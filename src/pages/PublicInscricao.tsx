@@ -178,9 +178,9 @@ export default function PublicInscricao() {
             <CheckCircle2 className="h-12 w-12" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-2xl font-black text-foreground tracking-tight uppercase">Inscrição Confirmada!</h1>
+            <h1 className="text-2xl font-black text-foreground tracking-tight uppercase">Vínculo Confirmado!</h1>
             <p className="text-sm text-muted-foreground font-medium">
-              A inscrição de <span className="text-primary font-bold">{form.nome}</span> foi recebida com sucesso.
+              A caminhada de <span className="text-primary font-bold">{form.nome}</span> foi registrada com sucesso.
             </p>
           </div>
           <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10">
@@ -192,7 +192,7 @@ export default function PublicInscricao() {
             onClick={() => window.location.reload()}
             className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
           >
-            Fazer outra inscrição
+            Fazer novo registro
           </button>
         </div>
       </div>
@@ -208,7 +208,7 @@ export default function PublicInscricao() {
              <UserPlus className="h-8 w-8" />
           </div>
           <div className="space-y-1">
-            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Formulário de Inscrição</p>
+            <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Acolhida e Renovação na Fé</p>
             <h1 className="text-3xl font-black text-foreground tracking-tighter leading-tight uppercase">
               Catequese {turma.nome}
             </h1>
@@ -241,7 +241,7 @@ export default function PublicInscricao() {
                   folder="catequizandos" 
                   currentImageUrl={form.foto} 
                   shape="circle" 
-                  label="Foto do Catequizando"
+                  label="Foto do Pequeno Cristão"
                 />
               </div>
               <div className="flex-1 w-full space-y-4">
@@ -440,7 +440,7 @@ export default function PublicInscricao() {
               <Spinner size="sm" color="white" text="Enviando Inscrição..." />
             ) : (
               <>
-                Finalizar e Enviar Inscrição <ArrowRight className="w-5 h-5" />
+                Confirmar Caminhada e Enviar <ArrowRight className="w-5 h-5" />
               </>
             )}
           </button>

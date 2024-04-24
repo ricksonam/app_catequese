@@ -742,13 +742,13 @@ export default function CatequizandosList() {
 
               <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto bg-[#F8F9FE]">
                 <div className="space-y-3">
-                   <div className="p-3.5 bg-primary/5 rounded-2xl border border-primary/10">
-                     <p className="text-[11px] font-bold text-primary leading-relaxed">
-                       Este link permite que os pais realizem a inscrição dos catequizandos diretamente pelo celular. 
-                       Os cadastros feitos pelos pais aparecerão automaticamente nesta lista abaixo.
-                     </p>
-                   </div>
-                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Link para Compartilhar</label>
+                    <div className="p-3.5 bg-primary/5 rounded-2xl border border-primary/10">
+                      <p className="text-[11px] font-bold text-primary leading-relaxed">
+                        Este elo de comunhão permite que as famílias realizem a inscrição ou atualizem os dados dos catequizandos diretamente de seus lares, fortalecendo nossa caminhada de fé. 
+                        As informações preenchidas florescerão automaticamente nesta lista, facilitando o pastoreio de cada pequeno cristão.
+                      </p>
+                    </div>
+                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Link de Acolhida e Atualização</label>
                    <div className="flex items-center gap-2 p-3 bg-white rounded-2xl border-2 border-black/5 shadow-inner">
                       <code className="text-[10px] font-mono font-bold text-primary truncate flex-1">
                         {`${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`}
@@ -765,7 +765,7 @@ export default function CatequizandosList() {
 
                 <div className="space-y-4">
                    <div className="flex items-center justify-between">
-                     <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Inscrições Online Recebidas</h3>
+                     <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Vínculos e Atualizações Recebidas</h3>
                      <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                        {list.filter(c => c.origem === 'online').length}
                      </span>
