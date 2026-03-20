@@ -13,7 +13,7 @@ export default function Dashboard() {
   const hoje = new Date();
   const proximosEncontros = useMemo(() => {
     return encontros
-      .filter((e) => new Date(e.data) >= hoje && !e.realizado)
+      .filter((e) => new Date(e.data) >= hoje && e.status === 'pendente')
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
       .slice(0, 3);
   }, [encontros]);
