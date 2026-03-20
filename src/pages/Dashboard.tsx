@@ -13,7 +13,7 @@ export default function Dashboard() {
   const hoje = new Date();
   const proximosEncontros = useMemo(() => {
     return encontros
-      .filter((e) => new Date(e.data) >= hoje && !e.realizado)
+      .filter((e) => new Date(e.data) >= hoje && e.status === 'pendente')
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
       .slice(0, 3);
   }, [encontros]);
@@ -45,7 +45,7 @@ export default function Dashboard() {
   const stats = [
     { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary" },
     { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/20 text-accent-foreground" },
-    { label: "Encontros", value: encontros.filter((e) => !e.realizado).length, icon: CalendarDays, color: "bg-success/10 text-success" },
+    { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success" },
   ];
 
   return (
@@ -128,7 +128,7 @@ export default function Dashboard() {
                     <CalendarDays className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{e.titulo}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{e.tema}</p>
                     <p className="text-xs text-muted-foreground">{turma?.nome} • {new Date(e.data).toLocaleDateString("pt-BR")}</p>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />

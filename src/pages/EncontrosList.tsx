@@ -1,40 +1,21 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getEncontros, saveEncontro, getTurmas, type Encontro } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Check } from "lucide-react";
+import { getEncontros, getTurmas, type Encontro, type EncontroStatus } from "@/lib/store";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, BookOpen } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { toast } from "sonner";
+
+const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; border: string }> = {
+  pendente: { label: "Pendente", bg: "bg-muted", text: "text-muted-foreground", border: "border-l-muted-foreground" },
+  realizado: { label: "Realizado", bg: "bg-success/10", text: "text-success", border: "border-l-success" },
+  adiado: { label: "Adiado", bg: "bg-warning/10", text: "text-warning", border: "border-l-warning" },
+  transferido: { label: "Transferido", bg: "bg-caution/10", text: "text-caution", border: "border-l-caution" },
+  cancelado: { label: "Cancelado", bg: "bg-destructive/10", text: "text-destructive", border: "border-l-destructive" },
+};
 
 export default function EncontrosList() {
   const { id } = useParams();
   const navigate = useNavigate();
   const turma = getTurmas().find((t) => t.id === id);
-  const [encontros, setEncontros] = useState(getEncontros(id));
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ titulo: "", data: "", descricao: "" });
-
-  const handleAdd = () => {
-    if (!form.titulo || !form.data) {
-      toast.error("Preencha título e data");
-      return;
-    }
-    const novo: Encontro = {
-      id: crypto.randomUUID(),
-      turmaId: id!,
-      ...form,
-      realizado: false,
-    };
-    saveEncontro(novo);
-    setEncontros(getEncontros(id));
-    setForm({ titulo: "", data: "", descricao: "" });
-    setOpen(false);
-    toast.success("Encontro adicionado!");
-  };
-
-  const toggleRealizado = (enc: Encontro) => {
-    saveEncontro({ ...enc, realizado: !enc.realizado });
-    setEncontros(getEncontros(id));
-  };
+  const [encontros] = useState(getEncontros(id));
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -45,84 +26,79 @@ export default function EncontrosList() {
           </button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Encontros</h1>
-            <p className="text-xs text-muted-foreground">{turma?.nome}</p>
+            <p className="text-xs text-muted-foreground">{turma?.nome} • {encontros.length} encontros</p>
           </div>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <button className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold">
-              <Plus className="h-4 w-4" /> Novo
-            </button>
-          </DialogTrigger>
-          <DialogContent className="rounded-2xl">
-            <DialogHeader>
-              <DialogTitle>Novo Encontro</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3 mt-2">
-              <input
-                type="text"
-                placeholder="Título do encontro"
-                value={form.titulo}
-                onChange={(e) => setForm((f) => ({ ...f, titulo: e.target.value }))}
-                className="w-full bg-muted rounded-xl px-4 py-3 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-              />
-              <input
-                type="date"
-                value={form.data}
-                onChange={(e) => setForm((f) => ({ ...f, data: e.target.value }))}
-                className="w-full bg-muted rounded-xl px-4 py-3 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-              />
-              <textarea
-                placeholder="Descrição (opcional)"
-                value={form.descricao}
-                onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
-                className="w-full bg-muted rounded-xl px-4 py-3 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none min-h-[60px] resize-none"
-              />
-              <button
-                onClick={handleAdd}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold"
-              >
-                Adicionar
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => navigate(`/turmas/${id}/encontros/novo`)}
+          className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
+        >
+          <Plus className="h-4 w-4" /> Novo Encontro
+        </button>
+        <button
+          onClick={() => navigate(`/modulos/biblioteca`)}
+          className="flex items-center justify-center gap-2 bg-secondary text-secondary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
+        >
+          <BookOpen className="h-4 w-4" /> Modelos
+        </button>
       </div>
 
       {encontros.length === 0 ? (
         <div className="ios-card p-8 text-center">
           <CalendarDays className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
           <p className="text-sm text-muted-foreground">Nenhum encontro cadastrado</p>
+          <p className="text-xs text-muted-foreground mt-1">Crie seu primeiro encontro ou use um modelo da biblioteca</p>
         </div>
       ) : (
-        <div className="ios-card overflow-hidden">
+        <div className="space-y-2">
           {encontros
             .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
-            .map((enc, i) => (
-              <div
-                key={enc.id}
-                className={`flex items-center gap-3 px-4 py-3 ${
-                  i < encontros.length - 1 ? "border-b border-border/50" : ""
-                }`}
-              >
-                <button
-                  onClick={() => toggleRealizado(enc)}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
-                    enc.realizado
-                      ? "bg-success border-success text-success-foreground"
-                      : "border-border text-muted-foreground"
-                  }`}
+            .map((enc) => {
+              const status = STATUS_CONFIG[enc.status];
+              return (
+                <div
+                  key={enc.id}
+                  className={`ios-card overflow-hidden border-l-4 ${status.border}`}
                 >
-                  {enc.realizado && <Check className="h-4 w-4" />}
-                </button>
-                <div className="flex-1">
-                  <p className={`text-sm font-medium ${enc.realizado ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                    {enc.titulo}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{new Date(enc.data).toLocaleDateString("pt-BR")}</p>
+                  <div className="px-4 py-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-semibold ${enc.status === 'cancelado' ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                          {enc.tema}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {new Date(enc.data).toLocaleDateString("pt-BR", { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
+                        </p>
+                        {enc.leituraBiblica && (
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">📖 {enc.leituraBiblica}</p>
+                        )}
+                      </div>
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${status.bg} ${status.text}`}>
+                        {status.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-3">
+                      <button
+                        onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
+                        className="flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-lg"
+                      >
+                        <Eye className="h-3.5 w-3.5" /> Visualizar
+                      </button>
+                      <button
+                        onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
+                        className="flex items-center gap-1 text-xs font-medium text-liturgical bg-liturgical/10 px-3 py-1.5 rounded-lg"
+                      >
+                        <Play className="h-3.5 w-3.5" /> Apresentação
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       )}
     </div>

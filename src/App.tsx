@@ -9,6 +9,9 @@ import TurmasList from "@/pages/TurmasList";
 import TurmaForm from "@/pages/TurmaForm";
 import TurmaDetail from "@/pages/TurmaDetail";
 import EncontrosList from "@/pages/EncontrosList";
+import EncontroForm from "@/pages/EncontroForm";
+import EncontroDetail from "@/pages/EncontroDetail";
+import EncontroPresentation from "@/pages/EncontroPresentation";
 import CatequizandosList from "@/pages/CatequizandosList";
 import ModulosGlobais from "@/pages/ModulosGlobais";
 import PlaceholderPage from "@/pages/PlaceholderPage";
@@ -29,6 +32,10 @@ const App = () => (
             <Route path="/turmas/nova" element={<TurmaForm />} />
             <Route path="/turmas/:id" element={<TurmaDetail />} />
             <Route path="/turmas/:id/encontros" element={<EncontrosList />} />
+            <Route path="/turmas/:id/encontros/novo" element={<EncontroForm />} />
+            <Route path="/turmas/:id/encontros/:encontroId" element={<EncontroDetail />} />
+            <Route path="/turmas/:id/encontros/:encontroId/editar" element={<EncontroForm />} />
+            <Route path="/turmas/:id/encontros/:encontroId/apresentacao" element={<EncontroPresentation />} />
             <Route path="/turmas/:id/catequizandos" element={<CatequizandosList />} />
             <Route path="/turmas/:id/atividades" element={<PlaceholderPage />} />
             <Route path="/turmas/:id/plano" element={<PlaceholderPage />} />
