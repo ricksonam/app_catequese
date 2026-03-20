@@ -20,13 +20,57 @@ export interface Catequizando {
   email: string;
 }
 
+export type EncontroStatus = 'pendente' | 'realizado' | 'adiado' | 'transferido' | 'cancelado';
+
+export type OracaoTipo = 'Ofício Divino' | 'Leitura Orante' | 'Celebrativo' | 'Oração Simples' | 'Louvor';
+
+export type RoteiroStepTipo = 'acolhida' | 'oracao_inicial' | 'desenvolvimento' | 'dinamica' | 'compromisso' | 'avisos' | 'oracao_final';
+
+export interface RoteiroStep {
+  id: string;
+  tipo: RoteiroStepTipo;
+  label: string;
+  conteudo: string;
+  tempo: number; // minutos
+  catequista: string;
+  oracaoTipo?: OracaoTipo;
+}
+
 export interface Encontro {
   id: string;
   turmaId: string;
-  titulo: string;
+  tema: string;
   data: string;
-  descricao: string;
-  realizado: boolean;
+  leituraBiblica: string;
+  materialApoio: string;
+  roteiro: RoteiroStep[];
+  status: EncontroStatus;
+  presencas: string[];
+  criadoEm: string;
+}
+
+export const ORACAO_TIPOS: OracaoTipo[] = [
+  'Ofício Divino', 'Leitura Orante', 'Celebrativo', 'Oração Simples', 'Louvor',
+];
+
+export const ROTEIRO_STEPS: { tipo: RoteiroStepTipo; label: string }[] = [
+  { tipo: 'acolhida', label: 'Acolhida' },
+  { tipo: 'oracao_inicial', label: 'Oração Inicial' },
+  { tipo: 'desenvolvimento', label: 'Desenvolvimento do Tema' },
+  { tipo: 'dinamica', label: 'Dinâmica' },
+  { tipo: 'compromisso', label: 'Compromisso' },
+  { tipo: 'avisos', label: 'Avisos' },
+  { tipo: 'oracao_final', label: 'Oração Final' },
+];
+
+export function deleteEncontro(id: string) {
+  const all = getEncontros().filter(e => e.id !== id);
+  localStorage.setItem(ENCONTROS_KEY, JSON.stringify(all));
+}
+
+export function deleteCatequizando(id: string) {
+  const all = getCatequizandos().filter(c => c.id !== id);
+  localStorage.setItem(CATEQUIZANDOS_KEY, JSON.stringify(all));
 }
 
 const TURMAS_KEY = 'ivc_turmas';
