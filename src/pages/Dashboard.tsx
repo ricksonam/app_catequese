@@ -128,7 +128,7 @@ export default function Dashboard() {
                     <CalendarDays className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{e.titulo}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{e.tema}</p>
                     <p className="text-xs text-muted-foreground">{turma?.nome} • {new Date(e.data).toLocaleDateString("pt-BR")}</p>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
