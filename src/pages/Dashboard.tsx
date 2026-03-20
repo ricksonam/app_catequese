@@ -45,7 +45,7 @@ export default function Dashboard() {
   const stats = [
     { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary" },
     { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/20 text-accent-foreground" },
-    { label: "Encontros", value: encontros.filter((e) => !e.realizado).length, icon: CalendarDays, color: "bg-success/10 text-success" },
+    { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success" },
   ];
 
   return (
