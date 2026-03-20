@@ -40,7 +40,7 @@ export default function EncontrosList() {
           <Plus className="h-4 w-4" /> Novo Encontro
         </button>
         <button
-          onClick={() => navigate(`/modulos/biblioteca`)}
+          onClick={() => navigate(`/turmas/${id}/biblioteca`)}
           className="flex items-center justify-center gap-2 bg-secondary text-secondary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
         >
           <BookOpen className="h-4 w-4" /> Modelos
