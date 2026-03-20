@@ -40,6 +40,9 @@ const App = () => (
             <Route path="/turmas/:id/catequizandos" element={<CatequizandosList />} />
             <Route path="/turmas/:id/atividades" element={<PlaceholderPage />} />
             <Route path="/turmas/:id/plano" element={<PlaceholderPage />} />
+            <Route path="/turmas/:id/biblioteca" element={<BibliotecaModelos />} />
+            <Route path="/modulos" element={<ModulosGlobais />} />
+            <Route path="/modulos/biblioteca" element={<BibliotecaModelos />} />
             <Route path="/modulos" element={<ModulosGlobais />} />
             <Route path="/modulos/*" element={<PlaceholderPage />} />
             <Route path="/cadastros/*" element={<PlaceholderPage />} />
