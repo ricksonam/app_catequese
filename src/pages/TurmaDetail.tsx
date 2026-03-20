@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getTurmas, getEncontros, getCatequizandos } from "@/lib/store";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, ChevronRight } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch } from "lucide-react";
 import { EtapaMap } from "@/components/EtapaMap";
 
 export default function TurmaDetail() {
@@ -24,8 +24,8 @@ export default function TurmaDetail() {
   const modulos = [
     { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/10 text-primary" },
     { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-accent/20 text-accent-foreground" },
-    { label: "Atividades e Etapas", icon: ListChecks, count: 0, path: `/turmas/${id}/atividades`, color: "bg-liturgical/10 text-liturgical" },
-    { label: "Plano da Turma", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-success/10 text-success" },
+    { label: "Atividades", icon: ListChecks, count: 0, path: `/turmas/${id}/atividades`, color: "bg-liturgical/10 text-liturgical" },
+    { label: "Plano", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-success/10 text-success" },
   ];
 
   return (
@@ -43,40 +43,32 @@ export default function TurmaDetail() {
         </div>
       </div>
 
+      {/* Quick Access Modules */}
+      <div className="grid grid-cols-4 gap-2">
+        {modulos.map((mod) => {
+          const Icon = mod.icon;
+          return (
+            <button
+              key={mod.label}
+              onClick={() => navigate(mod.path)}
+              className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 hover:shadow-md transition-all"
+            >
+              <div className={`w-10 h-10 rounded-xl ${mod.color} flex items-center justify-center`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <span className="text-[10px] font-medium text-foreground text-center leading-tight">{mod.label}</span>
+              {mod.count !== null && (
+                <span className="text-[9px] text-muted-foreground">{mod.count}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Etapa Map */}
       <div className="ios-card p-4">
         <p className="ios-section-title mb-3">Itinerário de Formação</p>
         <EtapaMap etapaAtual={turma.etapa} readonly />
-      </div>
-
-      {/* Modules */}
-      <div>
-        <p className="ios-section-title">Módulos da Turma</p>
-        <div className="ios-card overflow-hidden">
-          {modulos.map((mod, i) => {
-            const Icon = mod.icon;
-            return (
-              <button
-                key={mod.label}
-                onClick={() => navigate(mod.path)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted/50 transition-colors text-left ${
-                  i < modulos.length - 1 ? "border-b border-border/50" : ""
-                }`}
-              >
-                <div className={`w-10 h-10 rounded-xl ${mod.color} flex items-center justify-center`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">{mod.label}</p>
-                  {mod.count !== null && (
-                    <p className="text-xs text-muted-foreground">{mod.count} registros</p>
-                  )}
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
-            );
-          })}
-        </div>
       </div>
 
       {/* Info */}
