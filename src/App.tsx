@@ -13,6 +13,7 @@ import EncontroForm from "@/pages/EncontroForm";
 import EncontroDetail from "@/pages/EncontroDetail";
 import EncontroPresentation from "@/pages/EncontroPresentation";
 import CatequizandosList from "@/pages/CatequizandosList";
+import BibliotecaModelos from "@/pages/BibliotecaModelos";
 import ModulosGlobais from "@/pages/ModulosGlobais";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import NotFound from "@/pages/NotFound";
