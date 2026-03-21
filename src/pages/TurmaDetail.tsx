@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getTurmas, getEncontros, getCatequizandos } from "@/lib/store";
+import { getTurmas, getEncontros, getCatequizandos, getAtividades } from "@/lib/store";
 import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch } from "lucide-react";
 
 export default function TurmaDetail() {
@@ -8,6 +8,7 @@ export default function TurmaDetail() {
   const turma = getTurmas().find((t) => t.id === id);
   const encontros = getEncontros(id);
   const catequizandos = getCatequizandos(id);
+  const atividades = getAtividades(id);
 
   if (!turma) {
     return (
@@ -23,7 +24,7 @@ export default function TurmaDetail() {
   const modulos = [
     { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/10 text-primary" },
     { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-accent/20 text-accent-foreground" },
-    { label: "Atividades", icon: ListChecks, count: 0, path: `/turmas/${id}/atividades`, color: "bg-liturgical/10 text-liturgical" },
+    { label: "Atividades", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-liturgical/10 text-liturgical" },
     { label: "Plano", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-success/10 text-success" },
   ];
 
