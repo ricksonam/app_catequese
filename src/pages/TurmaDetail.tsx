@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getTurmas, getEncontros, getCatequizandos } from "@/lib/store";
+import { getTurmas, getEncontros, getCatequizandos, getAtividades } from "@/lib/store";
 import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch } from "lucide-react";
 
 export default function TurmaDetail() {
@@ -8,6 +8,7 @@ export default function TurmaDetail() {
   const turma = getTurmas().find((t) => t.id === id);
   const encontros = getEncontros(id);
   const catequizandos = getCatequizandos(id);
+  const atividades = getAtividades(id);
 
   if (!turma) {
     return (
