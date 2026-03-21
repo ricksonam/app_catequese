@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getCatequizandos, saveCatequizando, getTurmas, type Catequizando } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp } from "lucide-react";
+import { getCatequizandos, saveCatequizando, getTurmas, type Catequizando, type CatequizandoStatus } from "@/lib/store";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, Eye, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -26,14 +26,7 @@ interface CatequizandoForm {
 }
 
 const emptyForm: CatequizandoForm = {
-  nome: "",
-  dataNascimento: "",
-  responsavel: "",
-  telefone: "",
-  email: "",
-  endereco: "",
-  necessidadeEspecial: "",
-  observacao: "",
+  nome: "", dataNascimento: "", responsavel: "", telefone: "", email: "", endereco: "", necessidadeEspecial: "", observacao: "",
   batismo: { recebido: false, paroquia: "", data: "" },
   eucaristia: { recebido: false, paroquia: "", data: "" },
   crisma: { recebido: false, paroquia: "", data: "" },
@@ -49,6 +42,12 @@ function calcularIdade(dataNascimento: string): string {
   return `${idade} anos`;
 }
 
+const statusConfig: Record<CatequizandoStatus, { label: string; color: string }> = {
+  ativo: { label: "Ativo", color: "bg-success/10 text-success" },
+  desistente: { label: "Desistente", color: "bg-destructive/10 text-destructive" },
+  afastado: { label: "Afastado", color: "bg-warning/10 text-warning" },
+};
+
 export default function CatequizandosList() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -57,6 +56,7 @@ export default function CatequizandosList() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CatequizandoForm>({ ...emptyForm });
   const [showSacramentos, setShowSacramentos] = useState(false);
+  const [viewItem, setViewItem] = useState<Catequizando | null>(null);
 
   const updateField = useCallback((field: string, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -67,26 +67,12 @@ export default function CatequizandosList() {
   }, []);
 
   const handleAdd = () => {
-    if (!form.nome) {
-      toast.error("Nome é obrigatório");
-      return;
-    }
+    if (!form.nome) { toast.error("Nome é obrigatório"); return; }
     const novo: Catequizando = {
-      id: crypto.randomUUID(),
-      turmaId: id!,
-      nome: form.nome,
-      dataNascimento: form.dataNascimento,
-      responsavel: form.responsavel,
-      telefone: form.telefone,
-      email: form.email,
-      endereco: form.endereco,
-      necessidadeEspecial: form.necessidadeEspecial,
-      observacao: form.observacao,
-      sacramentos: {
-        batismo: form.batismo,
-        eucaristia: form.eucaristia,
-        crisma: form.crisma,
-      },
+      id: crypto.randomUUID(), turmaId: id!, nome: form.nome, dataNascimento: form.dataNascimento,
+      responsavel: form.responsavel, telefone: form.telefone, email: form.email, endereco: form.endereco,
+      necessidadeEspecial: form.necessidadeEspecial, observacao: form.observacao, status: 'ativo',
+      sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma },
     };
     saveCatequizando(novo);
     setList(getCatequizandos(id));
@@ -94,6 +80,14 @@ export default function CatequizandosList() {
     setShowSacramentos(false);
     setOpen(false);
     toast.success("Catequizando adicionado!");
+  };
+
+  const handleStatusChange = (catequizando: Catequizando, newStatus: CatequizandoStatus) => {
+    const updated = { ...catequizando, status: newStatus };
+    saveCatequizando(updated);
+    setList(getCatequizandos(id));
+    setViewItem(updated);
+    toast.success(`Status alterado para ${statusConfig[newStatus].label}`);
   };
 
   return (
@@ -115,18 +109,14 @@ export default function CatequizandosList() {
             </button>
           </DialogTrigger>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Novo Catequizando</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Novo Catequizando</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
               <div className="grid grid-cols-2 gap-2">
                 <FieldInput label="Data de nascimento" type="date" value={form.dataNascimento} onChange={(v) => updateField("dataNascimento", v)} />
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">Idade</label>
-                  <div className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground">
-                    {calcularIdade(form.dataNascimento) || "—"}
-                  </div>
+                  <div className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground">{calcularIdade(form.dataNascimento) || "—"}</div>
                 </div>
               </div>
               <FieldInput label="Responsável" value={form.responsavel} onChange={(v) => updateField("responsavel", v)} />
@@ -138,20 +128,10 @@ export default function CatequizandosList() {
               <FieldInput label="Necessidade especial" value={form.necessidadeEspecial} onChange={(v) => updateField("necessidadeEspecial", v)} placeholder="Se houver, descreva aqui" />
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Observação</label>
-                <textarea
-                  value={form.observacao}
-                  onChange={(e) => updateField("observacao", e.target.value)}
-                  className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none min-h-[60px] resize-none"
-                  placeholder="Anotações..."
-                />
+                <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none min-h-[60px] resize-none" placeholder="Anotações..." />
               </div>
 
-              {/* Sacramentos */}
-              <button
-                type="button"
-                onClick={() => setShowSacramentos(!showSacramentos)}
-                className="w-full flex items-center justify-between px-4 py-2.5 bg-muted rounded-xl text-sm font-medium text-foreground"
-              >
+              <button type="button" onClick={() => setShowSacramentos(!showSacramentos)} className="w-full flex items-center justify-between px-4 py-2.5 bg-muted rounded-xl text-sm font-medium text-foreground">
                 Sacramentos Recebidos
                 {showSacramentos ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </button>
@@ -160,12 +140,7 @@ export default function CatequizandosList() {
                   {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
                     <div key={sac} className="space-y-2">
                       <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={form[sac].recebido}
-                          onChange={(e) => updateSacramento(sac, "recebido", e.target.checked)}
-                          className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
-                        />
+                        <input type="checkbox" checked={form[sac].recebido} onChange={(e) => updateSacramento(sac, "recebido", e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
                         <span className="text-sm font-medium text-foreground capitalize">{sac}</span>
                       </label>
                       {form[sac].recebido && (
@@ -179,12 +154,7 @@ export default function CatequizandosList() {
                 </div>
               )}
 
-              <button
-                onClick={handleAdd}
-                className="w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold"
-              >
-                Adicionar
-              </button>
+              <button onClick={handleAdd} className="w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold">Adicionar</button>
             </div>
           </DialogContent>
         </Dialog>
@@ -197,52 +167,93 @@ export default function CatequizandosList() {
         </div>
       ) : (
         <div className="ios-card overflow-hidden">
-          {list.map((c, i) => (
-            <div
-              key={c.id}
-              className={`flex items-center gap-3 px-4 py-3 ${
-                i < list.length - 1 ? "border-b border-border/50" : ""
-              }`}
-            >
-              <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                <span className="text-sm font-bold text-accent-foreground">
-                  {c.nome.charAt(0).toUpperCase()}
-                </span>
+          {list.map((c, i) => {
+            const st = statusConfig[c.status || 'ativo'];
+            return (
+              <div key={c.id} className={`flex items-center gap-3 px-4 py-3 ${i < list.length - 1 ? "border-b border-border/50" : ""}`}>
+                <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                  <span className="text-sm font-bold text-accent-foreground">{c.nome.charAt(0).toUpperCase()}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground truncate">{c.nome}</p>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${st.color}`}>{st.label}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {c.dataNascimento && calcularIdade(c.dataNascimento)}
+                    {c.responsavel && ` • ${c.responsavel}`}
+                  </p>
+                </div>
+                <button onClick={() => setViewItem(c)} className="p-2 rounded-lg hover:bg-muted"><Eye className="h-4 w-4 text-muted-foreground" /></button>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">{c.nome}</p>
-                <p className="text-xs text-muted-foreground">
-                  {c.dataNascimento && `${calcularIdade(c.dataNascimento)}`}
-                  {c.responsavel && ` • Resp: ${c.responsavel}`}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* View Detail Dialog */}
+      <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
+        <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>{viewItem?.nome}</DialogTitle></DialogHeader>
+          {viewItem && (
+            <div className="space-y-3 text-sm">
+              {/* Status buttons */}
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-2">Status</p>
+                <div className="flex gap-2 flex-wrap">
+                  {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => (
+                    <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${(viewItem.status || 'ativo') === s ? statusConfig[s].color + ' ring-2 ring-offset-1 ring-current' : 'bg-muted text-muted-foreground'}`}>
+                      {statusConfig[s].label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <InfoRow label="Data de nascimento" value={viewItem.dataNascimento ? `${new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR")} (${calcularIdade(viewItem.dataNascimento)})` : undefined} />
+                <InfoRow label="Responsável" value={viewItem.responsavel} />
+                <InfoRow label="Telefone" value={viewItem.telefone} />
+                <InfoRow label="E-mail" value={viewItem.email} />
+                <InfoRow label="Endereço" value={viewItem.endereco} />
+                <InfoRow label="Necessidade especial" value={viewItem.necessidadeEspecial} />
+                <InfoRow label="Observação" value={viewItem.observacao} />
+              </div>
+
+              {viewItem.sacramentos && (
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-1.5">Sacramentos</p>
+                  {(["batismo", "eucaristia", "crisma"] as const).map(sac => {
+                    const s = viewItem.sacramentos![sac];
+                    return (
+                      <div key={sac} className="flex items-center gap-2 py-1">
+                        <span className={`w-2 h-2 rounded-full ${s.recebido ? 'bg-success' : 'bg-muted-foreground/30'}`} />
+                        <span className="capitalize font-medium text-foreground">{sac}</span>
+                        {s.recebido && s.paroquia && <span className="text-muted-foreground text-xs">• {s.paroquia}</span>}
+                        {s.recebido && s.data && <span className="text-muted-foreground text-xs">• {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function FieldInput({ label, type = "text", value, onChange, placeholder }: {
-  label: string;
-  type?: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) {
+function InfoRow({ label, value }: { label: string; value?: string }) {
+  if (!value) return null;
+  return <p><span className="text-muted-foreground">{label}:</span> <span className="font-medium text-foreground">{value}</span></p>;
+}
+
+function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div>
       <label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
-      <input
-        ref={ref}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-      />
+      <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none" />
     </div>
   );
 }
