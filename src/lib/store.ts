@@ -10,6 +10,12 @@ export interface Turma {
   criadoEm: string;
 }
 
+export interface SacramentoInfo {
+  recebido: boolean;
+  paroquia: string;
+  data: string;
+}
+
 export interface Catequizando {
   id: string;
   turmaId: string;
@@ -18,6 +24,14 @@ export interface Catequizando {
   responsavel: string;
   telefone: string;
   email: string;
+  endereco?: string;
+  necessidadeEspecial?: string;
+  observacao?: string;
+  sacramentos?: {
+    batismo: SacramentoInfo;
+    eucaristia: SacramentoInfo;
+    crisma: SacramentoInfo;
+  };
 }
 
 export type EncontroStatus = 'pendente' | 'realizado' | 'adiado' | 'transferido' | 'cancelado';

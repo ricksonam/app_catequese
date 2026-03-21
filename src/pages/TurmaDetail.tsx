@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getTurmas, getEncontros, getCatequizandos } from "@/lib/store";
 import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch } from "lucide-react";
-import { EtapaMap } from "@/components/EtapaMap";
 
 export default function TurmaDetail() {
   const { id } = useParams();
@@ -43,32 +42,28 @@ export default function TurmaDetail() {
         </div>
       </div>
 
-      {/* Quick Access Modules */}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Quick Access Modules - larger grid */}
+      <div className="grid grid-cols-2 gap-3">
         {modulos.map((mod) => {
           const Icon = mod.icon;
           return (
             <button
               key={mod.label}
               onClick={() => navigate(mod.path)}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-card border border-border/50 hover:shadow-md transition-all"
+              className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/50 hover:shadow-md transition-all text-left"
             >
-              <div className={`w-10 h-10 rounded-xl ${mod.color} flex items-center justify-center`}>
-                <Icon className="h-5 w-5" />
+              <div className={`w-12 h-12 rounded-xl ${mod.color} flex items-center justify-center shrink-0`}>
+                <Icon className="h-6 w-6" />
               </div>
-              <span className="text-[10px] font-medium text-foreground text-center leading-tight">{mod.label}</span>
-              {mod.count !== null && (
-                <span className="text-[9px] text-muted-foreground">{mod.count}</span>
-              )}
+              <div>
+                <span className="text-sm font-semibold text-foreground">{mod.label}</span>
+                {mod.count !== null && (
+                  <p className="text-xs text-muted-foreground">{mod.count} cadastrados</p>
+                )}
+              </div>
             </button>
           );
         })}
-      </div>
-
-      {/* Etapa Map */}
-      <div className="ios-card p-4">
-        <p className="ios-section-title mb-3">Itinerário de Formação</p>
-        <EtapaMap etapaAtual={turma.etapa} readonly />
       </div>
 
       {/* Info */}
@@ -76,6 +71,7 @@ export default function TurmaDetail() {
         <p className="ios-section-title">Informações</p>
         <div className="space-y-1.5 text-sm">
           <p><span className="text-muted-foreground">Ano:</span> <span className="font-medium text-foreground">{turma.ano}</span></p>
+          <p><span className="text-muted-foreground">Etapa:</span> <span className="font-medium text-foreground">{turma.etapa}</span></p>
           {turma.outrosDados && (
             <p><span className="text-muted-foreground">Notas:</span> <span className="font-medium text-foreground">{turma.outrosDados}</span></p>
           )}

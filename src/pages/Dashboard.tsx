@@ -1,8 +1,7 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cross, Cake } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getTurmas, getEncontros, getCatequizandos } from "@/lib/store";
 import { useMemo } from "react";
-import { EtapaMap } from "@/components/EtapaMap";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -32,16 +31,6 @@ export default function Dashboard() {
       .slice(0, 3);
   }, [catequizandos]);
 
-  // Simple liturgical time calculation
-  const tempoLiturgico = useMemo(() => {
-    const month = hoje.getMonth();
-    if (month === 11 || month <= 0) return { nome: "Advento / Natal", cor: "bg-liturgical" };
-    if (month >= 1 && month <= 2) return { nome: "Tempo Comum", cor: "bg-success" };
-    if (month >= 2 && month <= 3) return { nome: "Quaresma", cor: "bg-liturgical" };
-    if (month === 3 || month === 4) return { nome: "Páscoa", cor: "bg-gold" };
-    return { nome: "Tempo Comum", cor: "bg-success" };
-  }, []);
-
   const stats = [
     { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary" },
     { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/20 text-accent-foreground" },
@@ -54,28 +43,6 @@ export default function Dashboard() {
       <div>
         <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
         <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
-      </div>
-
-      {/* Liturgical Banner */}
-      <div className={`ios-card overflow-hidden ${tempoLiturgico.cor} p-4`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-card/20 flex items-center justify-center">
-            <Cross className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div>
-            <p className="text-xs font-medium text-primary-foreground/80 uppercase tracking-wider">Tempo Litúrgico</p>
-            <p className="text-lg font-bold text-primary-foreground">{tempoLiturgico.nome}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Evangelho do Dia */}
-      <div className="ios-card p-4">
-        <p className="ios-section-title">📖 Evangelho do Dia</p>
-        <p className="text-sm text-foreground leading-relaxed mt-2">
-          "Pedi e vos será dado; buscai e encontrareis; batei e vos será aberto." 
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">Mt 7,7 — Tempo Comum</p>
       </div>
 
       {/* Stats */}

@@ -1,7 +1,6 @@
-import { getTurmas } from "@/lib/store";
+import { getTurmas, getEncontros, getCatequizandos, ETAPAS_CATEQUESE } from "@/lib/store";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, ChevronRight, Plus } from "lucide-react";
-import { EtapaMap } from "@/components/EtapaMap";
+import { BookOpen, ChevronRight, Plus, CalendarDays, Users } from "lucide-react";
 
 export default function TurmasList() {
   const turmas = getTurmas();
@@ -27,24 +26,44 @@ export default function TurmasList() {
         </div>
       ) : (
         <div className="space-y-3">
-          {turmas.map((turma) => (
-            <button
-              key={turma.id}
-              onClick={() => navigate(`/turmas/${turma.id}`)}
-              className="ios-card w-full p-4 text-left hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="text-base font-semibold text-foreground">{turma.nome}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {turma.diaCatequese} • {turma.horario} • {turma.local}
-                  </p>
+          {turmas.map((turma) => {
+            const encontros = getEncontros(turma.id);
+            const catequizandos = getCatequizandos(turma.id);
+            const etapa = ETAPAS_CATEQUESE.find((e) => e.id === turma.etapa);
+
+            return (
+              <button
+                key={turma.id}
+                onClick={() => navigate(`/turmas/${turma.id}`)}
+                className="ios-card w-full p-4 text-left hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground">{turma.nome}</h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {turma.diaCatequese} • {turma.horario} • {turma.local}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground mt-1" />
-              </div>
-              <EtapaMap etapaAtual={turma.etapa} readonly />
-            </button>
-          ))}
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    <span>{encontros.length} encontros</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Users className="h-3.5 w-3.5" />
+                    <span>{catequizandos.length} catequizandos</span>
+                  </div>
+                  {etapa && (
+                    <span className="ml-auto text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      {etapa.label}
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
