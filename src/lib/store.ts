@@ -106,6 +106,9 @@ export interface Comunidade {
 export interface CatequistaCadastro {
   id: string;
   nome: string;
+  dataNascimento: string;
+  endereco: string;
+  profissao: string;
   telefone: string;
   email: string;
   comunidadeId: string;

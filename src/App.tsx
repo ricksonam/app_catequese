@@ -17,6 +17,9 @@ import AtividadesList from "@/pages/AtividadesList";
 import PlanoTurma from "@/pages/PlanoTurma";
 import BibliotecaModelos from "@/pages/BibliotecaModelos";
 import ModulosGlobais from "@/pages/ModulosGlobais";
+import MuralFotos from "@/pages/MuralFotos";
+import BibliaPage from "@/pages/BibliaPage";
+import MaterialApoio from "@/pages/MaterialApoio";
 import ParoquiaCadastro from "@/pages/ParoquiaCadastro";
 import ComunidadesCadastro from "@/pages/ComunidadesCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
@@ -47,6 +50,9 @@ const App = () => (
             <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
             <Route path="/turmas/:id/biblioteca" element={<BibliotecaModelos />} />
             <Route path="/modulos" element={<ModulosGlobais />} />
+            <Route path="/modulos/mural" element={<MuralFotos />} />
+            <Route path="/modulos/biblia" element={<BibliaPage />} />
+            <Route path="/modulos/material" element={<MaterialApoio />} />
             <Route path="/modulos/biblioteca" element={<BibliotecaModelos />} />
             <Route path="/modulos/*" element={<PlaceholderPage />} />
             <Route path="/cadastros/paroquia" element={<ParoquiaCadastro />} />

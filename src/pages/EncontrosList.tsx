@@ -31,21 +31,13 @@ export default function EncontrosList() {
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => navigate(`/turmas/${id}/encontros/novo`)}
-          className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
-        >
-          <Plus className="h-4 w-4" /> Novo Encontro
-        </button>
-        <button
-          onClick={() => navigate(`/turmas/${id}/biblioteca`)}
-          className="flex items-center justify-center gap-2 bg-secondary text-secondary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
-        >
-          <BookOpen className="h-4 w-4" /> Modelos
-        </button>
-      </div>
+      {/* Action button */}
+      <button
+        onClick={() => navigate(`/turmas/${id}/encontros/novo`)}
+        className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
+      >
+        <Plus className="h-4 w-4" /> Novo Encontro
+      </button>
 
       {encontros.length === 0 ? (
         <div className="ios-card p-8 text-center">

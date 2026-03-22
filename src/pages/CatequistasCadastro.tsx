@@ -7,6 +7,9 @@ import { toast } from "sonner";
 
 interface FormData {
   nome: string;
+  dataNascimento: string;
+  endereco: string;
+  profissao: string;
   telefone: string;
   email: string;
   comunidadeId: string;
@@ -15,7 +18,16 @@ interface FormData {
   observacao: string;
 }
 
-const emptyForm: FormData = { nome: "", telefone: "", email: "", comunidadeId: "", formacao: "", anosExperiencia: "", observacao: "" };
+const emptyForm: FormData = { nome: "", dataNascimento: "", endereco: "", profissao: "", telefone: "", email: "", comunidadeId: "", formacao: "", anosExperiencia: "", observacao: "" };
+
+function calcAge(birth: string): number | null {
+  if (!birth) return null;
+  const b = new Date(birth);
+  const now = new Date();
+  let age = now.getFullYear() - b.getFullYear();
+  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) age--;
+  return age;
+}
 
 export default function CatequistasCadastro() {
   const navigate = useNavigate();
@@ -71,6 +83,20 @@ export default function CatequistasCadastro() {
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
               <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Data de nascimento</label>
+                  <input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Idade</label>
+                  <div className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-muted-foreground">
+                    {form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}
+                  </div>
+                </div>
+              </div>
+              <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+              <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} />
+              <div className="grid grid-cols-2 gap-2">
                 <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", v)} />
                 <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
               </div>
@@ -122,6 +148,11 @@ export default function CatequistasCadastro() {
           <DialogHeader><DialogTitle>{viewItem?.nome}</DialogTitle></DialogHeader>
           {viewItem && (
             <div className="space-y-2 text-sm">
+              {viewItem.dataNascimento && (
+                <InfoRow label="Nascimento" value={`${new Date(viewItem.dataNascimento).toLocaleDateString("pt-BR")} (${calcAge(viewItem.dataNascimento)} anos)`} />
+              )}
+              <InfoRow label="Endereço" value={viewItem.endereco} />
+              <InfoRow label="Profissão" value={viewItem.profissao} />
               <InfoRow label="Telefone" value={viewItem.telefone} />
               <InfoRow label="E-mail" value={viewItem.email} />
               <InfoRow label="Comunidade" value={viewItem.comunidadeId ? getComunidadeNome(viewItem.comunidadeId) : undefined} />
