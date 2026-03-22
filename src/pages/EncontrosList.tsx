@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getEncontros, getTurmas, type Encontro, type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, BookOpen } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play } from "lucide-react";
 import { useState } from "react";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; border: string }> = {
