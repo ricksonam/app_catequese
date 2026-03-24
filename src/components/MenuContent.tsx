@@ -1,22 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { Church, Users, UserCheck, Image, BookOpen, FileText, Library } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, ChevronRight } from "lucide-react";
 
 interface MenuContentProps {
   onClose: () => void;
 }
 
 const cadastros = [
-  { label: "Paróquia / Área / Escola", icon: Church, path: "/cadastros/paroquia" },
-  { label: "Comunidades / Núcleos", icon: Users, path: "/cadastros/comunidades" },
-  { label: "Catequistas", icon: UserCheck, path: "/cadastros/catequistas" },
+  { label: "Paróquia / Área / Escola", icon: Church, path: "/cadastros/paroquia", color: "bg-primary/10 text-primary" },
+  { label: "Comunidades / Núcleos", icon: Users, path: "/cadastros/comunidades", color: "bg-accent/15 text-accent-foreground" },
+  { label: "Catequistas", icon: UserCheck, path: "/cadastros/catequistas", color: "bg-success/10 text-success" },
 ];
 
 const modulosGlobais = [
-  { label: "Mural de Fotos", icon: Image, path: "/modulos/mural" },
-  { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia" },
-  { label: "Material de Apoio", icon: FileText, path: "/modulos/material" },
-  { label: "Biblioteca de Modelos", icon: Library, path: "/modulos/biblioteca" },
+  { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-gold/15 text-gold" },
+  { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
+  { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Biblioteca de Modelos", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
 ];
 
 export function MenuContent({ onClose }: MenuContentProps) {
@@ -34,47 +33,51 @@ export function MenuContent({ onClose }: MenuContentProps) {
         <p className="text-sm text-muted-foreground">Cadastros e recursos</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4">
-        <p className="ios-section-title">Cadastros Obrigatórios</p>
-        <div className="ios-card overflow-hidden mb-6">
-          {cadastros.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.path}
-                onClick={() => go(item.path)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted/50 transition-colors text-left ${
-                  i < cadastros.length - 1 ? "border-b border-border/50" : ""
-                }`}
-              >
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Icon className="h-4 w-4 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-foreground">{item.label}</span>
-              </button>
-            );
-          })}
+      <div className="flex-1 overflow-y-auto px-4 space-y-6">
+        <div>
+          <p className="section-title">Cadastros Obrigatórios</p>
+          <div className="space-y-2">
+            {cadastros.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => go(item.path)}
+                  className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <div className={`icon-box ${item.color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="flex-1 text-sm font-medium text-foreground">{item.label}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <p className="ios-section-title">Módulos Globais</p>
-        <div className="ios-card overflow-hidden mb-6">
-          {modulosGlobais.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.path}
-                onClick={() => go(item.path)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted/50 transition-colors text-left ${
-                  i < modulosGlobais.length - 1 ? "border-b border-border/50" : ""
-                }`}
-              >
-                <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Icon className="h-4 w-4 text-accent-foreground" />
-                </div>
-                <span className="text-sm font-medium text-foreground">{item.label}</span>
-              </button>
-            );
-          })}
+        <div>
+          <p className="section-title">Módulos Globais</p>
+          <div className="space-y-2">
+            {modulosGlobais.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => go(item.path)}
+                  className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up"
+                  style={{ animationDelay: `${(i + 3) * 60}ms` }}
+                >
+                  <div className={`icon-box ${item.color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="flex-1 text-sm font-medium text-foreground">{item.label}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

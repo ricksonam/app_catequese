@@ -26,10 +26,7 @@ export default function EncontroPresentation() {
     if (!timerRunning || timeLeft <= 0) return;
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
-          setTimerRunning(false);
-          return 0;
-        }
+        if (prev <= 1) { setTimerRunning(false); return 0; }
         return prev - 1;
       });
     }, 1000);
@@ -60,18 +57,11 @@ export default function EncontroPresentation() {
     return () => window.removeEventListener("keydown", handler);
   }, [goNext, goPrev, navigate]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchMove = (e: React.TouchEvent) => { touchEndX.current = e.touches[0].clientX; };
   const handleTouchEnd = () => {
     const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) goNext();
-      else goPrev();
-    }
+    if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
   };
 
   if (!encontro || !step) {
@@ -87,52 +77,43 @@ export default function EncontroPresentation() {
   const handleTimerClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (timeLeft === 0) {
-      setTimeLeft(step.tempo * 60);
-      setTimerRunning(true);
-    } else {
-      setTimerRunning(!timerRunning);
-    }
+    if (timeLeft === 0) { setTimeLeft(step.tempo * 60); setTimerRunning(true); }
+    else { setTimerRunning(!timerRunning); }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-background flex flex-col"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* Top bar - topic name and catequista */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
-        <div className="flex-1 min-w-0">
-          <p className="text-base font-bold text-foreground truncate">{step.label}</p>
-          <div className="flex items-center gap-2">
-            <p className="text-xs text-muted-foreground truncate">{encontro.tema}</p>
-            {step.catequista && (
-              <span className="text-xs text-primary font-medium">• {step.catequista}</span>
-            )}
+    <div className="fixed inset-0 z-50 bg-background flex flex-col" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+      {/* Top */}
+      <div className="glass-card rounded-none border-x-0 border-t-0 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            <p className="text-base font-bold text-foreground truncate">{step.label}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground truncate">{encontro.tema}</p>
+              {step.catequista && <span className="text-xs text-primary font-semibold">• {step.catequista}</span>}
+            </div>
           </div>
+          <button onClick={() => navigate(-1)} className="back-btn ml-2">
+            <X className="h-5 w-5 text-foreground" />
+          </button>
         </div>
-        <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-muted ml-2">
-          <X className="h-5 w-5 text-foreground" />
-        </button>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress */}
       <div className="h-1 bg-muted">
-        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="h-full bg-primary transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
       </div>
 
-      {/* Center - description content */}
+      {/* Center */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-6 overflow-y-auto">
-        <span className="text-xs font-semibold text-primary uppercase tracking-wider mb-4">
+        <span className="text-xs font-bold text-primary uppercase tracking-widest mb-4">
           {currentStep + 1} / {steps.length}
         </span>
         {step.oracaoTipo && (
-          <span className="text-xs bg-liturgical/10 text-liturgical px-3 py-1 rounded-full mb-4">{step.oracaoTipo}</span>
+          <span className="pill-btn bg-liturgical/10 text-liturgical mb-4">{step.oracaoTipo}</span>
         )}
         {step.conteudo ? (
-          <div className="ios-card p-5 max-w-lg w-full">
+          <div className="float-card p-6 max-w-lg w-full animate-scale-in">
             <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{step.conteudo}</p>
           </div>
         ) : (
@@ -140,64 +121,39 @@ export default function EncontroPresentation() {
         )}
       </div>
 
-      {/* Bottom - navigation + timer */}
-      <div className="border-t border-border/50 px-4 py-3">
-        {/* Step dots */}
-        <div className="flex justify-center gap-1 mb-3">
+      {/* Bottom */}
+      <div className="glass-card rounded-none border-x-0 border-b-0 px-4 py-3">
+        <div className="flex justify-center gap-1.5 mb-3">
           {steps.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentStep(i)}
-              className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? "bg-primary" : "bg-border"}`}
-            />
+            <button key={i} onClick={() => setCurrentStep(i)} className={`w-2 h-2 rounded-full transition-all ${i === currentStep ? "bg-primary w-6" : "bg-border"}`} />
           ))}
         </div>
 
         <div className="flex items-center justify-between">
-          <button
-            onClick={goPrev}
-            disabled={currentStep === 0}
-            className="flex items-center gap-1 text-sm font-medium text-foreground disabled:text-muted-foreground disabled:opacity-50 px-3 py-2 rounded-xl hover:bg-muted"
-          >
+          <button onClick={goPrev} disabled={currentStep === 0} className="flex items-center gap-1 text-sm font-semibold text-foreground disabled:text-muted-foreground disabled:opacity-50 px-3 py-2 rounded-xl hover:bg-muted active:scale-95 transition-all">
             <ChevronLeft className="h-4 w-4" /> Anterior
           </button>
 
-          {/* Timer in center */}
           {step.tempo > 0 && (
             <button
               onClick={handleTimerClick}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                handleTimerClick(e);
-              }}
-              className={`w-16 h-16 rounded-full flex flex-col items-center justify-center border-2 transition-colors ${
-                timerRunning
-                  ? "border-primary bg-primary/5"
-                  : timeLeft === 0
-                  ? "border-destructive bg-destructive/5"
-                  : "border-border bg-muted"
+              onTouchEnd={(e) => { e.stopPropagation(); handleTimerClick(e); }}
+              className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 transition-all active:scale-95 ${
+                timerRunning ? "border-primary bg-primary/10 shadow-md shadow-primary/20"
+                : timeLeft === 0 ? "border-destructive bg-destructive/10"
+                : "border-border bg-muted/50"
               }`}
             >
               <span className={`text-sm font-bold ${timeLeft === 0 ? "text-destructive" : "text-foreground"}`}>
                 {formatTime(timeLeft)}
               </span>
-              <span className="text-[8px] text-muted-foreground flex items-center gap-0.5">
-                {timerRunning ? (
-                  <Pause className="h-2 w-2" />
-                ) : timeLeft === 0 ? (
-                  <RotateCcw className="h-2 w-2" />
-                ) : (
-                  <Play className="h-2 w-2" />
-                )}
+              <span className="text-[8px] text-muted-foreground">
+                {timerRunning ? <Pause className="h-2.5 w-2.5" /> : timeLeft === 0 ? <RotateCcw className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
               </span>
             </button>
           )}
 
-          <button
-            onClick={goNext}
-            disabled={currentStep === steps.length - 1}
-            className="flex items-center gap-1 text-sm font-medium text-foreground disabled:text-muted-foreground disabled:opacity-50 px-3 py-2 rounded-xl hover:bg-muted"
-          >
+          <button onClick={goNext} disabled={currentStep === steps.length - 1} className="flex items-center gap-1 text-sm font-semibold text-foreground disabled:text-muted-foreground disabled:opacity-50 px-3 py-2 rounded-xl hover:bg-muted active:scale-95 transition-all">
             Seguinte <ChevronRight className="h-4 w-4" />
           </button>
         </div>

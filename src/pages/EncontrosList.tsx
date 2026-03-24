@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getEncontros, getTurmas, type Encontro, type EncontroStatus } from "@/lib/store";
+import { getEncontros, getTurmas, type EncontroStatus } from "@/lib/store";
 import { ArrowLeft, Plus, CalendarDays, Eye, Play } from "lucide-react";
 import { useState } from "react";
 
@@ -18,10 +18,10 @@ export default function EncontrosList() {
   const [encontros] = useState(getEncontros(id));
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="p-2 rounded-xl hover:bg-muted">
+          <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div>
@@ -31,35 +31,34 @@ export default function EncontrosList() {
         </div>
       </div>
 
-      {/* Action button */}
-      <button
-        onClick={() => navigate(`/turmas/${id}/encontros/novo`)}
-        className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-semibold"
-      >
+      <button onClick={() => navigate(`/turmas/${id}/encontros/novo`)} className="w-full action-btn animate-float-up">
         <Plus className="h-4 w-4" /> Novo Encontro
       </button>
 
       {encontros.length === 0 ? (
-        <div className="ios-card p-8 text-center">
-          <CalendarDays className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Nenhum encontro cadastrado</p>
+        <div className="empty-state animate-float-up" style={{ animationDelay: '100ms' }}>
+          <div className="icon-box bg-primary/10 text-primary mx-auto mb-3">
+            <CalendarDays className="h-6 w-6" />
+          </div>
+          <p className="text-sm font-medium text-muted-foreground">Nenhum encontro cadastrado</p>
           <p className="text-xs text-muted-foreground mt-1">Crie seu primeiro encontro ou use um modelo da biblioteca</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {encontros
             .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
-            .map((enc) => {
+            .map((enc, i) => {
               const status = STATUS_CONFIG[enc.status];
               return (
                 <div
                   key={enc.id}
-                  className={`ios-card overflow-hidden border-l-4 ${status.border}`}
+                  className={`float-card overflow-hidden border-l-4 ${status.border} animate-float-up`}
+                  style={{ animationDelay: `${(i + 1) * 60}ms` }}
                 >
-                  <div className="px-4 py-3">
+                  <div className="px-4 py-3.5">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-semibold ${enc.status === 'cancelado' ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                        <p className={`text-sm font-bold ${enc.status === 'cancelado' ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                           {enc.tema}
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -69,20 +68,20 @@ export default function EncontrosList() {
                           <p className="text-xs text-muted-foreground mt-0.5 truncate">📖 {enc.leituraBiblica}</p>
                         )}
                       </div>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${status.bg} ${status.text}`}>
+                      <span className={`pill-btn ${status.bg} ${status.text}`}>
                         {status.label}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-3">
                       <button
                         onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                        className="flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-lg"
+                        className="flex items-center gap-1 text-xs font-semibold text-primary bg-primary/10 px-3 py-1.5 rounded-xl active:scale-95 transition-transform"
                       >
                         <Eye className="h-3.5 w-3.5" /> Visualizar
                       </button>
                       <button
                         onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                        className="flex items-center gap-1 text-xs font-medium text-liturgical bg-liturgical/10 px-3 py-1.5 rounded-lg"
+                        className="flex items-center gap-1 text-xs font-semibold text-liturgical bg-liturgical/10 px-3 py-1.5 rounded-xl active:scale-95 transition-transform"
                       >
                         <Play className="h-3.5 w-3.5" /> Apresentação
                       </button>
