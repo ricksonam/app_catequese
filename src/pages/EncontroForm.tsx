@@ -84,14 +84,12 @@ export default function EncontroForm() {
       )
     : MODELOS_ENCONTROS;
 
-  // Auto-fill catequista if only one registered
   const defaultCatequista = catequistas.length === 1 ? catequistas[0].nome : "";
 
   return (
-    <div className="space-y-4 animate-fade-in pb-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-muted">
+    <div className="space-y-5 pb-6">
+      <div className="page-header animate-fade-in">
+        <button onClick={() => navigate(-1)} className="back-btn">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
         <div>
@@ -100,147 +98,90 @@ export default function EncontroForm() {
         </div>
       </div>
 
-      {/* Use model button */}
       {!existing && (
         <button
           onClick={() => setShowModelos(true)}
-          className="w-full flex items-center justify-center gap-2 bg-secondary text-secondary-foreground py-3 rounded-xl text-sm font-semibold"
+          className="w-full float-card flex items-center justify-center gap-2 py-3.5 text-sm font-semibold text-foreground animate-float-up"
         >
-          <Library className="h-4 w-4" /> Usar Modelo da Biblioteca
+          <Library className="h-4 w-4 text-primary" /> Usar Modelo da Biblioteca
         </button>
       )}
 
-      {/* Basic fields */}
-      <div className="ios-card p-4 space-y-3">
+      <div className="float-card p-5 space-y-4 animate-float-up" style={{ animationDelay: '60ms' }}>
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Tema *</label>
-          <input
-            type="text"
-            value={tema}
-            onChange={(e) => setTema(e.target.value)}
-            placeholder="Ex: O Batismo de Jesus"
-            className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-          />
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Tema *</label>
+          <input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Data *</label>
-          <input
-            type="date"
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-          />
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Data *</label>
+          <input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Leitura Bíblica do Tema</label>
-          <input
-            type="text"
-            value={leituraBiblica}
-            onChange={(e) => setLeituraBiblica(e.target.value)}
-            placeholder="Ex: Mt 3,13-17"
-            className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-          />
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Leitura Bíblica do Tema</label>
+          <input type="text" value={leituraBiblica} onChange={(e) => setLeituraBiblica(e.target.value)} placeholder="Ex: Mt 3,13-17" className="form-input" />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Material de Apoio</label>
-          <textarea
-            value={materialApoio}
-            onChange={(e) => setMaterialApoio(e.target.value)}
-            placeholder="Materiais necessários, links, referências..."
-            className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none min-h-[60px] resize-none"
-          />
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Material de Apoio</label>
+          <textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários, links, referências..." className="form-input min-h-[60px] resize-none" />
         </div>
       </div>
 
-      {/* Roteiro */}
-      <div>
-        <p className="ios-section-title">Roteiro do Encontro</p>
+      <div className="animate-float-up" style={{ animationDelay: '120ms' }}>
+        <p className="section-title">Roteiro do Encontro</p>
         <div className="space-y-2">
           {roteiro.map((step, i) => {
             const isExpanded = expandedStep === step.id;
             return (
-              <div key={step.id} className="ios-card overflow-hidden">
+              <div key={step.id} className="float-card overflow-hidden">
                 <button
                   onClick={() => setExpandedStep(isExpanded ? null : step.id)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                  className="w-full flex items-center justify-between px-4 py-3.5 text-left"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
                       {i + 1}
                     </span>
-                    <span className="text-sm font-medium text-foreground">{step.label}</span>
+                    <span className="text-sm font-semibold text-foreground">{step.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {step.tempo > 0 && (
-                      <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
-                        {step.tempo}min
-                      </span>
+                      <span className="pill-btn pill-btn-inactive">{step.tempo}min</span>
                     )}
                     {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                   </div>
                 </button>
                 {isExpanded && (
-                  <div className="px-4 pb-4 space-y-3 border-t border-border/50 pt-3">
+                  <div className="px-4 pb-4 space-y-3 border-t border-border/30 pt-3">
                     {step.tipo === "oracao_inicial" && (
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 block">Tipo de Oração</label>
-                        <select
-                          value={step.oracaoTipo || ""}
-                          onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)}
-                          className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-                        >
-                          {ORACAO_TIPOS.map((t) => (
-                            <option key={t} value={t}>{t}</option>
-                          ))}
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Oração</label>
+                        <select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">
+                          {ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
                         </select>
                       </div>
                     )}
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Conteúdo</label>
-                      <textarea
-                        value={step.conteudo}
-                        onChange={(e) => updateStep(step.id, "conteudo", e.target.value)}
-                        placeholder={`Descreva o conteúdo de ${step.label}...`}
-                        className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none min-h-[80px] resize-none"
-                      />
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Conteúdo</label>
+                      <textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[80px] resize-none" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1">
                           <Clock className="h-3 w-3" /> Tempo (min)
                         </label>
-                        <input
-                          type="number"
-                          min={0}
-                          value={step.tempo || ""}
-                          onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)}
-                          placeholder="0"
-                          className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-                        />
+                        <input type="number" min={0} value={step.tempo || ""} onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)} placeholder="0" className="form-input" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1">
                           <User className="h-3 w-3" /> Catequista
                         </label>
                         {catequistas.length > 1 ? (
-                          <select
-                            value={step.catequista}
-                            onChange={(e) => updateStep(step.id, "catequista", e.target.value)}
-                            className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-                          >
+                          <select value={step.catequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} className="form-input">
                             <option value="">Selecione...</option>
-                            {catequistas.map((c) => (
-                              <option key={c.id} value={c.nome}>{c.nome}</option>
-                            ))}
+                            {catequistas.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}
                           </select>
                         ) : (
-                          <input
-                            type="text"
-                            value={step.catequista || defaultCatequista}
-                            onChange={(e) => updateStep(step.id, "catequista", e.target.value)}
-                            placeholder="Responsável"
-                            className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-                          />
+                          <input type="text" value={step.catequista || defaultCatequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} placeholder="Responsável" className="form-input" />
                         )}
                       </div>
                     </div>
@@ -252,38 +193,23 @@ export default function EncontroForm() {
         </div>
       </div>
 
-      {/* Save */}
-      <button
-        onClick={handleSave}
-        className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl text-sm font-semibold shadow-sm"
-      >
+      <button onClick={handleSave} className="w-full action-btn">
         {existing ? "Salvar Alterações" : "Criar Encontro"}
       </button>
 
-      {/* Modelos Dialog */}
       <Dialog open={showModelos} onOpenChange={setShowModelos}>
-        <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
           <DialogHeader><DialogTitle>Biblioteca de Modelos</DialogTitle></DialogHeader>
           <div className="relative mt-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={modeloSearch}
-              onChange={(e) => setModeloSearch(e.target.value)}
-              placeholder="Buscar modelo..."
-              className="w-full bg-muted rounded-xl pl-10 pr-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none"
-            />
+            <input type="text" value={modeloSearch} onChange={(e) => setModeloSearch(e.target.value)} placeholder="Buscar modelo..." className="form-input pl-10" />
           </div>
           <div className="space-y-2 mt-2 max-h-[50vh] overflow-y-auto">
             {filteredModelos.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => applyModelo(m)}
-                className="w-full ios-card p-3 text-left hover:shadow-md transition-shadow"
-              >
-                <p className="text-sm font-semibold text-foreground">{m.tema}</p>
+              <button key={m.id} onClick={() => applyModelo(m)} className="w-full float-card p-3.5 text-left">
+                <p className="text-sm font-bold text-foreground">{m.tema}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">📖 {m.leituraBiblica}</p>
-                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full mt-1 inline-block">{m.categoria}</span>
+                <span className="pill-btn pill-btn-inactive mt-1.5 inline-block">{m.categoria}</span>
               </button>
             ))}
           </div>

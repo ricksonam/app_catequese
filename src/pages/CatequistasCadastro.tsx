@@ -5,25 +5,12 @@ import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-interface FormData {
-  nome: string;
-  dataNascimento: string;
-  endereco: string;
-  profissao: string;
-  telefone: string;
-  email: string;
-  comunidadeId: string;
-  formacao: string;
-  anosExperiencia: string;
-  observacao: string;
-}
-
+interface FormData { nome: string; dataNascimento: string; endereco: string; profissao: string; telefone: string; email: string; comunidadeId: string; formacao: string; anosExperiencia: string; observacao: string; }
 const emptyForm: FormData = { nome: "", dataNascimento: "", endereco: "", profissao: "", telefone: "", email: "", comunidadeId: "", formacao: "", anosExperiencia: "", observacao: "" };
 
 function calcAge(birth: string): number | null {
   if (!birth) return null;
-  const b = new Date(birth);
-  const now = new Date();
+  const b = new Date(birth); const now = new Date();
   let age = now.getFullYear() - b.getFullYear();
   if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) age--;
   return age;
@@ -37,61 +24,42 @@ export default function CatequistasCadastro() {
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [viewItem, setViewItem] = useState<CatequistaCadastro | null>(null);
 
-  const updateField = useCallback((field: string, value: string) => {
-    setForm((f) => ({ ...f, [field]: value }));
-  }, []);
+  const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
 
   const handleAdd = () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
-    const novo: CatequistaCadastro = { id: crypto.randomUUID(), ...form };
-    saveCatequista(novo);
-    setList(getCatequistas());
-    setForm({ ...emptyForm });
-    setOpen(false);
+    saveCatequista({ id: crypto.randomUUID(), ...form });
+    setList(getCatequistas()); setForm({ ...emptyForm }); setOpen(false);
     toast.success("Catequista cadastrado!");
   };
 
-  const handleDelete = (cid: string) => {
-    deleteCatequista(cid);
-    setList(getCatequistas());
-    setViewItem(null);
-    toast.success("Removido!");
-  };
-
+  const handleDelete = (cid: string) => { deleteCatequista(cid); setList(getCatequistas()); setViewItem(null); toast.success("Removido!"); };
   const getComunidadeNome = (cid: string) => comunidades.find(c => c.id === cid)?.nome || "—";
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-muted">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
-          </button>
+          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Catequistas</h1>
             <p className="text-xs text-muted-foreground">{list.length} cadastrados</p>
           </div>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <button className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold">
-              <Plus className="h-4 w-4" /> Novo
-            </button>
-          </DialogTrigger>
-          <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto">
+          <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
+          <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
             <DialogHeader><DialogTitle>Novo Catequista</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Data de nascimento</label>
-                  <input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none" />
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Data de nascimento</label>
+                  <input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Idade</label>
-                  <div className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-muted-foreground">
-                    {form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}
-                  </div>
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                  <div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div>
                 </div>
               </div>
               <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
@@ -102,8 +70,8 @@ export default function CatequistasCadastro() {
               </div>
               {comunidades.length > 0 && (
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Comunidade</label>
-                  <select value={form.comunidadeId} onChange={(e) => updateField("comunidadeId", e.target.value)} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none">
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Comunidade</label>
+                  <select value={form.comunidadeId} onChange={(e) => updateField("comunidadeId", e.target.value)} className="form-input">
                     <option value="">Selecione...</option>
                     {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                   </select>
@@ -112,45 +80,43 @@ export default function CatequistasCadastro() {
               <FieldInput label="Formação" value={form.formacao} onChange={(v) => updateField("formacao", v)} placeholder="Ex: Teologia, Pedagogia..." />
               <FieldInput label="Anos de experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Observação</label>
-                <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none min-h-[60px] resize-none" />
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label>
+                <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" />
               </div>
-              <button onClick={handleAdd} className="w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold">Salvar</button>
+              <button onClick={handleAdd} className="w-full action-btn">Salvar</button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
       {list.length === 0 ? (
-        <div className="ios-card p-8 text-center">
-          <UserCheck className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">Nenhum catequista cadastrado</p>
+        <div className="empty-state animate-float-up">
+          <div className="icon-box bg-success/10 text-success mx-auto mb-3"><UserCheck className="h-6 w-6" /></div>
+          <p className="text-sm font-medium text-muted-foreground">Nenhum catequista cadastrado</p>
         </div>
       ) : (
-        <div className="ios-card overflow-hidden">
+        <div className="space-y-2">
           {list.map((item, i) => (
-            <div key={item.id} className={`flex items-center gap-3 px-4 py-3 ${i < list.length - 1 ? "border-b border-border/50" : ""}`}>
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <div key={item.id} className="float-card flex items-center gap-3 px-4 py-3.5 animate-float-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <span className="text-sm font-bold text-primary">{item.nome.charAt(0).toUpperCase()}</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">{item.nome}</p>
+                <p className="text-sm font-semibold text-foreground">{item.nome}</p>
                 <p className="text-xs text-muted-foreground">{item.formacao || 'Catequista'}{item.anosExperiencia && ` • ${item.anosExperiencia} anos`}</p>
               </div>
-              <button onClick={() => setViewItem(item)} className="p-2 rounded-lg hover:bg-muted"><Eye className="h-4 w-4 text-muted-foreground" /></button>
+              <button onClick={() => setViewItem(item)} className="back-btn"><Eye className="h-4 w-4 text-muted-foreground" /></button>
             </div>
           ))}
         </div>
       )}
 
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent className="rounded-2xl">
+        <DialogContent className="rounded-2xl border-border/30">
           <DialogHeader><DialogTitle>{viewItem?.nome}</DialogTitle></DialogHeader>
           {viewItem && (
             <div className="space-y-2 text-sm">
-              {viewItem.dataNascimento && (
-                <InfoRow label="Nascimento" value={`${new Date(viewItem.dataNascimento).toLocaleDateString("pt-BR")} (${calcAge(viewItem.dataNascimento)} anos)`} />
-              )}
+              {viewItem.dataNascimento && <InfoRow label="Nascimento" value={`${new Date(viewItem.dataNascimento).toLocaleDateString("pt-BR")} (${calcAge(viewItem.dataNascimento)} anos)`} />}
               <InfoRow label="Endereço" value={viewItem.endereco} />
               <InfoRow label="Profissão" value={viewItem.profissao} />
               <InfoRow label="Telefone" value={viewItem.telefone} />
@@ -159,7 +125,7 @@ export default function CatequistasCadastro() {
               <InfoRow label="Formação" value={viewItem.formacao} />
               <InfoRow label="Experiência" value={viewItem.anosExperiencia ? `${viewItem.anosExperiencia} anos` : undefined} />
               <InfoRow label="Observação" value={viewItem.observacao} />
-              <button onClick={() => handleDelete(viewItem.id)} className="w-full flex items-center justify-center gap-2 text-destructive py-2 mt-3 rounded-xl hover:bg-destructive/10 text-sm font-medium">
+              <button onClick={() => handleDelete(viewItem.id)} className="w-full flex items-center justify-center gap-2 text-destructive py-2.5 mt-3 rounded-xl hover:bg-destructive/10 text-sm font-semibold">
                 <Trash2 className="h-4 w-4" /> Excluir
               </button>
             </div>
@@ -172,15 +138,15 @@ export default function CatequistasCadastro() {
 
 function InfoRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
-  return <p><span className="text-muted-foreground">{label}:</span> <span className="font-medium text-foreground">{value}</span></p>;
+  return <p><span className="text-muted-foreground">{label}:</span> <span className="font-semibold text-foreground">{value}</span></p>;
 }
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div>
-      <label className="text-xs font-medium text-muted-foreground mb-1 block">{label}</label>
-      <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground border-0 focus:ring-2 focus:ring-primary outline-none" />
+      <label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label>
+      <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" />
     </div>
   );
 }

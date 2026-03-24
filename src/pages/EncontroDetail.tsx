@@ -27,7 +27,7 @@ export default function EncontroDetail() {
     return (
       <div className="text-center py-20">
         <p className="text-muted-foreground">Encontro não encontrado</p>
-        <button onClick={() => navigate(-1)} className="text-primary text-sm mt-2">Voltar</button>
+        <button onClick={() => navigate(-1)} className="text-primary text-sm mt-2 font-semibold">Voltar</button>
       </div>
     );
   }
@@ -60,10 +60,9 @@ export default function EncontroDetail() {
   const tempoTotal = encontro.roteiro.reduce((acc, s) => acc + s.tempo, 0);
 
   return (
-    <div className="space-y-4 animate-fade-in pb-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="p-2 rounded-xl hover:bg-muted">
+    <div className="space-y-5 pb-6">
+      <div className="page-header animate-fade-in">
+        <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
         <div className="flex-1 min-w-0">
@@ -72,92 +71,74 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      {/* Status & Actions */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => setShowStatus(true)}
-          className={`text-xs font-semibold px-3 py-1.5 rounded-full ${currentStatus.color}`}
-        >
+      {/* Actions */}
+      <div className="flex flex-wrap gap-2 animate-float-up">
+        <button onClick={() => setShowStatus(true)} className={`pill-btn ${currentStatus.color}`}>
           {currentStatus.label} ▾
         </button>
-        <button
-          onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)}
-          className="flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-lg"
-        >
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="pill-btn bg-primary/10 text-primary flex items-center gap-1">
           <Edit className="h-3.5 w-3.5" /> Editar
         </button>
-        <button
-          onClick={() => setShowPresenca(true)}
-          className="flex items-center gap-1 text-xs font-medium text-success bg-success/10 px-3 py-1.5 rounded-lg"
-        >
+        <button onClick={() => setShowPresenca(true)} className="pill-btn bg-success/10 text-success flex items-center gap-1">
           <Users className="h-3.5 w-3.5" /> Presença
         </button>
-        <button
-          onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)}
-          className="flex items-center gap-1 text-xs font-medium text-liturgical bg-liturgical/10 px-3 py-1.5 rounded-lg"
-        >
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="pill-btn bg-liturgical/10 text-liturgical flex items-center gap-1">
           <Play className="h-3.5 w-3.5" /> Apresentação
         </button>
-        <button
-          onClick={() => setShowDelete(true)}
-          className="flex items-center gap-1 text-xs font-medium text-destructive bg-destructive/10 px-3 py-1.5 rounded-lg"
-        >
+        <button onClick={() => setShowDelete(true)} className="pill-btn bg-destructive/10 text-destructive flex items-center gap-1">
           <Trash2 className="h-3.5 w-3.5" /> Excluir
         </button>
       </div>
 
       {/* Info */}
-      <div className="ios-card p-4 space-y-2">
+      <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '60ms' }}>
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground">Data</p>
-          <p className="text-sm font-medium text-foreground">
+          <p className="text-sm font-semibold text-foreground">
             {new Date(encontro.data).toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
           </p>
         </div>
         {encontro.leituraBiblica && (
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">Leitura Bíblica</p>
-            <p className="text-sm font-medium text-foreground flex items-center gap-1">
+            <p className="text-sm font-semibold text-foreground flex items-center gap-1">
               <BookOpen className="h-3.5 w-3.5 text-primary" /> {encontro.leituraBiblica}
             </p>
           </div>
         )}
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground">Tempo Total</p>
-          <p className="text-sm font-medium text-foreground flex items-center gap-1">
+          <p className="text-sm font-semibold text-foreground flex items-center gap-1">
             <Clock className="h-3.5 w-3.5 text-primary" /> {tempoTotal} min
           </p>
         </div>
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted-foreground">Presenças</p>
-          <p className="text-sm font-medium text-foreground">{encontro.presencas.length}/{catequizandos.length}</p>
+          <p className="text-sm font-semibold text-foreground">{encontro.presencas.length}/{catequizandos.length}</p>
         </div>
       </div>
 
       {encontro.materialApoio && (
-        <div className="ios-card p-4">
-          <p className="ios-section-title mb-2">Material de Apoio</p>
+        <div className="float-card p-5 animate-float-up" style={{ animationDelay: '120ms' }}>
+          <p className="section-title mb-2">Material de Apoio</p>
           <p className="text-sm text-foreground whitespace-pre-wrap">{encontro.materialApoio}</p>
         </div>
       )}
 
       {/* Roteiro */}
-      <div>
-        <p className="ios-section-title">Roteiro do Encontro</p>
-        <div className="ios-card overflow-hidden">
+      <div className="animate-float-up" style={{ animationDelay: '180ms' }}>
+        <p className="section-title">Roteiro do Encontro</p>
+        <div className="space-y-2">
           {encontro.roteiro.map((step, i) => (
-            <div
-              key={step.id}
-              className={`px-4 py-3 ${i < encontro.roteiro.length - 1 ? "border-b border-border/50" : ""}`}
-            >
+            <div key={step.id} className="float-card px-4 py-3.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
                     {i + 1}
                   </span>
-                  <span className="text-sm font-medium text-foreground">{step.label}</span>
+                  <span className="text-sm font-semibold text-foreground">{step.label}</span>
                   {step.oracaoTipo && (
-                    <span className="text-[10px] bg-liturgical/10 text-liturgical px-1.5 py-0.5 rounded-full">{step.oracaoTipo}</span>
+                    <span className="pill-btn bg-liturgical/10 text-liturgical">{step.oracaoTipo}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
@@ -170,26 +151,20 @@ export default function EncontroDetail() {
                 </div>
               </div>
               {step.conteudo && (
-                <p className="text-xs text-muted-foreground mt-1.5 ml-8 whitespace-pre-wrap">{step.conteudo}</p>
+                <p className="text-xs text-muted-foreground mt-2 ml-9 whitespace-pre-wrap">{step.conteudo}</p>
               )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Status Dialog */}
+      {/* Dialogs */}
       <Dialog open={showStatus} onOpenChange={setShowStatus}>
-        <DialogContent className="rounded-2xl">
+        <DialogContent className="rounded-2xl border-border/30">
           <DialogHeader><DialogTitle>Alterar Status</DialogTitle></DialogHeader>
           <div className="space-y-2 mt-2">
             {STATUS_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => handleStatusChange(opt.value)}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                  encontro.status === opt.value ? opt.color : "bg-muted text-foreground hover:bg-muted/80"
-                }`}
-              >
+              <button key={opt.value} onClick={() => handleStatusChange(opt.value)} className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${encontro.status === opt.value ? opt.color : "bg-muted/50 text-foreground hover:bg-muted"}`}>
                 {opt.label}
               </button>
             ))}
@@ -197,30 +172,21 @@ export default function EncontroDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* Presença Dialog */}
       <Dialog open={showPresenca} onOpenChange={setShowPresenca}>
-        <DialogContent className="rounded-2xl">
+        <DialogContent className="rounded-2xl border-border/30">
           <DialogHeader><DialogTitle>Lista de Presença</DialogTitle></DialogHeader>
           {catequizandos.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando cadastrado nesta turma</p>
           ) : (
-            <div className="space-y-1 mt-2 max-h-[50vh] overflow-y-auto">
+            <div className="space-y-1.5 mt-2 max-h-[50vh] overflow-y-auto">
               {catequizandos.map((c) => {
                 const presente = encontro.presencas.includes(c.id);
                 return (
-                  <button
-                    key={c.id}
-                    onClick={() => togglePresenca(c.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left transition-colors ${
-                      presente ? "bg-success/10" : "bg-muted"
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      presente ? "bg-success border-success" : "border-border"
-                    }`}>
+                  <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${presente ? "bg-success/10" : "bg-muted/50"}`}>
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${presente ? "bg-success border-success" : "border-border"}`}>
                       {presente && <span className="text-success-foreground text-xs">✓</span>}
                     </div>
-                    <span className="text-sm text-foreground">{c.nome}</span>
+                    <span className="text-sm text-foreground font-medium">{c.nome}</span>
                   </button>
                 );
               })}
@@ -229,24 +195,13 @@ export default function EncontroDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Dialog */}
       <Dialog open={showDelete} onOpenChange={setShowDelete}>
-        <DialogContent className="rounded-2xl">
+        <DialogContent className="rounded-2xl border-border/30">
           <DialogHeader><DialogTitle>Excluir Encontro</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground">Tem certeza que deseja mover este encontro para a lixeira?</p>
           <div className="flex gap-2 mt-4">
-            <button
-              onClick={() => setShowDelete(false)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-muted text-foreground"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleDelete}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-destructive text-destructive-foreground"
-            >
-              Excluir
-            </button>
+            <button onClick={() => setShowDelete(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-muted text-foreground">Cancelar</button>
+            <button onClick={handleDelete} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-destructive text-destructive-foreground">Excluir</button>
           </div>
         </DialogContent>
       </Dialog>

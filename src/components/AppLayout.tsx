@@ -27,19 +27,21 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border/50">
+      <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0">
         <div className="container flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-primary">IVC</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
+              <span className="text-xs font-black text-primary-foreground tracking-tight">IVC</span>
+            </div>
             <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
           </div>
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <button className="p-2 rounded-xl hover:bg-muted transition-colors">
-                <Menu className="h-5 w-5 text-foreground" />
+              <button className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
+                <Menu className="h-4.5 w-4.5 text-foreground" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-0">
+            <SheetContent side="right" className="w-80 p-0 glass-card rounded-l-3xl border-r-0">
               <MenuContent onClose={() => setMenuOpen(false)} />
             </SheetContent>
           </Sheet>
@@ -47,33 +49,45 @@ export default function AppLayout() {
       </header>
 
       {/* Content */}
-      <main className="flex-1 container px-4 py-4 pb-24">
+      <main className="flex-1 container px-4 py-5 pb-24">
         <Outlet />
       </main>
 
-      {/* iOS Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-t border-border/50 safe-area-inset-bottom">
-        <div className="container flex items-center justify-around h-16 px-2">
+      {/* Tab Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-2 pt-0">
+        <div className="glass-card mx-auto max-w-md flex items-center justify-around h-16 px-2 rounded-2xl">
           {tabs.map((tab) => {
             const isActive =
               tab.path === "/"
                 ? currentPath === "/"
                 : currentPath.startsWith(tab.path) && tab.path !== "/";
             const Icon = tab.icon;
+            const isFab = tab.path === "/turmas/nova";
+
+            if (isFab) {
+              return (
+                <button
+                  key={tab.path}
+                  onClick={() => navigate(tab.path)}
+                  className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 -mt-5 active:scale-95 transition-transform"
+                >
+                  <Icon className="h-5 w-5" />
+                </button>
+              );
+            }
+
             return (
               <button
                 key={tab.path}
                 onClick={() => navigate(tab.path)}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all ${
+                className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all active:scale-95 ${
                   isActive
                     ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                } ${tab.path === "/turmas/nova" ? "bg-primary text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center shadow-lg -mt-4" : ""}`}
+                    : "text-muted-foreground"
+                }`}
               >
-                <Icon className={tab.path === "/turmas/nova" ? "h-6 w-6" : "h-5 w-5"} />
-                {tab.path !== "/turmas/nova" && (
-                  <span className="text-[10px] font-medium">{tab.label}</span>
-                )}
+                <Icon className="h-5 w-5" />
+                <span className="text-[10px] font-semibold">{tab.label}</span>
               </button>
             );
           })}

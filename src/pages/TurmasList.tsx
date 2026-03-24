@@ -7,26 +7,25 @@ export default function TurmasList() {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between animate-fade-in">
         <h1 className="text-xl font-bold text-foreground">Turmas</h1>
-        <button
-          onClick={() => navigate("/turmas/nova")}
-          className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold"
-        >
+        <button onClick={() => navigate("/turmas/nova")} className="action-btn-sm">
           <Plus className="h-4 w-4" /> Nova
         </button>
       </div>
 
       {turmas.length === 0 ? (
-        <div className="ios-card p-8 text-center">
-          <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-          <h3 className="font-semibold text-foreground mb-1">Nenhuma turma cadastrada</h3>
+        <div className="empty-state animate-float-up">
+          <div className="icon-box bg-primary/10 text-primary mx-auto mb-3">
+            <BookOpen className="h-6 w-6" />
+          </div>
+          <h3 className="font-bold text-foreground mb-1">Nenhuma turma cadastrada</h3>
           <p className="text-sm text-muted-foreground">Crie sua primeira turma para começar.</p>
         </div>
       ) : (
         <div className="space-y-3">
-          {turmas.map((turma) => {
+          {turmas.map((turma, i) => {
             const encontros = getEncontros(turma.id);
             const catequizandos = getCatequizandos(turma.id);
             const etapa = ETAPAS_CATEQUESE.find((e) => e.id === turma.etapa);
@@ -35,28 +34,29 @@ export default function TurmasList() {
               <button
                 key={turma.id}
                 onClick={() => navigate(`/turmas/${turma.id}`)}
-                className="ios-card w-full p-4 text-left hover:shadow-md transition-shadow"
+                className="float-card w-full p-4 text-left animate-float-up"
+                style={{ animationDelay: `${i * 70}ms` }}
               >
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-base font-semibold text-foreground">{turma.nome}</h3>
+                    <h3 className="text-base font-bold text-foreground">{turma.nome}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {turma.diaCatequese} • {turma.horario} • {turma.local}
                     </p>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                 </div>
-                <div className="flex items-center gap-3 mt-3">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-lg">
                     <CalendarDays className="h-3.5 w-3.5" />
                     <span>{encontros.length} encontros</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-lg">
                     <Users className="h-3.5 w-3.5" />
                     <span>{catequizandos.length} catequizandos</span>
                   </div>
                   {etapa && (
-                    <span className="ml-auto text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                    <span className="ml-auto text-[10px] font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
                       {etapa.label}
                     </span>
                   )}
