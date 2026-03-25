@@ -55,26 +55,13 @@ export default function AppLayout() {
 
       {/* Tab Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-2 pt-0">
-        <div className="glass-card mx-auto max-w-md flex items-center justify-around h-16 px-2 rounded-2xl">
+        <div className="mx-auto max-w-md flex items-center justify-around h-16 px-2 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/60 shadow-lg shadow-black/5">
           {tabs.map((tab) => {
             const isActive =
               tab.path === "/"
                 ? currentPath === "/"
                 : currentPath.startsWith(tab.path) && tab.path !== "/";
             const Icon = tab.icon;
-            const isFab = tab.path === "/turmas/nova";
-
-            if (isFab) {
-              return (
-                <button
-                  key={tab.path}
-                  onClick={() => navigate(tab.path)}
-                  className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 -mt-5 active:scale-95 transition-transform"
-                >
-                  <Icon className="h-5 w-5" />
-                </button>
-              );
-            }
 
             return (
               <button
@@ -82,11 +69,11 @@ export default function AppLayout() {
                 onClick={() => navigate(tab.path)}
                 className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all active:scale-95 ${
                   isActive
-                    ? "text-primary"
+                    ? `${tab.color} font-bold`
                     : "text-muted-foreground"
                 }`}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className={`h-5 w-5 ${!isActive ? "" : ""}`} />
                 <span className="text-[10px] font-semibold">{tab.label}</span>
               </button>
             );
