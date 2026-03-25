@@ -11,10 +11,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuContent } from "./MenuContent";
 
 const tabs = [
-  { path: "/", icon: LayoutDashboard, label: "Início" },
-  { path: "/turmas", icon: BookOpen, label: "Turmas" },
-  { path: "/turmas/nova", icon: Plus, label: "Nova" },
-  { path: "/modulos", icon: Users, label: "Módulos" },
+  { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
+  { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-liturgical" },
+  { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-gold" },
+  { path: "/modulos/biblioteca", icon: Library, label: "Modelos", color: "text-success" },
 ];
 
 export default function AppLayout() {
