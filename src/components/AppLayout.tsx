@@ -1,10 +1,10 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Users,
   BookOpen,
   Menu,
-  Plus,
+  Image,
+  Library,
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
