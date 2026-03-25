@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getTurmas, saveEncontro, getEncontros, getCatequistas, type Encontro, type RoteiroStep, ORACAO_TIPOS, ROTEIRO_STEPS } from "@/lib/store";
 import { MODELOS_ENCONTROS, type ModeloEncontro } from "@/lib/modelosEncontros";
-import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search } from "lucide-react";
+import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -38,11 +38,40 @@ export default function EncontroForm() {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [showModelos, setShowModelos] = useState(false);
   const [modeloSearch, setModeloSearch] = useState("");
+  const [newStepLabel, setNewStepLabel] = useState("");
+  const [showAddStep, setShowAddStep] = useState(false);
+
+  const totalTempo = roteiro.reduce((sum, s) => sum + (s.tempo || 0), 0);
 
   const updateStep = (stepId: string, field: keyof RoteiroStep, value: string | number) => {
     setRoteiro((prev) =>
       prev.map((s) => (s.id === stepId ? { ...s, [field]: value } : s))
     );
+  };
+
+  const removeStep = (stepId: string) => {
+    setRoteiro((prev) => prev.filter((s) => s.id !== stepId));
+    if (expandedStep === stepId) setExpandedStep(null);
+    toast.success("Tópico removido");
+  };
+
+  const addStep = () => {
+    if (!newStepLabel.trim()) {
+      toast.error("Digite o nome do tópico");
+      return;
+    }
+    const newStep: RoteiroStep = {
+      id: crypto.randomUUID(),
+      tipo: "desenvolvimento",
+      label: newStepLabel.trim(),
+      conteudo: "",
+      tempo: 0,
+      catequista: "",
+    };
+    setRoteiro((prev) => [...prev, newStep]);
+    setNewStepLabel("");
+    setShowAddStep(false);
+    toast.success("Tópico adicionado");
   };
 
   const applyModelo = (modelo: ModeloEncontro) => {
@@ -86,8 +115,15 @@ export default function EncontroForm() {
 
   const defaultCatequista = catequistas.length === 1 ? catequistas[0].nome : "";
 
+  const formatTempo = (min: number) => {
+    if (min < 60) return `${min}min`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m > 0 ? `${h}h${m}min` : `${h}h`;
+  };
+
   return (
-    <div className="space-y-5 pb-6">
+    <div className="space-y-5 pb-24">
       <div className="page-header animate-fade-in">
         <button onClick={() => navigate(-1)} className="back-btn">
           <ArrowLeft className="h-5 w-5 text-foreground" />
@@ -185,17 +221,63 @@ export default function EncontroForm() {
                         )}
                       </div>
                     </div>
+                    <button
+                      onClick={() => removeStep(step.id)}
+                      className="w-full flex items-center justify-center gap-2 py-2 mt-1 rounded-xl text-xs font-semibold text-destructive bg-destructive/10 hover:bg-destructive/20 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Remover Tópico
+                    </button>
                   </div>
                 )}
               </div>
             );
           })}
         </div>
+
+        {/* Add new step */}
+        {showAddStep ? (
+          <div className="float-card p-4 mt-2 space-y-3 animate-scale-in">
+            <label className="text-xs font-semibold text-muted-foreground block">Nome do novo tópico</label>
+            <input
+              type="text"
+              value={newStepLabel}
+              onChange={(e) => setNewStepLabel(e.target.value)}
+              placeholder="Ex: Dinâmica extra, Leitura complementar..."
+              className="form-input"
+              onKeyDown={(e) => e.key === "Enter" && addStep()}
+            />
+            <div className="flex gap-2">
+              <button onClick={addStep} className="flex-1 action-btn text-sm py-2.5">
+                Adicionar
+              </button>
+              <button onClick={() => { setShowAddStep(false); setNewStepLabel(""); }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground bg-muted/50 hover:bg-muted transition-colors">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowAddStep(true)}
+            className="w-full float-card flex items-center justify-center gap-2 py-3 mt-2 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"
+          >
+            <Plus className="h-4 w-4" /> Adicionar Tópico
+          </button>
+        )}
       </div>
 
       <button onClick={handleSave} className="w-full action-btn">
         {existing ? "Salvar Alterações" : "Criar Encontro"}
       </button>
+
+      {/* Floating total time badge */}
+      {totalTempo > 0 && (
+        <div className="fixed bottom-20 right-4 z-40 animate-scale-in">
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30">
+            <Timer className="h-4 w-4" />
+            <span className="text-sm font-bold">{formatTempo(totalTempo)}</span>
+          </div>
+        </div>
+      )}
 
       <Dialog open={showModelos} onOpenChange={setShowModelos}>
         <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
