@@ -200,7 +200,21 @@ export function deleteEncontro(id: string) {
   localStorage.setItem(ENCONTROS_KEY, JSON.stringify(getEncontros().filter(e => e.id !== id)));
 }
 
-// Atividades
+// Ocorrências (cancelamentos/exclusões)
+export function getOcorrencias(turmaId?: string): RegistroOcorrencia[] {
+  const all: RegistroOcorrencia[] = JSON.parse(localStorage.getItem(OCORRENCIAS_KEY) || '[]');
+  return turmaId ? all.filter(o => o.turmaId === turmaId) : all;
+}
+export function saveOcorrencia(o: RegistroOcorrencia) {
+  const all = getOcorrencias();
+  all.push(o);
+  localStorage.setItem(OCORRENCIAS_KEY, JSON.stringify(all));
+}
+export function deleteOcorrencia(id: string) {
+  localStorage.setItem(OCORRENCIAS_KEY, JSON.stringify(getOcorrencias().filter(o => o.id !== id)));
+}
+
+
 export function getAtividades(turmaId?: string): Atividade[] {
   const all: Atividade[] = JSON.parse(localStorage.getItem(ATIVIDADES_KEY) || '[]');
   return turmaId ? all.filter(a => a.turmaId === turmaId) : all;
