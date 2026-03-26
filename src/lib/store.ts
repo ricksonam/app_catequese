@@ -37,7 +37,7 @@ export interface Catequizando {
   };
 }
 
-export type EncontroStatus = 'pendente' | 'realizado' | 'adiado' | 'transferido' | 'cancelado';
+export type EncontroStatus = 'pendente' | 'realizado' | 'transferido' | 'cancelado';
 
 export type OracaoTipo = 'Ofício Divino' | 'Leitura Orante' | 'Celebrativo' | 'Oração Simples' | 'Louvor';
 
