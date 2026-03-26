@@ -32,9 +32,9 @@ export default function Dashboard() {
   }, [catequizandos]);
 
   const stats = [
-    { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary" },
-    { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/15 text-accent-foreground" },
-    { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success" },
+    { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary", path: "/turmas" },
+    { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/15 text-accent-foreground", path: "/turmas" },
+    { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success", path: "/turmas" },
   ];
 
   return (
