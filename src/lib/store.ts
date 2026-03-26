@@ -148,6 +148,7 @@ export const ATIVIDADE_TIPOS: AtividadeTipo[] = [
 ];
 
 const TURMAS_KEY = 'ivc_turmas';
+const OCORRENCIAS_KEY = 'ivc_ocorrencias';
 const CATEQUIZANDOS_KEY = 'ivc_catequizandos';
 const ENCONTROS_KEY = 'ivc_encontros';
 const ATIVIDADES_KEY = 'ivc_atividades';
