@@ -47,7 +47,7 @@ export default function EncontrosList() {
           {encontros
             .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
             .map((enc, i) => {
-              const status = STATUS_CONFIG[enc.status];
+              const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
               return (
                 <div
                   key={enc.id}
