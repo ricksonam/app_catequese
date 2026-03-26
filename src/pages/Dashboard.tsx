@@ -50,7 +50,7 @@ export default function Dashboard() {
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="float-card p-4 text-center animate-float-up" style={{ animationDelay: `${i * 80}ms` }}>
+            <button key={stat.label} onClick={() => navigate(stat.path)} className="float-card p-4 text-center animate-float-up active:scale-95 transition-transform" style={{ animationDelay: `${i * 80}ms` }}>
               <div className={`icon-box ${stat.color} mx-auto mb-2.5`}>
                 <Icon className="h-5 w-5" />
               </div>
