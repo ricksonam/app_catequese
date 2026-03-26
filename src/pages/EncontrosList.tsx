@@ -6,7 +6,6 @@ import { useState } from "react";
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; border: string }> = {
   pendente: { label: "Pendente", bg: "bg-muted", text: "text-muted-foreground", border: "border-l-muted-foreground" },
   realizado: { label: "Realizado", bg: "bg-success/10", text: "text-success", border: "border-l-success" },
-  adiado: { label: "Adiado", bg: "bg-warning/10", text: "text-warning", border: "border-l-warning" },
   transferido: { label: "Transferido", bg: "bg-caution/10", text: "text-caution", border: "border-l-caution" },
   cancelado: { label: "Cancelado", bg: "bg-destructive/10", text: "text-destructive", border: "border-l-destructive" },
 };

@@ -37,7 +37,7 @@ export interface Catequizando {
   };
 }
 
-export type EncontroStatus = 'pendente' | 'realizado' | 'adiado' | 'transferido' | 'cancelado';
+export type EncontroStatus = 'pendente' | 'realizado' | 'transferido' | 'cancelado';
 
 export type OracaoTipo = 'Ofício Divino' | 'Leitura Orante' | 'Celebrativo' | 'Oração Simples' | 'Louvor';
 
@@ -64,6 +64,18 @@ export interface Encontro {
   status: EncontroStatus;
   presencas: string[];
   criadoEm: string;
+  motivoCancelamento?: string;
+  dataTransferida?: string;
+}
+
+export interface RegistroOcorrencia {
+  id: string;
+  encontroId: string;
+  turmaId: string;
+  tipo: 'cancelamento' | 'exclusao';
+  motivo: string;
+  data: string;
+  temaNome: string;
 }
 
 export type AtividadeTipo = 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Jornada' | 'Eventos geral' | 'Outros';
@@ -136,6 +148,7 @@ export const ATIVIDADE_TIPOS: AtividadeTipo[] = [
 ];
 
 const TURMAS_KEY = 'ivc_turmas';
+const OCORRENCIAS_KEY = 'ivc_ocorrencias';
 const CATEQUIZANDOS_KEY = 'ivc_catequizandos';
 const ENCONTROS_KEY = 'ivc_encontros';
 const ATIVIDADES_KEY = 'ivc_atividades';
@@ -187,7 +200,21 @@ export function deleteEncontro(id: string) {
   localStorage.setItem(ENCONTROS_KEY, JSON.stringify(getEncontros().filter(e => e.id !== id)));
 }
 
-// Atividades
+// Ocorrências (cancelamentos/exclusões)
+export function getOcorrencias(turmaId?: string): RegistroOcorrencia[] {
+  const all: RegistroOcorrencia[] = JSON.parse(localStorage.getItem(OCORRENCIAS_KEY) || '[]');
+  return turmaId ? all.filter(o => o.turmaId === turmaId) : all;
+}
+export function saveOcorrencia(o: RegistroOcorrencia) {
+  const all = getOcorrencias();
+  all.push(o);
+  localStorage.setItem(OCORRENCIAS_KEY, JSON.stringify(all));
+}
+export function deleteOcorrencia(id: string) {
+  localStorage.setItem(OCORRENCIAS_KEY, JSON.stringify(getOcorrencias().filter(o => o.id !== id)));
+}
+
+
 export function getAtividades(turmaId?: string): Atividade[] {
   const all: Atividade[] = JSON.parse(localStorage.getItem(ATIVIDADES_KEY) || '[]');
   return turmaId ? all.filter(a => a.turmaId === turmaId) : all;
