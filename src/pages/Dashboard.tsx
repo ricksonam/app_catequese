@@ -56,7 +56,7 @@ export default function Dashboard() {
               </div>
               <p className="text-2xl font-bold text-foreground">{stat.value}</p>
               <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5">{stat.label}</p>
-            </div>
+            </button>
           );
         })}
       </div>
