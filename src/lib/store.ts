@@ -64,6 +64,18 @@ export interface Encontro {
   status: EncontroStatus;
   presencas: string[];
   criadoEm: string;
+  motivoCancelamento?: string;
+  dataTransferida?: string;
+}
+
+export interface RegistroOcorrencia {
+  id: string;
+  encontroId: string;
+  turmaId: string;
+  tipo: 'cancelamento' | 'exclusao';
+  motivo: string;
+  data: string;
+  temaNome: string;
 }
 
 export type AtividadeTipo = 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Jornada' | 'Eventos geral' | 'Outros';
