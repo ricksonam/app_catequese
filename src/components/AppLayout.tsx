@@ -29,22 +29,23 @@ export default function AppLayout() {
       {/* Header */}
       <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0">
         <div className="container flex items-center justify-between h-14 px-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
-              <span className="text-xs font-black text-primary-foreground tracking-tight">IVC</span>
-            </div>
-            <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
-          </div>
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <button className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
                 <Menu className="h-4.5 w-4.5 text-foreground" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-0 glass-card rounded-l-3xl border-r-0">
+            <SheetContent side="left" className="w-80 p-0 glass-card rounded-r-3xl border-l-0">
               <MenuContent onClose={() => setMenuOpen(false)} />
             </SheetContent>
           </Sheet>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
+              <span className="text-xs font-black text-primary-foreground tracking-tight">IVC</span>
+            </div>
+            <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
+          </div>
+          <div className="w-10" />
         </div>
       </header>
 

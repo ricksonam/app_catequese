@@ -30,6 +30,7 @@ export interface Catequizando {
   necessidadeEspecial?: string;
   observacao?: string;
   status: CatequizandoStatus;
+  foto?: string;
   sacramentos?: {
     batismo: SacramentoInfo;
     eucaristia: SacramentoInfo;

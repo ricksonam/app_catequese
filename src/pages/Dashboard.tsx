@@ -32,9 +32,9 @@ export default function Dashboard() {
   }, [catequizandos]);
 
   const stats = [
-    { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary" },
-    { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/15 text-accent-foreground" },
-    { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success" },
+    { label: "Turmas", value: turmas.length, icon: BookOpen, color: "bg-primary/10 text-primary", path: "/turmas" },
+    { label: "Catequizandos", value: catequizandos.length, icon: Users, color: "bg-accent/15 text-accent-foreground", path: "/turmas" },
+    { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success", path: "/turmas" },
   ];
 
   return (
@@ -50,13 +50,13 @@ export default function Dashboard() {
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="float-card p-4 text-center animate-float-up" style={{ animationDelay: `${i * 80}ms` }}>
+            <button key={stat.label} onClick={() => navigate(stat.path)} className="float-card p-4 text-center animate-float-up active:scale-95 transition-transform" style={{ animationDelay: `${i * 80}ms` }}>
               <div className={`icon-box ${stat.color} mx-auto mb-2.5`}>
                 <Icon className="h-5 w-5" />
               </div>
               <p className="text-2xl font-bold text-foreground">{stat.value}</p>
               <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5">{stat.label}</p>
-            </div>
+            </button>
           );
         })}
       </div>

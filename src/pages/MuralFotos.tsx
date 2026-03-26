@@ -1,10 +1,10 @@
-import { ArrowLeft, Plus, Image, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Image, Trash2, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-interface Foto { id: string; url: string; legenda: string; data: string; }
+interface Foto { id: string; url: string; legenda: string; resumo: string; data: string; }
 const FOTOS_KEY = "ivc_mural_fotos";
 function getFotos(): Foto[] { return JSON.parse(localStorage.getItem(FOTOS_KEY) || "[]"); }
 function saveFotos(fotos: Foto[]) { localStorage.setItem(FOTOS_KEY, JSON.stringify(fotos)); }
@@ -13,24 +13,49 @@ export default function MuralFotos() {
   const navigate = useNavigate();
   const [fotos, setFotos] = useState(getFotos());
   const [viewFoto, setViewFoto] = useState<Foto | null>(null);
-  const [legenda, setLegenda] = useState("");
+  const [pendingFile, setPendingFile] = useState<string | null>(null);
+  const [resumo, setResumo] = useState("");
+  const [showResumoDialog, setShowResumoDialog] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const processFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { toast.error("Arquivo muito grande (máx 5MB)"); return; }
     const reader = new FileReader();
     reader.onload = () => {
-      const nova: Foto = { id: crypto.randomUUID(), url: reader.result as string, legenda: legenda || file.name, data: new Date().toISOString() };
-      const updated = [nova, ...fotos]; saveFotos(updated); setFotos(updated); setLegenda("");
-      toast.success("Foto adicionada!");
+      setPendingFile(reader.result as string);
+      setResumo("");
+      setShowResumoDialog(true);
     };
-    reader.readAsDataURL(file); e.target.value = "";
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleSaveFoto = () => {
+    if (!pendingFile) return;
+    const nova: Foto = {
+      id: crypto.randomUUID(),
+      url: pendingFile,
+      legenda: resumo.split('\n')[0] || "Foto",
+      resumo: resumo,
+      data: new Date().toISOString(),
+    };
+    const updated = [nova, ...fotos];
+    saveFotos(updated);
+    setFotos(updated);
+    setPendingFile(null);
+    setResumo("");
+    setShowResumoDialog(false);
+    toast.success("Foto adicionada!");
   };
 
   const handleDelete = (id: string) => {
-    const updated = fotos.filter((f) => f.id !== id); saveFotos(updated); setFotos(updated); setViewFoto(null);
+    const updated = fotos.filter((f) => f.id !== id);
+    saveFotos(updated);
+    setFotos(updated);
+    setViewFoto(null);
     toast.success("Foto removida!");
   };
 
@@ -44,12 +69,21 @@ export default function MuralFotos() {
         </div>
       </div>
 
-      <div className="float-card p-5 space-y-3 animate-float-up">
-        <input type="text" value={legenda} onChange={(e) => setLegenda(e.target.value)} placeholder="Legenda da foto (opcional)" className="form-input" />
-        <button onClick={() => fileRef.current?.click()} className="w-full action-btn">
-          <Plus className="h-4 w-4" /> Adicionar Foto
+      <div className="grid grid-cols-2 gap-3 animate-float-up">
+        <button onClick={() => cameraRef.current?.click()} className="float-card p-4 flex flex-col items-center gap-2 active:scale-95 transition-transform">
+          <div className="icon-box bg-primary/10 text-primary">
+            <Camera className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-semibold text-foreground">Tirar Foto</span>
         </button>
-        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+        <button onClick={() => fileRef.current?.click()} className="float-card p-4 flex flex-col items-center gap-2 active:scale-95 transition-transform">
+          <div className="icon-box bg-gold/15 text-gold">
+            <Plus className="h-5 w-5" />
+          </div>
+          <span className="text-xs font-semibold text-foreground">Importar</span>
+        </button>
+        <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={processFile} />
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={processFile} />
       </div>
 
       {fotos.length === 0 ? (
@@ -67,6 +101,35 @@ export default function MuralFotos() {
         </div>
       )}
 
+      {/* Resumo dialog */}
+      <Dialog open={showResumoDialog} onOpenChange={(o) => { if (!o) { setShowResumoDialog(false); setPendingFile(null); } }}>
+        <DialogContent className="rounded-2xl max-w-sm border-border/30">
+          <div className="space-y-4">
+            {pendingFile && (
+              <img src={pendingFile} className="w-full max-h-48 object-contain rounded-xl bg-muted" alt="" />
+            )}
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground mb-1 block">Resumo (opcional)</label>
+              <textarea
+                value={resumo}
+                onChange={(e) => setResumo(e.target.value)}
+                className="form-input min-h-[80px] resize-none"
+                placeholder="Descreva a foto..."
+              />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { setShowResumoDialog(false); setPendingFile(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground hover:bg-muted transition-colors">
+                Cancelar
+              </button>
+              <button onClick={handleSaveFoto} className="flex-1 action-btn">
+                Salvar
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* View dialog */}
       <Dialog open={!!viewFoto} onOpenChange={() => setViewFoto(null)}>
         <DialogContent className="rounded-2xl p-0 overflow-hidden max-w-sm border-border/30">
           {viewFoto && (
@@ -74,6 +137,7 @@ export default function MuralFotos() {
               <img src={viewFoto.url} alt={viewFoto.legenda} className="w-full max-h-[60vh] object-contain bg-foreground/5" />
               <div className="p-5 space-y-2">
                 <p className="text-sm font-semibold text-foreground">{viewFoto.legenda}</p>
+                {viewFoto.resumo && <p className="text-xs text-muted-foreground">{viewFoto.resumo}</p>}
                 <p className="text-xs text-muted-foreground">{new Date(viewFoto.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</p>
                 <button onClick={() => handleDelete(viewFoto.id)} className="w-full flex items-center justify-center gap-2 text-destructive py-2.5 rounded-xl hover:bg-destructive/10 text-sm font-semibold">
                   <Trash2 className="h-4 w-4" /> Excluir
