@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, ChevronRight } from "lucide-react";
+import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, ChevronRight } from "lucide-react";
 
 interface MenuContentProps {
   onClose: () => void;
