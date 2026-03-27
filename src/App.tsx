@@ -55,6 +55,7 @@ const App = () => (
             <Route path="/modulos/biblia" element={<BibliaPage />} />
             <Route path="/modulos/material" element={<MaterialApoio />} />
             <Route path="/modulos/biblioteca" element={<BibliotecaModelos />} />
+            <Route path="/modulos/calendario" element={<CalendarioLiturgico />} />
             <Route path="/modulos/*" element={<PlaceholderPage />} />
             <Route path="/cadastros/paroquia" element={<ParoquiaCadastro />} />
             <Route path="/cadastros/comunidades" element={<ComunidadesCadastro />} />
