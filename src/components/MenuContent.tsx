@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, ChevronRight } from "lucide-react";
+import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, ChevronRight } from "lucide-react";
 
 interface MenuContentProps {
   onClose: () => void;
@@ -12,6 +12,7 @@ const cadastros = [
 ];
 
 const modulosGlobais = [
+  { label: "Calendário Litúrgico", icon: CalendarDays, path: "/modulos/calendario", color: "bg-destructive/10 text-destructive" },
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-gold/15 text-gold" },
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
   { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
