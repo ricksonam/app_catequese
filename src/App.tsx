@@ -23,6 +23,7 @@ import MaterialApoio from "@/pages/MaterialApoio";
 import ParoquiaCadastro from "@/pages/ParoquiaCadastro";
 import ComunidadesCadastro from "@/pages/ComunidadesCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
+import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import NotFound from "@/pages/NotFound";
 
