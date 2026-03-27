@@ -258,30 +258,29 @@ export default function CatequizandosList() {
         <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
           {viewItem && !editMode && (
             <>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center overflow-hidden shrink-0">
-                    {(viewItem as any).foto ? (
-                      <img src={(viewItem as any).foto} className="w-full h-full object-cover" alt="" />
-                    ) : (
-                      <span className="text-2xl font-bold text-accent-foreground">{viewItem.nome.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
-                    {viewItem.dataNascimento && (
-                      <p className="text-xs text-muted-foreground">{calcularIdade(viewItem.dataNascimento)}</p>
-                    )}
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center overflow-hidden shrink-0">
+                  {(viewItem as any).foto ? (
+                    <img src={(viewItem as any).foto} className="w-full h-full object-cover" alt="" />
+                  ) : (
+                    <span className="text-2xl font-bold text-accent-foreground">{viewItem.nome.charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
-                <div className="flex gap-1.5">
-                  <button onClick={handleEdit} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button onClick={handleDelete} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
+                  {viewItem.dataNascimento && (
+                    <p className="text-xs text-muted-foreground">{calcularIdade(viewItem.dataNascimento)}</p>
+                  )}
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between mt-3">
+                <button onClick={handleEdit} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium">
+                  <Pencil className="h-4 w-4" /> Editar
+                </button>
+                <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors text-sm font-medium">
+                  <Trash2 className="h-4 w-4" /> Excluir
+                </button>
               </div>
 
               <div className="space-y-4 text-sm mt-4">
