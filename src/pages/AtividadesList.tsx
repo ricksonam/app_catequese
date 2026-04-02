@@ -129,10 +129,10 @@ export default function AtividadesList() {
             <p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} atividades</p>
           </div>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
           <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
-            <DialogHeader><DialogTitle>Nova Atividade</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{editingId ? 'Editar Atividade' : 'Nova Atividade'}</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome *" value={form.nome} onChange={(v) => updateField("nome", v)} />
               <div>
