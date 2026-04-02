@@ -30,6 +30,7 @@ export default function AtividadesList() {
   const [list, setList] = useState(getAtividades(id));
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ ...emptyForm });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<Atividade | null>(null);
   const [presencaOpen, setPresencaOpen] = useState(false);
   const [presencaItem, setPresencaItem] = useState<Atividade | null>(null);
