@@ -224,10 +224,19 @@ export default function AtividadesList() {
                     </span>
                     <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
                   </div>
-                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive transition-colors">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
                 </div>
+              </div>
+
+              {/* Edit & Delete buttons separated */}
+              <div className="px-5 flex items-center justify-between">
+                <button onClick={() => handleEdit(viewItem)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors">
+                  <Pencil className="h-3.5 w-3.5" /> Editar
+                </button>
+                <button onClick={() => handleDelete(viewItem.id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-destructive/10 text-destructive text-xs font-semibold transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" /> Excluir
+                </button>
               </div>
 
               <div className="px-5 pb-5 space-y-4">
