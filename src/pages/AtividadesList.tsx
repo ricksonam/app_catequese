@@ -1,12 +1,15 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getAtividades, saveAtividade, deleteAtividade, getTurmas, ATIVIDADE_TIPOS, type Atividade, type AtividadeTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Eye, Trash2 } from "lucide-react";
+import { getAtividades, saveAtividade, deleteAtividade, getTurmas, getCatequizandos, ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, FileText, Car, Printer, Users, ChevronRight, X, CheckCircle2 } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; data: string; local: string; horario: string; observacao: string; }
-const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", data: "", local: "", horario: "", observacao: "" };
+interface FormData {
+  nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade;
+  conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string;
+}
+const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "" };
 
 const tipoColors: Record<string, string> = {
   'Retiro': 'bg-primary/10 text-primary', 'Celebração': 'bg-liturgical/10 text-liturgical',
@@ -23,17 +26,73 @@ export default function AtividadesList() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [viewItem, setViewItem] = useState<Atividade | null>(null);
+  const [presencaOpen, setPresencaOpen] = useState(false);
+  const [presencaItem, setPresencaItem] = useState<Atividade | null>(null);
 
+  const catequizandos = getCatequizandos(id);
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
 
   const handleAdd = () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
-    saveAtividade({ id: crypto.randomUUID(), turmaId: id!, ...form, criadoEm: new Date().toISOString() });
+    saveAtividade({
+      id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao,
+      tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
+      data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
+      presencas: [], criadoEm: new Date().toISOString(),
+    });
     setList(getAtividades(id)); setForm({ ...emptyForm }); setOpen(false);
     toast.success("Atividade criada!");
   };
 
   const handleDelete = (aid: string) => { deleteAtividade(aid); setList(getAtividades(id)); setViewItem(null); toast.success("Removida!"); };
+
+  const togglePresenca = (catId: string) => {
+    if (!presencaItem) return;
+    const p = presencaItem.presencas || [];
+    const updated = p.includes(catId) ? p.filter(x => x !== catId) : [...p, catId];
+    const newItem = { ...presencaItem, presencas: updated };
+    saveAtividade(newItem);
+    setPresencaItem(newItem);
+    setList(getAtividades(id));
+  };
+
+  const printAutorizacao = (item: Atividade) => {
+    const w = window.open('', '_blank');
+    if (!w) return;
+    const cats = getCatequizandos(id);
+    w.document.write(`<!DOCTYPE html><html><head><title>Autorização</title><style>
+      body{font-family:Arial,sans-serif;padding:40px;color:#333}
+      h1{font-size:18px;text-align:center;margin-bottom:8px}
+      h2{font-size:14px;text-align:center;font-weight:normal;margin-bottom:30px;color:#666}
+      .info{margin-bottom:20px;font-size:13px;line-height:1.8}
+      .line{border-bottom:1px solid #333;margin-top:60px;width:70%;margin-left:auto;margin-right:auto}
+      .label{text-align:center;font-size:12px;color:#666;margin-top:6px}
+      .section{page-break-inside:avoid;margin-bottom:40px}
+      @media print{body{padding:20px}}
+    </style></head><body>`);
+    cats.forEach(cat => {
+      w.document.write(`<div class="section">
+        <h1>AUTORIZAÇÃO DE PARTICIPAÇÃO</h1>
+        <h2>${turma?.nome || 'Turma'} — ${item.nome}</h2>
+        <div class="info">
+          <p>Eu, __________________________________________, responsável pelo(a) catequizando(a) <strong>${cat.nome}</strong>, autorizo sua participação na atividade descrita abaixo:</p>
+          <p><strong>Atividade:</strong> ${item.nome}</p>
+          <p><strong>Tipo:</strong> ${item.tipo} (${item.modalidade === 'externa' ? 'Externa' : 'Interna'})</p>
+          ${item.data ? `<p><strong>Data:</strong> ${new Date(item.data + 'T00:00').toLocaleDateString('pt-BR')}</p>` : ''}
+          ${item.horario ? `<p><strong>Horário:</strong> ${item.horario}</p>` : ''}
+          ${item.local ? `<p><strong>Local:</strong> ${item.local}</p>` : ''}
+          ${item.conducao ? `<p><strong>Condução:</strong> ${item.conducao}</p>` : ''}
+          ${item.observacao ? `<p><strong>Obs:</strong> ${item.observacao}</p>` : ''}
+        </div>
+        <div class="line"></div>
+        <p class="label">Assinatura do Responsável</p>
+        <br/><p style="text-align:center;font-size:11px;color:#999">Data: ____/____/________</p>
+      </div>`);
+    });
+    w.document.write('</body></html>');
+    w.document.close();
+    w.print();
+  };
 
   return (
     <div className="space-y-5">
@@ -61,6 +120,30 @@ export default function AtividadesList() {
                   {ATIVIDADE_TIPOS.map(t => <option key={t}>{t}</option>)}
                 </select>
               </div>
+
+              {/* Modalidade */}
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-2 block">Modalidade</label>
+                <div className="flex gap-2">
+                  {(['interna', 'externa'] as const).map(m => (
+                    <button key={m} type="button" onClick={() => updateField("modalidade", m)}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${form.modalidade === m ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground'}`}>
+                      {m === 'interna' ? '🏠 Interna' : '🌍 Externa'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {form.modalidade === 'externa' && (
+                <div className="animate-fade-in">
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Condução</label>
+                  <select value={form.conducao} onChange={(e) => updateField("conducao", e.target.value)} className="form-input">
+                    <option value="">Selecione...</option>
+                    {CONDUCAO_TIPOS.map(c => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-2">
                 <FieldInput label="Data" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
                 <FieldInput label="Horário" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
@@ -84,8 +167,9 @@ export default function AtividadesList() {
       ) : (
         <div className="space-y-2">
           {list.map((item, i) => (
-            <div key={item.id} className="float-card flex items-center gap-3 px-4 py-3.5 animate-float-up" style={{ animationDelay: `${i * 50}ms` }}>
-              <span className={`pill-btn ${tipoColors[item.tipo] || 'bg-muted text-muted-foreground'}`}>{item.tipo}</span>
+            <button key={item.id} onClick={() => setViewItem(item)}
+              className="w-full float-card flex items-center gap-3 px-4 py-3.5 animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
+              <span className={`pill-btn text-[10px] ${tipoColors[item.tipo] || 'bg-muted text-muted-foreground'}`}>{item.tipo}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">{item.nome}</p>
                 <p className="text-xs text-muted-foreground">
@@ -94,37 +178,133 @@ export default function AtividadesList() {
                   {item.local && ` • ${item.local}`}
                 </p>
               </div>
-              <button onClick={() => setViewItem(item)} className="back-btn"><Eye className="h-4 w-4 text-muted-foreground" /></button>
-            </div>
+              {item.modalidade === 'externa' && <Car className="h-3.5 w-3.5 text-primary shrink-0" />}
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </button>
           ))}
         </div>
       )}
 
+      {/* Detail View Dialog */}
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent className="rounded-2xl border-border/30">
-          <DialogHeader><DialogTitle>{viewItem?.nome}</DialogTitle></DialogHeader>
+        <DialogContent className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {viewItem && (
-            <div className="space-y-2 text-sm">
-              <InfoRow label="Tipo" value={viewItem.tipo} />
-              <InfoRow label="Descrição" value={viewItem.descricao} />
-              <InfoRow label="Data" value={viewItem.data ? new Date(viewItem.data + 'T00:00').toLocaleDateString("pt-BR") : undefined} />
-              <InfoRow label="Horário" value={viewItem.horario} />
-              <InfoRow label="Local" value={viewItem.local} />
-              <InfoRow label="Observação" value={viewItem.observacao} />
-              <button onClick={() => handleDelete(viewItem.id)} className="w-full flex items-center justify-center gap-2 text-destructive py-2.5 mt-3 rounded-xl hover:bg-destructive/10 text-sm font-semibold">
-                <Trash2 className="h-4 w-4" /> Excluir
-              </button>
+            <>
+              {/* Header */}
+              <div className={`px-5 pt-5 pb-4 ${tipoColors[viewItem.tipo]?.replace(/text-\S+/, '') || 'bg-muted'}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <span className={`inline-block pill-btn text-[10px] mb-2 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
+                      {viewItem.tipo} • {viewItem.modalidade === 'externa' ? 'Externa' : 'Interna'}
+                    </span>
+                    <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
+                  </div>
+                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive transition-colors">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="px-5 pb-5 space-y-4">
+                {/* Info Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  {viewItem.data && (
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5">
+                      <Calendar className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-xs font-medium text-foreground">{new Date(viewItem.data + 'T00:00').toLocaleDateString("pt-BR")}</span>
+                    </div>
+                  )}
+                  {viewItem.horario && (
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-xs font-medium text-foreground">{viewItem.horario}</span>
+                    </div>
+                  )}
+                  {viewItem.local && (
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5 col-span-2">
+                      <MapPin className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-xs font-medium text-foreground">{viewItem.local}</span>
+                    </div>
+                  )}
+                  {viewItem.conducao && (
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5 col-span-2">
+                      <Car className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-xs font-medium text-foreground">Condução: {viewItem.conducao}</span>
+                    </div>
+                  )}
+                </div>
+
+                {viewItem.descricao && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1">Descrição</p>
+                    <p className="text-sm text-foreground leading-relaxed bg-muted/30 rounded-xl p-3">{viewItem.descricao}</p>
+                  </div>
+                )}
+                {viewItem.observacao && (
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1">Observação</p>
+                    <p className="text-sm text-foreground leading-relaxed bg-muted/30 rounded-xl p-3">{viewItem.observacao}</p>
+                  </div>
+                )}
+
+                {/* Presença summary */}
+                <div className="flex items-center justify-between bg-muted/30 rounded-xl p-3">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-success" />
+                    <span className="text-xs font-semibold text-foreground">
+                      Presenças: {(viewItem.presencas || []).length}/{catequizandos.length}
+                    </span>
+                  </div>
+                  <button onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                    className="text-xs font-semibold text-primary hover:underline">Registrar</button>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <button onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors">
+                    <CheckCircle2 className="h-4 w-4" /> Presença
+                  </button>
+                  {viewItem.modalidade === 'externa' && (
+                    <button onClick={() => printAutorizacao(viewItem)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gold/10 text-gold text-sm font-semibold hover:bg-gold/20 transition-colors">
+                      <Printer className="h-4 w-4" /> Autorização
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Presença Dialog */}
+      <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
+        <DialogContent className="rounded-2xl border-border/30 max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Registrar Presença</DialogTitle></DialogHeader>
+          {presencaItem && (
+            <div className="space-y-1 mt-2">
+              <p className="text-xs text-muted-foreground mb-3">{presencaItem.nome} • {(presencaItem.presencas || []).length}/{catequizandos.length} presentes</p>
+              {catequizandos.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando cadastrado</p>
+              ) : catequizandos.map(cat => {
+                const present = (presencaItem.presencas || []).includes(cat.id);
+                return (
+                  <button key={cat.id} onClick={() => togglePresenca(cat.id)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left ${present ? 'bg-success/10' : 'bg-muted/30 hover:bg-muted/50'}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all ${present ? 'bg-success text-white' : 'border-2 border-muted-foreground/30'}`}>
+                      {present && <CheckCircle2 className="h-3 w-3" />}
+                    </div>
+                    <span className={`text-sm font-medium ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{cat.nome}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </DialogContent>
       </Dialog>
     </div>
   );
-}
-
-function InfoRow({ label, value }: { label: string; value?: string }) {
-  if (!value) return null;
-  return <p><span className="text-muted-foreground">{label}:</span> <span className="font-semibold text-foreground">{value}</span></p>;
 }
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
