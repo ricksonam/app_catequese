@@ -178,7 +178,7 @@ export default function AtividadesList() {
                 <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label>
                 <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" />
               </div>
-              <button onClick={handleAdd} className="w-full action-btn">Criar Atividade</button>
+              <button onClick={handleAdd} className="w-full action-btn">{editingId ? 'Salvar Alterações' : 'Criar Atividade'}</button>
             </div>
           </DialogContent>
         </Dialog>
