@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getAtividades, saveAtividade, deleteAtividade, getTurmas, getCatequizandos, ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, FileText, Car, Printer, Users, ChevronRight, X, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, FileText, Car, Printer, Users, ChevronRight, X, CheckCircle2, Pencil } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
