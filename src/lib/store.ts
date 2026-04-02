@@ -80,6 +80,10 @@ export interface RegistroOcorrencia {
 }
 
 export type AtividadeTipo = 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Jornada' | 'Eventos geral' | 'Outros';
+export type AtividadeModalidade = 'interna' | 'externa';
+export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ônibus' | 'Trem' | 'Metrô' | 'Avião';
+
+export const CONDUCAO_TIPOS: ConducaoTipo[] = ['A pé', 'Carro', 'Carro aplicativo', 'Van', 'Ônibus', 'Trem', 'Metrô', 'Avião'];
 
 export interface Atividade {
   id: string;
@@ -87,10 +91,13 @@ export interface Atividade {
   nome: string;
   descricao: string;
   tipo: AtividadeTipo;
+  modalidade: AtividadeModalidade;
+  conducao?: ConducaoTipo;
   data: string;
   local: string;
   horario: string;
   observacao: string;
+  presencas: string[];
   criadoEm: string;
 }
 
