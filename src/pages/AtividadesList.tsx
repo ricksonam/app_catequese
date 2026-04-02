@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { getAtividades, saveAtividade, deleteAtividade, getTurmas, getCatequizandos, ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, FileText, Car, Printer, Users, ChevronRight, X, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, FileText, Car, Printer, Users, ChevronRight, X, CheckCircle2, Pencil } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -10,6 +10,11 @@ interface FormData {
   conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string;
 }
 const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "" };
+
+const fillFormFromItem = (item: Atividade): FormData => ({
+  nome: item.nome, descricao: item.descricao || '', tipo: item.tipo, modalidade: item.modalidade || 'interna',
+  conducao: item.conducao || '', data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
+});
 
 const tipoColors: Record<string, string> = {
   'Retiro': 'bg-primary/10 text-primary', 'Celebração': 'bg-liturgical/10 text-liturgical',
@@ -25,6 +30,7 @@ export default function AtividadesList() {
   const [list, setList] = useState(getAtividades(id));
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ ...emptyForm });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<Atividade | null>(null);
   const [presencaOpen, setPresencaOpen] = useState(false);
   const [presencaItem, setPresencaItem] = useState<Atividade | null>(null);
@@ -34,14 +40,33 @@ export default function AtividadesList() {
 
   const handleAdd = () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
-    saveAtividade({
-      id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao,
-      tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
-      data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
-      presencas: [], criadoEm: new Date().toISOString(),
-    });
-    setList(getAtividades(id)); setForm({ ...emptyForm }); setOpen(false);
-    toast.success("Atividade criada!");
+    if (editingId) {
+      const existing = list.find(a => a.id === editingId);
+      saveAtividade({
+        ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade,
+        conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
+        data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
+      });
+      setList(getAtividades(id)); setForm({ ...emptyForm }); setEditingId(null); setOpen(false);
+      setViewItem(null);
+      toast.success("Atividade atualizada!");
+    } else {
+      saveAtividade({
+        id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao,
+        tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
+        data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
+        presencas: [], criadoEm: new Date().toISOString(),
+      });
+      setList(getAtividades(id)); setForm({ ...emptyForm }); setOpen(false);
+      toast.success("Atividade criada!");
+    }
+  };
+
+  const handleEdit = (item: Atividade) => {
+    setForm(fillFormFromItem(item));
+    setEditingId(item.id);
+    setViewItem(null);
+    setOpen(true);
   };
 
   const handleDelete = (aid: string) => { deleteAtividade(aid); setList(getAtividades(id)); setViewItem(null); toast.success("Removida!"); };
@@ -60,38 +85,75 @@ export default function AtividadesList() {
     const w = window.open('', '_blank');
     if (!w) return;
     const cats = getCatequizandos(id);
-    w.document.write(`<!DOCTYPE html><html><head><title>Autorização</title><style>
-      body{font-family:Arial,sans-serif;padding:40px;color:#333}
-      h1{font-size:18px;text-align:center;margin-bottom:8px}
-      h2{font-size:14px;text-align:center;font-weight:normal;margin-bottom:30px;color:#666}
-      .info{margin-bottom:20px;font-size:13px;line-height:1.8}
-      .line{border-bottom:1px solid #333;margin-top:60px;width:70%;margin-left:auto;margin-right:auto}
-      .label{text-align:center;font-size:12px;color:#666;margin-top:6px}
-      .section{page-break-inside:avoid;margin-bottom:40px}
-      @media print{body{padding:20px}}
+    const dataFormatada = item.data ? new Date(item.data + 'T00:00').toLocaleDateString('pt-BR') : '___/___/______';
+    w.document.write(`<!DOCTYPE html><html><head><title>Autorização de Participação</title><style>
+      @page { margin: 15mm 20mm; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Georgia', 'Times New Roman', serif; color: #1a1a1a; font-size: 13px; line-height: 1.6; }
+      .page { page-break-after: always; padding: 20px 0; }
+      .page:last-child { page-break-after: avoid; }
+      .header { text-align: center; border-bottom: 3px double #8B4513; padding-bottom: 15px; margin-bottom: 20px; }
+      .header .cross { font-size: 28px; color: #8B4513; margin-bottom: 4px; }
+      .header h1 { font-size: 16px; font-weight: bold; color: #8B4513; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+      .header .parish { font-size: 11px; color: #666; font-style: italic; }
+      .title-box { background: linear-gradient(135deg, #f5e6d3, #faf0e6); border: 1px solid #d4a574; border-radius: 8px; padding: 12px; text-align: center; margin-bottom: 18px; }
+      .title-box h2 { font-size: 15px; font-weight: bold; color: #5c3317; margin-bottom: 2px; }
+      .title-box .subtitle { font-size: 11px; color: #8B6914; }
+      .body-text { margin-bottom: 16px; text-align: justify; }
+      .body-text p { margin-bottom: 8px; }
+      .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; background: #faf8f5; border: 1px solid #e8ddd0; border-radius: 8px; padding: 12px; margin: 14px 0; }
+      .info-item { display: flex; gap: 6px; font-size: 12px; }
+      .info-item .lbl { font-weight: bold; color: #5c3317; white-space: nowrap; }
+      .info-item.full { grid-column: 1 / -1; }
+      .disclaimer { font-size: 10px; color: #888; text-align: center; margin: 14px 0 8px; font-style: italic; border-top: 1px solid #e0d5c8; padding-top: 10px; }
+      .sig-area { margin-top: 24px; }
+      .sig-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 20px; }
+      .sig-block { flex: 1; text-align: center; }
+      .sig-line { border-bottom: 1px solid #333; margin-bottom: 4px; height: 30px; }
+      .sig-label { font-size: 10px; color: #666; }
+      .footer { text-align: center; font-size: 9px; color: #aaa; margin-top: 16px; border-top: 1px dotted #ddd; padding-top: 8px; }
     </style></head><body>`);
     cats.forEach(cat => {
-      w.document.write(`<div class="section">
-        <h1>AUTORIZAÇÃO DE PARTICIPAÇÃO</h1>
-        <h2>${turma?.nome || 'Turma'} — ${item.nome}</h2>
-        <div class="info">
-          <p>Eu, __________________________________________, responsável pelo(a) catequizando(a) <strong>${cat.nome}</strong>, autorizo sua participação na atividade descrita abaixo:</p>
-          <p><strong>Atividade:</strong> ${item.nome}</p>
-          <p><strong>Tipo:</strong> ${item.tipo} (${item.modalidade === 'externa' ? 'Externa' : 'Interna'})</p>
-          ${item.data ? `<p><strong>Data:</strong> ${new Date(item.data + 'T00:00').toLocaleDateString('pt-BR')}</p>` : ''}
-          ${item.horario ? `<p><strong>Horário:</strong> ${item.horario}</p>` : ''}
-          ${item.local ? `<p><strong>Local:</strong> ${item.local}</p>` : ''}
-          ${item.conducao ? `<p><strong>Condução:</strong> ${item.conducao}</p>` : ''}
-          ${item.observacao ? `<p><strong>Obs:</strong> ${item.observacao}</p>` : ''}
+      w.document.write(`<div class="page">
+        <div class="header">
+          <div class="cross">✝</div>
+          <h1>Autorização de Participação</h1>
+          <div class="parish">${turma?.nome || 'Catequese'} — Pastoral da Catequese</div>
         </div>
-        <div class="line"></div>
-        <p class="label">Assinatura do Responsável</p>
-        <br/><p style="text-align:center;font-size:11px;color:#999">Data: ____/____/________</p>
+        <div class="title-box">
+          <h2>${item.nome}</h2>
+          <div class="subtitle">${item.tipo} — Atividade ${item.modalidade === 'externa' ? 'Externa' : 'Interna'}</div>
+        </div>
+        <div class="body-text">
+          <p>Eu, ______________________________________________________________, portador(a) do RG nº ________________________, responsável legal pelo(a) catequizando(a) <strong>${cat.nome}</strong>, <strong>AUTORIZO</strong> sua participação na atividade descrita abaixo, sob a supervisão da equipe de catequese.</p>
+        </div>
+        <div class="info-grid">
+          <div class="info-item full"><span class="lbl">Atividade:</span> ${item.nome}</div>
+          <div class="info-item"><span class="lbl">Data:</span> ${dataFormatada}</div>
+          <div class="info-item"><span class="lbl">Horário:</span> ${item.horario || 'A definir'}</div>
+          <div class="info-item full"><span class="lbl">Local:</span> ${item.local || 'A definir'}</div>
+          ${item.conducao ? `<div class="info-item full"><span class="lbl">Transporte:</span> ${item.conducao}</div>` : ''}
+          ${item.observacao ? `<div class="info-item full"><span class="lbl">Observações:</span> ${item.observacao}</div>` : ''}
+        </div>
+        <div class="disclaimer">
+          Declaro estar ciente das condições da atividade e autorizo a equipe de catequese a tomar as providências necessárias em caso de emergência.
+        </div>
+        <div class="sig-area">
+          <div class="sig-row">
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Assinatura do Responsável</div></div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Nº do Documento (RG/CPF)</div></div>
+          </div>
+          <div class="sig-row">
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Local e Data</div></div>
+            <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Telefone para contato</div></div>
+          </div>
+        </div>
+        <div class="footer">Documento gerado para fins de autorização pastoral • ${new Date().toLocaleDateString('pt-BR')}</div>
       </div>`);
     });
     w.document.write('</body></html>');
     w.document.close();
-    w.print();
+    setTimeout(() => w.print(), 300);
   };
 
   return (
@@ -104,10 +166,10 @@ export default function AtividadesList() {
             <p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} atividades</p>
           </div>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
           <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
-            <DialogHeader><DialogTitle>Nova Atividade</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{editingId ? 'Editar Atividade' : 'Nova Atividade'}</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome *" value={form.nome} onChange={(v) => updateField("nome", v)} />
               <div>
@@ -153,7 +215,7 @@ export default function AtividadesList() {
                 <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label>
                 <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" />
               </div>
-              <button onClick={handleAdd} className="w-full action-btn">Criar Atividade</button>
+              <button onClick={handleAdd} className="w-full action-btn">{editingId ? 'Salvar Alterações' : 'Criar Atividade'}</button>
             </div>
           </DialogContent>
         </Dialog>
@@ -199,10 +261,19 @@ export default function AtividadesList() {
                     </span>
                     <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
                   </div>
-                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl hover:bg-destructive/10 text-destructive transition-colors">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
                 </div>
+              </div>
+
+              {/* Edit & Delete buttons separated */}
+              <div className="px-5 flex items-center justify-between">
+                <button onClick={() => handleEdit(viewItem)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-colors">
+                  <Pencil className="h-3.5 w-3.5" /> Editar
+                </button>
+                <button onClick={() => handleDelete(viewItem.id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-destructive/10 text-destructive text-xs font-semibold transition-colors">
+                  <Trash2 className="h-3.5 w-3.5" /> Excluir
+                </button>
               </div>
 
               <div className="px-5 pb-5 space-y-4">
