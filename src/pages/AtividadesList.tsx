@@ -40,14 +40,33 @@ export default function AtividadesList() {
 
   const handleAdd = () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
-    saveAtividade({
-      id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao,
-      tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
-      data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
-      presencas: [], criadoEm: new Date().toISOString(),
-    });
-    setList(getAtividades(id)); setForm({ ...emptyForm }); setOpen(false);
-    toast.success("Atividade criada!");
+    if (editingId) {
+      const existing = list.find(a => a.id === editingId);
+      saveAtividade({
+        ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade,
+        conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
+        data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
+      });
+      setList(getAtividades(id)); setForm({ ...emptyForm }); setEditingId(null); setOpen(false);
+      setViewItem(null);
+      toast.success("Atividade atualizada!");
+    } else {
+      saveAtividade({
+        id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao,
+        tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined,
+        data: form.data, local: form.local, horario: form.horario, observacao: form.observacao,
+        presencas: [], criadoEm: new Date().toISOString(),
+      });
+      setList(getAtividades(id)); setForm({ ...emptyForm }); setOpen(false);
+      toast.success("Atividade criada!");
+    }
+  };
+
+  const handleEdit = (item: Atividade) => {
+    setForm(fillFormFromItem(item));
+    setEditingId(item.id);
+    setViewItem(null);
+    setOpen(true);
   };
 
   const handleDelete = (aid: string) => { deleteAtividade(aid); setList(getAtividades(id)); setViewItem(null); toast.success("Removida!"); };
