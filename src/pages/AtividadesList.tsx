@@ -11,6 +11,11 @@ interface FormData {
 }
 const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "" };
 
+const fillFormFromItem = (item: Atividade): FormData => ({
+  nome: item.nome, descricao: item.descricao || '', tipo: item.tipo, modalidade: item.modalidade || 'interna',
+  conducao: item.conducao || '', data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
+});
+
 const tipoColors: Record<string, string> = {
   'Retiro': 'bg-primary/10 text-primary', 'Celebração': 'bg-liturgical/10 text-liturgical',
   'Encontro de pais': 'bg-accent/15 text-accent-foreground', 'Gincana': 'bg-success/10 text-success',
