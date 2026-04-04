@@ -1,14 +1,20 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { getTurmas, getEncontros, getCatequizandos, getAtividades } from "@/lib/store";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
 import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch } from "lucide-react";
 
 export default function TurmaDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const turma = getTurmas().find((t) => t.id === id);
-  const encontros = getEncontros(id);
-  const catequizandos = getCatequizandos(id);
-  const atividades = getAtividades(id);
+  const { data: turmas = [], isLoading } = useTurmas();
+  const { data: encontros = [] } = useEncontros(id);
+  const { data: catequizandos = [] } = useCatequizandos(id);
+  const { data: atividades = [] } = useAtividades(id);
+
+  const turma = turmas.find((t) => t.id === id);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
+  }
 
   if (!turma) {
     return (
@@ -28,43 +34,25 @@ export default function TurmaDetail() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="page-header animate-fade-in">
-        <button onClick={() => navigate("/turmas")} className="back-btn">
-          <ArrowLeft className="h-5 w-5 text-foreground" />
-        </button>
+        <button onClick={() => navigate("/turmas")} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <div>
           <h1 className="text-xl font-bold text-foreground">{turma.nome}</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {turma.diaCatequese} • {turma.horario} • {turma.local}
-          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">{turma.diaCatequese} • {turma.horario} • {turma.local}</p>
         </div>
       </div>
-
-      {/* Modules Grid */}
       <div className="grid grid-cols-2 gap-3">
         {modulos.map((mod, i) => {
           const Icon = mod.icon;
           return (
-            <button
-              key={mod.label}
-              onClick={() => navigate(mod.path)}
-              className="float-card flex flex-col items-center p-5 text-center animate-float-up"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div className={`icon-box w-14 h-14 rounded-2xl ${mod.color} mb-3`}>
-                <Icon className="h-6 w-6" />
-              </div>
+            <button key={mod.label} onClick={() => navigate(mod.path)} className="float-card flex flex-col items-center p-5 text-center animate-float-up" style={{ animationDelay: `${i * 80}ms` }}>
+              <div className={`icon-box w-14 h-14 rounded-2xl ${mod.color} mb-3`}><Icon className="h-6 w-6" /></div>
               <span className="text-sm font-bold text-foreground">{mod.label}</span>
-              {mod.count !== null && (
-                <p className="text-xs text-muted-foreground mt-0.5">{mod.count} cadastrados</p>
-              )}
+              {mod.count !== null && <p className="text-xs text-muted-foreground mt-0.5">{mod.count} cadastrados</p>}
             </button>
           );
         })}
       </div>
-
-      {/* Info */}
       <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '300ms' }}>
         <p className="section-title mb-2">Informações</p>
         <div className="space-y-2 text-sm">
