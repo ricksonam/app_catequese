@@ -3,7 +3,7 @@ import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, Ca
 
 // ========== TURMAS ==========
 export async function fetchTurmas(): Promise<Turma[]> {
-  const { data, error } = await supabase.from("turmas").select("*").order("criado_em", { ascending: false });
+  const { data, error } = await (supabase.from as any)("turmas").select("*").order("criado_em", { ascending: false });
   if (error) throw error;
   return (data || []).map((t: any) => ({
     id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
@@ -13,7 +13,7 @@ export async function fetchTurmas(): Promise<Turma[]> {
 }
 
 export async function upsertTurma(turma: Turma) {
-  const { error } = await supabase.from("turmas").upsert({
+  const { error } = await (supabase.from as any)("turmas").upsert({
     id: turma.id, nome: turma.nome, ano: turma.ano, dia_catequese: turma.diaCatequese,
     horario: turma.horario, local: turma.local, etapa: turma.etapa, outros_dados: turma.outrosDados,
     criado_em: turma.criadoEm,
@@ -22,7 +22,7 @@ export async function upsertTurma(turma: Turma) {
 }
 
 export async function removeTurma(id: string) {
-  const { error } = await supabase.from("turmas").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("turmas").delete().eq("id", id);
   if (error) throw error;
 }
 
@@ -42,7 +42,7 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
 }
 
 export async function upsertCatequizando(c: Catequizando) {
-  const { error } = await supabase.from("catequizandos").upsert({
+  const { error } = await (supabase.from as any)("catequizandos").upsert({
     id: c.id, turma_id: c.turmaId, nome: c.nome, data_nascimento: c.dataNascimento,
     responsavel: c.responsavel, telefone: c.telefone, email: c.email,
     endereco: c.endereco || '', necessidade_especial: c.necessidadeEspecial || '',
@@ -53,7 +53,7 @@ export async function upsertCatequizando(c: Catequizando) {
 }
 
 export async function removeCatequizando(id: string) {
-  const { error } = await supabase.from("catequizandos").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("catequizandos").delete().eq("id", id);
   if (error) throw error;
 }
 
@@ -73,7 +73,7 @@ export async function fetchEncontros(turmaId?: string): Promise<Encontro[]> {
 }
 
 export async function upsertEncontro(e: Encontro) {
-  const { error } = await supabase.from("encontros").upsert({
+  const { error } = await (supabase.from as any)("encontros").upsert({
     id: e.id, turma_id: e.turmaId, tema: e.tema, data: e.data,
     leitura_biblica: e.leituraBiblica, material_apoio: e.materialApoio,
     roteiro: e.roteiro as any, status: e.status, presencas: e.presencas as any,
@@ -84,7 +84,7 @@ export async function upsertEncontro(e: Encontro) {
 }
 
 export async function removeEncontro(id: string) {
-  const { error } = await supabase.from("encontros").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("encontros").delete().eq("id", id);
   if (error) throw error;
 }
 
@@ -103,7 +103,7 @@ export async function fetchAtividades(turmaId?: string): Promise<Atividade[]> {
 }
 
 export async function upsertAtividade(a: Atividade) {
-  const { error } = await supabase.from("atividades").upsert({
+  const { error } = await (supabase.from as any)("atividades").upsert({
     id: a.id, turma_id: a.turmaId, nome: a.nome, descricao: a.descricao,
     tipo: a.tipo, modalidade: a.modalidade, conducao: a.conducao || null,
     data: a.data, local: a.local, horario: a.horario, observacao: a.observacao,
@@ -113,13 +113,13 @@ export async function upsertAtividade(a: Atividade) {
 }
 
 export async function removeAtividade(id: string) {
-  const { error } = await supabase.from("atividades").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("atividades").delete().eq("id", id);
   if (error) throw error;
 }
 
 // ========== PAROQUIAS ==========
 export async function fetchParoquias(): Promise<Paroquia[]> {
-  const { data, error } = await supabase.from("paroquias").select("*").order("nome");
+  const { data, error } = await (supabase.from as any)("paroquias").select("*").order("nome");
   if (error) throw error;
   return (data || []).map((p: any) => ({
     id: p.id, nome: p.nome, tipo: p.tipo, endereco: p.endereco,
@@ -128,7 +128,7 @@ export async function fetchParoquias(): Promise<Paroquia[]> {
 }
 
 export async function upsertParoquia(p: Paroquia) {
-  const { error } = await supabase.from("paroquias").upsert({
+  const { error } = await (supabase.from as any)("paroquias").upsert({
     id: p.id, nome: p.nome, tipo: p.tipo, endereco: p.endereco,
     telefone: p.telefone, email: p.email, responsavel: p.responsavel, observacao: p.observacao,
   });
@@ -136,13 +136,13 @@ export async function upsertParoquia(p: Paroquia) {
 }
 
 export async function removeParoquia(id: string) {
-  const { error } = await supabase.from("paroquias").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("paroquias").delete().eq("id", id);
   if (error) throw error;
 }
 
 // ========== COMUNIDADES ==========
 export async function fetchComunidades(): Promise<Comunidade[]> {
-  const { data, error } = await supabase.from("comunidades").select("*").order("nome");
+  const { data, error } = await (supabase.from as any)("comunidades").select("*").order("nome");
   if (error) throw error;
   return (data || []).map((c: any) => ({
     id: c.id, nome: c.nome, tipo: c.tipo, paroquiaId: c.paroquia_id || '',
@@ -151,7 +151,7 @@ export async function fetchComunidades(): Promise<Comunidade[]> {
 }
 
 export async function upsertComunidade(c: Comunidade) {
-  const { error } = await supabase.from("comunidades").upsert({
+  const { error } = await (supabase.from as any)("comunidades").upsert({
     id: c.id, nome: c.nome, tipo: c.tipo, paroquia_id: c.paroquiaId || null,
     endereco: c.endereco, responsavel: c.responsavel, telefone: c.telefone, observacao: c.observacao,
   });
@@ -159,13 +159,13 @@ export async function upsertComunidade(c: Comunidade) {
 }
 
 export async function removeComunidade(id: string) {
-  const { error } = await supabase.from("comunidades").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("comunidades").delete().eq("id", id);
   if (error) throw error;
 }
 
 // ========== CATEQUISTAS ==========
 export async function fetchCatequistas(): Promise<CatequistaCadastro[]> {
-  const { data, error } = await supabase.from("catequistas").select("*").order("nome");
+  const { data, error } = await (supabase.from as any)("catequistas").select("*").order("nome");
   if (error) throw error;
   return (data || []).map((c: any) => ({
     id: c.id, nome: c.nome, dataNascimento: c.data_nascimento, endereco: c.endereco,
@@ -176,7 +176,7 @@ export async function fetchCatequistas(): Promise<CatequistaCadastro[]> {
 }
 
 export async function upsertCatequista(c: CatequistaCadastro) {
-  const { error } = await supabase.from("catequistas").upsert({
+  const { error } = await (supabase.from as any)("catequistas").upsert({
     id: c.id, nome: c.nome, data_nascimento: c.dataNascimento, endereco: c.endereco,
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidade_id: c.comunidadeId || null, formacao: c.formacao,
@@ -186,7 +186,7 @@ export async function upsertCatequista(c: CatequistaCadastro) {
 }
 
 export async function removeCatequista(id: string) {
-  const { error } = await supabase.from("catequistas").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("catequistas").delete().eq("id", id);
   if (error) throw error;
 }
 
@@ -203,7 +203,7 @@ export async function fetchOcorrencias(turmaId?: string): Promise<RegistroOcorre
 }
 
 export async function insertOcorrencia(o: RegistroOcorrencia) {
-  const { error } = await supabase.from("ocorrencias").insert({
+  const { error } = await (supabase.from as any)("ocorrencias").insert({
     id: o.id, encontro_id: o.encontroId, turma_id: o.turmaId,
     tipo: o.tipo, motivo: o.motivo, data: o.data, tema_nome: o.temaNome,
   });
@@ -211,6 +211,6 @@ export async function insertOcorrencia(o: RegistroOcorrencia) {
 }
 
 export async function removeOcorrencia(id: string) {
-  const { error } = await supabase.from("ocorrencias").delete().eq("id", id);
+  const { error } = await (supabase.from as any)("ocorrencias").delete().eq("id", id);
   if (error) throw error;
 }
