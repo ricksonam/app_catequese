@@ -54,16 +54,16 @@ export default function Dashboard() {
         <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <button key={stat.label} onClick={() => navigate(stat.path)} className="float-card p-4 text-center animate-float-up active:scale-95 transition-transform" style={{ animationDelay: `${i * 80}ms` }}>
-              <div className={`icon-box ${stat.color} mx-auto mb-2.5`}>
-                <Icon className="h-5 w-5" />
+            <button key={stat.label} onClick={() => navigate(stat.path)} className="float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-transform min-w-0" style={{ animationDelay: `${i * 80}ms` }}>
+              <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10`}>
+                <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5">{stat.label}</p>
+              <p className="text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
+              <p className="text-[8px] sm:text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5 leading-tight break-words">{stat.label}</p>
             </button>
           );
         })}
