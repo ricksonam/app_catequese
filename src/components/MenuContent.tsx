@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, ChevronRight, KeyRound, LogOut } from "lucide-react";
+import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, Dices, ChevronRight, KeyRound, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
