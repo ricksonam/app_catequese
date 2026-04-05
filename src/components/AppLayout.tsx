@@ -14,8 +14,9 @@ import { MenuContent } from "./MenuContent";
 const tabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-liturgical" },
-  { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-gold" },
-  { path: "/modulos/biblioteca", icon: Library, label: "Modelos", color: "text-success" },
+  { path: "/jogos", icon: Dices, label: "Jogos", color: "text-gold" },
+  { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-success" },
+  { path: "/modulos/biblioteca", icon: Library, label: "Modelos", color: "text-liturgical" },
 ];
 
 export default function AppLayout() {
