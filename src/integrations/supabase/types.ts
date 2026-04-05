@@ -372,6 +372,33 @@ export type Database = {
         }
         Relationships: []
       }
+      sorteios: {
+        Row: {
+          criado_em: string
+          id: string
+          nomes: Json
+          resultado: Json
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          id?: string
+          nomes?: Json
+          resultado?: Json
+          titulo?: string
+          user_id?: string
+        }
+        Update: {
+          criado_em?: string
+          id?: string
+          nomes?: Json
+          resultado?: Json
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       turmas: {
         Row: {
           ano: string
