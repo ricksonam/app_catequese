@@ -83,6 +83,11 @@ const AppRoutes = () => (
       <Route path="/modulos/biblioteca" element={<BibliotecaModelos />} />
       <Route path="/modulos/calendario" element={<CalendarioLiturgico />} />
       <Route path="/modulos/*" element={<PlaceholderPage />} />
+      <Route path="/jogos" element={<JogosHub />} />
+      <Route path="/jogos/sorteio" element={<SorteioNomes />} />
+      <Route path="/jogos/quiz" element={<QuizBiblico />} />
+      <Route path="/jogos/quem-sou" element={<QuemSouBiblico />} />
+      <Route path="/jogos/perguntas" element={<PerguntasRespostas />} />
       <Route path="/cadastros/paroquia" element={<ParoquiaCadastro />} />
       <Route path="/cadastros/comunidades" element={<ComunidadesCadastro />} />
       <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
