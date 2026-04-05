@@ -1,4 +1,4 @@
-import { Image, BookOpen, FileText, Library } from "lucide-react";
+import { Image, BookOpen, FileText, Library, Dices } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const modulos = [
