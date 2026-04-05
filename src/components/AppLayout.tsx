@@ -5,6 +5,7 @@ import {
   Menu,
   Image,
   Library,
+  Dices,
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
