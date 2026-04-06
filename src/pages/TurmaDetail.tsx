@@ -26,10 +26,10 @@ export default function TurmaDetail() {
   }
 
   const modulos = [
-    { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/10 text-primary" },
-    { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-accent/15 text-accent-foreground" },
-    { label: "Atividades", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-liturgical/10 text-liturgical" },
-    { label: "Plano", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-success/10 text-success" },
+    { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/12 text-primary", borderColor: "border-primary/20" },
+    { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(38,92%,50%)]/12 text-[hsl(38,92%,50%)]", borderColor: "border-[hsl(38,92%,50%)]/20" },
+    { label: "Atividades", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(270,50%,55%)]/12 text-[hsl(270,50%,55%)]", borderColor: "border-[hsl(270,50%,55%)]/20" },
+    { label: "Plano", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(152,60%,42%)]/12 text-[hsl(152,60%,42%)]", borderColor: "border-[hsl(152,60%,42%)]/20" },
   ];
 
   return (
@@ -41,18 +41,27 @@ export default function TurmaDetail() {
           <p className="text-xs text-muted-foreground mt-0.5">{turma.diaCatequese} • {turma.horario} • {turma.local}</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+
+      <div className="grid grid-cols-2 gap-2.5">
         {modulos.map((mod, i) => {
           const Icon = mod.icon;
           return (
-            <button key={mod.label} onClick={() => navigate(mod.path)} className="float-card flex flex-col items-center p-5 text-center animate-float-up" style={{ animationDelay: `${i * 80}ms` }}>
-              <div className={`icon-box w-14 h-14 rounded-2xl ${mod.color} mb-3`}><Icon className="h-6 w-6" /></div>
-              <span className="text-sm font-bold text-foreground">{mod.label}</span>
-              {mod.count !== null && <p className="text-xs text-muted-foreground mt-0.5">{mod.count} cadastrados</p>}
+            <button
+              key={mod.label}
+              onClick={() => navigate(mod.path)}
+              className={`float-card flex flex-col items-center p-4 text-center animate-float-up border ${mod.borderColor} active:scale-[0.97] transition-transform`}
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
+              <div className={`w-12 h-12 rounded-xl ${mod.color} flex items-center justify-center mb-2`}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <span className="text-xs font-bold text-foreground leading-tight">{mod.label}</span>
+              {mod.count !== null && <p className="text-[10px] text-muted-foreground mt-0.5">{mod.count} cadastrados</p>}
             </button>
           );
         })}
       </div>
+
       <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '300ms' }}>
         <p className="section-title mb-2">Informações</p>
         <div className="space-y-2 text-sm">
