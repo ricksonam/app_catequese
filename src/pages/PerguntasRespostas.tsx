@@ -10,26 +10,59 @@ interface PerguntaResp {
 }
 
 const banco: PerguntaResp[] = [
+  // Antigo Testamento
   { categoria: "Antigo Testamento", pergunta: "Quem foi o primeiro homem criado por Deus?", resposta: "Adão (Gn 2,7)" },
   { categoria: "Antigo Testamento", pergunta: "Quantos filhos Jacó teve?", resposta: "12 filhos, que deram origem às 12 tribos de Israel" },
   { categoria: "Antigo Testamento", pergunta: "Qual era a profissão de Amós?", resposta: "Boiadeiro e cultivador de sicômoros (Am 7,14)" },
   { categoria: "Antigo Testamento", pergunta: "Quem foi jogado na cova dos leões?", resposta: "Daniel (Dn 6)" },
   { categoria: "Antigo Testamento", pergunta: "Qual o menor livro do Antigo Testamento?", resposta: "Abdias, com apenas 1 capítulo" },
+  { categoria: "Antigo Testamento", pergunta: "Quem liderou o povo hebreu na travessia do Mar Vermelho?", resposta: "Moisés (Ex 14)" },
+  { categoria: "Antigo Testamento", pergunta: "Qual mulher foi juíza de Israel?", resposta: "Débora (Jz 4-5)" },
+  { categoria: "Antigo Testamento", pergunta: "Quem derrotou o gigante Golias?", resposta: "Davi, com uma funda e uma pedra (1Sm 17)" },
+  // Novo Testamento
   { categoria: "Novo Testamento", pergunta: "Quantos evangelhos existem?", resposta: "Quatro: Mateus, Marcos, Lucas e João" },
   { categoria: "Novo Testamento", pergunta: "Quem era o publicano que subiu na árvore?", resposta: "Zaqueu (Lc 19,1-10)" },
   { categoria: "Novo Testamento", pergunta: "Qual o primeiro milagre de Jesus?", resposta: "Transformar água em vinho nas bodas de Caná (Jo 2,1-11)" },
   { categoria: "Novo Testamento", pergunta: "Quantas bem-aventuranças Jesus proclamou?", resposta: "Oito (Mt 5,3-12)" },
   { categoria: "Novo Testamento", pergunta: "Quem traiu Jesus?", resposta: "Judas Iscariotes, por 30 moedas de prata (Mt 26,14-16)" },
+  { categoria: "Novo Testamento", pergunta: "Qual apóstolo era médico?", resposta: "São Lucas, autor do terceiro Evangelho e dos Atos dos Apóstolos" },
+  { categoria: "Novo Testamento", pergunta: "O que aconteceu no dia de Pentecostes?", resposta: "O Espírito Santo desceu sobre os apóstolos em forma de línguas de fogo (At 2,1-4)" },
+  { categoria: "Novo Testamento", pergunta: "Qual parábola fala de um filho que saiu de casa?", resposta: "A parábola do Filho Pródigo (Lc 15,11-32)" },
+  // Sacramentos
   { categoria: "Sacramentos", pergunta: "Quantos sacramentos a Igreja Católica reconhece?", resposta: "Sete: Batismo, Confirmação, Eucaristia, Penitência, Unção dos Enfermos, Ordem e Matrimônio" },
   { categoria: "Sacramentos", pergunta: "Qual sacramento Jesus instituiu na Última Ceia?", resposta: "A Eucaristia (Lc 22,19-20)" },
   { categoria: "Sacramentos", pergunta: "O que é a Crisma?", resposta: "É o sacramento da Confirmação, que fortalece os dons do Espírito Santo recebidos no Batismo" },
+  { categoria: "Sacramentos", pergunta: "Quais são os sacramentos de iniciação cristã?", resposta: "Batismo, Confirmação (Crisma) e Eucaristia" },
+  { categoria: "Sacramentos", pergunta: "O que é a Unção dos Enfermos?", resposta: "Sacramento que dá graça e força espiritual aos doentes graves ou idosos" },
+  // Igreja
   { categoria: "Igreja", pergunta: "Quem é considerado o primeiro Papa?", resposta: "São Pedro (Mt 16,18)" },
   { categoria: "Igreja", pergunta: "O que significa a palavra 'católica'?", resposta: "Universal – do grego 'katholikós'" },
   { categoria: "Igreja", pergunta: "Quais são os tempos litúrgicos?", resposta: "Advento, Natal, Quaresma, Tríduo Pascal, Tempo Pascal e Tempo Comum" },
+  { categoria: "Igreja", pergunta: "Quais são as quatro notas da Igreja?", resposta: "Una, Santa, Católica e Apostólica" },
+  // Santos
   { categoria: "Santos", pergunta: "Quem é o padroeiro da ecologia?", resposta: "São Francisco de Assis" },
   { categoria: "Santos", pergunta: "Qual santa é padroeira das causas impossíveis?", resposta: "Santa Rita de Cássia" },
   { categoria: "Santos", pergunta: "Quem é a padroeira do Brasil?", resposta: "Nossa Senhora Aparecida" },
   { categoria: "Santos", pergunta: "Qual santo foi o primeiro mártir cristão?", resposta: "Santo Estêvão (At 7,54-60)" },
+  { categoria: "Santos", pergunta: "Qual santa teve visões de Jesus Misericordioso?", resposta: "Santa Faustina Kowalska" },
+  // Liturgia
+  { categoria: "Liturgia", pergunta: "O que significa a cor verde na liturgia?", resposta: "Esperança e crescimento na fé, usada no Tempo Comum" },
+  { categoria: "Liturgia", pergunta: "Quando se usa a cor branca na liturgia?", resposta: "Natal, Páscoa, festas de santos não mártires, e celebrações do Senhor" },
+  { categoria: "Liturgia", pergunta: "O que é o Círio Pascal?", resposta: "Grande vela acesa na Vigília Pascal, símbolo de Cristo Ressuscitado, Luz do mundo" },
+  { categoria: "Liturgia", pergunta: "O que é a genuflexão?", resposta: "Gesto de dobrar o joelho direito ao chão em reverência à presença de Cristo na Eucaristia" },
+  { categoria: "Liturgia", pergunta: "Quais as partes principais da Missa?", resposta: "Ritos Iniciais, Liturgia da Palavra, Liturgia Eucarística e Ritos Finais" },
+  { categoria: "Liturgia", pergunta: "O que é o Aleluia na liturgia?", resposta: "Aclamação de louvor que significa 'Louvai o Senhor', cantada antes do Evangelho" },
+  // Doutrina Social
+  { categoria: "Doutrina Social", pergunta: "Qual é o princípio do bem comum?", resposta: "Conjunto de condições sociais que permitem a todos alcançar sua realização plena" },
+  { categoria: "Doutrina Social", pergunta: "O que ensina a Igreja sobre o trabalho?", resposta: "O trabalho é um direito e dever, e deve ser justo e dignificante (Laborem Exercens)" },
+  { categoria: "Doutrina Social", pergunta: "O que é solidariedade na Doutrina Social?", resposta: "Determinação firme de empenhar-se pelo bem comum, reconhecendo a interdependência entre todos" },
+  { categoria: "Doutrina Social", pergunta: "O que a Igreja ensina sobre a propriedade privada?", resposta: "É um direito, mas tem função social e deve servir ao bem comum" },
+  // História da Igreja
+  { categoria: "História da Igreja", pergunta: "Quem convocou o Concílio de Trento?", resposta: "Papa Paulo III em 1545, em resposta à Reforma Protestante" },
+  { categoria: "História da Igreja", pergunta: "O que foram as Cruzadas?", resposta: "Expedições militares entre os séculos XI e XIII para recuperar a Terra Santa" },
+  { categoria: "História da Igreja", pergunta: "Qual a importância do Edito de Milão (313)?", resposta: "Concedeu liberdade de culto aos cristãos no Império Romano" },
+  { categoria: "História da Igreja", pergunta: "Quem foi São Tomás de Aquino?", resposta: "Teólogo e filósofo do séc. XIII, autor da Suma Teológica, Doutor da Igreja" },
+  { categoria: "História da Igreja", pergunta: "O que foi a Inquisição?", resposta: "Tribunal eclesiástico criado no séc. XIII para julgar heresias e preservar a fé" },
 ];
 
 const categorias = [...new Set(banco.map((p) => p.categoria))];
@@ -45,7 +78,7 @@ export default function PerguntasRespostas() {
   const [mostrarResposta, setMostrarResposta] = useState(false);
   const [pontuacao, setPontuacao] = useState({ acertou: 0, errou: 0 });
   const [jogoFinalizado, setJogoFinalizado] = useState(false);
-  const [jogoPerguntas] = useState(() => {
+  const [jogoPerguntas, setJogoPerguntas] = useState(() => {
     const filtered = catFiltro === "todas" ? banco : banco.filter((p) => p.categoria === catFiltro);
     return [...filtered].sort(() => Math.random() - 0.5).slice(0, 10);
   });
@@ -60,6 +93,8 @@ export default function PerguntasRespostas() {
   };
 
   const iniciarJogo = () => {
+    const filtered = catFiltro === "todas" ? banco : banco.filter((p) => p.categoria === catFiltro);
+    setJogoPerguntas([...filtered].sort(() => Math.random() - 0.5).slice(0, 10));
     setModo("jogo");
     setJogoPergIdx(0);
     setMostrarResposta(false);
@@ -89,7 +124,6 @@ export default function PerguntasRespostas() {
         <h1 className="text-lg font-bold text-foreground flex-1">Perguntas e Respostas</h1>
       </div>
 
-      {/* Filtro e modo */}
       {modo === "lista" && (
         <>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
