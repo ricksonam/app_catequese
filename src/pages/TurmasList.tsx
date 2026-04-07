@@ -33,7 +33,7 @@ export default function TurmasList() {
             const tCatequizandos = catequizandos.filter(c => c.turmaId === turma.id);
             const etapa = ETAPAS_CATEQUESE.find((e) => e.id === turma.etapa);
             return (
-              <button key={turma.id} onClick={() => navigate(`/turmas/${turma.id}`)} className="float-card w-full p-4 text-left animate-float-up" style={{ animationDelay: `${i * 70}ms` }}>
+              <button key={turma.id} onClick={() => navigate(`/turmas/${turma.id}`)} className="float-card w-full p-4 text-left animate-float-up border-l-4 border-l-primary" style={{ animationDelay: `${i * 70}ms` }}>
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="text-base font-bold text-foreground">{turma.nome}</h3>
@@ -41,14 +41,14 @@ export default function TurmasList() {
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-lg">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
                     <CalendarDays className="h-3.5 w-3.5" /><span>{tEncontros.length} encontros</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-lg">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[hsl(var(--accent))] bg-[hsl(var(--accent))]/10 px-2.5 py-1 rounded-lg">
                     <Users className="h-3.5 w-3.5" /><span>{tCatequizandos.length} catequizandos</span>
                   </div>
-                  {etapa && <span className="ml-auto text-[10px] font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary">{etapa.label}</span>}
+                  {etapa && <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]">{etapa.label}</span>}
                 </div>
               </button>
             );

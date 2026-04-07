@@ -26,10 +26,10 @@ export default function TurmaDetail() {
   }
 
   const modulos = [
-    { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/12 text-primary", borderColor: "border-primary/20" },
-    { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(38,92%,50%)]/12 text-[hsl(38,92%,50%)]", borderColor: "border-[hsl(38,92%,50%)]/20" },
-    { label: "Atividades", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(270,50%,55%)]/12 text-[hsl(270,50%,55%)]", borderColor: "border-[hsl(270,50%,55%)]/20" },
-    { label: "Plano", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(152,60%,42%)]/12 text-[hsl(152,60%,42%)]", borderColor: "border-[hsl(152,60%,42%)]/20" },
+    { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/15 text-primary", borderColor: "border-primary/30", gradient: "from-primary/5 to-primary/15" },
+    { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(var(--accent))]/15 text-[hsl(var(--accent))]", borderColor: "border-[hsl(var(--accent))]/30", gradient: "from-[hsl(var(--accent))]/5 to-[hsl(var(--accent))]/15" },
+    { label: "Atividades e Eventos", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(var(--liturgical))]/15 text-[hsl(var(--liturgical))]", borderColor: "border-[hsl(var(--liturgical))]/30", gradient: "from-[hsl(var(--liturgical))]/5 to-[hsl(var(--liturgical))]/15" },
+    { label: "Plano da Turma", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success))]", borderColor: "border-[hsl(var(--success))]/30", gradient: "from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/15" },
   ];
 
   return (
@@ -49,14 +49,14 @@ export default function TurmaDetail() {
             <button
               key={mod.label}
               onClick={() => navigate(mod.path)}
-              className={`float-card flex flex-col items-center p-4 text-center animate-float-up border ${mod.borderColor} active:scale-[0.97] transition-transform`}
+              className={`float-card flex flex-col items-center p-5 text-center animate-float-up border ${mod.borderColor} bg-gradient-to-br ${mod.gradient} active:scale-[0.97] transition-transform`}
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className={`w-12 h-12 rounded-xl ${mod.color} flex items-center justify-center mb-2`}>
-                <Icon className="h-5 w-5" />
+              <div className={`w-14 h-14 rounded-2xl ${mod.color} flex items-center justify-center mb-2.5`}>
+                <Icon className="h-6 w-6" />
               </div>
-              <span className="text-xs font-bold text-foreground leading-tight">{mod.label}</span>
-              {mod.count !== null && <p className="text-[10px] text-muted-foreground mt-0.5">{mod.count} cadastrados</p>}
+              <span className="text-sm font-bold text-foreground leading-tight">{mod.label}</span>
+              {mod.count !== null && <p className="text-[11px] text-muted-foreground mt-1">{mod.count} cadastrados</p>}
             </button>
           );
         })}
