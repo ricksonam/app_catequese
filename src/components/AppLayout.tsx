@@ -47,7 +47,7 @@ export default function AppLayout() {
             </div>
             <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
           </div>
-          <div className="w-10" />
+          <BirthdayBell />
         </div>
       </header>
 
