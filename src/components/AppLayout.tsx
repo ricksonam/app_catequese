@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuContent } from "./MenuContent";
+import BirthdayBell from "./BirthdayBell";
 
 const tabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
@@ -47,7 +48,7 @@ export default function AppLayout() {
             </div>
             <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
           </div>
-          <div className="w-10" />
+          <BirthdayBell />
         </div>
       </header>
 
