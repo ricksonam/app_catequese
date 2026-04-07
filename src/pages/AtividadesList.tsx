@@ -82,7 +82,7 @@ export default function AtividadesList() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between animate-fade-in">
-        <div className="flex items-center gap-3"><button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button><div><h1 className="text-xl font-bold text-foreground">Atividades</h1><p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} atividades</p></div></div>
+        <div className="flex items-center gap-3"><button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button><div><h1 className="text-xl font-bold text-foreground">Atividades e Eventos</h1><p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} atividades</p></div></div>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
           <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
