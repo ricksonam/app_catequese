@@ -49,14 +49,14 @@ export default function TurmaDetail() {
             <button
               key={mod.label}
               onClick={() => navigate(mod.path)}
-              className={`float-card flex flex-col items-center p-4 text-center animate-float-up border ${mod.borderColor} active:scale-[0.97] transition-transform`}
+              className={`float-card flex flex-col items-center p-5 text-center animate-float-up border ${mod.borderColor} bg-gradient-to-br ${mod.gradient} active:scale-[0.97] transition-transform`}
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className={`w-12 h-12 rounded-xl ${mod.color} flex items-center justify-center mb-2`}>
-                <Icon className="h-5 w-5" />
+              <div className={`w-14 h-14 rounded-2xl ${mod.color} flex items-center justify-center mb-2.5`}>
+                <Icon className="h-6 w-6" />
               </div>
-              <span className="text-xs font-bold text-foreground leading-tight">{mod.label}</span>
-              {mod.count !== null && <p className="text-[10px] text-muted-foreground mt-0.5">{mod.count} cadastrados</p>}
+              <span className="text-sm font-bold text-foreground leading-tight">{mod.label}</span>
+              {mod.count !== null && <p className="text-[11px] text-muted-foreground mt-1">{mod.count} cadastrados</p>}
             </button>
           );
         })}

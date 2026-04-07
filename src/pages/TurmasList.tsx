@@ -33,7 +33,7 @@ export default function TurmasList() {
             const tCatequizandos = catequizandos.filter(c => c.turmaId === turma.id);
             const etapa = ETAPAS_CATEQUESE.find((e) => e.id === turma.etapa);
             return (
-              <button key={turma.id} onClick={() => navigate(`/turmas/${turma.id}`)} className="float-card w-full p-4 text-left animate-float-up" style={{ animationDelay: `${i * 70}ms` }}>
+              <button key={turma.id} onClick={() => navigate(`/turmas/${turma.id}`)} className="float-card w-full p-4 text-left animate-float-up border-l-4 border-l-primary" style={{ animationDelay: `${i * 70}ms` }}>
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <h3 className="text-base font-bold text-foreground">{turma.nome}</h3>
