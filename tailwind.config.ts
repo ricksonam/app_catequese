@@ -131,6 +131,8 @@ export default {
         "fade-in": "fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         "scale-in": "scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
         "float-up": "float-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "wiggle": "wiggle 1s ease-in-out infinite",
+        "pulse-border": "pulse-border 2s ease-in-out infinite",
       },
     },
   },

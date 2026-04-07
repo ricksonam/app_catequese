@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuContent } from "./MenuContent";
+import BirthdayBell from "./BirthdayBell";
 
 const tabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
