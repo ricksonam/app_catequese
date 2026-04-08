@@ -1,14 +1,18 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia } from "./store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto } from "./store";
 
 // ========== TURMAS ==========
 export async function fetchTurmas(): Promise<Turma[]> {
-  const { data, error } = await (supabase.from as any)("turmas").select("*").order("criado_em", { ascending: false });
+  const { data, error } = await (supabase.from as any)("turmas")
+    .select("*, turma_catequistas(catequista_id)")
+    .order("criado_em", { ascending: false });
   if (error) throw error;
   return (data || []).map((t: any) => ({
     id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
     horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
     criadoEm: t.criado_em,
+    comunidadeId: t.comunidade_id,
+    catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
   }));
 }
 
@@ -17,8 +21,18 @@ export async function upsertTurma(turma: Turma) {
     id: turma.id, nome: turma.nome, ano: turma.ano, dia_catequese: turma.diaCatequese,
     horario: turma.horario, local: turma.local, etapa: turma.etapa, outros_dados: turma.outrosDados,
     criado_em: turma.criadoEm,
+    comunidade_id: turma.comunidadeId || null,
   });
   if (error) throw error;
+
+  if (turma.catequistasIds) {
+    await (supabase.from as any)("turma_catequistas").delete().eq("turma_id", turma.id);
+    if (turma.catequistasIds.length > 0) {
+      const inserts = turma.catequistasIds.map(cid => ({ turma_id: turma.id, catequista_id: cid }));
+      const { error: tcError } = await (supabase.from as any)("turma_catequistas").insert(inserts);
+      if (tcError) throw tcError;
+    }
+  }
 }
 
 export async function removeTurma(id: string) {
@@ -172,6 +186,7 @@ export async function fetchCatequistas(): Promise<CatequistaCadastro[]> {
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidadeId: c.comunidade_id || '', formacao: c.formacao,
     anosExperiencia: c.anos_experiencia, observacao: c.observacao,
+    foto: c.foto || undefined, status: c.status || 'ativo',
   }));
 }
 
@@ -181,6 +196,7 @@ export async function upsertCatequista(c: CatequistaCadastro) {
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidade_id: c.comunidadeId || null, formacao: c.formacao,
     anos_experiencia: c.anosExperiencia, observacao: c.observacao,
+    foto: c.foto || null, status: c.status || 'ativo',
   });
   if (error) throw error;
 }
@@ -213,4 +229,60 @@ export async function insertOcorrencia(o: RegistroOcorrencia) {
 export async function removeOcorrencia(id: string) {
   const { error } = await (supabase.from as any)("ocorrencias").delete().eq("id", id);
   if (error) throw error;
+}
+
+// ========== CALENDARIO NOTAS ==========
+export async function fetchCalendarioNotas(): Promise<{ id: string; data: string; nota: string }[]> {
+  const { data, error } = await (supabase.from as any)("calendario_notas").select("*");
+  if (error) throw error;
+  return data || [];
+}
+
+export async function upsertCalendarioNota(n: { id: string; data: string; nota: string }) {
+  const { error } = await (supabase.from as any)("calendario_notas").upsert({
+    id: n.id, data: n.data, nota: n.nota,
+  });
+  if (error) throw error;
+}
+
+export async function removeCalendarioNota(id: string) {
+  const { error } = await (supabase.from as any)("calendario_notas").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ========== MURAL FOTOS ==========
+export async function fetchMuralFotos(): Promise<MuralFoto[]> {
+  const { data, error } = await (supabase.from as any)("mural_fotos").select("*").order("data", { ascending: false });
+  if (error) throw error;
+  return (data || []).map((f: any) => ({
+    id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
+    data: f.data, criadoEm: f.criado_em,
+  }));
+}
+
+export async function upsertMuralFoto(f: MuralFoto) {
+  const { error } = await (supabase.from as any)("mural_fotos").upsert({
+    id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
+    data: f.data, criado_em: f.criadoEm,
+  });
+  if (error) throw error;
+}
+
+export async function removeMuralFoto(id: string) {
+  const { error } = await (supabase.from as any)("mural_fotos").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ========== STORAGE ==========
+export async function uploadFile(file: Blob, folder: string, fileName: string): Promise<string> {
+  const path = `${folder}/${fileName}`;
+  const { data, error } = await supabase.storage.from("catequese").upload(path, file, {
+    upsert: true,
+    contentType: 'image/jpeg'
+  });
+  
+  if (error) throw error;
+  
+  const { data: { publicUrl } } = supabase.storage.from("catequese").getPublicUrl(path);
+  return publicUrl;
 }

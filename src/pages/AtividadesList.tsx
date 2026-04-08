@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Prin
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { formatarDataVigente } from "@/lib/utils";
 
 interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade; conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string; }
 const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "" };
@@ -69,7 +70,7 @@ export default function AtividadesList() {
 
   const printAutorizacao = (item: Atividade) => {
     const w = window.open('', '_blank'); if (!w) return;
-    const dataFormatada = item.data ? new Date(item.data + 'T00:00').toLocaleDateString('pt-BR') : '___/___/______';
+    const dataFormatada = item.data ? formatarDataVigente(item.data) : '___/___/______';
     w.document.write(`<!DOCTYPE html><html><head><title>Autorização</title><style>@page{margin:15mm 20mm}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Georgia,serif;color:#1a1a1a;font-size:13px;line-height:1.6}.page{page-break-after:always;padding:20px 0}.page:last-child{page-break-after:avoid}.header{text-align:center;border-bottom:3px double #8B4513;padding-bottom:15px;margin-bottom:20px}.header .cross{font-size:28px;color:#8B4513;margin-bottom:4px}.header h1{font-size:16px;font-weight:bold;color:#8B4513;letter-spacing:3px;text-transform:uppercase}.title-box{background:linear-gradient(135deg,#f5e6d3,#faf0e6);border:1px solid #d4a574;border-radius:8px;padding:12px;text-align:center;margin-bottom:18px}.title-box h2{font-size:15px;color:#5c3317}.body-text{margin-bottom:16px;text-align:justify}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;background:#faf8f5;border:1px solid #e8ddd0;border-radius:8px;padding:12px;margin:14px 0}.info-item{display:flex;gap:6px;font-size:12px}.info-item .lbl{font-weight:bold;color:#5c3317}.info-item.full{grid-column:1/-1}.sig-area{margin-top:24px}.sig-row{display:flex;justify-content:space-between;gap:30px;margin-bottom:20px}.sig-block{flex:1;text-align:center}.sig-line{border-bottom:1px solid #333;margin-bottom:4px;height:30px}.sig-label{font-size:10px;color:#666}.footer{text-align:center;font-size:9px;color:#aaa;margin-top:16px;border-top:1px dotted #ddd;padding-top:8px}</style></head><body>`);
     catequizandos.forEach(cat => {
       w.document.write(`<div class="page"><div class="header"><div class="cross">✝</div><h1>Autorização de Participação</h1></div><div class="title-box"><h2>${item.nome}</h2></div><div class="body-text"><p>Eu, ________________________________, responsável por <strong>${cat.nome}</strong>, <strong>AUTORIZO</strong> sua participação na atividade abaixo.</p></div><div class="info-grid"><div class="info-item full"><span class="lbl">Atividade:</span>${item.nome}</div><div class="info-item"><span class="lbl">Data:</span>${dataFormatada}</div><div class="info-item"><span class="lbl">Horário:</span>${item.horario||'A definir'}</div><div class="info-item full"><span class="lbl">Local:</span>${item.local||'A definir'}</div>${item.conducao?`<div class="info-item full"><span class="lbl">Transporte:</span>${item.conducao}</div>`:''}</div><div class="sig-area"><div class="sig-row"><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Assinatura do Responsável</div></div><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Documento</div></div></div><div class="sig-row"><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Local e Data</div></div><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Telefone</div></div></div></div><div class="footer">Documento gerado em ${new Date().toLocaleDateString('pt-BR')}</div></div>`);
@@ -108,7 +109,7 @@ export default function AtividadesList() {
         <div className="space-y-2">{list.map((item, i) => (
           <button key={item.id} onClick={() => setViewItem(item)} className="w-full float-card flex items-center gap-3 px-4 py-3.5 animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
             <span className={`pill-btn text-[10px] ${tipoColors[item.tipo] || 'bg-muted text-muted-foreground'}`}>{item.tipo}</span>
-            <div className="flex-1 min-w-0"><p className="text-sm font-semibold text-foreground truncate">{item.nome}</p><p className="text-xs text-muted-foreground">{item.data && new Date(item.data + 'T00:00').toLocaleDateString("pt-BR")}{item.horario && ` • ${item.horario}`}{item.local && ` • ${item.local}`}</p></div>
+            <div className="flex-1 min-w-0"><p className="text-sm font-semibold text-foreground truncate">{item.nome}</p><p className="text-xs text-muted-foreground">{item.data && formatarDataVigente(item.data)}{item.horario && ` • ${item.horario}`}{item.local && ` • ${item.local}`}</p></div>
             {item.modalidade === 'externa' && <Car className="h-3.5 w-3.5 text-primary shrink-0" />}
             <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
           </button>
@@ -129,7 +130,7 @@ export default function AtividadesList() {
             </div>
             <div className="px-5 pb-5 space-y-4">
               <div className="grid grid-cols-2 gap-2">
-                {viewItem.data && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5"><Calendar className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{new Date(viewItem.data + 'T00:00').toLocaleDateString("pt-BR")}</span></div>}
+                {viewItem.data && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5"><Calendar className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{formatarDataVigente(viewItem.data)}</span></div>}
                 {viewItem.horario && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5"><Clock className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{viewItem.horario}</span></div>}
                 {viewItem.local && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5 col-span-2"><MapPin className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{viewItem.local}</span></div>}
                 {viewItem.conducao && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5 col-span-2"><Car className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{viewItem.conducao}</span></div>}

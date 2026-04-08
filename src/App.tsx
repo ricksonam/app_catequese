@@ -28,8 +28,7 @@ import QuemSouBiblico from "@/pages/QuemSouBiblico";
 import PerguntasRespostas from "@/pages/PerguntasRespostas";
 import BibliaPage from "@/pages/BibliaPage";
 import MaterialApoio from "@/pages/MaterialApoio";
-import ParoquiaCadastro from "@/pages/ParoquiaCadastro";
-import ComunidadesCadastro from "@/pages/ComunidadesCadastro";
+import ParoquiaComunidadeCadastro from "@/pages/ParoquiaComunidadeCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 import PlaceholderPage from "@/pages/PlaceholderPage";
@@ -88,8 +87,7 @@ const AppRoutes = () => (
       <Route path="/jogos/quiz" element={<QuizBiblico />} />
       <Route path="/jogos/quem-sou" element={<QuemSouBiblico />} />
       <Route path="/jogos/perguntas" element={<PerguntasRespostas />} />
-      <Route path="/cadastros/paroquia" element={<ParoquiaCadastro />} />
-      <Route path="/cadastros/comunidades" element={<ComunidadesCadastro />} />
+      <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
       <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
     </Route>
     <Route path="*" element={<NotFound />} />

@@ -5,17 +5,18 @@ import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, MapPin, BookOp
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { ImagePicker } from "@/components/ImagePicker";
 
 type CatequistaStatus = "ativo" | "inativo" | "afastado";
 
 interface FormData {
-  nome: string; dataNascimento: string; endereco: string; profissao: string;
-  telefone: string; email: string; comunidadeId: string; formacao: string;
   anosExperiencia: string; observacao: string; status: CatequistaStatus;
+  foto: string;
 }
 const emptyForm: FormData = {
   nome: "", dataNascimento: "", endereco: "", profissao: "", telefone: "",
   email: "", comunidadeId: "", formacao: "", anosExperiencia: "", observacao: "", status: "ativo",
+  foto: "",
 };
 
 function calcAge(birth: string): number | null {
@@ -41,6 +42,7 @@ export default function CatequistasCadastro() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [viewItem, setViewItem] = useState<CatequistaCadastro | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
 
   const updateField = useCallback((field: string, value: string) => {
@@ -50,13 +52,14 @@ export default function CatequistasCadastro() {
   const handleSave = async () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
     try {
-      const id = editMode && viewItem ? viewItem.id : crypto.randomUUID();
+      const id = editMode && editingId ? editingId : crypto.randomUUID();
       await mutation.mutateAsync({ id, ...form });
       setForm({ ...emptyForm });
       setOpen(false);
-      if (editMode && viewItem) {
+      if (editMode && editingId) {
         setViewItem({ id, ...form } as any);
         setEditMode(false);
+        setEditingId(null);
       }
       toast.success(editMode ? "Catequista atualizado!" : "Catequista cadastrado!");
     } catch (err: any) { toast.error("Erro: " + err.message); }
@@ -74,8 +77,10 @@ export default function CatequistasCadastro() {
       comunidadeId: item.comunidadeId || "", formacao: item.formacao,
       anosExperiencia: item.anosExperiencia, observacao: item.observacao,
       status: (item as any).status || "ativo",
+      foto: item.foto || "",
     });
     setEditMode(true);
+    setEditingId(item.id);
     setViewItem(null);
     setOpen(true);
   };
@@ -83,6 +88,7 @@ export default function CatequistasCadastro() {
   const openNew = () => {
     setForm({ ...emptyForm });
     setEditMode(false);
+    setEditingId(null);
     setOpen(true);
   };
 
@@ -122,8 +128,8 @@ export default function CatequistasCadastro() {
                 style={{ animationDelay: `${i * 50}ms` }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                    <span className="text-lg font-bold text-primary">{item.nome.charAt(0).toUpperCase()}</span>
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                    {item.foto ? <img src={item.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-bold text-primary">{item.nome.charAt(0).toUpperCase()}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-foreground truncate">{item.nome}</p>
@@ -152,6 +158,15 @@ export default function CatequistasCadastro() {
         <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
           <DialogHeader><DialogTitle>{editMode ? "Editar Catequista" : "Novo Catequista"}</DialogTitle></DialogHeader>
           <div className="space-y-3 mt-2">
+            <div className="flex justify-center mb-2">
+              <ImagePicker 
+                onImageUpload={(url) => updateField("foto", url)} 
+                folder="catequistas" 
+                currentImageUrl={form.foto} 
+                shape="circle" 
+                label="Foto de Perfil"
+              />
+            </div>
             <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
             <div className="grid grid-cols-2 gap-2">
               <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
@@ -178,7 +193,22 @@ export default function CatequistasCadastro() {
               </select>
             </div>
             <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
-            <button onClick={handleSave} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editMode ? "Atualizar" : "Salvar"}</button>
+            
+            <div className="flex gap-2 pt-2">
+              <button 
+                onClick={() => setOpen(false)} 
+                className="flex-1 py-3 px-4 rounded-xl border border-border text-sm font-semibold hover:bg-muted transition-colors"
+              >
+                Voltar
+              </button>
+              <button 
+                onClick={handleSave} 
+                disabled={mutation.isPending} 
+                className="flex-[2] action-btn"
+              >
+                {mutation.isPending ? "Salvando..." : editMode ? "Atualizar" : "Salvar"}
+              </button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -198,8 +228,8 @@ export default function CatequistasCadastro() {
                     <X className="h-4 w-4 text-foreground" />
                   </button>
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mb-3 shadow-lg">
-                      <span className="text-3xl font-bold text-primary-foreground">{viewItem.nome.charAt(0).toUpperCase()}</span>
+                    <div className="w-20 h-20 rounded-full bg-muted border-4 border-background flex items-center justify-center mb-3 shadow-lg overflow-hidden">
+                      {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-3xl font-bold text-primary">{viewItem.nome.charAt(0).toUpperCase()}</span>}
                     </div>
                     <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
                     <p className="text-xs text-muted-foreground mt-0.5">{viewItem.formacao || "Catequista"}</p>

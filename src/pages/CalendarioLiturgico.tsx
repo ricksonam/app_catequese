@@ -1,6 +1,10 @@
-import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useCatequizandos, useCatequistas, useCalendarioNotas, useCalendarioNotaMutation, useDeleteCalendarioNota, useEncontros, useAtividades, useTurmas } from "@/hooks/useSupabaseData";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { formatarDataVigente } from "@/lib/utils";
 
 type EventType = 'solenidade' | 'festa' | 'memoria' | 'tempo' | 'comemorativa';
 
@@ -9,126 +13,57 @@ interface LiturgicalEvent {
   month: number;
   name: string;
   type: EventType;
+  color?: 'verde' | 'branco' | 'vermelho' | 'roxo' | 'rosa';
   movable?: boolean;
 }
 
-const TYPE_CONFIG: Record<EventType, { label: string; color: string; bg: string; text: string; dot: string; icon: typeof Star }> = {
-  solenidade: { label: "Solenidade", color: "hsl(var(--primary))", bg: "bg-primary/12", text: "text-primary", dot: "bg-primary", icon: Star },
-  festa: { label: "Festa", color: "hsl(38, 92%, 50%)", bg: "bg-[hsl(38,92%,50%)]/12", text: "text-[hsl(38,92%,50%)]", dot: "bg-[hsl(38,92%,50%)]", icon: Sun },
-  memoria: { label: "Memória", color: "hsl(152, 60%, 42%)", bg: "bg-[hsl(152,60%,42%)]/12", text: "text-[hsl(152,60%,42%)]", dot: "bg-[hsl(152,60%,42%)]", icon: Heart },
-  tempo: { label: "Tempo Litúrgico", color: "hsl(270, 50%, 55%)", bg: "bg-[hsl(270,50%,55%)]/12", text: "text-[hsl(270,50%,55%)]", dot: "bg-[hsl(270,50%,55%)]", icon: Flame },
-  comemorativa: { label: "Comemorativa", color: "hsl(200, 70%, 50%)", bg: "bg-[hsl(200,70%,50%)]/12", text: "text-[hsl(200,70%,50%)]", dot: "bg-[hsl(200,70%,50%)]", icon: Cross },
+const TYPE_CONFIG: Record<EventType, { label: string; dot: string; icon: typeof Star }> = {
+  solenidade: { label: "Solenidade", dot: "bg-primary", icon: Star },
+  festa: { label: "Festa", dot: "bg-orange-500", icon: Sun },
+  memoria: { label: "Memória", dot: "bg-emerald-500", icon: Heart },
+  tempo: { label: "Tempo Litúrgico", dot: "bg-purple-500", icon: Flame },
+  comemorativa: { label: "Comemorativa", dot: "bg-blue-500", icon: Cross },
 };
 
-// Datas litúrgicas 2026 — datas móveis calculadas com Páscoa em 05/04/2026
+const COLOR_MAP: Record<string, string> = {
+  verde: "bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 border-emerald-200/50",
+  branco: "bg-amber-50/50 text-amber-700 dark:text-amber-200 border-amber-200/50",
+  vermelho: "bg-red-600/10 text-red-700 dark:text-red-400 border-red-200/50",
+  roxo: "bg-purple-600/10 text-purple-700 dark:text-purple-400 border-purple-200/50",
+  rosa: "bg-pink-600/10 text-pink-700 dark:text-pink-400 border-pink-200/50",
+};
+
 const EVENTS: LiturgicalEvent[] = [
   // Janeiro
-  { day: 1, month: 1, name: "Santa Maria, Mãe de Deus", type: "solenidade" },
-  { day: 6, month: 1, name: "Epifania do Senhor", type: "solenidade" },
-  { day: 20, month: 1, name: "São Sebastião", type: "memoria" },
-  { day: 25, month: 1, name: "Conversão de São Paulo", type: "festa" },
-  { day: 28, month: 1, name: "São Tomás de Aquino", type: "memoria" },
-  { day: 31, month: 1, name: "São João Bosco", type: "memoria" },
-
+  { day: 1, month: 1, name: "Santa Maria, Mãe de Deus", type: "solenidade", color: 'branco' },
+  { day: 6, month: 1, name: "Epifania do Senhor", type: "solenidade", color: 'branco' },
+  { day: 20, month: 1, name: "São Sebastião", type: "memoria", color: 'vermelho' },
+  { day: 25, month: 1, name: "Conversão de São Paulo", type: "festa", color: 'branco' },
+  { day: 28, month: 1, name: "São Tomás de Aquino", type: "memoria", color: 'branco' },
+  { day: 31, month: 1, name: "São João Bosco", type: "memoria", color: 'branco' },
   // Fevereiro
-  { day: 2, month: 2, name: "Apresentação do Senhor", type: "festa" },
-  { day: 11, month: 2, name: "Nossa Senhora de Lourdes", type: "memoria" },
-  { day: 14, month: 2, name: "São Valentim / Santos Cirilo e Metódio", type: "memoria" },
-  { day: 18, month: 2, name: "Quarta-feira de Cinzas (Início da Quaresma)", type: "tempo", movable: true },
-  { day: 22, month: 2, name: "Cátedra de São Pedro", type: "festa" },
-
+  { day: 2, month: 2, name: "Apresentação do Senhor", type: "festa", color: 'branco' },
+  { day: 11, month: 2, name: "Nossa Senhora de Lourdes", type: "memoria", color: 'branco' },
+  { day: 14, month: 2, name: "Santos Cirilo e Metódio", type: "memoria", color: 'branco' },
+  { day: 18, month: 2, name: "Quarta-feira de Cinzas", type: "tempo", color: 'roxo', movable: true },
+  { day: 22, month: 2, name: "Cátedra de São Pedro", type: "festa", color: 'branco' },
   // Março
-  { day: 19, month: 3, name: "São José, Esposo da Virgem Maria", type: "solenidade" },
-  { day: 25, month: 3, name: "Anunciação do Senhor", type: "solenidade" },
-  { day: 29, month: 3, name: "Domingo de Ramos", type: "solenidade", movable: true },
-
+  { day: 19, month: 3, name: "São José", type: "solenidade", color: 'branco' },
+  { day: 25, month: 3, name: "Anunciação do Senhor", type: "solenidade", color: 'branco' },
+  { day: 29, month: 3, name: "Domingo de Ramos", type: "solenidade", color: 'vermelho', movable: true },
   // Abril
-  { day: 2, month: 4, name: "Quinta-feira Santa", type: "solenidade", movable: true },
-  { day: 3, month: 4, name: "Sexta-feira Santa (Paixão do Senhor)", type: "solenidade", movable: true },
-  { day: 5, month: 4, name: "Páscoa da Ressurreição", type: "solenidade", movable: true },
-  { day: 23, month: 4, name: "São Jorge", type: "memoria" },
-  { day: 25, month: 4, name: "São Marcos Evangelista", type: "festa" },
-  { day: 29, month: 4, name: "Santa Catarina de Sena", type: "memoria" },
-
-  // Maio
-  { day: 1, month: 5, name: "São José Operário", type: "memoria" },
-  { day: 3, month: 5, name: "Santos Filipe e Tiago Apóstolos", type: "festa" },
-  { day: 13, month: 5, name: "Nossa Senhora de Fátima", type: "memoria" },
-  { day: 14, month: 5, name: "Ascensão do Senhor", type: "solenidade", movable: true },
-  { day: 24, month: 5, name: "Pentecostes", type: "solenidade", movable: true },
-  { day: 25, month: 5, name: "Nossa Senhora Auxiliadora", type: "memoria" },
-  { day: 31, month: 5, name: "Santíssima Trindade / Visitação de Nossa Senhora", type: "solenidade", movable: true },
-
-  // Junho
-  { day: 4, month: 6, name: "Corpus Christi", type: "solenidade", movable: true },
-  { day: 12, month: 6, name: "Sagrado Coração de Jesus", type: "solenidade", movable: true },
-  { day: 13, month: 6, name: "Santo Antônio de Pádua", type: "memoria" },
-  { day: 24, month: 6, name: "Nascimento de São João Batista", type: "solenidade" },
-  { day: 29, month: 6, name: "Santos Pedro e Paulo", type: "solenidade" },
-
-  // Julho
-  { day: 3, month: 7, name: "São Tomé Apóstolo", type: "festa" },
-  { day: 11, month: 7, name: "São Bento", type: "memoria" },
-  { day: 16, month: 7, name: "Nossa Senhora do Carmo", type: "memoria" },
-  { day: 22, month: 7, name: "Santa Maria Madalena", type: "festa" },
-  { day: 25, month: 7, name: "São Tiago Apóstolo", type: "festa" },
-  { day: 26, month: 7, name: "Santos Joaquim e Ana", type: "memoria" },
-
-  // Agosto
-  { day: 6, month: 8, name: "Transfiguração do Senhor", type: "festa" },
-  { day: 10, month: 8, name: "São Lourenço", type: "festa" },
-  { day: 11, month: 8, name: "Santa Clara de Assis", type: "memoria" },
-  { day: 15, month: 8, name: "Assunção de Nossa Senhora", type: "solenidade" },
-  { day: 22, month: 8, name: "Nossa Senhora Rainha", type: "memoria" },
-  { day: 24, month: 8, name: "São Bartolomeu Apóstolo", type: "festa" },
-  { day: 28, month: 8, name: "Santo Agostinho", type: "memoria" },
-
-  // Setembro
-  { day: 8, month: 9, name: "Natividade de Nossa Senhora", type: "festa" },
-  { day: 14, month: 9, name: "Exaltação da Santa Cruz", type: "festa" },
-  { day: 15, month: 9, name: "Nossa Senhora das Dores", type: "memoria" },
-  { day: 21, month: 9, name: "São Mateus Apóstolo e Evangelista", type: "festa" },
-  { day: 29, month: 9, name: "Santos Arcanjos Miguel, Gabriel e Rafael", type: "festa" },
-  { day: 30, month: 9, name: "São Jerônimo", type: "memoria" },
-
+  { day: 2, month: 4, name: "Quinta-feira Santa", type: "solenidade", color: 'branco', movable: true },
+  { day: 3, month: 4, name: "Sexta-feira Santa", type: "solenidade", color: 'vermelho', movable: true },
+  { day: 5, month: 4, name: "Páscoa da Ressurreição", type: "solenidade", color: 'branco', movable: true },
+  { day: 23, month: 4, name: "São Jorge", type: "memoria", color: 'vermelho' },
+  { day: 25, month: 4, name: "São Marcos Evangelista", type: "festa", color: 'vermelho' },
   // Outubro
-  { day: 1, month: 10, name: "Santa Teresinha do Menino Jesus", type: "memoria" },
-  { day: 2, month: 10, name: "Santos Anjos da Guarda", type: "memoria" },
-  { day: 4, month: 10, name: "São Francisco de Assis", type: "memoria" },
-  { day: 7, month: 10, name: "Nossa Senhora do Rosário", type: "memoria" },
-  { day: 12, month: 10, name: "Nossa Senhora Aparecida", type: "solenidade" },
-  { day: 15, month: 10, name: "Santa Teresa de Ávila", type: "memoria" },
-  { day: 18, month: 10, name: "São Lucas Evangelista", type: "festa" },
-  { day: 28, month: 10, name: "Santos Simão e Judas Apóstolos", type: "festa" },
-
-  // Novembro
-  { day: 1, month: 11, name: "Todos os Santos", type: "solenidade" },
-  { day: 2, month: 11, name: "Finados (Comemoração dos Fiéis Defuntos)", type: "comemorativa" },
-  { day: 3, month: 11, name: "São Martinho de Lima", type: "memoria" },
-  { day: 15, month: 11, name: "Proclamação da República", type: "comemorativa" },
-  { day: 20, month: 11, name: "Consciência Negra", type: "comemorativa" },
-  { day: 21, month: 11, name: "Apresentação de Nossa Senhora", type: "memoria" },
-  { day: 22, month: 11, name: "Cristo Rei do Universo", type: "solenidade", movable: true },
-  { day: 30, month: 11, name: "Santo André Apóstolo / 1º Domingo do Advento", type: "tempo", movable: true },
-
-  // Dezembro
-  { day: 3, month: 12, name: "São Francisco Xavier", type: "memoria" },
-  { day: 8, month: 12, name: "Imaculada Conceição de Nossa Senhora", type: "solenidade" },
-  { day: 12, month: 12, name: "Nossa Senhora de Guadalupe", type: "festa" },
-  { day: 13, month: 12, name: "Santa Luzia", type: "memoria" },
-  { day: 25, month: 12, name: "Natal do Senhor", type: "solenidade" },
-  { day: 26, month: 12, name: "Santo Estêvão", type: "festa" },
-  { day: 27, month: 12, name: "São João Evangelista", type: "festa" },
-  { day: 28, month: 12, name: "Santos Inocentes", type: "festa" },
-  { day: 31, month: 12, name: "São Silvestre", type: "memoria" },
+  { day: 12, month: 10, name: "Nossa Senhora Aparecida", type: "solenidade", color: 'branco' },
+  { day: 25, month: 12, name: "Natal do Senhor", type: "solenidade", color: 'branco' },
 ];
 
-const MONTH_NAMES = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
-];
-
-const WEEKDAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
+const MONTH_NAMES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
 export default function CalendarioLiturgico() {
   const navigate = useNavigate();
@@ -136,127 +71,244 @@ export default function CalendarioLiturgico() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [filterType, setFilterType] = useState<EventType | 'all'>('all');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [noteContent, setNoteContent] = useState("");
+  const [noteId, setNoteId] = useState<string | null>(null);
+
+  // Data fetching
+  const { data: catequizandos = [] } = useCatequizandos();
+  const { data: catequistas = [] } = useCatequistas();
+  const { data: notas = [] } = useCalendarioNotas();
+  const { data: encontros = [] } = useEncontros();
+  const { data: atividades = [] } = useAtividades();
+  const { data: turmas = [] } = useTurmas();
+  
+  const notaMutation = useCalendarioNotaMutation();
+  const notaDelete = useDeleteCalendarioNota();
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
-  const monthEvents = useMemo(() => EVENTS.filter(e => e.month === currentMonth + 1), [currentMonth]);
+  // Helper to check birthdays
+  const birthdays = useMemo(() => {
+    const list: { day: number; name: string; type: 'catequizando' | 'catequista' }[] = [];
+    
+    [...catequizandos, ...catequistas].forEach(person => {
+      if (person.dataNascimento) {
+        const [y, m, d] = person.dataNascimento.split('-');
+        if (parseInt(m) === currentMonth + 1) {
+          list.push({ 
+            day: parseInt(d), 
+            name: person.nome, 
+            type: (person as any).turmaId ? 'catequizando' : 'catequista' 
+          });
+        }
+      }
+    });
+    return list;
+  }, [catequizandos, catequistas, currentMonth]);
 
-  const dayEvents = useMemo(() => {
-    if (!selectedDay) return [];
-    return monthEvents.filter(e => e.day === selectedDay);
-  }, [selectedDay, monthEvents]);
+  const monthNotes = useMemo(() => {
+    return notas.filter(n => n.data.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`));
+  }, [notas, currentMonth, currentYear]);
 
-  const filteredMonthEvents = useMemo(() => {
-    if (filterType === 'all') return monthEvents;
-    return monthEvents.filter(e => e.type === filterType);
-  }, [monthEvents, filterType]);
+  // Map Encontros and Atividades to the current month days
+  const currentMonthEvents = useMemo(() => {
+    const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+    return {
+      encontros: encontros.filter(e => e.data.startsWith(prefix)),
+      atividades: atividades.filter(a => a.data.startsWith(prefix))
+    };
+  }, [encontros, atividades, currentMonth, currentYear]);
 
-  const getEventsForDay = (day: number) => EVENTS.filter(e => e.month === currentMonth + 1 && e.day === day);
+  const getDayColor = (day: number) => {
+    const evt = EVENTS.find(e => e.month === currentMonth + 1 && e.day === day);
+    if (evt?.color) return COLOR_MAP[evt.color];
+    
+    // Default Liturgical Colors based on Month (Very simplified)
+    if (currentMonth === 11 || currentMonth === 0) return COLOR_MAP['branco']; // Natal/Epifania (approx)
+    if (currentMonth === 2 || currentMonth === 3) return COLOR_MAP['roxo']; // Quaresma (approx)
+    return COLOR_MAP['verde']; // Tempo Comum
+  };
+
+  const isToday = (day: number) => 
+    day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+
+  const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
 
   const prevMonth = () => {
-    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
-    else setCurrentMonth(m => m - 1);
+    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); }
+    else setCurrentMonth(currentMonth - 1);
     setSelectedDay(null);
   };
 
   const nextMonth = () => {
-    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
-    else setCurrentMonth(m => m + 1);
+    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); }
+    else setCurrentMonth(currentMonth + 1);
     setSelectedDay(null);
   };
 
-  const isToday = (day: number) =>
-    day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+  const handleSaveNote = async () => {
+    if (!selectedDay) return;
+    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+    try {
+      await notaMutation.mutateAsync({
+        id: noteId || crypto.randomUUID(),
+        data: dateStr,
+        nota: noteContent
+      });
+      toast.success("Anotação salva!");
+      setSelectedDay(null);
+    } catch (e) {
+      toast.error("Erro ao salvar");
+    }
+  };
+
+  const handleDeleteNote = async (id: string) => {
+    try {
+      await notaDelete.mutateAsync(id);
+      toast.success("Anotação excluída");
+      setSelectedDay(null);
+    } catch (e) {
+      toast.error("Erro ao excluir");
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDay) {
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+      const existing = notas.find(n => n.data === dateStr);
+      setNoteContent(existing?.nota || "");
+      setNoteId(existing?.id || null);
+    }
+  }, [selectedDay, notas, currentMonth, currentYear]);
 
   return (
-    <div className="space-y-4">
+    <div className={`flex flex-col gap-4 transition-all duration-500 ${isFullscreen ? 'fixed inset-0 z-[100] bg-background p-6 overflow-y-auto' : ''}`}>
       {/* Header */}
-      <div className="flex items-center gap-3 animate-fade-in">
-        <button onClick={() => navigate(-1)} className="back-btn">
-          <ArrowLeft className="h-5 w-5 text-foreground" />
-        </button>
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
-            <Church className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Calendário Litúrgico</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Ano {currentYear}</p>
+      <div className="flex items-center justify-between animate-fade-in">
+        <div className="flex items-center gap-3">
+          {!isFullscreen && (
+            <button onClick={() => navigate(-1)} className="back-btn">
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </button>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
+              <Church className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">Calendário Litúrgico</h1>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Ano {currentYear}</p>
+            </div>
           </div>
         </div>
+        <button onClick={toggleFullscreen} className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
+          {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+        </button>
       </div>
 
-      {/* Month Navigation */}
-      <div className="float-card overflow-hidden animate-float-up">
-        {/* Month header with liturgical gradient */}
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-4 py-3 border-b border-border/30">
-          <div className="flex items-center justify-between">
-            <button onClick={prevMonth} className="w-9 h-9 rounded-xl bg-background/80 hover:bg-background flex items-center justify-center transition-all active:scale-90 shadow-sm">
-              <ChevronLeft className="h-4 w-4 text-foreground" />
-            </button>
-            <h2 className="text-lg font-black text-foreground tracking-tight">
-              {MONTH_NAMES[currentMonth]}
-            </h2>
-            <button onClick={nextMonth} className="w-9 h-9 rounded-xl bg-background/80 hover:bg-background flex items-center justify-center transition-all active:scale-90 shadow-sm">
-              <ChevronRight className="h-4 w-4 text-foreground" />
-            </button>
-          </div>
+      {/* Calendar Card */}
+      <div className={`float-card overflow-hidden animate-float-up flex flex-col ${isFullscreen ? 'flex-1 shadow-2xl border-2 border-primary/10' : ''}`}>
+        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-4 border-b border-border/30 flex items-center justify-between">
+          <button onClick={prevMonth} className="w-10 h-10 rounded-xl bg-background/80 hover:bg-background flex items-center justify-center transition-all active:scale-90 shadow-sm border border-border/20">
+            <ChevronLeft className="h-5 w-5 text-foreground" />
+          </button>
+          <h2 className="text-2xl font-black text-foreground tracking-tight px-4">
+            {MONTH_NAMES[currentMonth]}
+          </h2>
+          <button onClick={nextMonth} className="w-10 h-10 rounded-xl bg-background/80 hover:bg-background flex items-center justify-center transition-all active:scale-90 shadow-sm border border-border/20">
+            <ChevronRight className="h-5 w-5 text-foreground" />
+          </button>
         </div>
 
-        <div className="p-3">
+        <div className={`p-4 ${isFullscreen ? 'flex-1' : ''}`}>
           {/* Weekday headers */}
-          <div className="grid grid-cols-7 gap-0.5 mb-1">
+          <div className="grid grid-cols-7 gap-1 mb-2">
             {WEEKDAYS.map((w, i) => (
-              <div key={i} className={`text-center text-[10px] font-black uppercase py-1 ${i === 0 ? 'text-destructive/70' : 'text-muted-foreground'}`}>
+              <div key={i} className={`text-center text-xs font-black uppercase py-2 ${i === 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
                 {w}
               </div>
             ))}
           </div>
 
           {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-0.5">
+          <div className={`grid grid-cols-7 gap-1.5 ${isFullscreen ? 'flex-1 h-full' : ''}`}>
             {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-              <div key={`empty-${i}`} className="aspect-square" />
+              <div key={`empty-${i}`} className="aspect-square opacity-20 border border-transparent" />
             ))}
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const day = i + 1;
-              const evts = getEventsForDay(day);
-              const selected = selectedDay === day;
+              const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+              const liturgicalEvts = EVENTS.filter(e => e.month === currentMonth + 1 && e.day === day);
+              const dayBirthdays = birthdays.filter(b => b.day === day);
+              const dayNote = monthNotes.find(n => n.data === dateStr);
+              const colorClasses = getDayColor(day);
               const todayMark = isToday(day);
-              const hasSolenidade = evts.some(e => e.type === 'solenidade');
-              const hasFesta = evts.some(e => e.type === 'festa');
-              const hasTempo = evts.some(e => e.type === 'tempo');
-              const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
 
               return (
                 <button
                   key={day}
-                  onClick={() => setSelectedDay(selected ? null : day)}
-                  className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all text-xs font-semibold relative active:scale-90
-                    ${selected ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-105 z-10' : ''}
-                    ${todayMark && !selected ? 'bg-primary/15 text-primary font-black ring-2 ring-primary/40' : ''}
-                    ${!selected && !todayMark && hasSolenidade ? 'bg-primary/8 text-primary font-bold' : ''}
-                    ${!selected && !todayMark && !hasSolenidade && hasTempo ? 'bg-[hsl(270,50%,55%)]/8 text-[hsl(270,50%,55%)]' : ''}
-                    ${!selected && !todayMark && !hasSolenidade && !hasTempo && hasFesta ? 'bg-[hsl(38,92%,50%)]/8' : ''}
-                    ${!selected && !todayMark && !hasSolenidade && !hasTempo && !hasFesta ? (dayOfWeek === 0 ? 'text-destructive/60' : 'text-foreground') : ''}
-                    ${!selected ? 'hover:bg-muted/60' : ''}
+                  onClick={() => setSelectedDay(day)}
+                  className={`relative aspect-square rounded-2xl flex flex-col p-2 transition-all border-2 overflow-hidden active:scale-95 group
+                    ${todayMark ? 'ring-2 ring-primary ring-offset-2 z-10' : ''}
+                    ${colorClasses} hover:brightness-95 hover:shadow-md
+                    ${isFullscreen ? 'items-start text-left p-3' : 'justify-center items-center'}
                   `}
                 >
-                  <span>{day}</span>
-                  {evts.length > 0 && !selected && (
-                    <div className="flex gap-px absolute bottom-0.5">
-                      {evts.slice(0, 3).map((e, idx) => (
-                        <span key={idx} className={`w-1 h-1 rounded-full ${TYPE_CONFIG[e.type].dot}`} />
-                      ))}
+                  <span className={`text-sm font-black ${todayMark ? 'text-primary' : ''}`}>{day}</span>
+                  
+                  {/* Indicators (Simplified for small view) */}
+                  {!isFullscreen && (
+                    <div className="flex flex-wrap justify-center gap-0.5 mt-1">
+                      {liturgicalEvts.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />}
+                      {dayBirthdays.length > 0 && <Cake className="h-3 w-3 text-pink-500 animate-bounce" />}
+                      {currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <BookOpen className="h-3 w-3 text-blue-500" />}
+                      {currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Lightbulb className="h-3 w-3 text-emerald-500" />}
+                      {dayNote && <StickyNote className="h-3 w-3 text-amber-500" />}
                     </div>
                   )}
-                  {selected && evts.length > 0 && (
-                    <div className="flex gap-px absolute bottom-0.5">
-                      {evts.slice(0, 3).map((_, idx) => (
-                        <span key={idx} className="w-1 h-1 rounded-full bg-primary-foreground/70" />
+
+                  {/* Detailed Layout for Fullscreen */}
+                  {isFullscreen && (
+                    <div className="flex-1 w-full mt-1.5 space-y-1.5 overflow-hidden">
+                      {liturgicalEvts.map((e, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 bg-background/40 backdrop-blur-sm rounded-lg px-2 py-1 border border-border/10">
+                          <Star className="h-2.5 w-2.5 shrink-0" />
+                          <span className="text-[9px] font-bold truncate leading-none uppercase">{e.name}</span>
+                        </div>
                       ))}
+                      {dayBirthdays.map((b, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 bg-pink-500/10 rounded-lg px-2 py-1 border border-pink-200/20 text-pink-700 dark:text-pink-400">
+                          <Cake className="h-2.5 w-2.5 shrink-0" />
+                          <span className="text-[9px] font-bold truncate leading-none">{b.name}</span>
+                        </div>
+                      ))}
+                      {currentMonthEvents.encontros.filter(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)).map((e, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 bg-blue-500/10 rounded-lg px-2 py-1 border border-blue-200/20 text-blue-700 dark:text-blue-400">
+                          <BookOpen className="h-2.5 w-2.5 shrink-0" />
+                          <span className="text-[9px] font-bold truncate leading-none">{e.tema}</span>
+                        </div>
+                      ))}
+                      {currentMonthEvents.atividades.filter(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)).map((a, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 bg-success/10 rounded-lg px-2 py-1 border border-success/20 text-success">
+                          <Lightbulb className="h-2.5 w-2.5 shrink-0" />
+                          <span className="text-[9px] font-bold truncate leading-none">{a.nome}</span>
+                        </div>
+                      ))}
+                      {dayNote && (
+                        <div className="flex items-center gap-1.5 bg-amber-500/10 rounded-lg px-2 py-1 border border-amber-200/20 text-amber-700 dark:text-amber-400">
+                          <StickyNote className="h-2.5 w-2.5 shrink-0" />
+                          <p className="text-[9px] font-medium truncate leading-none italic">{dayNote.nota.substring(0, 20)}...</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Bottom line for liturgical event types (Small view) */}
+                  {!isFullscreen && liturgicalEvts.length > 0 && (
+                    <div className="absolute top-1 right-1">
+                      <Star className="h-2 w-2 opacity-40" />
                     </div>
                   )}
                 </button>
@@ -264,104 +316,112 @@ export default function CalendarioLiturgico() {
             })}
           </div>
         </div>
-
-        {/* Legend */}
-        <div className="px-3 pb-3 flex flex-wrap gap-2">
-          {(Object.keys(TYPE_CONFIG) as EventType[]).map(t => {
-            const cfg = TYPE_CONFIG[t];
-            return (
-              <div key={t} className="flex items-center gap-1">
-                <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
-                <span className="text-[9px] text-muted-foreground font-medium">{cfg.label}</span>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
-      {/* Selected day events */}
-      {selectedDay && dayEvents.length > 0 && (
-        <div className="space-y-2 animate-float-up">
-          <p className="section-title">{selectedDay} de {MONTH_NAMES[currentMonth]}</p>
-          {dayEvents.map((evt, i) => {
-            const cfg = TYPE_CONFIG[evt.type];
-            const Icon = cfg.icon;
-            return (
-              <div key={i} className="float-card px-4 py-3.5 flex items-center gap-3 animate-float-up" style={{ animationDelay: `${i * 60}ms` }}>
-                <div className={`w-11 h-11 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0`}>
-                  <Icon className={`h-5 w-5 ${cfg.text}`} />
+      {/* Note Editor Modal */}
+      <Dialog open={!!selectedDay} onOpenChange={(o) => !o && setSelectedDay(null)}>
+        <DialogContent className="max-w-md rounded-3xl p-6 border-border/30 overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <StickyNote className="h-5 w-5 text-amber-600" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-black text-foreground">{selectedDay} de {MONTH_NAMES[currentMonth]}</p>
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Anotações e Eventos</p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 mt-2">
+            {/* Liturgical Info inside Modal */}
+            {selectedDay !== null && EVENTS.filter(e => e.month === currentMonth + 1 && e.day === selectedDay).map((e, idx) => (
+              <div key={idx} className={`p-3 rounded-2xl border ${COLOR_MAP[e.color || 'verde']} flex items-center gap-3`}>
+                <div className="w-8 h-8 rounded-lg bg-background/40 flex items-center justify-center shrink-0">
+                  <Star className="h-4 w-4" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground leading-tight">{evt.name}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider ${cfg.text}`}>{cfg.label}</span>
-                    {evt.movable && <span className="text-[9px] text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-full">data móvel</span>}
+                <div className="min-w-0">
+                  <p className="text-sm font-bold leading-tight truncate">{e.name}</p>
+                  <p className="text-[10px] uppercase font-bold opacity-70 tracking-tighter">{TYPE_CONFIG[e.type].label}</p>
+                </div>
+              </div>
+            ))}
+
+            {/* Birthday Info inside Modal */}
+            {selectedDay !== null && birthdays.filter(b => b.day === selectedDay).map((b, idx) => (
+              <div key={idx} className="p-3 rounded-2xl bg-pink-500/10 border border-pink-200/30 text-pink-700 dark:text-pink-400 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
+                  <Cake className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Aniversário de {b.name}</p>
+                  <p className="text-[10px] uppercase font-bold opacity-70">{b.type === 'catequista' ? 'Catequista' : 'Catequizando'}</p>
+                </div>
+              </div>
+            ))}
+            
+            {/* Catechism Encounters inside Modal */}
+            {selectedDay !== null && currentMonthEvents.encontros.filter(e => e.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((e, idx) => {
+              const turma = turmas.find(t => t.id === e.turmaId);
+              return (
+                <div key={idx} className="p-3 rounded-2xl bg-blue-500/10 border border-blue-200/30 text-blue-700 dark:text-blue-400 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
+                    <BookOpen className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{e.tema}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70">Encontro: {turma?.nome || 'Turma'}</p>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
 
-      {selectedDay && dayEvents.length === 0 && (
-        <div className="float-card p-6 text-center animate-float-up">
-          <p className="text-sm text-muted-foreground">Nenhum evento litúrgico neste dia</p>
-        </div>
-      )}
-
-      {/* Filter */}
-      <div className="animate-float-up" style={{ animationDelay: '100ms' }}>
-        <p className="section-title">Eventos do Mês</p>
-        <div className="flex gap-1.5 flex-wrap mb-3">
-          <button onClick={() => setFilterType('all')} className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all ${filterType === 'all' ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted/60 text-muted-foreground'}`}>
-            Todos ({monthEvents.length})
-          </button>
-          {(Object.keys(TYPE_CONFIG) as EventType[]).map(t => {
-            const count = monthEvents.filter(e => e.type === t).length;
-            if (count === 0) return null;
-            const cfg = TYPE_CONFIG[t];
-            return (
-              <button key={t} onClick={() => setFilterType(t)} className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition-all ${filterType === t ? `${cfg.bg} ${cfg.text} shadow-md` : 'bg-muted/60 text-muted-foreground'}`}>
-                {cfg.label} ({count})
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Month events list */}
-      <div className="space-y-2 pb-4">
-        {filteredMonthEvents.map((evt, i) => {
-          const cfg = TYPE_CONFIG[evt.type];
-          const Icon = cfg.icon;
-          return (
-            <button
-              key={i}
-              onClick={() => setSelectedDay(evt.day)}
-              className="float-card w-full px-4 py-3 flex items-center gap-3 text-left animate-float-up active:scale-[0.98] transition-transform"
-              style={{ animationDelay: `${i * 40}ms` }}
-            >
-              <div className={`w-11 h-11 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0`}>
-                <span className={`text-sm font-black ${cfg.text}`}>{evt.day}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{evt.name}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <Icon className={`h-3 w-3 ${cfg.text}`} />
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${cfg.text}`}>{cfg.label}</span>
-                  {evt.movable && <span className="text-[9px] text-muted-foreground">• móvel</span>}
+            {/* Activities/Events inside Modal */}
+            {selectedDay !== null && currentMonthEvents.atividades.filter(a => a.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((a, idx) => (
+              <div key={idx} className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-200/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
+                  <Lightbulb className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">{a.nome}</p>
+                  <p className="text-[10px] uppercase font-bold opacity-70">Atividade: {a.tipo}</p>
                 </div>
               </div>
-            </button>
-          );
-        })}
-        {filteredMonthEvents.length === 0 && (
-          <div className="float-card p-6 text-center">
-            <p className="text-sm text-muted-foreground">Nenhum evento neste mês</p>
+            ))}
+
+            {/* Note Area */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase px-1">Minhas Anotações</label>
+              <textarea
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                placeholder="Ex: Reunião de pais às 19h..."
+                className="w-full min-h-[120px] p-4 rounded-2xl bg-muted/30 border border-border/10 focus:ring-2 focus:ring-primary/20 transition-all outline-none text-sm resize-none"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              {noteId && (
+                <button 
+                  onClick={() => handleDeleteNote(noteId)}
+                  disabled={notaDelete.isPending}
+                  className="p-3 rounded-2xl text-destructive hover:bg-destructive/10 transition-colors border border-destructive/10"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              )}
+              <button 
+                onClick={handleSaveNote}
+                disabled={notaMutation.isPending}
+                className="flex-1 action-btn py-3 justify-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {notaMutation.isPending ? "Salvando..." : "Salvar Anotação"}
+              </button>
+            </div>
           </div>
-        )}
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

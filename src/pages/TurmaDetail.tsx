@@ -1,6 +1,18 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch } from "lucide-react";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma } from "@/hooks/useSupabaseData";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 export default function TurmaDetail() {
   const { id } = useParams();
@@ -9,8 +21,19 @@ export default function TurmaDetail() {
   const { data: encontros = [] } = useEncontros(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
+  const deleteMutation = useDeleteTurma();
 
   const turma = turmas.find((t) => t.id === id);
+
+  const handleDelete = async () => {
+    try {
+      await deleteMutation.mutateAsync(id!);
+      toast.success("Turma excluída com sucesso");
+      navigate("/turmas");
+    } catch (error: any) {
+      toast.error("Erro ao excluir: " + error.message);
+    }
+  };
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
@@ -69,6 +92,31 @@ export default function TurmaDetail() {
           <InfoRow label="Etapa" value={turma.etapa} />
           {turma.outrosDados && <InfoRow label="Notas" value={turma.outrosDados} />}
           <InfoRow label="Criada em" value={new Date(turma.criadoEm).toLocaleDateString("pt-BR")} />
+        </div>
+
+        <div className="pt-4 mt-2 border-t border-border/50">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button disabled={deleteMutation.isPending} className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/15 transition-colors font-semibold text-sm">
+                <Trash2 className="h-4 w-4" />
+                {deleteMutation.isPending ? "Excluindo..." : "Excluir Turma"}
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir Turma</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir esta turma? Esta ação não pode ser desfeita e removerá todos os dados vinculados.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Confirmar Exclusão
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>

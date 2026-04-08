@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { cn, formatarDataVigente } from "@/lib/utils";
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; color: string }[] = [
   { value: "pendente", label: "Pendente", color: "bg-muted text-muted-foreground" },
@@ -118,8 +118,8 @@ export default function EncontroDetail() {
       </div>
 
       <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '60ms' }}>
-        <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Data</p><p className="text-sm font-semibold text-foreground">{new Date(encontro.data).toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p></div>
-        {encontro.dataTransferida && <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Transferido para</p><p className="text-sm font-semibold text-caution flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" />{new Date(encontro.dataTransferida + 'T12:00:00').toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p></div>}
+        <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Data</p><p className="text-sm font-semibold text-foreground">{formatarDataVigente(encontro.data, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p></div>
+        {encontro.dataTransferida && <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Transferido para</p><p className="text-sm font-semibold text-caution flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" />{formatarDataVigente(encontro.dataTransferida, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p></div>}
         {encontro.leituraBiblica && <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Leitura Bíblica</p><p className="text-sm font-semibold text-foreground flex items-center gap-1"><BookOpen className="h-3.5 w-3.5 text-primary" /> {encontro.leituraBiblica}</p></div>}
         <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Tempo Total</p><p className="text-sm font-semibold text-foreground flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-primary" /> {tempoTotal} min</p></div>
         <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Presenças</p><p className="text-sm font-semibold text-foreground">{encontro.presencas.length}/{catequizandos.length}</p></div>

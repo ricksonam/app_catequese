@@ -1,3 +1,10 @@
-# Welcome to your Lovable project
+# Gestão de Catequese IVC
 
-TODO: Document your project here
+Sistema completo para gestão de turmas, catequizandos e encontros de catequese.
+
+## Funcionalidades
+- Gestão de Turmas e Catequizandos
+- Calendário Litúrgico Integrado
+- Controle de Presença
+- Relatórios de Ocorrências
+- Biblioteca de Modelos de Encontro

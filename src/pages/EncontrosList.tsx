@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
 import { ArrowLeft, Plus, CalendarDays, Eye, Play } from "lucide-react";
+import { formatarDataVigente } from "@/lib/utils";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; border: string }> = {
   pendente: { label: "Pendente", bg: "bg-muted", text: "text-muted-foreground", border: "border-l-muted-foreground" },
@@ -51,7 +52,7 @@ export default function EncontrosList() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-bold ${enc.status === 'cancelado' ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{enc.tema}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{new Date(enc.data).toLocaleDateString("pt-BR", { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{formatarDataVigente(enc.data, { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</p>
                       {enc.leituraBiblica && <p className="text-xs text-muted-foreground mt-0.5 truncate">📖 {enc.leituraBiblica}</p>}
                     </div>
                     <span className={`pill-btn ${status.bg} ${status.text}`}>{status.label}</span>

@@ -14,8 +14,7 @@ interface MenuContentProps {
 }
 
 const cadastros = [
-  { label: "Paróquia / Área / Escola", icon: Church, path: "/cadastros/paroquia", color: "bg-primary/10 text-primary" },
-  { label: "Comunidades / Núcleos", icon: Users, path: "/cadastros/comunidades", color: "bg-accent/15 text-accent-foreground" },
+  { label: "Paróquia e Comunidade", icon: Church, path: "/cadastros/paroquia-comunidade", color: "bg-primary/10 text-primary" },
   { label: "Catequistas", icon: UserCheck, path: "/cadastros/catequistas", color: "bg-success/10 text-success" },
 ];
 

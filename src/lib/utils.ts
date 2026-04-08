@@ -4,3 +4,50 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function formatarDataVigente(dataStr: string, options?: Intl.DateTimeFormatOptions) {
+  if (!dataStr) return "";
+  // Adiciona T12:00:00 para garantir que a data seja interpretada no meio do dia local, 
+  // evitando que o fuso horário (UTC vs Local) subtraia um dia.
+  const date = new Date(dataStr.includes('T') ? dataStr : `${dataStr}T12:00:00`);
+  return date.toLocaleDateString("pt-BR", options || { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+/**
+ * Redimensiona e comprime uma imagem para reduzir o tamanho do arquivo antes do upload.
+ */
+export async function compressImage(file: File, maxWidth = 1000, quality = 0.7): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error("Erro ao comprimir imagem"));
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+    };
+    reader.onerror = (err) => reject(err);
+  });
+}

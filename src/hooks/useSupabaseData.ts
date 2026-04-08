@@ -8,8 +8,10 @@ import {
   fetchComunidades, upsertComunidade, removeComunidade,
   fetchCatequistas, upsertCatequista, removeCatequista,
   fetchOcorrencias, insertOcorrencia, removeOcorrencia,
+  fetchCalendarioNotas, upsertCalendarioNota, removeCalendarioNota,
+  fetchMuralFotos, upsertMuralFoto, removeMuralFoto,
 } from "@/lib/supabaseStore";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia } from "@/lib/store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto } from "@/lib/store";
 
 // ===== TURMAS =====
 export function useTurmas() {
@@ -113,4 +115,30 @@ export function useOcorrenciaMutation() {
 export function useDeleteOcorrencia() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: removeOcorrencia, onSuccess: () => { qc.invalidateQueries({ queryKey: ["ocorrencias"] }); } });
+}
+
+// ===== CALENDARIO NOTAS =====
+export function useCalendarioNotas() {
+  return useQuery({ queryKey: ["calendario_notas"], queryFn: fetchCalendarioNotas });
+}
+export function useCalendarioNotaMutation() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: upsertCalendarioNota, onSuccess: () => { qc.invalidateQueries({ queryKey: ["calendario_notas"] }); } });
+}
+export function useDeleteCalendarioNota() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: removeCalendarioNota, onSuccess: () => { qc.invalidateQueries({ queryKey: ["calendario_notas"] }); } });
+}
+
+// ===== MURAL FOTOS =====
+export function useMuralFotos() {
+  return useQuery({ queryKey: ["mural_fotos"], queryFn: fetchMuralFotos });
+}
+export function useMuralFotoMutation() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: upsertMuralFoto, onSuccess: () => { qc.invalidateQueries({ queryKey: ["mural_fotos"] }); } });
+}
+export function useDeleteMuralFoto() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: removeMuralFoto, onSuccess: () => { qc.invalidateQueries({ queryKey: ["mural_fotos"] }); } });
 }

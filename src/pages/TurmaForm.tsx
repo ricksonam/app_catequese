@@ -1,23 +1,47 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
-import { useTurmaMutation } from "@/hooks/useSupabaseData";
+import { useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
 import { EtapaMap } from "@/components/EtapaMap";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function TurmaForm() {
   const navigate = useNavigate();
+  const { data: comunidades = [] } = useComunidades();
+  const { data: catequistas = [] } = useCatequistas();
   const mutation = useTurmaMutation();
+
   const [form, setForm] = useState({
-    nome: "", ano: new Date().getFullYear().toString(), diaCatequese: "", horario: "", local: "", etapa: "pre-catecumenato", outrosDados: "",
+    nome: "",
+    ano: "1° Ano",
+    diaCatequese: "",
+    horario: "",
+    local: "",
+    etapa: "pre-catecumenato",
+    outrosDados: "",
+    comunidadeId: "",
+    catequistasIds: [] as string[],
   });
 
-  const update = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
+  const update = (key: string, value: any) => setForm((f) => ({ ...f, [key]: value }));
+
+  const toggleCatequista = (id: string) => {
+    const ids = form.catequistasIds.includes(id)
+      ? form.catequistasIds.filter(x => x !== id)
+      : [...form.catequistasIds, id];
+    update("catequistasIds", ids);
+  };
 
   const handleSave = async () => {
-    if (!form.nome || !form.diaCatequese || !form.horario || !form.local) {
-      toast.error("Preencha os campos obrigatórios"); return;
+    if (!form.nome || !form.diaCatequese || !form.horario || !form.local || !form.comunidadeId || form.catequistasIds.length === 0) {
+      toast.error("Preencha todos os campos obrigatórios, incluindo comunidade e catequistas"); return;
     }
     const turma: Turma = { id: crypto.randomUUID(), ...form, criadoEm: new Date().toISOString() };
     try {
@@ -43,10 +67,17 @@ export default function TurmaForm() {
             {NOMES_TURMA.map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '60ms' }}>
-            <label className="text-sm font-semibold text-foreground">Ano / Ciclo *</label>
-            <input type="text" value={form.ano} onChange={(e) => update("ano", e.target.value)} className="form-input" placeholder="2025" />
+            <label className="text-sm font-semibold text-foreground">Etapas da Catequese *</label>
+            <select value={form.ano} onChange={(e) => update("ano", e.target.value)} className="form-input">
+              <option value="1° Ano">1° Ano</option>
+              <option value="2° Ano">2° Ano</option>
+              <option value="3° Ano">3° Ano</option>
+              <option value="Ciclo 1">Ciclo 1</option>
+              <option value="Ciclo 2">Ciclo 2</option>
+              <option value="Ciclo 3">Ciclo 3</option>
+            </select>
           </div>
           <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '120ms' }}>
             <label className="text-sm font-semibold text-foreground">Dia *</label>
@@ -56,26 +87,66 @@ export default function TurmaForm() {
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '180ms' }}>
+            <label className="text-sm font-semibold text-foreground">Comunidade *</label>
+            <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input">
+              <option value="">Selecione a comunidade...</option>
+              {comunidades.map((c) => <option key={c.id} value={c.id}>{c.name || c.nome}</option>)}
+            </select>
+          </div>
+          <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '240ms' }}>
+            <label className="text-sm font-semibold text-foreground">Catequistas *</label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="form-input flex items-center justify-between text-left">
+                  <span className="truncate">
+                    {form.catequistasIds.length === 0 
+                      ? "Selecionar catequistas..." 
+                      : `${form.catequistasIds.length} selecionado(s)`}
+                  </span>
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-[300px] overflow-y-auto">
+                {catequistas.map((cat) => (
+                  <DropdownMenuCheckboxItem
+                    key={cat.id}
+                    checked={form.catequistasIds.includes(cat.id)}
+                    onCheckedChange={() => toggleCatequista(cat.id)}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    {cat.nome}
+                  </DropdownMenuCheckboxItem>
+                ))}
+                {catequistas.length === 0 && (
+                  <div className="p-2 text-xs text-center text-muted-foreground">Nenhum catequista encontrado</div>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '300ms' }}>
             <label className="text-sm font-semibold text-foreground">Horário *</label>
             <input type="time" value={form.horario} onChange={(e) => update("horario", e.target.value)} className="form-input" />
           </div>
-          <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '240ms' }}>
+          <div className="float-card p-4 space-y-2 animate-float-up" style={{ animationDelay: '360ms' }}>
             <label className="text-sm font-semibold text-foreground">Local *</label>
             <input type="text" value={form.local} onChange={(e) => update("local", e.target.value)} className="form-input" placeholder="Salão paroquial" />
           </div>
         </div>
-        <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '300ms' }}>
+        <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '420ms' }}>
           <label className="text-sm font-semibold text-foreground">Etapa da Catequese (Tempo)</label>
           <EtapaMap etapaAtual={form.etapa} onSelect={(id) => update("etapa", id)} />
         </div>
-        <div className="float-card p-5 space-y-2 animate-float-up" style={{ animationDelay: '360ms' }}>
+        <div className="float-card p-5 space-y-2 animate-float-up" style={{ animationDelay: '480ms' }}>
           <label className="text-sm font-semibold text-foreground">Outros dados</label>
           <textarea value={form.outrosDados} onChange={(e) => update("outrosDados", e.target.value)} className="form-input min-h-[80px] resize-none" placeholder="Observações, anotações..." />
         </div>
       </div>
-      <button onClick={handleSave} disabled={mutation.isPending} className="w-full action-btn animate-float-up" style={{ animationDelay: '420ms' }}>
+      <button onClick={handleSave} disabled={mutation.isPending || !form.nome || !form.diaCatequese || !form.comunidadeId || form.catequistasIds.length === 0} className="w-full action-btn animate-float-up" style={{ animationDelay: '540ms' }}>
         {mutation.isPending ? "Salvando..." : "Criar Turma"}
       </button>
     </div>

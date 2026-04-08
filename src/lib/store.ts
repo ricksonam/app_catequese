@@ -8,6 +8,8 @@ export interface Turma {
   etapa: string;
   outrosDados: string;
   criadoEm: string;
+  comunidadeId?: string;
+  catequistasIds?: string[];
 }
 
 export interface SacramentoInfo {
@@ -135,6 +137,17 @@ export interface CatequistaCadastro {
   formacao: string;
   anosExperiencia: string;
   observacao: string;
+  foto?: string;
+  status?: string;
+}
+
+export interface MuralFoto {
+  id: string;
+  url: string;
+  legenda: string;
+  resumo: string;
+  data: string;
+  criadoEm: string;
 }
 
 export const ORACAO_TIPOS: OracaoTipo[] = [

@@ -26,64 +26,74 @@ export default function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const currentPath = location.pathname;
+  const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0">
-        <div className="container flex items-center justify-between h-14 px-4">
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <button className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
-                <Menu className="h-4.5 w-4.5 text-foreground" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-80 p-0 glass-card rounded-r-3xl border-l-0">
-              <MenuContent onClose={() => setMenuOpen(false)} />
-            </SheetContent>
-          </Sheet>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
-              <span className="text-xs font-black text-primary-foreground tracking-tight">IVC</span>
+      {!isPresentationMode && (
+        <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0">
+          <div className="container flex items-center justify-between h-14 px-4">
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <button className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
+                  <Menu className="h-4.5 w-4.5 text-foreground" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 p-0 glass-card rounded-r-3xl border-l-0">
+                <MenuContent onClose={() => setMenuOpen(false)} />
+              </SheetContent>
+            </Sheet>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
+                <span className="text-xs font-black text-primary-foreground tracking-tight">IVC</span>
+              </div>
+              <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
             </div>
-            <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
+            <BirthdayBell />
           </div>
-          <BirthdayBell />
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Content */}
-      <main className="flex-1 container px-4 py-5 pb-24">
+      <main className={`flex-1 container ${isPresentationMode ? 'p-0 max-w-none' : 'px-4 py-5 pb-24'}`}>
         <Outlet />
       </main>
 
       {/* Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-2 pt-0">
-        <div className="mx-auto max-w-md flex items-center justify-around h-16 px-2 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/60 shadow-lg shadow-black/5">
-          {tabs.map((tab) => {
-            const isActive =
-              tab.path === "/"
-                ? currentPath === "/"
-                : currentPath.startsWith(tab.path) && tab.path !== "/";
-            const Icon = tab.icon;
+      {!isPresentationMode && (
+        <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1">
+          <div className="mx-auto max-w-md flex items-center justify-around h-20 px-1.5 rounded-3xl bg-card/95 backdrop-blur-2xl border-2 border-primary/15 shadow-2xl shadow-black/15">
+            {tabs.map((tab) => {
+              const isActive =
+                tab.path === "/"
+                  ? currentPath === "/"
+                  : currentPath.startsWith(tab.path) && tab.path !== "/";
+              const Icon = tab.icon;
 
-            return (
-              <button
-                key={tab.path}
-                onClick={() => navigate(tab.path)}
-                className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all active:scale-95 ${
-                  isActive
-                    ? `${tab.color} font-bold`
-                    : "text-muted-foreground"
-                }`}
-              >
-                <Icon className={`h-5 w-5 ${!isActive ? "" : ""}`} />
-                <span className="text-[10px] font-semibold">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+              return (
+                <button
+                  key={tab.path}
+                  onClick={() => navigate(tab.path)}
+                  className={`group relative flex flex-col items-center justify-center gap-1 w-16 h-16 rounded-2xl transition-all duration-300 active:scale-90 ${
+                    isActive
+                      ? `${tab.color} bg-blue-100 dark:bg-blue-900/50 shadow-md border border-blue-300/50 dark:border-blue-700/50`
+                      : "text-muted-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  {isActive && (
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-1.5 rounded-full bg-current shadow-[0_0_8px_rgba(var(--primary),0.5)] animate-fade-in" />
+                  )}
+                  <Icon className={`h-6 w-6 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
+                  <span className={`text-[10px] tracking-tight transition-all ${isActive ? "font-bold opacity-100" : "font-medium opacity-70"}`}>
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </div>
   );
 }

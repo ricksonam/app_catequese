@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { ImagePicker } from "@/components/ImagePicker";
 
 interface Sacramento { recebido: boolean; paroquia: string; data: string; }
 interface CatequizandoForm {
@@ -54,14 +55,6 @@ export default function CatequizandosList() {
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
-
-  const handleFoto = (e: React.ChangeEvent<HTMLInputElement>, target: 'add' | 'edit') => {
-    const file = e.target.files?.[0]; if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { toast.error("Arquivo muito grande (máx 5MB)"); return; }
-    const reader = new FileReader();
-    reader.onload = () => { const url = reader.result as string; if (target === 'add') setForm(f => ({ ...f, foto: url })); else setEditForm(f => ({ ...f, foto: url })); };
-    reader.readAsDataURL(file); e.target.value = "";
-  };
 
   const handleAdd = async () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
@@ -127,11 +120,14 @@ export default function CatequizandosList() {
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
             <DialogHeader><DialogTitle>Novo Catequizando</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
-              <div className="flex justify-center">
-                <button onClick={() => fotoRef.current?.click()} className="relative w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-dashed border-border hover:border-primary transition-colors">
-                  {form.foto ? <img src={form.foto} className="w-full h-full object-cover" alt="" /> : <Camera className="h-6 w-6 text-muted-foreground" />}
-                </button>
-                <input ref={fotoRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFoto(e, 'add')} />
+              <div className="flex justify-center mb-2">
+                <ImagePicker 
+                  onImageUpload={(url) => setForm(f => ({ ...f, foto: url }))} 
+                  folder="catequizandos" 
+                  currentImageUrl={form.foto} 
+                  shape="circle" 
+                  label="Foto de Perfil"
+                />
               </div>
               <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
               <div className="grid grid-cols-2 gap-2">
@@ -223,11 +219,14 @@ export default function CatequizandosList() {
             <>
               <DialogHeader><div className="flex items-center justify-between"><DialogTitle>Editar Catequizando</DialogTitle><button onClick={() => setEditMode(false)} className="p-1.5 rounded-lg hover:bg-muted"><X className="h-4 w-4" /></button></div></DialogHeader>
               <div className="space-y-3 mt-2">
-                <div className="flex justify-center">
-                  <button onClick={() => editFotoRef.current?.click()} className="relative w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-dashed border-border hover:border-primary transition-colors">
-                    {editForm.foto ? <img src={editForm.foto} className="w-full h-full object-cover" alt="" /> : <Camera className="h-6 w-6 text-muted-foreground" />}
-                  </button>
-                  <input ref={editFotoRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFoto(e, 'edit')} />
+                <div className="flex justify-center mb-2">
+                  <ImagePicker 
+                    onImageUpload={(url) => setEditForm(f => ({ ...f, foto: url }))} 
+                    folder="catequizandos" 
+                    currentImageUrl={editForm.foto} 
+                    shape="circle" 
+                    label="Alterar Foto"
+                  />
                 </div>
                 <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
                 <div className="grid grid-cols-2 gap-2">

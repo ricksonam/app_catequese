@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { formatarDataVigente } from "@/lib/utils";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -126,11 +127,11 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{e.tema}</p>
-                    <p className="text-xs text-muted-foreground">{turma?.nome} • {new Date(e.data).toLocaleDateString("pt-BR")}</p>
+                    <p className="text-xs text-muted-foreground">{turma?.nome} • {formatarDataVigente(e.data)}</p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     {isUrgent && (
-                      <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full animate-pulse">
+                      <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full animate-pulse-slow">
                         {dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : `${dias}d`}
                       </span>
                     )}
