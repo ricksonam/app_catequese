@@ -1,4 +1,4 @@
-import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book } from "lucide-react";
+import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, Hash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const jogos = [
@@ -36,6 +36,13 @@ const jogos = [
     icon: Book,
     color: "bg-amber-500/10 text-amber-600",
     path: "/jogos/citacao",
+  },
+  {
+    label: "Bingo Bíblico",
+    desc: "Sorteio de temas bíblicos com cartelas",
+    icon: Hash,
+    color: "bg-indigo-500/10 text-indigo-600",
+    path: "/jogos/bingo",
   },
 ];
 

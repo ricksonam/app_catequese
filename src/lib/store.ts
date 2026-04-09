@@ -181,6 +181,19 @@ export interface HistoricoSorteioCitacao {
   criadoEm: string;
 }
 
+export interface BingoItem {
+  label: string;
+  icon: string;
+}
+
+export interface BingoModelo {
+  id: string;
+  nome: string;
+  categoria: string;
+  itens: BingoItem[];
+  criado_em?: string;
+}
+
 export const ORACAO_TIPOS: OracaoTipo[] = [
   'Ofício Divino', 'Leitura Orante', 'Celebrativo', 'Oração Simples', 'Louvor',
 ];

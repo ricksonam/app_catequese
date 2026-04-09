@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto } from "./store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "./store";
 
 // ========== TURMAS ==========
 export async function fetchTurmas(): Promise<Turma[]> {
@@ -295,14 +295,14 @@ export async function uploadFile(file: Blob, folder: string, fileName: string): 
 
 // ========== CITACOES BIBLICAS ==========
 export async function fetchCitacoes(): Promise<CitacaoBiblica[]> {
-  const { data, error } = await supabase.from("citacoes_biblicas").select("*").order("referencia");
+  const { data, error } = await (supabase.from as any)("citacoes_biblicas").select("*").order("referencia");
   if (error) throw error;
   return data || [];
 }
 
 export async function fetchHistoricoCitacoes(turmaId?: string): Promise<HistoricoSorteioCitacao[]> {
-  let q = supabase.from("sorteios_historico").select("*").order("criado_em", { ascending: false });
-  if (turmaId) q = q.eq("turma_id", turmaId);
+  let q = (supabase.from as any)("sorteios_historico").select("*").order("criado_em", { ascending: false });
+  if (turmaId) q = (q as any).eq("turma_id", turmaId);
   const { data, error } = await q;
   if (error) throw error;
   return (data || []).map((h: any) => ({
@@ -316,11 +316,18 @@ export async function fetchHistoricoCitacoes(turmaId?: string): Promise<Historic
 }
 
 export async function saveSorteioHistorico(h: Omit<HistoricoSorteioCitacao, 'id' | 'criadoEm'>) {
-  const { error } = await supabase.from("sorteios_historico").insert({
+  const { error } = await (supabase.from as any)("sorteios_historico").insert({
     turma_id: h.turmaId,
     data: h.data,
     tipo: h.tipo,
     resultados: h.resultados
   });
   if (error) throw error;
+}
+
+// ========== BINGO BÍBLICO ==========
+export async function fetchBingoModelos(): Promise<BingoModelo[]> {
+  const { data, error } = await (supabase.from as any)("bingo_modelos").select("*").order("nome");
+  if (error) throw error;
+  return data || [];
 }

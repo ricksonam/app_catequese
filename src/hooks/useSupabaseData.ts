@@ -11,8 +11,9 @@ import {
   fetchCalendarioNotas, upsertCalendarioNota, removeCalendarioNota,
   fetchMuralFotos, upsertMuralFoto, removeMuralFoto,
   fetchCitacoes, fetchHistoricoCitacoes, saveSorteioHistorico,
+  fetchBingoModelos,
 } from "@/lib/supabaseStore";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao } from "@/lib/store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "@/lib/store";
 
 // ===== TURMAS =====
 export function useTurmas() {
@@ -162,4 +163,9 @@ export function useSaveHistoricoCitacao() {
     mutationFn: saveSorteioHistorico, 
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["sorteios_historico"] }); } 
   });
+}
+
+// ===== BINGO BÍBLICO =====
+export function useBingoModelos() {
+  return useQuery({ queryKey: ["bingo_modelos"], queryFn: fetchBingoModelos });
 }
