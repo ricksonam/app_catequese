@@ -292,3 +292,35 @@ export async function uploadFile(file: Blob, folder: string, fileName: string): 
   const { data: { publicUrl } } = supabase.storage.from("catequese").getPublicUrl(path);
   return publicUrl;
 }
+
+// ========== CITACOES BIBLICAS ==========
+export async function fetchCitacoes(): Promise<CitacaoBiblica[]> {
+  const { data, error } = await supabase.from("citacoes_biblicas").select("*").order("referencia");
+  if (error) throw error;
+  return data || [];
+}
+
+export async function fetchHistoricoCitacoes(turmaId?: string): Promise<HistoricoSorteioCitacao[]> {
+  let q = supabase.from("sorteios_historico").select("*").order("criado_em", { ascending: false });
+  if (turmaId) q = q.eq("turma_id", turmaId);
+  const { data, error } = await q;
+  if (error) throw error;
+  return (data || []).map((h: any) => ({
+    id: h.id,
+    turmaId: h.turma_id,
+    data: h.data,
+    tipo: h.tipo,
+    resultados: h.resultados,
+    criadoEm: h.criado_em
+  }));
+}
+
+export async function saveSorteioHistorico(h: Omit<HistoricoSorteioCitacao, 'id' | 'criadoEm'>) {
+  const { error } = await supabase.from("sorteios_historico").insert({
+    turma_id: h.turmaId,
+    data: h.data,
+    tipo: h.tipo,
+    resultados: h.resultados
+  });
+  if (error) throw error;
+}

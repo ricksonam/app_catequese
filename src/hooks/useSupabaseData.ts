@@ -10,8 +10,9 @@ import {
   fetchOcorrencias, insertOcorrencia, removeOcorrencia,
   fetchCalendarioNotas, upsertCalendarioNota, removeCalendarioNota,
   fetchMuralFotos, upsertMuralFoto, removeMuralFoto,
+  fetchCitacoes, fetchHistoricoCitacoes, saveSorteioHistorico,
 } from "@/lib/supabaseStore";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto } from "@/lib/store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao } from "@/lib/store";
 
 // ===== TURMAS =====
 export function useTurmas() {
@@ -141,4 +142,24 @@ export function useMuralFotoMutation() {
 export function useDeleteMuralFoto() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: removeMuralFoto, onSuccess: () => { qc.invalidateQueries({ queryKey: ["mural_fotos"] }); } });
+}
+
+// ===== CITACOES BIBLICAS =====
+export function useCitacoes() {
+  return useQuery({ queryKey: ["citacoes_biblicas"], queryFn: fetchCitacoes });
+}
+
+export function useHistoricoCitacoes(turmaId?: string) {
+  return useQuery({ 
+    queryKey: ["sorteios_historico", turmaId], 
+    queryFn: () => fetchHistoricoCitacoes(turmaId) 
+  });
+}
+
+export function useSaveHistoricoCitacao() {
+  const qc = useQueryClient();
+  return useMutation({ 
+    mutationFn: saveSorteioHistorico, 
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sorteios_historico"] }); } 
+  });
 }

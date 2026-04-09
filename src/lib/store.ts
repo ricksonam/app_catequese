@@ -92,7 +92,7 @@ export interface RegistroOcorrencia {
   temaNome: string;
 }
 
-export type AtividadeTipo = 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Jornada' | 'Eventos geral' | 'Outros';
+export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Jornada' | 'Eventos geral' | 'Outros';
 export type AtividadeModalidade = 'interna' | 'externa';
 export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ônibus' | 'Trem' | 'Metrô' | 'Avião';
 
@@ -161,6 +161,23 @@ export interface MuralFoto {
   legenda: string;
   resumo: string;
   data: string;
+  criadoEm: string;
+}
+
+export interface CitacaoBiblica {
+  id: string;
+  referencia: string;
+  texto: string;
+  categoria?: string;
+  clima?: string;
+}
+
+export interface HistoricoSorteioCitacao {
+  id: string;
+  turmaId?: string;
+  data: string;
+  tipo: 'aleatorio' | 'por_catequizando';
+  resultados: Record<string, string>; // catequizandoId -> citacaoText
   criadoEm: string;
 }
 

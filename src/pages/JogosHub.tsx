@@ -1,4 +1,4 @@
-import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion } from "lucide-react";
+import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const jogos = [
@@ -29,6 +29,13 @@ const jogos = [
     icon: MessageCircleQuestion,
     color: "bg-success/10 text-success",
     path: "/jogos/perguntas",
+  },
+  {
+    label: "Sorteio da Citação",
+    desc: "Mensagens bíblicas para os catequizandos",
+    icon: Book,
+    color: "bg-amber-500/10 text-amber-600",
+    path: "/jogos/citacao",
   },
 ];
 
