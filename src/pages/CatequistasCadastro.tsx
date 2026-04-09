@@ -6,6 +6,7 @@ import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
+import { mascaraTelefone } from "@/lib/utils";
 
 type CatequistaStatus = "ativo" | "inativo" | "afastado";
 
@@ -175,7 +176,7 @@ export default function CatequistasCadastro() {
             <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
             <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} />
             <div className="grid grid-cols-2 gap-2">
-              <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", v)} />
+              <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
               <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
             </div>
             {comunidades.length > 0 && (

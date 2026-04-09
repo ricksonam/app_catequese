@@ -51,3 +51,14 @@ export async function compressImage(file: File, maxWidth = 1000, quality = 0.7):
     reader.onerror = (err) => reject(err);
   });
 }
+/**
+ * Aplica máscara de telefone (formato brasileiro) dinamicamente.
+ * Suporta (99) 9999-9999 e (99) 99999-9999
+ */
+export function mascaraTelefone(value: string) {
+  if (!value) return "";
+  value = value.replace(/\D/g, "");
+  value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
+  value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+  return value.substring(0, 15);
+}

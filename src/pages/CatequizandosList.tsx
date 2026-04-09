@@ -6,6 +6,7 @@ import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
+import { mascaraTelefone } from "@/lib/utils";
 
 interface Sacramento { recebido: boolean; paroquia: string; data: string; }
 interface CatequizandoForm {
@@ -136,7 +137,7 @@ export default function CatequizandosList() {
               </div>
               <FieldInput label="Responsável" value={form.responsavel} onChange={(v) => updateField("responsavel", v)} />
               <div className="grid grid-cols-2 gap-2">
-                <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", v)} />
+                <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
                 <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
               </div>
               <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
@@ -235,7 +236,7 @@ export default function CatequizandosList() {
                 </div>
                 <FieldInput label="Responsável" value={editForm.responsavel} onChange={(v) => setEditForm(f => ({ ...f, responsavel: v }))} />
                 <div className="grid grid-cols-2 gap-2">
-                  <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: v }))} />
+                  <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
                   <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
                 </div>
                 <FieldInput label="Endereço" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
