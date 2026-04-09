@@ -106,14 +106,47 @@ export default function AtividadesList() {
       {list.length === 0 ? (
         <div className="empty-state animate-float-up"><div className="icon-box bg-liturgical/10 text-liturgical mx-auto mb-3"><ListChecks className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhuma atividade cadastrada</p></div>
       ) : (
-        <div className="space-y-2">{list.map((item, i) => (
-          <button key={item.id} onClick={() => setViewItem(item)} className="w-full float-card flex items-center gap-3 px-4 py-3.5 animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
-            <span className={`pill-btn text-[10px] ${tipoColors[item.tipo] || 'bg-muted text-muted-foreground'}`}>{item.tipo}</span>
-            <div className="flex-1 min-w-0"><p className="text-sm font-semibold text-foreground truncate">{item.nome}</p><p className="text-xs text-muted-foreground">{item.data && formatarDataVigente(item.data)}{item.horario && ` • ${item.horario}`}{item.local && ` • ${item.local}`}</p></div>
-            {item.modalidade === 'externa' && <Car className="h-3.5 w-3.5 text-primary shrink-0" />}
-            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-          </button>
-        ))}</div>
+        <div className="space-y-6">
+          {(() => {
+            const sorted = [...list].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
+            const groups: Record<string, typeof sorted> = {};
+            
+            sorted.forEach(item => {
+              const date = new Date(item.data + 'T12:00:00');
+              const monthYear = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+              const key = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+              if (!groups[key]) groups[key] = [];
+              groups[key].push(item);
+            });
+
+            return Object.entries(groups).map(([month, items]) => (
+              <div key={month} className="space-y-4">
+                <div className="flex items-center justify-center gap-4 py-4">
+                  <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-primary/20"></div>
+                  <h3 className="text-sm font-extrabold text-primary uppercase tracking-[0.15em] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 shadow-sm">{month}</h3>
+                  <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-primary/20"></div>
+                </div>
+                <div className="space-y-3">
+                  {items.map((item, i) => (
+                    <button key={item.id} onClick={() => setViewItem(item)} className="w-full float-card flex flex-col items-center gap-2 px-4 py-5 animate-float-up text-center active:scale-[0.98] transition-transform" style={{ animationDelay: `${i * 50}ms` }}>
+                      <span className={`pill-btn text-[10px] font-bold uppercase tracking-wider mb-1 ${tipoColors[item.tipo] || 'bg-muted text-muted-foreground'}`}>{item.tipo}</span>
+                      <p className="text-base font-bold text-foreground leading-tight">{item.nome}</p>
+                      <div className="flex flex-col items-center gap-0.5 mt-1">
+                        <p className="text-xs text-muted-foreground font-medium">{item.data && formatarDataVigente(item.data)}{item.horario && ` • ${item.horario}`}</p>
+                        {item.local && <p className="text-xs text-muted-foreground italic flex items-center justify-center gap-1"><MapPin className="h-3 w-3" /> {item.local}</p>}
+                      </div>
+                      {item.modalidade === 'externa' && (
+                        <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                          <Car className="h-3 w-3" /> ATIVIDADE EXTERNA
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ));
+          })()}
+        </div>
       )}
 
       {/* Detail View */}
