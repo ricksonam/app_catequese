@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Book, Shuffle, Trash2, Users, Save, X, Maximize, Minimize, Scroll, Cross } from "lucide-react";
+import { ArrowLeft, Book, Shuffle, Trash2, Users, Save, X, Maximize, Minimize, Scroll, Cross, LayoutGrid, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTurmas, useCatequizandos, useCitacoes, useSaveHistoricoCitacao, useHistoricoCitacoes } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { CitacaoBiblica } from "@/lib/store";
+import { CitacaoBiblica, Catequizando } from "@/lib/store";
 
 export default function CitacaoSorteio() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function CitacaoSorteio() {
   const [selectedTurma, setSelectedTurma] = useState<string>("");
   const { data: catequizandos = [] } = useCatequizandos(selectedTurma || undefined);
   
-  const [modo, setModo] = useState<"individual" | "coletivo">("coletivo");
+  const [modo, setModo] = useState<"individual" | "coletivo" | "geral">("coletivo");
   const [sorteando, setSorteando] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
@@ -71,18 +71,49 @@ export default function CitacaoSorteio() {
   };
 
   const iniciarSorteio = () => {
-    if (modo === "individual" && !selectedTurma) {
-      toast.error("Selecione uma turma para o sorteio individual.");
+    if ((modo === "individual" || modo === "geral") && !selectedTurma) {
+      toast.error("Selecione uma turma para este modo de sorteio.");
       return;
     }
     setResultados({});
     setFilaAlunos(catequizandos.map(c => c.id));
     setCitacaoAtual(null);
     setMostrarResultado(false);
-    toast.success("Sorteio iniciado!");
+    toast.success("Sorteio preparado!");
+  };
+
+  const sortearGeral = async () => {
+    setSorteando(true);
+    setMostrarResultado(false);
+    
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
+
+    let pool = [...citacoesBase];
+    const evangelho = await getEvangelhoDia();
+    if (evangelho) pool = [evangelho, ...pool];
+
+    // Simular suspense longo
+    setTimeout(() => {
+      const novosResultados: Record<string, string> = {};
+      catequizandos.forEach(c => {
+        const rand = pool[Math.floor(Math.random() * pool.length)];
+        novosResultados[c.id] = `${rand.referencia}: ${rand.texto}`;
+      });
+      setResultados(novosResultados);
+      setSorteando(false);
+      setMostrarResultado(true);
+    }, 3000);
   };
 
   const sortear = async () => {
+    if (modo === "geral") {
+      sortearGeral();
+      return;
+    }
+
     if (modo === "individual" && filaAlunos.length === 0) {
       toast.info("Todos os catequizandos já receberam sua citação!");
       return;
@@ -96,15 +127,14 @@ export default function CitacaoSorteio() {
       audioRef.current.play().catch(() => {});
     }
 
-    // Tentar buscar evangelho do dia se for sorteio coletivo ocasionalmente ou como opção
     let pool = [...citacoesBase];
     const evangelho = await getEvangelhoDia();
     if (evangelho) pool = [evangelho, ...pool];
 
     let count = 0;
     const interval = setInterval(() => {
-      const rand = pool[Math.floor(Math.random() * pool.length)];
-      setCitacaoAtual(rand);
+      // No modo suspense solicitado, não mostramos o texto, apenas o pergaminho pulsando
+      // Mas para manter o visual dinâmico, mostramos apenas o ícone ou uma interrogação
       count++;
       
       if (count > 40) {
@@ -133,10 +163,10 @@ export default function CitacaoSorteio() {
       await saveHistorico.mutateAsync({
         turmaId: selectedTurma || undefined,
         data: new Date().toISOString(),
-        tipo: modo,
+        tipo: modo === 'geral' ? 'individual' : modo,
         resultados
       });
-      toast.success("Resultados salvos!");
+      toast.success("Resultados salvos no histórico!");
     } catch (e) {
       toast.error("Erro ao salvar histórico");
     }
@@ -175,31 +205,38 @@ export default function CitacaoSorteio() {
       )}
 
       {/* Config Panel */}
-      <div className={cn("space-y-4", isFullscreen && (sorteando || mostrarResultado) ? "hidden" : "block")}>
+      <div className={cn("space-y-4", isFullscreen && (sorteando || (mostrarResultado && modo !== 'geral')) ? "hidden" : "block")}>
         <div className="float-card p-5 space-y-4 border-t-4 border-t-amber-500/50">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="space-y-2 lg:col-span-2">
               <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Modo de Sorteio</label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button 
                   variant={modo === "coletivo" ? "default" : "outline"} 
-                  className="flex-1 rounded-xl h-12 font-bold"
+                  className="flex-1 min-w-[140px] rounded-xl h-12 font-bold"
                   onClick={() => setModo("coletivo")}
                 >
                   <Book className="h-4 w-4 mr-2" /> Coletivo
                 </Button>
                 <Button 
                   variant={modo === "individual" ? "default" : "outline"} 
-                  className="flex-1 rounded-xl h-12 font-bold"
+                  className="flex-1 min-w-[140px] rounded-xl h-12 font-bold"
                   onClick={() => setModo("individual")}
                 >
-                  <Users className="h-4 w-4 mr-2" /> Por Aluno
+                  <Users className="h-4 w-4 mr-2" /> Um a Um
+                </Button>
+                <Button 
+                  variant={modo === "geral" ? "default" : "outline"} 
+                  className="flex-1 min-w-[140px] rounded-xl h-12 font-bold"
+                  onClick={() => setModo("geral")}
+                >
+                  <LayoutGrid className="h-4 w-4 mr-2" /> Turma Geral
                 </Button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Turma (Opcional)</label>
+              <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Turma</label>
               <Select value={selectedTurma} onValueChange={setSelectedTurma}>
                 <SelectTrigger className="h-12 rounded-xl">
                   <SelectValue placeholder="Selecione a turma" />
@@ -213,7 +250,7 @@ export default function CitacaoSorteio() {
 
           {!mostrarResultado && !sorteando && (
             <Button onClick={iniciarSorteio} className="w-full h-14 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-lg gap-2 shadow-lg shadow-amber-900/20">
-              <Scroll className="h-6 w-6" /> PREPARAR PERGAMINHOS
+              <Scroll className="h-6 w-6" /> PREPARAR CATEQUESE
             </Button>
           )}
         </div>
@@ -221,94 +258,140 @@ export default function CitacaoSorteio() {
 
       {/* Draw Stage */}
       <div className={cn(
-        "flex-1 flex flex-col items-center justify-center relative",
+        "flex-1 flex flex-col items-center justify-center relative py-6",
         isFullscreen ? "min-h-[80vh]" : "min-h-[400px]"
       )}>
-        <div className={cn(
-          "relative w-full max-w-4xl transition-all duration-700",
-          sorteando ? "scale-105" : "scale-100"
-        )}>
-          {/* Parchment UI */}
-          <div className={cn(
-            "bg-[#fff9f0] border-[6px] border-[#e6d0a8] shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[40px] p-8 md:p-16 text-center space-y-8 relative overflow-hidden",
-            isFullscreen ? "py-24" : ""
-          )}>
-            {/* Design Elements */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 opacity-20">
-              <Cross className="h-12 w-12 text-amber-900" />
+        
+        {/* GERADO GERAL RESULT DISPLAY */}
+        {modo === 'geral' && mostrarResultado ? (
+          <div className="w-full max-w-6xl animate-reveal">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-serif font-black text-amber-900">Mural de Bênçãos da Turma</h2>
+              <Button onClick={salvarNoHistorico} className="bg-emerald-600 hover:bg-emerald-700 rounded-xl gap-2">
+                <Save className="h-4 w-4" /> Salvar Histórico
+              </Button>
             </div>
-            
-            <div className="min-h-[220px] flex flex-col items-center justify-center space-y-6">
-              {sorteando ? (
-                <div className="space-y-4">
-                  <div className="w-24 h-24 border-8 border-amber-900/20 border-t-amber-900 rounded-full animate-spin mx-auto" />
-                  <p className="text-amber-900/40 font-black uppercase tracking-[0.6em] text-sm animate-pulse">Sondando as Escrituras...</p>
-                </div>
-              ) : citacaoAtual ? (
-                <div className={cn(
-                  "space-y-6 transition-all duration-1000",
-                  mostrarResultado ? "animate-in fade-in zoom-in-95" : "opacity-0"
-                )}>
-                  {modo === "individual" && catequizandoAtual && (
-                    <div className="inline-block px-6 py-2 bg-amber-900 text-white rounded-full text-xs font-black uppercase tracking-[0.3em] mb-4">
-                      Para: {catequizandoAtual}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(resultados).map(([aid, txt]) => {
+                const catequizando = catequizandos.find(c => c.id === aid);
+                const [ref, ...body] = txt.split(": ");
+                return (
+                  <div key={aid} className="bg-[#fff9f0] border-2 border-amber-200/50 p-6 rounded-3xl shadow-sm space-y-3 relative overflow-hidden group hover:border-amber-400 transition-all">
+                    <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-30 transition-opacity">
+                      <Cross className="h-8 w-8 text-amber-900" />
                     </div>
-                  )}
-                  <div className="h-px w-32 bg-amber-900/20 mx-auto" />
-                  <p className="text-2xl md:text-4xl font-serif italic text-amber-950 leading-relaxed font-bold">
-                    "{citacaoAtual.texto}"
-                  </p>
-                  <p className="text-lg md:text-xl font-black text-amber-800 uppercase tracking-widest">
-                    — {citacaoAtual.referencia}
-                  </p>
-                  {citacaoAtual.categoria === "Evangelho do Dia" && (
-                    <span className="text-[10px] font-black text-emerald-700 uppercase bg-emerald-100 px-3 py-1 rounded-full">LITURGIA DE HOJE</span>
-                  )}
-                  <div className="h-px w-32 bg-amber-900/20 mx-auto" />
-                </div>
-              ) : (
-                <div className="space-y-4 opacity-30">
-                  <Scroll className="h-20 w-20 text-amber-900 mx-auto" />
-                  <p className="font-serif italic text-amber-900 text-xl">"A Tua Palavra é lâmpada para os meus pés..."</p>
-                </div>
-              )}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-900 font-black text-xs">
+                        {catequizando?.nome.substring(0, 1)}
+                      </div>
+                      <p className="font-bold text-amber-950">{catequizando?.nome}</p>
+                    </div>
+                    <p className="text-sm font-serif italic text-amber-900/80 leading-relaxed">"{body.join(": ")}"</p>
+                    <p className="text-xs font-black text-amber-700 uppercase tracking-tighter">— {ref}</p>
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Main Action Button */}
-            {!sorteando && (
-              <div className="pt-8">
-                <button 
-                  onClick={sortear}
-                  disabled={modo === "individual" && filaAlunos.length === 0}
-                  className={cn(
-                    "w-32 h-32 rounded-full border-8 border-[#f0e4d0] bg-amber-800 text-white shadow-2xl flex flex-col items-center justify-center transition-all active:scale-90 hover:scale-105 mx-auto relative group",
-                    filaAlunos.length === 0 && modo === "individual" ? "grayscale opacity-50" : "animate-pulse hover:animate-none"
-                  )}
-                >
-                  <Shuffle className="h-8 w-8 mb-1" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">{modo === "individual" ? "Próximo" : "Sortear"}</span>
-                  <div className="absolute -inset-4 border-2 border-amber-800/20 rounded-full animate-ping opacity-30 group-hover:hidden" />
-                </button>
-              </div>
-            )}
+            <div className="flex justify-center mt-12">
+               <Button variant="outline" onClick={() => setMostrarResultado(false)} className="rounded-full h-12 font-bold border-amber-200 text-amber-900">
+                  Realizar Novo Sorteio
+               </Button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className={cn(
+            "relative w-full max-w-4xl transition-all duration-700",
+            sorteando ? "scale-105" : "scale-100"
+          )}>
+            {/* Parchment UI */}
+            <div className={cn(
+              "bg-[#fff9f0] border-[6px] border-[#e6d0a8] shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[40px] p-8 md:p-16 text-center space-y-8 relative overflow-hidden",
+              isFullscreen ? "py-24" : ""
+            )}>
+              {/* Design Elements */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 opacity-20">
+                <Cross className="h-12 w-12 text-amber-900" />
+              </div>
+              
+              <div className="min-h-[220px] flex flex-col items-center justify-center space-y-6">
+                {sorteando ? (
+                  <div className="space-y-4">
+                    <div className="w-24 h-24 border-8 border-amber-900/20 border-t-amber-900 rounded-full animate-spin mx-auto shadow-inner" />
+                    <p className="text-amber-900 font-serif italic text-xl animate-pulse">Sondando as Escrituras...</p>
+                    <div className="flex justify-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-amber-900/20 animate-bounce [animation-delay:-0.3s]" />
+                      <div className="w-2 h-2 rounded-full bg-amber-900/20 animate-bounce [animation-delay:-0.15s]" />
+                      <div className="w-2 h-2 rounded-full bg-amber-900/20 animate-bounce" />
+                    </div>
+                  </div>
+                ) : citacaoAtual && mostrarResultado ? (
+                  <div className={cn(
+                    "space-y-6 transition-all duration-1000",
+                    mostrarResultado ? "animate-in fade-in zoom-in-95" : "opacity-0"
+                  )}>
+                    {modo === "individual" && catequizandoAtual && (
+                      <div className="inline-block px-6 py-2 bg-amber-900 text-white rounded-full text-xs font-black uppercase tracking-[0.3em] mb-4">
+                        Para: {catequizandoAtual}
+                      </div>
+                    )}
+                    <div className="h-px w-32 bg-amber-900/20 mx-auto" />
+                    <p className={cn(
+                      "font-serif italic text-amber-950 leading-relaxed font-bold",
+                      citacaoAtual.texto.length > 200 ? "text-xl md:text-2xl" : "text-2xl md:text-4xl"
+                    )}>
+                      "{citacaoAtual.texto}"
+                    </p>
+                    <p className="text-lg md:text-xl font-black text-amber-800 uppercase tracking-widest">
+                      — {citacaoAtual.referencia}
+                    </p>
+                    {citacaoAtual.categoria === "Evangelho do Dia" && (
+                      <span className="text-[10px] font-black text-emerald-700 uppercase bg-emerald-100 px-3 py-1 rounded-full">LITURGIA DE HOJE</span>
+                    )}
+                    <div className="h-px w-32 bg-amber-900/20 mx-auto" />
+                  </div>
+                ) : (
+                  <div className="space-y-4 opacity-30 group">
+                    <Scroll className="h-24 w-24 text-amber-900 mx-auto group-hover:scale-110 transition-transform" />
+                    <p className="font-serif italic text-amber-900 text-xl">"A Tua Palavra é lâmpada para os meus pés..."</p>
+                  </div>
+                )}
+              </div>
 
-        {/* Status Indicators */}
-        {modo === "individual" && filaAlunos.length > 0 && (
-          <div className="mt-8 flex gap-4 overflow-x-auto max-w-full p-4">
-            {filaAlunos.map(id => (
-              <div key={id} className="shrink-0 w-2 h-2 rounded-full bg-amber-900/20" />
-            ))}
+              {/* Main Action Button */}
+              {!sorteando && (mostrarResultado && modo === 'geral' ? null : (
+                <div className="pt-8">
+                  <button 
+                    onClick={sortear}
+                    disabled={modo === "individual" && filaAlunos.length === 0}
+                    className={cn(
+                      "w-32 h-32 rounded-full border-8 border-[#f0e4d0] bg-amber-800 text-white shadow-2xl flex flex-col items-center justify-center transition-all active:scale-90 hover:scale-105 mx-auto relative group",
+                      filaAlunos.length === 0 && modo === "individual" ? "grayscale opacity-50 cursor-not-allowed" : "animate-pulse hover:animate-none"
+                    )}
+                  >
+                    <Shuffle className="h-8 w-8 mb-1" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {modo === "individual" ? "Próximo" : modo === 'geral' ? "Sortear Geral" : "Sortear"}
+                    </span>
+                    <div className="absolute -inset-4 border-2 border-amber-800/20 rounded-full animate-ping opacity-30 group-hover:hidden" />
+                  </button>
+                  {modo === 'individual' && (
+                    <p className="text-xs font-black text-amber-900/40 uppercase tracking-widest mt-6">
+                      Catequizandos Restantes: {filaAlunos.length}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
+
       </div>
 
-      {/* Save Button for Individual Mode */}
+      {/* Save Button for Individual Mode (only if not Geral which has its own) */}
       {modo === "individual" && Object.keys(resultados).length > 0 && !sorteando && (
         <div className="flex justify-center pb-8">
           <Button onClick={salvarNoHistorico} className="h-14 px-8 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black shadow-lg shadow-emerald-900/20 gap-2 scale-110">
-            <Save className="h-5 w-5" /> SALVAR RESULTADOS DA TURMA
+            <Save className="h-5 w-5" /> CONCLUIR CATEQUIZANDOS
           </Button>
         </div>
       )}
@@ -316,22 +399,29 @@ export default function CitacaoSorteio() {
       {/* Historico Dialog */}
       <Dialog open={showHistorico} onOpenChange={setShowHistorico}>
         <DialogContent className="max-w-xl max-h-[80vh] overflow-y-auto rounded-3xl p-0 border-none shadow-2xl bg-[#fdf8f0]">
-          <div className="bg-amber-900 p-6 text-white">
-            <DialogTitle className="text-xl font-serif font-black">Histórico de Mensagens</DialogTitle>
+          <div className="bg-amber-900 p-6 text-white sticky top-0 z-10">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-xl font-serif font-black">Histórico de Mensagens</DialogTitle>
+              <button onClick={() => setShowHistorico(false)} className="p-2 hover:bg-white/10 rounded-full">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </div>
           <div className="p-6 space-y-4">
             {historico.length === 0 && <p className="text-center italic text-amber-900/40 py-8">Nenhum sorteio registrado.</p>}
             {historico.map((h) => (
               <div key={h.id} className="p-4 rounded-2xl bg-white/60 border border-amber-200 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-black text-amber-900 uppercase">{new Date(h.data).toLocaleDateString()} - {h.tipo === 'individual' ? 'Por Aluno' : 'Coletivo'}</p>
+                  <p className="text-xs font-black text-amber-900 uppercase">
+                    {new Date(h.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - {h.tipo === 'individual' ? 'Catequizandos' : 'Coletivo'}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   {Object.entries(h.resultados).map(([aid, txt]) => {
-                    const aluno = catequizandos.find(c => c.id === aid)?.nome || "Catequizando";
+                    const catequizando = catequizandos.find(c => c.id === aid)?.nome || "Catequizando";
                     return (
-                      <div key={aid} className="text-sm border-l-2 border-amber-500 pl-3 py-1">
-                        <span className="font-bold text-amber-950">{aluno}:</span> {txt}
+                      <div key={aid} className="text-sm border-l-2 border-amber-500 pl-3 py-1 bg-amber-50/30 rounded-r-lg">
+                        <span className="font-bold text-amber-950">{catequizando}:</span> {txt}
                       </div>
                     );
                   })}
