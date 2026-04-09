@@ -18,6 +18,7 @@ import EncontroPresentation from "@/pages/EncontroPresentation";
 import CatequizandosList from "@/pages/CatequizandosList";
 import AtividadesList from "@/pages/AtividadesList";
 import PlanoTurma from "@/pages/PlanoTurma";
+import RelatoriosTurma from "@/pages/RelatoriosTurma";
 import BibliotecaModelos from "@/pages/BibliotecaModelos";
 import ModulosGlobais from "@/pages/ModulosGlobais";
 import MuralFotos from "@/pages/MuralFotos";
@@ -76,6 +77,7 @@ const AppRoutes = () => (
       <Route path="/turmas/:id/catequizandos" element={<CatequizandosList />} />
       <Route path="/turmas/:id/atividades" element={<AtividadesList />} />
       <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
+      <Route path="/turmas/:id/relatorios" element={<RelatoriosTurma />} />
       <Route path="/turmas/:id/biblioteca" element={<BibliotecaModelos />} />
       <Route path="/modulos" element={<ModulosGlobais />} />
       <Route path="/modulos/mural" element={<MuralFotos />} />

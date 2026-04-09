@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2 } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +53,7 @@ export default function TurmaDetail() {
     { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(var(--accent))]/15 text-[hsl(var(--accent))]", borderColor: "border-[hsl(var(--accent))]/60", gradient: "from-[hsl(var(--accent))]/5 to-[hsl(var(--accent))]/15" },
     { label: "Atividades e Eventos", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(var(--liturgical))]/15 text-[hsl(var(--liturgical))]", borderColor: "border-[hsl(var(--liturgical))]/60", gradient: "from-[hsl(var(--liturgical))]/5 to-[hsl(var(--liturgical))]/15" },
     { label: "Plano da Turma", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success))]", borderColor: "border-[hsl(var(--success))]/60", gradient: "from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/15" },
+    { label: "Relatórios", icon: PieChart, count: null, path: `/turmas/${id}/relatorios`, color: "bg-[hsl(var(--destructive))]/15 text-[hsl(var(--destructive))]", borderColor: "border-[hsl(var(--destructive))]/60", gradient: "from-[hsl(var(--destructive))]/5 to-[hsl(var(--destructive))]/15" },
   ];
 
   return (
