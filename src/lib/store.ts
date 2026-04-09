@@ -29,6 +29,9 @@ export interface Catequizando {
   telefone: string;
   email: string;
   endereco?: string;
+  numero?: string;
+  bairro?: string;
+  complemento?: string;
   necessidadeEspecial?: string;
   observacao?: string;
   status: CatequizandoStatus;
@@ -130,6 +133,9 @@ export interface CatequistaCadastro {
   nome: string;
   dataNascimento: string;
   endereco: string;
+  numero?: string;
+  bairro?: string;
+  complemento?: string;
   profissao: string;
   telefone: string;
   email: string;
@@ -165,7 +171,7 @@ export const ROTEIRO_STEPS: { tipo: RoteiroStepTipo; label: string }[] = [
 ];
 
 export const ATIVIDADE_TIPOS: AtividadeTipo[] = [
-  'Retiro', 'Celebração', 'Encontro de pais', 'Gincana', 'Passeios', 'Jornada', 'Eventos geral', 'Outros',
+  'Momento Orante', 'Retiro', 'Celebração', 'Encontro de pais', 'Gincana', 'Passeios', 'Jornada', 'Eventos geral', 'Outros',
 ];
 
 const TURMAS_KEY = 'ivc_turmas';

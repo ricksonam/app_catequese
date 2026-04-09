@@ -11,11 +11,17 @@ import { mascaraTelefone } from "@/lib/utils";
 type CatequistaStatus = "ativo" | "inativo" | "afastado";
 
 interface FormData {
+  nome: string; dataNascimento: string; endereco: string; 
+  numero: string; bairro: string; complemento: string;
+  profissao: string; telefone: string;
+  email: string; comunidadeId: string; formacao: string; 
   anosExperiencia: string; observacao: string; status: CatequistaStatus;
   foto: string;
 }
 const emptyForm: FormData = {
-  nome: "", dataNascimento: "", endereco: "", profissao: "", telefone: "",
+  nome: "", dataNascimento: "", endereco: "", 
+  numero: "", bairro: "", complemento: "",
+  profissao: "", telefone: "",
   email: "", comunidadeId: "", formacao: "", anosExperiencia: "", observacao: "", status: "ativo",
   foto: "",
 };
@@ -73,7 +79,8 @@ export default function CatequistasCadastro() {
 
   const openEdit = (item: CatequistaCadastro) => {
     setForm({
-      nome: item.nome, dataNascimento: item.dataNascimento, endereco: item.endereco,
+      nome: item.nome, dataNascimento: item.dataNascimento, 
+      endereco: item.endereco, numero: item.numero || "", bairro: item.bairro || "", complemento: item.complemento || "",
       profissao: item.profissao, telefone: item.telefone, email: item.email,
       comunidadeId: item.comunidadeId || "", formacao: item.formacao,
       anosExperiencia: item.anosExperiencia, observacao: item.observacao,
@@ -173,7 +180,14 @@ export default function CatequistasCadastro() {
               <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
               <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label><div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
             </div>
-            <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+            <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+            <div className="grid grid-cols-3 gap-2">
+              <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
+              <div className="col-span-2">
+                <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
+              </div>
+            </div>
+            <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
             <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} />
             <div className="grid grid-cols-2 gap-2">
               <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
@@ -245,7 +259,16 @@ export default function CatequistasCadastro() {
                   )}
                   {viewItem.telefone && <DetailRow icon={<Phone className="h-4 w-4" />} label="Telefone" value={viewItem.telefone} />}
                   {viewItem.email && <DetailRow icon={<Mail className="h-4 w-4" />} label="E-mail" value={viewItem.email} />}
-                  {viewItem.endereco && <DetailRow icon={<MapPin className="h-4 w-4" />} label="Endereço" value={viewItem.endereco} />}
+                  {viewItem.endereco && (
+                    <div className="p-3 rounded-xl bg-muted/30">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Endereço</p>
+                      <p className="text-sm font-medium text-foreground">
+                        {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
+                        {viewItem.bairro ? ` - ${viewItem.bairro}` : ""}
+                        {viewItem.complemento ? ` (${viewItem.complemento})` : ""}
+                      </p>
+                    </div>
+                  )}
                   {viewItem.profissao && <DetailRow icon={<Briefcase className="h-4 w-4" />} label="Profissão" value={viewItem.profissao} />}
                   {viewItem.comunidadeId && <DetailRow icon={<User className="h-4 w-4" />} label="Comunidade" value={getComunidadeNome(viewItem.comunidadeId)} />}
                   {viewItem.formacao && <DetailRow icon={<BookOpen className="h-4 w-4" />} label="Formação" value={viewItem.formacao} />}

@@ -11,12 +11,15 @@ import { mascaraTelefone } from "@/lib/utils";
 interface Sacramento { recebido: boolean; paroquia: string; data: string; }
 interface CatequizandoForm {
   nome: string; dataNascimento: string; responsavel: string; telefone: string; email: string;
-  endereco: string; necessidadeEspecial: string; observacao: string; foto: string;
-  batismo: Sacramento; eucaristia: Sacramento; crisma: Sacramento;
+  endereco: string; numero: string; bairro: string; complemento: string;
+  necessidadeEspecial: string; observacao: string; foto: string;
+  batismo: SacramentoInfo; eucaristia: SacramentoInfo; crisma: SacramentoInfo;
 }
 
 const emptyForm: CatequizandoForm = {
-  nome: "", dataNascimento: "", responsavel: "", telefone: "", email: "", endereco: "", necessidadeEspecial: "", observacao: "", foto: "",
+  nome: "", dataNascimento: "", responsavel: "", telefone: "", email: "", 
+  endereco: "", numero: "", bairro: "", complemento: "",
+  necessidadeEspecial: "", observacao: "", foto: "",
   batismo: { recebido: false, paroquia: "", data: "" }, eucaristia: { recebido: false, paroquia: "", data: "" }, crisma: { recebido: false, paroquia: "", data: "" },
 };
 
@@ -61,9 +64,10 @@ export default function CatequizandosList() {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
     const novo: Catequizando = {
       id: crypto.randomUUID(), turmaId: id!, nome: form.nome, dataNascimento: form.dataNascimento,
-      responsavel: form.responsavel, telefone: form.telefone, email: form.email, endereco: form.endereco,
+      responsavel: form.responsavel, telefone: form.telefone, email: form.email, 
+      endereco: form.endereco, numero: form.numero, bairro: form.bairro, complemento: form.complemento,
       necessidadeEspecial: form.necessidadeEspecial, observacao: form.observacao, status: 'ativo',
-      foto: form.foto || undefined, sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma },
+      foto: form.foto || undefined, sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma } as any,
     };
     try { await mutation.mutateAsync(novo); setForm({ ...emptyForm }); setShowSacramentos(false); setOpen(false); toast.success("Catequizando adicionado!"); }
     catch (err: any) { toast.error("Erro: " + err.message); }
@@ -79,11 +83,12 @@ export default function CatequizandosList() {
     if (!viewItem) return;
     setEditForm({
       nome: viewItem.nome, dataNascimento: viewItem.dataNascimento, responsavel: viewItem.responsavel,
-      telefone: viewItem.telefone, email: viewItem.email, endereco: viewItem.endereco || "",
+      telefone: viewItem.telefone, email: viewItem.email, 
+      endereco: viewItem.endereco || "", numero: viewItem.numero || "", bairro: viewItem.bairro || "", complemento: viewItem.complemento || "",
       necessidadeEspecial: viewItem.necessidadeEspecial || "", observacao: viewItem.observacao || "", foto: viewItem.foto || "",
-      batismo: viewItem.sacramentos?.batismo || { recebido: false, paroquia: "", data: "" },
-      eucaristia: viewItem.sacramentos?.eucaristia || { recebido: false, paroquia: "", data: "" },
-      crisma: viewItem.sacramentos?.crisma || { recebido: false, paroquia: "", data: "" },
+      batismo: (viewItem.sacramentos?.batismo || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
+      eucaristia: (viewItem.sacramentos?.eucaristia || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
+      crisma: (viewItem.sacramentos?.crisma || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
     });
     setEditMode(true);
   };
@@ -92,9 +97,11 @@ export default function CatequizandosList() {
     if (!viewItem || !editForm.nome) { toast.error("Nome é obrigatório"); return; }
     const updated: Catequizando = {
       ...viewItem, nome: editForm.nome, dataNascimento: editForm.dataNascimento, responsavel: editForm.responsavel,
-      telefone: editForm.telefone, email: editForm.email, endereco: editForm.endereco, necessidadeEspecial: editForm.necessidadeEspecial,
+      telefone: editForm.telefone, email: editForm.email, 
+      endereco: editForm.endereco, numero: editForm.numero, bairro: editForm.bairro, complemento: editForm.complemento,
+      necessidadeEspecial: editForm.necessidadeEspecial,
       observacao: editForm.observacao, foto: editForm.foto || undefined,
-      sacramentos: { batismo: editForm.batismo, eucaristia: editForm.eucaristia, crisma: editForm.crisma },
+      sacramentos: { batismo: editForm.batismo as any, eucaristia: editForm.eucaristia as any, crisma: editForm.crisma as any },
     };
     try { await mutation.mutateAsync(updated); setViewItem(updated); setEditMode(false); toast.success("Atualizado!"); }
     catch (err: any) { toast.error("Erro: " + err.message); }
@@ -140,7 +147,14 @@ export default function CatequizandosList() {
                 <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
                 <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
               </div>
-              <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+              <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+              <div className="grid grid-cols-3 gap-2">
+                <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
+                <div className="col-span-2">
+                  <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
+                </div>
+              </div>
+              <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
               <FieldInput label="Necessidade especial" value={form.necessidadeEspecial} onChange={(v) => updateField("necessidadeEspecial", v)} placeholder="Se houver, descreva aqui" />
               <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" placeholder="Anotações..." /></div>
               <button type="button" onClick={() => setShowSacramentos(!showSacramentos)} className="w-full flex items-center justify-between form-input font-semibold">Sacramentos Recebidos {showSacramentos ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>
@@ -205,7 +219,14 @@ export default function CatequizandosList() {
                   <InfoRow label="Responsável" value={viewItem.responsavel} />
                   <InfoRow label="Telefone" value={viewItem.telefone} />
                   <InfoRow label="E-mail" value={viewItem.email} />
-                  <InfoRow label="Endereço" value={viewItem.endereco} />
+                  <div className="p-3 rounded-xl bg-muted/30">
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Endereço</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
+                      {viewItem.bairro ? ` - ${viewItem.bairro}` : ""}
+                      {viewItem.complemento ? ` (${viewItem.complemento})` : ""}
+                    </p>
+                  </div>
                   <InfoRow label="Necessidade especial" value={viewItem.necessidadeEspecial} />
                   <InfoRow label="Observação" value={viewItem.observacao} />
                 </div>
@@ -239,7 +260,14 @@ export default function CatequizandosList() {
                   <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
                   <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
                 </div>
-                <FieldInput label="Endereço" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
+                <FieldInput label="Rua / Logradouro" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
+                <div className="grid grid-cols-3 gap-2">
+                  <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
+                  <div className="col-span-2">
+                    <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
+                  </div>
+                </div>
+                <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
                 <FieldInput label="Necessidade especial" value={editForm.necessidadeEspecial} onChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))} />
                 <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none" /></div>
                 <button type="button" onClick={() => setShowEditSacramentos(!showEditSacramentos)} className="w-full flex items-center justify-between form-input font-semibold">Sacramentos {showEditSacramentos ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>

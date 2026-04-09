@@ -49,7 +49,8 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
   return (data || []).map((c: any) => ({
     id: c.id, turmaId: c.turma_id, nome: c.nome, dataNascimento: c.data_nascimento,
     responsavel: c.responsavel, telefone: c.telefone, email: c.email,
-    endereco: c.endereco, necessidadeEspecial: c.necessidade_especial,
+    endereco: c.endereco, numero: c.numero, bairro: c.bairro, complemento: c.complemento,
+    necessidadeEspecial: c.necessidade_especial,
     observacao: c.observacao, status: c.status, foto: c.foto || undefined,
     sacramentos: c.sacramentos || undefined,
   }));
@@ -59,7 +60,8 @@ export async function upsertCatequizando(c: Catequizando) {
   const { error } = await (supabase.from as any)("catequizandos").upsert({
     id: c.id, turma_id: c.turmaId, nome: c.nome, data_nascimento: c.dataNascimento,
     responsavel: c.responsavel, telefone: c.telefone, email: c.email,
-    endereco: c.endereco || '', necessidade_especial: c.necessidadeEspecial || '',
+    endereco: c.endereco || '', numero: c.numero || '', bairro: c.bairro || '', complemento: c.complemento || '',
+    necessidade_especial: c.necessidadeEspecial || '',
     observacao: c.observacao || '', status: c.status, foto: c.foto || null,
     sacramentos: c.sacramentos || null,
   });
@@ -182,7 +184,8 @@ export async function fetchCatequistas(): Promise<CatequistaCadastro[]> {
   const { data, error } = await (supabase.from as any)("catequistas").select("*").order("nome");
   if (error) throw error;
   return (data || []).map((c: any) => ({
-    id: c.id, nome: c.nome, dataNascimento: c.data_nascimento, endereco: c.endereco,
+    id: c.id, nome: c.nome, dataNascimento: c.data_nascimento, 
+    endereco: c.endereco, numero: c.numero, bairro: c.bairro, complemento: c.complemento,
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidadeId: c.comunidade_id || '', formacao: c.formacao,
     anosExperiencia: c.anos_experiencia, observacao: c.observacao,
@@ -192,7 +195,8 @@ export async function fetchCatequistas(): Promise<CatequistaCadastro[]> {
 
 export async function upsertCatequista(c: CatequistaCadastro) {
   const { error } = await (supabase.from as any)("catequistas").upsert({
-    id: c.id, nome: c.nome, data_nascimento: c.dataNascimento, endereco: c.endereco,
+    id: c.id, nome: c.nome, data_nascimento: c.dataNascimento, 
+    endereco: c.endereco, numero: c.numero, bairro: c.bairro, complemento: c.complemento,
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidade_id: c.comunidadeId || null, formacao: c.formacao,
     anos_experiencia: c.anosExperiencia, observacao: c.observacao,
