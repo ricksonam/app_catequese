@@ -29,10 +29,10 @@ export default function AppLayout() {
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col print:block print:min-h-0 print:bg-white">
       {/* Header */}
       {!isPresentationMode && (
-        <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0">
+        <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0 print:hidden">
           <div className="container flex items-center justify-between h-14 px-4">
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
@@ -56,13 +56,13 @@ export default function AppLayout() {
       )}
 
       {/* Content */}
-      <main className={`flex-1 container ${isPresentationMode ? 'p-0 max-w-none' : 'px-4 py-5 pb-24'}`}>
+      <main className={`flex-1 container ${isPresentationMode ? 'p-0 max-w-none' : 'px-4 py-5 pb-24 print:p-0 print:m-0 print:max-w-none'}`}>
         <Outlet />
       </main>
 
       {/* Tab Bar */}
       {!isPresentationMode && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden">
           <div className="mx-auto max-w-md flex items-center justify-around h-20 px-1.5 rounded-3xl bg-card/95 backdrop-blur-2xl border-2 border-primary/15 shadow-2xl shadow-black/15">
             {tabs.map((tab) => {
               const isActive =

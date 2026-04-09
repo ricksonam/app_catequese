@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon } from "lucide-react";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,10 +19,12 @@ export default function RelatoriosTurma() {
   const { data: encontros = [], isLoading: loadingE } = useEncontros(id);
   const { data: catequizandos = [], isLoading: loadingC } = useCatequizandos(id);
   const { data: atividades = [], isLoading: loadingA } = useAtividades(id);
+  const { data: paroquias = [], isLoading: loadingP } = useParoquias();
+  const { data: comunidades = [], isLoading: loadingCom } = useComunidades();
 
   const turma = turmas.find(t => t.id === id);
 
-  if (loadingT || loadingE || loadingC || loadingA) {
+  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom) {
     return <div className="flex justify-center py-20"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
@@ -30,8 +32,15 @@ export default function RelatoriosTurma() {
     return <div className="text-center py-20">Turma não encontrada.</div>;
   }
 
+  const comunidade = comunidades.find(c => c.id === turma.comunidadeId);
+  const paroquia = paroquias.find(p => p.id === comunidade?.paroquiaId);
+  const orgNomes = { 
+    paroquia: paroquia?.nome || "Paróquia não informada", 
+    comunidade: comunidade?.nome || "Comunidade não informada" 
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:m-0 print:p-0 print:space-y-0">
       <div className="flex items-center gap-3 print:hidden">
         <button onClick={() => navigate(`/turmas/${id}`)} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
           <ArrowLeft className="h-5 w-5" />
@@ -60,7 +69,7 @@ export default function RelatoriosTurma() {
       {tab === "inteligente" ? (
         <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} />
       ) : (
-        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} />
+        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} />
       )}
     </div>
   );
@@ -263,7 +272,7 @@ const NoData = ({ txt = "Dados Insuficientes" }: { txt?: string }) => (
 // ==========================================
 // TAB 2: GERADOR DE DOCUMENTOS (PRINT)
 // ==========================================
-function GeradorDocumentos({ encontros, catequizandos, atividades, turma }: any) {
+function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
   const [docTipo, setDocTipo] = useState<"ficha_cat" | "ficha_enc" | "lista_chamada" | "boletim_turma">("ficha_cat");
   const [targetId, setTargetId] = useState<string>("");
 
@@ -280,10 +289,10 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma }: any)
         const cat = catequizandos.find((c:any) => c.id === targetId);
         if (!cat) return null;
         return (
-          <div className="hidden print:block w-full text-black font-sans leading-relaxed">
+          <div className="hidden print:block w-full text-black font-sans leading-relaxed print:break-inside-avoid">
             <div className="border-b-4 border-black pb-4 mb-8 text-center space-y-2">
               <h1 className="text-3xl font-black uppercase">Ficha Cadastral do Catequizando</h1>
-              <p className="text-lg">Paróquia / Comunidade do IVC</p>
+              <p className="text-lg">Paróquia: {org.paroquia} • Comunidade: {org.comunidade}</p>
               <p className="font-bold">Turma: {turma.nome}</p>
             </div>
             
@@ -346,9 +355,10 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma }: any)
 
       case "lista_chamada":
         return (
-          <div className="hidden print:block w-full text-black font-sans text-xs">
-            <h1 className="text-2xl font-black uppercase text-center mb-2">Diário de Classe - Frequência</h1>
-            <p className="text-center text-sm font-bold mb-6">Turma: {turma.nome} • Ano CATEQUÉTICO</p>
+          <div className="hidden print:block w-full text-black font-sans text-xs print:break-inside-avoid">
+            <h1 className="text-2xl font-black uppercase text-center mb-1">Diário de Classe - Frequência</h1>
+            <p className="text-center text-sm font-bold mb-1">Paróquia: {org.paroquia} • Comunidade: {org.comunidade}</p>
+            <p className="text-center text-sm font-bold mb-4">Turma: {turma.nome} • Ano CATEQUÉTICO: {turma.ano}</p>
             
             <table className="w-full border-collapse border border-black mb-8">
               <thead>
@@ -383,10 +393,10 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma }: any)
         const ativos = catequizandos.filter((c:any) => c.status === 'ativo').length;
         const faltasEncontros = encontros.filter((e:any) => e.status === 'pendente').length;
         return (
-           <div className="hidden print:block w-full text-black font-sans leading-relaxed">
+           <div className="hidden print:block w-full text-black font-sans leading-relaxed print:break-inside-avoid">
               <div className="text-center mb-10 border-b-2 border-black pb-6">
                 <h1 className="text-3xl font-black uppercase">Relatório Resumo da Turma</h1>
-                <p className="text-lg italic mt-2">{formatarDataVigente(new Date().toISOString())}</p>
+                <p className="text-lg italic mt-2">Paróquia: {org.paroquia} • {formatarDataVigente(new Date().toISOString())}</p>
               </div>
               
               <div className="grid grid-cols-2 gap-8 mb-10">
@@ -428,10 +438,10 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma }: any)
         const enc = encontros.find((e:any) => e.id === targetId);
         if (!enc) return null;
         return (
-          <div className="hidden print:block w-full text-black font-sans leading-relaxed">
+          <div className="hidden print:block w-full text-black font-sans leading-relaxed print:break-inside-avoid">
             <div className="border-y-4 border-black py-4 mb-8 text-center bg-gray-100">
               <h1 className="text-2xl font-black uppercase">Ficha Técnica de Encontro</h1>
-              <p className="text-sm font-bold tracking-widest">Catequese Paroquial</p>
+              <p className="text-sm font-bold tracking-widest">{org.comunidade}</p>
             </div>
             
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -481,7 +491,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma }: any)
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:m-0 print:p-0 print:space-y-0">
       <div className="float-card p-6 border-l-4 border-l-primary print:hidden">
         <div className="flex items-start gap-4 mb-6">
            <div className="p-3 bg-primary/10 rounded-xl"><Printer className="h-6 w-6 text-primary" /></div>
