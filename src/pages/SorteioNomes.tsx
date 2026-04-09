@@ -22,6 +22,7 @@ interface Sorteio {
 export default function SorteioNomes() {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { data: turmas } = useTurmas();
   const [selectedTurma, setSelectedTurma] = useState<string>("");
   const { data: catequizandos } = useCatequizandos(selectedTurma || undefined);
@@ -43,7 +44,19 @@ export default function SorteioNomes() {
     loadHistorico();
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener('fullscreenchange', handleFsChange);
-    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+    
+    // Setup Audio
+    const audio = new Audio("https://www.orangefreesounds.com/wp-content/uploads/2019/05/Drum-roll-suspense-award.mp3");
+    audio.loop = false;
+    audioRef.current = audio;
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
 
   const toggleFullscreen = () => {
@@ -73,10 +86,9 @@ export default function SorteioNomes() {
   };
 
   const formatNome = (fullNome: string) => {
-    const parts = fullNome.split(" ").filter(p => p.length > 2 || p.toLowerCase() === "de" || p.toLowerCase() === "da");
-    // Show first and second meaningful names
-    const result = fullNome.split(" ").slice(0, 2).join(" ");
-    return result;
+    if (!fullNome) return "";
+    const parts = fullNome.split(" ").slice(0, 2);
+    return parts.join(" ");
   };
 
   const adicionarNome = () => {
@@ -118,13 +130,18 @@ export default function SorteioNomes() {
       return;
     }
 
-    // Try to enter fullscreen automatically for suspense
     if (!document.fullscreenElement && window.innerWidth < 1024) {
       containerRef.current?.requestFullscreen().catch(() => {});
     }
 
     setSorteando(true);
     setMostrarResultado(false);
+
+    // Play Sound
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    }
     
     let count = 0;
     const interval = setInterval(() => {
@@ -132,12 +149,11 @@ export default function SorteioNomes() {
       setSorteioAtual(formatNome(rand));
       count++;
       
-      if (count > 25) {
+      if (count > 35) { // Increased for more suspense
         clearInterval(interval);
         const idx = Math.floor(Math.random() * disponiveis.length);
         const sorteado = disponiveis[idx];
         
-        // Final reveals
         setTimeout(() => {
           setSorteioAtual(formatNome(sorteado));
           setResultado((prev) => [...prev, sorteado]);
@@ -205,7 +221,7 @@ export default function SorteioNomes() {
         </div>
       )}
 
-      {/* Config Sections - Hide in fullscreen unless it just started */}
+      {/* Config Sections */}
       <div className={cn("space-y-5", isFullscreen && started ? "hidden" : "block")}>
         <div className="float-card p-4 space-y-4 animate-float-up">
           <div className="space-y-2">
@@ -276,73 +292,84 @@ export default function SorteioNomes() {
           sorteando ? "border-primary shadow-[0_0_50px_-12px_rgba(var(--primary-rgb),0.5)] scale-105" : "scale-100",
           isFullscreen ? "bg-background/80 backdrop-blur-xl border-2 border-primary/20 p-20" : "p-10"
         )}>
-          {/* Background suspense elements */}
           {sorteando && (
             <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
                <div className="absolute inset-0 animate-ping repeat-infinite bg-primary/20 rounded-full scale-150" />
             </div>
           )}
 
-          <div className="relative z-10 space-y-8">
-            <div className="min-h-[120px] flex items-center justify-center">
+          <div className="relative z-10 space-y-16">
+            <div className="min-h-[160px] flex items-center justify-center">
               {sorteando ? (
-                <div className="flex flex-col items-center justify-center space-y-2">
-                  <p className="text-8xl font-black text-primary animate-bounce">?</p>
-                  <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.3em] animate-pulse">Escolhendo...</p>
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <p className="text-9xl font-black text-primary animate-bounce">?</p>
+                  <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.5em] animate-pulse">O mistério acontece...</p>
                 </div>
               ) : sorteioAtual ? (
                 <div className={cn(
                   "flex flex-col items-center justify-center space-y-4 transition-all duration-700",
-                  mostrarResultado ? "scale-125 md:scale-[1.8] animate-in zoom-in-50 duration-500" : "scale-100"
+                  mostrarResultado ? "scale-125 md:scale-[2] animate-in zoom-in-50 duration-500" : "scale-100"
                 )}>
                   {mostrarResultado && (
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="h-px w-8 bg-primary/30" />
-                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Sorteado!</span>
-                      <div className="h-px w-8 bg-primary/30" />
+                      <div className="h-px w-12 bg-primary/30" />
+                      <span className="text-[12px] font-black text-primary uppercase tracking-[0.4em]">Parabéns!</span>
+                      <div className="h-px w-12 bg-primary/30" />
                     </div>
                   )}
-                  <p className="text-4xl md:text-6xl font-black text-foreground drop-shadow-md">
+                  <p className="text-4xl md:text-7xl font-black text-foreground drop-shadow-2xl">
                     {sorteioAtual}
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center text-muted-foreground space-y-3">
-                  <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center">
-                    <Shuffle className="h-8 w-8 opacity-20" />
+                <div className="flex flex-col items-center justify-center text-muted-foreground space-y-4">
+                  <div className="w-20 h-20 rounded-full bg-muted/30 flex items-center justify-center animate-pulse">
+                    <Shuffle className="h-10 w-10 opacity-20" />
                   </div>
-                  <p className="text-sm font-medium italic">O mistério aguarda...</p>
+                  <p className="text-sm font-bold italic opacity-40 uppercase tracking-widest">Aguardando o toque...</p>
                 </div>
               )}
             </div>
 
-            <div className="pt-6">
+            <div className="relative pt-12">
               {!started ? (
-                <Button onClick={iniciarSorteio} className="w-full h-14 rounded-2xl text-lg font-bold gap-3 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all" disabled={nomes.length === 0}>
-                  <Shuffle className="h-5 w-5" /> Iniciar Sorteio
+                <Button onClick={iniciarSorteio} className="w-full h-16 rounded-3xl text-lg font-black gap-3 shadow-xl shadow-primary/30 active:scale-[0.98] transition-all bg-primary hover:bg-primary/90" disabled={nomes.length === 0}>
+                  <Shuffle className="h-6 w-6" /> INICIAR JOGO
                 </Button>
               ) : (
-                <div className="flex gap-3">
-                  <Button 
+                <div className="flex flex-col items-center gap-8">
+                  <button 
                     onClick={sortearProximo} 
-                    className="flex-1 h-14 rounded-2xl text-lg font-bold gap-3 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all" 
                     disabled={sorteando || disponiveis.length === 0}
+                    className={cn(
+                      "w-28 h-28 rounded-full flex flex-col items-center justify-center transition-all duration-300 active:scale-90 shadow-2xl relative group",
+                      sorteando || disponiveis.length === 0 
+                        ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50" 
+                        : "bg-primary text-primary-foreground hover:scale-110 shadow-primary/40 animate-pulse hover:animate-none"
+                    )}
                   >
-                    <Shuffle className="h-5 w-5" /> 
-                    {disponiveis.length === 0 ? "Fim do Sorteio" : "Sortear Próximo"}
-                  </Button>
-                  <Button variant="outline" onClick={salvarSorteio} size="icon" className="h-14 w-14 rounded-2xl border-2">
-                    <Save className="h-5 w-5" />
-                  </Button>
-                  <Button variant="outline" onClick={iniciarSorteio} size="icon" className="h-14 w-14 rounded-2xl border-2">
-                     <X className="h-5 w-5" />
-                  </Button>
+                    <Shuffle className="h-8 w-8 mb-1" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Sorteio</span>
+                    {/* Ring decoration */}
+                    {!sorteando && disponiveis.length > 0 && (
+                      <div className="absolute -inset-2 border-2 border-primary/20 rounded-full animate-ping opacity-30" />
+                    )}
+                  </button>
+
+                  <div className="flex gap-4">
+                    <Button variant="outline" onClick={salvarSorteio} size="icon" className="h-12 w-12 rounded-2xl border-2 hover:bg-primary/10 hover:text-primary transition-colors">
+                      <Save className="h-5 w-5" />
+                    </Button>
+                    <Button variant="outline" onClick={iniciarSorteio} size="icon" className="h-12 w-12 rounded-2xl border-2 hover:bg-destructive/10 hover:text-destructive transition-colors">
+                       <X className="h-5 w-5" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
 
             {disponiveis.length > 0 && (
-              <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{disponiveis.length} Nomes no Saco</p>
+              <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.3em]">{disponiveis.length} {disponiveis.length === 1 ? 'nome restante' : 'nomes restantes'}</p>
             )}
           </div>
         </div>
