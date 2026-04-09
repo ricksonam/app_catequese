@@ -150,80 +150,90 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      <button onClick={() => setShowOcorrencias(true)} className="float-card w-full px-4 py-3 flex items-center gap-2 text-sm font-semibold text-foreground animate-float-up" style={{ animationDelay: '240ms' }}>
-        <FileText className="h-4 w-4 text-primary" /> Relatório de Ocorrências ({ocorrencias.length})
+      <button onClick={() => setShowOcorrencias(true)} className="float-card w-full px-4 py-4 flex items-center justify-between group animate-float-up" style={{ animationDelay: '240ms' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-liturgical/10 flex items-center justify-center">
+            <FileText className="h-5 w-5 text-liturgical" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-bold text-foreground">Avaliação do Encontro</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">
+              {encontro.avaliacao ? 'Concluída ✓' : 'Pendente'}
+            </p>
+          </div>
+        </div>
+        <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+          <Edit className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary" />
+        </div>
       </button>
 
-      {/* Status Dialog */}
-      <Dialog open={showStatus} onOpenChange={setShowStatus}>
-        <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>Alterar Status</DialogTitle></DialogHeader>
-          <div className="space-y-2 mt-2">{STATUS_OPTIONS.map((opt) => (
-            <button key={opt.value} onClick={() => handleStatusClick(opt.value)} className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${encontro.status === opt.value ? opt.color : "bg-muted/50 text-foreground hover:bg-muted"}`}>{opt.label}</button>
-          ))}</div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Transfer Calendar */}
-      <Dialog open={showTransferCalendar} onOpenChange={setShowTransferCalendar}>
-        <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>Transferir para qual data?</DialogTitle></DialogHeader>
-          <p className="text-xs text-muted-foreground">Datas com encontros marcados estão sinalizadas em azul.</p>
-          <div className="flex justify-center mt-2"><Calendar mode="single" selected={selectedTransferDate} onSelect={handleTransferDateSelect} modifiers={{ booked: encontroDates }} modifiersClassNames={{ booked: "bg-primary/20 text-primary font-bold" }} className={cn("p-3 pointer-events-auto")} /></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Conflict */}
-      <Dialog open={showConflict} onOpenChange={setShowConflict}>
-        <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>Conflito de Data</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Já existe o encontro <span className="font-semibold text-foreground">"{conflictEncontro?.tema}"</span> nesta data.</p>
-          <div className="flex flex-col gap-2 mt-4">
-            <button onClick={() => handleConflictAction('remanejar')} className="w-full py-3 rounded-xl text-sm font-semibold bg-primary/10 text-primary">Remanejar (trocar datas)</button>
-            <button onClick={() => handleConflictAction('cancelar')} className="w-full py-3 rounded-xl text-sm font-semibold bg-destructive/10 text-destructive">Cancelar o encontro existente</button>
-            <button onClick={() => setShowConflict(false)} className="w-full py-2.5 rounded-xl text-sm font-semibold bg-muted text-foreground">Voltar</button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Cancel Motivo */}
-      <Dialog open={showCancelMotivo} onOpenChange={setShowCancelMotivo}>
-        <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>Motivo do Cancelamento</DialogTitle></DialogHeader>
-          <textarea value={motivoText} onChange={(e) => setMotivoText(e.target.value)} placeholder="Informe o motivo..." className="w-full min-h-[100px] rounded-xl border border-border bg-background p-3 text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          <div className="flex gap-2 mt-2"><button onClick={() => setShowCancelMotivo(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-muted text-foreground">Voltar</button><button onClick={handleCancelConfirm} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-destructive text-destructive-foreground">Confirmar</button></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Motivo */}
-      <Dialog open={showDeleteMotivo} onOpenChange={setShowDeleteMotivo}>
-        <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>Excluir Encontro</DialogTitle></DialogHeader>
-          <p className="text-sm text-muted-foreground">Informe o motivo da exclusão:</p>
-          <textarea value={motivoText} onChange={(e) => setMotivoText(e.target.value)} placeholder="Motivo da exclusão..." className="w-full min-h-[80px] rounded-xl border border-border bg-background p-3 text-sm text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          <div className="flex gap-2 mt-2"><button onClick={() => setShowDeleteMotivo(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-muted text-foreground">Cancelar</button><button onClick={handleDelete} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-destructive text-destructive-foreground">Excluir</button></div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Presença */}
-      <Dialog open={showPresenca} onOpenChange={setShowPresenca}>
-        <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>Lista de Presença</DialogTitle></DialogHeader>
-          {catequizandos.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando cadastrado</p> : (
-            <div className="space-y-1 mt-2 max-h-[50vh] overflow-y-auto">{catequizandos.map((c) => {
-              const present = encontro.presencas.includes(c.id);
-              return <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${present ? 'bg-success/10' : 'hover:bg-muted/50'}`}>
-                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${present ? 'bg-success border-success' : 'border-border'}`}>{present && <span className="text-white text-xs">✓</span>}</div>
-                <span className={`font-medium ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.nome}</span>
-              </button>;
-            })}</div>
-          )}
-          <p className="text-xs text-muted-foreground text-center mt-2">{encontro.presencas.length}/{catequizandos.length} presentes</p>
-        </DialogContent>
-      </Dialog>
-
-      {/* Ocorrencias */}
+      {/* Avaliação do Encontro Dialog */}
       <Dialog open={showOcorrencias} onOpenChange={setShowOcorrencias}>
-        <DialogContent className="rounded-2xl border-border/30 max-h-[80vh] overflow-y-auto"><DialogHeader><DialogTitle>Relatório de Ocorrências</DialogTitle></DialogHeader>
-          {ocorrencias.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Nenhuma ocorrência registrada</p> : (
-            <div className="space-y-2 mt-2">{ocorrencias.map((o) => (
-              <div key={o.id} className="float-card p-3"><p className="text-sm font-semibold text-foreground">{o.temaNome}</p><p className="text-xs text-muted-foreground">{o.tipo === 'cancelamento' ? '🔴 Cancelamento' : '🗑️ Exclusão'} • {new Date(o.data).toLocaleDateString('pt-BR')}</p><p className="text-xs text-muted-foreground mt-1">{o.motivo}</p></div>
-            ))}</div>
-          )}
+        <DialogContent className="rounded-2xl border-border/30 max-h-[90vh] overflow-y-auto p-0 overflow-hidden">
+          <div className="bg-liturgical/5 p-6 border-b border-liturgical/10">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-8 h-8 rounded-lg bg-liturgical/20 text-liturgical flex items-center justify-center">✝</span>
+              <p className="text-[10px] font-black text-liturgical uppercase tracking-[0.2em]">Ficha de Avaliação</p>
+            </div>
+            <DialogTitle className="text-xl font-black text-foreground">Como foi o encontro?</DialogTitle>
+          </div>
+
+          <div className="p-6 space-y-6">
+            <div className="space-y-3">
+              <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                As atividades planejadas foram realizadas?
+              </label>
+              <div className="flex gap-2">
+                {(['sim', 'nao', 'nulo'] as const).map(op => (
+                  <button
+                    key={op}
+                    onClick={() => {
+                      const aval = encontro.avaliacao || { atividadesRealizadas: 'nulo', pontosPositivos: '', pontosMelhorar: '', conclusao: '' };
+                      encontroMut.mutate({ ...encontro, avaliacao: { ...aval, atividadesRealizadas: op } });
+                    }}
+                    className={cn(
+                      "flex-1 py-3 rounded-xl text-xs font-bold transition-all border-2",
+                      (encontro.avaliacao?.atividadesRealizadas || 'nulo') === op
+                        ? "bg-primary/10 border-primary text-primary shadow-sm"
+                        : "bg-muted/30 border-transparent text-muted-foreground"
+                    )}
+                  >
+                    {op === 'sim' ? '✅ Sim' : op === 'nao' ? '❌ Não' : '➖ Parcial'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {[
+              { id: 'pontosPositivos', label: 'Quais foram os pontos positivos?', icon: '✨' },
+              { id: 'pontosMelhorar', label: 'Quais pontos podem ser melhorados?', icon: '💡' },
+              { id: 'conclusao', label: 'Conclusão Geral', icon: '📝' }
+            ].map(field => (
+              <div key={field.id} className="space-y-2">
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                  <span className="text-sm">{field.icon}</span>
+                  {field.label}
+                </label>
+                <textarea
+                  value={encontro.avaliacao?.[field.id as keyof AvaliacaoEncontro] || ''}
+                  onChange={(e) => {
+                    const aval = encontro.avaliacao || { atividadesRealizadas: 'nulo', pontosPositivos: '', pontosMelhorar: '', conclusao: '' };
+                    encontroMut.mutate({ ...encontro, avaliacao: { ...aval, [field.id]: e.target.value } });
+                  }}
+                  placeholder="Escreva aqui..."
+                  className="w-full min-h-[80px] rounded-2xl border-2 border-muted/30 bg-muted/10 p-4 text-sm text-foreground focus:border-primary/30 focus:bg-background transition-all outline-none resize-none"
+                />
+              </div>
+            ))}
+            
+            <button 
+              onClick={() => setShowOcorrencias(false)}
+              className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-black text-sm uppercase tracking-[0.1em] shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
+            >
+              Salvar Avaliação
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

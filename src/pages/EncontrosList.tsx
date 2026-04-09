@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; border: string }> = {
@@ -16,7 +16,10 @@ export default function EncontrosList() {
   const navigate = useNavigate();
   const { data: turmas = [] } = useTurmas();
   const { data: encontros = [], isLoading } = useEncontros(id);
+  const { data: catequizandos = [] } = useCatequizandos(id);
   const turma = turmas.find((t) => t.id === id);
+
+  const totalAlunos = catequizandos.length || 1;
 
   if (isLoading) {
     return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
@@ -66,6 +69,8 @@ export default function EncontrosList() {
                 <div className="space-y-3">
                   {items.map((enc, i) => {
                     const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
+                    const presPct = Math.round(((enc.presencas || []).length / totalAlunos) * 100);
+
                     return (
                       <div key={enc.id} className={`float-card overflow-hidden border-l-4 ${status.border} animate-float-up`} style={{ animationDelay: `${(i + 1) * 60}ms` }}>
                         <div className="px-4 py-4 flex flex-col items-center text-center">
@@ -75,7 +80,10 @@ export default function EncontrosList() {
                           
                           <div className="flex flex-col items-center gap-1 mb-3">
                             <p className="text-xs font-medium text-muted-foreground">{formatarDataVigente(enc.data, { weekday: 'long', day: '2-digit', month: 'long' })}</p>
-                            {enc.leituraBiblica && <p className="text-xs text-muted-foreground italic">📖 {enc.leituraBiblica}</p>}
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-md border border-primary/10 mt-1">
+                              <Users className="h-3 w-3" /> {presPct}% de Presença
+                            </div>
+                            {enc.leituraBiblica && <p className="text-xs text-muted-foreground italic mt-1">📖 {enc.leituraBiblica}</p>}
                           </div>
 
                           <span className={`pill-btn py-1 px-3 text-[10px] font-bold uppercase tracking-wider mb-4 ${status.bg} ${status.text} border border-current/10`}>

@@ -49,6 +49,13 @@ export type OracaoTipo = 'Ofício Divino' | 'Leitura Orante' | 'Celebrativo' | '
 
 export type RoteiroStepTipo = 'acolhida' | 'oracao_inicial' | 'desenvolvimento' | 'dinamica' | 'compromisso' | 'avisos' | 'oracao_final';
 
+export interface AvaliacaoEncontro {
+  atividadesRealizadas: 'sim' | 'nulo' | 'nao';
+  pontosPositivos: string;
+  pontosMelhorar: string;
+  conclusao: string;
+}
+
 export interface RoteiroStep {
   id: string;
   tipo: RoteiroStepTipo;
@@ -72,6 +79,7 @@ export interface Encontro {
   criadoEm: string;
   motivoCancelamento?: string;
   dataTransferida?: string;
+  avaliacao?: AvaliacaoEncontro;
 }
 
 export interface RegistroOcorrencia {

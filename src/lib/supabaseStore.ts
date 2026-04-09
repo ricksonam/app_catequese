@@ -85,6 +85,7 @@ export async function fetchEncontros(turmaId?: string): Promise<Encontro[]> {
     roteiro: e.roteiro || [], status: e.status, presencas: e.presencas || [],
     criadoEm: e.criado_em, motivoCancelamento: e.motivo_cancelamento || undefined,
     dataTransferida: e.data_transferida || undefined,
+    avaliacao: e.avaliacao || undefined,
   }));
 }
 
@@ -95,6 +96,7 @@ export async function upsertEncontro(e: Encontro) {
     roteiro: e.roteiro as any, status: e.status, presencas: e.presencas as any,
     criado_em: e.criadoEm, motivo_cancelamento: e.motivoCancelamento || null,
     data_transferida: e.dataTransferida || null,
+    avaliacao: e.avaliacao || null,
   });
   if (error) throw error;
 }

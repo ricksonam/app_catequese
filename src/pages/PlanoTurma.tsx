@@ -139,8 +139,10 @@ export default function PlanoTurma() {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <p className="text-[10px] font-black text-primary uppercase">{dateStr.split(' ')[1]}</p>
-                            <p className="text-lg font-black text-foreground leading-none">{dateStr.split(' ')[0]}</p>
+                            <p className="text-[10px] font-black text-primary uppercase">Dia</p>
+                            <p className="text-lg font-black text-foreground leading-none">
+                              {dateStr.split(' ')[0]} <span className="text-[10px] font-bold text-muted-foreground uppercase">{dateStr.split(' ')[2]?.replace('.', '')}</span>
+                            </p>
                           </div>
                         </button>
                       </div>
