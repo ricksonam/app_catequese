@@ -185,9 +185,14 @@ export default function AtividadesList() {
           {catequizandos.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando</p> : (
             <div className="space-y-1 mt-2 max-h-[50vh] overflow-y-auto">{catequizandos.map(c => {
               const present = (presencaItem?.presencas || []).includes(c.id);
-              return <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${present ? 'bg-success/10' : 'hover:bg-muted/50'}`}>
-                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${present ? 'bg-success border-success' : 'border-border'}`}>{present && <CheckCircle2 className="h-3 w-3 text-white" />}</div>
-                <span className={`font-medium ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.nome}</span>
+              return <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex flex-col items-start gap-1 px-3 py-2.5 rounded-xl text-sm transition-colors ${present ? 'bg-success/10' : 'hover:bg-muted/50'}`}>
+                <div className="flex items-center gap-3 w-full">
+                  <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${present ? 'bg-success border-success' : 'border-border'}`}>{present && <CheckCircle2 className="h-3 w-3 text-white" />}</div>
+                  <div className="flex-1 text-left">
+                    <span className={`font-bold block ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.responsavel || 'Sem responsável'}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-tight">Catequizando: {c.nome}</span>
+                  </div>
+                </div>
               </button>;
             })}</div>
           )}
