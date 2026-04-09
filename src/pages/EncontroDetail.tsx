@@ -110,7 +110,7 @@ export default function EncontroDetail() {
         <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center"><Trash2 className="h-4 w-4 text-destructive" /></button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 animate-float-up">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-float-up">
         <button onClick={() => setShowStatus(true)} className={`pill-btn ${currentStatus.color} justify-center`}>{currentStatus.label} ▾</button>
         <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="pill-btn bg-primary/10 text-primary flex items-center justify-center gap-1"><Edit className="h-3.5 w-3.5" /> Editar</button>
         <button onClick={() => setShowPresenca(true)} className="pill-btn bg-success/10 text-success flex items-center justify-center gap-1"><Users className="h-3.5 w-3.5" /> Presença</button>
@@ -232,6 +232,128 @@ export default function EncontroDetail() {
               className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-black text-sm uppercase tracking-[0.1em] shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
             >
               Salvar Avaliação
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Status Modal */}
+      <Dialog open={showStatus} onOpenChange={setShowStatus}>
+        <DialogContent className="rounded-2xl border-border/30">
+          <DialogTitle>Alterar Status</DialogTitle>
+          <div className="space-y-3 mt-4">
+            {STATUS_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleStatusClick(opt.value)}
+                disabled={encontro.status === opt.value}
+                className={cn(
+                  "w-full p-4 rounded-xl font-bold flex items-center justify-between transition-all",
+                  encontro.status === opt.value ? "bg-muted/50 text-muted-foreground cursor-not-allowed" : `${opt.color.replace('text-', 'hover:bg-opacity-20 text-')} hover:bg-opacity-10 bg-muted/10`
+                )}
+              >
+                <span>{opt.label}</span>
+                {encontro.status === opt.value && <span className="text-[10px] uppercase tracking-wider">Atual</span>}
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transfer Calendar Modal */}
+      <Dialog open={showTransferCalendar} onOpenChange={setShowTransferCalendar}>
+        <DialogContent className="rounded-2xl border-border/30">
+          <DialogTitle>Escolher Nova Data</DialogTitle>
+          <div className="flex justify-center p-4">
+            <Calendar
+              mode="single"
+              selected={selectedTransferDate}
+              onSelect={handleTransferDateSelect}
+              className="rounded-xl border"
+              disabled={(date) => {
+                const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                const isTaken = encontroDates.some(d => d.toISOString().split('T')[0] === date.toISOString().split('T')[0]);
+                return isPast || isTaken;
+              }}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Conflict Modal */}
+      <Dialog open={showConflict} onOpenChange={setShowConflict}>
+        <DialogContent className="rounded-2xl border-border/30">
+          <DialogTitle className="text-caution">Conflito de Data</DialogTitle>
+          <div className="space-y-4">
+            <p className="text-sm text-foreground">
+              Já existe um encontro agendado para esta data: <strong>{conflictEncontro?.tema}</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground">O que deseja fazer com o encontro existente?</p>
+            <div className="flex flex-col gap-2">
+              <button onClick={() => handleConflictAction('remanejar')} className="action-btn">
+                Mover para {formatarDataVigente(encontro.data)}
+              </button>
+              <button onClick={() => handleConflictAction('cancelar')} className="w-full py-3 rounded-xl border border-destructive/20 text-destructive font-bold text-sm hover:bg-destructive/10 transition-colors">
+                Cancelar encontro existente
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel/Delete Motivo Modal */}
+      <Dialog open={showCancelMotivo || showDeleteMotivo} onOpenChange={(o) => { if(!o){ setShowCancelMotivo(false); setShowDeleteMotivo(false); } }}>
+        <DialogContent className="rounded-2xl border-border/30">
+          <DialogTitle>{showCancelMotivo ? 'Motivo do Cancelamento' : 'Motivo da Exclusão'}</DialogTitle>
+          <div className="space-y-4 mt-2">
+            <p className="text-xs text-muted-foreground">
+              Por favor, informe o motivo para registrar na aba de Ocorrências da turma.
+            </p>
+            <textarea
+              className="w-full min-h-[100px] rounded-xl border-2 border-muted/50 bg-background p-3 text-sm resize-none focus:border-primary/50 outline-none transition-colors"
+              placeholder="Ex: Falta de energia, catequista doente..."
+              value={motivoText}
+              onChange={(e) => setMotivoText(e.target.value)}
+            />
+            <button
+              onClick={showCancelMotivo ? handleCancelConfirm : handleDelete}
+              className="w-full action-btn bg-destructive hover:bg-destructive/90 text-destructive-foreground border-transparent"
+            >
+              Confirmar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Presence Manager Modal */}
+      <Dialog open={showPresenca} onOpenChange={setShowPresenca}>
+        <DialogContent className="rounded-2xl border-border/30 max-h-[85vh] flex flex-col">
+          <div className="shrink-0 mb-4">
+            <DialogTitle>Chamada do Encontro</DialogTitle>
+            <p className="text-xs text-muted-foreground mt-1">{encontro.presencas.length} de {catequizandos.length} alunos presentes</p>
+          </div>
+          <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+            {catequizandos.map(cat => {
+              const present = encontro.presencas.includes(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => togglePresenca(cat.id)}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-colors ${present ? 'border-success bg-success/5' : 'border-muted/30 bg-muted/10 hover:border-muted/50'}`}
+                >
+                  <div className="text-left">
+                    <p className={`text-sm font-bold ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{cat.nome}</p>
+                    <p className="text-[10px] uppercase text-muted-foreground font-semibold">RM: {cat.id.substring(0,6)}</p>
+                  </div>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 ${present ? 'bg-success border-success' : 'border-muted-foreground/30'}`}>
+                    {present && <Users className="h-3 w-3 text-white" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <div className="shrink-0 pt-4 mt-2 border-t border-border/10">
+            <button onClick={() => setShowPresenca(false)} className="w-full action-btn">
+              Concluído
             </button>
           </div>
         </DialogContent>
