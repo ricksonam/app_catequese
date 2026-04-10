@@ -186,8 +186,22 @@ export default function CatequizandosList() {
                 {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-sm font-bold text-accent-foreground">{c.nome.charAt(0).toUpperCase()}</span>}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2"><p className="text-sm font-semibold text-foreground truncate">{c.nome}</p><span className={`pill-btn ${st.color}`}>{st.label}</span></div>
-                <p className="text-xs text-muted-foreground">{c.dataNascimento && calcularIdade(c.dataNascimento)}{c.responsavel && ` • ${c.responsavel}`}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-semibold text-foreground truncate">{c.nome}</p>
+                  <span className={`pill-btn ${st.color} shrink-0`}>{st.label}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {c.dataNascimento && (
+                    <>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(c.dataNascimento + 'T00:00').toLocaleDateString('pt-BR')}
+                      </span>
+                      <span className="text-[10px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded-lg border border-primary/15">
+                        {calcularIdade(c.dataNascimento)}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
             </button>

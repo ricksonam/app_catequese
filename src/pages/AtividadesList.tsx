@@ -106,45 +106,108 @@ export default function AtividadesList() {
       {list.length === 0 ? (
         <div className="empty-state animate-float-up"><div className="icon-box bg-liturgical/10 text-liturgical mx-auto mb-3"><ListChecks className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhuma atividade cadastrada</p></div>
       ) : (
-        <div className="space-y-6">
+      <div className="space-y-6">
           {(() => {
+            const TIPO_ICONES: Record<string, string> = {
+              'Retiro': '🏕️', 'Celebração': '✝️', 'Encontro de pais': '👨‍👩‍👧',
+              'Gincana': '🎯', 'Passeios': '🌿', 'Jornada': '🚶', 'Eventos geral': '📅', 'Outros': '📌',
+            };
             const sorted = [...list].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
             const groups: Record<string, typeof sorted> = {};
-            
+            const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+            const DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+
             sorted.forEach(item => {
-              const date = new Date(item.data + 'T12:00:00');
-              const monthYear = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-              const key = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+              const d = new Date(item.data + 'T12:00:00');
+              const key = `${d.getFullYear()}-${d.getMonth()}`;
               if (!groups[key]) groups[key] = [];
               groups[key].push(item);
             });
 
-            return Object.entries(groups).map(([month, items]) => (
-              <div key={month} className="space-y-4">
-                <div className="flex items-center justify-center gap-4 py-4">
-                  <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-primary/20"></div>
-                  <h3 className="text-sm font-extrabold text-primary uppercase tracking-[0.15em] bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10 shadow-sm">{month}</h3>
-                  <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-primary/20"></div>
-                </div>
-                <div className="space-y-3">
-                  {items.map((item, i) => (
-                    <button key={item.id} onClick={() => setViewItem(item)} className="w-full float-card flex flex-col items-center gap-2 px-4 py-5 animate-float-up text-center active:scale-[0.98] transition-transform" style={{ animationDelay: `${i * 50}ms` }}>
-                      <span className={`pill-btn text-[10px] font-bold uppercase tracking-wider mb-1 ${tipoColors[item.tipo] || 'bg-muted text-muted-foreground'}`}>{item.tipo}</span>
-                      <p className="text-base font-bold text-foreground leading-tight">{item.nome}</p>
-                      <div className="flex flex-col items-center gap-0.5 mt-1">
-                        <p className="text-xs text-muted-foreground font-medium">{item.data && formatarDataVigente(item.data)}{item.horario && ` • ${item.horario}`}</p>
-                        {item.local && <p className="text-xs text-muted-foreground italic flex items-center justify-center gap-1"><MapPin className="h-3 w-3" /> {item.local}</p>}
-                      </div>
-                      {item.modalidade === 'externa' && (
-                        <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
-                          <Car className="h-3 w-3" /> ATIVIDADE EXTERNA
+            return Object.entries(groups).map(([key, items]) => {
+              const [y, m] = key.split('-').map(Number);
+              const monthLabel = `${MESES[m]} ${y}`;
+              return (
+                <div key={key} className="space-y-3">
+                  {/* Separador litúrgico de mês */}
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-liturgical/25 to-liturgical/40" />
+                    <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-liturgical/10 to-liturgical/5 border border-liturgical/20 shadow-sm">
+                      <span className="text-[9px] text-liturgical/70">✝</span>
+                      <h3 className="text-xs font-extrabold text-liturgical uppercase tracking-[0.18em]">{monthLabel}</h3>
+                      <span className="text-[10px] font-bold text-liturgical/50 ml-1">({items.length})</span>
+                    </div>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent via-liturgical/25 to-liturgical/40" />
+                  </div>
+
+                  {/* Cards */}
+                  {items.map((item, i) => {
+                    const d = new Date(item.data + 'T12:00:00');
+                    const cor = tipoColors[item.tipo] || 'bg-muted text-muted-foreground';
+                    const icone = TIPO_ICONES[item.tipo] || '📌';
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setViewItem(item)}
+                        className="w-full relative p-[1.5px] rounded-2xl bg-gradient-to-br from-liturgical/30 via-primary/15 to-primary/5 shadow-md hover:shadow-lg animate-float-up active:scale-[0.98] transition-all duration-300 hover:-translate-y-0.5"
+                        style={{ animationDelay: `${i * 55}ms` }}
+                      >
+                        <div className="rounded-[14px] bg-card overflow-hidden">
+                          {/* Faixa de tipo no topo */}
+                          <div className={`h-1 w-full ${cor.split(' ')[0].replace('bg-', 'bg-gradient-to-r from-').replace('/10','/60').replace('/15','/60')} from-${cor.split(' ')[0].replace('bg-','').replace('/10','').replace('/15','')}/60 to-transparent`}
+                               style={{ background: `linear-gradient(to right, var(--tw-color, rgba(0,0,0,0.1)) 0%, transparent 100%)` }}
+                          />
+
+                          <div className="flex items-stretch">
+                            {/* Coluna da data */}
+                            <div className="flex flex-col items-center justify-center px-4 py-3.5 bg-gradient-to-b from-liturgical/5 to-liturgical/10 shrink-0 min-w-[60px] border-r border-black/5">
+                              <span className="text-xl leading-none mb-0.5">{icone}</span>
+                              <span className="text-2xl font-black text-foreground leading-tight">
+                                {String(d.getDate()).padStart(2,'0')}
+                              </span>
+                              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wide">
+                                {DIAS[d.getDay()]}
+                              </span>
+                            </div>
+
+                            {/* Conteúdo */}
+                            <div className="flex-1 px-4 py-3 min-w-0 text-left">
+                              {/* Badge de tipo */}
+                              <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full mb-1.5 border ${cor.replace('bg-','bg-').replace('text-','text-')} border-current/10`}>
+                                {item.tipo}
+                              </span>
+                              <p className="text-sm font-bold text-foreground leading-snug truncate">{item.nome}</p>
+                              <div className="flex flex-wrap items-center gap-2 mt-1">
+                                {item.horario && (
+                                  <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                    <Clock className="h-3 w-3" />{item.horario}
+                                  </span>
+                                )}
+                                {item.local && (
+                                  <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                    <MapPin className="h-3 w-3" />{item.local}
+                                  </span>
+                                )}
+                                {item.modalidade === 'externa' && (
+                                  <span className="flex items-center gap-0.5 text-[9px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/20">
+                                    <Car className="h-2.5 w-2.5" />Externa
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Seta */}
+                            <div className="flex items-center justify-center px-3 shrink-0">
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          </div>
                         </div>
-                      )}
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
-            ));
+              );
+            });
           })()}
         </div>
       )}
