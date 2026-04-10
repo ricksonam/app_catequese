@@ -123,6 +123,10 @@ export default {
           "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0.4)" },
           "50%": { boxShadow: "0 0 0 6px hsl(var(--primary) / 0)" },
         },
+        "pulse-border-red": {
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--destructive) / 0.7)" },
+          "50%": { boxShadow: "0 0 0 8px hsl(var(--destructive) / 0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -133,6 +137,7 @@ export default {
         "float-up": "float-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both",
         "wiggle": "wiggle 1s ease-in-out infinite",
         "pulse-border": "pulse-border 6s ease-in-out infinite",
+        "pulse-border-red": "pulse-border-red 8s ease-in-out infinite",
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },

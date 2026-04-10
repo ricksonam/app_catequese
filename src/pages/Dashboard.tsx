@@ -129,7 +129,7 @@ export default function Dashboard() {
                 <button
                   key={e.id}
                   onClick={() => navigate(`/turmas/${e.turmaId}/encontros/${e.id}`)}
-                  className={`float-card flex items-center gap-3 px-4 py-3.5 animate-float-up w-full text-left transition-all active:scale-[0.98] ${isUrgent ? "animate-pulse-border border-primary/50" : ""}`}
+                  className={`flex items-center gap-3 px-4 py-3.5 animate-float-up w-full text-left transition-all active:scale-[0.98] ${isUrgent ? "float-card animate-pulse-border-red border-destructive/60 bg-red-500/5 relative z-10 scale-[1.02] shadow-lg ring-1 ring-destructive/20" : "float-card"}`}
                   style={{ animationDelay: `${(i + 3) * 60}ms` }}
                 >
                   <div className={`icon-box ${isUrgent ? "bg-destructive/10" : "bg-primary/10"}`}>
