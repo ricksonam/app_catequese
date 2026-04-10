@@ -1,9 +1,10 @@
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
+import WelcomeModal from "@/components/WelcomeModal";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -11,8 +12,16 @@ export default function Dashboard() {
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   const loading = tLoading || eLoading || cLoading;
+
+  // Abre boas-vindas para novos usuários (sem turmas e sem flag no localStorage)
+  useEffect(() => {
+    if (!loading && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
+      setWelcomeOpen(true);
+    }
+  }, [loading, turmas.length]);
 
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
@@ -78,6 +87,9 @@ export default function Dashboard() {
     { label: "Encontros", value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays, color: "bg-success/10 text-success", action: handleEncontrosClick },
   ];
 
+  // Botão flutuante para reabrir o tour manualmente
+  const showTourButton = !welcomeOpen && !!localStorage.getItem("ivc_welcome_seen");
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -88,9 +100,21 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="animate-fade-in">
-        <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
-        <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
+      <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
+
+      <div className="animate-fade-in flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
+          <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
+        </div>
+        {showTourButton && (
+          <button
+            onClick={() => setWelcomeOpen(true)}
+            className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-xl border border-primary/20 flex items-center gap-1 shrink-0"
+          >
+            🗺️ Tour
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
