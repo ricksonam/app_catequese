@@ -63,7 +63,7 @@ export default function AppLayout() {
       {/* Tab Bar */}
       {!isPresentationMode && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden">
-          <div className="mx-auto max-w-md flex items-center justify-around h-20 px-1.5 rounded-3xl bg-card/95 backdrop-blur-2xl border border-black/20 dark:border-white/10 shadow-2xl shadow-black/15">
+          <div className="mx-auto max-w-md flex items-center justify-around h-20 px-1.5 rounded-3xl bg-card/95 backdrop-blur-2xl border border-blue-500/40 dark:border-blue-400/30 shadow-2xl shadow-blue-500/10">
             {tabs.map((tab) => {
               const isActive =
                 tab.path === "/"

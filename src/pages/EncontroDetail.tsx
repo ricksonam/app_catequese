@@ -117,36 +117,151 @@ export default function EncontroDetail() {
         <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="pill-btn bg-liturgical/10 text-liturgical flex items-center justify-center gap-1"><Play className="h-3.5 w-3.5" /> Apresentar</button>
       </div>
 
-      <div className="float-card p-5 space-y-3 animate-float-up" style={{ animationDelay: '60ms' }}>
-        <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Data</p><p className="text-sm font-semibold text-foreground">{formatarDataVigente(encontro.data, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p></div>
-        {encontro.dataTransferida && <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Transferido para</p><p className="text-sm font-semibold text-caution flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" />{formatarDataVigente(encontro.dataTransferida, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p></div>}
-        {encontro.leituraBiblica && <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Leitura Bíblica</p><p className="text-sm font-semibold text-foreground flex items-center gap-1"><BookOpen className="h-3.5 w-3.5 text-primary" /> {encontro.leituraBiblica}</p></div>}
-        <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Tempo Total</p><p className="text-sm font-semibold text-foreground flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-primary" /> {tempoTotal} min</p></div>
-        <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Presenças</p><p className="text-sm font-semibold text-foreground">{encontro.presencas.length}/{catequizandos.length}</p></div>
-        {encontro.motivoCancelamento && <div className="space-y-0.5"><p className="text-xs text-muted-foreground">Motivo do Cancelamento</p><p className="text-sm font-semibold text-destructive">{encontro.motivoCancelamento}</p></div>}
+      {/* Card de informações gerais */}
+      <div className="float-card overflow-hidden animate-float-up" style={{ animationDelay: '60ms' }}>
+        {/* Header do card */}
+        <div className="px-5 py-3 bg-gradient-to-r from-primary/8 to-primary/3 border-b border-black/5 flex items-center gap-2">
+          <CalendarDays className="h-4 w-4 text-primary" />
+          <p className="text-xs font-black text-primary uppercase tracking-widest">Detalhes do Encontro</p>
+        </div>
+        <div className="divide-y divide-black/5">
+          {/* Data */}
+          <div className="flex items-center px-5 py-3 gap-3">
+            <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center shrink-0">
+              <CalendarDays className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Data</p>
+              <p className="text-sm font-semibold text-foreground capitalize">{formatarDataVigente(encontro.data, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p>
+            </div>
+          </div>
+          {/* Transferido */}
+          {encontro.dataTransferida && (
+            <div className="flex items-center px-5 py-3 gap-3">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                <CalendarDays className="h-4 w-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Transferido para</p>
+                <p className="text-sm font-semibold text-amber-600 capitalize">{formatarDataVigente(encontro.dataTransferida, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</p>
+              </div>
+            </div>
+          )}
+          {/* Leitura Bíblica */}
+          {encontro.leituraBiblica && (
+            <div className="flex items-center px-5 py-3 gap-3">
+              <div className="w-8 h-8 rounded-xl bg-liturgical/10 flex items-center justify-center shrink-0">
+                <BookOpen className="h-4 w-4 text-liturgical" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Leitura Bíblica</p>
+                <p className="text-sm font-semibold text-foreground">{encontro.leituraBiblica}</p>
+              </div>
+            </div>
+          )}
+          {/* Tempo e Presenças */}
+          <div className="grid grid-cols-2 divide-x divide-black/5">
+            <div className="flex items-center px-5 py-3 gap-3">
+              <div className="w-8 h-8 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
+                <Clock className="h-4 w-4 text-sky-600" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Duração</p>
+                <p className="text-sm font-bold text-foreground">{tempoTotal} min</p>
+              </div>
+            </div>
+            <div className="flex items-center px-5 py-3 gap-3">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                <Users className="h-4 w-4 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Presenças</p>
+                <p className="text-sm font-bold text-foreground">{encontro.presencas.length}/{catequizandos.length}</p>
+              </div>
+            </div>
+          </div>
+          {/* Motivo cancelamento */}
+          {encontro.motivoCancelamento && (
+            <div className="flex items-center px-5 py-3 gap-3 bg-destructive/5">
+              <div className="w-8 h-8 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+                <span className="text-xs font-black text-destructive">!</span>
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-destructive uppercase tracking-widest">Motivo do Cancelamento</p>
+                <p className="text-sm font-semibold text-destructive">{encontro.motivoCancelamento}</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {encontro.materialApoio && <div className="float-card p-5 animate-float-up" style={{ animationDelay: '120ms' }}><p className="section-title mb-2">Material de Apoio</p><p className="text-sm text-foreground whitespace-pre-wrap">{encontro.materialApoio}</p></div>}
 
+      {/* Roteiro */}
       <div className="animate-float-up" style={{ animationDelay: '180ms' }}>
-        <p className="section-title">Roteiro do Encontro</p>
-        <div className="space-y-2">
-          {encontro.roteiro.map((step, i) => (
-            <div key={step.id} className="float-card px-4 py-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                  <span className="text-sm font-semibold text-foreground">{step.label}</span>
-                  {step.oracaoTipo && <span className="pill-btn bg-liturgical/10 text-liturgical text-[10px]">{step.oracaoTipo}</span>}
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                  {step.tempo > 0 && <span className="flex items-center gap-0.5"><Clock className="h-3 w-3" />{step.tempo}min</span>}
-                  {step.catequista && <span className="flex items-center gap-0.5"><User className="h-3 w-3" />{step.catequista}</span>}
+        {/* Cabeçalho da seção */}
+        <div className="flex items-center justify-between mb-3">
+          <p className="section-title mb-0">Roteiro do Encontro</p>
+          <span className="text-[10px] font-black text-muted-foreground bg-muted/50 px-2 py-1 rounded-lg">
+            {encontro.roteiro.length} tópico{encontro.roteiro.length !== 1 ? 's' : ''} • {tempoTotal}min
+          </span>
+        </div>
+
+        {/* Linha de tempo do roteiro */}
+        <div className="relative">
+          {/* Linha vertical conectora */}
+          <div className="absolute left-[27px] top-4 bottom-4 w-px bg-gradient-to-b from-primary/30 via-primary/15 to-transparent" />
+
+          <div className="space-y-2">
+            {encontro.roteiro.map((step, i) => (
+              <div key={step.id} className="relative float-card overflow-hidden">
+                {/* Faixa lateral com número */}
+                <div className="flex items-stretch">
+                  {/* Índice */}
+                  <div className="flex flex-col items-center justify-start pt-3.5 px-3 relative z-10">
+                    <span className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-xs font-black flex items-center justify-center shadow-sm shadow-primary/30 shrink-0">
+                      {i + 1}
+                    </span>
+                  </div>
+
+                  {/* Conteúdo */}
+                  <div className="flex-1 min-w-0 py-3 pr-4">
+                    {/* Linha principal: tópico + badges */}
+                    <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                      <span className="text-sm font-bold text-foreground leading-snug">{step.label}</span>
+                      {step.oracaoTipo && (
+                        <span className="text-[9px] font-black uppercase tracking-widest bg-liturgical/10 text-liturgical px-1.5 py-0.5 rounded-full border border-liturgical/15">
+                          {step.oracaoTipo}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Meta-linha: tempo e catequista */}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {step.tempo > 0 && (
+                        <span className="flex items-center gap-1 text-[11px] font-bold text-sky-600 bg-sky-500/10 px-2 py-0.5 rounded-lg border border-sky-500/15">
+                          <Clock className="h-3 w-3" />{step.tempo} min
+                        </span>
+                      )}
+                      {step.catequista && (
+                        <span className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-lg border border-black/8">
+                          <User className="h-3 w-3 shrink-0" />
+                          <span className="truncate max-w-[150px]">{step.catequista}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Conteúdo/detalhes */}
+                    {step.conteudo && (
+                      <p className="text-xs text-muted-foreground mt-2 leading-relaxed border-l-2 border-primary/20 pl-2.5 whitespace-pre-wrap">
+                        {step.conteudo}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-              {step.conteudo && <p className="text-xs text-muted-foreground mt-2 ml-9 whitespace-pre-wrap">{step.conteudo}</p>}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
