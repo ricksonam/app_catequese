@@ -81,9 +81,6 @@ export default function AppLayout() {
                       : "text-muted-foreground hover:bg-muted/50"
                   }`}
                 >
-                  {isActive && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-1.5 rounded-full bg-current shadow-[0_0_8px_rgba(var(--primary),0.5)] animate-fade-in" />
-                  )}
                   <Icon className={`h-6 w-6 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
                   <span className={`text-[10px] tracking-tight transition-all ${isActive ? "font-bold opacity-100" : "font-medium opacity-70"}`}>
                     {tab.label}

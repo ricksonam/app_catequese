@@ -258,7 +258,7 @@ export default function EncontrosList() {
                               className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3.5 text-primary hover:bg-primary/8 transition-colors group/btn"
                             >
                               <Eye className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                              <span className="text-[8px] font-black uppercase tracking-wide">Ver</span>
+                              <span className="text-[8px] font-black uppercase tracking-wide">Abrir</span>
                             </button>
                             <div className="h-px bg-black/5" />
                             <button
@@ -266,7 +266,7 @@ export default function EncontrosList() {
                               className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3.5 text-liturgical hover:bg-liturgical/8 transition-colors group/btn"
                             >
                               <Play className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                              <span className="text-[8px] font-black uppercase tracking-wide">Slides</span>
+                              <span className="text-[8px] font-black uppercase tracking-wide">Apresentar</span>
                             </button>
                           </div>
                         </div>

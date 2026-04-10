@@ -45,13 +45,13 @@ export default function Dashboard() {
     return pendentes[0] || null;
   }, [encontros]);
 
-  // Aniversariantes apenas desta semana (próximos 7 dias)
-  const aniversariantesSemana = useMemo(() => {
+  // Aniversariantes: prioriza semana atual, fallback para o mais próximo
+  const { aniversariantesSemana, fallbackAniversario } = useMemo(() => {
     const fimSemana = new Date(hoje);
     fimSemana.setDate(fimSemana.getDate() + 7);
     const thisYear = hoje.getFullYear();
 
-    return catequizandos
+    const todos = catequizandos
       .filter((c) => c.dataNascimento)
       .map((c) => {
         const bday = new Date(c.dataNascimento);
@@ -59,8 +59,13 @@ export default function Dashboard() {
         if (nextBday < hoje) nextBday = new Date(thisYear + 1, bday.getMonth(), bday.getDate());
         return { ...c, proximoAniversario: nextBday };
       })
-      .filter((c) => c.proximoAniversario >= hoje && c.proximoAniversario <= fimSemana)
       .sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime());
+
+    const semana = todos.filter((c) => c.proximoAniversario >= hoje && c.proximoAniversario <= fimSemana);
+    return {
+      aniversariantesSemana: semana,
+      fallbackAniversario: semana.length === 0 && todos.length > 0 ? todos[0] : null,
+    };
   }, [catequizandos]);
 
   function getDiasRestantes(dataStr: string) {
@@ -202,49 +207,75 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ── ANIVERSARIANTES DA SEMANA ── visual totalmente diferente */}
-      {aniversariantesSemana.length > 0 && (
+      {/* ── ANIVERSARIANTES DA SEMANA ou mais próximo ── */}
+      {(aniversariantesSemana.length > 0 || fallbackAniversario) && (
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center shadow-sm">
               <Cake className="h-4 w-4 text-white" />
             </div>
-            <p className="section-title mb-0">Aniversariantes desta Semana</p>
+            <p className="section-title mb-0">
+              {aniversariantesSemana.length > 0 ? "Aniversariantes desta Semana" : "Próximo Aniversário"}
+            </p>
           </div>
 
-          {/* Scroll horizontal estilo cards de festa */}
-          <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-            {aniversariantesSemana.map((c, i) => {
-              const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-              const isHoje = diasAte === 0;
-              return (
-                <div
-                  key={c.id}
-                  className={`shrink-0 flex flex-col items-center text-center p-4 rounded-2xl border-2 w-28 animate-float-up ${
-                    isHoje
-                      ? "bg-gradient-to-b from-amber-400/20 to-pink-400/10 border-amber-400/50 shadow-lg shadow-amber-400/15"
-                      : "bg-card border-black/10"
-                  }`}
-                  style={{ animationDelay: `${(i + 5) * 60}ms` }}
-                >
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-black mb-2 shadow-sm ${
-                    isHoje
-                      ? "bg-gradient-to-br from-amber-400 to-pink-500 text-white"
-                      : "bg-gradient-to-br from-primary/20 to-primary/10 text-primary"
-                  }`}>
-                    {c.nome?.charAt(0).toUpperCase()}
+          {aniversariantesSemana.length > 0 ? (
+            /* Scroll horizontal estilo cards de festa */
+            <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+              {aniversariantesSemana.map((c, i) => {
+                const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+                const isHoje = diasAte === 0;
+                return (
+                  <div
+                    key={c.id}
+                    className={`shrink-0 flex flex-col items-center text-center p-4 rounded-2xl border-2 w-28 animate-float-up ${
+                      isHoje
+                        ? "bg-gradient-to-b from-amber-400/20 to-pink-400/10 border-amber-400/50 shadow-lg shadow-amber-400/15"
+                        : "bg-card border-black/10"
+                    }`}
+                    style={{ animationDelay: `${(i + 5) * 60}ms` }}
+                  >
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-black mb-2 shadow-sm ${
+                      isHoje
+                        ? "bg-gradient-to-br from-amber-400 to-pink-500 text-white"
+                        : "bg-gradient-to-br from-primary/20 to-primary/10 text-primary"
+                    }`}>
+                      {c.nome?.charAt(0).toUpperCase()}
+                    </div>
+                    <p className="text-xs font-bold text-foreground leading-tight break-words w-full">
+                      {c.nome?.split(" ")[0]}
+                    </p>
+                    <p className={`text-[10px] font-black mt-1 ${isHoje ? "text-amber-600" : "text-muted-foreground"}`}>
+                      {isHoje ? "🎉 Hoje!" : `em ${diasAte} dia${diasAte !== 1 ? "s" : ""}`}
+                    </p>
+                    {isHoje && <Star className="h-3 w-3 text-amber-500 mt-1 animate-pulse" />}
                   </div>
-                  <p className="text-xs font-bold text-foreground leading-tight break-words w-full">
-                    {c.nome?.split(" ")[0]}
-                  </p>
-                  <p className={`text-[10px] font-black mt-1 ${isHoje ? "text-amber-600" : "text-muted-foreground"}`}>
-                    {isHoje ? "🎉 Hoje!" : `em ${diasAte} dia${diasAte !== 1 ? "s" : ""}`}
-                  </p>
-                  {isHoje && <Star className="h-3 w-3 text-amber-500 mt-1 animate-pulse" />}
+                );
+              })}
+            </div>
+          ) : fallbackAniversario ? (
+            /* Card horizontal compacto para o próximo aniversário */
+            (() => {
+              const fb = fallbackAniversario;
+              const diasAte = Math.round((fb.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+              return (
+                <div className="float-card flex items-center gap-4 px-5 py-4 border-black/10">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-base font-black text-primary shrink-0">
+                    {fb.nome?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-foreground">{fb.nome}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {fb.proximoAniversario.toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long' })}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-black text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shrink-0">
+                    em {diasAte}d
+                  </span>
                 </div>
               );
-            })}
-          </div>
+            })()
+          ) : null}
         </div>
       )}
 
