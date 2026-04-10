@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, ChevronRight } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,16 +49,16 @@ export default function TurmaDetail() {
   }
 
   const modulos = [
-    { label: "Encontros", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/15 text-primary", borderColor: "border-primary/60", gradient: "from-primary/5 to-primary/15" },
-    { label: "Catequizandos", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(var(--accent))]/15 text-[hsl(var(--accent))]", borderColor: "border-[hsl(var(--accent))]/60", gradient: "from-[hsl(var(--accent))]/5 to-[hsl(var(--accent))]/15" },
-    { label: "Atividades e Eventos", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(var(--liturgical))]/15 text-[hsl(var(--liturgical))]", borderColor: "border-[hsl(var(--liturgical))]/60", gradient: "from-[hsl(var(--liturgical))]/5 to-[hsl(var(--liturgical))]/15" },
-    { label: "Plano da Turma", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success))]", borderColor: "border-[hsl(var(--success))]/60", gradient: "from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/15" },
-    { label: "Relatórios", icon: PieChart, count: null, path: `/turmas/${id}/relatorios`, color: "bg-[hsl(var(--destructive))]/15 text-[hsl(var(--destructive))]", borderColor: "border-[hsl(var(--destructive))]/60", gradient: "from-[hsl(var(--destructive))]/5 to-[hsl(var(--destructive))]/15" },
+    { label: "Encontros", desc: "Gestão de calendário e frequência", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/10 text-primary", gradient: "from-primary/5 to-primary/10" },
+    { label: "Catequizandos", desc: "Perfis e acompanhamento detalhado", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(var(--accent))]/15 text-[hsl(var(--accent))]", gradient: "from-[hsl(var(--accent))]/5 to-[hsl(var(--accent))]/10" },
+    { label: "Atividades e Eventos", desc: "Eventos extras e projetos especiais", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(var(--liturgical))]/15 text-[hsl(var(--liturgical))]", gradient: "from-[hsl(var(--liturgical))]/5 to-[hsl(var(--liturgical))]/10" },
+    { label: "Plano da Turma", desc: "Planejamento de conteúdos e etapas", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success))]", gradient: "from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/10" },
+    { label: "Relatórios", desc: "Métricas, dados e geração de PDF", icon: PieChart, count: null, path: `/turmas/${id}/relatorios`, color: "bg-[hsl(var(--destructive))]/10 text-[hsl(var(--destructive))]", gradient: "from-[hsl(var(--destructive))]/5 to-[hsl(var(--destructive))]/10" },
   ];
 
   return (
     <div className="space-y-4">
-      <div className="page-header animate-fade-in mb-4">
+      <div className="page-header animate-fade-in mb-6">
         <button onClick={() => navigate("/turmas")} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <div>
           <h1 className="text-xl font-bold text-foreground">{turma.nome}</h1>
@@ -66,22 +66,47 @@ export default function TurmaDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 gap-4">
         {modulos.map((mod, i) => {
           const Icon = mod.icon;
           return (
-            <button
+            <div 
               key={mod.label}
+              className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/50 via-[hsl(var(--liturgical))]/40 to-primary/30 shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_20px_50px_rgb(0,0,0,0.15)] animate-float-up transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group"
+              style={{ animationDelay: `${i * 100}ms` }}
               onClick={() => navigate(mod.path)}
-              className={`float-card flex flex-col items-center p-4 text-center animate-float-up ${mod.borderColor} bg-gradient-to-br ${mod.gradient} active:scale-[0.97] transition-transform`}
-              style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className={`w-12 h-12 rounded-xl ${mod.color} flex items-center justify-center mb-2`}>
-                <Icon className="h-5 w-5" />
+              {/* Moldura litúrgica dupla interna */}
+              <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/10 z-20 pointer-events-none opacity-50 mix-blend-overlay"></div>
+              
+              <div className={`relative flex items-center p-4 rounded-[14px] bg-card w-full h-full bg-gradient-to-r ${mod.gradient} overflow-hidden`}>
+                
+                {/* Marca d'água / Ícone de fundo para dar charme inteligente */}
+                <div className="absolute -right-4 -top-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
+                   <Icon className="w-28 h-28" />
+                </div>
+
+                <div className={`w-14 h-14 rounded-2xl ${mod.color} flex items-center justify-center shrink-0 shadow-lg relative z-30 border border-white/20 dark:border-white/5`}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                
+                <div className="ml-4 flex-1 text-left relative z-30">
+                  <h3 className="text-[15px] font-bold text-foreground leading-tight group-hover:text-primary transition-colors">{mod.label}</h3>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{mod.desc}</p>
+                  
+                  {mod.count !== null && (
+                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-full bg-background/80 shadow-sm border border-border/50 text-[10px] font-semibold text-foreground">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--success))] mr-1.5 shadow-[0_0_5px_hsl(var(--success))]"></span>
+                      {mod.count} ativo{mod.count !== 1 ? 's' : ''}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="w-8 h-8 rounded-full bg-background/50 flex items-center justify-center ml-2 border border-border/50 shadow-sm relative z-30 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+                  <ChevronRight className="h-4 w-4" />
+                </div>
               </div>
-              <span className="text-[13px] font-bold text-foreground leading-tight">{mod.label}</span>
-              {mod.count !== null && <p className="text-[10px] text-muted-foreground mt-0.5">{mod.count} cadastrados</p>}
-            </button>
+            </div>
           );
         })}
       </div>
