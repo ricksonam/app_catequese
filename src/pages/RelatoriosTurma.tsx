@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn, formatarDataVigente } from "@/lib/utils";
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
@@ -272,292 +270,308 @@ const NoData = ({ txt = "Dados Insuficientes" }: { txt?: string }) => (
 // ==========================================
 // TAB 2: GERADOR DE DOCUMENTOS (PRINT)
 // ==========================================
-function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
-  const [docTipo, setDocTipo] = useState<"ficha_cat" | "ficha_enc" | "lista_chamada" | "boletim_turma">("ficha_cat");
-  const [targetId, setTargetId] = useState<string>("");
 
-  const handlePrint = () => {
-    if (docTipo === "ficha_cat" || docTipo === "ficha_enc") {
-      if (!targetId) return;
-    }
-    window.print();
+const DOC_TYPES = [
+  { id: "ficha_cat", label: "Fichas Individuais", icon: User, color: "from-violet-500 to-purple-600", bg: "bg-violet-500/10", border: "border-violet-500/30", text: "text-violet-600" },
+  { id: "ficha_enc", label: "Fichas de Encontros", icon: CalendarDays, color: "from-sky-500 to-blue-600", bg: "bg-sky-500/10", border: "border-sky-500/30", text: "text-sky-600" },
+  { id: "lista_chamada", label: "Grade de Frequência", icon: CheckCircle2, color: "from-emerald-500 to-teal-600", bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-600" },
+  { id: "boletim_turma", label: "Relatório da Turma", icon: FileText, color: "from-amber-500 to-orange-600", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-600" },
+];
+
+function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
+  const [docTipo, setDocTipo] = useState<string>("ficha_cat");
+  const [printTarget, setPrintTarget] = useState<any>(null);
+
+  const selectedType = DOC_TYPES.find(d => d.id === docTipo)!;
+
+  const handlePrint = (target: any) => {
+    setPrintTarget(target);
+    setTimeout(() => window.print(), 100);
   };
 
-  const RenderPrintableArea = () => {
-    switch (docTipo) {
-      case "ficha_cat":
-        const cat = catequizandos.find((c:any) => c.id === targetId);
-        if (!cat) return null;
-        return (
-          <div className="hidden print:block w-full text-black font-sans leading-relaxed print:break-inside-avoid">
-            <div className="border-b-4 border-black pb-4 mb-8 text-center space-y-2">
-              <h1 className="text-3xl font-black uppercase">Ficha Cadastral do Catequizando</h1>
-              <p className="text-lg">Paróquia: {org.paroquia} • Comunidade: {org.comunidade}</p>
-              <p className="font-bold">Turma: {turma.nome}</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-8 mb-8 border border-neutral-300 p-6 rounded-lg">
-              <div>
-                <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Nome Completo</p>
-                <p className="text-xl font-bold">{cat.nome}</p>
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Data de Nascimento</p>
-                <p className="text-lg font-bold">{new Date(cat.dataNascimento).toLocaleDateString("pt-BR")}</p>
-              </div>
-              <div className="col-span-2">
-                <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Responsável</p>
-                <p className="text-lg font-bold">{cat.responsavel}</p>
-                <p className="text-sm mt-1">{cat.telefone} • {cat.email}</p>
-              </div>
-              <div className="col-span-2">
-                <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Endereço Completo</p>
-                <p className="text-sm">{cat.endereco}, {cat.numero} - {cat.bairro} ({cat.complemento})</p>
-              </div>
-            </div>
+  // ---- Renderiza área de impressão ----
+  const PrintArea = () => {
+    if (!printTarget) return null;
 
-            <div className="mb-8">
-              <h3 className="font-black text-lg border-b border-black pb-2 mb-4">Informações Sacramentais</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className={cn("p-4 border rounded", cat.sacramentos?.batismo?.recebido ? "bg-gray-100" : "")}>
-                  <p className="font-bold uppercase text-xs">Batismo</p>
-                  <p>{cat.sacramentos?.batismo?.recebido ? "Sim" : "Não"}</p>
-                  {cat.sacramentos?.batismo?.data && <p className="text-xs">Data: {new Date(cat.sacramentos.batismo.data).toLocaleDateString()}</p>}
+    if (docTipo === "ficha_cat") {
+      const cat = printTarget;
+      return (
+        <div className="hidden print:block w-full text-black font-sans leading-relaxed">
+          <div className="border-b-4 border-black pb-4 mb-8 text-center space-y-2">
+            <h1 className="text-3xl font-black uppercase">Ficha Cadastral do Catequizando</h1>
+            <p className="text-lg">Paróquia: {org.paroquia} • Comunidade: {org.comunidade}</p>
+            <p className="font-bold">Turma: {turma.nome}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-8 mb-8 border border-neutral-300 p-6 rounded-lg">
+            <div><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Nome Completo</p><p className="text-xl font-bold">{cat.nome}</p></div>
+            <div><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Data de Nascimento</p><p className="text-lg font-bold">{new Date(cat.dataNascimento).toLocaleDateString("pt-BR")}</p></div>
+            <div className="col-span-2"><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Responsável</p><p className="text-lg font-bold">{cat.responsavel}</p><p className="text-sm mt-1">{cat.telefone} • {cat.email}</p></div>
+            <div className="col-span-2"><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Endereço</p><p className="text-sm">{cat.endereco}, {cat.numero} - {cat.bairro}</p></div>
+          </div>
+          <div className="mb-8">
+            <h3 className="font-black text-lg border-b border-black pb-2 mb-4">Informações Sacramentais</h3>
+            <div className="grid grid-cols-3 gap-4">
+              {[["Batismo", cat.sacramentos?.batismo], ["1ª Eucaristia", cat.sacramentos?.eucaristia], ["Crisma", cat.sacramentos?.crisma]].map(([label, s]: any) => (
+                <div key={label} className={cn("p-4 border rounded", s?.recebido ? "bg-gray-100" : "")}>
+                  <p className="font-bold uppercase text-xs">{label}</p>
+                  <p>{s?.recebido ? "Sim" : "Não"}</p>
                 </div>
-                <div className={cn("p-4 border rounded", cat.sacramentos?.eucaristia?.recebido ? "bg-gray-100" : "")}>
-                  <p className="font-bold uppercase text-xs">1ª Eucaristia</p>
-                  <p>{cat.sacramentos?.eucaristia?.recebido ? "Sim" : "Não"}</p>
-                </div>
-                <div className={cn("p-4 border rounded", cat.sacramentos?.crisma?.recebido ? "bg-gray-100" : "")}>
-                  <p className="font-bold uppercase text-xs">Crisma</p>
-                  <p>{cat.sacramentos?.crisma?.recebido ? "Sim" : "Não"}</p>
-                </div>
-              </div>
-            </div>
-
-            {cat.necessidadeEspecial && (
-              <div className="mb-8 p-4 border-2 border-dashed border-neutral-400 rounded-lg bg-neutral-50">
-                <p className="font-black text-sm uppercase text-neutral-600 mb-1">Necessidades Especiais (Atenção)</p>
-                <p className="font-bold">{cat.necessidadeEspecial}</p>
-              </div>
-            )}
-
-            <div className="mt-20 flex gap-12 font-bold justify-center items-center">
-               <div className="text-center flex-1">
-                 <div className="border-t border-black pt-2">Assinatura do Catequista</div>
-               </div>
-               <div className="text-center flex-1">
-                 <div className="border-t border-black pt-2">Assinatura do Responsável</div>
-               </div>
+              ))}
             </div>
           </div>
-        );
-
-      case "lista_chamada":
-        return (
-          <div className="hidden print:block w-full text-black font-sans text-xs print:break-inside-avoid">
-            <h1 className="text-2xl font-black uppercase text-center mb-1">Diário de Classe - Frequência</h1>
-            <p className="text-center text-sm font-bold mb-1">Paróquia: {org.paroquia} • Comunidade: {org.comunidade}</p>
-            <p className="text-center text-sm font-bold mb-4">Turma: {turma.nome} • Ano CATEQUÉTICO: {turma.ano}</p>
-            
-            <table className="w-full border-collapse border border-black mb-8">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-black p-2 w-8">#</th>
-                  <th className="border border-black p-2 text-left">NOME DO CATEQUIZANDO</th>
-                  {Array.from({length: 15}).map((_, i) => (
-                    <th key={i} className="border border-black p-1 w-8 text-[8px] uppercase font-normal">{`Enc ${i+1}`}</th>
-                  ))}
-                  <th className="border border-black p-2 w-12 text-center">%</th>
-                </tr>
-              </thead>
-              <tbody>
-                {catequizandos.filter((c:any) => c.status === 'ativo').map((c:any, i:number) => (
-                  <tr key={c.id}>
-                    <td className="border border-black p-2 text-center">{i + 1}</td>
-                    <td className="border border-black p-2 font-bold">{c.nome}</td>
-                    {Array.from({length: 15}).map((_, i) => (
-                      <td key={i} className="border border-black p-1 text-center"></td>
-                    ))}
-                    <td className="border border-black p-2 text-center bg-gray-50"></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            
-            <p className="text-xs italic text-gray-600">Legenda: P (Presente) • F (Falta) • J (Falta Justificada)</p>
+          <div className="mt-20 flex gap-12 font-bold justify-center">
+            <div className="text-center flex-1"><div className="border-t border-black pt-2">Assinatura do Catequista</div></div>
+            <div className="text-center flex-1"><div className="border-t border-black pt-2">Assinatura do Responsável</div></div>
           </div>
-        );
-
-      case "boletim_turma":
-        const ativos = catequizandos.filter((c:any) => c.status === 'ativo').length;
-        const faltasEncontros = encontros.filter((e:any) => e.status === 'pendente').length;
-        return (
-           <div className="hidden print:block w-full text-black font-sans leading-relaxed print:break-inside-avoid">
-              <div className="text-center mb-10 border-b-2 border-black pb-6">
-                <h1 className="text-3xl font-black uppercase">Relatório Resumo da Turma</h1>
-                <p className="text-lg italic mt-2">Paróquia: {org.paroquia} • {formatarDataVigente(new Date().toISOString())}</p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-8 mb-10">
-                <div className="p-6 border rounded-xl bg-gray-50">
-                  <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs mb-2">Dados da Turma</h3>
-                  <p className="text-xl font-black mb-1">{turma.nome}</p>
-                  <p>Etapa: {turma.etapa} • Ano: {turma.ano}</p>
-                  <p>Horário: {turma.diaCatequese} às {turma.horario}</p>
-                </div>
-                <div className="p-6 border rounded-xl bg-gray-50">
-                  <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs mb-2">Métricas Básicas</h3>
-                  <p className="text-lg font-bold">Total Matriculados: {catequizandos.length}</p>
-                  <p className="text-lg font-bold text-green-700">Ativos: {ativos}</p>
-                  <p className="text-lg font-bold text-red-700">Desistentes/Afastados: {catequizandos.length - ativos}</p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-black uppercase border-b border-black pb-2 mb-4">Progresso de Encontros</h3>
-                <p className="mb-2 font-bold">Encontros Planejados Totais: {encontros.length}</p>
-                <p className="mb-2 font-bold text-green-700">Encontros Realizados: {encontros.filter((e:any) => e.status === 'realizado').length}</p>
-                <p className="mb-10 font-bold text-yellow-600">Encontros Pendentes: {faltasEncontros}</p>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-black uppercase border-b border-black pb-2 mb-4">Atividades Realizadas</h3>
-                {atividades.length === 0 ? <p>Nenhuma atividade registrada.</p> : (
-                  <ul className="list-disc pl-6 space-y-2">
-                    {atividades.map((a:any) => (
-                      <li key={a.id}><strong>{a.nome}</strong> - {new Date(a.data).toLocaleDateString()} ({a.tipo})</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-           </div>
-        );
-
-      case "ficha_enc":
-        const enc = encontros.find((e:any) => e.id === targetId);
-        if (!enc) return null;
-        return (
-          <div className="hidden print:block w-full text-black font-sans leading-relaxed print:break-inside-avoid">
-            <div className="border-y-4 border-black py-4 mb-8 text-center bg-gray-100">
-              <h1 className="text-2xl font-black uppercase">Ficha Técnica de Encontro</h1>
-              <p className="text-sm font-bold tracking-widest">{org.comunidade}</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mb-6">
-               <div className="p-4 border rounded-lg"><span className="text-xs font-black uppercase text-gray-500">Turma</span><p className="font-bold">{turma.nome}</p></div>
-               <div className="p-4 border rounded-lg"><span className="text-xs font-black uppercase text-gray-500">Data e Status</span><p className="font-bold">{formatarDataVigente(enc.data)} • {enc.status.toUpperCase()}</p></div>
-            </div>
-
-            <div className="p-6 border-2 border-black rounded-lg mb-8">
-              <span className="text-xs font-black uppercase text-gray-500 tracking-widest block mb-2">Tema Principal</span>
-              <h2 className="text-3xl font-black">{enc.tema}</h2>
-              {enc.leituraBiblica && <p className="mt-4 font-serif italic text-lg border-l-4 border-gray-400 pl-4">Biblia: {enc.leituraBiblica}</p>}
-            </div>
-
-            <div className="mb-8">
-              <h3 className="font-black text-lg border-b border-black pb-2 mb-4 uppercase">Roteiro Planejado</h3>
-              {enc.roteiro?.length === 0 ? <p className="italic text-gray-500">Sem roteiro definido.</p> : (
-                <div className="space-y-4">
-                  {enc.roteiro.map((r:any, i:number) => (
-                    <div key={i} className="flex gap-4 border-b pb-2">
-                       <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shrink-0">{i+1}</span>
-                       <div>
-                         <p className="font-black uppercase text-sm">{r.label} <span className="text-gray-500 text-xs font-normal">({r.tempo} min)</span></p>
-                         <p className="text-sm mt-1">{r.conteudo}</p>
-                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {enc.avaliacao && (
-              <div className="p-6 border-2 border-dashed border-gray-400 rounded-lg bg-gray-50">
-                <h3 className="font-black text-sm uppercase text-gray-600 mb-4">Avaliação do Encontro</h3>
-                <p><strong>Atividades Realizadas com Sucesso?</strong> {enc.avaliacao.atividadesRealizadas.toUpperCase()}</p>
-                <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                  <div><strong>Pontos Positivos:</strong> {enc.avaliacao.pontosPositivos}</div>
-                  <div><strong>Melhorias:</strong> {enc.avaliacao.pontosMelhorar}</div>
-                  <div className="col-span-2"><strong>Conclusão:</strong> {enc.avaliacao.conclusao}</div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      
-      default: return null;
+        </div>
+      );
     }
+
+    if (docTipo === "ficha_enc") {
+      const enc = printTarget;
+      return (
+        <div className="hidden print:block w-full text-black font-sans leading-relaxed">
+          <div className="border-y-4 border-black py-4 mb-8 text-center bg-gray-100">
+            <h1 className="text-2xl font-black uppercase">Ficha Técnica de Encontro</h1>
+            <p className="text-sm font-bold tracking-widest">{org.comunidade}</p>
+          </div>
+          <div className="p-6 border-2 border-black rounded-lg mb-8">
+            <span className="text-xs font-black uppercase text-gray-500 tracking-widest block mb-2">Tema Principal</span>
+            <h2 className="text-3xl font-black">{enc.tema}</h2>
+            {enc.leituraBiblica && <p className="mt-4 font-serif italic text-lg border-l-4 border-gray-400 pl-4">Bíblia: {enc.leituraBiblica}</p>}
+          </div>
+          <div className="mb-8"><h3 className="font-black text-lg border-b border-black pb-2 mb-4 uppercase">Roteiro Planejado</h3>
+            {enc.roteiro?.map((r: any, i: number) => (
+              <div key={i} className="flex gap-4 border-b pb-2 mb-2">
+                <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shrink-0">{i+1}</span>
+                <div><p className="font-black uppercase text-sm">{r.label} <span className="text-gray-500 text-xs font-normal">({r.tempo} min)</span></p><p className="text-sm mt-1">{r.conteudo}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (docTipo === "lista_chamada") {
+      return (
+        <div className="hidden print:block w-full text-black font-sans text-xs">
+          <h1 className="text-2xl font-black uppercase text-center mb-1">Diário de Classe - Frequência</h1>
+          <p className="text-center text-sm font-bold mb-4">Turma: {turma.nome} • Paróquia: {org.paroquia}</p>
+          <table className="w-full border-collapse border border-black mb-8">
+            <thead><tr className="bg-gray-200">
+              <th className="border border-black p-2 w-8">#</th>
+              <th className="border border-black p-2 text-left">NOME DO CATEQUIZANDO</th>
+              {Array.from({length: 15}).map((_, i) => (<th key={i} className="border border-black p-1 w-8 text-[8px]">{`E${i+1}`}</th>))}
+              <th className="border border-black p-2 w-12">%</th>
+            </tr></thead>
+            <tbody>
+              {catequizandos.filter((c: any) => c.status === 'ativo').map((c: any, i: number) => (
+                <tr key={c.id}>
+                  <td className="border border-black p-2 text-center">{i+1}</td>
+                  <td className="border border-black p-2 font-bold">{c.nome}</td>
+                  {Array.from({length: 15}).map((_, j) => (<td key={j} className="border border-black p-1"></td>))}
+                  <td className="border border-black p-2 bg-gray-50"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="text-xs italic text-gray-600">Legenda: P (Presente) • F (Falta) • J (Falta Justificada)</p>
+        </div>
+      );
+    }
+
+    if (docTipo === "boletim_turma") {
+      const ativos = catequizandos.filter((c: any) => c.status === 'ativo').length;
+      return (
+        <div className="hidden print:block w-full text-black font-sans leading-relaxed">
+          <div className="text-center mb-10 border-b-2 border-black pb-6">
+            <h1 className="text-3xl font-black uppercase">Relatório Resumo da Turma</h1>
+            <p className="text-lg italic mt-2">Paróquia: {org.paroquia} • {formatarDataVigente(new Date().toISOString())}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-8 mb-10">
+            <div className="p-6 border rounded-xl bg-gray-50">
+              <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs mb-2">Dados da Turma</h3>
+              <p className="text-xl font-black mb-1">{turma.nome}</p>
+              <p>Etapa: {turma.etapa} • Ano: {turma.ano}</p>
+            </div>
+            <div className="p-6 border rounded-xl bg-gray-50">
+              <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs mb-2">Métricas</h3>
+              <p className="font-bold">Total: {catequizandos.length}</p>
+              <p className="font-bold text-green-700">Ativos: {ativos}</p>
+              <p className="font-bold text-red-700">Desistentes: {catequizandos.length - ativos}</p>
+            </div>
+          </div>
+          <h3 className="text-lg font-black uppercase border-b border-black pb-2 mb-4">Progresso de Encontros</h3>
+          <p className="mb-1 font-bold">Planejados: {encontros.length}</p>
+          <p className="mb-1 font-bold text-green-700">Realizados: {encontros.filter((e: any) => e.status === 'realizado').length}</p>
+          <p className="mb-10 font-bold text-yellow-600">Pendentes: {encontros.filter((e: any) => e.status === 'pendente').length}</p>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
-    <div className="space-y-6 print:m-0 print:p-0 print:space-y-0">
-      <div className="float-card p-6 border-l-4 border-l-primary print:hidden">
-        <div className="flex items-start gap-4 mb-6">
-           <div className="p-3 bg-primary/10 rounded-xl"><Printer className="h-6 w-6 text-primary" /></div>
-           <div>
-             <h2 className="text-lg font-bold">Central de Emissão de Documentos</h2>
-             <p className="text-sm text-muted-foreground">Gere PDFs e relatórios formatados estritamente para impressão A4. Selecione o tipo de documento abaixo.</p>
-           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-muted/20 rounded-2xl">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Tipo de Documento</label>
-            <Select value={docTipo} onValueChange={(v:any) => { setDocTipo(v); setTargetId(""); }}>
-              <SelectTrigger className="h-12 bg-white rounded-xl font-semibold border-primary/20">
-                <SelectValue placeholder="Selecione..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ficha_cat">Ficha do Catequizando (Individual)</SelectItem>
-                <SelectItem value="ficha_enc">Roteiro/Ficha de Encontro (Individual)</SelectItem>
-                <SelectItem value="lista_chamada">Grade de Frequência (Diário de Classe)</SelectItem>
-                <SelectItem value="boletim_turma">Relatório Resumo da Turma (Geral)</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className="space-y-5 print:m-0 print:p-0 print:space-y-0 animate-fade-in">
+      {/* Cabeçalho */}
+      <div className="relative p-[2px] rounded-2xl bg-gradient-to-br from-primary/40 via-primary/20 to-primary/10 print:hidden">
+        <div className="flex items-center gap-4 p-5 rounded-[14px] bg-card">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/25 shrink-0">
+            <Printer className="h-6 w-6 text-primary-foreground" />
           </div>
-
-          {docTipo === "ficha_cat" && (
-            <div className="space-y-2 animate-in fade-in slide-in-from-right-4">
-              <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Selecione o Catequizando</label>
-              <Select value={targetId} onValueChange={setTargetId}>
-                <SelectTrigger className="h-12 bg-white rounded-xl border-accent/20">
-                  <SelectValue placeholder="Escolha..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {catequizandos.map((c:any) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {docTipo === "ficha_enc" && (
-            <div className="space-y-2 animate-in fade-in slide-in-from-right-4">
-              <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Selecione o Encontro</label>
-              <Select value={targetId} onValueChange={setTargetId}>
-                <SelectTrigger className="h-12 bg-white rounded-xl border-accent/20">
-                  <SelectValue placeholder="Escolha..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {encontros.map((e:any) => <SelectItem key={e.id} value={e.id}>{formatarDataVigente(e.data)} - {e.tema}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-6 flex justify-end">
-           <Button 
-             onClick={handlePrint} 
-             disabled={(docTipo === "ficha_cat" || docTipo === "ficha_enc") && !targetId}
-             className="h-14 px-8 rounded-2xl font-black tracking-widest shadow-lg gap-2 bg-emerald-600 hover:bg-emerald-700 hover:-translate-y-1 transition-all"
-           >
-             <Printer className="h-5 w-5" /> GERAR E IMPRIMIR (A4)
-           </Button>
+          <div>
+            <h2 className="text-base font-black text-foreground">Documentos & Fichas</h2>
+            <p className="text-xs text-muted-foreground">Selecione o tipo de documento e clique para imprimir diretamente.</p>
+          </div>
         </div>
       </div>
 
-      {RenderPrintableArea()}
+      {/* Chips de tipo de documento */}
+      <div className="print:hidden">
+        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Tipo de Documento</p>
+        <div className="grid grid-cols-2 gap-2.5">
+          {DOC_TYPES.map(dt => {
+            const Icon = dt.icon;
+            const isActive = docTipo === dt.id;
+            return (
+              <button
+                key={dt.id}
+                onClick={() => setDocTipo(dt.id)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3.5 rounded-2xl border-2 transition-all text-left font-bold text-sm active:scale-[0.97]",
+                  isActive
+                    ? `${dt.bg} ${dt.border} ${dt.text} shadow-sm scale-[1.02]`
+                    : "border-black/10 bg-card text-muted-foreground hover:border-black/25"
+                )}
+              >
+                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all", isActive ? `bg-gradient-to-br ${dt.color}` : "bg-muted/50")}>
+                  <Icon className={cn("h-4.5 w-4.5", isActive ? "text-white" : "text-muted-foreground")} />
+                </div>
+                <span className="leading-tight text-xs">{dt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Lista de itens a imprimir */}
+      <div className="print:hidden">
+        <div className={cn("p-[2px] rounded-2xl bg-gradient-to-br", selectedType.color)}>
+          <div className="rounded-[14px] bg-card overflow-hidden">
+            {/* Header da lista */}
+            <div className={cn("px-5 py-3.5 flex items-center gap-2.5", selectedType.bg)}>
+              <div className={cn("w-8 h-8 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-sm", selectedType.color)}>
+                {(() => { const Icon = selectedType.icon; return <Icon className="h-4 w-4 text-white" />; })()}
+              </div>
+              <div>
+                <p className={cn("text-xs font-black uppercase tracking-widest", selectedType.text)}>{selectedType.label}</p>
+                <p className="text-[10px] text-muted-foreground">Clique em um item para imprimir</p>
+              </div>
+            </div>
+
+            {/* Listagem dinâmica */}
+            <div className="divide-y divide-black/5">
+              {docTipo === "ficha_cat" && (
+                catequizandos.length === 0 ? (
+                  <div className="py-10 text-center text-sm text-muted-foreground">Nenhum catequizando cadastrado</div>
+                ) : (
+                  catequizandos.map((cat: any) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => handlePrint(cat)}
+                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-violet-500/5 active:bg-violet-500/10 transition-colors text-left group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-violet-500/10 flex items-center justify-center text-sm font-black text-violet-600 shrink-0">
+                          {cat.nome?.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-foreground">{cat.nome}</p>
+                          <p className="text-[11px] text-muted-foreground">{cat.status || 'ativo'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-violet-600 bg-violet-500/10 px-2.5 py-1.5 rounded-xl border border-violet-500/20 group-hover:bg-violet-500/20 transition-colors">
+                        <Printer className="h-3 w-3" /> Imprimir
+                      </div>
+                    </button>
+                  ))
+                )
+              )}
+
+              {docTipo === "ficha_enc" && (
+                encontros.length === 0 ? (
+                  <div className="py-10 text-center text-sm text-muted-foreground">Nenhum encontro cadastrado</div>
+                ) : (
+                  [...encontros].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()).map((enc: any) => (
+                    <button
+                      key={enc.id}
+                      onClick={() => handlePrint(enc)}
+                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-sky-500/5 active:bg-sky-500/10 transition-colors text-left group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
+                          <CalendarDays className="h-4 w-4 text-sky-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-foreground truncate max-w-[180px]">{enc.tema}</p>
+                          <p className="text-[11px] text-muted-foreground">{formatarDataVigente(enc.data)} • {enc.status}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-500/10 px-2.5 py-1.5 rounded-xl border border-sky-500/20 group-hover:bg-sky-500/20 transition-colors shrink-0">
+                        <Printer className="h-3 w-3" /> Imprimir
+                      </div>
+                    </button>
+                  ))
+                )
+              )}
+
+              {docTipo === "lista_chamada" && (
+                <button
+                  onClick={() => handlePrint(turma)}
+                  className="w-full flex items-center justify-between px-5 py-5 hover:bg-emerald-500/5 active:bg-emerald-500/10 transition-colors group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-foreground">Grade de Frequência — {turma.nome}</p>
+                      <p className="text-[11px] text-muted-foreground">{catequizandos.filter((c: any) => c.status === 'ativo').length} alunos ativos • 15 colunas</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors shrink-0">
+                    <Printer className="h-3 w-3" /> Imprimir
+                  </div>
+                </button>
+              )}
+
+              {docTipo === "boletim_turma" && (
+                <button
+                  onClick={() => handlePrint(turma)}
+                  className="w-full flex items-center justify-between px-5 py-5 hover:bg-amber-500/5 active:bg-amber-500/10 transition-colors group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                      <FileText className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-foreground">Relatório Resumo — {turma.nome}</p>
+                      <p className="text-[11px] text-muted-foreground">Visão geral da turma formatada para A4</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-500/10 px-2.5 py-1.5 rounded-xl border border-amber-500/20 group-hover:bg-amber-500/20 transition-colors shrink-0">
+                    <Printer className="h-3 w-3" /> Imprimir
+                  </div>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Área de impressão (invisível na tela, visível só no print) */}
+      <PrintArea />
     </div>
   );
 }
