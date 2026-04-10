@@ -17,10 +17,20 @@ export default function Dashboard() {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
+  // Analisa datas ISO ignorando timezone, mantendo a data exata local
+  const parseDataLocal = (dataStr: string) => {
+    if (!dataStr) return new Date();
+    const parts = dataStr.split('T')[0].split('-');
+    if (parts.length === 3) {
+      return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    }
+    return new Date(dataStr);
+  };
+
   const proximosEncontros = useMemo(() => {
     return encontros
-      .filter((e) => new Date(e.data) >= hoje && e.status === 'pendente')
-      .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())
+      .filter((e) => parseDataLocal(e.data) >= hoje && e.status === 'pendente')
+      .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime())
       .slice(0, 3);
   }, [encontros]);
 
@@ -39,9 +49,9 @@ export default function Dashboard() {
   }, [catequizandos]);
 
   function getDiasRestantes(dataStr: string) {
-    const d = new Date(dataStr);
+    const d = parseDataLocal(dataStr);
     d.setHours(0, 0, 0, 0);
-    return Math.ceil((d.getTime() - hoje.getTime()) / 86400000);
+    return Math.round((d.getTime() - hoje.getTime()) / 86400000);
   }
 
   function handleCatequizandosClick() {
@@ -132,7 +142,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1.5">
                     {isUrgent && (
                       <span className="text-[10px] font-bold text-destructive bg-destructive/10 px-2 py-0.5 rounded-full animate-pulse-slow">
-                        {dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : `${dias}d`}
+                        {dias === 0 
+                          ? "Hoje!" 
+                          : dias === 1 
+                            ? "Amanhã" 
+                            : parseDataLocal(e.data).toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase()}
                       </span>
                     )}
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
