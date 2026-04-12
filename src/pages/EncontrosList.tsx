@@ -203,7 +203,7 @@ export default function EncontrosList() {
                       className={cn(
                         "relative p-[1.5px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)]",
                         isAvaliado 
-                          ? "bg-gradient-to-br from-gold/50 via-gold/20 to-primary/10 shadow-gold/10" 
+                          ? "bg-gradient-to-br from-gold/70 via-gold/30 to-primary/20 shadow-[0_10px_40px_rgba(212,175,55,0.25)] border-gold/40" 
                           : "bg-gradient-to-br from-[hsl(var(--gold))]/40 via-primary/20 to-primary/10"
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
@@ -272,7 +272,7 @@ export default function EncontrosList() {
                               )}
                             >
                               <FileText className="h-3.5 w-3.5" />
-                              {isAvaliado ? 'Rever Avaliação' : 'Avaliar Agora'}
+                              {isAvaliado ? 'Encontro já avaliado ✓' : 'Avaliar Agora'}
                             </button>
                           </div>
 

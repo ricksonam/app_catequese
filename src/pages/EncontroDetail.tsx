@@ -9,11 +9,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const STATUS_OPTIONS: { value: EncontroStatus; label: string; color: string }[] = [
-  { value: "pendente", label: "Pendente", color: "bg-muted text-muted-foreground" },
-  { value: "realizado", label: "Realizado", color: "bg-success text-success-foreground" },
-  { value: "transferido", label: "Transferido", color: "bg-caution text-caution-foreground" },
-  { value: "cancelado", label: "Cancelado", color: "bg-destructive text-destructive-foreground" },
+const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string }[] = [
+  { value: "pendente", label: "Pendente", bg: "bg-muted/10", text: "text-muted-foreground" },
+  { value: "realizado", label: "Realizado", bg: "bg-emerald-500/10", text: "text-emerald-700" },
+  { value: "transferido", label: "Transferido", bg: "bg-amber-500/10", text: "text-amber-700" },
+  { value: "cancelado", label: "Cancelado", bg: "bg-destructive/10", text: "text-destructive" },
 ];
 
 export default function EncontroDetail() {
@@ -128,7 +128,7 @@ export default function EncontroDetail() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-float-up">
-        <button onClick={() => setShowStatus(true)} className={`pill-btn ${currentStatus.color} justify-center`}>{currentStatus.label} ▾</button>
+        <button onClick={() => setShowStatus(true)} className={`pill-btn ${currentStatus.bg} ${currentStatus.text} border-2 border-current/20 justify-center`}>{currentStatus.label} ▾</button>
         <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="pill-btn bg-primary/10 text-primary flex items-center justify-center gap-1"><Edit className="h-3.5 w-3.5" /> Editar</button>
         <button onClick={() => setShowPresenca(true)} className="pill-btn bg-success/10 text-success flex items-center justify-center gap-1"><Users className="h-3.5 w-3.5" /> Presença</button>
         <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="pill-btn bg-liturgical/10 text-liturgical flex items-center justify-center gap-1"><Play className="h-3.5 w-3.5" /> Apresentar</button>
@@ -328,9 +328,9 @@ export default function EncontroDetail() {
               </label>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'sim', label: 'Sim', icon: '✅', color: 'border-emerald-500/30 text-emerald-700 bg-emerald-50' },
-                  { id: 'nulo', label: 'Parcial', icon: '➖', color: 'border-amber-500/30 text-amber-700 bg-amber-50' },
-                  { id: 'nao', label: 'Não', icon: '❌', color: 'border-destructive/30 text-destructive bg-destructive/5' }
+                  { id: 'sim', label: 'Sim', icon: '✅', color: 'border-emerald-500/60 text-emerald-800 bg-emerald-50' },
+                  { id: 'nulo', label: 'Parcial', icon: '➖', color: 'border-amber-500/60 text-amber-800 bg-amber-50' },
+                  { id: 'nao', label: 'Não', icon: '❌', color: 'border-destructive/60 text-destructive bg-destructive/5' }
                 ].map(op => (
                   <button
                     key={op.id}
@@ -339,7 +339,7 @@ export default function EncontroDetail() {
                       "flex flex-col items-center justify-center py-4 rounded-2xl text-xs font-bold transition-all border-2 gap-1.5",
                       draftAvaliacao?.atividadesRealizadas === op.id
                         ? `${op.color.split(' ')[0]} ${op.color.split(' ')[1]} ${op.color.split(' ')[2]} shadow-md`
-                        : "bg-muted/20 border-transparent text-muted-foreground hover:bg-muted/40"
+                        : "bg-muted/10 border-muted/50 text-muted-foreground hover:bg-muted/20"
                     )}
                   >
                     <span className="text-xl">{op.icon}</span>
@@ -351,12 +351,12 @@ export default function EncontroDetail() {
 
             {/* Campos de Texto */}
             {[
-              { id: 'pontosPositivos', label: 'Quais foram os pontos positivos?', icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />, placeholder: "Ex: Participação ativa, compreensão do tema..." },
-              { id: 'pontosMelhorar', label: 'O que pode ser melhorado?', icon: <AlertCircle className="h-4 w-4 text-amber-500" />, placeholder: "Ex: Controle do tempo, materiais extras..." },
+              { id: 'pontosPositivos', label: 'Quais foram os pontos positivos?', icon: <CheckCircle2 className="h-4 w-4 text-emerald-600" />, placeholder: "Ex: Participação ativa, compreensão do tema..." },
+              { id: 'pontosMelhorar', label: 'O que pode ser melhorado?', icon: <AlertCircle className="h-4 w-4 text-amber-600" />, placeholder: "Ex: Controle do tempo, materiais extras..." },
               { id: 'conclusao', label: 'Conclusão Geral / Ocorrências', icon: <MessageSquare className="h-4 w-4 text-primary" />, placeholder: "Resumo final do encontro..." }
             ].map(field => (
               <div key={field.id} className="space-y-3 group">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 transition-colors group-focus-within:text-primary">
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 transition-colors group-focus-within:text-gold-700">
                   {field.icon}
                   {field.label}
                 </label>
@@ -364,7 +364,7 @@ export default function EncontroDetail() {
                   value={draftAvaliacao?.[field.id as keyof AvaliacaoEncontro] || ''}
                   onChange={(e) => setDraftAvaliacao(prev => prev ? { ...prev, [field.id]: e.target.value } : null)}
                   placeholder={field.placeholder}
-                  className="w-full min-h-[120px] rounded-2xl border-2 border-muted/40 bg-muted/5 p-5 text-base sm:text-lg text-foreground placeholder:text-muted-foreground/40 focus:border-primary/30 focus:bg-white focus:shadow-xl focus:shadow-primary/5 transition-all outline-none resize-none leading-relaxed"
+                  className="w-full min-h-[120px] rounded-2xl border-2 border-gold/40 shadow-sm bg-muted/5 p-5 text-base sm:text-lg text-foreground placeholder:text-muted-foreground/40 focus:border-gold focus:bg-white focus:shadow-xl focus:shadow-gold/10 transition-all outline-none resize-none leading-relaxed"
                 />
               </div>
             ))}
@@ -407,9 +407,11 @@ export default function EncontroDetail() {
                 key={opt.value}
                 onClick={() => handleStatusClick(opt.value)}
                 disabled={encontro.status === opt.value}
-                className={cn(
-                  "w-full p-4 rounded-xl font-bold flex items-center justify-between transition-all",
-                  encontro.status === opt.value ? "bg-muted/50 text-muted-foreground cursor-not-allowed" : `${opt.color.replace('text-', 'hover:bg-opacity-20 text-')} hover:bg-opacity-10 bg-muted/10`
+                 className={cn(
+                  "w-full p-4 rounded-xl font-bold flex items-center justify-between transition-all border-2",
+                  encontro.status === opt.value 
+                    ? "bg-muted/50 border-muted/20 text-muted-foreground cursor-not-allowed" 
+                    : `${opt.bg} ${opt.text} border-current/20 hover:scale-[1.02]`
                 )}
               >
                 <span>{opt.label}</span>
