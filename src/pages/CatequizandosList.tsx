@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X } from "lucide-react";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
 import { mascaraTelefone } from "@/lib/utils";
@@ -123,8 +124,20 @@ export default function CatequizandosList() {
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div><h1 className="text-xl font-bold text-foreground">Catequizandos</h1><p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} cadastrados</p></div>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
+        <div className="flex items-center gap-2">
+          {id && (
+            <ReportModule 
+              context="catequizandos" 
+              turmaId={id} 
+              trigger={
+                <button className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                  <Printer className="h-5 w-5" />
+                </button>
+              }
+            />
+          )}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
             <DialogHeader><DialogTitle>Novo Catequizando</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
@@ -203,7 +216,22 @@ export default function CatequizandosList() {
                   )}
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div className="flex items-center gap-2 px-1">
+                {id && (
+                  <ReportModule 
+                    context="catequizandos" 
+                    turmaId={id} 
+                    initialDocId={c.id}
+                    instantReport="cat_individual"
+                    trigger={
+                      <button className="p-2.5 rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-primary transition-all">
+                        <Printer className="h-4 w-4" />
+                      </button>
+                    }
+                  />
+                )}
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
             </button>
           );
         })}</div>

@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText, Printer } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
+import ReportModule from "@/components/reports/ReportModule";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string }> = {
   pendente:    { label: "Pendente",    bg: "bg-muted/60",         text: "text-muted-foreground",  dot: "bg-muted-foreground", gradient: "from-slate-400/20 to-slate-500/10" },
@@ -92,6 +93,19 @@ export default function EncontrosList() {
             <h1 className="text-xl font-bold text-foreground">Encontros</h1>
             <p className="text-xs text-muted-foreground">{turma?.nome} • {encontros.length} encontros</p>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {id && (
+            <ReportModule 
+              context="encontros" 
+              turmaId={id} 
+              trigger={
+                <button className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                  <Printer className="h-5 w-5" />
+                </button>
+              }
+            />
+          )}
         </div>
       </div>
 
@@ -293,6 +307,21 @@ export default function EncontrosList() {
                               <Play className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
                               <span className="text-[8px] font-black uppercase tracking-wide">Apresentar</span>
                             </button>
+                            <div className="h-px bg-black/5" />
+                            {id && (
+                              <ReportModule 
+                                context="encontros" 
+                                turmaId={id} 
+                                initialDocId={enc.id}
+                                instantReport="enc_complet"
+                                trigger={
+                                  <button className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3.5 text-muted-foreground hover:bg-muted/50 transition-colors group/btn">
+                                    <Printer className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
+                                    <span className="text-[8px] font-black uppercase tracking-wide">Imprimir</span>
+                                  </button>
+                                }
+                              />
+                            )}
                           </div>
                         </div>
                       </div>

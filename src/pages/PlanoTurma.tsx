@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
 import { toast } from "sonner";
+import ReportModule from "@/components/reports/ReportModule";
 
 type TimelineItem = { id: string; tipo: 'encontro' | 'atividade'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
 const statusColors: Record<string, string> = { pendente: 'bg-muted-foreground', realizado: 'bg-success', transferido: 'bg-caution', cancelado: 'bg-destructive' };
@@ -90,6 +91,19 @@ export default function PlanoTurma() {
             <h1 className="text-xl font-bold text-foreground">Plano da Turma</h1>
             <p className="text-xs text-muted-foreground">{turma?.nome} • {totalAlunos} catequizandos</p>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {id && (
+            <ReportModule 
+              context="plano" 
+              turmaId={id} 
+              trigger={
+                <button className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                  <Printer className="h-5 w-5" />
+                </button>
+              }
+            />
+          )}
         </div>
       </div>
 

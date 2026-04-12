@@ -4,6 +4,7 @@ import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, ty
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
 import { formatarDataVigente } from "@/lib/utils";
 
@@ -84,8 +85,20 @@ export default function AtividadesList() {
     <div className="space-y-5">
       <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3"><button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button><div><h1 className="text-xl font-bold text-foreground">Atividades e Eventos</h1><p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} atividades</p></div></div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
-          <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
+        <div className="flex items-center gap-2">
+          {id && (
+            <ReportModule 
+              context="atividades" 
+              turmaId={id} 
+              trigger={
+                <button className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                  <Printer className="h-5 w-5" />
+                </button>
+              }
+            />
+          )}
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
+            <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
             <DialogHeader><DialogTitle>{editingId ? 'Editar Atividade' : 'Nova Atividade'}</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
