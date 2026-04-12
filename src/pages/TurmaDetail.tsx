@@ -49,10 +49,10 @@ export default function TurmaDetail() {
   }
 
   const modulos = [
-    { label: "Encontros", desc: "Calendário e freq.", icon: CalendarDays, count: encontros.length, path: `/turmas/${id}/encontros`, color: "bg-primary/10 text-primary", gradient: "from-primary/5 to-primary/10" },
-    { label: "Catequizandos", desc: "Perfis e acompanhamento", icon: Users, count: catequizandos.length, path: `/turmas/${id}/catequizandos`, color: "bg-[hsl(var(--accent))]/15 text-[hsl(var(--accent))]", gradient: "from-[hsl(var(--accent))]/5 to-[hsl(var(--accent))]/10" },
-    { label: "Atividades", desc: "Eventos e projetos", icon: ListChecks, count: atividades.length, path: `/turmas/${id}/atividades`, color: "bg-[hsl(var(--liturgical))]/15 text-[hsl(var(--liturgical))]", gradient: "from-[hsl(var(--liturgical))]/5 to-[hsl(var(--liturgical))]/10" },
-    { label: "Plano Aula", desc: "Conteúdos e etapas", icon: GitBranch, count: null, path: `/turmas/${id}/plano`, color: "bg-[hsl(var(--success))]/15 text-[hsl(var(--success))]", gradient: "from-[hsl(var(--success))]/5 to-[hsl(var(--success))]/10" },
+    { label: "Encontros", desc: "Calendário e freq.", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${id}/encontros`, color: "bg-primary text-white", bg: "bg-primary/10", border: "border-primary/20", gradient: "from-primary/15 to-white" },
+    { label: "Catequizandos", desc: "Perfis e acompanhamento", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${id}/catequizandos`, color: "bg-emerald-600 text-white", bg: "bg-emerald-500/10", border: "border-emerald-500/20", gradient: "from-emerald-500/15 to-white" },
+    { label: "Atividades", desc: "Eventos e projetos", icon: ListChecks, count: atividades.length, unit: "atividade", path: `/turmas/${id}/atividades`, color: "bg-amber-600 text-white", bg: "bg-amber-500/10", border: "border-amber-500/20", gradient: "from-amber-500/15 to-white" },
+    { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bg: "bg-sky-500/10", border: "border-sky-500/20", gradient: "from-sky-500/15 to-white" },
   ];
 
   const relatorioModulo = { label: "Relatórios", icon: PieChart, path: `/turmas/${id}/relatorios` };
@@ -100,13 +100,17 @@ export default function TurmaDetail() {
           </div>
         </div>
 
-        {/* Barra de Informações Compacta */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide px-0.5">
-          <InfoBadge label="Ano" value={turma.ano} color="bg-primary/5 text-primary border-primary/10" />
-          <InfoBadge label="Etapa" value={turma.etapa} color="bg-accent/5 text-accent-foreground border-accent/10" />
-          <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-liturgical/5 text-liturgical border-liturgical/10" />
-          <InfoBadge label="Hora" value={turma.horario} color="bg-success/5 text-success border-success/10" />
-          <InfoBadge label="Local" value={turma.local} color="bg-muted/50 text-muted-foreground border-black/5" />
+        {/* Barra de Informações em Duas Linhas */}
+        <div className="space-y-2 px-0.5">
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+            <InfoBadge label="Ano" value={turma.ano} color="bg-primary/10 text-primary border-primary/20" />
+            <InfoBadge label="Etapa" value={turma.etapa} color="bg-liturgical/10 text-liturgical border-liturgical/20" />
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+            <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-muted/10 text-muted-foreground border-black/10" />
+            <InfoBadge label="Hora" value={turma.horario} color="bg-muted/10 text-muted-foreground border-black/10" />
+            <InfoBadge label="Local" value={turma.local} color="bg-muted/10 text-muted-foreground border-black/10" />
+          </div>
         </div>
       </div>
 
@@ -117,29 +121,45 @@ export default function TurmaDetail() {
           return (
             <div 
               key={mod.label}
-              className="relative p-[1.5px] rounded-2xl bg-gradient-to-br from-gold/40 via-gold/10 to-primary/20 shadow-sm hover:shadow-xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.97] cursor-pointer group"
+              className={cn(
+                "relative p-[2px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-2 active:scale-[0.96] cursor-pointer group shadow-lg",
+                mod.label === "Encontros" ? "bg-gradient-to-br from-primary/60 via-primary/30 to-white" :
+                mod.label === "Catequizandos" ? "bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white" :
+                mod.label === "Atividades" ? "bg-gradient-to-br from-amber-500/60 via-amber-500/30 to-white" :
+                "bg-gradient-to-br from-sky-500/60 via-sky-500/30 to-white"
+              )}
               style={{ animationDelay: `${i * 100}ms` }}
               onClick={() => navigate(mod.path)}
             >
-              <div className="absolute inset-[2px] rounded-xl border border-white/30 z-20 pointer-events-none opacity-40 mix-blend-overlay"></div>
+              <div className="absolute inset-[3px] rounded-[22px] border-2 border-white/40 z-20 pointer-events-none opacity-60"></div>
               
-              <div className={`relative flex flex-col items-center justify-center p-5 rounded-[14px] bg-card h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
+              <div className={`relative flex flex-col items-center justify-center p-6 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
                 
-                <div className="absolute -right-2 -bottom-2 opacity-[0.03] pointer-events-none group-hover:scale-125 transition-transform duration-700">
-                   <Icon className="w-20 h-20" />
+                <div className="absolute -right-3 -bottom-3 opacity-[0.05] pointer-events-none group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
+                   <Icon className="w-24 h-24" />
                 </div>
 
-                <div className={`w-12 h-12 rounded-2xl ${mod.color} flex items-center justify-center shrink-0 shadow-md relative z-30 border border-white/20 mb-3`}>
-                  <Icon className="h-6 w-6" />
+                <div className={cn(
+                  "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 mb-4 transition-transform group-hover:scale-110 duration-500",
+                  mod.color
+                )}>
+                  <Icon className="h-7 w-7" />
                 </div>
                 
-                <div className="relative z-30 space-y-1">
-                  <h3 className="text-[13px] font-black text-foreground tracking-tight leading-tight group-hover:text-primary transition-colors">{mod.label}</h3>
-                  <p className="text-[9px] text-muted-foreground leading-tight px-1">{mod.desc}</p>
+                <div className="relative z-30 space-y-1.5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
+                    <p className="text-[10px] text-muted-foreground leading-tight mt-1 px-1 font-medium">{mod.desc}</p>
+                  </div>
                   
                   {mod.count !== null && (
-                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-full bg-white/80 dark:bg-black/20 shadow-sm border border-border/40 text-[9px] font-black text-foreground">
-                      {mod.count} {mod.count !== 1 ? 'itens' : 'item'}
+                    <div className={cn(
+                      "mt-3 inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm border transition-colors",
+                      mod.label === "Encontros" ? "bg-primary/10 text-primary border-primary/20" :
+                      mod.label === "Catequizandos" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
+                      "bg-amber-500/10 text-amber-700 border-amber-500/20"
+                    )}>
+                      {mod.count} {mod.count !== 1 ? `${mod.unit}s` : mod.unit}
                     </div>
                   )}
                 </div>
