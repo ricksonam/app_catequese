@@ -1,12 +1,13 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation } from "@/hooks/useSupabaseData";
-import { type EncontroStatus, type RegistroOcorrencia } from "@/lib/store";
-import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText } from "lucide-react";
-import { useState } from "react";
+import { type EncontroStatus, type RegistroOcorrencia, type AvaliacaoEncontro } from "@/lib/store";
+import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; color: string }[] = [
   { value: "pendente", label: "Pendente", color: "bg-muted text-muted-foreground" },
@@ -39,6 +40,22 @@ export default function EncontroDetail() {
   const [conflictEncontro, setConflictEncontro] = useState<any>(null);
   const [selectedTransferDate, setSelectedTransferDate] = useState<Date | undefined>();
   const [showOcorrencias, setShowOcorrencias] = useState(false);
+  const [searchParams] = useSearchParams();
+  const [draftAvaliacao, setDraftAvaliacao] = useState<AvaliacaoEncontro | null>(null);
+
+  useEffect(() => {
+    if (searchParams.get('eval') === 'true') {
+      setShowOcorrencias(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (showOcorrencias && encontro?.avaliacao) {
+      setDraftAvaliacao(encontro.avaliacao);
+    } else if (showOcorrencias && !encontro?.avaliacao) {
+      setDraftAvaliacao({ atividadesRealizadas: 'nulo', pontosPositivos: '', pontosMelhorar: '', conclusao: '' });
+    }
+  }, [showOcorrencias, encontro?.avaliacao]);
 
   if (!encontro) {
     return <div className="text-center py-20"><p className="text-muted-foreground">Encontro não encontrado</p><button onClick={() => navigate(-1)} className="text-primary text-sm mt-2 font-semibold">Voltar</button></div>;
@@ -284,71 +301,100 @@ export default function EncontroDetail() {
 
       {/* Avaliação do Encontro Dialog */}
       <Dialog open={showOcorrencias} onOpenChange={setShowOcorrencias}>
-        <DialogContent className="rounded-2xl border-border/30 max-h-[90vh] overflow-y-auto p-0 overflow-hidden">
-          <div className="bg-liturgical/5 p-6 border-b border-liturgical/10">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-lg bg-liturgical/20 text-liturgical flex items-center justify-center">✝</span>
-              <p className="text-[10px] font-black text-liturgical uppercase tracking-[0.2em]">Ficha de Avaliação</p>
+        <DialogContent className="rounded-3xl border-gold/30 max-w-lg w-[95vw] max-h-[92vh] overflow-y-auto p-0 overflow-hidden shadow-2xl">
+          {/* Header Litúrgico */}
+          <div className="bg-gradient-to-br from-primary/10 via-gold/5 to-white p-6 border-b border-gold/20 relative">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/40 via-gold to-primary/40" />
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-2xl bg-gold/20 text-gold flex items-center justify-center shadow-inner">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gold uppercase tracking-[0.2em] leading-none">Memorial do Encontro</p>
+                <DialogTitle className="text-xl font-black text-foreground mt-1">Feedback & Avaliação</DialogTitle>
+              </div>
             </div>
-            <DialogTitle className="text-xl font-black text-foreground">Como foi o encontro?</DialogTitle>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Registre os frutos deste encontro para acompanhar o crescimento da turma.
+            </p>
           </div>
 
-          <div className="p-6 space-y-6">
-            <div className="space-y-3">
+          <div className="p-6 space-y-8">
+            {/* Opção de Atividades */}
+            <div className="space-y-4">
               <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 As atividades planejadas foram realizadas?
               </label>
-              <div className="flex gap-2">
-                {(['sim', 'nao', 'nulo'] as const).map(op => (
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'sim', label: 'Sim', icon: '✅', color: 'border-emerald-500/30 text-emerald-700 bg-emerald-50' },
+                  { id: 'nulo', label: 'Parcial', icon: '➖', color: 'border-amber-500/30 text-amber-700 bg-amber-50' },
+                  { id: 'nao', label: 'Não', icon: '❌', color: 'border-destructive/30 text-destructive bg-destructive/5' }
+                ].map(op => (
                   <button
-                    key={op}
-                    onClick={() => {
-                      const aval = encontro.avaliacao || { atividadesRealizadas: 'nulo', pontosPositivos: '', pontosMelhorar: '', conclusao: '' };
-                      encontroMut.mutate({ ...encontro, avaliacao: { ...aval, atividadesRealizadas: op } });
-                    }}
+                    key={op.id}
+                    onClick={() => setDraftAvaliacao(prev => prev ? { ...prev, atividadesRealizadas: op.id as any } : null)}
                     className={cn(
-                      "flex-1 py-3 rounded-xl text-xs font-bold transition-all border-2",
-                      (encontro.avaliacao?.atividadesRealizadas || 'nulo') === op
-                        ? "bg-primary/10 border-primary text-primary shadow-sm"
-                        : "bg-muted/30 border-transparent text-muted-foreground"
+                      "flex flex-col items-center justify-center py-4 rounded-2xl text-xs font-bold transition-all border-2 gap-1.5",
+                      draftAvaliacao?.atividadesRealizadas === op.id
+                        ? `${op.color.split(' ')[0]} ${op.color.split(' ')[1]} ${op.color.split(' ')[2]} shadow-md`
+                        : "bg-muted/20 border-transparent text-muted-foreground hover:bg-muted/40"
                     )}
                   >
-                    {op === 'sim' ? '✅ Sim' : op === 'nao' ? '❌ Não' : '➖ Parcial'}
+                    <span className="text-xl">{op.icon}</span>
+                    {op.label}
                   </button>
                 ))}
               </div>
             </div>
 
+            {/* Campos de Texto */}
             {[
-              { id: 'pontosPositivos', label: 'Quais foram os pontos positivos?', icon: '✨' },
-              { id: 'pontosMelhorar', label: 'Quais pontos podem ser melhorados?', icon: '💡' },
-              { id: 'conclusao', label: 'Conclusão Geral', icon: '📝' }
+              { id: 'pontosPositivos', label: 'Quais foram os pontos positivos?', icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />, placeholder: "Ex: Participação ativa, compreensão do tema..." },
+              { id: 'pontosMelhorar', label: 'O que pode ser melhorado?', icon: <AlertCircle className="h-4 w-4 text-amber-500" />, placeholder: "Ex: Controle do tempo, materiais extras..." },
+              { id: 'conclusao', label: 'Conclusão Geral / Ocorrências', icon: <MessageSquare className="h-4 w-4 text-primary" />, placeholder: "Resumo final do encontro..." }
             ].map(field => (
-              <div key={field.id} className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                  <span className="text-sm">{field.icon}</span>
+              <div key={field.id} className="space-y-3 group">
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 transition-colors group-focus-within:text-primary">
+                  {field.icon}
                   {field.label}
                 </label>
                 <textarea
-                  value={encontro.avaliacao?.[field.id as keyof AvaliacaoEncontro] || ''}
-                  onChange={(e) => {
-                    const aval = encontro.avaliacao || { atividadesRealizadas: 'nulo', pontosPositivos: '', pontosMelhorar: '', conclusao: '' };
-                    encontroMut.mutate({ ...encontro, avaliacao: { ...aval, [field.id]: e.target.value } });
-                  }}
-                  placeholder="Escreva aqui..."
-                  className="w-full min-h-[80px] rounded-2xl border-2 border-muted/30 bg-muted/10 p-4 text-sm text-foreground focus:border-primary/30 focus:bg-background transition-all outline-none resize-none"
+                  value={draftAvaliacao?.[field.id as keyof AvaliacaoEncontro] || ''}
+                  onChange={(e) => setDraftAvaliacao(prev => prev ? { ...prev, [field.id]: e.target.value } : null)}
+                  placeholder={field.placeholder}
+                  className="w-full min-h-[120px] rounded-2xl border-2 border-muted/40 bg-muted/5 p-5 text-base sm:text-lg text-foreground placeholder:text-muted-foreground/40 focus:border-primary/30 focus:bg-white focus:shadow-xl focus:shadow-primary/5 transition-all outline-none resize-none leading-relaxed"
                 />
               </div>
             ))}
-            
-            <button 
-              onClick={() => setShowOcorrencias(false)}
-              className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-black text-sm uppercase tracking-[0.1em] shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
-            >
-              Salvar Avaliação
-            </button>
           </div>
+
+          <DialogFooter className="p-6 bg-muted/20 border-t border-black/5 gap-3 sm:gap-0">
+            <Button
+              variant="ghost"
+              onClick={() => setShowOcorrencias(false)}
+              className="rounded-2xl font-bold text-muted-foreground"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                if (!draftAvaliacao) return;
+                const newStatus = encontro.status === 'pendente' ? 'realizado' : encontro.status;
+                encontroMut.mutate({ 
+                  ...encontro, 
+                  status: newStatus as EncontroStatus,
+                  avaliacao: draftAvaliacao 
+                });
+                setShowOcorrencias(false);
+                toast.success("Avaliação salva com sucesso!");
+              }}
+              className="rounded-2xl bg-primary px-8 py-6 font-black uppercase tracking-widest text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Concluir Avaliação
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       {/* Status Modal */}

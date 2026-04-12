@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock } from "lucide-react";
-import { formatarDataVigente } from "@/lib/utils";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText } from "lucide-react";
+import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string }> = {
@@ -195,11 +195,17 @@ export default function EncontrosList() {
                   const dia = String(d.getDate()).padStart(2, "0");
                   const mes = MESES_PT[d.getMonth()].slice(0, 3).toUpperCase();
                   const tempoTotal = enc.roteiro?.reduce((s: number, r: any) => s + (r.tempo || 0), 0) || 0;
+                  const isAvaliado = !!enc.avaliacao?.conclusao;
 
                   return (
                     <div
                       key={enc.id}
-                      className="relative p-[1.5px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/40 via-primary/20 to-primary/10 shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)] animate-float-up transition-all duration-300 hover:-translate-y-0.5 group"
+                      className={cn(
+                        "relative p-[1.5px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)]",
+                        isAvaliado 
+                          ? "bg-gradient-to-br from-gold/50 via-gold/20 to-primary/10 shadow-gold/10" 
+                          : "bg-gradient-to-br from-[hsl(var(--gold))]/40 via-primary/20 to-primary/10"
+                      )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
                       {/* Moldura litúrgica interna */}
@@ -225,6 +231,11 @@ export default function EncontrosList() {
                                 <span className={`w-1.5 h-1.5 rounded-full inline-block ${status.dot}`} />
                                 {status.label}
                               </span>
+                              {isAvaliado && (
+                                <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                  Avaliado ✓
+                                </span>
+                              )}
                             </div>
 
                             {/* Tema */}
@@ -249,9 +260,22 @@ export default function EncontrosList() {
                                 <Users className="h-3 w-3" />{presPct}%
                               </span>
                             </div>
+
+                            {/* Botão de Avaliação Rápida */}
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/encontros/${enc.id}?eval=true`); }}
+                              className={cn(
+                                "mt-3 w-full py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 border-2 transition-all active:scale-95",
+                                isAvaliado 
+                                  ? "bg-gold/10 border-gold/30 text-gold-700 hover:bg-gold/20" 
+                                  : "bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100"
+                              )}
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                              {isAvaliado ? 'Rever Avaliação' : 'Avaliar Agora'}
+                            </button>
                           </div>
 
-                          {/* Ações verticais */}
                           <div className="flex flex-col gap-px border-l border-black/5 shrink-0">
                             <button
                               onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
