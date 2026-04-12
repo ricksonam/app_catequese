@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
 import { useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
 import { EtapaMap } from "@/components/EtapaMap";
-import { ArrowLeft, Check, ChevronDown } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -14,9 +14,14 @@ import {
 
 export default function TurmaForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { data: turmas = [], isLoading: isLoadingTurmas } = useTurmas();
   const { data: comunidades = [] } = useComunidades();
   const { data: catequistas = [] } = useCatequistas();
   const mutation = useTurmaMutation();
+
+  const isEditing = Boolean(id);
+  const existingTurma = turmas.find(t => t.id === id);
 
   const [form, setForm] = useState({
     nome: "",
@@ -29,6 +34,22 @@ export default function TurmaForm() {
     comunidadeId: "",
     catequistasIds: [] as string[],
   });
+
+  useEffect(() => {
+    if (isEditing && existingTurma) {
+      setForm({
+        nome: existingTurma.nome,
+        ano: existingTurma.ano,
+        diaCatequese: existingTurma.diaCatequese,
+        horario: existingTurma.horario,
+        local: existingTurma.local,
+        etapa: existingTurma.etapa,
+        outrosDados: existingTurma.outrosDados || "",
+        comunidadeId: existingTurma.comunidadeId || "",
+        catequistasIds: existingTurma.catequistasIds || [],
+      });
+    }
+  }, [isEditing, existingTurma]);
 
   const update = (key: string, value: any) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -43,10 +64,14 @@ export default function TurmaForm() {
     if (!form.nome || !form.diaCatequese || !form.horario || !form.local || !form.comunidadeId || form.catequistasIds.length === 0) {
       toast.error("Preencha todos os campos obrigatórios, incluindo comunidade e catequistas"); return;
     }
-    const turma: Turma = { id: crypto.randomUUID(), ...form, criadoEm: new Date().toISOString() };
+    const turma: Turma = { 
+      id: isEditing ? id! : crypto.randomUUID(), 
+      ...form, 
+      criadoEm: isEditing ? existingTurma?.criadoEm || new Date().toISOString() : new Date().toISOString() 
+    };
     try {
       await mutation.mutateAsync(turma);
-      toast.success("Turma criada com sucesso!");
+      toast.success(isEditing ? "Alterações salvas!" : "Turma criada com sucesso!");
       navigate(`/turmas/${turma.id}`);
     } catch (err: any) {
       toast.error("Erro ao salvar: " + err.message);
@@ -57,7 +82,9 @@ export default function TurmaForm() {
     <div className="space-y-5">
       <div className="page-header animate-fade-in">
         <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-        <h1 className="text-xl font-bold text-foreground">Nova Turma</h1>
+        <h1 className="text-xl font-bold text-foreground inline-flex items-center gap-2">
+          {isEditing ? <><Pencil className="h-5 w-5" /> Editar Turma</> : "Nova Turma"}
+        </h1>
       </div>
       <div className="space-y-4">
         <div className="float-card p-5 space-y-3 animate-float-up">
@@ -147,7 +174,7 @@ export default function TurmaForm() {
         </div>
       </div>
       <button onClick={handleSave} disabled={mutation.isPending || !form.nome || !form.diaCatequese || !form.comunidadeId || form.catequistasIds.length === 0} className="w-full action-btn animate-float-up" style={{ animationDelay: '540ms' }}>
-        {mutation.isPending ? "Salvando..." : "Criar Turma"}
+        {mutation.isPending ? "Salvando..." : (isEditing ? "Salvar Alterações" : "Criar Turma")}
       </button>
     </div>
   );

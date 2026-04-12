@@ -69,6 +69,7 @@ const AppRoutes = () => (
       <Route path="/" element={<Dashboard />} />
       <Route path="/turmas" element={<TurmasList />} />
       <Route path="/turmas/nova" element={<TurmaForm />} />
+      <Route path="/turmas/:id/editar" element={<TurmaForm />} />
       <Route path="/turmas/:id" element={<TurmaDetail />} />
       <Route path="/turmas/:id/encontros" element={<EncontrosList />} />
       <Route path="/turmas/:id/encontros/novo" element={<EncontroForm />} />

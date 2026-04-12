@@ -60,14 +60,10 @@ export default function TurmaDetail() {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Header & Info Bar */}
-      <div className="space-y-4 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/turmas")} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-            <h1 className="text-xl font-black text-foreground tracking-tight">{turma.nome}</h1>
-          </div>
-          
+      {/* Header Centralizado */}
+      <div className="space-y-6 animate-fade-in flex flex-col items-center text-center">
+        <div className="w-full flex items-center justify-between">
+          <button onClick={() => navigate("/turmas")} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div className="flex items-center gap-2">
             <button 
               onClick={() => navigate(relatorioModulo.path)}
@@ -77,9 +73,16 @@ export default function TurmaDetail() {
               Relatórios
             </button>
 
+            <button 
+              onClick={() => navigate(`/turmas/${id}/editar`)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
+
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button disabled={deleteMutation.isPending} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95">
+                <button disabled={deleteMutation.isPending} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </AlertDialogTrigger>
@@ -101,8 +104,13 @@ export default function TurmaDetail() {
           </div>
         </div>
 
+        <div className="flex flex-col items-center gap-2">
+           <h1 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm">{turma.nome}</h1>
+           <div className="h-1 w-12 bg-primary/20 rounded-full"></div>
+        </div>
+
         {/* Barra de Informações Centralizada */}
-        <div className="space-y-2 px-0.5">
+        <div className="space-y-2 w-full">
           <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
             <InfoBadge label="Ano" value={turma.ano} color="bg-primary/10 text-primary border-primary/20" />
             <InfoBadge label="Etapa" value={turma.etapa} color="bg-liturgical/10 text-liturgical border-liturgical/20" />
@@ -158,7 +166,7 @@ export default function TurmaDetail() {
                   
                   {(mod.count !== null || isPlan) && (
                     <div className={cn(
-                      "mt-1.5 flex flex-col items-center justify-center min-w-[70px] py-1 rounded-xl shadow-sm border transition-colors",
+                      "mt-2 flex flex-col items-center justify-center min-w-[75px] py-1.5 rounded-xl shadow-sm border transition-colors mx-auto",
                       mod.label === "Encontros" ? "bg-blue-500/10 text-blue-700 border-blue-500/20" :
                       mod.label === "Catequizandos" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
                       mod.label === "Atividades" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
