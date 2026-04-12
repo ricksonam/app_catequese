@@ -101,13 +101,13 @@ export default function TurmaDetail() {
           </div>
         </div>
 
-        {/* Barra de Informações em Duas Linhas */}
+        {/* Barra de Informações Centralizada */}
         <div className="space-y-2 px-0.5">
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
             <InfoBadge label="Ano" value={turma.ano} color="bg-primary/10 text-primary border-primary/20" />
             <InfoBadge label="Etapa" value={turma.etapa} color="bg-liturgical/10 text-liturgical border-liturgical/20" />
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
             <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-muted/10 text-muted-foreground border-black/10" />
             <InfoBadge label="Hora" value={turma.horario} color="bg-muted/10 text-muted-foreground border-black/10" />
             <InfoBadge label="Local" value={turma.local} color="bg-muted/10 text-muted-foreground border-black/10" />
@@ -147,20 +147,25 @@ export default function TurmaDetail() {
                   <Icon className="h-7 w-7" />
                 </div>
                 
-                <div className="relative z-30 space-y-1.5 flex-1 flex flex-col justify-between">
-                  <div>
+                <div className="relative z-30 flex-1 flex flex-col items-center justify-between w-full">
+                  <div className="min-h-[32px] flex flex-col items-center justify-center">
                     <h3 className="text-sm font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
-                    <p className="text-[10px] text-muted-foreground leading-tight mt-1 px-1 font-medium">{mod.desc}</p>
+                    {mod.label === "Plano da turma" && (
+                      <p className="text-[9px] text-muted-foreground leading-tight mt-1 px-1 font-medium">{mod.desc}</p>
+                    )}
                   </div>
                   
                   {mod.count !== null && (
                     <div className={cn(
-                      "mt-3 inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm border transition-colors",
-                      mod.label === "Encontros" ? "bg-primary/10 text-primary border-primary/20" :
+                      "mt-4 flex flex-col items-center justify-center min-w-[80px] py-2 rounded-2xl shadow-sm border transition-colors",
+                      mod.label === "Encontros" ? "bg-blue-500/10 text-blue-700 border-blue-500/20" :
                       mod.label === "Catequizandos" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
                       "bg-amber-500/10 text-amber-700 border-amber-500/20"
                     )}>
-                      {mod.count} {mod.count !== 1 ? `${mod.unit}s` : mod.unit}
+                      <span className="text-xl font-black leading-none">{mod.count}</span>
+                      <span className="text-[8px] font-black uppercase tracking-wider mt-1.5 opacity-80">
+                        {mod.count !== 1 ? `${mod.unit}s` : mod.unit}
+                      </span>
                     </div>
                   )}
                 </div>
