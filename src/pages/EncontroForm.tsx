@@ -118,7 +118,7 @@ export default function EncontroForm() {
           <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Tema *</label><input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" /></div>
           <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Data *</label><input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" /></div>
           <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Leitura Bíblica do Tema</label><input type="text" value={leituraBiblica} onChange={(e) => setLeituraBiblica(e.target.value)} placeholder="Ex: Mt 3,13-17" className="form-input" /></div>
-          <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Material de Apoio</label><textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários..." className="form-input min-h-[60px] resize-none" /></div>
+          <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Material de Apoio</label><textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários..." className="form-input min-h-[100px] resize-y" /></div>
         </div>
 
         <div className="animate-float-up" style={{ animationDelay: '120ms' }}>
@@ -147,7 +147,7 @@ export default function EncontroForm() {
                       {step.tipo === "oracao_inicial" && (
                         <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Oração</label><select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">{ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
                       )}
-                      <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[80px] resize-none" /></div>
+                      <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[150px] resize-y" /></div>
                       <div className="grid grid-cols-2 gap-2">
                         <div><label className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1"><Clock className="h-3 w-3" /> Tempo (min)</label><input type="number" min={0} value={step.tempo || ""} onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)} placeholder="0" className="form-input" /></div>
                         <div><label className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1"><User className="h-3 w-3" /> Catequista</label>
