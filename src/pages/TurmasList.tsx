@@ -49,29 +49,26 @@ export default function TurmasList() {
                      <BookOpen className="w-32 h-32 text-primary" />
                   </div>
                   
-                  <div className="flex items-start justify-between mb-4 relative z-30">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex flex-col items-center justify-center shrink-0 shadow-sm">
-                        <BookOpen className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="text-base font-bold text-foreground leading-tight group-hover:text-primary transition-colors">{turma.nome}</h3>
-                        <p className="text-xs text-muted-foreground mt-0.5">{turma.diaCatequese} • {turma.horario} • {turma.local}</p>
-                      </div>
+                  <div className="flex flex-col items-center justify-center mb-5 relative z-30 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-3 group-hover:scale-110 transition-transform duration-500">
+                      <BookOpen className="h-7 w-7 text-primary" />
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-background/60 flex items-center justify-center border border-border/50 shadow-sm shrink-0 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
-                      <ChevronRight className="h-4 w-4" />
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
+                        {turma.nome} <span className="opacity-40 font-bold ml-1">— {turma.ano}</span>
+                      </h3>
+                      <p className="text-xs text-muted-foreground font-medium">{turma.diaCatequese} • {turma.horario} • {turma.local}</p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 flex-wrap relative z-30">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-lg border border-primary/10">
+                  <div className="flex items-center justify-center gap-2 flex-wrap relative z-30">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-primary bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/10 shadow-sm">
                       <CalendarDays className="h-3.5 w-3.5" /><span>{tEncontros.length} encontros</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[hsl(var(--accent))] bg-[hsl(var(--accent))]/10 px-2.5 py-1 rounded-lg border border-[hsl(var(--accent))]/10">
-                      <Users className="h-3.5 w-3.5" /><span>{tCatequizandos.length} inscritos</span>
+                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/10 shadow-sm">
+                      <Users className="h-3.5 w-3.5" /><span>{tCatequizandos.length} catequizandos</span>
                     </div>
-                    {etapa && <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[hsl(var(--success))]/15 text-[hsl(var(--success))] drop-shadow-sm border border-[hsl(var(--success))]/20">{etapa.label}</span>}
+                    {etapa && <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 shadow-sm">{etapa.label}</span>}
                   </div>
                 </div>
               </div>

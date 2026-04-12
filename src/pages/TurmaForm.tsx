@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
-import { useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
+import { useTurmas, useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
 import { EtapaMap } from "@/components/EtapaMap";
 import { ArrowLeft, Check, ChevronDown, Pencil } from "lucide-react";
 import { toast } from "sonner";
