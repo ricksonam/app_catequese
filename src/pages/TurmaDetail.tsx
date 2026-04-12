@@ -133,22 +133,21 @@ export default function TurmaDetail() {
               onClick={() => navigate(mod.path)}
             >
               <div className="absolute inset-[3px] rounded-[22px] border-2 border-white/40 z-20 pointer-events-none opacity-60"></div>
-              
-              <div className={`relative flex flex-col items-center justify-center p-6 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
+                <div className={`relative flex flex-col items-center justify-center p-4 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
                 
                 <div className="absolute -right-3 -bottom-3 opacity-[0.05] pointer-events-none group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
                    <Icon className="w-24 h-24" />
                 </div>
 
                 <div className={cn(
-                  "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 mb-4 transition-transform group-hover:scale-110 duration-500",
+                  "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 mb-2 transition-transform group-hover:scale-110 duration-500",
                   mod.color
                 )}>
-                  <Icon className="h-7 w-7" />
+                  <Icon className="h-6 w-6" />
                 </div>
                 
                 <div className="relative z-30 flex-1 flex flex-col items-center justify-between w-full">
-                  <div className="min-h-[32px] flex flex-col items-center justify-center">
+                  <div className="min-h-[28px] flex flex-col items-center justify-center">
                     <h3 className="text-sm font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
                     {mod.label === "Plano da turma" && (
                       <p className="text-[9px] text-muted-foreground leading-tight mt-1 px-1 font-medium">{mod.desc}</p>
@@ -157,19 +156,19 @@ export default function TurmaDetail() {
                   
                   {mod.count !== null && (
                     <div className={cn(
-                      "mt-4 flex flex-col items-center justify-center min-w-[80px] py-2 rounded-2xl shadow-sm border transition-colors",
+                      "mt-2 flex flex-col items-center justify-center min-w-[70px] py-1 rounded-2xl shadow-sm border transition-colors",
                       mod.label === "Encontros" ? "bg-blue-500/10 text-blue-700 border-blue-500/20" :
                       mod.label === "Catequizandos" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
                       "bg-amber-500/10 text-amber-700 border-amber-500/20"
                     )}>
                       <span className="text-xl font-black leading-none">{mod.count}</span>
-                      <span className="text-[8px] font-black uppercase tracking-wider mt-1.5 opacity-80">
+                      <span className="text-[8px] font-black uppercase tracking-wider mt-1 opacity-80">
                         {mod.count !== 1 ? `${mod.unit}s` : mod.unit}
                       </span>
                     </div>
                   )}
                 </div>
-              </div>
+              </div>        </div>
             </div>
           );
         })}
