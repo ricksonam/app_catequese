@@ -79,9 +79,19 @@ export default function EncontroForm() {
   const handleSave = async () => {
     if (!tema || !data) { toast.error("Preencha o tema e a data"); return; }
     const encontro: Encontro = {
-      id: existing?.id || crypto.randomUUID(), turmaId: id!, tema, data, leituraBiblica, materialApoio,
-      roteiro, status: existing?.status || "pendente", presencas: existing?.presencas || [],
+      id: existing?.id || crypto.randomUUID(), 
+      turmaId: id!, 
+      tema, 
+      data, 
+      leituraBiblica, 
+      materialApoio,
+      roteiro, 
+      status: existing?.status || "pendente", 
+      presencas: existing?.presencas || [],
       criadoEm: existing?.criadoEm || new Date().toISOString(),
+      avaliacao: existing?.avaliacao,
+      motivoCancelamento: existing?.motivoCancelamento,
+      dataTransferida: existing?.dataTransferida,
     };
     try {
       await mutation.mutateAsync(encontro);
