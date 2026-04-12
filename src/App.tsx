@@ -107,6 +107,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ScrollToTop />
           <AppRoutes />
         </AuthProvider>
       </BrowserRouter>
