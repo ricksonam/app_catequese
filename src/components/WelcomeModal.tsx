@@ -138,8 +138,8 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
           <div className="flex flex-col items-center text-center px-7 pt-10 pb-8 overflow-y-auto">
             {/* Logo/icon */}
             <div className="relative mb-5">
-              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-xl shadow-primary/30">
-                <span className="text-3xl font-black text-primary-foreground">✝</span>
+              <div className="w-20 h-20 rounded-3xl overflow-hidden bg-white/50 border border-primary/20 shadow-xl shadow-primary/30">
+                <img src="/app-icon.jpg" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center shadow-lg">
                 <PartyPopper className="h-3.5 w-3.5 text-white" />

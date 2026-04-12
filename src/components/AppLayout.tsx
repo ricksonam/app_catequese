@@ -45,8 +45,8 @@ export default function AppLayout() {
               </SheetContent>
             </Sheet>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm shadow-primary/30">
-                <span className="text-xs font-black text-primary-foreground tracking-tight">IVC</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden bg-white/50 border border-primary/20 shadow-sm">
+                <img src="/app-icon.jpg" alt="Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
             </div>
