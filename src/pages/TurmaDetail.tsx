@@ -116,14 +116,15 @@ export default function TurmaDetail() {
       </div>
 
       {/* Grade 2x2 de Módulos */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {modulos.map((mod, i) => {
           const Icon = mod.icon;
+          const isPlan = mod.label === "Plano da turma";
           return (
             <div 
               key={mod.label}
               className={cn(
-                "relative p-[2px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-2 active:scale-[0.96] cursor-pointer group shadow-lg",
+                "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[150px]",
                 mod.label === "Encontros" ? "bg-gradient-to-br from-primary/60 via-primary/30 to-white" :
                 mod.label === "Catequizandos" ? "bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white" :
                 mod.label === "Atividades" ? "bg-gradient-to-br from-amber-500/60 via-amber-500/30 to-white" :
@@ -133,42 +134,46 @@ export default function TurmaDetail() {
               onClick={() => navigate(mod.path)}
             >
               <div className="absolute inset-[3px] rounded-[22px] border-2 border-white/40 z-20 pointer-events-none opacity-60"></div>
-                <div className={`relative flex flex-col items-center justify-center p-4 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
+              
+              <div className={`relative flex flex-col items-center justify-between p-3.5 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
                 
-                <div className="absolute -right-3 -bottom-3 opacity-[0.05] pointer-events-none group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
-                   <Icon className="w-24 h-24" />
+                <div className="absolute -right-3 -top-3 opacity-[0.05] pointer-events-none group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
+                   <Icon className="w-20 h-20" />
                 </div>
 
                 <div className={cn(
-                  "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 mb-2 transition-transform group-hover:scale-110 duration-500",
+                  "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 transition-transform group-hover:scale-110 duration-500",
                   mod.color
                 )}>
-                  <Icon className="h-6 w-6" />
+                  <Icon className="h-5 w-5" />
                 </div>
                 
-                <div className="relative z-30 flex-1 flex flex-col items-center justify-between w-full">
-                  <div className="min-h-[28px] flex flex-col items-center justify-center">
-                    <h3 className="text-sm font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
-                    {mod.label === "Plano da turma" && (
-                      <p className="text-[9px] text-muted-foreground leading-tight mt-1 px-1 font-medium">{mod.desc}</p>
+                <div className="relative z-30 flex-1 flex flex-col items-center justify-center w-full min-h-0">
+                  <div className="flex flex-col items-center justify-center mb-1">
+                    <h3 className="text-[13px] font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
+                    {isPlan && (
+                      <p className="text-[8px] text-muted-foreground leading-tight mt-1 px-1 font-medium line-clamp-1">{mod.desc}</p>
                     )}
                   </div>
                   
-                  {mod.count !== null && (
+                  {(mod.count !== null || isPlan) && (
                     <div className={cn(
-                      "mt-2 flex flex-col items-center justify-center min-w-[70px] py-1 rounded-2xl shadow-sm border transition-colors",
+                      "mt-1.5 flex flex-col items-center justify-center min-w-[70px] py-1 rounded-xl shadow-sm border transition-colors",
                       mod.label === "Encontros" ? "bg-blue-500/10 text-blue-700 border-blue-500/20" :
                       mod.label === "Catequizandos" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
-                      "bg-amber-500/10 text-amber-700 border-amber-500/20"
+                      mod.label === "Atividades" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
+                      "bg-sky-500/10 text-sky-700 border-sky-500/20"
                     )}>
-                      <span className="text-xl font-black leading-none">{mod.count}</span>
-                      <span className="text-[8px] font-black uppercase tracking-wider mt-1 opacity-80">
-                        {mod.count !== 1 ? `${mod.unit}s` : mod.unit}
+                      <span className={cn("font-black leading-none", isPlan ? "text-[10px]" : "text-lg")}>
+                        {isPlan ? (turma.etapa || "N/A") : mod.count}
+                      </span>
+                      <span className="text-[7px] font-black uppercase tracking-wider mt-0.5 opacity-80">
+                        {isPlan ? "Etapa Atual" : (mod.count !== 1 ? `${mod.unit}s` : mod.unit)}
                       </span>
                     </div>
                   )}
                 </div>
-              </div>        </div>
+              </div>
             </div>
           );
         })}
