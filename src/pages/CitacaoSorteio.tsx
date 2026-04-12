@@ -235,16 +235,39 @@ export default function CitacaoSorteio() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Turma</label>
-              <Select value={selectedTurma} onValueChange={setSelectedTurma}>
-                <SelectTrigger className="h-12 rounded-xl">
-                  <SelectValue placeholder="Selecione a turma" />
-                </SelectTrigger>
-                <SelectContent>
-                  {turmas?.map(t => <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>)}
-                </SelectContent>
-              </Select>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-900/60 ml-1">Selecione a Turma</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {turmas?.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setSelectedTurma(t.id)}
+                    className={cn(
+                      "p-4 rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-2 text-center group relative overflow-hidden",
+                      selectedTurma === t.id 
+                        ? "border-amber-600 bg-amber-50 shadow-xl shadow-amber-900/10 ring-2 ring-amber-600/20" 
+                        : "border-amber-900/10 hover:border-amber-500/30 bg-white"
+                    )}
+                  >
+                    {selectedTurma === t.id && (
+                      <div className="absolute -top-1 -right-1 bg-amber-600 text-white p-1 rounded-bl-xl shadow-md">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                      </div>
+                    )}
+                    <div className={cn(
+                      "w-10 h-10 rounded-2xl flex items-center justify-center transition-all shadow-sm",
+                      selectedTurma === t.id ? "bg-amber-600 text-white" : "bg-amber-100 text-amber-800 group-hover:bg-amber-600 group-hover:text-white"
+                    )}>
+                      <Users className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className={cn("text-xs font-black leading-tight truncate px-1", selectedTurma === t.id ? "text-amber-900" : "text-amber-950")}>{t.nome}</p>
+                      <p className="text-[9px] font-bold text-amber-900/40 uppercase tracking-widest">{t.ano}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {!turmas?.length && <p className="text-xs italic text-amber-900/30 text-center py-4">Nenhuma turma encontrada.</p>}
             </div>
           </div>
 

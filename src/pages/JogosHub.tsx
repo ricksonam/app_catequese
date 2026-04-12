@@ -65,14 +65,14 @@ export default function JogosHub() {
             <button
               key={jogo.path}
               onClick={() => navigate(jogo.path)}
-              className="float-card p-5 text-left animate-float-up"
+              className="float-card p-5 text-center animate-float-up group"
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className={`icon-box w-13 h-13 rounded-2xl ${jogo.color} mb-3`}>
+              <div className={`icon-box w-13 h-13 rounded-2xl ${jogo.color} mb-3 mx-auto group-hover:scale-110 transition-transform duration-500 shadow-sm`}>
                 <Icon className="h-6 w-6" />
               </div>
-              <h3 className="text-sm font-bold text-foreground">{jogo.label}</h3>
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{jogo.desc}</p>
+              <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">{jogo.label}</h3>
+              <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight font-medium opacity-80">{jogo.desc}</p>
             </button>
           );
         })}

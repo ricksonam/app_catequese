@@ -229,23 +229,45 @@ export default function SorteioNomes() {
             <Input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Ex: Sorteio da leitura" />
           </div>
 
-          <div className="space-y-2">
-            <Label>Importar de uma turma</Label>
-            <div className="flex gap-2">
-              <Select value={selectedTurma} onValueChange={setSelectedTurma}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Selecionar turma" />
-                </SelectTrigger>
-                <SelectContent>
-                  {turmas?.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>{t.nome}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button variant="outline" size="icon" onClick={importarCatequizandos} disabled={!selectedTurma}>
-                <Users className="h-4 w-4" />
-              </Button>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Importar de uma turma</label>
+            <div className="grid grid-cols-2 gap-2">
+              {turmas?.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => {
+                    setSelectedTurma(t.id);
+                    // We need a small timeout to let the state update or just use the t.id directly in a modified import function
+                  }}
+                  className={cn(
+                    "p-3 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1.5 text-center group",
+                    selectedTurma === t.id 
+                      ? "border-primary bg-primary/5 shadow-md shadow-primary/10" 
+                      : "border-muted-foreground/10 hover:border-primary/30 bg-card"
+                  )}
+                >
+                  <div className={cn(
+                    "w-8 h-8 rounded-xl flex items-center justify-center transition-colors shadow-sm",
+                    selectedTurma === t.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
+                  )}>
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className={cn("text-[11px] font-black leading-tight truncate px-1", selectedTurma === t.id ? "text-primary" : "text-foreground")}>{t.nome}</p>
+                    <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-60 tracking-tighter">{t.ano}</p>
+                  </div>
+                </button>
+              ))}
             </div>
+            {selectedTurma && (
+              <Button 
+                variant="default" 
+                className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-black text-xs gap-2 shadow-lg shadow-primary/20 animate-in zoom-in-95 duration-300" 
+                onClick={importarCatequizandos}
+              >
+                <Users className="h-4 w-4" /> IMPORTAR NOMES DESTA TURMA
+              </Button>
+            )}
           </div>
 
           <div className="space-y-2">
