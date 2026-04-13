@@ -1,7 +1,7 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText, Printer } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
@@ -13,8 +13,8 @@ const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: s
   cancelado:   { label: "Cancelado",   bg: "bg-destructive/15",   text: "text-destructive",       dot: "bg-destructive",      gradient: "from-destructive/20 to-red-500/10"  },
 };
 
-const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-const MESES_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "SÃ¡b"];
+const MESES_PT = ["Janeiro","Fevereiro","MarÃ§o","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 function parseLocalDate(dateStr: string) {
   const [y, m, d] = dateStr.split("T")[0].split("-").map(Number);
@@ -39,7 +39,7 @@ export default function EncontrosList() {
     [encontros]
   );
 
-  // Meses disponíveis
+  // Meses disponÃ­veis
   const availableMonths = useMemo(() => {
     const seen = new Set<string>();
     sorted.forEach((enc) => {
@@ -67,7 +67,7 @@ export default function EncontrosList() {
     });
   }, [sorted, filterMonth, search]);
 
-  // Agrupa por mês/ano (após filtro)
+  // Agrupa por mÃªs/ano (apÃ³s filtro)
   const groups = useMemo(() => {
     const g: Record<string, { monthLabel: string; items: typeof filtered }> = {};
     filtered.forEach((enc) => {
@@ -91,7 +91,7 @@ export default function EncontrosList() {
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Encontros</h1>
-            <p className="text-xs text-muted-foreground">{turma?.nome} • {encontros.length} encontros</p>
+            <p className="text-xs text-muted-foreground">{turma?.nome} â€¢ {encontros.length} encontros</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function EncontrosList() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por tema, data ou leitura bíblica..."
+              placeholder="Buscar por tema, data ou leitura bÃ­blica..."
               className="w-full h-11 pl-10 pr-10 rounded-2xl border border-black/15 bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
             />
             {search && (
@@ -123,32 +123,27 @@ export default function EncontrosList() {
             )}
           </div>
 
-          {/* Chips de mês */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
-            <button
-              onClick={() => setFilterMonth("todos")}
-              className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold border-2 transition-all ${
-                filterMonth === "todos"
-                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                  : "bg-card border-black/15 text-muted-foreground hover:border-black/30"
-              }`}
-            >
-              Todos os Meses
-            </button>
-            {availableMonths.map((m) => (
-              <button
-                key={m.key}
-                onClick={() => setFilterMonth(m.key)}
-                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold border-2 transition-all capitalize ${
-                  filterMonth === m.key
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-card border-black/15 text-muted-foreground hover:border-black/30"
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
+          {/* Filtro de Meses */}
+          {availableMonths.length > 0 && (
+            <div className="flex items-center">
+              <div className="relative inline-flex items-center bg-card border border-black/15 hover:border-black/30 rounded-full transition-all shadow-sm">
+                <span className="pl-4 pr-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground pointer-events-none">Filtro:</span>
+                <select
+                  value={filterMonth}
+                  onChange={(e) => setFilterMonth(e.target.value)}
+                  className="appearance-none bg-transparent font-bold text-xs text-primary pr-9 py-2 outline-none cursor-pointer"
+                >
+                  <option value="todos">Todos os Meses</option>
+                  {availableMonths.map((m) => (
+                    <option key={m.key} value={m.key} className="capitalize">{m.label}</option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 flex items-center text-muted-foreground">
+                  <ChevronRight className="h-3.5 w-3.5 rotate-90" />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Resumo dos resultados */}
           {(search || filterMonth !== "todos") && (
@@ -178,19 +173,19 @@ export default function EncontrosList() {
         <div className="space-y-8">
           {groups.map(([monthKey, { monthLabel, items }], gi) => (
             <div key={monthKey} className="space-y-3">
-              {/* Separador de mês estilo litúrgico */}
+              {/* Separador de mÃªs estilo litÃºrgico */}
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/25 to-primary/40" />
                 <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm">
-                  <span className="text-[9px] text-primary/70">✝</span>
+                  <span className="text-[9px] text-primary/70">âœ</span>
                   <h3 className="text-xs font-extrabold text-primary uppercase tracking-[0.18em]">{monthLabel}</h3>
                   <span className="text-[10px] font-bold text-primary/50 ml-1">({items.length})</span>
                 </div>
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/25 to-primary/40" />
               </div>
 
-              {/* Cards Litúrgicos */}
-              <div className="space-y-3">
+              {/* Cards LitÃºrgicos */}
+              <div className="space-y-4">
                 {items.map((enc, i) => {
                   const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
                   const presPct = Math.round(((enc.presencas || []).length / totalAlunos) * 100);
@@ -213,7 +208,7 @@ export default function EncontrosList() {
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
-                      {/* Moldura litúrgica interna */}
+                      {/* Moldura litÃºrgica interna */}
                       <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
 
                       <div className="relative rounded-[14px] bg-card overflow-hidden">
@@ -229,7 +224,7 @@ export default function EncontrosList() {
                               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
                             </div>
 
-                            {/* Conteúdo principal */}
+                            {/* ConteÃºdo principal */}
                             <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
                               {/* Status badge */}
                               <div className="flex justify-center items-center gap-2 mb-2">
@@ -245,7 +240,7 @@ export default function EncontrosList() {
                               </p>
 
                               {/* Meta-info linha */}
-                              <div className="flex flex-wrap items-center justify-center gap-2 mt-auto">
+                              <div className="flex flex-wrap items-center justify-center gap-2 mt-auto mb-1">
                                 {enc.leituraBiblica && (
                                   <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
                                     <BookOpen className="h-3 w-3 shrink-0" />
@@ -264,49 +259,35 @@ export default function EncontrosList() {
                             </div>
                           </div>
 
-                          {/* Chips na parte de baixo */}
-                          <div className="flex items-stretch border-t border-black/5 bg-black/[0.02] divide-x divide-black/5">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/encontros/${enc.id}?eval=true`); }}
-                              className={cn(
-                                "flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all",
-                                isAvaliado 
-                                  ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400" 
-                                  : "bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400"
-                              )}
-                            >
-                              <FileText className="h-3.5 w-3.5 mb-px" />
-                              {isAvaliado ? 'Avaliado' : 'Avaliar'}
-                            </button>
+                          {/* Chips AÃ§Ãµes Separadas na Base do Card */}
+                          <div className="px-3 pb-3">
+                            <div className="flex flex-wrap items-center justify-center gap-2">
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/encontros/${enc.id}?eval=true`); }}
+                                  className={cn(
+                                    "flex-1 min-w-[30%] py-2 px-1 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md",
+                                    isAvaliado 
+                                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200" 
+                                      : "bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
+                                  )}
+                                >
+                                  <FileText className="h-3.5 w-3.5 mb-px" />
+                                  {isAvaliado ? 'Avaliado' : 'Avaliar'}
+                                </button>
 
-                            <button
-                              onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                              className="flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-black/5 hover:text-primary transition-colors flex items-center justify-center gap-1.5"
-                            >
-                              <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
-                            </button>
+                                <button
+                                  onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
+                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                >
+                                  <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
+                                </button>
 
-                            <button
-                              onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                              className="flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-black/5 hover:text-liturgical transition-colors flex items-center justify-center gap-1.5"
-                            >
-                              <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
-                            </button>
-
-                            <div className="flex-1 flex items-stretch">
-                              {id && (
-                                <ReportModule 
-                                  context="encontros" 
-                                  turmaId={id} 
-                                  initialDocId={enc.id}
-                                  instantReport="enc_complet"
-                                  trigger={
-                                    <button className="w-full h-full py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-black/5 hover:text-primary transition-colors flex items-center justify-center gap-1.5">
-                                      <Printer className="h-3.5 w-3.5 mb-px" /> Imprimir
-                                    </button>
-                                  }
-                                />
-                              )}
+                                <button
+                                  onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
+                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-violet-100 text-violet-700 hover:bg-violet-200 border border-violet-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                >
+                                  <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
+                                </button>
                             </div>
                           </div>
                         </div>
