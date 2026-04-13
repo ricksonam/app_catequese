@@ -65,7 +65,9 @@ export default function EncontroPresentation() {
         {/* Header */}
         <div className="px-5 pt-5 pb-3">
           <div className="flex items-center justify-between mb-2">
-            <div className="w-8" />
+            <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center p-1">
+              <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
             <h1 className="text-xl sm:text-2xl font-black text-foreground text-center flex-1 px-2 leading-tight">{encontro.tema}</h1>
             <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-full bg-muted/60 hover:bg-muted flex items-center justify-center transition-all active:scale-90 shrink-0"><X className="h-4 w-4 text-muted-foreground" /></button>
           </div>
