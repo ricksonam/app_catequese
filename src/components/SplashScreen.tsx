@@ -3,41 +3,42 @@ export default function SplashScreen() {
     <div className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center animate-in fade-in duration-500">
       {/* Decorative background pulse */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] animate-pulse" />
       </div>
 
-      <div className="relative group">
-        {/* Glowing ring around the icon */}
-        <div className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse scale-150 opacity-50" />
+      <div className="relative group perspective-1000">
+        {/* Glowing ring around the icon - enlarged and better contrast */}
+        <div className="absolute -inset-8 bg-primary/30 rounded-full blur-3xl animate-pulse scale-125 opacity-60 transform-gpu" />
         
-        <div className="relative bg-white dark:bg-zinc-900 w-28 h-28 rounded-[32px] shadow-2xl border border-primary/20 flex items-center justify-center animate-pulse-gentle">
-          <img src="/app-icon.svg" className="w-full h-full p-2" alt="Catequese" />
+        <div className="relative bg-white dark:bg-zinc-900 w-44 h-44 rounded-[42px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-primary/20 flex items-center justify-center animate-pulse-gentle transform-gpu will-change-transform">
+          <img src="/app-icon.svg" className="w-full h-full p-4 drop-shadow-sm" alt="Catequese" />
         </div>
       </div>
 
-      <div className="mt-10 text-center space-y-3 animate-float-up" style={{ animationDelay: '300ms' }}>
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black text-foreground tracking-tighter">Catequese IvC</h1>
-          <div className="flex items-center justify-center gap-2">
-            <div className="h-[1px] w-4 bg-primary/30" />
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Iniciação à Vida Cristã</p>
-            <div className="h-[1px] w-4 bg-primary/30" />
+      <div className="mt-12 text-center space-y-4 animate-float-up" style={{ animationDelay: '300ms' }}>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black text-foreground tracking-tighter sm:text-5xl">Catequese IvC</h1>
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-[1.5px] w-6 bg-primary/40" />
+            <p className="text-[12px] font-black uppercase tracking-[0.5em] text-primary drop-shadow-sm">Iniciação à Vida Cristã</p>
+            <div className="h-[1.5px] w-6 bg-primary/40" />
           </div>
         </div>
       </div>
       
       {/* Loading Progress Bar */}
-      <div className="absolute bottom-20 flex flex-col items-center gap-4 w-full px-12 max-w-xs">
-        <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden border border-border/50">
+      <div className="absolute bottom-20 flex flex-col items-center gap-5 w-full px-12 max-w-sm">
+        <div className="w-full h-2 bg-muted/50 rounded-full overflow-hidden border border-border/40 backdrop-blur-sm">
           <div 
-            className="h-full bg-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]" 
+            className="h-full bg-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.6)]" 
             style={{ 
               animation: 'progress-loading 2s ease-in-out forwards' 
             }} 
           />
         </div>
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10">
-           <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] animate-pulse">Iniciando catequese...</p>
+        <div className="flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md">
+           <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+           <p className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Iniciando catequese...</p>
         </div>
       </div>
 
@@ -47,11 +48,14 @@ export default function SplashScreen() {
           100% { transform: translateX(0); }
         }
         @keyframes pulse-gentle {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.05); opacity: 0.95; }
+          0%, 100% { transform: scale(1) translate3d(0,0,0); opacity: 1; }
+          50% { transform: scale(1.08) translate3d(0,0,0); opacity: 0.98; }
         }
         .animate-pulse-gentle {
-          animation: pulse-gentle 2s ease-in-out infinite;
+          animation: pulse-gentle 2.5s ease-in-out infinite;
+        }
+        .perspective-1000 {
+          perspective: 1000px;
         }
       `}</style>
     </div>
