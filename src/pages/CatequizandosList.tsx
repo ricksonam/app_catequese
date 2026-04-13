@@ -53,10 +53,48 @@ interface CatequizandoForm {
   responsaveis: ResponsavelForm[];
 }
 
+const NECESSIDADES_ESPECIAIS = [
+  { id: "nenhuma", label: "Nenhuma", lanyard: null, color: "" },
+  { id: "tea", label: "Autismo (TEA)", lanyard: "quebra-cabeça", color: "bg-blue-500", pattern: "🧩" },
+  { id: "tdah", label: "TDAH", lanyard: "girassol", color: "bg-green-500", pattern: "🌻" },
+  { id: "visual", label: "Deficiência Visual", lanyard: "branco/azul", color: "bg-white border-blue-500", pattern: "🦯" },
+  { id: "auditiva", label: "Deficiência Auditiva", lanyard: "azul", color: "bg-blue-700", pattern: "👂" },
+  { id: "fisica", label: "Deficiência Física", lanyard: "azul/branco", color: "bg-blue-600", pattern: "♿" },
+  { id: "oculta", label: "Deficiências Ocultas", lanyard: "girassol", color: "bg-green-100 border-green-500", pattern: "🌻" },
+  { id: "outro", label: "Outro", lanyard: "cinza", color: "bg-gray-400", pattern: "⭕" },
+];
+
+function LanyardDrawing({ type }: { type: string }) {
+  const need = NECESSIDADES_ESPECIAIS.find(n => n.id === type);
+  if (!need || !need.lanyard) return null;
+
+  return (
+    <div className="flex flex-col items-center gap-2 p-3 bg-white/50 rounded-2xl border-2 border-dashed border-black/10 animate-in zoom-in-95">
+      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Cordão de Identificação</p>
+      <div className="relative w-full max-w-[200px] h-12 flex items-center justify-center">
+        {/* Simulação do Cordão (Strap) */}
+        <div className={`absolute inset-x-0 h-6 rounded-full border-2 border-black/10 ${need.color} shadow-sm overflow-hidden flex items-center justify-around px-2`}>
+          {[...Array(6)].map((_, i) => (
+            <span key={i} className="text-xs filter saturate-150 drop-shadow-sm">{need.pattern}</span>
+          ))}
+        </div>
+        {/* O Crachá (Badge) */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-4 w-10 h-14 bg-white rounded-md border-2 border-black/10 shadow-lg flex flex-col items-center p-1 z-10">
+          <div className="w-6 h-1 bg-black/10 rounded-full mb-1" />
+          <div className="w-full h-8 bg-muted/20 rounded flex items-center justify-center text-lg">{need.pattern}</div>
+          <div className="w-full h-1 bg-black/5 rounded-full mt-1.5" />
+          <div className="w-3/4 h-1 bg-black/5 rounded-full mt-1" />
+        </div>
+      </div>
+      <p className="text-xs font-bold text-foreground mt-4 uppercase">{need.lanyard}</p>
+    </div>
+  );
+}
+
 const emptyForm: CatequizandoForm = {
   nome: "", dataNascimento: new Date().toISOString().split('T')[0], email: "", telefone: "",
   endereco: "", numero: "", bairro: "", complemento: "",
-  necessidadeEspecial: "", observacao: "", foto: "",
+  necessidadeEspecial: "nenhuma", observacao: "", foto: "",
   batismo: { recebido: false, paroquia: "", data: "" }, eucaristia: { recebido: false, paroquia: "", data: "" }, crisma: { recebido: false, paroquia: "", data: "" },
   participacaoPastoral: "",
   responsaveis: [{ id: crypto.randomUUID(), nome: "", telefone: "", vinculo: 'pais' }],
@@ -233,14 +271,15 @@ export default function CatequizandosList() {
                     <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2"><FieldInput label="Endereço / Rua" value={form.endereco} onChange={(v) => updateField("endereco", v)} /></div>
-                    <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
-                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
-                    <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
+                    <FieldInput label="Endereço / Rua" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+                    <div className="grid grid-cols-2 gap-4">
+                       <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
+                       <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
+                    </div>
                   </div>
+                  <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
+                </div>
                 </div>
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
@@ -349,13 +388,33 @@ export default function CatequizandosList() {
                   </div>
                   <Separator />
                   <div className="space-y-3">
-                    <FieldInput label="Necessidade Especial" value={form.necessidadeEspecial} onChange={(v) => updateField("necessidadeEspecial", v)} placeholder="Se houver, descreva aqui" />
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Necessidade Especial</label>
+                      <Select 
+                        value={form.necessidadeEspecial} 
+                        onValueChange={(v) => updateField("necessidadeEspecial", v)}
+                      >
+                        <SelectTrigger className="h-10 bg-background border-2 border-black/10">
+                          <SelectValue placeholder="Selecione se houver" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {NECESSIDADES_ESPECIAIS.map(n => (
+                            <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {form.necessidadeEspecial !== "nenhuma" && (
+                        <div className="mt-4">
+                          <LanyardDrawing type={form.necessidadeEspecial} />
+                        </div>
+                      )}
+                    </div>
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação Geral</label>
                       <textarea 
                         value={form.observacao} 
                         onChange={(e) => updateField("observacao", e.target.value)} 
-                        className="form-input min-h-[80px] resize-none" 
+                        className="form-input min-h-[80px] resize-none border-2 border-black/10" 
                         placeholder="Anotações extras sobre o catequizando..." 
                       />
                     </div>
@@ -457,59 +516,51 @@ export default function CatequizandosList() {
                   </div>
                 </div>
 
-                {/* Alerta Necessidade Especial Clean */}
-                {viewItem.necessidadeEspecial && (
-                  <div className="flex gap-4 items-start p-4 bg-destructive/5 rounded-2xl border border-destructive/10">
-                    <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-destructive font-black">!</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-destructive uppercase tracking-widest mb-1">Atenção Especial</p>
-                      <p className="text-sm font-medium text-destructive/90">{viewItem.necessidadeEspecial}</p>
-                    </div>
-                  </div>
+                {/* Identificação Especial (Cordão) */}
+                {viewItem.necessidadeEspecial && viewItem.necessidadeEspecial !== "nenhuma" && (
+                   <LanyardDrawing type={viewItem.necessidadeEspecial} />
                 )}
 
                 {/* Blocos de Informação em Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Dados Pessoais */}
-                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
+                  <div className="bg-white rounded-2xl p-5 border-2 border-black/10 shadow-sm">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                        <span className="w-4 h-4 rounded bg-muted flex items-center justify-center text-muted-foreground"><UserPlus className="w-3 h-3" /></span> Dados Pessoais
                     </h4>
                     <div className="space-y-3.5">
                       <div className="flex justify-between items-center">
-                         <span className="text-[11px] font-semibold text-muted-foreground">Nascimento</span>
-                         <span className="text-sm font-semibold text-foreground text-right">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
+                         <span className="text-xs font-bold text-muted-foreground">Nascimento</span>
+                         <span className="text-base font-black text-foreground text-right">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
                       </div>
                       <div className="h-px bg-black/5" />
                       <div className="flex justify-between items-center">
-                         <span className="text-[11px] font-semibold text-muted-foreground">Telefone</span>
-                         <span className="text-sm font-semibold text-foreground text-right">{viewItem.telefone || "—"}</span>
+                         <span className="text-xs font-bold text-muted-foreground">Telefone</span>
+                         <span className="text-base font-black text-foreground text-right">{viewItem.telefone || "—"}</span>
                       </div>
                       <div className="h-px bg-black/5" />
                       <div className="flex justify-between items-center">
-                         <span className="text-[11px] font-semibold text-muted-foreground">E-mail</span>
-                         <span className="text-sm font-semibold text-foreground text-right truncate max-w-[150px]">{viewItem.email || "—"}</span>
+                         <span className="text-xs font-bold text-muted-foreground">E-mail</span>
+                         <span className="text-base font-black text-foreground text-right truncate max-w-[150px]">{viewItem.email || "—"}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Endereço */}
-                  <div className="bg-white rounded-2xl p-4 border border-black/5 shadow-sm">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
+                  <div className="bg-white rounded-2xl p-5 border-2 border-black/10 shadow-sm">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
                       <span className="w-4 h-4 rounded bg-muted flex items-center justify-center text-muted-foreground">📍</span> Endereço
                     </h4>
-                    <p className="text-sm font-semibold text-foreground leading-snug">
+                    <p className="text-base font-black text-foreground leading-snug">
                       {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
                         <>
                           {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
-                          <span className="block text-muted-foreground font-medium text-[11px] mt-1">
+                          <span className="block text-muted-foreground font-bold text-xs mt-1">
                             {viewItem.bairro ? `Bairro: ${viewItem.bairro} ` : ""}
                             {viewItem.complemento ? `(${viewItem.complemento})` : ""}
                           </span>
                         </>
-                      ) : <span className="text-muted-foreground italic">Nenhum cadastrado</span>}
+                      ) : <span className="text-muted-foreground italic text-sm">Nenhum cadastrado</span>}
                     </p>
                   </div>
                 </div>
@@ -540,15 +591,15 @@ export default function CatequizandosList() {
                 </div>
 
                 {/* DADOS PASTORAIS E SACRAMENTOS */}
-                <div className="bg-orange-50/30 rounded-2xl p-5 border border-orange-100 shadow-sm">
+                <div className="bg-orange-50/30 rounded-2xl p-6 border-2 border-orange-100 shadow-sm">
                   <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <span className="w-4 h-4 rounded bg-orange-100 flex items-center justify-center text-orange-500">✝️</span> Dados Pastorais
                   </h4>
                   
                   {viewItem.dadosPastorais?.participacaoPastoral && (
-                    <div className="mb-4 p-3 bg-white border border-orange-100 rounded-xl">
+                    <div className="mb-4 p-4 bg-white border-2 border-orange-100 rounded-2xl">
                       <p className="text-[10px] font-black text-orange-400 uppercase tracking-wider mb-1">Participação em Pastorais/Grupos</p>
-                      <p className="text-sm font-semibold">{viewItem.dadosPastorais.participacaoPastoral}</p>
+                      <p className="text-base font-black">{viewItem.dadosPastorais.participacaoPastoral}</p>
                     </div>
                   )}
 
@@ -557,21 +608,21 @@ export default function CatequizandosList() {
                       const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
                       const isOk = s?.recebido;
                       return (
-                        <div key={sac} className="flex-1 flex flex-col items-start p-3 bg-white border border-orange-100 rounded-xl">
+                        <div key={sac} className="flex-1 flex flex-col items-start p-4 bg-white border-2 border-orange-100 rounded-2xl">
                           <div className="flex items-center gap-2 mb-2 w-full">
-                            <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${isOk ? 'bg-success text-white' : 'bg-muted-foreground/30 text-white'}`}>
-                              <span className="text-[10px] font-bold">{isOk ? '✓' : ''}</span>
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isOk ? 'bg-success text-white' : 'bg-muted-foreground/30 text-white'}`}>
+                              <span className="text-[12px] font-black">{isOk ? '✓' : ''}</span>
                             </div>
-                            <span className={`text-xs font-bold capitalize ${isOk ? 'text-foreground' : 'text-muted-foreground'}`}>{sac}</span>
+                            <span className={`text-sm font-black capitalize ${isOk ? 'text-foreground' : 'text-muted-foreground'}`}>{sac}</span>
                           </div>
                           {isOk ? (
-                            <div className="text-[10px] font-medium text-muted-foreground w-full">
-                              {s.paroquia && <p className="truncate"><span className="opacity-70 font-bold">Local:</span> {s.paroquia}</p>}
-                              {s.data && <p><span className="opacity-70 font-bold">Data:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
+                            <div className="text-xs font-bold text-muted-foreground w-full">
+                              {s.paroquia && <p className="truncate"><span className="opacity-70 font-black">Local:</span> {s.paroquia}</p>}
+                              {s.data && <p><span className="opacity-70 font-black">Data:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
                               {!s.paroquia && !s.data && <p className="italic">Sem detalhes</p>}
                             </div>
                           ) : (
-                            <p className="text-[10px] font-medium text-muted-foreground/50 italic">Pendente</p>
+                            <p className="text-xs font-bold text-muted-foreground/50 italic">Pendente</p>
                           )}
                         </div>
                       );
@@ -590,13 +641,13 @@ export default function CatequizandosList() {
                 )}
                 
                 {/* Alterar Status */}
-                <div className="pt-4 border-t border-black/5 pb-2">
+                <div className="pt-4 border-t-2 border-black/10 pb-2">
                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Situação do Aluno</p>
                   <div className="flex justify-center gap-2 flex-wrap">
                     {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                       const isAtivo = (viewItem.status || 'ativo') === s;
                       return (
-                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${isAtivo ? 'bg-foreground text-background border-foreground shadow-md scale-105' : 'bg-muted text-muted-foreground hover:bg-black/5 border-black/5'}`}>
+                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${isAtivo ? 'bg-foreground text-background border-foreground shadow-md scale-105' : 'bg-muted text-muted-foreground hover:bg-black/5 border-black/10'}`}>
                           {statusConfig[s].label}
                         </button>
                       );
@@ -654,14 +705,15 @@ export default function CatequizandosList() {
                     <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2"><FieldInput label="Endereço / Rua" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} /></div>
-                    <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
-                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
-                    <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
+                    <FieldInput label="Endereço / Rua" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
+                       <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
+                    </div>
                   </div>
+                  <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
+                </div>
                 </div>
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
@@ -761,11 +813,26 @@ export default function CatequizandosList() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <FieldInput label="Necessidade Especial" value={editForm.necessidadeEspecial} onChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))} />
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Necessidade Especial</label>
+                    <Select 
+                      value={editForm.necessidadeEspecial} 
+                      onValueChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))}
+                    >
+                      <SelectTrigger className="h-10 bg-background border-2 border-black/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {NECESSIDADES_ESPECIAIS.map(n => (
+                          <SelectItem key={n.id} value={n.id}>{n.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação Geral</label>
-                    <textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none" />
+                    <textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none border-2 border-black/10" />
                   </div>
                 </div>
                 
