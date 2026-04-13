@@ -203,30 +203,40 @@ export default function CatequizandosList() {
         <div className="space-y-2">{list.map((c, i) => {
           const st = statusConfig[c.status || 'ativo'];
           return (
-            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="float-card w-full flex items-center gap-3 px-4 py-3.5 animate-float-up text-left active:scale-[0.98] transition-transform" style={{ animationDelay: `${i * 50}ms` }}>
-              <span className="text-xs font-bold text-muted-foreground w-4 shrink-0">{i + 1}</span>
-              <div className="w-10 h-10 rounded-full bg-accent/15 flex items-center justify-center overflow-hidden shrink-0">
-                {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-sm font-bold text-accent-foreground">{c.nome.charAt(0).toUpperCase()}</span>}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm font-semibold text-foreground truncate">{c.nome}</p>
+            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98]">
+                <div className="relative shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shadow-inner ring-2 ring-background">
+                    {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
+                  </div>
+                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${st.color.split(' ')[0]}`} title={`Status: ${st.label}`} />
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  {c.dataNascimento && (
-                    <>
-                      <span className="text-[10px] text-muted-foreground">
-                        {new Date(c.dataNascimento + 'T00:00').toLocaleDateString('pt-BR')}
+                
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm sm:text-base font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">{c.nome}</h3>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    {c.responsavel && (
+                      <span className="inline-flex items-center text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full truncate">
+                         Resp: <span className="text-foreground ml-1 truncate">{c.responsavel.split(' ')[0]}</span>
                       </span>
-                      <span className="text-[10px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded-lg border border-primary/15">
-                        {calcularIdade(c.dataNascimento)}
-                      </span>
-                    </>
-                  )}
+                    )}
+                    {c.dataNascimento && (
+                      <>
+                        <span className="w-1 h-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
+                        <span className="text-[10px] sm:text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+                          {calcularIdade(c.dataNascimento)}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 px-1">
-                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                
+                <div className="shrink-0 pl-2">
+                  <div className="w-8 h-8 rounded-full bg-muted/50 flex flex-col items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors text-muted-foreground">
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
               </div>
             </button>
           );
@@ -234,64 +244,153 @@ export default function CatequizandosList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
-        <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
+        <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
-            <>
-              <div className="flex items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center overflow-hidden shrink-0">
-                  {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-2xl font-bold text-accent-foreground">{viewItem.nome.charAt(0).toUpperCase()}</span>}
+            <div className="flex flex-col h-full relative bg-background">
+              {/* Hero Banner */}
+              <div className="relative pt-8 pb-5 px-6 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-center border-b border-black/5">
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button onClick={handleEdit} className="p-2 rounded-full bg-white/50 hover:bg-white text-primary shadow-sm transition-all border border-black/5"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={handleDelete} className="p-2 rounded-full bg-white/50 hover:bg-white text-destructive shadow-sm transition-all border border-black/5"><Trash2 className="h-4 w-4" /></button>
                 </div>
-                <div className="flex-1 min-w-0"><h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>{viewItem.dataNascimento && <p className="text-xs text-muted-foreground">{calcularIdade(viewItem.dataNascimento)}</p>}</div>
-              </div>
-              <div className="flex items-center justify-between mt-3">
-                <button onClick={handleEdit} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium"><Pencil className="h-4 w-4" /> Editar</button>
-                <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors text-sm font-medium"><Trash2 className="h-4 w-4" /> Excluir</button>
-              </div>
-              <div className="space-y-4 text-sm mt-4">
-                <div><p className="text-xs font-semibold text-muted-foreground mb-2">Status</p>
-                  <div className="flex gap-2 flex-wrap">{(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => (
-                    <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`pill-btn transition-all ${(viewItem.status || 'ativo') === s ? statusConfig[s].color + ' ring-2 ring-offset-1 ring-current' : 'pill-btn-inactive'}`}>{statusConfig[s].label}</button>
-                  ))}</div>
+                
+                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-white shadow-xl ring-4 ring-white/50 flex items-center justify-center overflow-hidden mb-4 relative z-10">
+                  {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-4xl font-black text-primary/70">{viewItem.nome.charAt(0).toUpperCase()}</span>}
                 </div>
-                <div className="space-y-2.5">
-                  <InfoRow label="Data de nascimento" value={viewItem.dataNascimento ? `${new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR")} (${calcularIdade(viewItem.dataNascimento)})` : undefined} />
-                  <InfoRow label="ResponsÃ¡vel" value={viewItem.responsavel} />
-                  <InfoRow label="Telefone" value={viewItem.telefone} />
-                  <InfoRow label="E-mail" value={viewItem.email} />
-                  <div className="p-3 rounded-xl bg-muted/30">
-                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">EndereÃ§o</p>
-                    <p className="text-sm font-medium text-foreground">
-                      {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
-                      {viewItem.bairro ? ` - ${viewItem.bairro}` : ""}
-                      {viewItem.complemento ? ` (${viewItem.complemento})` : ""}
+                <h2 className="text-xl sm:text-2xl font-black text-foreground mb-2 leading-tight px-2">{viewItem.nome}</h2>
+                <div className="flex justify-center gap-2 flex-wrap">
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${(statusConfig[viewItem.status || 'ativo']).color.replace('text-','border-')} ${(statusConfig[viewItem.status || 'ativo']).color}`}>
+                    {statusConfig[viewItem.status || 'ativo'].label}
+                  </span>
+                  {viewItem.dataNascimento && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 bg-primary/10 text-primary">
+                      {calcularIdade(viewItem.dataNascimento)}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-5 sm:p-6 space-y-6">
+                {/* Alerta Necessidade Especial */}
+                {viewItem.necessidadeEspecial && (
+                  <div className="bg-destructive/10 border-l-4 border-destructive p-4 rounded-r-xl">
+                    <p className="text-xs font-bold text-destructive uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" /> Atenção Especial
                     </p>
+                    <p className="text-sm font-semibold text-destructive/80 leading-snug">{viewItem.necessidadeEspecial}</p>
                   </div>
-                  <InfoRow label="Necessidade especial" value={viewItem.necessidadeEspecial} />
-                  <InfoRow label="ObservaÃ§Ã£o" value={viewItem.observacao} />
+                )}
+
+                {/* Blocos de Informação */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Card Pessoal */}
+                  <div className="bg-muted/30 rounded-2xl p-4 border border-black/5">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Dados Pessoais</h4>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                         <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Nascimento</p>
+                         <p className="font-semibold text-foreground">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informada"}</p>
+                      </div>
+                      <div className="h-px bg-black/5" />
+                      <div>
+                         <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Telefone</p>
+                         <p className="font-semibold text-foreground">{viewItem.telefone || "—"}</p>
+                      </div>
+                      <div className="h-px bg-black/5" />
+                      <div>
+                         <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">E-mail</p>
+                         <p className="font-semibold text-foreground truncate">{viewItem.email || "—"}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Endereço e Responsável */}
+                  <div className="space-y-4">
+                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative overflow-hidden shadow-sm">
+                      <div className="absolute top-0 right-0 p-4 opacity-10"><UserPlus className="h-12 w-12 text-primary" /></div>
+                      <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-1 relative z-10">Responsável</h4>
+                      <p className="text-base font-bold text-foreground leading-tight relative z-10">{viewItem.responsavel || "Não informado"}</p>
+                    </div>
+
+                    <div className="bg-muted/30 rounded-2xl p-4 border border-black/5">
+                      <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Endereço</h4>
+                      <p className="text-sm font-semibold text-foreground leading-snug">
+                        {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
+                          <>
+                            {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
+                            <br />
+                            <span className="text-muted-foreground font-medium text-xs">
+                              {viewItem.bairro ? `Bairro: ${viewItem.bairro} ` : ""}
+                              {viewItem.complemento ? `(${viewItem.complemento})` : ""}
+                            </span>
+                          </>
+                        ) : <span className="text-muted-foreground">Nenhum cadatrado</span>}
+                      </p>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Sacramentos Grid */}
                 {viewItem.sacramentos && (
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground mb-1.5">Sacramentos</p>
-                    {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
-                      const s = viewItem.sacramentos![sac]; 
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Situação Sacramental</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
+                        const s = viewItem.sacramentos![sac]; 
+                        const isOk = s?.recebido;
+                        return (
+                          <div key={sac} className={`p-3.5 rounded-2xl border ${isOk ? 'bg-success/5 border-success/20' : 'bg-muted/50 border-black/5'}`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-black capitalize text-foreground">{sac}</span>
+                              <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs ${isOk ? 'bg-success/20 text-success' : 'bg-black/5 text-muted-foreground'}`}>
+                                {isOk ? '✓' : '-'}
+                              </div>
+                            </div>
+                            {isOk ? (
+                              <div className="text-[10px] font-medium text-muted-foreground space-y-0.5">
+                                {s.paroquia && <p className="truncate"><span className="font-semibold text-foreground/70">P:</span> {s.paroquia}</p>}
+                                {s.data && <p><span className="font-semibold text-foreground/70">D:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
+                                {!s.paroquia && !s.data && <p className="italic">S/ Detalhes</p>}
+                              </div>
+                            ) : (
+                              <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">Pendente</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Observações */}
+                {viewItem.observacao && (
+                  <div className="bg-amber-50 rounded-2xl p-4 border border-amber-100/50">
+                    <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1.5">Anotações</h4>
+                    <p className="text-sm text-amber-900/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
+                  </div>
+                )}
+                
+                {/* Alterar Status */}
+                <div className="pt-4 border-t border-black/5 pb-2">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Ativar / Inativar Cadastro</p>
+                  <div className="flex justify-center gap-2 flex-wrap">
+                    {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
+                      const isAtivo = (viewItem.status || 'ativo') === s;
                       return (
-                        <div key={sac} className="flex items-center gap-2 py-1.5">
-                          <span className={`w-2.5 h-2.5 rounded-full ${s.recebido ? 'bg-success' : 'bg-muted-foreground/30'}`} />
-                          <span className="capitalize font-semibold text-foreground">{sac}</span>
-                          {s.recebido && s.paroquia && <span className="text-muted-foreground text-xs">â€¢ {s.paroquia}</span>}
-                          {s.recebido && s.data && <span className="text-muted-foreground text-xs">â€¢ {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</span>}
-                        </div>
+                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${isAtivo ? 'bg-foreground text-background border-foreground shadow-[0_4px_10px_-3px_rgba(0,0,0,0.3)]' : 'bg-muted text-muted-foreground hover:bg-muted/70 border-black/5'}`}>
+                          {statusConfig[s].label}
+                        </button>
                       );
                     })}
                   </div>
-                )}
+                </div>
               </div>
-            </>
+            </div>
           )}
           {viewItem && editMode && (
-            <>
+            <div className="p-5 sm:p-6 bg-background rounded-2xl">
               <DialogHeader><div className="flex items-center justify-between"><DialogTitle>Editar Catequizando</DialogTitle><button onClick={() => setEditMode(false)} className="p-1.5 rounded-lg hover:bg-muted"><X className="h-4 w-4" /></button></div></DialogHeader>
-              <div className="space-y-3 mt-2">
+              <div className="space-y-3 mt-4">
                 <div className="flex justify-center mb-2">
                   <ImagePicker 
                     onImageUpload={(url) => setEditForm(f => ({ ...f, foto: url }))} 
@@ -304,37 +403,37 @@ export default function CatequizandosList() {
                 <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
                 <div className="grid grid-cols-2 gap-2">
                   <FieldInput label="Data de nascimento" type="date" value={editForm.dataNascimento} onChange={(v) => setEditForm(f => ({ ...f, dataNascimento: v }))} />
-                  <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label><div className="form-input text-muted-foreground">{calcularIdade(editForm.dataNascimento) || "â€”"}</div></div>
+                  <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label><div className="form-input text-muted-foreground">{calcularIdade(editForm.dataNascimento) || "—"}</div></div>
                 </div>
-                <FieldInput label="ResponsÃ¡vel" value={editForm.responsavel} onChange={(v) => setEditForm(f => ({ ...f, responsavel: v }))} />
+                <FieldInput label="Responsável" value={editForm.responsavel} onChange={(v) => setEditForm(f => ({ ...f, responsavel: v }))} />
                 <div className="grid grid-cols-2 gap-2">
                   <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
                   <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
                 </div>
                 <FieldInput label="Rua / Logradouro" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
                 <div className="grid grid-cols-3 gap-2">
-                  <FieldInput label="NÃºmero" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
+                  <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
                   <div className="col-span-2">
                     <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
                   </div>
                 </div>
                 <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
                 <FieldInput label="Necessidade especial" value={editForm.necessidadeEspecial} onChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))} />
-                <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">ObservaÃ§Ã£o</label><textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none" /></div>
+                <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none" /></div>
                 <button type="button" onClick={() => setShowEditSacramentos(!showEditSacramentos)} className="w-full flex items-center justify-between form-input font-semibold">Sacramentos {showEditSacramentos ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>
                 {showEditSacramentos && (
-                  <div className="space-y-3 pl-3 border-l-2 border-primary/20">
+                  <div className="space-y-3 pl-3 border-l-2 border-primary/20 mt-2">
                     {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
                       <div key={sac} className="space-y-2">
                         <label className="flex items-center gap-2"><input type="checkbox" checked={editForm[sac].recebido} onChange={(e) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], recebido: e.target.checked } }))} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" /><span className="text-sm font-semibold text-foreground capitalize">{sac}</span></label>
-                        {editForm[sac].recebido && <div className="grid grid-cols-2 gap-2 ml-6"><FieldInput label="ParÃ³quia" value={editForm[sac].paroquia} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], paroquia: v } }))} /><FieldInput label="Data" type="date" value={editForm[sac].data} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], data: v } }))} /></div>}
+                        {editForm[sac].recebido && <div className="grid grid-cols-2 gap-2 ml-6"><FieldInput label="Paróquia" value={editForm[sac].paroquia} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], paroquia: v } }))} /><FieldInput label="Data" type="date" value={editForm[sac].data} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], data: v } }))} /></div>}
                       </div>
                     ))}
                   </div>
                 )}
-                <button onClick={handleSaveEdit} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : "Salvar"}</button>
+                <button onClick={handleSaveEdit} disabled={mutation.isPending} className="w-full action-btn mt-4">{mutation.isPending ? "Salvando..." : "Salvar"}</button>
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
