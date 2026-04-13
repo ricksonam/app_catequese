@@ -12,13 +12,21 @@ export interface Turma {
   catequistasIds?: string[];
 }
 
-export interface SacramentoInfo {
-  recebido: boolean;
-  paroquia: string;
-  data: string;
+export interface ResponsavelInfo {
+  id: string;
+  nome: string;
+  telefone: string;
+  vinculo: 'pais' | 'avós' | 'tios' | 'outros';
 }
 
-export type CatequizandoStatus = 'ativo' | 'desistente' | 'afastado';
+export interface DadosPastoraisInfo {
+  sacramentos: {
+    batismo: SacramentoInfo;
+    eucaristia: SacramentoInfo;
+    crisma: SacramentoInfo;
+  };
+  participacaoPastoral: string;
+}
 
 export interface Catequizando {
   id: string;
@@ -41,6 +49,8 @@ export interface Catequizando {
     eucaristia: SacramentoInfo;
     crisma: SacramentoInfo;
   };
+  responsaveis?: ResponsavelInfo[];
+  dadosPastorais?: DadosPastoraisInfo;
 }
 
 export type EncontroStatus = 'pendente' | 'realizado' | 'transferido' | 'cancelado';

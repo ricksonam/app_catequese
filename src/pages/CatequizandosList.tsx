@@ -8,6 +8,9 @@ import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
 import { mascaraTelefone } from "@/lib/utils";
+import { CustomDatePicker } from "@/components/CustomDatePicker";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -40,18 +43,23 @@ function calcularIdade(dataNascimento: string): string {
 }
 
 interface SacramentoInfo { recebido: boolean; paroquia: string; data: string; }
+interface ResponsavelForm { id: string; nome: string; telefone: string; vinculo: 'pais' | 'avós' | 'tios' | 'outros'; }
 interface CatequizandoForm {
-  nome: string; dataNascimento: string; responsavel: string; telefone: string; email: string;
+  nome: string; dataNascimento: string; email: string; telefone: string;
   endereco: string; numero: string; bairro: string; complemento: string;
   necessidadeEspecial: string; observacao: string; foto: string;
   batismo: SacramentoInfo; eucaristia: SacramentoInfo; crisma: SacramentoInfo;
+  participacaoPastoral: string;
+  responsaveis: ResponsavelForm[];
 }
 
 const emptyForm: CatequizandoForm = {
-  nome: "", dataNascimento: "", responsavel: "", telefone: "", email: "", 
+  nome: "", dataNascimento: new Date().toISOString().split('T')[0], email: "", telefone: "",
   endereco: "", numero: "", bairro: "", complemento: "",
   necessidadeEspecial: "", observacao: "", foto: "",
   batismo: { recebido: false, paroquia: "", data: "" }, eucaristia: { recebido: false, paroquia: "", data: "" }, crisma: { recebido: false, paroquia: "", data: "" },
+  participacaoPastoral: "",
+  responsaveis: [{ id: crypto.randomUUID(), nome: "", telefone: "", vinculo: 'pais' }],
 };
 
 const statusConfig: Record<CatequizandoStatus, { label: string; color: string }> = {
@@ -81,16 +89,39 @@ export default function CatequizandosList() {
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
 
   const handleAdd = async () => {
-    if (!form.nome) { toast.error("Nome Ã© obrigatÃ³rio"); return; }
+    if (!form.nome) { toast.error("Nome é obrigatório"); return; }
     const novo: Catequizando = {
       id: crypto.randomUUID(), turmaId: id!, nome: form.nome, dataNascimento: form.dataNascimento,
-      responsavel: form.responsavel, telefone: form.telefone, email: form.email, 
+      responsavel: form.responsaveis[0]?.nome || "", telefone: form.telefone, email: form.email, 
       endereco: form.endereco, numero: form.numero, bairro: form.bairro, complemento: form.complemento,
       necessidadeEspecial: form.necessidadeEspecial, observacao: form.observacao, status: 'ativo',
-      foto: form.foto || undefined, sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma } as any,
+      foto: form.foto || undefined,
+      sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma } as any,
+      responsaveis: form.responsaveis as any[],
+      dadosPastorais: {
+        sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma },
+        participacaoPastoral: form.participacaoPastoral
+      } as any
     };
     try { await mutation.mutateAsync(novo); setForm({ ...emptyForm }); setShowSacramentos(false); setOpen(false); toast.success("Catequizando adicionado!"); }
     catch (err: any) { toast.error("Erro: " + err.message); }
+  };
+
+  const addResponsavel = (isEdit: boolean) => {
+    const newItem = { id: crypto.randomUUID(), nome: "", telefone: "", vinculo: 'pais' as const };
+    if (isEdit) setEditForm(f => ({ ...f, responsaveis: [...f.responsaveis, newItem] }));
+    else setForm(f => ({ ...f, responsaveis: [...f.responsaveis, newItem] }));
+  };
+
+  const removeResponsavel = (id: string, isEdit: boolean) => {
+    if (isEdit) setEditForm(f => ({ ...f, responsaveis: f.responsaveis.filter(r => r.id !== id) }));
+    else setForm(f => ({ ...f, responsaveis: f.responsaveis.filter(r => r.id !== id) }));
+  };
+
+  const updateResponsavel = (id: string, field: string, value: string, isEdit: boolean) => {
+    const update = (r: ResponsavelForm) => r.id === id ? { ...r, [field]: value } : r;
+    if (isEdit) setEditForm(f => ({ ...f, responsaveis: f.responsaveis.map(update) }));
+    else setForm(f => ({ ...f, responsaveis: f.responsaveis.map(update) }));
   };
 
   const handleStatusChange = (catequizando: Catequizando, newStatus: CatequizandoStatus) => {
@@ -102,25 +133,33 @@ export default function CatequizandosList() {
   const handleEdit = () => {
     if (!viewItem) return;
     setEditForm({
-      nome: viewItem.nome, dataNascimento: viewItem.dataNascimento, responsavel: viewItem.responsavel,
+      nome: viewItem.nome, dataNascimento: viewItem.dataNascimento,
       telefone: viewItem.telefone, email: viewItem.email, 
       endereco: viewItem.endereco || "", numero: viewItem.numero || "", bairro: viewItem.bairro || "", complemento: viewItem.complemento || "",
       necessidadeEspecial: viewItem.necessidadeEspecial || "", observacao: viewItem.observacao || "", foto: viewItem.foto || "",
-      batismo: (viewItem.sacramentos?.batismo || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
-      eucaristia: (viewItem.sacramentos?.eucaristia || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
-      crisma: (viewItem.sacramentos?.crisma || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
+      batismo: (viewItem.dadosPastorais?.sacramentos?.batismo || viewItem.sacramentos?.batismo || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
+      eucaristia: (viewItem.dadosPastorais?.sacramentos?.eucaristia || viewItem.sacramentos?.eucaristia || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
+      crisma: (viewItem.dadosPastorais?.sacramentos?.crisma || viewItem.sacramentos?.crisma || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
+      participacaoPastoral: viewItem.dadosPastorais?.participacaoPastoral || "",
+      responsaveis: (viewItem.responsaveis?.length ? viewItem.responsaveis : [{ id: crypto.randomUUID(), nome: viewItem.responsavel || "", telefone: viewItem.telefone || "", vinculo: 'pais' }]) as ResponsavelForm[],
     });
     setEditMode(true);
   };
 
   const handleSaveEdit = async () => {
-    if (!viewItem || !editForm.nome) { toast.error("Nome Ã© obrigatÃ³rio"); return; }
+    if (!viewItem || !editForm.nome) { toast.error("Nome é obrigatório"); return; }
     const updated: Catequizando = {
-      ...viewItem, nome: editForm.nome, dataNascimento: editForm.dataNascimento, responsavel: editForm.responsavel,
+      ...viewItem, nome: editForm.nome, dataNascimento: editForm.dataNascimento,
+      responsavel: editForm.responsaveis[0]?.nome || "",
       telefone: editForm.telefone, email: editForm.email, 
       endereco: editForm.endereco, numero: editForm.numero, bairro: editForm.bairro, complemento: editForm.complemento,
       necessidadeEspecial: editForm.necessidadeEspecial,
       observacao: editForm.observacao, foto: editForm.foto || undefined,
+      responsaveis: editForm.responsaveis as any[],
+      dadosPastorais: {
+        sacramentos: { batismo: editForm.batismo as any, eucaristia: editForm.eucaristia as any, crisma: editForm.crisma as any },
+        participacaoPastoral: editForm.participacaoPastoral
+      } as any,
       sacramentos: { batismo: editForm.batismo as any, eucaristia: editForm.eucaristia as any, crisma: editForm.crisma as any },
     };
     try { await mutation.mutateAsync(updated); setViewItem(updated); setEditMode(false); toast.success("Atualizado!"); }
@@ -152,50 +191,184 @@ export default function CatequizandosList() {
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
-            <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
-              <DialogHeader><DialogTitle>Novo Catequizando</DialogTitle></DialogHeader>
-              <div className="space-y-3 mt-2">
-                <div className="flex justify-center mb-2">
-                  <ImagePicker 
-                    onImageUpload={(url) => setForm(f => ({ ...f, foto: url }))} 
-                    folder="catequizandos" 
-                    currentImageUrl={form.foto} 
-                    shape="circle" 
-                    label="Foto de Perfil"
-                  />
-                </div>
-                <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
-                <div className="grid grid-cols-2 gap-2">
-                  <FieldInput label="Data de nascimento" type="date" value={form.dataNascimento} onChange={(v) => updateField("dataNascimento", v)} />
-                  <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label><div className="form-input text-muted-foreground">{calcularIdade(form.dataNascimento) || "â€”"}</div></div>
-                </div>
-                <FieldInput label="ResponsÃ¡vel" value={form.responsavel} onChange={(v) => updateField("responsavel", v)} />
-                <div className="grid grid-cols-2 gap-2">
-                  <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
-                  <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
-                </div>
-                <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
-                <div className="grid grid-cols-3 gap-2">
-                  <FieldInput label="NÃºmero" value={form.numero} onChange={(v) => updateField("numero", v)} />
-                  <div className="col-span-2">
+            <DialogContent className="rounded-2xl max-h-[90vh] overflow-y-auto border-border/30 w-full max-w-2xl">
+              <DialogHeader><DialogTitle className="text-2xl font-black">Ficha de Inscrição</DialogTitle></DialogHeader>
+              <div className="space-y-8 mt-4 pb-6">
+                {/* SEÇÃO 1: DADOS PESSOAIS */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-primary font-bold">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><UserPlus className="w-4 h-4" /></div>
+                    <span>DADOS PESSOAIS</span>
+                  </div>
+                  <Separator className="bg-primary/10" />
+                  
+                  <div className="flex justify-center mb-4">
+                    <ImagePicker 
+                      onImageUpload={(url) => setForm(f => ({ ...f, foto: url }))} 
+                      folder="catequizandos" 
+                      currentImageUrl={form.foto} 
+                      shape="circle" 
+                      label="Foto de Perfil"
+                    />
+                  </div>
+
+                  <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <CustomDatePicker 
+                      label="Data de Nascimento" 
+                      value={form.dataNascimento} 
+                      onChange={(v) => updateField("dataNascimento", v)} 
+                    />
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                      <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
+                        {calcularIdade(form.dataNascimento) || "—"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
+                    <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2"><FieldInput label="Endereço / Rua" value={form.endereco} onChange={(v) => updateField("endereco", v)} /></div>
+                    <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
+                    <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
                   </div>
                 </div>
-                <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
-                <FieldInput label="Necessidade especial" value={form.necessidadeEspecial} onChange={(v) => updateField("necessidadeEspecial", v)} placeholder="Se houver, descreva aqui" />
-                <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">ObservaÃ§Ã£o</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" placeholder="AnotaÃ§Ãµes..." /></div>
-                <button type="button" onClick={() => setShowSacramentos(!showSacramentos)} className="w-full flex items-center justify-between form-input font-semibold">Sacramentos Recebidos {showSacramentos ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>
-                {showSacramentos && (
-                  <div className="space-y-3 pl-3 border-l-2 border-primary/20">
-                    {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
-                      <div key={sac} className="space-y-2">
-                        <label className="flex items-center gap-2"><input type="checkbox" checked={form[sac].recebido} onChange={(e) => updateSacramento(sac, "recebido", e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" /><span className="text-sm font-semibold text-foreground capitalize">{sac}</span></label>
-                        {form[sac].recebido && <div className="grid grid-cols-2 gap-2 ml-6"><FieldInput label="ParÃ³quia" value={form[sac].paroquia} onChange={(v) => updateSacramento(sac, "paroquia", v)} placeholder="Nome da parÃ³quia" /><FieldInput label="Data" type="date" value={form[sac].data} onChange={(v) => updateSacramento(sac, "data", v)} /></div>}
+
+                {/* SEÇÃO 2: DADOS PASTORAIS */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-orange-500 font-bold">
+                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">✝️</div>
+                    <span>DADOS PASTORAIS</span>
+                  </div>
+                  <Separator className="bg-orange-500/10" />
+
+                  <div className="space-y-4 bg-muted/20 p-4 rounded-xl border border-black/5">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sacramentos Recebidos</p>
+                    <div className="grid grid-cols-1 gap-4">
+                      {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
+                        <div key={sac} className="space-y-2">
+                          <label className="flex items-center gap-2 p-2 rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={form[sac].recebido} 
+                              onChange={(e) => updateSacramento(sac, "recebido", e.target.checked)} 
+                              className="w-5 h-5 rounded-md border-border text-primary focus:ring-primary" 
+                            />
+                            <span className="text-sm font-bold text-foreground capitalize">{sac}</span>
+                          </label>
+                          {form[sac].recebido && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-7 animate-in slide-in-from-left-2">
+                              <FieldInput label="Paróquia" value={form[sac].paroquia} onChange={(v) => updateSacramento(sac, "paroquia", v)} placeholder="Local do sacramento" />
+                              <CustomDatePicker label="Data" value={form[sac].data || ""} onChange={(v) => updateSacramento(sac, "data", v)} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
+                    <textarea 
+                      value={form.participacaoPastoral} 
+                      onChange={(e) => setForm(f => ({ ...f, participacaoPastoral: e.target.value }))} 
+                      className="form-input min-h-[60px] resize-none" 
+                      placeholder="Ex: Coroinhas, Infância Missionária, etc..." 
+                    />
+                  </div>
+                </div>
+
+                {/* SEÇÃO 3: DADOS DO RESPONSÁVEL */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-blue-500 font-bold">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mt-[-4px]">👥</div>
+                      <span>DADOS DO RESPONSÁVEL</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => addResponsavel(false)}
+                      className="text-[10px] font-black uppercase text-blue-600 bg-blue-50/50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition-all flex items-center gap-1"
+                    >
+                      <Plus className="w-3 h-3" /> Adicionar Outro
+                    </button>
+                  </div>
+                  <Separator className="bg-blue-500/10" />
+
+                  <div className="space-y-4">
+                    {form.responsaveis.map((resp, idx) => (
+                      <div key={resp.id} className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 relative group animate-in zoom-in-95">
+                        {form.responsaveis.length > 1 && (
+                          <button 
+                            onClick={() => removeResponsavel(resp.id, false)}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <FieldInput label="Nome do Responsável" value={resp.nome} onChange={(v) => updateResponsavel(resp.id, "nome", v, false)} />
+                          <FieldInput label="Telefone Contato" type="tel" value={resp.telefone} onChange={(v) => updateResponsavel(resp.id, "telefone", mascaraTelefone(v), false)} />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Vínculo / Parentesco</label>
+                          <Select 
+                            value={resp.vinculo} 
+                            onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v, false)}
+                          >
+                            <SelectTrigger className="h-10 bg-background">
+                              <SelectValue placeholder="Selecione o vínculo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pais">Pais</SelectItem>
+                              <SelectItem value="avós">Avós</SelectItem>
+                              <SelectItem value="tios">Tios</SelectItem>
+                              <SelectItem value="outros">Outros</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     ))}
                   </div>
-                )}
-                <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : "Adicionar"}</button>
+                </div>
+
+                {/* OBSERVAÇÕES E NECESSIDADES */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-muted-foreground font-bold">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">📝</div>
+                    <span>OUTRAS INFORMAÇÕES</span>
+                  </div>
+                  <Separator />
+                  <div className="space-y-3">
+                    <FieldInput label="Necessidade Especial" value={form.necessidadeEspecial} onChange={(v) => updateField("necessidadeEspecial", v)} placeholder="Se houver, descreva aqui" />
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação Geral</label>
+                      <textarea 
+                        value={form.observacao} 
+                        onChange={(e) => updateField("observacao", e.target.value)} 
+                        className="form-input min-h-[80px] resize-none" 
+                        placeholder="Anotações extras sobre o catequizando..." 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleAdd} 
+                  disabled={mutation.isPending} 
+                  className="w-full action-btn h-12 text-lg font-black shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {mutation.isPending ? "Salvando..." : "CONCLUIR INSCRIÇÃO"}
+                </button>
               </div>
             </DialogContent>
           </Dialog>
@@ -322,76 +495,103 @@ export default function CatequizandosList() {
                     </div>
                   </div>
 
-                  {/* Responsável e Endereço */}
-                  <div className="space-y-4">
-                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary mt-0.5"><UserPlus className="w-4 h-4" /></div>
-                      <div>
-                        <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Responsável</h4>
-                        <p className="text-sm sm:text-base font-bold text-foreground leading-tight">{viewItem.responsavel || "Não informado"}</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl p-4 border border-black/5 shadow-sm">
-                      <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Endereço</h4>
-                      <p className="text-sm font-semibold text-foreground leading-snug">
-                        {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
-                          <>
-                            {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
-                            <span className="block text-muted-foreground font-medium text-[11px] mt-1">
-                              {viewItem.bairro ? `Bairro: ${viewItem.bairro} ` : ""}
-                              {viewItem.complemento ? `(${viewItem.complemento})` : ""}
-                            </span>
-                          </>
-                        ) : <span className="text-muted-foreground">Nenhum cadastrado</span>}
-                      </p>
-                    </div>
+                  {/* Endereço */}
+                  <div className="bg-white rounded-2xl p-4 border border-black/5 shadow-sm">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
+                      <span className="w-4 h-4 rounded bg-muted flex items-center justify-center text-muted-foreground">📍</span> Endereço
+                    </h4>
+                    <p className="text-sm font-semibold text-foreground leading-snug">
+                      {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
+                        <>
+                          {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
+                          <span className="block text-muted-foreground font-medium text-[11px] mt-1">
+                            {viewItem.bairro ? `Bairro: ${viewItem.bairro} ` : ""}
+                            {viewItem.complemento ? `(${viewItem.complemento})` : ""}
+                          </span>
+                        </>
+                      ) : <span className="text-muted-foreground italic">Nenhum cadastrado</span>}
+                    </p>
                   </div>
                 </div>
 
-                {/* Sacramentos Simplificados */}
-                {viewItem.sacramentos && (
-                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Situação Sacramental</h4>
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
-                        const s = viewItem.sacramentos![sac]; 
-                        const isOk = s?.recebido;
-                        return (
-                          <div key={sac} className="flex-1 flex flex-col items-start p-3 bg-muted/20 border border-black/5 rounded-xl">
-                            <div className="flex items-center gap-2 mb-2 w-full">
-                              <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${isOk ? 'bg-success text-white' : 'bg-muted-foreground/30 text-white'}`}>
-                                <span className="text-[10px] font-bold">{isOk ? '✓' : ''}</span>
-                              </div>
-                              <span className={`text-xs font-bold capitalize ${isOk ? 'text-foreground' : 'text-muted-foreground'}`}>{sac}</span>
-                            </div>
-                            {isOk ? (
-                              <div className="text-[10px] font-medium text-muted-foreground w-full">
-                                {s.paroquia && <p className="truncate"><span className="opacity-70">P:</span> {s.paroquia}</p>}
-                                {s.data && <p><span className="opacity-70">D:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
-                                {!s.paroquia && !s.data && <p className="italic">Nenhum detalhe</p>}
-                              </div>
-                            ) : (
-                              <p className="text-[10px] font-medium text-muted-foreground/50 italic">Pendente</p>
-                            )}
+                {/* DADOS DOS RESPONSÁVEIS */}
+                <div className="bg-blue-50/30 rounded-2xl p-5 border border-blue-100 shadow-sm">
+                  <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="w-4 h-4 rounded bg-blue-100 flex items-center justify-center text-blue-500">👥</span> Responsáveis
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {viewItem.responsaveis?.length ? (
+                      viewItem.responsaveis.map(resp => (
+                        <div key={resp.id} className="p-3 bg-white border border-blue-100 rounded-xl">
+                          <p className="text-sm font-bold text-foreground truncate">{resp.nome}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-[10px] font-bold text-blue-500 uppercase">{resp.vinculo}</span>
+                            <span className="text-[11px] font-medium text-muted-foreground">{resp.telefone}</span>
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-2 p-3 bg-white border border-blue-100 rounded-xl">
+                        <p className="text-sm font-bold text-foreground">{viewItem.responsavel || "Não informado"}</p>
+                        <p className="text-[11px] text-muted-foreground">{viewItem.telefone}</p>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+
+                {/* DADOS PASTORAIS E SACRAMENTOS */}
+                <div className="bg-orange-50/30 rounded-2xl p-5 border border-orange-100 shadow-sm">
+                  <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="w-4 h-4 rounded bg-orange-100 flex items-center justify-center text-orange-500">✝️</span> Dados Pastorais
+                  </h4>
+                  
+                  {viewItem.dadosPastorais?.participacaoPastoral && (
+                    <div className="mb-4 p-3 bg-white border border-orange-100 rounded-xl">
+                      <p className="text-[10px] font-black text-orange-400 uppercase tracking-wider mb-1">Participação em Pastorais/Grupos</p>
+                      <p className="text-sm font-semibold">{viewItem.dadosPastorais.participacaoPastoral}</p>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
+                      const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
+                      const isOk = s?.recebido;
+                      return (
+                        <div key={sac} className="flex-1 flex flex-col items-start p-3 bg-white border border-orange-100 rounded-xl">
+                          <div className="flex items-center gap-2 mb-2 w-full">
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${isOk ? 'bg-success text-white' : 'bg-muted-foreground/30 text-white'}`}>
+                              <span className="text-[10px] font-bold">{isOk ? '✓' : ''}</span>
+                            </div>
+                            <span className={`text-xs font-bold capitalize ${isOk ? 'text-foreground' : 'text-muted-foreground'}`}>{sac}</span>
+                          </div>
+                          {isOk ? (
+                            <div className="text-[10px] font-medium text-muted-foreground w-full">
+                              {s.paroquia && <p className="truncate"><span className="opacity-70 font-bold">Local:</span> {s.paroquia}</p>}
+                              {s.data && <p><span className="opacity-70 font-bold">Data:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
+                              {!s.paroquia && !s.data && <p className="italic">Sem detalhes</p>}
+                            </div>
+                          ) : (
+                            <p className="text-[10px] font-medium text-muted-foreground/50 italic">Pendente</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
                 {/* Observações */}
                 {viewItem.observacao && (
                   <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
-                    <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2">Anotações Diversas</h4>
+                    <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
+                       <span className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center text-accent">📝</span> Anotações
+                    </h4>
                     <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
                   </div>
                 )}
                 
                 {/* Alterar Status */}
                 <div className="pt-4 border-t border-black/5 pb-2">
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Alterar Situação Ativa</p>
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Situação do Aluno</p>
                   <div className="flex justify-center gap-2 flex-wrap">
                     {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                       const isAtivo = (viewItem.status || 'ativo') === s;
@@ -407,50 +607,175 @@ export default function CatequizandosList() {
             </div>
           )}
           {viewItem && editMode && (
-            <div className="p-5 sm:p-6 bg-background rounded-2xl">
-              <DialogHeader><div className="flex items-center justify-between"><DialogTitle>Editar Catequizando</DialogTitle><button onClick={() => setEditMode(false)} className="p-1.5 rounded-lg hover:bg-muted"><X className="h-4 w-4" /></button></div></DialogHeader>
-              <div className="space-y-3 mt-4">
-                <div className="flex justify-center mb-2">
-                  <ImagePicker 
-                    onImageUpload={(url) => setEditForm(f => ({ ...f, foto: url }))} 
-                    folder="catequizandos" 
-                    currentImageUrl={editForm.foto} 
-                    shape="circle" 
-                    label="Alterar Foto"
-                  />
+            <div className="p-5 sm:p-6 bg-background rounded-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <DialogTitle className="text-xl font-bold">Editar Inscrição</DialogTitle>
+                  <button onClick={() => setEditMode(false)} className="p-2 rounded-xl bg-muted hover:bg-black/5 transition-colors"><X className="h-4 w-4" /></button>
                 </div>
-                <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
-                <div className="grid grid-cols-2 gap-2">
-                  <FieldInput label="Data de nascimento" type="date" value={editForm.dataNascimento} onChange={(v) => setEditForm(f => ({ ...f, dataNascimento: v }))} />
-                  <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label><div className="form-input text-muted-foreground">{calcularIdade(editForm.dataNascimento) || "—"}</div></div>
-                </div>
-                <FieldInput label="Responsável" value={editForm.responsavel} onChange={(v) => setEditForm(f => ({ ...f, responsavel: v }))} />
-                <div className="grid grid-cols-2 gap-2">
-                  <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
-                  <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
-                </div>
-                <FieldInput label="Rua / Logradouro" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
-                <div className="grid grid-cols-3 gap-2">
-                  <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
-                  <div className="col-span-2">
+              </DialogHeader>
+              <div className="space-y-8 mt-4 pb-6">
+                {/* SEÇÃO 1: DADOS PESSOAIS */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-primary font-bold">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><Pencil className="w-3 h-3" /></div>
+                    <span>DADOS PESSOAIS</span>
+                  </div>
+                  <Separator className="bg-primary/10" />
+                  
+                  <div className="flex justify-center mb-4">
+                    <ImagePicker 
+                      onImageUpload={(url) => setEditForm(f => ({ ...f, foto: url }))} 
+                      folder="catequizandos" 
+                      currentImageUrl={editForm.foto} 
+                      shape="circle" 
+                      label="Alterar Foto"
+                    />
+                  </div>
+
+                  <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <CustomDatePicker 
+                      label="Data de Nascimento" 
+                      value={editForm.dataNascimento} 
+                      onChange={(v) => setEditForm(f => ({ ...f, dataNascimento: v }))} 
+                    />
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                      <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
+                        {calcularIdade(editForm.dataNascimento) || "—"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
+                    <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="sm:col-span-2"><FieldInput label="Endereço / Rua" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} /></div>
+                    <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
+                    <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
                   </div>
                 </div>
-                <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
-                <FieldInput label="Necessidade especial" value={editForm.necessidadeEspecial} onChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))} />
-                <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none" /></div>
-                <button type="button" onClick={() => setShowEditSacramentos(!showEditSacramentos)} className="w-full flex items-center justify-between form-input font-semibold">Sacramentos {showEditSacramentos ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>
-                {showEditSacramentos && (
-                  <div className="space-y-3 pl-3 border-l-2 border-primary/20 mt-2">
-                    {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
-                      <div key={sac} className="space-y-2">
-                        <label className="flex items-center gap-2"><input type="checkbox" checked={editForm[sac].recebido} onChange={(e) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], recebido: e.target.checked } }))} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" /><span className="text-sm font-semibold text-foreground capitalize">{sac}</span></label>
-                        {editForm[sac].recebido && <div className="grid grid-cols-2 gap-2 ml-6"><FieldInput label="Paróquia" value={editForm[sac].paroquia} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], paroquia: v } }))} /><FieldInput label="Data" type="date" value={editForm[sac].data} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], data: v } }))} /></div>}
+
+                {/* SEÇÃO 2: DADOS PASTORAIS */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-orange-500 font-bold">
+                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">✝️</div>
+                    <span>DADOS PASTORAIS</span>
+                  </div>
+                  <Separator className="bg-orange-500/10" />
+
+                  <div className="space-y-4 bg-muted/20 p-4 rounded-xl border border-black/5">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sacramentos Recebidos</p>
+                    <div className="grid grid-cols-1 gap-4">
+                      {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
+                        <div key={sac} className="space-y-2">
+                          <label className="flex items-center gap-2 p-2 rounded-lg hover:bg-black/5 transition-colors cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={editForm[sac].recebido} 
+                              onChange={(e) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], recebido: e.target.checked } }))} 
+                              className="w-5 h-5 rounded-md border-border text-primary focus:ring-primary" 
+                            />
+                            <span className="text-sm font-bold text-foreground capitalize">{sac}</span>
+                          </label>
+                          {editForm[sac].recebido && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-7 animate-in slide-in-from-left-2">
+                              <FieldInput label="Paróquia" value={editForm[sac].paroquia} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], paroquia: v } }))} placeholder="Local do sacramento" />
+                              <CustomDatePicker label="Data" value={editForm[sac].data || ""} onChange={(v) => setEditForm(f => ({ ...f, [sac]: { ...f[sac], data: v } }))} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
+                    <textarea 
+                      value={editForm.participacaoPastoral} 
+                      onChange={(e) => setEditForm(f => ({ ...f, participacaoPastoral: e.target.value }))} 
+                      className="form-input min-h-[60px] resize-none" 
+                    />
+                  </div>
+                </div>
+
+                {/* SEÇÃO 3: DADOS DO RESPONSÁVEL */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-blue-500 font-bold">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mt-[-4px]">👥</div>
+                      <span>DADOS DO RESPONSÁVEL</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => addResponsavel(true)}
+                      className="text-[10px] font-black uppercase text-blue-600 bg-blue-50/50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition-all flex items-center gap-1"
+                    >
+                      <Plus className="w-3 h-3" /> Adicionar Outro
+                    </button>
+                  </div>
+                  <Separator className="bg-blue-500/10" />
+
+                  <div className="space-y-4">
+                    {editForm.responsaveis.map((resp, idx) => (
+                      <div key={resp.id} className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 relative group animate-in zoom-in-95">
+                        {editForm.responsaveis.length > 1 && (
+                          <button 
+                            onClick={() => removeResponsavel(resp.id, true)}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <FieldInput label="Nome do Responsável" value={resp.nome} onChange={(v) => updateResponsavel(resp.id, "nome", v, true)} />
+                          <FieldInput label="Telefone Contato" type="tel" value={resp.telefone} onChange={(v) => updateResponsavel(resp.id, "telefone", mascaraTelefone(v), true)} />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Vínculo / Parentesco</label>
+                          <Select 
+                            value={resp.vinculo} 
+                            onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v, true)}
+                          >
+                            <SelectTrigger className="h-10 bg-background">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pais">Pais</SelectItem>
+                              <SelectItem value="avós">Avós</SelectItem>
+                              <SelectItem value="tios">Tios</SelectItem>
+                              <SelectItem value="outros">Outros</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     ))}
                   </div>
-                )}
-                <button onClick={handleSaveEdit} disabled={mutation.isPending} className="w-full action-btn mt-4">{mutation.isPending ? "Salvando..." : "Salvar"}</button>
+                </div>
+
+                <div className="space-y-3">
+                  <FieldInput label="Necessidade Especial" value={editForm.necessidadeEspecial} onChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))} />
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação Geral</label>
+                    <textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none" />
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={handleSaveEdit} 
+                  disabled={mutation.isPending} 
+                  className="w-full action-btn h-12 text-lg font-black"
+                >
+                  {mutation.isPending ? "Salvando..." : "SALVAR ALTERAÇÕES"}
+                </button>
               </div>
             </div>
           )}
