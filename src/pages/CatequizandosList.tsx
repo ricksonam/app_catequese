@@ -138,15 +138,20 @@ export default function CatequizandosList() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 animate-fade-in">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div><h1 className="text-xl font-bold text-foreground">Catequizandos</h1><p className="text-xs text-muted-foreground">{turma?.nome} â€¢ {list.length} cadastrados</p></div>
+          <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-foreground truncate">Catequizandos</h1>
+            <p className="text-xs text-muted-foreground truncate">{turma?.nome} • {list.length} cadastrados</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          {id && <ReportModule context="catequizandos" turmaId={id} />}
+        <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+          <div className="flex-1 sm:flex-none">
+            {id && <ReportModule context="catequizandos" turmaId={id} />}
+          </div>
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><button className="action-btn-sm"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
+            <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
               <DialogHeader><DialogTitle>Novo Catequizando</DialogTitle></DialogHeader>
               <div className="space-y-3 mt-2">
