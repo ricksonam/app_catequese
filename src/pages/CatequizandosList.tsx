@@ -253,11 +253,13 @@ export default function CatequizandosList() {
           {viewItem && !editMode && (
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
               {/* Header Bar Clean */}
-              <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
+              <div className="sticky top-0 z-50 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">{viewItem.nome}</span>
-                <div className="flex items-center gap-1.5 pr-8">
+                <div className="flex items-center gap-1.5 z-50">
                   <button onClick={handleEdit} className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-4 w-4" /></button>
                   <button onClick={handleDelete} className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                  <div className="w-px h-4 bg-black/10 mx-1" />
+                  <button onClick={() => { setViewItem(null); setEditMode(false); }} className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"><X className="h-4 w-4" /></button>
                 </div>
               </div>
 

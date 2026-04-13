@@ -5,7 +5,6 @@ import { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
-import GlobalDashboard from "@/components/dashboard/GlobalDashboard";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -119,14 +118,22 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
           <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
         </div>
-        {showTourButton && (
+        <div className="flex flex-col items-end gap-2">
+          {showTourButton && (
+            <button
+              onClick={() => setWelcomeOpen(true)}
+              className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-xl border border-primary/20 flex items-center gap-1 shrink-0"
+            >
+              🗺️ Tour
+            </button>
+          )}
           <button
-            onClick={() => setWelcomeOpen(true)}
-            className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-xl border border-primary/20 flex items-center gap-1 shrink-0"
+            onClick={() => navigate("/relatorios")}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#d4a574]/10 text-[#d4a574] text-[10px] font-black uppercase tracking-widest border border-[#d4a574]/20 shadow-sm active:scale-95 transition-all"
           >
-            🗺️ Tour
+            📋 Relatórios
           </button>
-        )}
+        </div>
       </div>
 
       {/* Stats */}
@@ -280,10 +287,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Global Information Hub — Dashboard de Relatórios */}
-      <div className="animate-float-up" style={{ animationDelay: '400ms' }}>
-        <GlobalDashboard />
-      </div>
+
 
       {turmas.length === 0 && (
         <div className="float-card p-8 text-center bg-primary/5 border-primary/20 animate-float-up" style={{ animationDelay: '400ms' }}>
