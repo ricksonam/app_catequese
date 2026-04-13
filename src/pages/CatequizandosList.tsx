@@ -252,23 +252,26 @@ export default function CatequizandosList() {
         <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
             <div className="flex flex-col h-full relative bg-background">
-              {/* Hero Banner */}
-              <div className="relative pt-8 pb-5 px-6 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent text-center border-b border-black/5">
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <button onClick={handleEdit} className="p-2 rounded-full bg-white/50 hover:bg-white text-primary shadow-sm transition-all border border-black/5"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={handleDelete} className="p-2 rounded-full bg-white/50 hover:bg-white text-destructive shadow-sm transition-all border border-black/5"><Trash2 className="h-4 w-4" /></button>
+              {/* Hero Banner Litúrgico */}
+              <div className="relative pt-12 pb-6 px-6 bg-gradient-to-br from-liturgical/20 via-liturgical/5 to-transparent text-center border-b border-liturgical/10 overflow-hidden">
+                <div className="absolute top-4 left-4 flex gap-2 z-20">
+                  <button onClick={handleEdit} className="p-2 rounded-full bg-white/60 hover:bg-white text-liturgical shadow-sm transition-all border border-liturgical/20"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={handleDelete} className="p-2 rounded-full bg-white/60 hover:bg-white text-destructive shadow-sm transition-all border border-liturgical/20"><Trash2 className="h-4 w-4" /></button>
                 </div>
                 
-                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-white shadow-xl ring-4 ring-white/50 flex items-center justify-center overflow-hidden mb-4 relative z-10">
-                  {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-4xl font-black text-primary/70">{viewItem.nome.charAt(0).toUpperCase()}</span>}
+                {/* Fundo Litúrgico - Símbolo */}
+                <div className="absolute -right-6 -top-6 opacity-[0.04] rotate-12 pointer-events-none text-[160px] leading-none select-none text-liturgical">✝</div>
+
+                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-white shadow-xl ring-4 ring-liturgical/20 flex items-center justify-center overflow-hidden mb-4 relative z-10">
+                  {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-4xl font-black text-liturgical/70">{viewItem.nome.charAt(0).toUpperCase()}</span>}
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-foreground mb-2 leading-tight px-2">{viewItem.nome}</h2>
-                <div className="flex justify-center gap-2 flex-wrap">
+                <h2 className="text-xl sm:text-2xl font-black text-foreground mb-2 leading-tight px-2 relative z-10">{viewItem.nome}</h2>
+                <div className="flex justify-center gap-2 flex-wrap relative z-10">
                   <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${(statusConfig[viewItem.status || 'ativo']).color.replace('text-','border-')} ${(statusConfig[viewItem.status || 'ativo']).color}`}>
                     {statusConfig[viewItem.status || 'ativo'].label}
                   </span>
                   {viewItem.dataNascimento && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 bg-primary/10 text-primary">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-liturgical/20 bg-liturgical/10 text-liturgical">
                       {calcularIdade(viewItem.dataNascimento)}
                     </span>
                   )}
@@ -311,9 +314,9 @@ export default function CatequizandosList() {
 
                   {/* Card Endereço e Responsável */}
                   <div className="space-y-4">
-                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative overflow-hidden shadow-sm">
-                      <div className="absolute top-0 right-0 p-4 opacity-10"><UserPlus className="h-12 w-12 text-primary" /></div>
-                      <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-1 relative z-10">Responsável</h4>
+                    <div className="bg-liturgical/5 rounded-2xl p-4 border border-liturgical/10 relative overflow-hidden shadow-sm">
+                      <div className="absolute top-0 right-0 p-4 opacity-10"><UserPlus className="h-12 w-12 text-liturgical" /></div>
+                      <h4 className="text-[10px] font-black text-liturgical uppercase tracking-widest mb-1 relative z-10">Responsável</h4>
                       <p className="text-base font-bold text-foreground leading-tight relative z-10">{viewItem.responsavel || "Não informado"}</p>
                     </div>
 
