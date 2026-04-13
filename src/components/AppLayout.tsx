@@ -52,7 +52,7 @@ export default function AppLayout() {
               className="flex items-center gap-2.5 group hover:opacity-80 transition-all active:scale-[0.98]"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white border border-primary/20 shadow-sm shadow-primary/10 group-hover:shadow-md group-hover:border-primary/40 transition-all">
-                <img src="/app-icon.png?v=2" alt="Logo" className="w-full h-full object-contain p-1" />
+                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
               <div className="flex flex-col items-start leading-none">
                 <span className="text-sm font-black text-primary tracking-tight">iCatequese</span>

@@ -139,7 +139,7 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
             {/* Logo/icon */}
             <div className="relative mb-6">
               <div className="w-28 h-28 rounded-[32px] overflow-hidden bg-white shadow-xl shadow-primary/10 border border-primary/10 flex items-center justify-center">
-                <img src="/app-icon.png?v=2" alt="Logo" className="w-full h-full object-contain p-2" />
+                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-2" />
               </div>
               <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center shadow-lg animate-bounce">
                 <PartyPopper className="h-4 w-4 text-white" />

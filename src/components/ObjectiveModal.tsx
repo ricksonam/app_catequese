@@ -20,7 +20,7 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
           <div className="relative group perspective-1000">
             <div className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse scale-125 opacity-40 transform-gpu" />
             <div className="relative w-36 h-36 rounded-[40px] overflow-hidden bg-primary/10 border-2 border-primary/20 shadow-2xl animate-float-float transform-gpu will-change-transform">
-              <img src="/app-icon.png?v=2" className="w-full h-full object-cover" alt="Logo iCatequese" />
+              <img src="/app-logo.png" className="w-full h-full object-cover" alt="Logo iCatequese" />
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
           <div className="pt-6 border-t border-border/60">
             <div className="flex items-center gap-4">
               <Avatar className="h-14 w-14 border-2 border-primary/30 shadow-xl">
-                <AvatarImage src="/avatar-rickson.png" alt="Rickson Amazonas" />
+                <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
                 <AvatarFallback className="bg-primary text-white font-black text-xl">RA</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
