@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
 import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil } from "lucide-react";
@@ -189,41 +189,20 @@ export default function AtividadesList() {
                             </div>
 
                             <div className="flex-1 px-4 py-3 min-w-0 text-left">
-                              <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full mb-1.5 border ${cor.replace('bg-','bg-').replace('text-','text-')} border-current/10`}>
+                              <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md mb-1.5 ${cor}`}>
                                 {item.tipo}
                               </span>
                               <p className="text-sm font-bold text-foreground leading-snug truncate">{item.nome}</p>
                               <div className="flex flex-wrap items-center gap-2 mt-1">
                                 {item.horario && <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><Clock className="h-3 w-3" />{item.horario}</span>}
                                 {item.local && <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><MapPin className="h-3 w-3" />{item.local}</span>}
-                                {item.modalidade === 'externa' && <span className="flex items-center gap-0.5 text-[9px] font-black text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/20"><Car className="h-2.5 w-2.5" />Externa</span>}
+                                {item.modalidade === 'externa' && <span className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-md"><Car className="h-3 w-3" />Externa</span>}
                               </div>
                             </div>
 
-                            <div className="flex flex-col border-l border-black/5 min-w-[50px]">
-                               {id && (
-                                <ReportModule 
-                                  context="atividades" 
-                                  turmaId={id} 
-                                  initialDocId={item.id}
-                                  instantReport="ativ_complet"
-                                  trigger={
-                                    <button className="flex-1 flex flex-col items-center justify-center gap-1 px-2 text-muted-foreground hover:bg-muted/50 transition-colors group/btn">
-                                      <Printer className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                                      <span className="text-[7px] font-black uppercase tracking-tighter">Imprimir</span>
-                                    </button>
-                                  }
-                                />
-                               )}
-                               <div className="h-px bg-black/5" />
-                               <button 
-                                  onClick={(e) => { e.stopPropagation(); setEditingId(item.id); setForm(fillFormFromItem(item)); setOpen(true); }} 
-                                  className="flex-1 flex flex-col items-center justify-center gap-1 px-2 text-muted-foreground hover:bg-muted/50 transition-colors group/edit"
-                               >
-                                 <ChevronRight className="h-4 w-4 group-hover/edit:translate-x-0.5 transition-transform" />
-                                 <span className="text-[7px] font-black uppercase tracking-tighter">Ver</span>
-                               </button>
-                             </div>
+                            <div className="flex items-center justify-center px-4 border-l border-black/5 opacity-50">
+                              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                            </div>
                           </div>
                         </div>
                       </button>

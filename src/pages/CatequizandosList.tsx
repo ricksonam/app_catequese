@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer } from "lucide-react";
@@ -211,7 +211,6 @@ export default function CatequizandosList() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-sm font-semibold text-foreground truncate">{c.nome}</p>
-                  <span className={`pill-btn ${st.color} shrink-0`}>{st.label}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   {c.dataNascimento && (
@@ -227,20 +226,6 @@ export default function CatequizandosList() {
                 </div>
               </div>
               <div className="flex items-center gap-2 px-1">
-                {id && (
-                  <ReportModule 
-                    context="catequizandos" 
-                    turmaId={id} 
-                    initialDocId={c.id}
-                    instantReport="cat_individual"
-                    trigger={
-                      <button className="flex flex-col items-center justify-center gap-0.5 p-2 rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-primary transition-all group/btn border border-transparent hover:border-primary/20">
-                        <Printer className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-[8px] font-black uppercase">RelatÃ³rio</span>
-                      </button>
-                    }
-                  />
-                )}
                 <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </div>
             </button>

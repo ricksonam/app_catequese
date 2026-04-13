@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
 import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText } from "lucide-react";
@@ -13,7 +13,7 @@ const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: s
   cancelado:   { label: "Cancelado",   bg: "bg-destructive/15",   text: "text-destructive",       dot: "bg-destructive",      gradient: "from-destructive/20 to-red-500/10"  },
 };
 
-const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "SÃ¡b"];
+const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 const MESES_PT = ["Janeiro","Fevereiro","MarÃ§o","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 function parseLocalDate(dateStr: string) {
@@ -216,9 +216,9 @@ export default function EncontrosList() {
                         <div className={`h-1 w-full bg-gradient-to-r ${status.gradient}`} />
 
                         <div className="flex flex-col">
-                          <div className="flex items-stretch">
+                          <div className="flex items-stretch bg-white">
                             {/* Coluna da data */}
-                            <div className="flex flex-col items-center justify-center px-4 py-5 bg-gradient-to-b from-primary/5 to-primary/10 border-r border-black/5 shrink-0 min-w-[70px]">
+                            <div className="flex flex-col items-center justify-center px-4 py-5 border-r border-black/5 shrink-0 min-w-[70px]">
                               <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
                               <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
                               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
@@ -265,7 +265,7 @@ export default function EncontrosList() {
                                 <button
                                   onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/encontros/${enc.id}?eval=true`); }}
                                   className={cn(
-                                    "flex-1 min-w-[30%] py-2 px-1 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md",
+                                    "flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md",
                                     isAvaliado 
                                       ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200" 
                                       : "bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
@@ -277,14 +277,14 @@ export default function EncontrosList() {
 
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
                                 >
                                   <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
                                 </button>
 
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-xl text-[9px] font-black uppercase tracking-widest bg-violet-100 text-violet-700 hover:bg-violet-200 border border-violet-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-100 text-violet-700 hover:bg-violet-200 border border-violet-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
                                 >
                                   <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
                                 </button>
