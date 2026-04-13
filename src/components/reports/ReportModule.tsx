@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Printer, FileText, Users, Calendar, ClipboardList, BookOpen, 
@@ -68,6 +70,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const { data: turmas = [] } = useTurmas();
   const { data: encontros = [] } = useEncontros(turmaId);
@@ -120,25 +124,56 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   };
 
   const handleShare = async () => {
-    const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
-    const shareData = {
-      title: 'IVC - Gestão de Catequese',
-      text: `Confira o ${reportName} da turma ${turma.nome}. Para enviar o documento completo, escolha 'Salvar como PDF' no menu de impressão.`,
-      url: window.location.href,
-    };
+    if (!previewRef.current) return;
+    
+    setIsGenerating(true);
+    const toastId = toast.loading("Gerando PDF para compartilhar...");
 
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          toast.info("Para compartilhar o arquivo PDF, selecione 'Salvar como PDF' na tela de impressão.");
-          window.print();
-        }
+    try {
+      const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
+      const element = previewRef.current;
+      
+      // Captura o canvas com alta escala para qualidade
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      
+      const pdfBlob = pdf.output("blob");
+      const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
+      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `Relatório: ${reportName}`,
+          text: `Confira o ${reportName} da turma ${turma.nome}.`,
+        });
+        toast.success("Pronto! Escolha onde compartilhar.", { id: toastId });
+      } else {
+        // Fallback: Download
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        toast.success("PDF gerado e baixado! Agora você pode anexá-lo no WhatsApp.", { id: toastId });
       }
-    } else {
-      toast.info("Para compartilhar o arquivo PDF, selecione 'Salvar como PDF' na tela de impressão.");
-      window.print();
+    } catch (err) {
+      console.error("PDF generation failed", err);
+      toast.error("Erro ao gerar PDF. Tente usar a opção de Imprimir.", { id: toastId });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -323,10 +358,14 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             </button>
             <button 
               onClick={handleShare}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#d4a574] text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
+              disabled={isGenerating}
+              className={cn(
+                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
+                isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#d4a574]"
+              )}
             >
-              <Share2 className="h-4 w-4" />
-              Compartilhar
+              <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+              {isGenerating ? "Gerando..." : "Compartilhar"}
             </button>
             <div className="h-6 w-px bg-white/20 mx-2" />
             <button onClick={resetFlow} className="p-2.5 rounded-xl bg-destructive/20 hover:bg-destructive text-white transition-all">
@@ -334,7 +373,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             </button>
           </div>
 
-          <div className="paper-preview p-0 md:p-12 overflow-visible">
+          <div className="paper-preview p-0 md:p-12 overflow-visible" ref={previewRef}>
              <div className="bg-white text-black min-h-full">
                {renderPreviewContent()}
              </div>
