@@ -56,30 +56,32 @@ export function ImagePicker({
       {label && <label className="text-xs font-semibold text-muted-foreground block">{label}</label>}
       
       <div className="flex flex-col items-center gap-4">
-        <div className={cn(
-          "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
-          shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
-        )}>
-          {currentImageUrl ? (
-            <>
-              <img src={currentImageUrl} alt="Preview" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <p className="text-[10px] text-white font-bold uppercase">Alterar</p>
-              </div>
-            </>
-          ) : (
-            <div className="flex flex-col items-center gap-1 text-muted-foreground">
-              <ImageIcon className="h-6 w-6" />
-              <span className="text-[10px] font-medium">Sem imagem</span>
+        {currentImageUrl && (
+          <div className={cn(
+            "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
+            shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
+          )}>
+            <img src={currentImageUrl} alt="Preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <p className="text-[10px] text-white font-bold uppercase">Alterar</p>
             </div>
-          )}
 
-          {isUploading && (
-            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            </div>
-          )}
-        </div>
+            {isUploading && (
+              <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            )}
+          </div>
+        )}
+
+        {isUploading && !currentImageUrl && (
+          <div className={cn(
+            "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
+            shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
+          )}>
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        )}
 
         <div className="flex gap-2 w-full max-w-[300px]">
           <button
