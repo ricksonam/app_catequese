@@ -133,21 +133,54 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
       const element = previewRef.current;
       
-      // Captura o canvas com alta escala para qualidade
-      const canvas = await html2canvas(element, {
-        scale: 2,
+      // Para garantir que o PDF saia em A4, precisamos que o elemento capturado 
+      // não esteja escalonado pela visualização mobile (scale-0.6).
+      // Vamos clonar o conteúdo para um container temporário fora da tela com largura fixa de A4.
+      const printContainer = document.createElement("div");
+      printContainer.style.position = "absolute";
+      printContainer.style.left = "-9999px";
+      printContainer.style.top = "0";
+      printContainer.style.width = "210mm"; // Largura exata A4
+      printContainer.style.backgroundColor = "white";
+      printContainer.className = "pdf-capture-container";
+      
+      // Clona o conteúdo da prévia
+      printContainer.innerHTML = element.innerHTML;
+      document.body.appendChild(printContainer);
+
+      const canvas = await html2canvas(printContainer, {
+        scale: 2, // Aumenta resolução
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
+        windowWidth: 1024, // Força largura de desktop para o renderizador
       });
 
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      // Remove o container temporário
+      document.body.removeChild(printContainer);
+
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF("p", "mm", "a4");
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
       
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Primeira página
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      // Páginas subsequentes (caso o relatório seja longo)
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
       
       const pdfBlob = pdf.output("blob");
       const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
@@ -161,17 +194,16 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
         });
         toast.success("Pronto! Escolha onde compartilhar.", { id: toastId });
       } else {
-        // Fallback: Download
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement("a");
         link.href = url;
         link.download = fileName;
         link.click();
-        toast.success("PDF gerado e baixado! Agora você pode anexá-lo no WhatsApp.", { id: toastId });
+        toast.success("PDF gerado e baixado!", { id: toastId });
       }
     } catch (err) {
       console.error("PDF generation failed", err);
-      toast.error("Erro ao gerar PDF. Tente usar a opção de Imprimir.", { id: toastId });
+      toast.error("Erro ao gerar PDF profissional. Tente Imprimir.", { id: toastId });
     } finally {
       setIsGenerating(false);
     }

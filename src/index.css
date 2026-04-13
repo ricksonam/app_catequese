@@ -207,7 +207,7 @@
 }
 
 .paper-preview {
-  @apply bg-white text-black shadow-2xl rounded-sm w-full max-w-[210mm] min-h-[297mm] mx-auto overflow-hidden;
+  @apply bg-white text-black shadow-2xl rounded-sm w-full max-w-[210mm] min-h-[297mm] mx-auto overflow-visible;
   transform-origin: top center;
 }
 
