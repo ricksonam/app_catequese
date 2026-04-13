@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Printer, FileText, Users, Calendar, ClipboardList, BookOpen, Clock, CheckCircle2, LayoutGrid, UserCircle } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
@@ -207,10 +208,11 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
         </DialogContent>
       </Dialog>
 
-      {selectedReport && (
-        <div className="hidden print:block fixed inset-0 min-h-screen w-full bg-white z-[99999] overflow-visible">
+      {selectedReport && createPortal(
+        <div className="absolute top-0 left-0 w-full min-h-screen bg-white z-[999999] print-wrapper">
           {content}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
