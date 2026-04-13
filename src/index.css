@@ -200,3 +200,23 @@
     size: A4;
   }
 }
+
+/* Paper Preview Simulation */
+.preview-overlay {
+  @apply fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center overflow-y-auto pt-4 pb-20 px-4;
+}
+
+.paper-preview {
+  @apply bg-white text-black shadow-2xl rounded-sm w-full max-w-[210mm] min-h-[297mm] mx-auto overflow-hidden;
+  transform-origin: top center;
+}
+
+@media (max-width: 640px) {
+  .paper-preview {
+    @apply scale-[0.6] -mb-[40%];
+  }
+}
+
+.preview-actions {
+  @apply sticky top-4 z-[110] flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-xl;
+}
