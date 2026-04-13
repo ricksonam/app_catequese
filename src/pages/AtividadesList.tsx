@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
 import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -250,9 +250,11 @@ export default function AtividadesList() {
               {/* Header Bar Clean */}
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Atividade</span>
-                <div className="flex items-center gap-1.5 pr-8">
-                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                <div className="flex items-center gap-1.5 z-50">
+                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
+                  <div className="w-px h-4 bg-black/10 mx-1" />
+                  <button onClick={() => setViewItem(null)} className="p-2 rounded-xl bg-muted/80 text-foreground hover:bg-black/10 transition-colors shadow-sm"><X className="h-4 w-4" /></button>
                 </div>
               </div>
 
