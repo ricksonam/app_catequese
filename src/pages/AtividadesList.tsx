@@ -39,6 +39,13 @@ const tipoColors: Record<string, string> = {
   'Eventos geral': 'bg-muted text-muted-foreground', 'Outros': 'bg-muted text-muted-foreground',
 };
 
+const TIPO_ICONES: Record<string, string> = {
+  'Retiro': '🕊️', 'Celebração': '⛪',
+  'Encontro de pais': '👨‍👩‍👧‍👦', 'Gincana': '🎯',
+  'Passeios': '🚌', 'Jornada': '✨',
+  'Eventos geral': '📅', 'Outros': '📌',
+};
+
 export default function AtividadesList() {
   const { id } = useParams();
   const navigate = useNavigate();
