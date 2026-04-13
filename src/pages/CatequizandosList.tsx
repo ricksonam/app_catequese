@@ -250,35 +250,37 @@ export default function CatequizandosList() {
                     />
                   </div>
 
-                  <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <CustomDatePicker 
-                      label="Data de Nascimento" 
-                      value={form.dataNascimento} 
-                      onChange={(v) => updateField("dataNascimento", v)} 
-                    />
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
-                      <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
-                        {calcularIdade(form.dataNascimento) || "—"}
+                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-black/10 shadow-sm">
+                    <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <CustomDatePicker 
+                        label="Data de Nascimento" 
+                        value={form.dataNascimento} 
+                        onChange={(v) => updateField("dataNascimento", v)} 
+                      />
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                        <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
+                          {calcularIdade(form.dataNascimento) || "—"}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
-                    <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FieldInput label="Endereço / Rua" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
-                    <div className="grid grid-cols-2 gap-4">
-                       <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
-                       <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
+                      <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
                     </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FieldInput label="Endereço / Rua" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+                      <div className="grid grid-cols-2 gap-4">
+                         <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
+                         <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
+                      </div>
+                    </div>
+                    <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
                   </div>
-                  <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
                 </div>
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
@@ -682,35 +684,37 @@ export default function CatequizandosList() {
                     />
                   </div>
 
-                  <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <CustomDatePicker 
-                      label="Data de Nascimento" 
-                      value={editForm.dataNascimento} 
-                      onChange={(v) => setEditForm(f => ({ ...f, dataNascimento: v }))} 
-                    />
-                    <div>
-                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
-                      <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
-                        {calcularIdade(editForm.dataNascimento) || "—"}
+                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-black/10 shadow-sm">
+                    <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <CustomDatePicker 
+                        label="Data de Nascimento" 
+                        value={editForm.dataNascimento} 
+                        onChange={(v) => setEditForm(f => ({ ...f, dataNascimento: v }))} 
+                      />
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                        <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
+                          {calcularIdade(editForm.dataNascimento) || "—"}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
-                    <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <FieldInput label="Endereço / Rua" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
-                    <div className="grid grid-cols-2 gap-4">
-                      <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
-                       <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FieldInput label="Telefone" type="tel" value={editForm.telefone} onChange={(v) => setEditForm(f => ({ ...f, telefone: mascaraTelefone(v) }))} />
+                      <FieldInput label="E-mail" type="email" value={editForm.email} onChange={(v) => setEditForm(f => ({ ...f, email: v }))} />
                     </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <FieldInput label="Endereço / Rua" value={editForm.endereco} onChange={(v) => setEditForm(f => ({ ...f, endereco: v }))} />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FieldInput label="Número" value={editForm.numero} onChange={(v) => setEditForm(f => ({ ...f, numero: v }))} />
+                         <FieldInput label="Bairro" value={editForm.bairro} onChange={(v) => setEditForm(f => ({ ...f, bairro: v }))} />
+                      </div>
+                    </div>
+                    <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
                   </div>
-                  <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
                 </div>
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
