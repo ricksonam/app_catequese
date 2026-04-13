@@ -5,6 +5,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
+import GlobalDashboard from "@/components/dashboard/GlobalDashboard";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -278,6 +279,11 @@ export default function Dashboard() {
           ) : null}
         </div>
       )}
+
+      {/* Global Information Hub — Dashboard de Relatórios */}
+      <div className="animate-float-up" style={{ animationDelay: '400ms' }}>
+        <GlobalDashboard />
+      </div>
 
       {turmas.length === 0 && (
         <div className="float-card p-8 text-center bg-primary/5 border-primary/20 animate-float-up" style={{ animationDelay: '400ms' }}>

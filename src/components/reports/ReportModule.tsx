@@ -54,7 +54,7 @@ const MODULE_CONFIG = {
   }
 };
 
-export default function ReportModule({ context, turmaId, trigger, initialDocId }: ReportModuleProps) {
+export default function ReportModule({ context, turmaId, trigger, initialDocId, instantReport }: ReportModuleProps) {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [printDoc, setPrintDoc] = useState<any>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -148,8 +148,9 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId }
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild onClick={handleTriggerClick}>
           {trigger || (
-            <button className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
-              <Printer className="h-5 w-5" />
+            <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20">
+              <FileText className="h-5 w-5" />
+              <span className="text-xs font-bold uppercase tracking-wide">Relatórios</span>
             </button>
           )}
         </DialogTrigger>

@@ -93,17 +93,7 @@ export default function PlanoTurma() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {id && (
-            <ReportModule 
-              context="plano" 
-              turmaId={id} 
-              trigger={
-                <button className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all">
-                  <Printer className="h-5 w-5" />
-                </button>
-              }
-            />
-          )}
+          {id && <ReportModule context="plano" turmaId={id} />}
         </div>
       </div>
 
