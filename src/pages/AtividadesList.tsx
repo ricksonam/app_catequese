@@ -234,49 +234,117 @@ export default function AtividadesList() {
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
         <DialogContent className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {viewItem && (
-            <>
-              <div className={`px-5 pt-5 pb-4 ${tipoColors[viewItem.tipo]?.replace(/text-\S+/, '') || 'bg-muted'}`}>
-                <span className={`inline-block pill-btn text-[10px] mb-2 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>{viewItem.tipo} â€¢ {viewItem.modalidade === 'externa' ? 'Externa' : 'Interna'}</span>
-                <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
-              </div>
-              <div className="px-5 flex items-center justify-between">
-                <button onClick={() => handleEdit(viewItem)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold"><Pencil className="h-3.5 w-3.5" /> Editar</button>
-                <button onClick={() => handleDelete(viewItem.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-destructive/10 text-destructive text-xs font-semibold"><Trash2 className="h-3.5 w-3.5" /> Excluir</button>
-              </div>
-              <div className="px-5 pb-5 space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  {viewItem.data && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5"><Calendar className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{formatarDataVigente(viewItem.data)}</span></div>}
-                  {viewItem.horario && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5"><Clock className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{viewItem.horario}</span></div>}
-                  {viewItem.local && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5 col-span-2"><MapPin className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{viewItem.local}</span></div>}
-                  {viewItem.conducao && <div className="flex items-center gap-2 bg-muted/50 rounded-xl px-3 py-2.5 col-span-2"><Car className="h-4 w-4 text-primary shrink-0" /><span className="text-xs font-medium text-foreground">{viewItem.conducao}</span></div>}
-                </div>
-                {viewItem.descricao && <div><p className="text-xs font-semibold text-muted-foreground mb-1">DescriÃ§Ã£o</p><p className="text-sm text-foreground">{viewItem.descricao}</p></div>}
-                {viewItem.observacao && <div><p className="text-xs font-semibold text-muted-foreground mb-1">ObservaÃ§Ã£o</p><p className="text-sm text-foreground">{viewItem.observacao}</p></div>}
-                <div className="flex gap-2 pt-2">
-                  <button onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-success/10 text-success text-xs font-semibold"><Users className="h-3.5 w-3.5" /> PresenÃ§a ({(viewItem.presencas||[]).length})</button>
-                  {viewItem.modalidade === 'externa' && <button onClick={() => printAutorizacao(viewItem)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-semibold"><Printer className="h-3.5 w-3.5" /> AutorizaÃ§Ã£o</button>}
+            <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
+              {/* Header Bar Clean */}
+              <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
+                <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Atividade</span>
+                <div className="flex items-center gap-1.5 pr-8">
+                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"><Trash2 className="h-4 w-4" /></button>
                 </div>
               </div>
-            </>
+
+              <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
+                <div className="text-center sm:text-left">
+                   <div className="flex justify-center sm:justify-start gap-2 mb-3">
+                     <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-current/10 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
+                       <span>{TIPO_ICONES[viewItem.tipo] || '📌'}</span> {viewItem.tipo}
+                     </span>
+                     <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md bg-muted text-muted-foreground">
+                       {viewItem.modalidade === 'externa' ? 'Externa' : 'Interna'}
+                     </span>
+                   </div>
+                   <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Tempo */}
+                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm space-y-3.5">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary"><Calendar className="w-4 h-4" /></div>
+                         <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-0.5">Data</p>
+                            <p className="text-sm font-semibold text-foreground">{viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'}</p>
+                         </div>
+                      </div>
+                      <div className="h-px bg-black/5" />
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary"><Clock className="w-4 h-4" /></div>
+                         <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-0.5">Horário</p>
+                            <p className="text-sm font-semibold text-foreground">{viewItem.horario || 'A definir'}</p>
+                         </div>
+                      </div>
+                  </div>
+
+                  {/* Espaço */}
+                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm space-y-3.5">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-600"><MapPin className="w-4 h-4" /></div>
+                         <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest leading-none mb-0.5">Local</p>
+                            <p className="text-sm font-semibold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
+                         </div>
+                      </div>
+                      {viewItem.modalidade === 'externa' && viewItem.conducao && (
+                        <>
+                          <div className="h-px bg-black/5" />
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0 text-amber-600"><Car className="w-4 h-4" /></div>
+                             <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-amber-600/70 uppercase tracking-widest leading-none mb-0.5">Condução</p>
+                                <p className="text-sm font-semibold text-foreground truncate">{viewItem.conducao}</p>
+                             </div>
+                          </div>
+                        </>
+                      )}
+                  </div>
+                </div>
+
+                {viewItem.descricao && (
+                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Descrição</h4>
+                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.descricao}</p>
+                  </div>
+                )}
+                
+                {viewItem.observacao && (
+                  <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
+                    <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2">Observação</h4>
+                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-success/10 text-success hover:bg-success/20 transition-all font-bold text-xs ring-1 ring-inset ring-success/20">
+                    <Users className="h-4 w-4" /> 
+                    <span>Lista de Presença <span className="bg-success text-white rounded-full px-1.5 py-0.5 ml-1 text-[10px]">{(viewItem.presencas||[]).length}</span></span>
+                  </button>
+                  {viewItem.modalidade === 'externa' && (
+                    <button onClick={() => printAutorizacao(viewItem)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all font-bold text-xs ring-1 ring-inset ring-primary/20">
+                      <Printer className="h-4 w-4" /> Baixar Autorização
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>
 
       <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
-        <DialogContent className="rounded-2xl border-border/30">
-          <DialogHeader><DialogTitle>PresenÃ§a - {presencaItem?.nome}</DialogTitle></DialogHeader>
-          {catequizandos.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando</p> : (
-            <div className="space-y-1 mt-2 max-h-[50vh] overflow-y-auto">
+        <DialogContent className="rounded-2xl border-border/30 max-w-sm">
+          <DialogHeader><DialogTitle className="px-2">Presença - {presencaItem?.nome}</DialogTitle></DialogHeader>
+          {catequizandos.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando matriculado</p> : (
+            <div className="space-y-1 mt-2 max-h-[50vh] overflow-y-auto px-1">
               {catequizandos.map(c => {
                 const present = (presencaItem?.presencas || []).includes(c.id);
                 return (
-                  <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex flex-col items-start gap-1 px-3 py-2.5 rounded-xl text-sm transition-colors ${present ? 'bg-success/10' : 'hover:bg-muted/50'}`}>
-                    <div className="flex items-center gap-3 w-full">
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${present ? 'bg-success border-success' : 'border-border'}`}>{present && <CheckCircle2 className="h-3 w-3 text-white" />}</div>
-                      <div className="flex-1 text-left">
-                        <span className={`font-bold block ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.responsavel || 'Sem responsÃ¡vel'}</span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">Catequizando: {c.nome}</span>
-                      </div>
+                  <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors border ${present ? 'bg-success/10 border-success/20' : 'bg-muted/30 border-transparent hover:bg-muted/50'}`}>
+                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${present ? 'bg-success border-success' : 'border-black/10'}`}>{present && <CheckCircle2 className="h-3 w-3 text-white" />}</div>
+                    <div className="flex-1 text-left min-w-0">
+                      <span className={`font-bold block truncate leading-tight ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.nome}</span>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-tight truncate block mt-0.5">Resp: {c.responsavel || 'Não informado'}</span>
                     </div>
                   </button>
                 );
