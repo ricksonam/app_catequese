@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, Dices, ChevronRight, KeyRound, LogOut } from "lucide-react";
+import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, Dices, ChevronRight, KeyRound, LogOut, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 
 interface MenuContentProps {
   onClose: () => void;
+  onShowObjective?: () => void;
 }
 
 const cadastros = [
@@ -146,13 +147,31 @@ export function MenuContent({ onClose }: MenuContentProps) {
           </div>
         </div>
 
-        {/* Sobre Movido para o fim e sem Título */}
-        <div>
-           <div className="w-full float-card p-4 space-y-1 animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm" style={{ animationDelay: `500ms` }}>
-             <p className="text-sm font-bold text-foreground">Desenvolvido por:</p>
-             <p className="text-xs text-muted-foreground">Rickson Amazonas</p>
-             <p className="text-xs text-muted-foreground">ricksonam@hotmail.com</p>
-           </div>
+        {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
+        <div className="pt-2">
+           <button 
+             onClick={() => {
+               if (onShowObjective) onShowObjective();
+               onClose();
+             }}
+             className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-primary/10 border border-primary/20 shadow-sm hover:shadow-md hover:border-primary/40 transition-all active:scale-[0.98] animate-float-up"
+             style={{ animationDelay: `500ms` }}
+           >
+             <div className="absolute top-0 right-0 p-2 opacity-20">
+               <Sparkles className="h-10 w-10 text-primary rotate-12" />
+             </div>
+             <div className="flex items-start gap-3">
+               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shrink-0 group-hover:scale-110 transition-transform">
+                 <img src="/app-logo.png" className="w-6 h-6 object-contain brightness-0 invert" alt="i" />
+               </div>
+               <div className="flex-1 text-left min-w-0">
+                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Sobre o App</p>
+                 <p className="text-sm font-black text-primary leading-none">iCatequese</p>
+                 <p className="text-[11px] text-muted-foreground mt-1.5 truncate">Versão 1.0.0 • Rickson Amazonas</p>
+               </div>
+               <ChevronRight className="h-4 w-4 text-primary self-center" />
+             </div>
+           </button>
         </div>
       </div>
 

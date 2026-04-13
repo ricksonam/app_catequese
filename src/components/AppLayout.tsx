@@ -43,7 +43,10 @@ export default function AppLayout() {
                 </button>
               </SheetTrigger>
               <SheetContent side="left" className="w-80 p-0 glass-card rounded-r-3xl border-l-0">
-                <MenuContent onClose={() => setMenuOpen(false)} />
+                <MenuContent 
+                  onClose={() => setMenuOpen(false)} 
+                  onShowObjective={() => setShowObjective(true)} 
+                />
               </SheetContent>
             </Sheet>
             
