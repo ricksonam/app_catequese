@@ -166,11 +166,11 @@ export default function TurmaDetail() {
                   
                   {(mod.count !== null || isPlan) && (
                     <div className={cn(
-                      "mt-2 flex flex-col items-center justify-center min-w-[75px] py-1.5 rounded-xl shadow-sm border transition-colors mx-auto",
-                      mod.label === "Encontros" ? "bg-blue-500/10 text-blue-700 border-blue-500/20" :
-                      mod.label === "Catequizandos" ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20" :
-                      mod.label === "Atividades" ? "bg-amber-500/10 text-amber-700 border-amber-500/20" :
-                      "bg-sky-500/10 text-sky-700 border-sky-500/20"
+                      "mt-2 flex flex-col items-center justify-center min-w-[75px] transition-colors mx-auto",
+                      mod.label === "Encontros" ? "text-blue-700" :
+                      mod.label === "Catequizandos" ? "text-emerald-700" :
+                      mod.label === "Atividades" ? "text-amber-700" :
+                      "text-sky-700"
                     )}>
                       <span className={cn("font-black leading-none", isPlan ? "text-[10px]" : "text-lg")}>
                         {isPlan ? (turma.etapa || "N/A") : mod.count}
