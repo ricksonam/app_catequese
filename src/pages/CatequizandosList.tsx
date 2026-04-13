@@ -251,117 +251,126 @@ export default function CatequizandosList() {
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
         <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
-            <div className="flex flex-col h-full relative bg-background">
-              {/* Hero Banner Litúrgico */}
-              <div className="relative pt-12 pb-6 px-6 bg-gradient-to-br from-liturgical/20 via-liturgical/5 to-transparent text-center border-b border-liturgical/10 overflow-hidden">
-                <div className="absolute top-4 left-4 flex gap-2 z-20">
-                  <button onClick={handleEdit} className="p-2 rounded-full bg-white/60 hover:bg-white text-liturgical shadow-sm transition-all border border-liturgical/20"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={handleDelete} className="p-2 rounded-full bg-white/60 hover:bg-white text-destructive shadow-sm transition-all border border-liturgical/20"><Trash2 className="h-4 w-4" /></button>
-                </div>
-                
-                {/* Fundo Litúrgico - Símbolo */}
-                <div className="absolute -right-6 -top-6 opacity-[0.04] rotate-12 pointer-events-none text-[160px] leading-none select-none text-liturgical">✝</div>
-
-                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-white shadow-xl ring-4 ring-liturgical/20 flex items-center justify-center overflow-hidden mb-4 relative z-10">
-                  {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-4xl font-black text-liturgical/70">{viewItem.nome.charAt(0).toUpperCase()}</span>}
-                </div>
-                <h2 className="text-xl sm:text-2xl font-black text-foreground mb-2 leading-tight px-2 relative z-10">{viewItem.nome}</h2>
-                <div className="flex justify-center gap-2 flex-wrap relative z-10">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${(statusConfig[viewItem.status || 'ativo']).color.replace('text-','border-')} ${(statusConfig[viewItem.status || 'ativo']).color}`}>
-                    {statusConfig[viewItem.status || 'ativo'].label}
-                  </span>
-                  {viewItem.dataNascimento && (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-liturgical/20 bg-liturgical/10 text-liturgical">
-                      {calcularIdade(viewItem.dataNascimento)}
-                    </span>
-                  )}
+            <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
+              {/* Header Bar Clean */}
+              <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
+                <span className="text-sm font-bold text-foreground truncate pr-4">{viewItem.nome}</span>
+                <div className="flex items-center gap-1.5 pr-8">
+                  <button onClick={handleEdit} className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={handleDelete} className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"><Trash2 className="h-4 w-4" /></button>
                 </div>
               </div>
 
-              <div className="p-5 sm:p-6 space-y-6">
-                {/* Alerta Necessidade Especial */}
+              <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
+                {/* Perfil Minimalista */}
+                <div className="flex flex-col sm:flex-row items-center gap-5 pb-2">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden shrink-0 border border-black/5">
+                    {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-3xl font-bold text-accent-foreground">{viewItem.nome.charAt(0).toUpperCase()}</span>}
+                  </div>
+                  <div className="flex-1 text-center sm:text-left min-w-0">
+                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
+                    <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                      <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${statusConfig[viewItem.status || 'ativo'].color}`}>
+                        {statusConfig[viewItem.status || 'ativo'].label}
+                      </span>
+                      {viewItem.dataNascimento && (
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground">
+                          {calcularIdade(viewItem.dataNascimento)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Alerta Necessidade Especial Clean */}
                 {viewItem.necessidadeEspecial && (
-                  <div className="bg-destructive/10 border-l-4 border-destructive p-4 rounded-r-xl">
-                    <p className="text-xs font-bold text-destructive uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" /> Atenção Especial
-                    </p>
-                    <p className="text-sm font-semibold text-destructive/80 leading-snug">{viewItem.necessidadeEspecial}</p>
+                  <div className="flex gap-4 items-start p-4 bg-destructive/5 rounded-2xl border border-destructive/10">
+                    <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-destructive font-black">!</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-destructive uppercase tracking-widest mb-1">Atenção Especial</p>
+                      <p className="text-sm font-medium text-destructive/90">{viewItem.necessidadeEspecial}</p>
+                    </div>
                   </div>
                 )}
 
-                {/* Blocos de Informação */}
+                {/* Blocos de Informação em Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Card Pessoal */}
-                  <div className="bg-muted/30 rounded-2xl p-4 border border-black/5">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Dados Pessoais</h4>
-                    <div className="space-y-3 text-sm">
-                      <div>
-                         <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Nascimento</p>
-                         <p className="font-semibold text-foreground">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informada"}</p>
+                  {/* Dados Pessoais */}
+                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                       <span className="w-4 h-4 rounded bg-muted flex items-center justify-center text-muted-foreground"><UserPlus className="w-3 h-3" /></span> Dados Pessoais
+                    </h4>
+                    <div className="space-y-3.5">
+                      <div className="flex justify-between items-center">
+                         <span className="text-[11px] font-semibold text-muted-foreground">Nascimento</span>
+                         <span className="text-sm font-semibold text-foreground text-right">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
                       </div>
                       <div className="h-px bg-black/5" />
-                      <div>
-                         <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Telefone</p>
-                         <p className="font-semibold text-foreground">{viewItem.telefone || "—"}</p>
+                      <div className="flex justify-between items-center">
+                         <span className="text-[11px] font-semibold text-muted-foreground">Telefone</span>
+                         <span className="text-sm font-semibold text-foreground text-right">{viewItem.telefone || "—"}</span>
                       </div>
                       <div className="h-px bg-black/5" />
-                      <div>
-                         <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">E-mail</p>
-                         <p className="font-semibold text-foreground truncate">{viewItem.email || "—"}</p>
+                      <div className="flex justify-between items-center">
+                         <span className="text-[11px] font-semibold text-muted-foreground">E-mail</span>
+                         <span className="text-sm font-semibold text-foreground text-right truncate max-w-[150px]">{viewItem.email || "—"}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Card Endereço e Responsável */}
+                  {/* Responsável e Endereço */}
                   <div className="space-y-4">
-                    <div className="bg-liturgical/5 rounded-2xl p-4 border border-liturgical/10 relative overflow-hidden shadow-sm">
-                      <div className="absolute top-0 right-0 p-4 opacity-10"><UserPlus className="h-12 w-12 text-liturgical" /></div>
-                      <h4 className="text-[10px] font-black text-liturgical uppercase tracking-widest mb-1 relative z-10">Responsável</h4>
-                      <p className="text-base font-bold text-foreground leading-tight relative z-10">{viewItem.responsavel || "Não informado"}</p>
+                    <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary mt-0.5"><UserPlus className="w-4 h-4" /></div>
+                      <div>
+                        <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Responsável</h4>
+                        <p className="text-sm sm:text-base font-bold text-foreground leading-tight">{viewItem.responsavel || "Não informado"}</p>
+                      </div>
                     </div>
 
-                    <div className="bg-muted/30 rounded-2xl p-4 border border-black/5">
+                    <div className="bg-white rounded-2xl p-4 border border-black/5 shadow-sm">
                       <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Endereço</h4>
                       <p className="text-sm font-semibold text-foreground leading-snug">
                         {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
                           <>
                             {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
-                            <br />
-                            <span className="text-muted-foreground font-medium text-xs">
+                            <span className="block text-muted-foreground font-medium text-[11px] mt-1">
                               {viewItem.bairro ? `Bairro: ${viewItem.bairro} ` : ""}
                               {viewItem.complemento ? `(${viewItem.complemento})` : ""}
                             </span>
                           </>
-                        ) : <span className="text-muted-foreground">Nenhum cadatrado</span>}
+                        ) : <span className="text-muted-foreground">Nenhum cadastrado</span>}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Sacramentos Grid */}
+                {/* Sacramentos Simplificados */}
                 {viewItem.sacramentos && (
-                  <div>
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Situação Sacramental</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Situação Sacramental</h4>
+                    <div className="flex flex-col sm:flex-row gap-3">
                       {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
                         const s = viewItem.sacramentos![sac]; 
                         const isOk = s?.recebido;
                         return (
-                          <div key={sac} className={`p-3.5 rounded-2xl border ${isOk ? 'bg-success/5 border-success/20' : 'bg-muted/50 border-black/5'}`}>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs font-black capitalize text-foreground">{sac}</span>
-                              <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs ${isOk ? 'bg-success/20 text-success' : 'bg-black/5 text-muted-foreground'}`}>
-                                {isOk ? '✓' : '-'}
+                          <div key={sac} className="flex-1 flex flex-col items-start p-3 bg-muted/20 border border-black/5 rounded-xl">
+                            <div className="flex items-center gap-2 mb-2 w-full">
+                              <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${isOk ? 'bg-success text-white' : 'bg-muted-foreground/30 text-white'}`}>
+                                <span className="text-[10px] font-bold">{isOk ? '✓' : ''}</span>
                               </div>
+                              <span className={`text-xs font-bold capitalize ${isOk ? 'text-foreground' : 'text-muted-foreground'}`}>{sac}</span>
                             </div>
                             {isOk ? (
-                              <div className="text-[10px] font-medium text-muted-foreground space-y-0.5">
-                                {s.paroquia && <p className="truncate"><span className="font-semibold text-foreground/70">P:</span> {s.paroquia}</p>}
-                                {s.data && <p><span className="font-semibold text-foreground/70">D:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
-                                {!s.paroquia && !s.data && <p className="italic">S/ Detalhes</p>}
+                              <div className="text-[10px] font-medium text-muted-foreground w-full">
+                                {s.paroquia && <p className="truncate"><span className="opacity-70">P:</span> {s.paroquia}</p>}
+                                {s.data && <p><span className="opacity-70">D:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
+                                {!s.paroquia && !s.data && <p className="italic">Nenhum detalhe</p>}
                               </div>
                             ) : (
-                              <p className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">Pendente</p>
+                              <p className="text-[10px] font-medium text-muted-foreground/50 italic">Pendente</p>
                             )}
                           </div>
                         );
@@ -372,20 +381,20 @@ export default function CatequizandosList() {
 
                 {/* Observações */}
                 {viewItem.observacao && (
-                  <div className="bg-amber-50 rounded-2xl p-4 border border-amber-100/50">
-                    <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1.5">Anotações</h4>
-                    <p className="text-sm text-amber-900/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
+                  <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
+                    <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2">Anotações Diversas</h4>
+                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
                   </div>
                 )}
                 
                 {/* Alterar Status */}
                 <div className="pt-4 border-t border-black/5 pb-2">
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Ativar / Inativar Cadastro</p>
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Alterar Situação Ativa</p>
                   <div className="flex justify-center gap-2 flex-wrap">
                     {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                       const isAtivo = (viewItem.status || 'ativo') === s;
                       return (
-                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${isAtivo ? 'bg-foreground text-background border-foreground shadow-[0_4px_10px_-3px_rgba(0,0,0,0.3)]' : 'bg-muted text-muted-foreground hover:bg-muted/70 border-black/5'}`}>
+                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${isAtivo ? 'bg-foreground text-background border-foreground shadow-md scale-105' : 'bg-muted text-muted-foreground hover:bg-black/5 border-black/5'}`}>
                           {statusConfig[s].label}
                         </button>
                       );
