@@ -47,16 +47,41 @@ export default function MuralFotos() {
       return;
     }
 
+    const toastId = toast.loading("Preparando foto para compartilhar...");
     try {
       setIsSharing(true);
-      await navigator.share({
-        title: foto.legenda || "Foto do Mural",
-        text: foto.resumo || "Confira este momento da nossa catequese!",
-        url: foto.url
-      });
+      
+      // 1. Busca a imagem como Blob
+      const response = await fetch(foto.url);
+      const blob = await response.blob();
+      
+      // 2. Cria o arquivo com nome baseado na legenda
+      const fileName = `${(foto.legenda || "foto").replace(/\s+/g, "_")}.jpg`;
+      const file = new File([blob], fileName, { type: 'image/jpeg' });
+
+      // 3. Verifica se pode compartilhar arquivos
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: foto.legenda || "Foto do Mural",
+          text: foto.resumo || ""
+        });
+        toast.success("Pronto!", { id: toastId });
+      } else {
+        // Fallback para link se nÃ£o puder compartilhar arquivo
+        await navigator.share({
+          title: foto.legenda || "Foto do Mural",
+          text: foto.resumo || "",
+          url: foto.url
+        });
+        toast.success("Link compartilhado!", { id: toastId });
+      }
     } catch (error) {
       if ((error as Error).name !== 'AbortError') {
-        toast.error("Erro ao compartilhar");
+        console.error("Share error:", error);
+        toast.error("Erro ao preparar foto para envio", { id: toastId });
+      } else {
+        toast.dismiss(toastId);
       }
     } finally {
       setIsSharing(false);
