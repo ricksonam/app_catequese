@@ -119,9 +119,27 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     window.print();
   };
 
-  const handleShare = () => {
-    toast.info("Para compartilhar (ex: WhatsApp), selecione 'Salvar como PDF' na tela de impressão a seguir.", { duration: 6000 });
-    window.print();
+  const handleShare = async () => {
+    const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
+    const shareData = {
+      title: 'IVC - Gestão de Catequese',
+      text: `Confira o ${reportName} da turma ${turma.nome}. Para enviar o documento completo, escolha 'Salvar como PDF' no menu de impressão.`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          toast.info("Para compartilhar o arquivo PDF, selecione 'Salvar como PDF' na tela de impressão.");
+          window.print();
+        }
+      }
+    } else {
+      toast.info("Para compartilhar o arquivo PDF, selecione 'Salvar como PDF' na tela de impressão.");
+      window.print();
+    }
   };
 
   const resetFlow = () => {

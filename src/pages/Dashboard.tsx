@@ -208,7 +208,7 @@ export default function Dashboard() {
       {(aniversariantesSemana.length > 0 || fallbackAniversario) && (
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center shadow-md animate-bounce" style={{ animationDelay: '500ms' }}>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-violet-600 flex items-center justify-center shadow-md animate-bounce" style={{ animationDelay: '500ms' }}>
               <Cake className="h-4 w-4 text-white" />
             </div>
             <p className="text-lg font-black text-foreground uppercase tracking-tight mb-0">
@@ -227,14 +227,14 @@ export default function Dashboard() {
                     key={c.id}
                     className={`shrink-0 flex flex-col items-center text-center p-4 rounded-2xl border-2 w-28 animate-float-up ${
                       isHoje
-                        ? "bg-gradient-to-b from-amber-400/20 to-pink-400/10 border-amber-400/50 shadow-lg shadow-amber-400/15"
+                        ? "bg-gradient-to-b from-primary/20 to-violet-500/10 border-primary/50 shadow-lg shadow-primary/15"
                         : "bg-card border-black/10"
                     }`}
                     style={{ animationDelay: `${(i + 5) * 60}ms` }}
                   >
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-black mb-2 shadow-sm ${
                       isHoje
-                        ? "bg-gradient-to-br from-amber-400 to-pink-500 text-white"
+                        ? "bg-gradient-to-br from-primary to-violet-600 text-white"
                         : "bg-gradient-to-br from-primary/20 to-primary/10 text-primary"
                     }`}>
                       {c.nome?.charAt(0).toUpperCase()}
@@ -242,10 +242,10 @@ export default function Dashboard() {
                     <p className="text-xs font-bold text-foreground leading-tight break-words w-full">
                       {c.nome?.split(" ")[0]}
                     </p>
-                    <p className={`text-[10px] font-black mt-1 ${isHoje ? "text-amber-600" : "text-muted-foreground"}`}>
+                    <p className={`text-[10px] font-black mt-1 ${isHoje ? "text-primary" : "text-muted-foreground"}`}>
                       {isHoje ? "🎉 Hoje!" : `em ${diasAte} dia${diasAte !== 1 ? "s" : ""}`}
                     </p>
-                    {isHoje && <Star className="h-3 w-3 text-amber-500 mt-1 animate-pulse" />}
+                    {isHoje && <Star className="h-3 w-3 text-primary mt-1 animate-pulse" />}
                   </div>
                 );
               })}

@@ -202,9 +202,7 @@ export default function EncontrosList() {
                       key={enc.id}
                       className={cn(
                         "relative p-[1.5px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)]",
-                        isAvaliado 
-                          ? "bg-gradient-to-br from-gold/80 via-gold/40 to-primary/30 shadow-[0_15px_50px_rgba(212,175,55,0.3)] border-gold/60" 
-                          : "bg-gradient-to-br from-[hsl(var(--gold))]/40 via-primary/20 to-primary/10"
+                        "bg-gradient-to-br from-primary/30 via-primary/10 to-transparent border-primary/20"
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
