@@ -36,8 +36,8 @@ export default function AppLayout() {
           <div className="container flex items-center justify-between h-14 px-4">
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
-                <button className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
-                  <Menu className="h-4.5 w-4.5 text-foreground" />
+                <button className="p-2.5 rounded-xl bg-primary/15 text-primary border border-primary/20 shadow-sm hover:bg-primary/25 hover:shadow-md transition-all active:scale-95">
+                  <Menu className="h-5 w-5" />
                 </button>
               </SheetTrigger>
               <SheetContent side="left" className="w-80 p-0 glass-card rounded-r-3xl border-l-0">

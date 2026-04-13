@@ -107,7 +107,7 @@ export function MenuContent({ onClose }: MenuContentProps) {
                 <button
                   key={item.path}
                   onClick={() => go(item.path)}
-                  className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card"
+                  className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
                   style={{ animationDelay: `${(i + 3) * 60}ms` }}
                 >
                   <div className={`icon-box ${item.color}`}>
@@ -122,20 +122,11 @@ export function MenuContent({ onClose }: MenuContentProps) {
         </div>
 
         <div>
-           <p className="text-xs font-extrabold uppercase tracking-widest text-black dark:text-white mb-3 px-1">Sobre</p>
-           <div className="w-full float-card p-4 space-y-1 animate-float-up bg-white dark:bg-card" style={{ animationDelay: `400ms` }}>
-             <p className="text-sm font-bold text-foreground">Desenvolvido por:</p>
-             <p className="text-xs text-muted-foreground">Rickson Amazonas</p>
-             <p className="text-xs text-muted-foreground">ricksonam@hotmail.com</p>
-           </div>
-        </div>
-
-        <div>
           <p className="text-xs font-extrabold uppercase tracking-widest text-black dark:text-white mb-3 px-1">Conta</p>
           <div className="space-y-2">
             <button
               onClick={() => setShowPasswordDialog(true)}
-              className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card"
+              className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="icon-box bg-primary/10 text-primary">
                 <KeyRound className="h-5 w-5" />
@@ -145,7 +136,7 @@ export function MenuContent({ onClose }: MenuContentProps) {
             </button>
             <button
               onClick={handleSignOut}
-              className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card"
+              className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="icon-box bg-destructive/10 text-destructive">
                 <LogOut className="h-5 w-5" />
@@ -153,6 +144,15 @@ export function MenuContent({ onClose }: MenuContentProps) {
               <span className="flex-1 text-sm font-medium text-destructive">Sair</span>
             </button>
           </div>
+        </div>
+
+        {/* Sobre Movido para o fim e sem Título */}
+        <div>
+           <div className="w-full float-card p-4 space-y-1 animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm" style={{ animationDelay: `500ms` }}>
+             <p className="text-sm font-bold text-foreground">Desenvolvido por:</p>
+             <p className="text-xs text-muted-foreground">Rickson Amazonas</p>
+             <p className="text-xs text-muted-foreground">ricksonam@hotmail.com</p>
+           </div>
         </div>
       </div>
 
