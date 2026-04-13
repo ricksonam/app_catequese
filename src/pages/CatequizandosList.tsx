@@ -280,7 +280,6 @@ export default function CatequizandosList() {
                   </div>
                   <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
                 </div>
-                </div>
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
                 <div className="space-y-4">
@@ -713,7 +712,6 @@ export default function CatequizandosList() {
                     </div>
                   </div>
                   <FieldInput label="Complemento" value={editForm.complemento} onChange={(v) => setEditForm(f => ({ ...f, complemento: v }))} />
-                </div>
                 </div>
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
