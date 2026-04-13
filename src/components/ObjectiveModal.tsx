@@ -20,7 +20,7 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
           <div className="relative group perspective-1000">
             <div className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse scale-125 opacity-40 transform-gpu" />
             <div className="relative w-36 h-36 rounded-[40px] overflow-hidden bg-primary/10 border-2 border-primary/20 shadow-2xl animate-float-float transform-gpu will-change-transform">
-              <img src="/app-icon.png" className="w-full h-full object-cover" alt="Logo iCatequese" />
+              <img src="/app-icon.png?v=2" className="w-full h-full object-cover" alt="Logo iCatequese" />
             </div>
           </div>
         </div>
