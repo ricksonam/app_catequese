@@ -28,7 +28,7 @@ const modulosGlobais = [
   { label: "Biblioteca de Modelos", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
 ];
 
-export function MenuContent({ onClose }: MenuContentProps) {
+export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
