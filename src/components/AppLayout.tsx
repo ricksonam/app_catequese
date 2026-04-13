@@ -45,10 +45,10 @@ export default function AppLayout() {
               </SheetContent>
             </Sheet>
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden bg-white/50 border border-primary/20 shadow-sm">
-                <img src="/app-icon.jpg" alt="Logo" className="w-full h-full object-cover" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white/80 border border-primary/20 shadow-sm shadow-primary/10">
+                <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
-              <span className="text-sm text-muted-foreground font-medium">Gestão de Catequese</span>
+              <span className="text-sm font-bold text-primary tracking-tight">Catequese Digital</span>
             </div>
             <BirthdayBell />
           </div>

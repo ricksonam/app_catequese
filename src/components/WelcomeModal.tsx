@@ -137,12 +137,12 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
         {step === "welcome" && (
           <div className="flex flex-col items-center text-center px-7 pt-10 pb-8 overflow-y-auto">
             {/* Logo/icon */}
-            <div className="relative mb-5">
-              <div className="w-20 h-20 rounded-3xl overflow-hidden bg-white/50 border border-primary/20 shadow-xl shadow-primary/30">
-                <img src="/app-icon.jpg" alt="Logo" className="w-full h-full object-cover" />
+            <div className="relative mb-6">
+              <div className="w-28 h-28 rounded-[32px] overflow-hidden bg-white shadow-xl shadow-primary/10 border border-primary/10 flex items-center justify-center">
+                <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain p-2" />
               </div>
-              <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center shadow-lg">
-                <PartyPopper className="h-3.5 w-3.5 text-white" />
+              <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center shadow-lg animate-bounce">
+                <PartyPopper className="h-4 w-4 text-white" />
               </div>
             </div>
 

@@ -127,10 +127,10 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm border-border/60 shadow-xl animate-float-up">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-16 h-16 rounded-2xl overflow-hidden bg-white/50 border border-border/40 shadow-lg mb-2">
-            <img src="/app-icon.jpg" alt="Logo" className="w-full h-full object-cover" />
+          <div className="mx-auto w-24 h-24 rounded-3xl overflow-hidden bg-white/80 border border-border/40 shadow-xl shadow-primary/5 mb-2">
+            <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain p-2" />
           </div>
-          <CardTitle className="text-xl">
+          <CardTitle className="text-2xl font-black">
             {isLogin ? "Entrar" : "Criar Conta"}
           </CardTitle>
           <CardDescription>

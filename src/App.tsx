@@ -45,8 +45,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-32 h-32 rounded-3xl overflow-hidden bg-white/80 dark:bg-zinc-900 shadow-2xl border border-primary/20 animate-pulse transform-gpu">
-          <img src="/app-icon.svg" alt="Logo" className="w-full h-full object-contain p-4" />
+        <div className="w-32 h-32 rounded-3xl overflow-hidden bg-white/80 dark:bg-zinc-900 shadow-2xl border border-primary/20 animate-float transform-gpu">
+          <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain p-2" />
         </div>
       </div>
     );

@@ -8,27 +8,24 @@ export default function SplashScreen() {
 
       <div className="relative group perspective-1000">
         {/* Glowing ring around the icon - enlarged and better contrast */}
-        <div className="absolute -inset-8 bg-primary/30 rounded-full blur-3xl animate-pulse scale-125 opacity-60 transform-gpu" />
+        <div className="absolute -inset-10 bg-primary/25 rounded-full blur-3xl animate-pulse scale-125 opacity-40 transform-gpu" />
         
-        <div className="relative bg-white dark:bg-zinc-900 w-44 h-44 rounded-[42px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-primary/20 flex items-center justify-center animate-pulse-gentle transform-gpu will-change-transform">
-          <img src="/app-icon.svg" className="w-full h-full p-4 drop-shadow-sm" alt="Catequese" />
+        <div className="relative w-56 h-56 flex items-center justify-center animate-float-float transform-gpu will-change-transform">
+          <img src="/app-icon.png" className="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.15)]" alt="Catequese" />
         </div>
       </div>
 
-      <div className="mt-12 text-center space-y-4 animate-float-up" style={{ animationDelay: '300ms' }}>
-        <div className="space-y-2">
-          <h1 className="text-4xl font-black text-foreground tracking-tighter sm:text-5xl">Catequese IvC</h1>
-          <div className="flex items-center justify-center gap-3">
-            <div className="h-[1.5px] w-6 bg-primary/40" />
-            <p className="text-[12px] font-black uppercase tracking-[0.5em] text-primary drop-shadow-sm">Iniciação à Vida Cristã</p>
-            <div className="h-[1.5px] w-6 bg-primary/40" />
-          </div>
+      <div className="mt-8 text-center space-y-4 animate-float-up" style={{ animationDelay: '300ms' }}>
+        <div className="flex items-center justify-center gap-3">
+          <div className="h-[1px] w-8 bg-primary/30" />
+          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary drop-shadow-sm">Iniciação à Vida Cristã</p>
+          <div className="h-[1px] w-8 bg-primary/30" />
         </div>
       </div>
       
       {/* Loading Progress Bar */}
       <div className="absolute bottom-20 flex flex-col items-center gap-5 w-full px-12 max-w-sm">
-        <div className="w-full h-2 bg-muted/50 rounded-full overflow-hidden border border-border/40 backdrop-blur-sm">
+        <div className="w-full h-1.5 bg-muted/50 rounded-full overflow-hidden border border-border/40 backdrop-blur-sm">
           <div 
             className="h-full bg-primary shadow-[0_0_20px_rgba(var(--primary-rgb),0.6)]" 
             style={{ 
@@ -36,9 +33,9 @@ export default function SplashScreen() {
             }} 
           />
         </div>
-        <div className="flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md">
+        <div className="flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 backdrop-blur-md">
            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-           <p className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Iniciando catequese...</p>
+           <p className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Preparando encontro...</p>
         </div>
       </div>
 
@@ -47,12 +44,12 @@ export default function SplashScreen() {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(0); }
         }
-        @keyframes pulse-gentle {
-          0%, 100% { transform: scale(1) translate3d(0,0,0); opacity: 1; }
-          50% { transform: scale(1.08) translate3d(0,0,0); opacity: 0.98; }
+        @keyframes float-float {
+          0%, 100% { transform: translateY(0) scale(1) translate3d(0,0,0); }
+          50% { transform: translateY(-20px) scale(1.02) translate3d(0,0,0); }
         }
-        .animate-pulse-gentle {
-          animation: pulse-gentle 2.5s ease-in-out infinite;
+        .animate-float-float {
+          animation: float-float 3s ease-in-out infinite;
         }
         .perspective-1000 {
           perspective: 1000px;
