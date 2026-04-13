@@ -330,7 +330,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
       {/* Hidden Portal for System Print */}
       {isPreviewOpen && createPortal(
-        <div className="absolute top-0 left-0 w-full min-h-screen bg-white z-[999999] print-wrapper">
+        <div className="hidden print:block absolute top-0 left-0 w-full min-h-screen bg-white z-[999999] print-wrapper">
           {renderPreviewContent()}
         </div>,
         document.body
