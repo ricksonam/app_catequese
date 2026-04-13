@@ -220,98 +220,94 @@ export default function EncontrosList() {
                         {/* Faixa de status no topo */}
                         <div className={`h-1 w-full bg-gradient-to-r ${status.gradient}`} />
 
-                        <div className="flex items-stretch gap-0">
-                          {/* Coluna da data */}
-                          <div className="flex flex-col items-center justify-center px-4 py-4 bg-gradient-to-b from-primary/5 to-primary/10 border-r border-black/5 shrink-0 min-w-[64px]">
-                            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
-                            <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
+                        <div className="flex flex-col">
+                          <div className="flex items-stretch">
+                            {/* Coluna da data */}
+                            <div className="flex flex-col items-center justify-center px-4 py-5 bg-gradient-to-b from-primary/5 to-primary/10 border-r border-black/5 shrink-0 min-w-[70px]">
+                              <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
+                              <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
+                              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
+                            </div>
+
+                            {/* Conteúdo principal */}
+                            <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
+                              {/* Status badge */}
+                              <div className="flex justify-center items-center gap-2 mb-2">
+                                <span className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-widest ${status.text}`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${status.dot}`} />
+                                  {status.label}
+                                </span>
+                              </div>
+
+                              {/* Tema */}
+                              <p className={`text-base font-bold leading-snug mb-3 ${enc.status === "cancelado" ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                                {enc.tema}
+                              </p>
+
+                              {/* Meta-info linha */}
+                              <div className="flex flex-wrap items-center justify-center gap-2 mt-auto">
+                                {enc.leituraBiblica && (
+                                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                    <BookOpen className="h-3 w-3 shrink-0" />
+                                    <span className="truncate max-w-[120px]">{enc.leituraBiblica}</span>
+                                  </span>
+                                )}
+                                {tempoTotal > 0 && (
+                                  <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                    <Clock className="h-3 w-3" />{tempoTotal}min
+                                  </span>
+                                )}
+                                <span className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/8 px-1.5 py-0.5 rounded-md border border-primary/10">
+                                  <Users className="h-3 w-3" />{presPct}%
+                                </span>
+                              </div>
+                            </div>
                           </div>
 
-                          {/* Conteúdo principal */}
-                          <div className="flex-1 px-4 py-3.5 min-w-0">
-                            {/* Status badge */}
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <span className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-widest ${status.text}`}>
-                                <span className={`w-1.5 h-1.5 rounded-full inline-block ${status.dot}`} />
-                                {status.label}
-                              </span>
-                              {isAvaliado && (
-                                <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                                  Avaliado ✓
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Tema */}
-                            <p className={`text-sm font-bold leading-snug mb-2 ${enc.status === "cancelado" ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                              {enc.tema}
-                            </p>
-
-                            {/* Meta-info linha */}
-                            <div className="flex flex-wrap items-center gap-2">
-                              {enc.leituraBiblica && (
-                                <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                  <BookOpen className="h-3 w-3 shrink-0" />
-                                  <span className="truncate max-w-[120px]">{enc.leituraBiblica}</span>
-                                </span>
-                              )}
-                              {tempoTotal > 0 && (
-                                <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                                  <Clock className="h-3 w-3" />{tempoTotal}min
-                                </span>
-                              )}
-                              <span className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/8 px-1.5 py-0.5 rounded-md border border-primary/10">
-                                <Users className="h-3 w-3" />{presPct}%
-                              </span>
-                            </div>
-
-                            {/* Botão de Avaliação Rápida */}
+                          {/* Chips na parte de baixo */}
+                          <div className="flex items-stretch border-t border-black/5 bg-black/[0.02] divide-x divide-black/5">
                             <button
                               onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/encontros/${enc.id}?eval=true`); }}
                               className={cn(
-                                "mt-3 w-full py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 border-2 transition-all active:scale-95",
+                                "flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all",
                                 isAvaliado 
-                                  ? "bg-gold/10 border-gold/30 text-gold-700 hover:bg-gold/20" 
-                                  : "bg-emerald-50 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100"
+                                  ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400" 
+                                  : "bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400"
                               )}
                             >
-                              <FileText className="h-3.5 w-3.5" />
-                              {isAvaliado ? 'Encontro já avaliado ✓' : 'Avaliar Agora'}
+                              <FileText className="h-3.5 w-3.5 mb-px" />
+                              {isAvaliado ? 'Avaliado' : 'Avaliar'}
                             </button>
-                          </div>
 
-                          <div className="flex flex-col gap-px border-l border-black/5 shrink-0">
                             <button
                               onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                              className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3.5 text-primary hover:bg-primary/8 transition-colors group/btn"
+                              className="flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-black/5 hover:text-primary transition-colors flex items-center justify-center gap-1.5"
                             >
-                              <Eye className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                              <span className="text-[8px] font-black uppercase tracking-wide">Abrir</span>
+                              <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
                             </button>
-                            <div className="h-px bg-black/5" />
+
                             <button
                               onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                              className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3.5 text-liturgical hover:bg-liturgical/8 transition-colors group/btn"
+                              className="flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-black/5 hover:text-liturgical transition-colors flex items-center justify-center gap-1.5"
                             >
-                              <Play className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                              <span className="text-[8px] font-black uppercase tracking-wide">Apresentar</span>
+                              <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
                             </button>
-                            <div className="h-px bg-black/5" />
-                            {id && (
-                              <ReportModule 
-                                context="encontros" 
-                                turmaId={id} 
-                                initialDocId={enc.id}
-                                instantReport="enc_complet"
-                                trigger={
-                                  <button className="flex-1 flex flex-col items-center justify-center gap-0.5 px-3.5 text-muted-foreground hover:bg-muted/50 transition-colors group/btn">
-                                    <Printer className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                                    <span className="text-[8px] font-black uppercase tracking-wide">Imprimir</span>
-                                  </button>
-                                }
-                              />
-                            )}
+
+                            <div className="flex-1 flex items-stretch">
+                              {id && (
+                                <ReportModule 
+                                  context="encontros" 
+                                  turmaId={id} 
+                                  initialDocId={enc.id}
+                                  instantReport="enc_complet"
+                                  trigger={
+                                    <button className="w-full h-full py-2.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:bg-black/5 hover:text-primary transition-colors flex items-center justify-center gap-1.5">
+                                      <Printer className="h-3.5 w-3.5 mb-px" /> Imprimir
+                                    </button>
+                                  }
+                                />
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

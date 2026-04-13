@@ -143,6 +143,23 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     }
   };
 
+  const content = renderPrintTemplate();
+
+  if (instantReport) {
+    return (
+      <>
+        <div onClick={handleTriggerClick} style={{ display: 'contents' }}>
+          {trigger}
+        </div>
+        {selectedReport && (
+          <div className="hidden print:block fixed inset-0 min-h-screen w-full bg-white z-[99999] overflow-visible">
+            {content}
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -190,10 +207,11 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
         </DialogContent>
       </Dialog>
 
-      {/* Hidden Print Area */}
-      <div className="hidden print:block absolute inset-0 bg-white z-[9999]">
-        {renderPrintTemplate()}
-      </div>
+      {selectedReport && (
+        <div className="hidden print:block fixed inset-0 min-h-screen w-full bg-white z-[99999] overflow-visible">
+          {content}
+        </div>
+      )}
     </>
   );
 }
