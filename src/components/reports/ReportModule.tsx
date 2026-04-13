@@ -192,7 +192,12 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
           title: `Relatório: ${reportName}`,
           text: `Confira o ${reportName} da turma ${turma.nome}.`,
         });
-        toast.success("Pronto! Escolha onde compartilhar.", { id: toastId });
+        toast.success("Enviado com sucesso!", { id: toastId });
+        
+        // Dá um pequeno delay para que o menu de compartilhamento feche suavemente antes de voltar
+        setTimeout(() => {
+          resetFlow();
+        }, 500);
       } else {
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement("a");
@@ -409,10 +414,6 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
              <div className="bg-white text-black min-h-full">
                {renderPreviewContent()}
              </div>
-          </div>
-
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 bg-black/80 backdrop-blur-md rounded-2xl text-white text-[10px] font-bold uppercase tracking-[0.2em] border border-white/10 text-center animate-bounce">
-            Dica: No celular, salve como PDF para enviar no WhatsApp
           </div>
         </div>
       )}
