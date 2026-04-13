@@ -11,6 +11,7 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuContent } from "./MenuContent";
 import BirthdayBell from "./BirthdayBell";
+import { ObjectiveModal } from "./ObjectiveModal";
 
 const tabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
@@ -24,6 +25,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showObjective, setShowObjective] = useState(false);
 
   const currentPath = location.pathname;
   const isPresentationMode = currentPath.endsWith("/apresentacao");
@@ -44,14 +46,24 @@ export default function AppLayout() {
                 <MenuContent onClose={() => setMenuOpen(false)} />
               </SheetContent>
             </Sheet>
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white/80 border border-primary/20 shadow-sm shadow-primary/10">
+            
+            <button 
+              onClick={() => setShowObjective(true)}
+              className="flex items-center gap-2.5 group hover:opacity-80 transition-all active:scale-[0.98]"
+            >
+              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white border border-primary/20 shadow-sm shadow-primary/10 group-hover:shadow-md group-hover:border-primary/40 transition-all">
                 <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
-              <span className="text-sm font-bold text-primary tracking-tight">Catequese Digital</span>
-            </div>
+              <div className="flex flex-col items-start leading-none">
+                <span className="text-sm font-black text-primary tracking-tight">Catequese Digital</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Ver Objetivo</span>
+              </div>
+            </button>
+
             <BirthdayBell />
           </div>
+          
+          <ObjectiveModal open={showObjective} onOpenChange={setShowObjective} />
         </header>
       )}
 

@@ -10,8 +10,8 @@ export default function SplashScreen() {
         {/* Glowing ring around the icon - enlarged and better contrast */}
         <div className="absolute -inset-10 bg-primary/25 rounded-full blur-3xl animate-pulse scale-125 opacity-40 transform-gpu" />
         
-        <div className="relative w-56 h-56 flex items-center justify-center animate-float-float transform-gpu will-change-transform">
-          <img src="/app-icon.png" className="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.15)]" alt="Catequese" />
+        <div className="relative w-56 h-56 rounded-full overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center animate-float-float transform-gpu will-change-transform shadow-2xl">
+          <img src="/app-icon.png" className="w-full h-full object-contain p-2" alt="Catequese" />
         </div>
       </div>
 
