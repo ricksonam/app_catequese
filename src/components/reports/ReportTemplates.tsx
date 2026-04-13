@@ -12,19 +12,19 @@ interface HeaderProps {
 }
 
 const PrintHeader = ({ titulo, subtitulo, paroquia, comunidade, turma, etapa }: HeaderProps) => (
-  <div className="border-b-[3px] border-black pb-4 mb-6 text-center space-y-1">
+  <div className="border-b-[3px] border-[#8B4513] pb-4 mb-6 text-center space-y-1">
     <div className="flex justify-center mb-2">
-      <div className="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center">
-        <Cross className="h-6 w-6 text-black" />
+      <div className="w-12 h-12 rounded-full border-2 border-[#8B4513] shadow-inner flex items-center justify-center bg-gradient-to-br from-[#f5e6d3] to-[#faf0e6]">
+        <Cross className="h-6 w-6 text-[#8B4513]" />
       </div>
     </div>
-    <h1 className="text-2xl font-black uppercase tracking-tight">{titulo}</h1>
-    {subtitulo && <p className="text-sm italic font-serif">{subtitulo}</p>}
-    <div className="flex items-center justify-center gap-4 text-xs font-bold uppercase tracking-widest pt-2">
+    <h1 className="text-2xl font-black uppercase tracking-tight text-[#5c3317]">{titulo}</h1>
+    {subtitulo && <p className="text-sm italic font-serif text-[#8B4513]">{subtitulo}</p>}
+    <div className="flex items-center justify-center gap-4 text-xs font-bold uppercase tracking-widest pt-2 text-[#5c3317]">
       {paroquia && <span>Paróquia: {paroquia}</span>}
       {comunidade && <span>Comunidade: {comunidade}</span>}
     </div>
-    <div className="flex items-center justify-center gap-4 text-[10px] font-black uppercase opacity-70">
+    <div className="flex items-center justify-center gap-4 text-[10px] font-black uppercase opacity-70 text-[#8B4513]">
       {turma && <span>Turma: {turma}</span>}
       {etapa && <span>Etapa: {etapa}</span>}
       <span>Data de Impressão: {new Date().toLocaleDateString('pt-BR')}</span>

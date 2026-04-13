@@ -89,7 +89,7 @@ export default function PlanoTurma() {
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Plano da Turma</h1>
-            <p className="text-xs text-muted-foreground">{turma?.nome} • {totalAlunos} catequizandos</p>
+            <p className="text-xs text-muted-foreground">{totalAlunos} catequizandos</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

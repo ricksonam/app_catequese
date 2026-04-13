@@ -91,7 +91,7 @@ export default function EncontrosList() {
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Encontros</h1>
-            <p className="text-xs text-muted-foreground">{turma?.nome} â€¢ {encontros.length} encontros</p>
+            <p className="text-xs text-muted-foreground">{encontros.length} encontros</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

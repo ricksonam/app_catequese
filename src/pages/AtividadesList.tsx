@@ -111,7 +111,7 @@ export default function AtividadesList() {
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div className="min-w-0">
              <h1 className="text-xl font-bold text-foreground truncate">Atividades e Eventos</h1>
-             <p className="text-xs text-muted-foreground truncate">{turma?.nome} • {list.length} atividades</p>
+             <p className="text-xs text-muted-foreground truncate">{list.length} atividades</p>
           </div>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">

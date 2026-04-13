@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Printer, FileText, Users, Calendar, ClipboardList, BookOpen, Clock, CheckCircle2, LayoutGrid, UserCircle } from "lucide-react";
+import { Printer, FileText, Users, Calendar, ClipboardList, BookOpen, Clock, CheckCircle2, LayoutGrid, UserCircle, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { cn } from "@/lib/utils";
 import * as Templates from "./ReportTemplates";
@@ -83,10 +84,18 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     setSelectedReport(reportId);
     setPrintDoc(doc || null);
     setTimeout(() => {
+      const handleAfterPrint = () => {
+        setSelectedReport(null);
+        window.removeEventListener('afterprint', handleAfterPrint);
+      };
+      window.addEventListener('afterprint', handleAfterPrint);
       window.print();
-      // Reset after print to avoid stale state
-      setTimeout(() => setSelectedReport(null), 500);
-    }, 200);
+    }, 500); // Dar tempo pro React renderizar o DOM do Portal completamente
+  };
+
+  const handleShare = (reportId: string, doc?: any) => {
+    toast.info("Para compartilhar (ex: WhatsApp), selecione 'Salvar como PDF' na tela de impressão a seguir.", { duration: 6000 });
+    handlePrint(reportId, doc);
   };
 
   const handleTriggerClick = (e: React.MouseEvent) => {
@@ -187,22 +196,35 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
           <div className="p-4 space-y-2">
             {config.reports.map((report) => (
-              <button
+              <div
                 key={report.id}
-                onClick={() => {
-                  handlePrint(report.id);
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-all text-left group"
+                className="w-full flex items-center justify-between p-3.5 rounded-2xl hover:bg-muted/40 transition-all border border-transparent hover:border-black/5 group"
               >
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-muted group-hover:bg-primary/10 group-hover:text-primary")}>
-                  <report.icon className="h-5 w-5" />
+                <div onClick={() => { handlePrint(report.id); setIsOpen(false); }} className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer">
+                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary shrink-0")}>
+                    <report.icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0 pr-2">
+                    <p className="text-sm font-bold text-foreground truncate">{report.label}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">{report.desc}</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-foreground">{report.label}</p>
-                  <p className="text-[10px] text-muted-foreground">{report.desc}</p>
+                
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button 
+                    onClick={() => { handlePrint(report.id); setIsOpen(false); }} 
+                    className="p-2.5 rounded-xl bg-white border border-black/5 shadow-sm text-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <Printer className="h-4 w-4" />
+                  </button>
+                  <button 
+                    onClick={() => { handleShare(report.id); setIsOpen(false); }} 
+                    className="p-2.5 rounded-xl bg-[#d4a574]/15 text-[#d4a574] border border-[#d4a574]/20 shadow-sm hover:bg-[#d4a574]/25 transition-colors"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </DialogContent>

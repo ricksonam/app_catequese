@@ -184,6 +184,7 @@
 @media print {
   body {
     background: white !important;
+    color: black !important;
     min-height: auto !important;
   }
   #root {
