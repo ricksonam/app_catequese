@@ -1,5 +1,3 @@
-import { Church } from "lucide-react";
-
 export default function SplashScreen() {
   return (
     <div className="fixed inset-0 z-[9999] bg-background flex flex-col items-center justify-center animate-in fade-in duration-500">
@@ -12,8 +10,8 @@ export default function SplashScreen() {
         {/* Glowing ring around the icon */}
         <div className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse scale-150 opacity-50" />
         
-        <div className="relative bg-white dark:bg-zinc-900 w-24 h-24 rounded-[32px] shadow-2xl border border-primary/20 flex items-center justify-center animate-scale-in">
-          <Church className="h-12 w-12 text-primary animate-bounce" />
+        <div className="relative bg-white dark:bg-zinc-900 w-28 h-28 rounded-[32px] shadow-2xl border border-primary/20 flex items-center justify-center animate-pulse-gentle">
+          <img src="/app-icon.svg" className="w-full h-full p-2" alt="Catequese" />
         </div>
       </div>
 
@@ -47,6 +45,13 @@ export default function SplashScreen() {
         @keyframes progress-loading {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(0); }
+        }
+        @keyframes pulse-gentle {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.05); opacity: 0.95; }
+        }
+        .animate-pulse-gentle {
+          animation: pulse-gentle 2s ease-in-out infinite;
         }
       `}</style>
     </div>
