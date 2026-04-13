@@ -118,22 +118,6 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
           <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          {showTourButton && (
-            <button
-              onClick={() => setWelcomeOpen(true)}
-              className="text-[10px] font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-xl border border-primary/20 flex items-center gap-1 shrink-0"
-            >
-              🗺️ Tour
-            </button>
-          )}
-          <button
-            onClick={() => navigate("/relatorios")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#d4a574]/10 text-[#d4a574] text-[10px] font-black uppercase tracking-widest border border-[#d4a574]/20 shadow-sm active:scale-95 transition-all"
-          >
-            📋 Relatórios
-          </button>
-        </div>
       </div>
 
       {/* Stats */}
@@ -154,9 +138,14 @@ export default function Dashboard() {
 
       {/* ── PRÓXIMO ENCONTRO ── */}
       <div className="animate-float-up" style={{ animationDelay: '200ms' }}>
-        <div className="flex items-center justify-between mb-3">
-          <p className="section-title mb-0">Próximo Encontro</p>
-          <button onClick={() => navigate("/turmas")} className="text-xs text-primary font-semibold">Ver todos</button>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md animate-bounce">
+              <CalendarDays className="h-4 w-4 text-white" />
+            </div>
+            <p className="text-lg font-black text-foreground uppercase tracking-tight mb-0">Próximo Encontro</p>
+          </div>
+          <button onClick={() => navigate("/turmas")} className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors">Ver todos</button>
         </div>
 
         {!proximoEncontro ? (
@@ -218,11 +207,11 @@ export default function Dashboard() {
       {/* ── ANIVERSARIANTES DA SEMANA ou mais próximo ── */}
       {(aniversariantesSemana.length > 0 || fallbackAniversario) && (
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center shadow-sm">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-pink-500 flex items-center justify-center shadow-md animate-bounce" style={{ animationDelay: '500ms' }}>
               <Cake className="h-4 w-4 text-white" />
             </div>
-            <p className="section-title mb-0">
+            <p className="text-lg font-black text-foreground uppercase tracking-tight mb-0">
               {aniversariantesSemana.length > 0 ? "Aniversariantes desta Semana" : "Próximo Aniversário"}
             </p>
           </div>
