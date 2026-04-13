@@ -33,7 +33,7 @@ const fillFormFromItem = (item: Atividade): FormData => ({
 });
 
 const tipoColors: Record<string, string> = {
-  'Retiro': 'bg-primary/10 text-primary', 'CelebraÃ§Ã£o': 'bg-liturgical/10 text-liturgical',
+  'Retiro': 'bg-primary/10 text-primary', 'Celebração': 'bg-liturgical/10 text-liturgical',
   'Encontro de pais': 'bg-accent/15 text-accent-foreground', 'Gincana': 'bg-success/10 text-success',
   'Passeios': 'bg-gold/15 text-gold', 'Jornada': 'bg-primary/10 text-primary',
   'Eventos geral': 'bg-muted text-muted-foreground', 'Outros': 'bg-muted text-muted-foreground',
@@ -102,7 +102,7 @@ export default function AtividadesList() {
       <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div><h1 className="text-xl font-bold text-foreground">Atividades e Eventos</h1><p className="text-xs text-muted-foreground">{turma?.nome} â€¢ {list.length} atividades</p></div>
+          <div><h1 className="text-xl font-bold text-foreground">Atividades e Eventos</h1><p className="text-xs text-muted-foreground">{turma?.nome} • {list.length} atividades</p></div>
         </div>
         <div className="flex items-center gap-2">
           {id && <ReportModule context="atividades" turmaId={id} />}
@@ -134,16 +134,16 @@ export default function AtividadesList() {
       {list.length === 0 ? (
         <div className="empty-state animate-float-up"><div className="icon-box bg-liturgical/10 text-liturgical mx-auto mb-3"><ListChecks className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhuma atividade cadastrada</p></div>
       ) : (
-      <div className="space-y-6">
+        <div className="space-y-6">
           {(() => {
             const TIPO_ICONES: Record<string, string> = {
-              'Retiro': 'ðŸ•ï¸', 'CelebraÃ§Ã£o': 'âœï¸', 'Encontro de pais': 'ðŸ‘¨â€ðŸ‘©â€ðŸ‘§',
-              'Gincana': 'ðŸŽ¯', 'Passeios': 'ðŸŒ¿', 'Jornada': 'ðŸš¶', 'Eventos geral': 'ðŸ“…', 'Outros': 'ðŸ“Œ',
+              'Retiro': '⛺', 'Celebração': '✨', 'Encontro de pais': '👨‍👩‍👧',
+              'Gincana': '🎯', 'Passeios': '🌿', 'Jornada': '🚶', 'Eventos geral': '📅', 'Outros': '📌',
             };
             const sorted = [...list].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
             const groups: Record<string, typeof sorted> = {};
-            const MESES = ["Janeiro","Fevereiro","MarÃ§o","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-            const DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","SÃ¡b"];
+            const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+            const DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sab"];
 
             sorted.forEach(item => {
               const d = new Date(item.data + 'T12:00:00');
@@ -160,7 +160,6 @@ export default function AtividadesList() {
                   <div className="flex items-center gap-3">
                     <div className="h-px flex-1 bg-gradient-to-r from-transparent via-liturgical/25 to-liturgical/40" />
                     <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-liturgical/10 to-liturgical/5 border border-liturgical/20 shadow-sm">
-                      <span className="text-[9px] text-liturgical/70">âœ</span>
                       <h3 className="text-xs font-extrabold text-liturgical uppercase tracking-[0.18em]">{monthLabel}</h3>
                       <span className="text-[10px] font-bold text-liturgical/50 ml-1">({items.length})</span>
                     </div>
@@ -170,38 +169,55 @@ export default function AtividadesList() {
                   {items.map((item, i) => {
                     const d = new Date(item.data + 'T12:00:00');
                     const cor = tipoColors[item.tipo] || 'bg-muted text-muted-foreground';
-                    const icone = TIPO_ICONES[item.tipo] || 'ðŸ“Œ';
+                    const icone = TIPO_ICONES[item.tipo] || '📌';
                     return (
                       <button
                         key={item.id}
                         onClick={() => setViewItem(item)}
-                        className="w-full relative p-[1.5px] rounded-2xl bg-gradient-to-br from-liturgical/30 via-primary/15 to-primary/5 shadow-md hover:shadow-lg animate-float-up active:scale-[0.98] transition-all duration-300 hover:-translate-y-0.5"
+                        className="w-full text-left group animate-float-up"
                         style={{ animationDelay: `${i * 55}ms` }}
                       >
-                        <div className="rounded-[14px] bg-card overflow-hidden">
-                          <div className={`${cor.split(' ')[0].replace('bg-', 'bg-gradient-to-r from-').replace('/10','/60').replace('/15','/60')} from-${cor.split(' ')[0].replace('bg-','').replace('/10','').replace('/15','')}/60 to-transparent h-1 w-full`} />
+                        <div className="flex items-stretch bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
+                          <div className={`absolute top-0 bottom-0 left-0 w-1 ${cor.split(' ')[0].replace('bg-','bg-')}`} />
+                          
+                          {/* Coluna da data */}
+                          <div className="flex flex-col items-center justify-center px-4 py-4 border-r border-black/5 shrink-0 min-w-[75px] bg-muted/30 group-hover:bg-primary/5 transition-colors pl-5">
+                            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none mb-1">{DIAS[d.getDay()]}</span>
+                            <span className="text-3xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{MESES[d.getMonth()].substring(0,3)}</span>
+                          </div>
 
-                          <div className="flex items-stretch">
-                            <div className="flex flex-col items-center justify-center px-4 py-3.5 bg-gradient-to-b from-liturgical/5 to-liturgical/10 shrink-0 min-w-[60px] border-r border-black/5">
-                              <span className="text-xl leading-none mb-0.5">{icone}</span>
-                              <span className="text-2xl font-black text-foreground leading-tight">{String(d.getDate()).padStart(2,'0')}</span>
-                              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-wide">{DIAS[d.getDay()]}</span>
-                            </div>
-
-                            <div className="flex-1 px-4 py-3 min-w-0 text-left">
-                              <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md mb-1.5 ${cor}`}>
+                          {/* Conteúdo */}
+                          <div className="flex-1 px-4 sm:px-5 py-3 sm:py-4 min-w-0 flex flex-col justify-center">
+                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                              <span className="text-base leading-none bg-muted/50 p-1 rounded-md">{icone}</span>
+                              <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-current/10 ${cor}`}>
                                 {item.tipo}
                               </span>
-                              <p className="text-sm font-bold text-foreground leading-snug truncate">{item.nome}</p>
-                              <div className="flex flex-wrap items-center gap-2 mt-1">
-                                {item.horario && <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><Clock className="h-3 w-3" />{item.horario}</span>}
-                                {item.local && <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><MapPin className="h-3 w-3" />{item.local}</span>}
-                                {item.modalidade === 'externa' && <span className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-md"><Car className="h-3 w-3" />Externa</span>}
-                              </div>
+                              {item.modalidade === 'externa' && (
+                                <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+                                  <Car className="h-2.5 w-2.5" /> Externa
+                                </span>
+                              )}
                             </div>
+                            <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
+                              {item.horario && (
+                                <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground">
+                                  <Clock className="h-3.5 w-3.5 text-primary/70" /> {item.horario}
+                                </p>
+                              )}
+                              {item.local && (
+                                <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full">
+                                  <MapPin className="h-3.5 w-3.5 text-primary/70 shrink-0" /> <span className="truncate">{item.local}</span>
+                                </p>
+                              )}
+                            </div>
+                          </div>
 
-                            <div className="flex items-center justify-center px-4 border-l border-black/5 opacity-50">
-                              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          <div className="flex flex-col justify-center px-4 opacity-50 group-hover:opacity-100 transition-opacity pr-5">
+                            <div className="w-8 h-8 rounded-full bg-muted/50 group-hover:bg-primary/10 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
+                              <ChevronRight className="h-4 w-4" />
                             </div>
                           </div>
                         </div>
