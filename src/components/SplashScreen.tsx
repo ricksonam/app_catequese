@@ -17,9 +17,7 @@ export default function SplashScreen() {
 
       <div className="mt-8 text-center space-y-4 animate-float-up" style={{ animationDelay: '300ms' }}>
         <div className="flex items-center justify-center gap-3">
-          <div className="h-[1px] w-8 bg-primary/30" />
-          <p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary drop-shadow-sm">Iniciação à Vida Cristã</p>
-          <div className="h-[1px] w-8 bg-primary/30" />
+          <p className="text-[12px] font-black uppercase tracking-[0.3em] text-primary drop-shadow-sm">iCatequese – Gestão inteligente para catequistas</p>
         </div>
       </div>
       

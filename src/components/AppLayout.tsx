@@ -55,7 +55,7 @@ export default function AppLayout() {
                 <img src="/app-icon.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
               <div className="flex flex-col items-start leading-none">
-                <span className="text-sm font-black text-primary tracking-tight">Catequese Digital</span>
+                <span className="text-sm font-black text-primary tracking-tight">iCatequese</span>
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Ver Objetivo</span>
               </div>
             </button>

@@ -148,10 +148,10 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
 
             <h1 className="text-2xl font-black text-foreground mb-2 leading-tight">
               Bem-vindo ao<br />
-              <span className="text-primary">IVC Catequese!</span>
+              <span className="text-primary">iCatequese!</span>
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              Seu sistema completo de gestão de catequese. Antes de começar, precisamos configurar alguns dados importantes.
+              Seu sistema completo de gerenciamento no iCatequese. Antes de começar, precisamos configurar alguns dados importantes.
             </p>
 
             {/* Call-to-action cards */}

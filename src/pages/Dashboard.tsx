@@ -116,7 +116,7 @@ export default function Dashboard() {
       <div className="animate-fade-in flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
-          <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao IVC - Gestão de Catequese</p>
+          <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao iCatequese</p>
         </div>
       </div>
 

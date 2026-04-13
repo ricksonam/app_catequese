@@ -20,17 +20,17 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
           <div className="relative group perspective-1000">
             <div className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl animate-pulse scale-125 opacity-40 transform-gpu" />
             <div className="relative w-32 h-32 rounded-full overflow-hidden bg-white border-4 border-white shadow-2xl animate-float-float transform-gpu will-change-transform">
-              <img src="/app-icon.png" className="w-full h-full object-contain p-2" alt="Logo Catequese" />
+              <img src="/app-icon.png" className="w-full h-full object-contain p-2" alt="Logo iCatequese" />
             </div>
           </div>
         </div>
 
         <div className="px-8 pt-6 pb-10 space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-black text-foreground tracking-tight">Nossa Missão & Propósito</h2>
+            <h2 className="text-2xl font-black text-foreground tracking-tight">Missão iCatequese</h2>
             <div className="flex items-center justify-center gap-2">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Iniciação à Vida Cristã</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Gestão Inteligente para Catequistas</p>
               <Sparkles className="h-3.5 w-3.5 text-primary" />
             </div>
           </div>
@@ -41,7 +41,7 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
               <Church className="h-4 w-4" />
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground italic text-center">
-              "Semeando a Palavra, cultivando o Reino. Este aplicativo é uma plataforma de gestão de turmas de catequese que vem para auxiliar os catequistas a organizar a catequese de forma que a evangelização se torne o essencial."
+              "Semeando a Palavra, cultivando o Reino. O iCatequese é uma plataforma que vem para auxiliar os catequistas a organizar a missão de forma que a evangelização se torne o essencial."
             </p>
             <div className="mt-4 pt-4 border-t border-primary/10">
               <p className="text-sm leading-relaxed text-foreground/80 font-medium text-center">

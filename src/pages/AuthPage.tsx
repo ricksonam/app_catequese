@@ -134,7 +134,7 @@ export default function AuthPage() {
             {isLogin ? "Entrar" : "Criar Conta"}
           </CardTitle>
           <CardDescription>
-            {isLogin ? "Acesse sua conta de catequese" : "Cadastre-se para começar"}
+            {isLogin ? "Acesse sua conta no iCatequese" : "Cadastre-se para começar no iCatequese"}
           </CardDescription>
         </CardHeader>
         <CardContent>
