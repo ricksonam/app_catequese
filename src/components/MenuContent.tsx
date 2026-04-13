@@ -151,8 +151,12 @@ export function MenuContent({ onClose }: MenuContentProps) {
         <div className="pt-2">
            <button 
              onClick={() => {
-               if (onShowObjective) onShowObjective();
                onClose();
+               // Pequeno delay para garantir que o Menu (Sheet) feche antes de abrir o Modal
+               // Isso evita conflitos de foco entre os dois componentes Radix UI
+               setTimeout(() => {
+                 if (onShowObjective) onShowObjective();
+               }, 150);
              }}
              className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-primary/10 border border-primary/20 shadow-sm hover:shadow-md hover:border-primary/40 transition-all active:scale-[0.98] animate-float-up"
              style={{ animationDelay: `500ms` }}
@@ -161,8 +165,8 @@ export function MenuContent({ onClose }: MenuContentProps) {
                <Sparkles className="h-10 w-10 text-primary rotate-12" />
              </div>
              <div className="flex items-start gap-3">
-               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shrink-0 group-hover:scale-110 transition-transform">
-                 <img src="/app-logo.png" className="w-6 h-6 object-contain brightness-0 invert" alt="i" />
+               <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                 <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="i" />
                </div>
                <div className="flex-1 text-left min-w-0">
                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Sobre o App</p>
