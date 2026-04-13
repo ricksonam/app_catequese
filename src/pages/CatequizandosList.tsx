@@ -234,11 +234,11 @@ export default function CatequizandosList() {
               <div className="space-y-8 mt-4 pb-6">
                 {/* SEÇÃO 1: DADOS PESSOAIS */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-primary font-bold">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><UserPlus className="w-4 h-4" /></div>
-                    <span>DADOS PESSOAIS</span>
+                  <div className="flex items-center gap-3 text-primary font-black">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-sm"><UserPlus className="w-5 h-5" /></div>
+                    <span className="text-lg tracking-tight">DADOS PESSOAIS</span>
                   </div>
-                  <Separator className="bg-primary/10" />
+                  <Separator className="bg-primary/20 h-0.5" />
                   
                   <div className="flex justify-center mb-4">
                     <ImagePicker 
@@ -283,13 +283,13 @@ export default function CatequizandosList() {
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-orange-500 font-bold">
-                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">✝️</div>
-                    <span>DADOS PASTORAIS</span>
+                  <div className="flex items-center gap-3 text-orange-600 font-black">
+                    <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shadow-sm">✝️</div>
+                    <span className="text-lg tracking-tight">DADOS PASTORAIS</span>
                   </div>
-                  <Separator className="bg-orange-500/10" />
+                  <Separator className="bg-orange-500/20 h-0.5" />
 
-                  <div className="space-y-4 bg-muted/20 p-4 rounded-xl border border-black/5">
+                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sacramentos Recebidos</p>
                     <div className="grid grid-cols-1 gap-4">
                       {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
@@ -340,11 +340,11 @@ export default function CatequizandosList() {
                       <Plus className="w-3 h-3" /> Adicionar Outro
                     </button>
                   </div>
-                  <Separator className="bg-blue-500/10" />
+                  <Separator className="bg-blue-500/20 h-0.5" />
 
                   <div className="space-y-4">
                     {form.responsaveis.map((resp, idx) => (
-                      <div key={resp.id} className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 relative group animate-in zoom-in-95">
+                      <div key={resp.id} className="p-5 bg-white border-2 border-blue-100 rounded-2xl space-y-4 relative group animate-in zoom-in-95 shadow-sm">
                         {form.responsaveis.length > 1 && (
                           <button 
                             onClick={() => removeResponsavel(resp.id, false)}
@@ -486,11 +486,11 @@ export default function CatequizandosList() {
               {/* Header Bar Clean */}
               <div className="sticky top-0 z-50 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">{viewItem.nome}</span>
-                <div className="flex items-center gap-1.5 z-50">
-                  <button onClick={handleEdit} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={handleDelete} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
-                  <div className="w-px h-4 bg-black/10 mx-1" />
-                  <button onClick={() => { setViewItem(null); setEditMode(false); }} className="p-2 rounded-xl bg-muted/80 text-foreground hover:bg-black/10 transition-colors shadow-sm"><X className="h-4 w-4" /></button>
+                <div className="flex items-center gap-4 z-50">
+                  <button onClick={handleEdit} className="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all shadow-sm hover:scale-110 active:scale-95"><Pencil className="h-5 w-5" /></button>
+                  <button onClick={handleDelete} className="p-2.5 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all shadow-sm hover:scale-110 active:scale-95"><Trash2 className="h-5 w-5" /></button>
+                  <div className="w-px h-6 bg-black/10 mx-1" />
+                  <button onClick={() => { setViewItem(null); setEditMode(false); }} className="p-2.5 rounded-xl bg-muted text-foreground hover:bg-black/10 transition-all shadow-sm hover:scale-110 active:scale-95"><X className="h-5 w-5" /></button>
                 </div>
               </div>
 
@@ -523,9 +523,9 @@ export default function CatequizandosList() {
                 {/* Blocos de Informação em Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Dados Pessoais */}
-                  <div className="bg-white rounded-2xl p-5 border-2 border-black/10 shadow-sm">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                       <span className="w-4 h-4 rounded bg-muted flex items-center justify-center text-muted-foreground"><UserPlus className="w-3 h-3" /></span> Dados Pessoais
+                  <div className="bg-white rounded-2xl p-6 border-2 border-black/10 shadow-sm">
+                    <h4 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                       <span className="w-5 h-5 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shadow-sm"><UserPlus className="w-4 h-4" /></span> Dados Pessoais
                     </h4>
                     <div className="space-y-3.5">
                       <div className="flex justify-between items-center">
@@ -546,9 +546,9 @@ export default function CatequizandosList() {
                   </div>
 
                   {/* Endereço */}
-                  <div className="bg-white rounded-2xl p-5 border-2 border-black/10 shadow-sm">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <span className="w-4 h-4 rounded bg-muted flex items-center justify-center text-muted-foreground">📍</span> Endereço
+                  <div className="bg-white rounded-2xl p-6 border-2 border-black/10 shadow-sm">
+                    <h4 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shadow-sm">📍</span> Endereço
                     </h4>
                     <p className="text-base font-black text-foreground leading-snug">
                       {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
@@ -564,10 +564,9 @@ export default function CatequizandosList() {
                   </div>
                 </div>
 
-                {/* DADOS DOS RESPONSÁVEIS */}
-                <div className="bg-blue-50/30 rounded-2xl p-5 border border-blue-100 shadow-sm">
-                  <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span className="w-4 h-4 rounded bg-blue-100 flex items-center justify-center text-blue-500">👥</span> Responsáveis
+                <div className="bg-white rounded-2xl p-6 border-2 border-blue-100 shadow-sm">
+                  <h4 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center text-blue-500 shadow-sm">👥</span> Responsáveis
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {viewItem.responsaveis?.length ? (
@@ -590,9 +589,9 @@ export default function CatequizandosList() {
                 </div>
 
                 {/* DADOS PASTORAIS E SACRAMENTOS */}
-                <div className="bg-orange-50/30 rounded-2xl p-6 border-2 border-orange-100 shadow-sm">
-                  <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span className="w-4 h-4 rounded bg-orange-100 flex items-center justify-center text-orange-500">✝️</span> Dados Pastorais
+                <div className="bg-white rounded-2xl p-6 border-2 border-orange-100 shadow-sm">
+                  <h4 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center text-orange-500 shadow-sm">✝️</span> Dados Pastorais
                   </h4>
                   
                   {viewItem.dadosPastorais?.participacaoPastoral && (
@@ -667,11 +666,11 @@ export default function CatequizandosList() {
               <div className="space-y-8 mt-4 pb-6">
                 {/* SEÇÃO 1: DADOS PESSOAIS */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-primary font-bold">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center"><Pencil className="w-3 h-3" /></div>
-                    <span>DADOS PESSOAIS</span>
+                  <div className="flex items-center gap-3 text-primary font-black">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-sm"><Pencil className="w-5 h-5" /></div>
+                    <span className="text-lg tracking-tight">DADOS PESSOAIS</span>
                   </div>
-                  <Separator className="bg-primary/10" />
+                  <Separator className="bg-primary/20 h-0.5" />
                   
                   <div className="flex justify-center mb-4">
                     <ImagePicker 
@@ -716,13 +715,13 @@ export default function CatequizandosList() {
 
                 {/* SEÇÃO 2: DADOS PASTORAIS */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-orange-500 font-bold">
-                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">✝️</div>
-                    <span>DADOS PASTORAIS</span>
+                  <div className="flex items-center gap-3 text-orange-600 font-black">
+                    <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shadow-sm">✝️</div>
+                    <span className="text-lg tracking-tight">DADOS PASTORAIS</span>
                   </div>
-                  <Separator className="bg-orange-500/10" />
+                  <Separator className="bg-orange-500/20 h-0.5" />
 
-                  <div className="space-y-4 bg-muted/20 p-4 rounded-xl border border-black/5">
+                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sacramentos Recebidos</p>
                     <div className="grid grid-cols-1 gap-4">
                       {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
@@ -772,11 +771,11 @@ export default function CatequizandosList() {
                       <Plus className="w-3 h-3" /> Adicionar Outro
                     </button>
                   </div>
-                  <Separator className="bg-blue-500/10" />
+                  <Separator className="bg-blue-500/20 h-0.5" />
 
                   <div className="space-y-4">
                     {editForm.responsaveis.map((resp, idx) => (
-                      <div key={resp.id} className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 relative group animate-in zoom-in-95">
+                      <div key={resp.id} className="p-5 bg-white border-2 border-blue-100 rounded-2xl space-y-4 relative group animate-in zoom-in-95 shadow-sm">
                         {editForm.responsaveis.length > 1 && (
                           <button 
                             onClick={() => removeResponsavel(resp.id, true)}
