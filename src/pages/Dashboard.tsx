@@ -345,9 +345,28 @@ export default function Dashboard() {
                 );
               })}
             </div>
-                );
-              })()
-            ) : null}
+          ) : fallbackAniversario ? (
+            (() => {
+              const fb = fallbackAniversario;
+              const diasAte = Math.round((fb.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+              return (
+                <div className="float-card flex items-center gap-4 px-5 py-4 border-black/10">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-base font-black text-primary shrink-0">
+                    {fb.nome?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-foreground">{fb.nome}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {fb.proximoAniversario.toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long' })}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-black text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shrink-0">
+                    em {diasAte}d
+                  </span>
+                </div>
+              );
+            })()
+          ) : null}
         </div>
       )}
 
