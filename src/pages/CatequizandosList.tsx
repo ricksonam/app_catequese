@@ -461,8 +461,8 @@ export default function CatequizandosList() {
                     )}
                     {c.dataNascimento && (
                       <>
-                        <span className="w-1 h-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
-                        <span className="text-[10px] sm:text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary/20 hidden sm:block" />
+                        <span className="text-xs sm:text-sm font-black text-primary bg-primary/10 px-2.5 py-1 rounded-lg border-2 border-primary/20 shadow-sm">
                           {calcularIdade(c.dataNascimento)}
                         </span>
                       </>
@@ -471,8 +471,8 @@ export default function CatequizandosList() {
                 </div>
                 
                 <div className="shrink-0 pl-2">
-                  <div className="w-8 h-8 rounded-full bg-muted/50 flex flex-col items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors text-muted-foreground">
-                    <ChevronRight className="h-4 w-4" />
+                  <div className="w-10 h-10 rounded-full bg-muted/50 flex flex-col items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all text-muted-foreground shadow-inner">
+                    <ChevronRight className="h-5 w-5" />
                   </div>
                 </div>
               </div>
@@ -482,7 +482,7 @@ export default function CatequizandosList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
-        <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
+        <DialogContent hideClose className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
               {/* Header Bar Clean */}
