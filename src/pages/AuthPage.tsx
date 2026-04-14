@@ -285,14 +285,14 @@ export default function AuthPage() {
           ))}
         </div>
 
-        {/* Chip compartilhar no canto superior direito */}
+        {/* Botão compartilhar icônico e animado no canto superior direito */}
         <button
           id="btn-compartilhar"
           onClick={handleShare}
-          className="absolute top-6 right-6 z-20 h-9 px-4 rounded-full bg-white/60 backdrop-blur-md border border-primary/20 text-primary font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-white/80"
+          className="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/70 backdrop-blur-md border border-primary/20 text-primary shadow-xl shadow-primary/10 flex items-center justify-center active:scale-90 transition-all hover:bg-white hover:border-primary/40 animate-glow-pulse shimmer-effect group"
+          title="Compartilhar iCatequese"
         >
-          <Share2 className="h-4 w-4" />
-          Compartilhar
+          <Share2 className="h-5 w-5 transition-transform group-hover:rotate-12 group-active:scale-110" />
         </button>
 
         {/* ── Conteúdo ── */}
