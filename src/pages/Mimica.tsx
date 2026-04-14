@@ -253,24 +253,24 @@ export default function Mimica() {
               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Categorias</label>
               <span className="text-[10px] text-muted-foreground font-medium italic">Clique para selecionar · clique em + de uma para combinar</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {CATEGORIAS.map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => combinarCategoria(cat.id)}
                   className={cn(
-                    "p-4 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 relative",
+                    "p-3 sm:p-4 rounded-2xl border-2 text-left transition-all flex flex-col gap-1.5 sm:gap-2 relative",
                     categorias.includes(cat.id) ? cat.bg + " shadow-md" : "border-border bg-card hover:border-primary/30 opacity-60"
                   )}
                 >
                   {categorias.includes(cat.id) && (
-                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-current/20 flex items-center justify-center">
-                      <span className="text-[10px] font-black">✓</span>
+                    <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-current/20 flex items-center justify-center">
+                      <span className="text-[9px] font-black">✓</span>
                     </div>
                   )}
-                  <span className="text-2xl">{cat.emoji}</span>
-                  <span className="text-sm font-black">{cat.label}</span>
-                  <span className="text-[10px] text-muted-foreground">{BANCO_MIMICA[cat.id].length} cartas</span>
+                  <span className="text-xl sm:text-2xl">{cat.emoji}</span>
+                  <span className="text-[11px] sm:text-sm font-black leading-tight">{cat.label}</span>
+                  <span className="text-[9px] sm:text-[10px] text-muted-foreground">{BANCO_MIMICA[cat.id].length} cartas</span>
                 </button>
               ))}
             </div>
@@ -283,13 +283,13 @@ export default function Mimica() {
 
           <div className="space-y-3">
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Tempo por Rodada</label>
-            <div className="flex flex-wrap gap-2">
-              {[30, 45, 60, 90, 120].map(t => (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {[30, 45, 60, 120, 300].map(t => (
                 <button
                   key={t}
                   onClick={() => setTempoPorRodada(t)}
                   className={cn(
-                    "px-4 h-11 rounded-xl border-2 font-black text-sm transition-all",
+                    "px-3 sm:px-4 h-11 rounded-xl border-2 font-black text-sm transition-all whitespace-nowrap shrink-0",
                     tempoPorRodada === t ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-card border-border hover:border-primary/40"
                   )}
                 >
