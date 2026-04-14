@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 
 interface Participante {
   nome: string;
-  genero: "M" | "F" | "N";
 }
 
 interface Grupo {
@@ -50,10 +49,8 @@ export default function SorteioGrupos() {
 
   const [participantes, setParticipantes] = useState<Participante[]>([]);
   const [novoNome, setNovoNome] = useState("");
-  const [novoGenero, setNovoGenero] = useState<"M" | "F" | "N">("N");
 
   const [tamanhoGrupo, setTamanhoGrupo] = useState<number>(3);
-  const [modoGenero, setModoGenero] = useState<"misto" | "meninos" | "meninas">("misto");
 
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -80,7 +77,6 @@ export default function SorteioGrupos() {
     }
     const novos: Participante[] = catequizandos.map(c => ({
       nome: c.nome.split(" ").slice(0, 2).join(" "),
-      genero: "N" as const,
     }));
     // Merge sem duplicar
     const nomeExistentes = participantes.map(p => p.nome);
@@ -96,7 +92,7 @@ export default function SorteioGrupos() {
       toast.error("Nome já está na lista!");
       return;
     }
-    setParticipantes(prev => [...prev, { nome, genero: novoGenero }]);
+    setParticipantes(prev => [...prev, { nome }]);
     setNovoNome("");
   };
 
@@ -105,20 +101,10 @@ export default function SorteioGrupos() {
   };
 
   const realizarSorteio = () => {
-    let pool = [...participantes];
-
-    if (modoGenero === "meninos") {
-      pool = pool.filter(p => p.genero === "M");
-    } else if (modoGenero === "meninas") {
-      pool = pool.filter(p => p.genero === "F");
-    }
+    const pool = [...participantes];
 
     if (pool.length === 0) {
-      toast.error(
-        modoGenero !== "misto"
-          ? "Nenhum participante do gênero selecionado. Defina o gênero ao adicionar nomes."
-          : "Nenhum participante na lista."
-      );
+      toast.error("Nenhum participante na lista.");
       return;
     }
 
@@ -221,7 +207,12 @@ export default function SorteioGrupos() {
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
                   Importar de uma Turma
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                <div className={cn(
+                  "gap-2",
+                  turmas && turmas.length === 1
+                    ? "flex justify-center"
+                    : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+                )}>
                   {turmas?.map((t) => (
                     <button
                       key={t.id}
@@ -262,25 +253,10 @@ export default function SorteioGrupos() {
                     onKeyDown={e => e.key === "Enter" && adicionarManual()}
                     className="flex-1 h-11 rounded-xl border-2 font-medium"
                   />
-                  <div className="flex gap-1">
-                    {(["M", "F", "N"] as const).map(g => (
-                      <button
-                        key={g}
-                        onClick={() => setNovoGenero(g)}
-                        className={cn(
-                          "w-11 h-11 rounded-xl border-2 font-black text-xs transition-all",
-                          novoGenero === g ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:border-primary/40"
-                        )}
-                      >
-                        {g === "M" ? "♂" : g === "F" ? "♀" : "·"}
-                      </button>
-                    ))}
-                  </div>
                   <Button onClick={adicionarManual} size="icon" className="h-11 w-11 rounded-xl shrink-0">
                     <Plus className="h-5 w-5" />
                   </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground ml-1 font-medium">♂ Menino · ♀ Menina · · Neutro</p>
               </div>
 
               {/* Lista de participantes */}
@@ -291,13 +267,8 @@ export default function SorteioGrupos() {
                   </label>
                   <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto p-1">
                     {participantes.map(p => (
-                      <span key={p.nome} className={cn(
-                        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border",
-                        p.genero === "M" ? "bg-blue-50 border-blue-200 text-blue-700" :
-                        p.genero === "F" ? "bg-pink-50 border-pink-200 text-pink-700" :
-                        "bg-muted border-border text-muted-foreground"
-                      )}>
-                        {p.genero === "M" ? "♂" : p.genero === "F" ? "♀" : "·"} {p.nome}
+                      <span key={p.nome} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-muted border-border text-foreground">
+                        {p.nome}
                         <button onClick={() => removerParticipante(p.nome)} className="hover:text-destructive rounded-full transition-colors">
                           <X className="h-3.5 w-3.5" />
                         </button>
@@ -310,49 +281,23 @@ export default function SorteioGrupos() {
               <div className="h-px bg-border" />
 
               {/* Configurações do Grupo */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
-                    Pessoas por grupo
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {tamanhoOpcoes.map(n => (
-                      <button
-                        key={n}
-                        onClick={() => setTamanhoGrupo(n)}
-                        className={cn(
-                          "w-12 h-12 rounded-xl border-2 font-black text-sm transition-all",
-                          tamanhoGrupo === n ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20" : "bg-card border-border hover:border-primary/40"
-                        )}
-                      >
-                        {n}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
-                    Tipo de grupo
-                  </label>
-                  <div className="flex flex-col gap-2">
-                    {[
-                      { id: "misto", label: "Misto", icon: "👫" },
-                      { id: "meninos", label: "Só Meninos", icon: "♂" },
-                      { id: "meninas", label: "Só Meninas", icon: "♀" },
-                    ].map(m => (
-                      <button
-                        key={m.id}
-                        onClick={() => setModoGenero(m.id as any)}
-                        className={cn(
-                          "flex items-center gap-3 px-4 py-3 rounded-xl border-2 font-bold text-sm transition-all text-left",
-                          modoGenero === m.id ? "bg-primary/10 border-primary text-primary" : "bg-card border-border hover:border-primary/30"
-                        )}
-                      >
-                        <span className="text-base">{m.icon}</span> {m.label}
-                      </button>
-                    ))}
-                  </div>
+              <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+                  Pessoas por grupo
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {tamanhoOpcoes.map(n => (
+                    <button
+                      key={n}
+                      onClick={() => setTamanhoGrupo(n)}
+                      className={cn(
+                        "w-14 h-14 rounded-xl border-2 font-black text-sm transition-all",
+                        tamanhoGrupo === n ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20" : "bg-card border-border hover:border-primary/40"
+                      )}
+                    >
+                      {n}
+                    </button>
+                  ))}
                 </div>
               </div>
 
