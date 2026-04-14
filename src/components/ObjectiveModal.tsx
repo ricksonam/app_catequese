@@ -110,12 +110,6 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
           .animate-float-float {
             animation: float-float 4s ease-in-out infinite;
           }
-          @keyframes shimmer {
-            to { background-position: 200% center; }
-          }
-          .animate-shimmer {
-            animation: shimmer 3s linear infinite;
-          }
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
           }
