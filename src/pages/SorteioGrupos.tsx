@@ -285,13 +285,13 @@ export default function SorteioGrupos() {
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
                   Pessoas por grupo
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2 overflow-x-auto pb-1">
                   {tamanhoOpcoes.map(n => (
                     <button
                       key={n}
                       onClick={() => setTamanhoGrupo(n)}
                       className={cn(
-                        "w-14 h-14 rounded-xl border-2 font-black text-sm transition-all",
+                        "w-14 h-14 rounded-xl border-2 font-black text-sm transition-all shrink-0",
                         tamanhoGrupo === n ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20" : "bg-card border-border hover:border-primary/40"
                       )}
                     >

@@ -111,9 +111,29 @@ export default function Mimica() {
     };
   }, []);
 
+  // Seleção exclusiva: clica numa categoria e ela substitui a seleção.
+  // Para combinar, clica nas outras mantendo a tecla ou interface de múltipla escolha.
+  // Aqui: clique seleciona apenas aquela; clique novamente em outra troca.
   const toggleCategoria = (id: string) => {
+    if (categorias.length === 1 && categorias[0] === id) {
+      // já é a única selecionada — não faz nada (mínimo 1 obrigatório)
+      return;
+    }
+    // Se já está junto com outras, remove ela (deseleciona só essa)
+    if (categorias.includes(id) && categorias.length > 1) {
+      setCategorias(prev => prev.filter(c => c !== id));
+    } else if (!categorias.includes(id)) {
+      // Seleciona exclusivamente (substituindo tudo)
+      setCategorias([id]);
+    }
+  };
+
+  // Combinar categorias: botão separado para toggle de multipla
+  const combinarCategoria = (id: string) => {
     setCategorias(prev =>
-      prev.includes(id) ? (prev.length > 1 ? prev.filter(c => c !== id) : prev) : [...prev, id]
+      prev.includes(id)
+        ? prev.length > 1 ? prev.filter(c => c !== id) : prev
+        : [...prev, id]
     );
   };
 
@@ -229,23 +249,36 @@ export default function Mimica() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Categorias</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Categorias</label>
+              <span className="text-[10px] text-muted-foreground font-medium italic">Clique para selecionar · clique em + de uma para combinar</span>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {CATEGORIAS.map(cat => (
                 <button
                   key={cat.id}
-                  onClick={() => toggleCategoria(cat.id)}
+                  onClick={() => combinarCategoria(cat.id)}
                   className={cn(
-                    "p-4 rounded-2xl border-2 text-left transition-all flex flex-col gap-2",
-                    categorias.includes(cat.id) ? cat.bg + " border-2 shadow-md" : "border-border bg-card hover:border-primary/30"
+                    "p-4 rounded-2xl border-2 text-left transition-all flex flex-col gap-2 relative",
+                    categorias.includes(cat.id) ? cat.bg + " shadow-md" : "border-border bg-card hover:border-primary/30 opacity-60"
                   )}
                 >
+                  {categorias.includes(cat.id) && (
+                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-current/20 flex items-center justify-center">
+                      <span className="text-[10px] font-black">✓</span>
+                    </div>
+                  )}
                   <span className="text-2xl">{cat.emoji}</span>
                   <span className="text-sm font-black">{cat.label}</span>
                   <span className="text-[10px] text-muted-foreground">{BANCO_MIMICA[cat.id].length} cartas</span>
                 </button>
               ))}
             </div>
+            {categorias.length > 0 && (
+              <p className="text-[10px] font-bold text-muted-foreground ml-1">
+                ✅ Selecionado: {categorias.map(c => CATEGORIAS.find(x => x.id === c)?.label).join(" + ")}
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
