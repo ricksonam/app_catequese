@@ -1,4 +1,4 @@
-import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, Hash } from "lucide-react";
+import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, Hash, UsersRound, Theater } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const jogos = [
@@ -43,6 +43,20 @@ const jogos = [
     icon: Hash,
     color: "bg-indigo-500/10 text-indigo-600",
     path: "/jogos/bingo",
+  },
+  {
+    label: "Sorteio de Grupos",
+    desc: "Divida a turma em grupos de forma aleatória",
+    icon: UsersRound,
+    color: "bg-purple-500/10 text-purple-600",
+    path: "/jogos/grupos",
+  },
+  {
+    label: "Mímica Bíblica",
+    desc: "Personagens, objetos e orações em mímica",
+    icon: Theater,
+    color: "bg-pink-500/10 text-pink-600",
+    path: "/jogos/mimica",
   },
 ];
 
