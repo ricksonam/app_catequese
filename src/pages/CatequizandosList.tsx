@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer } from "lucide-react";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -40,6 +40,28 @@ function calcularIdade(dataNascimento: string): string {
   const m = hoje.getMonth() - nasc.getMonth();
   if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
   return `${idade} anos`;
+}
+
+function isAniversarianteSemana(dataNascimento: string): boolean {
+  if (!dataNascimento) return false;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  
+  const nasc = new Date(dataNascimento);
+  const thisYear = hoje.getFullYear();
+  
+  // Próximo aniversário este ano
+  let proxBday = new Date(thisYear, nasc.getMonth(), nasc.getDate());
+  
+  // Se já passou, verificar o próximo ano (mas para "na semana" raramente importa, a menos que estejamos no fim do ano)
+  if (proxBday < hoje) {
+    proxBday = new Date(thisYear + 1, nasc.getMonth(), nasc.getDate());
+  }
+
+  const diffTime = proxBday.getTime() - hoje.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays >= 0 && diffDays <= 7;
 }
 
 interface SacramentoInfo { recebido: boolean; paroquia: string; data: string; }
@@ -449,6 +471,11 @@ export default function CatequizandosList() {
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
                   </div>
                   <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${st.color.split(' ')[0]}`} title={`Status: ${st.label}`} />
+                  {isAniversarianteSemana(c.dataNascimento) && (
+                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce z-20">
+                      <Cake className="h-3.5 w-3.5 text-white" />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex-1 min-w-0">

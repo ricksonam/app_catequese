@@ -208,7 +208,7 @@ export default function Dashboard() {
       {(aniversariantesSemana.length > 0 || fallbackAniversario) && (
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-violet-600 flex items-center justify-center shadow-md animate-bounce" style={{ animationDelay: '500ms' }}>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md animate-bounce" style={{ animationDelay: '500ms' }}>
               <Cake className="h-4 w-4 text-white" />
             </div>
             <p className="text-lg font-black text-foreground uppercase tracking-tight mb-0">

@@ -14,27 +14,7 @@ const months = [
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
-function ScrollToValue({ selected, children, isOpen }: { selected: boolean; children: React.ReactNode; isOpen: boolean }) {
-  const ref = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (selected && isOpen && ref.current) {
-      const timer = setTimeout(() => {
-        ref.current?.scrollIntoView({ block: "center", behavior: "auto" });
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [selected, isOpen]);
-
-  return (
-    <div className="w-full">
-      {React.cloneElement(children as React.ReactElement, { ref })}
-    </div>
-  );
-}
-
 export function CustomDatePicker({ value, onChange, label }: CustomDatePickerProps) {
-  // Parse date or use null
   const initialDate = value ? new Date(value + 'T12:00:00') : null;
   const [tempDate, setTempDate] = useState<{ d: number | null, m: number | null, y: number | null }>({
     d: initialDate ? initialDate.getDate() : null,
@@ -46,9 +26,7 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
   const [openMonth, setOpenMonth] = useState(false);
   const [openYear, setOpenYear] = useState(false);
   
-  // Years list (up to 100 years ago)
   const years = Array.from({ length: 120 }, (_, i) => new Date().getFullYear() - i);
-  // Days list (based on currently selected month/year, default to 31 if not selected)
   const currentYear = tempDate.y || new Date().getFullYear();
   const currentMonth = tempDate.m !== null ? tempDate.m : new Date().getMonth();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -58,17 +36,25 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
     const updated = { d: newDay, m: newMonth, y: newYear };
     setTempDate(updated);
     
-    // If all parts are selected, call onChange
     if (updated.d !== null && updated.m !== null && updated.y !== null) {
       const maxDays = new Date(updated.y, updated.m + 1, 0).getDate();
       const validDay = Math.min(updated.d, maxDays);
-      
-      const yyyy = updated.y;
       const mm = String(updated.m + 1).padStart(2, '0');
       const dd = String(validDay).padStart(2, '0');
-      onChange(`${yyyy}-${mm}-${dd}`);
+      onChange(`${updated.y}-${mm}-${dd}`);
     }
   };
+
+  // Helper to handle scrolling to selected item manually once when opened
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if ((openDay || openMonth || openYear) && scrollRef.current) {
+      const selected = scrollRef.current.querySelector('[data-selected="true"]');
+      if (selected) {
+        selected.scrollIntoView({ block: 'center', behavior: 'instant' });
+      }
+    }
+  }, [openDay, openMonth, openYear]);
 
   return (
     <div className="space-y-1 w-full animate-in fade-in slide-in-from-top-1">
@@ -84,22 +70,26 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
               <ChevronDown className="h-4 w-4 opacity-50 text-primary" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-2 rounded-2xl border-2 shadow-2xl" align="start">
-            <div className="max-h-[280px] overflow-y-auto p-1 grid grid-cols-4 gap-2">
+          <PopoverContent className="w-[200px] p-2 rounded-2xl border-2 shadow-2xl z-[100]" align="start">
+            <div 
+              ref={openDay ? scrollRef : null}
+              className="max-h-[250px] overflow-y-auto p-1 grid grid-cols-4 gap-2 overscroll-contain touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {days.map((d) => (
-                <ScrollToValue key={d} selected={d === tempDate.d} isOpen={openDay}>
-                  <button
-                    onClick={() => { updateDate(d, tempDate.m, tempDate.y); setOpenDay(false); }}
-                    className={cn(
-                      "w-10 h-10 flex items-center justify-center text-sm rounded-xl transition-all font-bold",
-                      d === tempDate.d 
-                        ? "bg-primary text-primary-foreground shadow-lg scale-110 z-10" 
-                        : "hover:bg-primary/10 text-foreground/70"
-                    )}
-                  >
-                    {d}
-                  </button>
-                </ScrollToValue>
+                <button
+                  key={d}
+                  data-selected={d === tempDate.d}
+                  onClick={() => { updateDate(d, tempDate.m, tempDate.y); setOpenDay(false); }}
+                  className={cn(
+                    "w-10 h-10 flex items-center justify-center text-sm rounded-xl transition-all font-bold",
+                    d === tempDate.d 
+                      ? "bg-primary text-primary-foreground shadow-lg scale-110 z-10" 
+                      : "hover:bg-primary/10 text-foreground"
+                  )}
+                >
+                  {d}
+                </button>
               ))}
             </div>
           </PopoverContent>
@@ -109,28 +99,32 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
         <Popover open={openMonth} onOpenChange={setOpenMonth}>
           <PopoverTrigger asChild>
             <button className="flex-[2] flex items-center justify-between h-12 px-4 py-2 text-base font-black bg-white border-2 border-black/10 rounded-xl hover:bg-primary/5 hover:border-primary/30 transition-all shadow-sm active:scale-95">
-              <span className={cn("truncate text-left", tempDate.m === null && "text-muted-foreground/60")}>
+              <span className="truncate text-left">
                 {tempDate.m !== null ? months[tempDate.m] : "Mês"}
               </span>
               <ChevronDown className="h-4 w-4 opacity-50 text-primary" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-[220px] p-2 rounded-2xl border-2 shadow-2xl" align="start">
-            <div className="max-h-[280px] overflow-y-auto p-1 flex flex-col gap-1.5">
+          <PopoverContent className="w-[220px] p-2 rounded-2xl border-2 shadow-2xl z-[100]" align="start">
+            <div 
+              ref={openMonth ? scrollRef : null}
+              className="max-h-[250px] overflow-y-auto p-1 flex flex-col gap-1.5 overscroll-contain touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {months.map((m, i) => (
-                <ScrollToValue key={m} selected={i === tempDate.m} isOpen={openMonth}>
-                  <button
-                    onClick={() => { updateDate(tempDate.d, i, tempDate.y); setOpenMonth(false); }}
-                    className={cn(
-                      "w-full px-4 py-3 text-left text-sm rounded-xl transition-all font-bold",
-                      i === tempDate.m 
-                        ? "bg-primary text-primary-foreground shadow-lg translate-x-1" 
-                        : "hover:bg-primary/10 text-foreground/70"
-                    )}
-                  >
-                    {m}
-                  </button>
-                </ScrollToValue>
+                <button
+                  key={m}
+                  data-selected={i === tempDate.m}
+                  onClick={() => { updateDate(tempDate.d, i, tempDate.y); setOpenMonth(false); }}
+                  className={cn(
+                    "w-full px-4 py-3 text-left text-sm rounded-xl transition-all font-bold",
+                    i === tempDate.m 
+                      ? "bg-primary text-primary-foreground shadow-lg" 
+                      : "hover:bg-primary/10 text-foreground"
+                  )}
+                >
+                  {m}
+                </button>
               ))}
             </div>
           </PopoverContent>
@@ -140,28 +134,30 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
         <Popover open={openYear} onOpenChange={setOpenYear}>
           <PopoverTrigger asChild>
             <button className="flex-[1.2] flex items-center justify-between h-12 px-4 py-2 text-base font-black bg-white border-2 border-black/10 rounded-xl hover:bg-primary/5 hover:border-primary/30 transition-all shadow-sm active:scale-95">
-              <span className={cn(!tempDate.y && "text-muted-foreground/60")}>
-                {tempDate.y ? tempDate.y : "Ano"}
-              </span>
+              <span>{tempDate.y ? tempDate.y : "Ano"}</span>
               <ChevronDown className="h-4 w-4 opacity-50 text-primary" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-[140px] p-2 rounded-2xl border-2 shadow-2xl" align="start">
-            <div className="max-h-[280px] overflow-y-auto p-1 flex flex-col gap-1.5">
+          <PopoverContent className="w-[140px] p-2 rounded-2xl border-2 shadow-2xl z-[100]" align="start">
+            <div 
+              ref={openYear ? scrollRef : null}
+              className="max-h-[250px] overflow-y-auto p-1 flex flex-col gap-1.2 overscroll-contain touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {years.map((y) => (
-                <ScrollToValue key={y} selected={y === tempDate.y} isOpen={openYear}>
-                  <button
-                    onClick={() => { updateDate(tempDate.d, tempDate.m, y); setOpenYear(false); }}
-                    className={cn(
-                      "w-full px-4 py-3 text-left text-sm rounded-xl transition-all font-bold",
-                      y === tempDate.y 
-                        ? "bg-primary text-primary-foreground shadow-lg translate-x-1" 
-                        : "hover:bg-primary/10 text-foreground/70"
-                    )}
-                  >
-                    {y}
-                  </button>
-                </ScrollToValue>
+                <button
+                  key={y}
+                  data-selected={y === tempDate.y}
+                  onClick={() => { updateDate(tempDate.d, tempDate.m, y); setOpenYear(false); }}
+                  className={cn(
+                    "w-full px-4 py-3 text-left text-sm rounded-xl transition-all font-bold",
+                    y === tempDate.y 
+                      ? "bg-primary text-primary-foreground shadow-lg" 
+                      : "hover:bg-primary/10 text-foreground"
+                  )}
+                >
+                  {y}
+                </button>
               ))}
             </div>
           </PopoverContent>
