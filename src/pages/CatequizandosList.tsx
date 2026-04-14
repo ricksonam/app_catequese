@@ -42,26 +42,12 @@ function calcularIdade(dataNascimento: string): string {
   return `${idade} anos`;
 }
 
-function isAniversarianteSemana(dataNascimento: string): boolean {
+function isAniversarianteMes(dataNascimento: string): boolean {
   if (!dataNascimento) return false;
   const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  
   const nasc = new Date(dataNascimento);
-  const thisYear = hoje.getFullYear();
-  
-  // Próximo aniversário este ano
-  let proxBday = new Date(thisYear, nasc.getMonth(), nasc.getDate());
-  
-  // Se já passou, verificar o próximo ano (mas para "na semana" raramente importa, a menos que estejamos no fim do ano)
-  if (proxBday < hoje) {
-    proxBday = new Date(thisYear + 1, nasc.getMonth(), nasc.getDate());
-  }
-
-  const diffTime = proxBday.getTime() - hoje.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  return diffDays >= 0 && diffDays <= 7;
+  // Verifica se o mês de nascimento é o mesmo que o mês atual
+  return nasc.getMonth() === hoje.getMonth();
 }
 
 interface SacramentoInfo { recebido: boolean; paroquia: string; data: string; }
@@ -272,7 +258,7 @@ export default function CatequizandosList() {
                     />
                   </div>
 
-                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-black/10 shadow-sm">
+                  <div className="space-y-4">
                     <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -313,7 +299,7 @@ export default function CatequizandosList() {
                   </div>
                   <Separator className="bg-orange-500/20 h-0.5" />
 
-                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm">
+                  <div className="space-y-4">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sacramentos Recebidos</p>
                     <div className="grid grid-cols-1 gap-4">
                       {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
@@ -368,7 +354,7 @@ export default function CatequizandosList() {
 
                   <div className="space-y-4">
                     {form.responsaveis.map((resp, idx) => (
-                      <div key={resp.id} className="p-5 bg-white border-2 border-blue-100 rounded-2xl space-y-4 relative group animate-in zoom-in-95 shadow-sm">
+                      <div key={resp.id} className="p-4 bg-white/40 border border-blue-200 rounded-xl space-y-4 relative group animate-in zoom-in-95 shadow-sm">
                         {form.responsaveis.length > 1 && (
                           <button 
                             onClick={() => removeResponsavel(resp.id, false)}
@@ -471,7 +457,7 @@ export default function CatequizandosList() {
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
                   </div>
                   <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${st.color.split(' ')[0]}`} title={`Status: ${st.label}`} />
-                  {isAniversarianteSemana(c.dataNascimento) && (
+                  {isAniversarianteMes(c.dataNascimento) && (
                     <div className="absolute -top-1 -right-1 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce z-20">
                       <Cake className="h-3.5 w-3.5 text-white" />
                     </div>
@@ -711,7 +697,7 @@ export default function CatequizandosList() {
                     />
                   </div>
 
-                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-black/10 shadow-sm">
+                  <div className="space-y-4">
                     <FieldInput label="Nome completo *" value={editForm.nome} onChange={(v) => setEditForm(f => ({ ...f, nome: v }))} />
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -752,7 +738,7 @@ export default function CatequizandosList() {
                   </div>
                   <Separator className="bg-orange-500/20 h-0.5" />
 
-                  <div className="space-y-4 bg-white p-5 rounded-2xl border-2 border-orange-100 shadow-sm">
+                  <div className="space-y-4">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sacramentos Recebidos</p>
                     <div className="grid grid-cols-1 gap-4">
                       {(["batismo", "eucaristia", "crisma"] as const).map((sac) => (
@@ -806,7 +792,7 @@ export default function CatequizandosList() {
 
                   <div className="space-y-4">
                     {editForm.responsaveis.map((resp, idx) => (
-                      <div key={resp.id} className="p-5 bg-white border-2 border-blue-100 rounded-2xl space-y-4 relative group animate-in zoom-in-95 shadow-sm">
+                      <div key={resp.id} className="p-4 bg-white/40 border border-blue-200 rounded-xl space-y-4 relative group animate-in zoom-in-95 shadow-sm">
                         {editForm.responsaveis.length > 1 && (
                           <button 
                             onClick={() => removeResponsavel(resp.id, true)}
