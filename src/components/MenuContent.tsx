@@ -170,7 +170,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                </div>
                <div className="flex-1 text-left min-w-0">
                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Sobre o App</p>
-                 <p className="text-sm font-black text-primary leading-none">iCatequese</p>
+                 <p className="text-[15px] font-black leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm pb-1">iCatequese</p>
                  <p className="text-[11px] text-muted-foreground mt-1.5 truncate">Versão 1.0.0 • Rickson Amazonas</p>
                </div>
                <ChevronRight className="h-4 w-4 text-primary self-center" />

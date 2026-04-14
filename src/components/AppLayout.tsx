@@ -58,7 +58,7 @@ export default function AppLayout() {
                 <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
               <div className="flex flex-col items-start leading-none">
-                <span className="text-sm font-black text-primary tracking-tight">iCatequese</span>
+                <span className="text-[15px] font-black tracking-tight leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm pb-1">iCatequese</span>
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Ver Objetivo</span>
               </div>
             </button>
