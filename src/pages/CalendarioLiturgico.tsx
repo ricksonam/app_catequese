@@ -74,6 +74,7 @@ export default function CalendarioLiturgico() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [noteContent, setNoteContent] = useState("");
   const [noteId, setNoteId] = useState<string | null>(null);
+  const [isEditingNote, setIsEditingNote] = useState(false);
 
   // Data fetching
   const { data: catequizandos = [] } = useCatequizandos();
@@ -158,7 +159,7 @@ export default function CalendarioLiturgico() {
         nota: noteContent
       });
       toast.success("Anotação salva!");
-      setSelectedDay(null);
+      setIsEditingNote(false);
     } catch (e) {
       toast.error("Erro ao salvar");
     }
@@ -180,6 +181,7 @@ export default function CalendarioLiturgico() {
       const existing = notas.find(n => n.data === dateStr);
       setNoteContent(existing?.nota || "");
       setNoteId(existing?.id || null);
+      setIsEditingNote(false);
     }
   }, [selectedDay, notas, currentMonth, currentYear]);
 
@@ -267,6 +269,12 @@ export default function CalendarioLiturgico() {
                       {currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Lightbulb className="h-3 w-3 text-emerald-500" />}
                       {dayNote && <StickyNote className="h-3 w-3 text-amber-500" />}
                     </div>
+                  )}
+
+                  {!isFullscreen && (liturgicalEvts.length > 0 || dayNote) && (
+                    <span className="text-[9px] font-bold text-center truncate w-full px-0.5 mt-0.5 opacity-90 leading-tight z-10">
+                      {dayNote ? dayNote.nota : liturgicalEvts[0].name}
+                    </span>
                   )}
 
                   {/* Detailed Layout for Fullscreen */}
@@ -390,35 +398,66 @@ export default function CalendarioLiturgico() {
             ))}
 
             {/* Note Area */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase px-1">Minhas Anotações</label>
-              <textarea
-                value={noteContent}
-                onChange={(e) => setNoteContent(e.target.value)}
-                placeholder="Ex: Reunião de pais às 19h..."
-                className="w-full min-h-[120px] p-4 rounded-2xl bg-muted/30 border border-border/10 focus:ring-2 focus:ring-primary/20 transition-all outline-none text-sm resize-none"
-              />
-            </div>
+            {isEditingNote ? (
+              <div className="space-y-3 animate-fade-in mt-4 border-t border-border/20 pt-4">
+                <label className="text-xs font-bold text-muted-foreground uppercase px-1">Minhas Anotações</label>
+                <textarea
+                  value={noteContent}
+                  onChange={(e) => setNoteContent(e.target.value)}
+                  placeholder="Ex: Reunião de pais às 19h..."
+                  className="w-full min-h-[120px] p-4 rounded-2xl bg-muted/30 border border-border/20 focus:ring-2 focus:ring-primary/20 transition-all outline-none text-sm resize-none shadow-inner"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setIsEditingNote(false)}
+                    className="p-3 rounded-2xl text-muted-foreground hover:bg-muted transition-colors border border-transparent"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                  <button 
+                    onClick={handleSaveNote}
+                    disabled={notaMutation.isPending}
+                    className="flex-1 action-btn py-3 justify-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {notaMutation.isPending ? "..." : "Salvar"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 pt-4 border-t border-border/20 flex flex-col gap-2">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-bold text-muted-foreground uppercase px-1">Anotações do Dia</label>
+                  {!noteContent && (
+                    <button 
+                      onClick={() => setIsEditingNote(true)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all text-[11px] font-bold active:scale-95"
+                    >
+                      <Plus className="h-3 w-3" /> Adicionar
+                    </button>
+                  )}
+                </div>
 
-            <div className="flex gap-2">
-              {noteId && (
-                <button 
-                  onClick={() => handleDeleteNote(noteId)}
-                  disabled={notaDelete.isPending}
-                  className="p-3 rounded-2xl text-destructive hover:bg-destructive/10 transition-colors border border-destructive/10"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              )}
-              <button 
-                onClick={handleSaveNote}
-                disabled={notaMutation.isPending}
-                className="flex-1 action-btn py-3 justify-center gap-2"
-              >
-                <Save className="h-4 w-4" />
-                {notaMutation.isPending ? "Salvando..." : "Salvar Anotação"}
-              </button>
-            </div>
+                {noteContent && (
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-200/30 text-amber-800 dark:text-amber-200 relative group transition-all hover:bg-amber-500/15">
+                    <div className="flex items-start gap-3">
+                      <StickyNote className="h-4 w-4 shrink-0 mt-0.5 text-amber-600 opacity-80" />
+                      <p className="text-sm font-medium whitespace-pre-wrap leading-relaxed pr-8">{noteContent}</p>
+                    </div>
+                    <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex flex-col gap-1">
+                       <button onClick={() => setIsEditingNote(true)} className="p-2 rounded-xl bg-background/50 hover:bg-background/80 text-amber-700 shadow-sm transition-colors">
+                          <BookOpen className="h-3.5 w-3.5" />
+                       </button>
+                       <button onClick={() => { handleDeleteNote(noteId!); setIsEditingNote(false); }} className="p-2 rounded-xl bg-destructive/10 hover:bg-destructive/20 text-destructive shadow-sm transition-colors">
+                          <Trash2 className="h-3.5 w-3.5" />
+                       </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
           </div>
         </DialogContent>
       </Dialog>

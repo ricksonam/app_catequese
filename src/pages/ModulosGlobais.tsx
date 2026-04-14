@@ -1,7 +1,8 @@
-import { Image, BookOpen, FileText, Library, Dices } from "lucide-react";
+import { Image, BookOpen, FileText, Library, Dices, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const modulos = [
+  { label: "Calendário Litúrgico", desc: "Acompanhe e anote nas datas", icon: CalendarDays, color: "bg-destructive/10 text-destructive", path: "/modulos/calendario" },
   { label: "Jogos", desc: "Sorteios, quiz e jogos bíblicos", icon: Dices, color: "bg-gold/15 text-gold", path: "/jogos" },
   { label: "Mural de Fotos", desc: "Compartilhe momentos da catequese", icon: Image, color: "bg-primary/10 text-primary", path: "/modulos/mural" },
   { label: "Bíblia", desc: "Consulte passagens bíblicas", icon: BookOpen, color: "bg-primary/10 text-primary", path: "/modulos/biblia" },
