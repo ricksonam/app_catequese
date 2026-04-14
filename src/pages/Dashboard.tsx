@@ -1,6 +1,6 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, AlertTriangle, MapPin, UserCheck, BellRing } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useParoquias, useCatequistas } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,15 +15,12 @@ export default function Dashboard() {
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
-  const { data: paroquias = [], isLoading: pLoading } = useParoquias();
-  const { data: catequistas = [], isLoading: qLoading } = useCatequistas();
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
 
-  const loading = tLoading || eLoading || cLoading || pLoading || qLoading;
+  const loading = tLoading || eLoading || cLoading;
 
   useEffect(() => {
     if (!loading && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
@@ -151,97 +148,11 @@ export default function Dashboard() {
     ? (dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()])
     : "";
 
-  const missingParoquia = paroquias.length === 0;
-  const missingCatequistas = catequistas.length === 0;
-  const hasMissing = (missingParoquia || missingCatequistas) && !bannerDismissed;
-
   return (
     <div className="space-y-6">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
 
-      {/* ── Banner Cadastros Pendentes ── */}
-      {hasMissing && !loading && (
-        <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500 shadow-2xl shadow-amber-500/20 p-1">
-          <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-[30px] p-6">
-            {/* Background decorations */}
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-400/10 rounded-full blur-2xl animate-pulse" />
-            <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-orange-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
 
-            <div className="relative z-10">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0 border border-amber-200 dark:border-amber-700/50 animate-bounce-subtle">
-                    <span className="text-2xl">✨</span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-foreground leading-tight tracking-tight">Olá, Catequista! 👋</h3>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">Acesso Restrito</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setBannerDismissed(true)}
-                  className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-black/10 transition-colors shrink-0"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <p className="text-sm font-medium text-muted-foreground leading-relaxed mb-6">
-                Antes de ter o <strong>acesso completo</strong> a plataforma primeiro faça os <strong>cadastros básicos</strong> da paróquia e dos catequistas e em seguida você já pode criar a sua turma.
-              </p>
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-100 dark:border-amber-800/30 mb-5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
-                  Botões de acesso rápido:
-                </p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {missingParoquia && (
-                    <button
-                      onClick={() => navigate("/cadastros/paroquia-comunidade")}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border-2 border-amber-100 dark:border-amber-900/30 shadow-sm hover:shadow-md hover:border-amber-400 transition-all active:scale-[0.98] group"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform">
-                        <MapPin className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-[13px] font-black text-foreground leading-none">Minha Paróquia</p>
-                        <p className="text-[10px] text-muted-foreground mt-1">Configurar local</p>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-amber-400" />
-                    </button>
-                  )}
-                  {missingCatequistas && (
-                    <button
-                      onClick={() => navigate("/cadastros/catequistas")}
-                      className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 shadow-sm hover:shadow-md hover:border-sky-400 transition-all active:scale-[0.98] group"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform">
-                        <UserCheck className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-[13px] font-black text-foreground leading-none">Catequistas</p>
-                        <p className="text-[10px] text-muted-foreground mt-1">Equipe ativa</p>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-sky-400" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 px-1">
-                <div className="flex -space-x-2">
-                  <div className="w-6 h-6 rounded-full bg-amber-400 border-2 border-white dark:border-gray-900 flex items-center justify-center text-[10px] font-bold">1</div>
-                  <div className="w-6 h-6 rounded-full bg-sky-400 border-2 border-white dark:border-gray-900 flex items-center justify-center text-[10px] font-bold">2</div>
-                </div>
-                <p className="text-[10px] font-bold text-muted-foreground">O acesso também está disponível no botão Menu.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
- 
       {/* ── ATIVAR NOTIFICAÇÕES ── */}
       {permission === "default" && (
         <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 shadow-xl shadow-blue-500/20 p-1">
@@ -434,94 +345,47 @@ export default function Dashboard() {
                 );
               })}
             </div>
-          ) : fallbackAniversario ? (
-            (() => {
-              const fb = fallbackAniversario;
-              const diasAte = Math.round((fb.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-              return (
-                <div className="float-card flex items-center gap-4 px-5 py-4 border-black/10">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-base font-black text-primary shrink-0">
-                    {fb.nome?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground">{fb.nome}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {fb.proximoAniversario.toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long' })}
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-black text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shrink-0">
-                    em {diasAte}d
-                  </span>
-                </div>
-              );
-            })()
-          ) : null}
+                );
+              })()
+            ) : null}
         </div>
       )}
 
       {turmas.length === 0 && (
         <div 
-          className={cn(
-            "p-8 text-center transition-all duration-700 relative overflow-hidden",
-            !missingParoquia && !missingCatequistas 
-              ? "float-card bg-primary/5 border-primary shadow-2xl shadow-primary/20 animate-card-activate ring-4 ring-primary/5" 
-              : "float-card opacity-60 grayscale bg-muted/20 border-muted-foreground/10 cursor-not-allowed"
-          )}
+          className="float-card p-8 text-center animate-card-activate"
+          onClick={() => navigate("/turmas/nova")}
+          style={{ cursor: 'pointer' }}
         >
-          {/* Brilho decorativo apenas quando ativo */}
-          {!missingParoquia && !missingCatequistas && (
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 animate-pulse" />
-          )}
-
-          <div className={cn(
-            "icon-box mx-auto mb-4 transition-transform duration-500",
-            !missingParoquia && !missingCatequistas ? "bg-primary/20 text-primary scale-110 animate-bounce-subtle" : "bg-muted text-muted-foreground"
-          )}>
+          <div className="icon-box bg-primary/20 text-primary mx-auto mb-4 scale-110 animate-bounce-subtle">
             <BookOpen className="h-6 w-6" />
           </div>
           
           <h3 className="text-lg font-black text-foreground mb-2">Comece criando sua turma</h3>
           <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto leading-relaxed">
-            {!missingParoquia && !missingCatequistas 
-              ? "Tudo pronto! Agora você já pode criar sua primeira turma e começar a organizar seus encontros."
-              : "Quase lá! Para liberar a criação de turmas, primeiro complete os cadastros básicos da paróquia e dos catequistas."
-            }
+            Tudo pronto! Crie sua primeira turma e comece a organizar seus encontros de catequese.
           </p>
 
           <button 
-            onClick={() => {
-              if (!missingParoquia && !missingCatequistas) {
-                navigate("/turmas/nova");
-              } else {
-                setBannerDismissed(false); // Reabre o banner se estivesse fechado
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            className={cn(
-              "mx-auto flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm transition-all duration-300 shadow-xl",
-              !missingParoquia && !missingCatequistas 
-                ? "bg-primary text-white shadow-primary/25 hover:scale-105 active:scale-95 animate-soft-pulse"
-                : "bg-muted text-muted-foreground/50 shadow-none grayscale"
-            )}
+            onClick={(e) => { e.stopPropagation(); navigate("/turmas/nova"); }}
+            className="mx-auto flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm bg-primary text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all animate-soft-pulse"
           >
-            {!missingParoquia && !missingCatequistas && (
-              <span className="relative flex h-2 w-2 mr-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-              </span>
-            )}
+            <span className="relative flex h-2 w-2 mr-1">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
             Criar Turma
           </button>
 
-          {(!missingParoquia && !missingCatequistas) && (
-            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-primary uppercase tracking-[0.2em] animate-pulse">
-              <span>✦</span>
-              <span>Acesso Liberado</span>
-              <span>✦</span>
-            </div>
-          )}
+          <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-primary uppercase tracking-[0.2em] animate-pulse">
+            <span>✦</span>
+            <span>Acesso Liberado</span>
+            <span>✦</span>
+          </div>
         </div>
       )}
+
+
 
       {/* Turma intelligence picker dialog */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
