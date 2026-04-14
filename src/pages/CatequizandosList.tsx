@@ -92,7 +92,7 @@ function LanyardDrawing({ type }: { type: string }) {
 }
 
 const emptyForm: CatequizandoForm = {
-  nome: "", dataNascimento: new Date().toISOString().split('T')[0], email: "", telefone: "",
+  nome: "", dataNascimento: "", email: "", telefone: "",
   endereco: "", numero: "", bairro: "", complemento: "",
   necessidadeEspecial: "nenhuma", observacao: "", foto: "",
   batismo: { recebido: false, paroquia: "", data: "" }, eucaristia: { recebido: false, paroquia: "", data: "" }, crisma: { recebido: false, paroquia: "", data: "" },
