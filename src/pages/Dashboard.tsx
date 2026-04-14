@@ -94,8 +94,8 @@ export default function Dashboard() {
 
   const stats = [
     { 
-      label: selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome || "Turma",
-      value: selectedTurmaId === "all" ? turmas.length : (selectedTurma?.etapa || "Selecionada"),
+      label: selectedTurmaId === "all" ? "Turmas" : (selectedTurma?.etapa || ""),
+      value: selectedTurmaId === "all" ? turmas.length : (selectedTurma?.nome || "Turma"),
       icon: BookOpen,
       color: "bg-primary/10 text-primary",
       isTurma: true,
@@ -184,18 +184,25 @@ export default function Dashboard() {
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               <p className={cn(
-                "font-bold text-foreground leading-tight truncate",
-                stat.isTurma ? "text-[10px] sm:text-xs mb-1" : "text-xl sm:text-2xl"
+                "font-bold leading-tight truncate",
+                stat.isTurma && selectedTurmaId !== "all" ? "text-xs sm:text-sm mb-1 text-primary" : "text-xl sm:text-2xl text-foreground"
               )} title={String(stat.value)}>
                 {stat.value}
               </p>
-              <p className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 leading-tight break-words">
+              <div className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 leading-tight break-words">
                 {stat.isTurma ? (
-                  <span className="flex items-center justify-center gap-1 text-primary animate-pulse">
-                    ● SELECIONAR 
-                  </span>
+                  <div className="flex flex-col items-center gap-0.5">
+                    {selectedTurmaId === "all" ? (
+                      <span className="text-muted-foreground">{stat.label}</span>
+                    ) : (
+                       <span className="text-[9px] text-muted-foreground/80 capitalize font-medium">{stat.label}</span>
+                    )}
+                    <span className="flex items-center justify-center gap-1 text-primary animate-pulse pt-0.5">
+                      {selectedTurmaId === "all" ? "● SELECIONAR" : "● TROCAR"}
+                    </span>
+                  </div>
                 ) : stat.label}
-              </p>
+              </div>
             </button>
           );
         })}
