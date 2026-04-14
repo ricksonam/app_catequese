@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, ChevronRight, Pencil } from "lucide-react";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma } from "@/hooks/useSupabaseData";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, ChevronRight, Pencil, Copy, Link2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ export default function TurmaDetail() {
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
   const deleteMutation = useDeleteTurma();
+  const leaveMutation = useLeaveTurma();
 
   const turma = turmas.find((t) => t.id === id);
 
@@ -33,6 +34,23 @@ export default function TurmaDetail() {
       navigate("/turmas");
     } catch (error: any) {
       toast.error("Erro ao excluir: " + error.message);
+    }
+  };
+
+  const handleLeave = async () => {
+    try {
+      await leaveMutation.mutateAsync(id!);
+      toast.success("Você saiu da turma.");
+      navigate("/turmas");
+    } catch (error: any) {
+      toast.error("Erro ao sair da turma: " + error.message);
+    }
+  };
+
+  const handleCopyCode = () => {
+    if (turma?.codigoAcesso) {
+      navigator.clipboard.writeText(turma.codigoAcesso);
+      toast.success("Código copiado!");
     }
   };
 
@@ -73,34 +91,61 @@ export default function TurmaDetail() {
               Relatórios
             </button>
 
-            <button 
-              onClick={() => navigate(`/turmas/${id}/editar`)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20"
-            >
-              <Pencil className="h-4 w-4" />
-            </button>
-
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button disabled={deleteMutation.isPending} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20">
-                  <Trash2 className="h-4 w-4" />
+            {/* Conditionally show edit/delete (owner) or leave (shared) */}
+            {turma.isShared ? (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 text-[10px] font-black uppercase tracking-widest">
+                    <LogOut className="h-3.5 w-3.5" /> Sair da Turma
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="rounded-2xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Sair da Turma</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Você vai perder o acesso a esta turma. Para voltar, precisará do código novamente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleLeave} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
+                      Confirmar Saída
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            ) : (
+              <>
+                <button 
+                  onClick={() => navigate(`/turmas/${id}/editar`)}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20"
+                >
+                  <Pencil className="h-4 w-4" />
                 </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-2xl">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Excluir Turma</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Tem certeza que deseja excluir esta turma? Esta ação não pode ser desfeita e removerá todos os dados vinculados.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
-                    Confirmar Exclusão
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button disabled={deleteMutation.isPending} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Excluir Turma</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Tem certeza que deseja excluir esta turma? Esta ação não pode ser desfeita e removerá todos os dados vinculados.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
+                        Confirmar Exclusão
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
           </div>
         </div>
 
@@ -191,6 +236,32 @@ export default function TurmaDetail() {
         <div className="float-card p-4 animate-float-up" style={{ animationDelay: '400ms' }}>
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-2">Observações da Turma</p>
           <p className="text-xs text-foreground leading-relaxed italic">"{turma.outrosDados}"</p>
+        </div>
+      )}
+
+      {/* Código de Acesso - apenas para dono */}
+      {!turma.isShared && turma.codigoAcesso && (
+        <div className="float-card p-4 animate-float-up border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10" style={{ animationDelay: '500ms' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                <Link2 className="h-4 w-4 text-emerald-700" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700">Código de Compartilhamento</p>
+                <p className="text-[9px] text-muted-foreground">Compartilhe para dar acesso a outro catequista</p>
+              </div>
+            </div>
+            <button
+              onClick={handleCopyCode}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/15 text-emerald-700 text-[10px] font-black uppercase tracking-wide border border-emerald-500/20 hover:bg-emerald-500/25 transition-all active:scale-95"
+            >
+              <Copy className="h-3 w-3" /> Copiar
+            </button>
+          </div>
+          <div className="mt-3 py-2 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center">
+            <span className="text-2xl font-black tracking-[0.4em] text-emerald-700">{turma.codigoAcesso}</span>
+          </div>
         </div>
       )}
     </div>

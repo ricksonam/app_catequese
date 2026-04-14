@@ -2,26 +2,76 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "./store";
 
 // ========== TURMAS ==========
+
+function gerarCodigoTurma(nome: string): string {
+  const palavras = nome.trim().split(/\s+/);
+  const letra1 = (palavras[0]?.[0] || 'A').toUpperCase();
+  const letra2 = (palavras[1]?.[0] || palavras[0]?.[1] || 'B').toUpperCase();
+  const digitos = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
+  return `${letra1}${letra2}${digitos}`;
+}
+
 export async function fetchTurmas(): Promise<Turma[]> {
-  const { data, error } = await (supabase.from as any)("turmas")
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  // Fetch owned turmas
+  const { data: ownedData, error: ownedError } = await (supabase.from as any)("turmas")
     .select("*, turma_catequistas(catequista_id)")
+    .eq("user_id", user.id)
     .order("criado_em", { ascending: false });
-  if (error) throw error;
-  return (data || []).map((t: any) => ({
+  if (ownedError) throw ownedError;
+
+  // Fetch turmas where user is a member (shared)
+  const { data: memberData, error: memberError } = await (supabase.from as any)("turma_membros")
+    .select("turma_id")
+    .eq("user_id", user.id);
+  if (memberError) throw memberError;
+
+  const sharedIds = (memberData || []).map((m: any) => m.turma_id);
+  let sharedTurmas: Turma[] = [];
+
+  if (sharedIds.length > 0) {
+    const { data: sharedData, error: sharedError } = await (supabase.from as any)("turmas")
+      .select("*, turma_catequistas(catequista_id)")
+      .in("id", sharedIds)
+      .order("criado_em", { ascending: false });
+    if (sharedError) throw sharedError;
+
+    sharedTurmas = (sharedData || []).map((t: any) => ({
+      id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
+      horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
+      criadoEm: t.criado_em,
+      comunidadeId: t.comunidade_id,
+      catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
+      codigoAcesso: t.codigo_acesso,
+      isShared: true,
+    }));
+  }
+
+  const ownedTurmas = (ownedData || []).map((t: any) => ({
     id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
     horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
     criadoEm: t.criado_em,
     comunidadeId: t.comunidade_id,
     catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
+    codigoAcesso: t.codigo_acesso,
+    isShared: false,
   }));
+
+  return [...ownedTurmas, ...sharedTurmas];
 }
 
 export async function upsertTurma(turma: Turma) {
+  // Generate access code for new turmas
+  const codigo = turma.codigoAcesso || gerarCodigoTurma(turma.nome);
+
   const { error } = await (supabase.from as any)("turmas").upsert({
     id: turma.id, nome: turma.nome, ano: turma.ano, dia_catequese: turma.diaCatequese,
     horario: turma.horario, local: turma.local, etapa: turma.etapa, outros_dados: turma.outrosDados,
     criado_em: turma.criadoEm,
     comunidade_id: turma.comunidadeId || null,
+    codigo_acesso: codigo,
   });
   if (error) throw error;
 
@@ -37,6 +87,47 @@ export async function upsertTurma(turma: Turma) {
 
 export async function removeTurma(id: string) {
   const { error } = await (supabase.from as any)("turmas").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function joinTurmaByCode(code: string): Promise<{ turmaId: string; nome: string }> {
+  const normalizedCode = code.trim().toUpperCase();
+  const { data, error } = await (supabase.from as any)("turmas")
+    .select("id, nome")
+    .eq("codigo_acesso", normalizedCode)
+    .single();
+  if (error || !data) throw new Error("Código inválido. Verifique e tente novamente.");
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+
+  // Check if already owner
+  const { data: owned } = await (supabase.from as any)("turmas")
+    .select("id")
+    .eq("id", data.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (owned) throw new Error("Você já é o proprietário desta turma.");
+
+  // Join
+  const { error: joinError } = await (supabase.from as any)("turma_membros").insert({
+    turma_id: data.id,
+    user_id: user.id,
+  });
+  if (joinError) {
+    if (joinError.code === '23505') throw new Error("Você já tem acesso a esta turma.");
+    throw joinError;
+  }
+  return { turmaId: data.id, nome: data.nome };
+}
+
+export async function leaveTurma(turmaId: string) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+  const { error } = await (supabase.from as any)("turma_membros")
+    .delete()
+    .eq("turma_id", turmaId)
+    .eq("user_id", user.id);
   if (error) throw error;
 }
 

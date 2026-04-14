@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  fetchTurmas, upsertTurma, removeTurma,
+  fetchTurmas, upsertTurma, removeTurma, joinTurmaByCode, leaveTurma,
   fetchCatequizandos, upsertCatequizando, removeCatequizando,
   fetchEncontros, upsertEncontro, removeEncontro,
   fetchAtividades, upsertAtividade, removeAtividade,
@@ -26,6 +26,14 @@ export function useTurmaMutation() {
 export function useDeleteTurma() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: removeTurma, onSuccess: () => { qc.invalidateQueries({ queryKey: ["turmas"] }); } });
+}
+export function useJoinTurma() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: joinTurmaByCode, onSuccess: () => { qc.invalidateQueries({ queryKey: ["turmas"] }); } });
+}
+export function useLeaveTurma() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: leaveTurma, onSuccess: () => { qc.invalidateQueries({ queryKey: ["turmas"] }); } });
 }
 
 // ===== CATEQUIZANDOS =====

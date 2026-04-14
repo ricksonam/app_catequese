@@ -10,6 +10,8 @@ export interface Turma {
   criadoEm: string;
   comunidadeId?: string;
   catequistasIds?: string[];
+  codigoAcesso?: string;
+  isShared?: boolean; // true if this turma belongs to another catechist
 }
 
 export interface ResponsavelInfo {
