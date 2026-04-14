@@ -251,12 +251,12 @@ export default function AuthPage() {
   ────────────────────────────────────────────── */
   if (view === "landing") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-between overflow-hidden relative bg-[#0f0a1e]">
+      <div className="min-h-screen flex flex-col items-center justify-between overflow-hidden relative bg-sky-50">
         {/* ── Background Litúrgico Animado ── */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {/* Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#0f0a1e] to-[#0a1628]" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-sky-50 to-white" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: "1s" }} />
           <div className="absolute top-1/3 right-0 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: "2s" }} />
 
@@ -271,28 +271,37 @@ export default function AuthPage() {
           ].map((p, i) => (
             <div
               key={i}
-              className="absolute text-white/10 font-serif select-none"
+              className="absolute text-primary/10 font-serif select-none"
               style={{
                 top: p.top,
                 left: (p as any).left,
                 right: (p as any).right,
-                fontSize: undefined,
                 animation: `float-particle ${p.dur} ease-in-out infinite`,
                 animationDelay: p.delay,
               }}
             >
-              <span className={`${p.size} opacity-30`}>{p.symbol}</span>
+              <span className={`${p.size} opacity-40`}>{p.symbol}</span>
             </div>
           ))}
         </div>
+
+        {/* Chip compartilhar no canto superior direito */}
+        <button
+          id="btn-compartilhar"
+          onClick={handleShare}
+          className="absolute top-6 right-6 z-20 h-9 px-4 rounded-full bg-white/60 backdrop-blur-md border border-primary/20 text-primary font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm hover:bg-white/80"
+        >
+          <Share2 className="h-4 w-4" />
+          Compartilhar
+        </button>
 
         {/* ── Conteúdo ── */}
         <div className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto px-6 text-center py-10">
           {/* Logo com halo */}
           <div className="relative mb-8">
-            <div className="absolute inset-0 scale-125 rounded-[40px] bg-violet-500/20 blur-2xl animate-pulse" />
+            <div className="absolute inset-0 scale-125 rounded-[40px] bg-primary/10 blur-2xl animate-pulse" />
             <div
-              className="relative w-32 h-32 rounded-[32px] overflow-hidden bg-white shadow-2xl shadow-violet-500/30 border-2 border-white/20"
+              className="relative w-32 h-32 rounded-[32px] overflow-hidden bg-white shadow-2xl shadow-primary/10 border-2 border-white/40"
               style={{ animation: "logo-breathe 4s ease-in-out infinite" }}
             >
               <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain p-2" />
@@ -304,54 +313,46 @@ export default function AuthPage() {
           </div>
 
           {/* Nome + Slogan */}
-          <h1 className="text-5xl font-black tracking-tighter mb-3 bg-gradient-to-r from-amber-300 via-white to-violet-300 bg-clip-text text-transparent drop-shadow-lg">
+          <h1 className="text-5xl font-black tracking-tighter mb-3 bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm">
             iCatequese
           </h1>
-          <p className="text-white/70 text-base leading-relaxed mb-2 max-w-xs">
+          <p className="text-slate-600 font-medium text-base leading-relaxed mb-2 max-w-xs">
             Organize, acompanhe e inspire<br />sua catequese
           </p>
-          <div className="flex items-center gap-2 mb-10">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/20" />
-            <span className="text-white/30 text-xs font-bold tracking-widest uppercase">✝ Ad maiorem Dei gloriam ✝</span>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/20" />
+          <div className="flex items-center gap-2 mb-10 w-full px-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-primary/20" />
+            <span className="text-primary/40 text-[10px] font-black tracking-[0.2em] uppercase">✝ Ad maiorem Dei gloriam ✝</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-primary/20" />
           </div>
 
           {/* Botões */}
-          <div className="w-full space-y-3">
+          <div className="w-full space-y-4">
             <button
               id="btn-entrar"
               onClick={() => setView("login")}
-              className="w-full h-14 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-base shadow-lg shadow-violet-600/40 flex items-center justify-center gap-2.5 active:scale-[0.97] transition-all hover:shadow-violet-500/60 hover:shadow-xl"
+              className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold text-base shadow-lg shadow-primary/30 flex items-center justify-center gap-2.5 active:scale-[0.97] transition-all hover:shadow-primary/40 hover:shadow-xl group"
             >
               <LogIn className="h-5 w-5" />
               Entrar
-              <ChevronRight className="h-4 w-4 ml-1 opacity-60" />
+              <ChevronRight className="h-4 w-4 ml-1 opacity-60 group-hover:translate-x-1 transition-transform" />
             </button>
 
-            <button
-              id="btn-cadastro"
-              onClick={() => setView("signup")}
-              className="w-full h-12 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold text-sm backdrop-blur-sm flex items-center justify-center gap-2 active:scale-[0.97] transition-all hover:bg-white/15"
-            >
-              <UserPlus className="h-4 w-4" />
-              Cadastre-se
-            </button>
-
-            {/* Chip compartilhar */}
-            <button
-              id="btn-compartilhar"
-              onClick={handleShare}
-              className="w-full h-10 rounded-2xl bg-amber-400/10 border border-amber-400/25 text-amber-300 font-semibold text-xs flex items-center justify-center gap-2 active:scale-[0.97] transition-all hover:bg-amber-400/20"
-            >
-              <Share2 className="h-3.5 w-3.5" />
-              Compartilhar o Aplicativo
-            </button>
+            <div className="pt-2">
+              <button
+                id="btn-cadastro"
+                onClick={() => setView("signup")}
+                className="w-full h-12 rounded-2xl bg-white border-2 border-primary/20 text-primary font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.97] transition-all hover:bg-primary/5 hover:border-primary/40"
+              >
+                <UserPlus className="h-4 w-4" />
+                Cadastre-se
+              </button>
+            </div>
           </div>
         </div>
 
         {/* ── Footer ── */}
         <div className="relative z-10 pb-6 text-center">
-          <p className="text-white/25 text-xs">Versão 1.0.0 · Rickson Amazonas</p>
+          <p className="text-slate-400 font-bold text-[10px] tracking-widest uppercase">Versão 1.0.0 · Rickson Amazonas</p>
         </div>
 
         <style>{`
@@ -361,56 +362,57 @@ export default function AuthPage() {
             66% { transform: translateY(-8px) rotate(-3deg); }
           }
           @keyframes logo-breathe {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 30px 8px rgba(139,92,246,0.2); }
-            50% { transform: scale(1.03); box-shadow: 0 0 50px 15px rgba(139,92,246,0.4); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px 8px rgba(37,99,235,0.1); }
+            50% { transform: scale(1.03); box-shadow: 0 0 50px 15px rgba(37,99,235,0.2); }
           }
         `}</style>
       </div>
     );
   }
 
+
   /* ──────────────────────────────────────────────
      LOGIN VIEW
   ────────────────────────────────────────────── */
   if (view === "login") {
     return (
-      <div className="min-h-screen flex flex-col bg-[#0f0a1e] relative overflow-hidden">
+      <div className="min-h-screen flex flex-col bg-sky-50 relative overflow-hidden">
         {/* Fundo suave */}
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-900/30 via-[#0f0a1e] to-[#0f0a1e] pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-violet-600/15 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-100 via-sky-50 to-white pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
 
         <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
           <div className="w-full max-w-sm">
             {/* Back */}
             <button
               onClick={() => setView("landing")}
-              className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-sm mb-8 transition-colors"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
             >
               <ArrowLeft className="h-4 w-4" /> Voltar
             </button>
 
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-violet-500/20 border border-white/20">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-primary/10 border border-primary/20">
                 <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
-              <h2 className="text-2xl font-black text-white mb-1">Bem-vindo de volta!</h2>
-              <p className="text-white/50 text-sm">Entre com sua conta para continuar</p>
+              <h2 className="text-2xl font-black text-slate-800 mb-1">Bem-vindo de volta!</h2>
+              <p className="text-slate-500 text-sm font-medium">Entre com sua conta para continuar</p>
             </div>
 
             {/* Email salvo chip */}
             {savedEmail && (
-              <div className="mb-4 p-3 rounded-2xl bg-violet-500/10 border border-violet-500/25 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
-                  <Mail className="h-4 w-4 text-violet-300" />
+              <div className="mb-4 p-3 rounded-2xl bg-primary/5 border border-primary/15 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Mail className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-violet-400/70 font-bold uppercase tracking-wide">Conta salva</p>
-                  <p className="text-sm text-white font-semibold truncate">{savedEmail}</p>
+                  <p className="text-[10px] text-primary/70 font-black uppercase tracking-wide">Conta salva</p>
+                  <p className="text-sm text-slate-800 font-bold truncate">{savedEmail}</p>
                 </div>
                 <button
                   onClick={handleClearSavedEmail}
-                  className="text-white/30 hover:text-white/60 transition-colors"
+                  className="text-slate-300 hover:text-slate-500 transition-colors"
                   title="Usar outra conta"
                 >
                   <X className="h-4 w-4" />
@@ -422,7 +424,7 @@ export default function AuthPage() {
               {/* Email – só mostra se não tiver salvo */}
               {!savedEmail && (
                 <div className="space-y-1.5">
-                  <Label className="text-white/70 text-sm font-semibold">Email</Label>
+                  <Label className="text-slate-600 text-sm font-bold ml-1">Email</Label>
                   <Input
                     id="login-email"
                     type="email"
@@ -430,13 +432,13 @@ export default function AuthPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu@email.com"
                     required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-violet-400 h-12 rounded-xl"
+                    className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
                   />
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <Label className="text-white/70 text-sm font-semibold">Senha</Label>
+                <Label className="text-slate-600 text-sm font-bold ml-1">Senha</Label>
                 <div className="relative">
                   <Input
                     id="login-password"
@@ -445,12 +447,12 @@ export default function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-violet-400 h-12 rounded-xl pr-11"
+                    className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm pr-11"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -460,7 +462,7 @@ export default function AuthPage() {
               <button
                 type="button"
                 onClick={() => setView("forgot")}
-                className="text-violet-400 text-xs hover:text-violet-300 transition-colors w-full text-right"
+                className="text-primary text-xs font-bold hover:underline transition-colors w-full text-right"
               >
                 Esqueci minha senha
               </button>
@@ -468,7 +470,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-13 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-base shadow-lg shadow-violet-600/30 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
+                className="w-full h-13 py-3.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold text-base shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -481,10 +483,10 @@ export default function AuthPage() {
             </form>
 
             <div className="text-center mt-6">
-              <span className="text-white/40 text-sm">Não tem conta? </span>
+              <span className="text-slate-400 text-sm font-medium">Não tem conta? </span>
               <button
                 onClick={() => setView("signup")}
-                className="text-violet-400 font-semibold text-sm hover:text-violet-300 transition-colors"
+                className="text-primary font-bold text-sm hover:underline transition-colors"
               >
                 Cadastre-se
               </button>
@@ -500,9 +502,9 @@ export default function AuthPage() {
   ────────────────────────────────────────────── */
   if (view === "signup") {
     return (
-      <div className="min-h-screen flex flex-col bg-[#0f0a1e] relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 via-[#0f0a1e] to-[#0f0a1e] pointer-events-none" />
-        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-[80px] pointer-events-none" />
+      <div className="min-h-screen flex flex-col bg-sky-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-100 via-sky-50 to-white pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
 
         <ConsentModal
           open={showConsentModal}
@@ -515,23 +517,23 @@ export default function AuthPage() {
             {/* Back */}
             <button
               onClick={() => setView("landing")}
-              className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-sm mb-8 transition-colors"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
             >
               <ArrowLeft className="h-4 w-4" /> Voltar
             </button>
 
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-indigo-500/20 border border-white/20">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-primary/10 border border-primary/20">
                 <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
               </div>
-              <h2 className="text-2xl font-black text-white mb-1">Criar sua conta</h2>
-              <p className="text-white/50 text-sm">Junte-se à comunidade iCatequese</p>
+              <h2 className="text-2xl font-black text-slate-800 mb-1">Criar sua conta</h2>
+              <p className="text-slate-500 text-sm font-medium">Junte-se à comunidade iCatequese</p>
             </div>
 
             <form onSubmit={handleSignupSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-white/70 text-sm font-semibold">Nome Completo</Label>
+                <Label className="text-slate-600 text-sm font-bold ml-1">Nome Completo</Label>
                 <Input
                   id="signup-name"
                   type="text"
@@ -539,12 +541,12 @@ export default function AuthPage() {
                   onChange={(e) => setSignupName(e.target.value)}
                   placeholder="Seu nome"
                   required
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl"
+                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-white/70 text-sm font-semibold">Email</Label>
+                <Label className="text-slate-600 text-sm font-bold ml-1">Email</Label>
                 <Input
                   id="signup-email"
                   type="email"
@@ -552,12 +554,12 @@ export default function AuthPage() {
                   onChange={(e) => setSignupEmail(e.target.value)}
                   placeholder="seu@email.com"
                   required
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl"
+                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-white/70 text-sm font-semibold">Senha</Label>
+                <Label className="text-slate-600 text-sm font-bold ml-1">Senha</Label>
                 <div className="relative">
                   <Input
                     id="signup-password"
@@ -566,12 +568,12 @@ export default function AuthPage() {
                     onChange={(e) => setSignupPassword(e.target.value)}
                     placeholder="Mín. 6 caracteres"
                     required
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl pr-11"
+                    className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm pr-11"
                   />
                   <button
                     type="button"
                     onClick={() => setShowSignupPassword(!showSignupPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
                   >
                     {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -579,7 +581,7 @@ export default function AuthPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-white/70 text-sm font-semibold">Confirmar Senha</Label>
+                <Label className="text-slate-600 text-sm font-bold ml-1">Confirmar Senha</Label>
                 <Input
                   id="signup-confirm"
                   type="password"
@@ -587,18 +589,18 @@ export default function AuthPage() {
                   onChange={(e) => setSignupConfirm(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl"
+                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
                 />
               </div>
 
-              <p className="text-white/30 text-xs text-center px-2">
-                Ao cadastrar, você será solicitado a aceitar nossos <span className="text-indigo-400">Termos de Uso</span>.
+              <p className="text-slate-400 text-xs text-center px-2 font-medium">
+                Ao cadastrar, você será solicitado a aceitar nossos <span className="text-primary font-bold">Termos de Uso</span>.
               </p>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold text-base shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -611,10 +613,10 @@ export default function AuthPage() {
             </form>
 
             <div className="text-center mt-6">
-              <span className="text-white/40 text-sm">Já tem conta? </span>
+              <span className="text-slate-400 text-sm font-medium">Já tem conta? </span>
               <button
                 onClick={() => setView("login")}
-                className="text-indigo-400 font-semibold text-sm hover:text-indigo-300 transition-colors"
+                className="text-primary font-bold text-sm hover:underline transition-colors"
               >
                 Entrar
               </button>
@@ -629,29 +631,29 @@ export default function AuthPage() {
      FORGOT PASSWORD VIEW
   ────────────────────────────────────────────── */
   return (
-    <div className="min-h-screen flex flex-col bg-[#0f0a1e] relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-violet-900/30 via-[#0f0a1e] to-[#0f0a1e] pointer-events-none" />
+    <div className="min-h-screen flex flex-col bg-sky-50 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-100 via-sky-50 to-white pointer-events-none" />
 
       <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
         <div className="w-full max-w-sm">
           <button
             onClick={() => setView("login")}
-            className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-sm mb-8 transition-colors"
+            className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
           >
             <ArrowLeft className="h-4 w-4" /> Voltar ao login
           </button>
 
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mx-auto mb-4">
-              <Mail className="h-7 w-7 text-violet-300" />
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+              <Mail className="h-7 w-7 text-primary" />
             </div>
-            <h2 className="text-2xl font-black text-white mb-1">Recuperar Senha</h2>
-            <p className="text-white/50 text-sm">Enviaremos um link para o seu email</p>
+            <h2 className="text-2xl font-black text-slate-800 mb-1">Recuperar Senha</h2>
+            <p className="text-slate-500 text-sm font-medium">Enviaremos um link para o seu email</p>
           </div>
 
           <form onSubmit={handleForgotPassword} className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-white/70 text-sm font-semibold">Email</Label>
+              <Label className="text-slate-600 text-sm font-bold ml-1">Email</Label>
               <Input
                 id="forgot-email"
                 type="email"
@@ -659,13 +661,13 @@ export default function AuthPage() {
                 onChange={(e) => setForgotEmail(e.target.value)}
                 placeholder="seu@email.com"
                 required
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-violet-400 h-12 rounded-xl"
+                className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold text-base shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
