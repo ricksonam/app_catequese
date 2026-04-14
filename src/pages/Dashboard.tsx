@@ -1,10 +1,11 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
+import { cn } from "@/lib/utils";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -13,6 +14,7 @@ export default function Dashboard() {
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
+  const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
 
@@ -37,13 +39,29 @@ export default function Dashboard() {
     return new Date(dataStr);
   };
 
-  // Apenas o PRÓXIMO encontro mais próximo
+  // Filtragem baseada na turma selecionada
+  const filteredCatequizandos = useMemo(() => {
+    if (selectedTurmaId === "all") return catequizandos;
+    return catequizandos.filter(c => c.turmaId === selectedTurmaId);
+  }, [catequizandos, selectedTurmaId]);
+
+  const filteredEncontros = useMemo(() => {
+    if (selectedTurmaId === "all") return encontros;
+    return encontros.filter(e => e.turmaId === selectedTurmaId);
+  }, [encontros, selectedTurmaId]);
+
+  const selectedTurma = useMemo(() => {
+    if (selectedTurmaId === "all") return null;
+    return turmas.find(t => t.id === selectedTurmaId);
+  }, [turmas, selectedTurmaId]);
+
+  // Apenas o PRÓXIMO encontro mais próximo (da turma selecionada)
   const proximoEncontro = useMemo(() => {
-    const pendentes = encontros
+    const pendentes = filteredEncontros
       .filter((e) => parseDataLocal(e.data) >= hoje && e.status === 'pendente')
       .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime());
     return pendentes[0] || null;
-  }, [encontros]);
+  }, [filteredEncontros, hoje]);
 
   // Aniversariantes: prioriza semana atual, fallback para o mais próximo
   const { aniversariantesSemana, fallbackAniversario } = useMemo(() => {
@@ -51,7 +69,7 @@ export default function Dashboard() {
     fimSemana.setDate(fimSemana.getDate() + 7);
     const thisYear = hoje.getFullYear();
 
-    const todos = catequizandos
+    const todos = filteredCatequizandos
       .filter((c) => c.dataNascimento)
       .map((c) => {
         const bday = new Date(c.dataNascimento);
@@ -66,7 +84,7 @@ export default function Dashboard() {
       aniversariantesSemana: semana,
       fallbackAniversario: semana.length === 0 && todos.length > 0 ? todos[0] : null,
     };
-  }, [catequizandos]);
+  }, [filteredCatequizandos, hoje]);
 
   function getDiasRestantes(dataStr: string) {
     const d = parseDataLocal(dataStr);
@@ -74,25 +92,43 @@ export default function Dashboard() {
     return Math.round((d.getTime() - hoje.getTime()) / 86400000);
   }
 
-  function handleCatequizandosClick() {
-    if (turmas.length === 0) return;
-    if (turmas.length === 1) navigate(`/turmas/${turmas[0].id}/catequizandos`);
-    else setTurmaPickerOpen(true);
-  }
-
-  function handleEncontrosClick() {
-    if (turmas.length === 0) return;
-    if (turmas.length === 1) navigate(`/turmas/${turmas[0].id}/encontros`);
-    else navigate("/turmas");
-  }
-
   const stats = [
-    { label: "Turmas",        value: turmas.length,                                           icon: BookOpen,    color: "bg-primary/10 text-primary",          action: () => navigate("/turmas") },
-    { label: "Catequizandos", value: catequizandos.length,                                    icon: Users,       color: "bg-accent/15 text-accent-foreground",  action: handleCatequizandosClick },
-    { label: "Encontros",     value: encontros.filter((e) => e.status === 'pendente').length, icon: CalendarDays,color: "bg-success/10 text-success",            action: handleEncontrosClick },
+    { 
+      label: selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome || "Turma",
+      value: selectedTurmaId === "all" ? turmas.length : (selectedTurma?.etapa || "Selecionada"),
+      icon: BookOpen,
+      color: "bg-primary/10 text-primary",
+      isTurma: true,
+      action: () => setTurmaPickerOpen(true)
+    },
+    { 
+      label: "Catequizandos", 
+      value: filteredCatequizandos.length, 
+      icon: Users, 
+      color: "bg-accent/15 text-accent-foreground", 
+      action: () => {
+        if (selectedTurmaId !== "all") {
+          navigate(`/turmas/${selectedTurmaId}/catequizandos`);
+        } else {
+          if (turmas.length === 1) navigate(`/turmas/${turmas[0].id}/catequizandos`);
+          else setTurmaPickerOpen(true);
+        }
+      } 
+    },
+    { 
+      label: "Encontros", 
+      value: filteredEncontros.filter((e) => e.status === 'pendente').length, 
+      icon: CalendarDays, 
+      color: "bg-success/10 text-success", 
+      action: () => {
+        if (selectedTurmaId !== "all") {
+          navigate(`/turmas/${selectedTurmaId}/encontros`);
+        } else {
+          navigate("/turmas");
+        }
+      } 
+    },
   ];
-
-  const showTourButton = !welcomeOpen && !!localStorage.getItem("ivc_welcome_seen");
 
   if (loading) {
     return (
@@ -120,16 +156,29 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats Inteligentes */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
-            <button key={stat.label} onClick={stat.action} className="float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-transform min-w-0" style={{ animationDelay: `${i * 80}ms` }}>
+            <button 
+              key={`${stat.label}-${i}`} 
+              onClick={stat.action} 
+              className={cn(
+                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-transform min-w-0 border-2",
+                stat.isTurma && selectedTurmaId !== "all" ? "border-primary/30 bg-primary/5" : "border-transparent"
+              )}
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
               <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10`}>
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <p className="text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
+              <p className={cn(
+                "font-bold text-foreground leading-tight truncate",
+                stat.isTurma ? "text-[10px] sm:text-xs mb-1" : "text-xl sm:text-2xl"
+              )} title={String(stat.value)}>
+                {stat.value}
+              </p>
               <p className="text-[8px] sm:text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5 leading-tight break-words">{stat.label}</p>
             </button>
           );
@@ -151,7 +200,7 @@ export default function Dashboard() {
         {!proximoEncontro ? (
           <div className="float-card p-8 text-center">
             <div className="icon-box bg-primary/10 text-primary mx-auto mb-3"><CalendarDays className="h-5 w-5" /></div>
-            <p className="text-sm text-muted-foreground">Nenhum encontro agendado</p>
+            <p className="text-sm text-muted-foreground">Nenhum encontro agendado {selectedTurmaId !== 'all' ? 'para esta turma' : ''}</p>
             <button onClick={() => navigate("/turmas")} className="text-sm text-primary font-semibold mt-2">Agendar encontro</button>
           </div>
         ) : (
@@ -168,7 +217,6 @@ export default function Dashboard() {
             <div className={`h-1 w-full ${isUrgent ? "bg-gradient-to-r from-destructive to-red-400" : "bg-gradient-to-r from-primary/40 to-primary/10"}`} />
 
             <div className="flex items-stretch">
-              {/* Coluna da data — estilo almanaque */}
               <div className="flex flex-col items-center justify-center px-5 py-4 bg-gradient-to-b from-primary/5 to-primary/10 shrink-0 min-w-[68px]">
                 <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">
                   {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
@@ -181,14 +229,12 @@ export default function Dashboard() {
                 </span>
               </div>
 
-              {/* Conteúdo */}
               <div className="flex-1 px-4 py-4 min-w-0">
                 <p className="text-sm font-bold text-foreground truncate mb-1">{proximoEncontro.tema}</p>
                 <p className="text-xs text-muted-foreground">{turmaEncontro?.nome}</p>
                 <p className="text-xs text-muted-foreground">{formatarDataVigente(proximoEncontro.data)}</p>
               </div>
 
-              {/* Badge piscante + seta */}
               <div className="flex flex-col items-center justify-center gap-2 px-4 py-4 shrink-0">
                 <span className={`text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse ${
                   isUrgent
@@ -204,7 +250,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* ── ANIVERSARIANTES DA SEMANA ou mais próximo ── */}
+      {/* ── ANIVERSARIANTES ── */}
       {(aniversariantesSemana.length > 0 || fallbackAniversario) && (
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
           <div className="flex items-center gap-2.5 mb-4">
@@ -217,7 +263,6 @@ export default function Dashboard() {
           </div>
 
           {aniversariantesSemana.length > 0 ? (
-            /* Scroll horizontal estilo cards de festa */
             <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
               {aniversariantesSemana.map((c, i) => {
                 const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
@@ -251,7 +296,6 @@ export default function Dashboard() {
               })}
             </div>
           ) : fallbackAniversario ? (
-            /* Card horizontal compacto para o próximo aniversário */
             (() => {
               const fb = fallbackAniversario;
               const diasAte = Math.round((fb.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
@@ -276,8 +320,6 @@ export default function Dashboard() {
         </div>
       )}
 
-
-
       {turmas.length === 0 && (
         <div className="float-card p-8 text-center bg-primary/5 border-primary/20 animate-float-up" style={{ animationDelay: '400ms' }}>
           <div className="icon-box bg-primary/10 text-primary mx-auto mb-3"><BookOpen className="h-5 w-5" /></div>
@@ -287,27 +329,52 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Turma picker dialog */}
+      {/* Turma intelligence picker dialog */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
-        <DialogContent className="max-w-sm mx-auto rounded-2xl">
+        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">Escolha a Turma</DialogTitle>
+            <DialogTitle className="text-2xl font-black tracking-tight text-center">Selecionar Turma</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
+          <div className="space-y-3 mt-4">
+            <button
+               onClick={() => { setSelectedTurmaId("all"); setTurmaPickerOpen(false); }}
+               className={cn(
+                 "w-full flex items-center gap-4 p-4 rounded-2xl transition-all active:scale-[0.98] text-left border-2",
+                 selectedTurmaId === "all" ? "bg-primary/10 border-primary" : "bg-muted/30 border-transparent hover:bg-muted/50"
+               )}
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                <BookOpen className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-foreground">Todas as Turmas</p>
+                <p className="text-xs text-muted-foreground">Visão geral completa</p>
+              </div>
+            </button>
+
             {turmas.map((t) => {
               const count = catequizandos.filter((c) => c.turmaId === t.id).length;
+              const isSelected = selectedTurmaId === t.id;
               return (
                 <button
                   key={t.id}
-                  onClick={() => { setTurmaPickerOpen(false); navigate(`/turmas/${t.id}/catequizandos`); }}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-[0.98] text-left"
+                  onClick={() => { setSelectedTurmaId(t.id); setTurmaPickerOpen(false); }}
+                  className={cn(
+                    "w-full flex items-center gap-4 p-4 rounded-2xl transition-all active:scale-[0.98] text-left border-2",
+                    isSelected ? "bg-primary/10 border-primary shadow-md" : "bg-muted/30 border-transparent hover:bg-muted/50"
+                  )}
                 >
-                  <div className="icon-box bg-primary/10 w-10 h-10"><BookOpen className="h-4 w-4 text-primary" /></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">{t.nome}</p>
-                    <p className="text-xs text-muted-foreground">{count} catequizando{count !== 1 ? "s" : ""}</p>
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
+                    isSelected ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/10"
+                  )}>
+                    <BookOpen className={cn("h-6 w-6", isSelected ? "text-white" : "text-primary")} />
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-foreground truncate">{t.nome}</p>
+                    <p className="text-xs text-muted-foreground">{t.etapa} • {count} alunos</p>
+                  </div>
+                  {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />}
                 </button>
               );
             })}
