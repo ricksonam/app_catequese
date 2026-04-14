@@ -99,7 +99,8 @@ export default function Dashboard() {
       icon: BookOpen,
       color: "bg-primary/10 text-primary",
       isTurma: true,
-      action: () => setTurmaPickerOpen(true)
+      action: () => setTurmaPickerOpen(true),
+      isInteractive: true
     },
     { 
       label: "Catequizandos", 
@@ -165,11 +166,20 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-transform min-w-0 border-2",
-                stat.isTurma && selectedTurmaId !== "all" ? "border-primary/30 bg-primary/5" : "border-transparent"
+                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border-4 relative overflow-hidden",
+                stat.isTurma 
+                  ? "border-primary bg-primary/5 shadow-2xl shadow-primary/20 ring-4 ring-primary/10 animate-pulse-subtle" 
+                  : "border-transparent"
               )}
               style={{ animationDelay: `${i * 80}ms` }}
             >
+              {stat.isTurma && (
+                <div className="absolute top-0 right-0 p-1.5 bg-primary text-white rounded-bl-xl shadow-lg">
+                  <ChevronRight className="h-3.5 w-3.5 animate-bounce-horizontal" />
+                </div>
+              )}
+
+
               <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10`}>
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
@@ -179,7 +189,13 @@ export default function Dashboard() {
               )} title={String(stat.value)}>
                 {stat.value}
               </p>
-              <p className="text-[8px] sm:text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mt-0.5 leading-tight break-words">{stat.label}</p>
+              <p className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 leading-tight break-words">
+                {stat.isTurma ? (
+                  <span className="flex items-center justify-center gap-1 text-primary animate-pulse">
+                    ● SELECIONAR 
+                  </span>
+                ) : stat.label}
+              </p>
             </button>
           );
         })}
