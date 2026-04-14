@@ -50,7 +50,7 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
                 <Church className="h-5 w-5" />
               </div>
               <p className="text-base sm:text-lg leading-relaxed text-foreground/90 italic font-medium text-center">
-                "Semeando a Palavra, cultivando o Reino. O iCatequese é uma plataforma que vem para auxiliar os catequistas a organizar a missão de forma que a evangelização se torne o essencial."
+                "Semear a Palavra e cultivar o Reino. O iCatequese é uma plataforma para auxiliar catequistas a organizar seus encontros de catequese e sua missão evangelizadora, com recursos didáticos que inovam o processo educativo da fé."
               </p>
               <div className="mt-6 pt-6 border-t border-primary/10">
                 <p className="text-sm sm:text-[15px] leading-relaxed text-muted-foreground font-medium text-center">
