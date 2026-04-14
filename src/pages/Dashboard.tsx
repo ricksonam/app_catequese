@@ -1,6 +1,6 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, AlertTriangle, MapPin, UserCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useParoquias, useCatequistas } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
@@ -14,11 +14,14 @@ export default function Dashboard() {
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
+  const { data: paroquias = [], isLoading: pLoading } = useParoquias();
+  const { data: catequistas = [], isLoading: qLoading } = useCatequistas();
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
-  const loading = tLoading || eLoading || cLoading;
+  const loading = tLoading || eLoading || cLoading || pLoading || qLoading;
 
   useEffect(() => {
     if (!loading && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
@@ -146,9 +149,64 @@ export default function Dashboard() {
     ? (dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()])
     : "";
 
+  const missingParoquia = paroquias.length === 0;
+  const missingCatequistas = catequistas.length === 0;
+  const hasMissing = (missingParoquia || missingCatequistas) && !bannerDismissed;
+
   return (
     <div className="space-y-6">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
+
+      {/* ── Banner Cadastros Pendentes ── */}
+      {hasMissing && !loading && (
+        <div className="animate-float-up relative overflow-hidden rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 shadow-lg shadow-amber-500/10">
+          {/* Faixa decorativa */}
+          <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400" />
+
+          <div className="p-4">
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-400/20 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-black text-amber-800 dark:text-amber-300">Cadastros básicos pendentes</p>
+                <p className="text-xs text-amber-700/70 dark:text-amber-400/70 mt-0.5">
+                  Complete os cadastros abaixo para usar o sistema completo.
+                </p>
+              </div>
+              <button
+                onClick={() => setBannerDismissed(true)}
+                className="text-amber-400/60 hover:text-amber-600 transition-colors shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {missingParoquia && (
+                <button
+                  onClick={() => navigate("/cadastros/paroquia-comunidade")}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-amber-300 dark:border-amber-600/40 shadow-sm text-xs font-bold text-amber-700 dark:text-amber-400 active:scale-[0.97] transition-all hover:shadow-md"
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  Cadastrar Paróquia
+                  <ChevronRight className="h-3 w-3 opacity-60" />
+                </button>
+              )}
+              {missingCatequistas && (
+                <button
+                  onClick={() => navigate("/cadastros/catequistas")}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-sky-300 dark:border-sky-600/40 shadow-sm text-xs font-bold text-sky-700 dark:text-sky-400 active:scale-[0.97] transition-all hover:shadow-md"
+                >
+                  <UserCheck className="h-3.5 w-3.5" />
+                  Cadastrar Catequistas
+                  <ChevronRight className="h-3 w-3 opacity-60" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="animate-fade-in flex items-start justify-between">
         <div>

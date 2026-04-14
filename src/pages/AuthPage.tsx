@@ -1,75 +1,223 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { Eye, EyeOff, LogIn, UserPlus, Mail } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  LogIn,
+  UserPlus,
+  Mail,
+  Share2,
+  ArrowLeft,
+  Cross,
+  ChevronRight,
+  X,
+  Check,
+} from "lucide-react";
 
+/* ─── tipos de view ─── */
+type View = "landing" | "login" | "signup" | "forgot";
+
+const SAVED_EMAIL_KEY = "ivc_saved_email";
+
+/* ──────────────────────────────────────────────
+   CONSENT MODAL
+────────────────────────────────────────────── */
+function ConsentModal({
+  open,
+  onAccept,
+  onCancel,
+}: {
+  open: boolean;
+  onAccept: () => void;
+  onCancel: () => void;
+}) {
+  const [agreed, setAgreed] = useState(false);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative w-full sm:max-w-sm bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[88vh] overflow-hidden border border-white/20 z-10">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-black/10 dark:border-white/10">
+          <h2 className="text-lg font-black text-foreground">Termos de Uso</h2>
+          <button
+            onClick={onCancel}
+            className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-muted-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        {/* Body scrollável */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4 text-sm text-muted-foreground leading-relaxed">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-primary/20 bg-white shadow-md shrink-0">
+              <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
+            </div>
+            <div>
+              <p className="text-base font-black text-foreground">iCatequese</p>
+              <p className="text-xs text-muted-foreground">Termos e Privacidade</p>
+            </div>
+          </div>
+
+          <p>
+            Bem-vindo ao <strong className="text-foreground">iCatequese</strong>. Ao criar sua conta, você concorda com os termos abaixo:
+          </p>
+
+          <div className="space-y-3">
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/15">
+              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">📋 Uso dos Dados</p>
+              <p>Seus dados são utilizados exclusivamente para a gestão pastoral da catequese. Não compartilhamos suas informações com terceiros.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/15">
+              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">🔒 Privacidade</p>
+              <p>As informações dos catequizandos são tratadas com total sigilo e respeito, em conformidade com a LGPD (Lei nº 13.709/2018).</p>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15">
+              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">✝️ Finalidade Pastoral</p>
+              <p>O sistema destina-se ao uso pastoral e educativo da catequese. É proibido utilizar os dados para fins comerciais ou não autorizados.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
+              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">📧 Comunicações</p>
+              <p>Podemos enviar notificações relacionadas ao funcionamento do sistema. Você pode desativar isso nas configurações da conta.</p>
+            </div>
+          </div>
+          <p className="text-xs text-center text-muted-foreground/70 pt-2">
+            Desenvolvido por Rickson Amazonas • Versão 1.0.0
+          </p>
+        </div>
+        {/* Footer */}
+        <div className="px-6 pb-6 pt-4 border-t border-black/10 dark:border-white/10 space-y-3">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <button
+              type="button"
+              onClick={() => setAgreed((v) => !v)}
+              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                agreed ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600"
+              }`}
+            >
+              {agreed && <Check className="h-3 w-3 text-white" />}
+            </button>
+            <span className="text-sm text-foreground leading-snug">
+              Li e concordo com os <strong>Termos de Uso</strong> e a <strong>Política de Privacidade</strong> do iCatequese.
+            </span>
+          </label>
+          <Button
+            onClick={onAccept}
+            disabled={!agreed}
+            className="w-full rounded-2xl h-12 font-bold text-sm"
+          >
+            Confirmar Cadastro
+          </Button>
+          <button onClick={onCancel} className="w-full text-sm text-muted-foreground py-1">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────────────────────────
+   AUTH PAGE PRINCIPAL
+────────────────────────────────────────────── */
 export default function AuthPage() {
   const { session, isReady } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
-  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [view, setView] = useState<View>("landing");
+
+  // Login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [savedEmail, setSavedEmail] = useState<string | null>(null);
+
+  // Signup state
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirm, setSignupConfirm] = useState("");
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+
+  // Forgot password
+  const [forgotEmail, setForgotEmail] = useState("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem(SAVED_EMAIL_KEY);
+    if (saved) setSavedEmail(saved);
+  }, []);
 
   // Redirect if already logged in
-  if (isReady && session) {
-    return <Navigate to="/" replace />;
-  }
+  if (isReady && session) return <Navigate to="/" replace />;
 
+  /* ── handlers ── */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const loginEmail = savedEmail || email;
+    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     if (error) {
       toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
       setLoading(false);
+    } else {
+      localStorage.setItem(SAVED_EMAIL_KEY, loginEmail);
     }
-    // Don't setLoading(false) on success — the redirect will happen via AuthContext
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleClearSavedEmail = () => {
+    localStorage.removeItem(SAVED_EMAIL_KEY);
+    setSavedEmail(null);
+    setEmail("");
+  };
+
+  const handleSignupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loading) return;
-    if (password !== confirmPassword) {
+    if (signupPassword !== signupConfirm) {
       toast({ title: "Erro", description: "As senhas não coincidem", variant: "destructive" });
       return;
     }
-    if (password.length < 6) {
+    if (signupPassword.length < 6) {
       toast({ title: "Erro", description: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
       return;
     }
+    setShowConsentModal(true);
+  };
+
+  const handleSignupConfirm = async () => {
+    setShowConsentModal(false);
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: window.location.origin },
+      email: signupEmail,
+      password: signupPassword,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { full_name: signupName },
+      },
     });
     setLoading(false);
     if (error) {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Cadastro realizado!", description: "Verifique seu email para confirmar a conta." });
-      setIsLogin(true);
+      toast({ title: "Cadastro realizado! 🎉", description: "Verifique seu email para confirmar a conta." });
+      setView("login");
     }
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
+    if (!forgotEmail) {
       toast({ title: "Erro", description: "Digite seu email", variant: "destructive" });
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     setLoading(false);
@@ -77,148 +225,457 @@ export default function AuthPage() {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Email enviado!", description: "Verifique sua caixa de entrada para redefinir a senha." });
-      setIsForgotPassword(false);
+      setView("login");
     }
   };
 
-  if (isForgotPassword) {
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "iCatequese",
+          text: "Conheça o iCatequese – o sistema completo de gestão para a catequese!",
+          url: window.location.origin,
+        });
+      } catch {
+        // ignored
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.origin);
+      toast({ title: "Link copiado!", description: "Compartilhe com seus colegas catequistas." });
+    }
+  };
+
+  /* ──────────────────────────────────────────────
+     LANDING VIEW
+  ────────────────────────────────────────────── */
+  if (view === "landing") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <Card className="w-full max-w-sm border-border/60 shadow-xl animate-float-up">
-          <CardHeader className="text-center space-y-2">
-            <div className="mx-auto w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 mb-2">
-              <Mail className="h-7 w-7 text-primary-foreground" />
+      <div className="min-h-screen flex flex-col items-center justify-between overflow-hidden relative bg-[#0f0a1e]">
+        {/* ── Background Litúrgico Animado ── */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Gradients */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a0533] via-[#0f0a1e] to-[#0a1628]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: "1s" }} />
+          <div className="absolute top-1/3 right-0 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: "2s" }} />
+
+          {/* Partículas litúrgicas flutuantes */}
+          {[
+            { symbol: "✦", top: "8%", left: "12%", size: "text-2xl", delay: "0s", dur: "6s" },
+            { symbol: "✝", top: "15%", right: "10%", size: "text-3xl", delay: "1s", dur: "8s" },
+            { symbol: "☩", top: "72%", left: "8%", size: "text-xl", delay: "2s", dur: "7s" },
+            { symbol: "✦", top: "80%", right: "14%", size: "text-lg", delay: "0.5s", dur: "9s" },
+            { symbol: "✝", top: "45%", left: "5%", size: "text-base", delay: "3s", dur: "6s" },
+            { symbol: "✦", top: "30%", right: "6%", size: "text-sm", delay: "1.5s", dur: "10s" },
+          ].map((p, i) => (
+            <div
+              key={i}
+              className="absolute text-white/10 font-serif select-none"
+              style={{
+                top: p.top,
+                left: (p as any).left,
+                right: (p as any).right,
+                fontSize: undefined,
+                animation: `float-particle ${p.dur} ease-in-out infinite`,
+                animationDelay: p.delay,
+              }}
+            >
+              <span className={`${p.size} opacity-30`}>{p.symbol}</span>
             </div>
-            <CardTitle className="text-xl">Recuperar Senha</CardTitle>
-            <CardDescription>Digite seu email para receber o link de recuperação</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleForgotPassword} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="forgot-email">Email</Label>
-                <Input
-                  id="forgot-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Enviando..." : "Enviar Link"}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full"
-                onClick={() => setIsForgotPassword(false)}
-              >
-                Voltar ao login
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+          ))}
+        </div>
+
+        {/* ── Conteúdo ── */}
+        <div className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto px-6 text-center py-10">
+          {/* Logo com halo */}
+          <div className="relative mb-8">
+            <div className="absolute inset-0 scale-125 rounded-[40px] bg-violet-500/20 blur-2xl animate-pulse" />
+            <div
+              className="relative w-32 h-32 rounded-[32px] overflow-hidden bg-white shadow-2xl shadow-violet-500/30 border-2 border-white/20"
+              style={{ animation: "logo-breathe 4s ease-in-out infinite" }}
+            >
+              <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain p-2" />
+            </div>
+            {/* Estrelinhas orbitando */}
+            <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center shadow-lg shadow-amber-400/40 animate-bounce">
+              <span className="text-white text-sm">✦</span>
+            </div>
+          </div>
+
+          {/* Nome + Slogan */}
+          <h1 className="text-5xl font-black tracking-tighter mb-3 bg-gradient-to-r from-amber-300 via-white to-violet-300 bg-clip-text text-transparent drop-shadow-lg">
+            iCatequese
+          </h1>
+          <p className="text-white/70 text-base leading-relaxed mb-2 max-w-xs">
+            Organize, acompanhe e inspire<br />sua catequese
+          </p>
+          <div className="flex items-center gap-2 mb-10">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/20" />
+            <span className="text-white/30 text-xs font-bold tracking-widest uppercase">✝ Ad maiorem Dei gloriam ✝</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/20" />
+          </div>
+
+          {/* Botões */}
+          <div className="w-full space-y-3">
+            <button
+              id="btn-entrar"
+              onClick={() => setView("login")}
+              className="w-full h-14 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-base shadow-lg shadow-violet-600/40 flex items-center justify-center gap-2.5 active:scale-[0.97] transition-all hover:shadow-violet-500/60 hover:shadow-xl"
+            >
+              <LogIn className="h-5 w-5" />
+              Entrar
+              <ChevronRight className="h-4 w-4 ml-1 opacity-60" />
+            </button>
+
+            <button
+              id="btn-cadastro"
+              onClick={() => setView("signup")}
+              className="w-full h-12 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold text-sm backdrop-blur-sm flex items-center justify-center gap-2 active:scale-[0.97] transition-all hover:bg-white/15"
+            >
+              <UserPlus className="h-4 w-4" />
+              Cadastre-se
+            </button>
+
+            {/* Chip compartilhar */}
+            <button
+              id="btn-compartilhar"
+              onClick={handleShare}
+              className="w-full h-10 rounded-2xl bg-amber-400/10 border border-amber-400/25 text-amber-300 font-semibold text-xs flex items-center justify-center gap-2 active:scale-[0.97] transition-all hover:bg-amber-400/20"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Compartilhar o Aplicativo
+            </button>
+          </div>
+        </div>
+
+        {/* ── Footer ── */}
+        <div className="relative z-10 pb-6 text-center">
+          <p className="text-white/25 text-xs">Versão 1.0.0 · Rickson Amazonas</p>
+        </div>
+
+        <style>{`
+          @keyframes float-particle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-18px) rotate(5deg); }
+            66% { transform: translateY(-8px) rotate(-3deg); }
+          }
+          @keyframes logo-breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px 8px rgba(139,92,246,0.2); }
+            50% { transform: scale(1.03); box-shadow: 0 0 50px 15px rgba(139,92,246,0.4); }
+          }
+        `}</style>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm border-border/60 shadow-xl animate-float-up">
-        <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-24 h-24 rounded-3xl overflow-hidden bg-white/80 border border-border/40 shadow-xl shadow-primary/5 mb-2">
-            <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-2" />
-          </div>
-          <CardTitle className="text-2xl font-black">
-            {isLogin ? "Entrar" : "Criar Conta"}
-          </CardTitle>
-          <CardDescription>
-            {isLogin ? "Acesse sua conta no iCatequese" : "Cadastre-se para começar no iCatequese"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={isLogin ? handleLogin : handleSignUp} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
-              />
+  /* ──────────────────────────────────────────────
+     LOGIN VIEW
+  ────────────────────────────────────────────── */
+  if (view === "login") {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#0f0a1e] relative overflow-hidden">
+        {/* Fundo suave */}
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-900/30 via-[#0f0a1e] to-[#0f0a1e] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-violet-600/15 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
+          <div className="w-full max-w-sm">
+            {/* Back */}
+            <button
+              onClick={() => setView("landing")}
+              className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-sm mb-8 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" /> Voltar
+            </button>
+
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-violet-500/20 border border-white/20">
+                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
+              </div>
+              <h2 className="text-2xl font-black text-white mb-1">Bem-vindo de volta!</h2>
+              <p className="text-white/50 text-sm">Entre com sua conta para continuar</p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
+
+            {/* Email salvo chip */}
+            {savedEmail && (
+              <div className="mb-4 p-3 rounded-2xl bg-violet-500/10 border border-violet-500/25 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
+                  <Mail className="h-4 w-4 text-violet-300" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] text-violet-400/70 font-bold uppercase tracking-wide">Conta salva</p>
+                  <p className="text-sm text-white font-semibold truncate">{savedEmail}</p>
+                </div>
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={handleClearSavedEmail}
+                  className="text-white/30 hover:text-white/60 transition-colors"
+                  title="Usar outra conta"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <X className="h-4 w-4" />
                 </button>
               </div>
-            </div>
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirmar Senha</Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
             )}
-            <Button type="submit" className="w-full gap-2" disabled={loading}>
-              {loading ? (
-                "Carregando..."
-              ) : isLogin ? (
-                <>
-                  <LogIn className="h-4 w-4" /> Entrar
-                </>
-              ) : (
-                <>
-                  <UserPlus className="h-4 w-4" /> Cadastrar
-                </>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Email – só mostra se não tiver salvo */}
+              {!savedEmail && (
+                <div className="space-y-1.5">
+                  <Label className="text-white/70 text-sm font-semibold">Email</Label>
+                  <Input
+                    id="login-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                    required
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-violet-400 h-12 rounded-xl"
+                  />
+                </div>
               )}
-            </Button>
-            {isLogin && (
-              <Button
-                type="button"
-                variant="link"
-                className="w-full text-sm"
-                onClick={() => setIsForgotPassword(true)}
-              >
-                Esqueci minha senha
-              </Button>
-            )}
-            <div className="text-center text-sm text-muted-foreground">
-              {isLogin ? "Não tem conta?" : "Já tem conta?"}{" "}
+
+              <div className="space-y-1.5">
+                <Label className="text-white/70 text-sm font-semibold">Senha</Label>
+                <div className="relative">
+                  <Input
+                    id="login-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-violet-400 h-12 rounded-xl pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-primary font-medium hover:underline"
+                onClick={() => setView("forgot")}
+                className="text-violet-400 text-xs hover:text-violet-300 transition-colors w-full text-right"
               >
-                {isLogin ? "Cadastre-se" : "Entrar"}
+                Esqueci minha senha
+              </button>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-13 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-base shadow-lg shadow-violet-600/30 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <LogIn className="h-4 w-4" /> Entrar
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="text-center mt-6">
+              <span className="text-white/40 text-sm">Não tem conta? </span>
+              <button
+                onClick={() => setView("signup")}
+                className="text-violet-400 font-semibold text-sm hover:text-violet-300 transition-colors"
+              >
+                Cadastre-se
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ──────────────────────────────────────────────
+     SIGNUP VIEW
+  ────────────────────────────────────────────── */
+  if (view === "signup") {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#0f0a1e] relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 via-[#0f0a1e] to-[#0f0a1e] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-[80px] pointer-events-none" />
+
+        <ConsentModal
+          open={showConsentModal}
+          onAccept={handleSignupConfirm}
+          onCancel={() => setShowConsentModal(false)}
+        />
+
+        <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
+          <div className="w-full max-w-sm">
+            {/* Back */}
+            <button
+              onClick={() => setView("landing")}
+              className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-sm mb-8 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" /> Voltar
+            </button>
+
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-indigo-500/20 border border-white/20">
+                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
+              </div>
+              <h2 className="text-2xl font-black text-white mb-1">Criar sua conta</h2>
+              <p className="text-white/50 text-sm">Junte-se à comunidade iCatequese</p>
+            </div>
+
+            <form onSubmit={handleSignupSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-white/70 text-sm font-semibold">Nome Completo</Label>
+                <Input
+                  id="signup-name"
+                  type="text"
+                  value={signupName}
+                  onChange={(e) => setSignupName(e.target.value)}
+                  placeholder="Seu nome"
+                  required
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-white/70 text-sm font-semibold">Email</Label>
+                <Input
+                  id="signup-email"
+                  type="email"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-white/70 text-sm font-semibold">Senha</Label>
+                <div className="relative">
+                  <Input
+                    id="signup-password"
+                    type={showSignupPassword ? "text" : "password"}
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                    placeholder="Mín. 6 caracteres"
+                    required
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupPassword(!showSignupPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  >
+                    {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-white/70 text-sm font-semibold">Confirmar Senha</Label>
+                <Input
+                  id="signup-confirm"
+                  type="password"
+                  value={signupConfirm}
+                  onChange={(e) => setSignupConfirm(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-indigo-400 h-12 rounded-xl"
+                />
+              </div>
+
+              <p className="text-white/30 text-xs text-center px-2">
+                Ao cadastrar, você será solicitado a aceitar nossos <span className="text-indigo-400">Termos de Uso</span>.
+              </p>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-base shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4" /> Cadastrar
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="text-center mt-6">
+              <span className="text-white/40 text-sm">Já tem conta? </span>
+              <button
+                onClick={() => setView("login")}
+                className="text-indigo-400 font-semibold text-sm hover:text-indigo-300 transition-colors"
+              >
+                Entrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ──────────────────────────────────────────────
+     FORGOT PASSWORD VIEW
+  ────────────────────────────────────────────── */
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0f0a1e] relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-violet-900/30 via-[#0f0a1e] to-[#0f0a1e] pointer-events-none" />
+
+      <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
+        <div className="w-full max-w-sm">
+          <button
+            onClick={() => setView("login")}
+            className="flex items-center gap-1.5 text-white/50 hover:text-white/80 text-sm mb-8 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" /> Voltar ao login
+          </button>
+
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center mx-auto mb-4">
+              <Mail className="h-7 w-7 text-violet-300" />
+            </div>
+            <h2 className="text-2xl font-black text-white mb-1">Recuperar Senha</h2>
+            <p className="text-white/50 text-sm">Enviaremos um link para o seu email</p>
+          </div>
+
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-white/70 text-sm font-semibold">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="seu@email.com"
+                required
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/30 focus:border-violet-400 h-12 rounded-xl"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Enviar Link de Recuperação"
+              )}
+            </button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

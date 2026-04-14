@@ -1,114 +1,34 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ChevronRight,
-  ChevronLeft,
-  X,
-  MapPin,
-  Users,
-  BookOpen,
-  CalendarDays,
-  LayoutDashboard,
-  Layers,
-  CheckCircle2,
-  Sparkles,
-  PartyPopper,
-} from "lucide-react";
+import { X, MapPin, UserCheck, CheckCircle2, Dove } from "lucide-react";
+
+const WELCOME_SEEN_KEY = "ivc_welcome_seen";
 
 interface WelcomeModalProps {
   open: boolean;
   onClose: () => void;
 }
 
-const TOUR_STEPS = [
-  {
-    icon: LayoutDashboard,
-    color: "from-violet-500 to-indigo-600",
-    title: "Painel Principal",
-    desc: "No painel você vê um resumo de tudo: turmas, catequizandos, próximos encontros e aniversários do mês.",
-  },
-  {
-    icon: BookOpen,
-    color: "from-amber-500 to-orange-600",
-    title: "Turmas",
-    desc: "Crie e gerencie suas turmas. Em cada turma você organiza encontros, catequizandos e atividades.",
-  },
-  {
-    icon: CalendarDays,
-    color: "from-emerald-500 to-teal-600",
-    title: "Encontros",
-    desc: "Planeje seus encontros com roteiro, leitura bíblica, chamada e avaliação ao final. Tudo em um só lugar.",
-  },
-  {
-    icon: Users,
-    color: "from-sky-500 to-blue-600",
-    title: "Catequizandos",
-    desc: "Cadastre os catequizandos com foto e dados pessoais. Acompanhe presenças e sacramentos.",
-  },
-  {
-    icon: Layers,
-    color: "from-pink-500 to-rose-600",
-    title: "Módulos Globais",
-    desc: "Acesse a Bíblia, jogos pedagógicos, material de apoio, biblioteca de modelos e o calendário litúrgico.",
-  },
-];
-
-const REQUIRED_STEPS = [
-  {
-    icon: MapPin,
-    color: "bg-amber-500/15 text-amber-600",
-    border: "border-amber-500/30",
-    title: "Paróquia / Comunidade",
-    desc: "Informe os dados da sua paróquia. Essas informações aparecerão nos relatórios.",
-    path: "/cadastros/paroquia-comunidade",
-    key: "paroquia",
-  },
-  {
-    icon: Users,
-    color: "bg-sky-500/15 text-sky-600",
-    border: "border-sky-500/30",
-    title: "Catequistas",
-    desc: "Cadastre os catequistas que atuam na catequese para associá-los aos encontros.",
-    path: "/cadastros/catequistas",
-    key: "catequistas",
-  },
-  {
-    icon: BookOpen,
-    color: "bg-violet-500/15 text-violet-600",
-    border: "border-violet-500/30",
-    title: "Criar sua primeira Turma",
-    desc: "Com os cadastros feitos, crie sua turma e comece a organizar os encontros.",
-    path: "/turmas/nova",
-    key: "turma",
-  },
-];
-
 export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
   const navigate = useNavigate();
-  const [step, setStep] = useState<"welcome" | "checklist" | "tour">("welcome");
-  const [tourIndex, setTourIndex] = useState(0);
-  const [done, setDone] = useState<Record<string, boolean>>({});
+  const [doNotShow, setDoNotShow] = useState(false);
 
-  // Persist completed steps in localStorage
+  // Sync checkbox with what's already saved
   useEffect(() => {
-    const saved = localStorage.getItem("ivc_onboarding_done");
-    if (saved) setDone(JSON.parse(saved));
-  }, []);
+    if (open) {
+      setDoNotShow(false);
+    }
+  }, [open]);
 
-  function markDone(key: string) {
-    const next = { ...done, [key]: true };
-    setDone(next);
-    localStorage.setItem("ivc_onboarding_done", JSON.stringify(next));
-  }
-
-  function handleClose() {
-    localStorage.setItem("ivc_welcome_seen", "true");
+  function handleClose(dismissed = false) {
+    if (dismissed && doNotShow) {
+      localStorage.setItem(WELCOME_SEEN_KEY, "true");
+    }
     onClose();
   }
 
-  function handleGoTo(path: string, key: string) {
-    markDone(key);
-    handleClose();
+  function handleGoTo(path: string) {
+    handleClose(true);
     navigate(path);
   }
 
@@ -118,217 +38,126 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
     <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
-        onClick={handleClose}
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={() => handleClose(false)}
       />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-sm bg-card rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden animate-float-up border border-black/10">
-        
-        {/* Close */}
+      <div className="relative w-full sm:max-w-sm bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-black/10 dark:border-white/10" style={{ animation: "modal-slide-up 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+
+        {/* Faixa litúrgica no topo */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-violet-600 via-amber-400 to-violet-600" />
+
+        {/* Botão fechar */}
         <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+          onClick={() => handleClose(false)}
+          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-black/10 transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
 
-        {/* === WELCOME STEP === */}
-        {step === "welcome" && (
-          <div className="flex flex-col items-center text-center px-7 pt-10 pb-8 overflow-y-auto">
-            {/* Logo/icon */}
-            <div className="relative mb-6">
-              <div className="w-28 h-28 rounded-[32px] overflow-hidden bg-white shadow-xl shadow-primary/10 border border-primary/10 flex items-center justify-center">
-                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-2" />
-              </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center shadow-lg animate-bounce">
-                <PartyPopper className="h-4 w-4 text-white" />
-              </div>
-            </div>
+        {/* Conteúdo */}
+        <div className="flex flex-col items-center text-center px-7 pt-8 pb-7">
 
-            <h1 className="text-2xl font-black text-foreground mb-2 leading-tight">
-              Bem-vindo ao<br />
-              <span className="text-primary">iCatequese!</span>
+          {/* Ícone do app + ornamento */}
+          <div className="relative mb-5">
+            <div className="w-24 h-24 rounded-[28px] overflow-hidden bg-white shadow-xl shadow-primary/15 border-2 border-primary/10 flex items-center justify-center">
+              <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-2" />
+            </div>
+            {/* Pombinha animada */}
+            <div className="absolute -top-2 -right-3 w-9 h-9 rounded-full bg-violet-100 dark:bg-violet-900/50 border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-md animate-bounce">
+              <span className="text-base">🕊️</span>
+            </div>
+          </div>
+
+          {/* Saudação */}
+          <div className="mb-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 mb-1">✦ Bem-vindo ao ✦</p>
+            <h1 className="text-3xl font-black tracking-tighter bg-gradient-to-r from-violet-600 via-primary to-indigo-600 bg-clip-text text-transparent leading-tight">
+              iCatequese
             </h1>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              Seu sistema completo de gerenciamento no iCatequese. Antes de começar, precisamos configurar alguns dados importantes.
+          </div>
+
+          <p className="text-base font-semibold text-foreground mt-2 mb-1">
+            Que bom ter você aqui! 🙏
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
+            Antes de começar, é necessário cadastrar alguns dados básicos para que o sistema funcione corretamente.
+          </p>
+
+          {/* Cadastros necessários */}
+          <div className="w-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 rounded-2xl p-4 mb-6 text-left">
+            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-3">
+              📋 Cadastros necessários
             </p>
-
-            {/* Call-to-action cards */}
-            <div className="w-full space-y-2.5 mb-7">
-              <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-left">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
-                  <span className="text-base">📋</span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Cadastros obrigatórios</p>
-                  <p className="text-[11px] text-muted-foreground">Paróquia, catequistas e turma</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-primary/10 border border-primary/20 text-left">
-                <div className="w-9 h-9 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                  <span className="text-base">🗺️</span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">Tour guiado disponível</p>
-                  <p className="text-[11px] text-muted-foreground">Conheça todas as funcionalidades</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 w-full">
+            <div className="space-y-2.5">
               <button
-                onClick={() => setStep("checklist")}
-                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                onClick={() => handleGoTo("/cadastros/paroquia-comunidade")}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/30 shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
               >
-                <Sparkles className="h-4 w-4" />
-                Começar Setup
+                <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+                  <MapPin className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-bold text-foreground">Paróquia / Comunidade</p>
+                  <p className="text-[11px] text-muted-foreground">Dados da sua paróquia</p>
+                </div>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded-full">1°</span>
               </button>
+
               <button
-                onClick={() => setStep("tour")}
-                className="w-full py-3 rounded-2xl bg-muted/60 text-foreground font-semibold text-sm active:scale-[0.98] transition-all"
+                onClick={() => handleGoTo("/cadastros/catequistas")}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/30 shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
               >
-                Ver o Tour Primeiro
-              </button>
-              <button
-                onClick={handleClose}
-                className="text-xs text-muted-foreground py-1.5"
-              >
-                Pular por agora
+                <div className="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0">
+                  <UserCheck className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-bold text-foreground">Catequistas</p>
+                  <p className="text-[11px] text-muted-foreground">Cadastre os catequistas ativos</p>
+                </div>
+                <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/40 px-2 py-0.5 rounded-full">2°</span>
               </button>
             </div>
           </div>
-        )}
 
-        {/* === CHECKLIST STEP === */}
-        {step === "checklist" && (
-          <div className="flex flex-col px-6 pt-8 pb-7 overflow-y-auto">
-            <div className="mb-6">
-              <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Configuração Inicial</p>
-              <h2 className="text-xl font-black text-foreground leading-tight">Cadastros necessários</h2>
-              <p className="text-xs text-muted-foreground mt-1">Complete estes 3 passos para começar a usar o sistema.</p>
-            </div>
-
-            <div className="space-y-3 mb-7">
-              {REQUIRED_STEPS.map((item) => {
-                const Icon = item.icon;
-                const isDone = done[item.key];
-                return (
-                  <button
-                    key={item.key}
-                    onClick={() => handleGoTo(item.path, item.key)}
-                    className={`w-full flex items-center gap-3 p-4 rounded-2xl border text-left transition-all active:scale-[0.98] ${
-                      isDone
-                        ? "bg-emerald-500/10 border-emerald-500/20"
-                        : `${item.color.split(" ")[0].replace("text-", "bg-")}/0 border-black/10 bg-card hover:border-black/30`
-                    }`}
-                  >
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isDone ? "bg-emerald-500/15" : item.color}`}>
-                      {isDone ? (
-                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                      ) : (
-                        <Icon className="h-5 w-5" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-bold ${isDone ? "text-emerald-600" : "text-foreground"}`}>
-                        {item.title}
-                        {isDone && <span className="ml-1.5 text-[10px] font-black uppercase tracking-wide">✓ Feito</span>}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground leading-snug mt-0.5">{item.desc}</p>
-                    </div>
-                    {!isDone && <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => setStep("welcome")}
-                className="flex-1 py-3 rounded-2xl bg-muted/60 font-semibold text-sm text-foreground flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
-              >
-                <ChevronLeft className="h-4 w-4" /> Voltar
-              </button>
-              <button
-                onClick={() => setStep("tour")}
-                className="flex-1 py-3 rounded-2xl bg-primary/10 text-primary font-bold text-sm active:scale-[0.98] transition-all"
-              >
-                Ver Tour
-              </button>
-            </div>
-            <button onClick={handleClose} className="text-xs text-muted-foreground py-2 mt-1 text-center">
-              Fechar e continuar depois
-            </button>
-          </div>
-        )}
-
-        {/* === TOUR STEP === */}
-        {step === "tour" && (
-          <div className="flex flex-col px-6 pt-8 pb-7 overflow-y-auto">
-            {/* Progress dots */}
-            <div className="flex gap-1.5 justify-center mb-6">
-              {TOUR_STEPS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setTourIndex(i)}
-                  className={`rounded-full transition-all ${
-                    i === tourIndex ? "w-6 h-2 bg-primary" : "w-2 h-2 bg-muted"
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Tour card */}
-            {(() => {
-              const current = TOUR_STEPS[tourIndex];
-              const Icon = current.icon;
-              return (
-                <div className="flex flex-col items-center text-center mb-8 animate-float-up">
-                  <div className={`w-24 h-24 rounded-3xl bg-gradient-to-br ${current.color} flex items-center justify-center shadow-xl mb-5`}>
-                    <Icon className="h-12 w-12 text-white" />
-                  </div>
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">
-                    {tourIndex + 1} de {TOUR_STEPS.length}
-                  </p>
-                  <h3 className="text-xl font-black text-foreground mb-3">{current.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{current.desc}</p>
-                </div>
-              );
-            })()}
-
-            <div className="flex gap-2 mb-3">
-              <button
-                onClick={() => setTourIndex((p) => Math.max(0, p - 1))}
-                disabled={tourIndex === 0}
-                className="flex-1 py-3 rounded-2xl bg-muted/60 font-semibold text-sm text-foreground flex items-center justify-center gap-1.5 disabled:opacity-40 active:scale-[0.98] transition-all"
-              >
-                <ChevronLeft className="h-4 w-4" /> Anterior
-              </button>
-              {tourIndex < TOUR_STEPS.length - 1 ? (
-                <button
-                  onClick={() => setTourIndex((p) => p + 1)}
-                  className="flex-1 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
-                >
-                  Próximo <ChevronRight className="h-4 w-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={() => setStep("checklist")}
-                  className="flex-1 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
-                >
-                  Fazer Setup <ChevronRight className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+          {/* Checkbox "não mostrar mais" */}
+          <label className="flex items-center gap-2.5 cursor-pointer mb-5 self-start">
             <button
-              onClick={handleClose}
-              className="text-xs text-muted-foreground py-1.5 text-center"
+              type="button"
+              onClick={() => setDoNotShow((v) => !v)}
+              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                doNotShow ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600"
+              }`}
             >
-              Fechar e continuar depois
+              {doNotShow && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+            </button>
+            <span className="text-xs text-muted-foreground">Não mostrar este aviso novamente</span>
+          </label>
+
+          {/* Ações */}
+          <div className="flex gap-2.5 w-full">
+            <button
+              onClick={() => handleClose(true)}
+              className="flex-1 py-3 rounded-2xl bg-muted/60 dark:bg-white/10 text-foreground font-semibold text-sm active:scale-[0.97] transition-all"
+            >
+              Sair
+            </button>
+            <button
+              onClick={() => handleClose(true)}
+              className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-violet-500/25 active:scale-[0.97] transition-all"
+            >
+              Entendi, vamos lá!
             </button>
           </div>
-        )}
+        </div>
+
+        <style>{`
+          @keyframes modal-slide-up {
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0)    scale(1); }
+          }
+        `}</style>
       </div>
     </div>
   );
