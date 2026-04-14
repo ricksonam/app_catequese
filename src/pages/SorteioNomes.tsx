@@ -339,7 +339,7 @@ export default function SorteioNomes() {
                       <div className="h-px w-12 bg-primary/30" />
                     </div>
                   )}
-                  <p className="text-4xl md:text-7xl font-black text-foreground drop-shadow-2xl">
+                  <p className="text-4xl md:text-7xl font-black text-foreground drop-shadow-2xl px-2 w-full text-center break-words overflow-wrap-anywhere">
                     {sorteioAtual}
                   </p>
                 </div>
