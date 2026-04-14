@@ -1,7 +1,8 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, AlertTriangle, MapPin, UserCheck } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, AlertTriangle, MapPin, UserCheck, BellRing } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useParoquias, useCatequistas } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const { permission, subscribe, loading: pushLoading } = usePushNotifications();
 
   const loading = tLoading || eLoading || cLoading || pLoading || qLoading;
 
@@ -236,6 +238,30 @@ export default function Dashboard() {
                 <p className="text-[10px] font-bold text-muted-foreground">O acesso também está disponível no botão Menu.</p>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+ 
+      {/* ── ATIVAR NOTIFICAÇÕES ── */}
+      {permission === "default" && (
+        <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 shadow-xl shadow-blue-500/20 p-1">
+          <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-[30px] p-5 flex items-center justify-between gap-4">
+             <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-2xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50 animate-soft-pulse">
+                 <BellRing className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+               </div>
+               <div>
+                 <h3 className="text-sm font-black text-foreground leading-tight">Lembretes por Notificação</h3>
+                 <p className="text-[10px] text-muted-foreground mt-0.5">Receba avisos de encontros e aniversários</p>
+               </div>
+             </div>
+             <button
+               onClick={subscribe}
+               disabled={pushLoading}
+               className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2"
+             >
+               {pushLoading ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Ligar"}
+             </button>
           </div>
         </div>
       )}
