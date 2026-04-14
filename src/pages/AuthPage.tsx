@@ -289,7 +289,7 @@ export default function AuthPage() {
         <button
           id="btn-compartilhar"
           onClick={handleShare}
-          className="absolute top-6 right-6 z-20 w-12 h-12 rounded-full bg-white/70 backdrop-blur-md border border-primary/20 text-primary shadow-xl shadow-primary/10 flex items-center justify-center active:scale-90 transition-all hover:bg-white hover:border-primary/40 animate-glow-pulse shimmer-effect group"
+          className="fixed top-8 right-8 z-[100] w-12 h-12 rounded-full bg-white/70 backdrop-blur-md border border-primary/20 text-primary shadow-2xl shadow-primary/20 flex items-center justify-center active:scale-90 transition-all hover:bg-white hover:border-primary/40 animate-glow-pulse shimmer-effect group"
           title="Compartilhar iCatequese"
         >
           <Share2 className="h-5 w-5 transition-transform group-hover:rotate-12 group-active:scale-110" />
