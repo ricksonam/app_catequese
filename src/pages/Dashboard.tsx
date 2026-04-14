@@ -402,11 +402,66 @@ export default function Dashboard() {
       )}
 
       {turmas.length === 0 && (
-        <div className="float-card p-8 text-center bg-primary/5 border-primary/20 animate-float-up" style={{ animationDelay: '400ms' }}>
-          <div className="icon-box bg-primary/10 text-primary mx-auto mb-3"><BookOpen className="h-5 w-5" /></div>
-          <h3 className="text-base font-bold text-foreground mb-1">Comece criando sua turma</h3>
-          <p className="text-sm text-muted-foreground mb-5">Crie sua primeira turma de catequese para começar a gerenciar encontros e catequizandos.</p>
-          <button onClick={() => navigate("/turmas/nova")} className="action-btn mx-auto">Criar Turma</button>
+        <div 
+          className={cn(
+            "p-8 text-center transition-all duration-700 relative overflow-hidden",
+            !missingParoquia && !missingCatequistas 
+              ? "float-card bg-primary/5 border-primary shadow-2xl shadow-primary/20 animate-card-activate ring-4 ring-primary/5" 
+              : "float-card opacity-60 grayscale bg-muted/20 border-muted-foreground/10 cursor-not-allowed"
+          )}
+        >
+          {/* Brilho decorativo apenas quando ativo */}
+          {!missingParoquia && !missingCatequistas && (
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/5 animate-pulse" />
+          )}
+
+          <div className={cn(
+            "icon-box mx-auto mb-4 transition-transform duration-500",
+            !missingParoquia && !missingCatequistas ? "bg-primary/20 text-primary scale-110 animate-bounce-subtle" : "bg-muted text-muted-foreground"
+          )}>
+            <BookOpen className="h-6 w-6" />
+          </div>
+          
+          <h3 className="text-lg font-black text-foreground mb-2">Comece criando sua turma</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto leading-relaxed">
+            {!missingParoquia && !missingCatequistas 
+              ? "Tudo pronto! Agora você já pode criar sua primeira turma e começar a organizar seus encontros."
+              : "Quase lá! Para liberar a criação de turmas, primeiro complete os cadastros básicos da paróquia e dos catequistas."
+            }
+          </p>
+
+          <button 
+            onClick={() => {
+              if (!missingParoquia && !missingCatequistas) {
+                navigate("/turmas/nova");
+              } else {
+                setBannerDismissed(false); // Reabre o banner se estivesse fechado
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className={cn(
+              "mx-auto flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm transition-all duration-300 shadow-xl",
+              !missingParoquia && !missingCatequistas 
+                ? "bg-primary text-white shadow-primary/25 hover:scale-105 active:scale-95 animate-soft-pulse"
+                : "bg-muted text-muted-foreground/50 shadow-none grayscale"
+            )}
+          >
+            {!missingParoquia && !missingCatequistas && (
+              <span className="relative flex h-2 w-2 mr-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              </span>
+            )}
+            Criar Turma
+          </button>
+
+          {(!missingParoquia && !missingCatequistas) && (
+            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-primary uppercase tracking-[0.2em] animate-pulse">
+              <span>✦</span>
+              <span>Acesso Liberado</span>
+              <span>✦</span>
+            </div>
+          )}
         </div>
       )}
 

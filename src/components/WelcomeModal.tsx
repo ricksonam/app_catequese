@@ -71,90 +71,96 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
           </div>
 
           {/* Saudação */}
-          <div className="mb-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 mb-1">✦ Bem-vindo ao ✦</p>
-            <h1 className="text-3xl font-black tracking-tighter bg-gradient-to-r from-violet-600 via-primary to-indigo-600 bg-clip-text text-transparent leading-tight">
+          <div className="mb-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 mb-1 animate-pulse">✦ Bem-vindo ao ✦</p>
+            <h1 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-violet-600 via-primary to-indigo-600 bg-clip-text text-transparent leading-tight animate-in fade-in zoom-in duration-700">
               iCatequese
             </h1>
           </div>
 
-          <p className="text-base font-semibold text-foreground mt-2 mb-1">
-            Que bom ter você aqui! 🙏
+          <p className="text-lg font-bold text-foreground mt-2 mb-2 animate-in slide-in-from-bottom duration-500 delay-150">
+            Olá, Catequista! 🙏
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-            Antes de começar, é necessário cadastrar alguns dados básicos para que o sistema funcione corretamente.
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs animate-in slide-in-from-bottom duration-500 delay-300">
+            Antes de ter o acesso completo a plataforma primeiro faça os <strong>cadastros básicos</strong> da paróquia e dos catequistas e em seguida você ja pode criar a sua turma.
+          </p>
+
+          <p className="text-[11px] text-primary/70 font-medium mb-4 animate-in fade-in duration-700 delay-500">
+            O acesso aos cadastros básicos estão no botão menu ou você pode usar os acessos rápidos abaixo:
           </p>
 
           {/* Cadastros necessários */}
-          <div className="w-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 rounded-2xl p-4 mb-6 text-left">
-            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-3">
-              📋 Cadastros necessários
+          <div className="w-full bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200/50 dark:border-amber-700/20 rounded-3xl p-5 mb-6 text-left shadow-sm animate-in zoom-in-95 duration-700 delay-700">
+            <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+              📋 Cadastros prioritários
             </p>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               <button
                 onClick={() => handleGoTo("/cadastros/paroquia-comunidade")}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/30 shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
+                className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-white dark:bg-gray-800 border-2 border-amber-100 dark:border-amber-900/30 shadow-sm hover:shadow-md hover:border-amber-300 transition-all active:scale-[0.98] group"
               >
-                <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
-                  <MapPin className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <MapPin className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-bold text-foreground">Paróquia / Comunidade</p>
-                  <p className="text-[11px] text-muted-foreground">Dados da sua paróquia</p>
+                  <p className="text-sm font-black text-foreground">1. Paróquia / Comunidade</p>
+                  <p className="text-[11px] text-muted-foreground">Configurações iniciais</p>
                 </div>
-                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded-full">1°</span>
+                <ChevronRight className="w-4 h-4 text-amber-400 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
               </button>
 
               <button
                 onClick={() => handleGoTo("/cadastros/catequistas")}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700/30 shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
+                className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 shadow-sm hover:shadow-md hover:border-sky-300 transition-all active:scale-[0.98] group"
               >
-                <div className="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0">
-                  <UserCheck className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                  <UserCheck className="h-5 w-5 text-sky-600 dark:text-sky-400" />
                 </div>
                 <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-bold text-foreground">Catequistas</p>
-                  <p className="text-[11px] text-muted-foreground">Cadastre os catequistas ativos</p>
+                  <p className="text-sm font-black text-foreground">2. Catequistas</p>
+                  <p className="text-[11px] text-muted-foreground">Equipe de catequese</p>
                 </div>
-                <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-100 dark:bg-sky-900/40 px-2 py-0.5 rounded-full">2°</span>
+                <ChevronRight className="w-4 h-4 text-sky-400 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
               </button>
             </div>
           </div>
 
           {/* Checkbox "não mostrar mais" */}
-          <label className="flex items-center gap-2.5 cursor-pointer mb-5 self-start">
+          <label className="flex items-center gap-3 cursor-pointer mb-6 self-start group">
             <button
               type="button"
               onClick={() => setDoNotShow((v) => !v)}
-              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
-                doNotShow ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600"
+              className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
+                doNotShow ? "bg-primary border-primary scale-110 shadow-lg shadow-primary/20" : "border-gray-200 dark:border-gray-700 group-hover:border-primary/50"
               }`}
             >
               {doNotShow && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
             </button>
-            <span className="text-xs text-muted-foreground">Não mostrar este aviso novamente</span>
+            <span className="text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Não mostrar este aviso novamente</span>
           </label>
 
           {/* Ações */}
-          <div className="flex gap-2.5 w-full">
+          <div className="flex gap-3 w-full">
             <button
               onClick={() => handleClose(true)}
-              className="flex-1 py-3 rounded-2xl bg-muted/60 dark:bg-white/10 text-foreground font-semibold text-sm active:scale-[0.97] transition-all"
+              className="flex-1 py-3.5 rounded-2xl bg-muted/60 dark:bg-white/5 text-foreground font-bold text-sm active:scale-[0.97] transition-all hover:bg-muted/80"
             >
-              Sair
+              Depois
             </button>
             <button
               onClick={() => handleClose(true)}
-              className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold text-sm shadow-lg shadow-violet-500/25 active:scale-[0.97] transition-all"
+              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-sm shadow-xl shadow-violet-500/25 active:scale-[0.97] transition-all hover:brightness-110 flex items-center justify-center gap-2"
             >
-              Entendi, vamos lá!
+              Vamos lá!
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         <style>{`
           @keyframes modal-slide-up {
-            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            from { opacity: 0; transform: translateY(60px) scale(0.9); }
             to   { opacity: 1; transform: translateY(0)    scale(1); }
           }
         `}</style>
@@ -162,3 +168,5 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
     </div>
   );
 }
+
+import { ChevronRight } from "lucide-react";
