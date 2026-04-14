@@ -159,50 +159,82 @@ export default function Dashboard() {
 
       {/* ── Banner Cadastros Pendentes ── */}
       {hasMissing && !loading && (
-        <div className="animate-float-up relative overflow-hidden rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 shadow-lg shadow-amber-500/10">
-          {/* Faixa decorativa */}
-          <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400" />
+        <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500 shadow-2xl shadow-amber-500/20 p-1">
+          <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-[30px] p-6">
+            {/* Background decorations */}
+            <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-400/10 rounded-full blur-2xl animate-pulse" />
+            <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-orange-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
 
-          <div className="p-4">
-            <div className="flex items-start gap-3 mb-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-400/20 flex items-center justify-center shrink-0 mt-0.5">
-                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0 border border-amber-200 dark:border-amber-700/50 animate-bounce-subtle">
+                    <span className="text-2xl">✨</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-foreground leading-tight tracking-tight">Olá, Catequista! 👋</h3>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400">Acesso Restrito</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setBannerDismissed(true)}
+                  className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-black/10 transition-colors shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-amber-800 dark:text-amber-300">Cadastros básicos pendentes</p>
-                <p className="text-xs text-amber-700/70 dark:text-amber-400/70 mt-0.5">
-                  Complete os cadastros abaixo para usar o sistema completo.
+
+              <p className="text-sm font-medium text-muted-foreground leading-relaxed mb-6">
+                Antes de ter o <strong>acesso completo</strong> a plataforma primeiro faça os <strong>cadastros básicos</strong> da paróquia e dos catequistas e em seguida você já pode criar a sua turma.
+              </p>
+
+              <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-100 dark:border-amber-800/30 mb-5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-4 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                  Botões de acesso rápido:
                 </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {missingParoquia && (
+                    <button
+                      onClick={() => navigate("/cadastros/paroquia-comunidade")}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border-2 border-amber-100 dark:border-amber-900/30 shadow-sm hover:shadow-md hover:border-amber-400 transition-all active:scale-[0.98] group"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform">
+                        <MapPin className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="text-[13px] font-black text-foreground leading-none">Minha Paróquia</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Configurar local</p>
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 text-amber-400" />
+                    </button>
+                  )}
+                  {missingCatequistas && (
+                    <button
+                      onClick={() => navigate("/cadastros/catequistas")}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-gray-800 border-2 border-sky-100 dark:border-sky-900/30 shadow-sm hover:shadow-md hover:border-sky-400 transition-all active:scale-[0.98] group"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform">
+                        <UserCheck className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <p className="text-[13px] font-black text-foreground leading-none">Catequistas</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Equipe ativa</p>
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 text-sky-400" />
+                    </button>
+                  )}
+                </div>
               </div>
-              <button
-                onClick={() => setBannerDismissed(true)}
-                className="text-amber-400/60 hover:text-amber-600 transition-colors shrink-0"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
 
-            <div className="flex gap-2 flex-wrap">
-              {missingParoquia && (
-                <button
-                  onClick={() => navigate("/cadastros/paroquia-comunidade")}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-amber-300 dark:border-amber-600/40 shadow-sm text-xs font-bold text-amber-700 dark:text-amber-400 active:scale-[0.97] transition-all hover:shadow-md"
-                >
-                  <MapPin className="h-3.5 w-3.5" />
-                  Cadastrar Paróquia
-                  <ChevronRight className="h-3 w-3 opacity-60" />
-                </button>
-              )}
-              {missingCatequistas && (
-                <button
-                  onClick={() => navigate("/cadastros/catequistas")}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-sky-300 dark:border-sky-600/40 shadow-sm text-xs font-bold text-sky-700 dark:text-sky-400 active:scale-[0.97] transition-all hover:shadow-md"
-                >
-                  <UserCheck className="h-3.5 w-3.5" />
-                  Cadastrar Catequistas
-                  <ChevronRight className="h-3 w-3 opacity-60" />
-                </button>
-              )}
+              <div className="flex items-center gap-2 px-1">
+                <div className="flex -space-x-2">
+                  <div className="w-6 h-6 rounded-full bg-amber-400 border-2 border-white dark:border-gray-900 flex items-center justify-center text-[10px] font-bold">1</div>
+                  <div className="w-6 h-6 rounded-full bg-sky-400 border-2 border-white dark:border-gray-900 flex items-center justify-center text-[10px] font-bold">2</div>
+                </div>
+                <p className="text-[10px] font-bold text-muted-foreground">O acesso também está disponível no botão Menu.</p>
+              </div>
             </div>
           </div>
         </div>
