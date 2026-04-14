@@ -36,7 +36,7 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
 
           <div className="px-6 sm:px-10 pt-8 pb-10 space-y-8 flex-1">
             <div className="text-center space-y-1">
-              <h2 className="text-4xl sm:text-5xl font-black text-primary tracking-tighter drop-shadow-md bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">iCatequese</h2>
+              <h2 className="text-4xl sm:text-5xl font-black text-primary tracking-tighter drop-shadow-md bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent">iCatequese</h2>
               <div className="flex items-center justify-center gap-2">
                 <Sparkles className="h-3.5 w-3.5 text-amber-500" />
                 <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground">Gestão Inteligente para Catequistas</p>
@@ -109,6 +109,12 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
           }
           .animate-float-float {
             animation: float-float 4s ease-in-out infinite;
+          }
+          @keyframes shimmer {
+            to { background-position: 200% center; }
+          }
+          .animate-shimmer {
+            animation: shimmer 3s linear infinite;
           }
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
