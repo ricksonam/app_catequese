@@ -3,6 +3,7 @@ import { ArrowLeft, RotateCcw, Trophy, ChevronDown, ChevronUp, PlayCircle, Minim
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { GameTimerButton } from "@/components/GameTimerButton";
 
 interface PerguntaResp {
   categoria: string;
@@ -84,6 +85,7 @@ export default function PerguntasRespostas() {
   const [pontuacao, setPontuacao] = useState({ acertou: 0, errou: 0 });
   const [jogoFinalizado, setJogoFinalizado] = useState(false);
   const [jogoPerguntas, setJogoPerguntas] = useState<PerguntaResp[]>([]);
+  const [timeoutActive, setTimeoutActive] = useState(false);
 
   useEffect(() => {
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -117,6 +119,7 @@ export default function PerguntasRespostas() {
     setMostrarResposta(false);
     setPontuacao({ acertou: 0, errou: 0 });
     setJogoFinalizado(false);
+    setTimeoutActive(false);
 
     if (!document.fullscreenElement && window.innerWidth < 1024) {
       containerRef.current?.requestFullscreen().catch(() => {});
@@ -138,7 +141,13 @@ export default function PerguntasRespostas() {
     } else {
       setJogoPergIdx((p) => p + 1);
       setMostrarResposta(false);
+      setTimeoutActive(false);
     }
+  };
+
+  const handleTimeUp = () => {
+    if (mostrarResposta) return;
+    setTimeoutActive(true);
   };
 
   return (
@@ -245,38 +254,62 @@ export default function PerguntasRespostas() {
       )}
 
       {modo === "jogo" && !jogoFinalizado && (
-        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full">
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full relative pt-10">
           {!isFullscreen && (
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-6">
+            <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-6 absolute top-0">
               <div className="h-full bg-success rounded-full transition-all duration-500" style={{ width: `${((jogoPergIdx + 1) / jogoPerguntas.length) * 100}%` }} />
             </div>
           )}
 
-          <div className="float-card p-6 sm:p-8 space-y-6 animate-float-up shadow-xl shadow-black/5">
-            <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2.5 py-1 rounded-md">{jogoPerguntas[jogoPergIdx].categoria}</span>
-            <h2 className="text-xl font-bold text-foreground leading-relaxed mt-2">{jogoPerguntas[jogoPergIdx].pergunta}</h2>
+          <div className="float-card p-6 sm:p-8 space-y-6 animate-float-up shadow-xl shadow-black/5 relative overflow-hidden">
+            {timeoutActive && !mostrarResposta && (
+                <div className="absolute inset-0 bg-destructive/5 pointer-events-none animate-pulse z-0" />
+            )}
+            
+            <div className="flex items-start justify-between gap-4 relative z-10">
+              <div>
+                <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2.5 py-1 rounded-md">{jogoPerguntas[jogoPergIdx].categoria}</span>
+                <h2 className="text-xl font-bold text-foreground leading-relaxed mt-4">{jogoPerguntas[jogoPergIdx].pergunta}</h2>
+              </div>
+              <GameTimerButton 
+                key={jogoPergIdx} 
+                onTimeUp={handleTimeUp} 
+                disabled={mostrarResposta} 
+                duration={10} 
+              />
+            </div>
 
-            {!mostrarResposta ? (
-              <Button onClick={() => setMostrarResposta(true)} variant="outline" className="w-full h-14 font-bold text-base gap-2 mt-4">
-                👀 Revelar Resposta
-              </Button>
-            ) : (
-              <div className="space-y-4 animate-in slide-in-from-bottom-2 pt-2">
-                <div className="p-5 rounded-xl bg-success/10 border-2 border-success/30 shadow-inner">
-                  <p className="text-sm font-bold text-foreground leading-relaxed">📖 {jogoPerguntas[jogoPergIdx].resposta}</p>
+            <div className="relative z-10">
+              {!mostrarResposta ? (
+                <Button onClick={() => setMostrarResposta(true)} variant="outline" className={cn("w-full h-14 font-bold text-base gap-2 mt-4", timeoutActive ? "border-amber-500 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20" : "")}>
+                  👀 Revelar Resposta
+                </Button>
+              ) : (
+                <div className="space-y-4 animate-in slide-in-from-bottom-2 pt-2">
+                  <div className="p-5 rounded-xl bg-success/10 border-2 border-success/30 shadow-inner">
+                    <p className="text-sm font-bold text-foreground leading-relaxed">📖 {jogoPerguntas[jogoPergIdx].resposta}</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button onClick={() => marcar(true)} className="flex-1 h-14 font-bold bg-success hover:bg-success/90 text-white shadow-lg shadow-success/20">
+                      ✓ Acertou
+                    </Button>
+                    <Button onClick={() => marcar(false)} variant="destructive" className="flex-1 h-14 font-bold shadow-lg shadow-destructive/20">
+                      ✗ Errou
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-3">
-                  <Button onClick={() => marcar(true)} className="flex-1 h-14 font-bold bg-success hover:bg-success/90 text-white shadow-lg shadow-success/20">
-                    ✓ Acertou
-                  </Button>
-                  <Button onClick={() => marcar(false)} variant="destructive" className="flex-1 h-14 font-bold shadow-lg shadow-destructive/20">
-                    ✗ Errou
-                  </Button>
-                </div>
+              )}
+            </div>
+
+            {timeoutActive && !mostrarResposta && (
+              <div className="text-center mt-6 animate-fade-in slide-in-from-bottom-2 relative z-10">
+                  <span className="inline-flex items-center px-4 py-2 bg-destructive/10 text-destructive rounded-full text-xs font-black uppercase tracking-widest gap-2">
+                      ⏱️ Tempo Esgotado!
+                  </span>
               </div>
             )}
 
-            <p className="text-xs text-center font-bold text-muted-foreground mt-4">{jogoPergIdx + 1}/{jogoPerguntas.length}</p>
+            <p className="text-xs text-center font-bold text-muted-foreground mt-4 relative z-10">{jogoPergIdx + 1}/{jogoPerguntas.length}</p>
           </div>
         </div>
       )}

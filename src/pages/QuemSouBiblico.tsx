@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Eye, RotateCcw, Trophy, Lightbulb, PlayCircle, Minimize } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { GameTimerButton } from "@/components/GameTimerButton";
 
 interface Personagem {
   nome: string;
@@ -37,11 +37,13 @@ export default function QuemSouBiblico() {
   const [shuffled, setShuffled] = useState<Personagem[]>([]);
   const [personagemIdx, setPersonagemIdx] = useState(0);
   const [dicaIdx, setDicaIdx] = useState(0);
-  const [palpite, setPalpite] = useState("");
+  const [opcoes, setOpcoes] = useState<string[]>([]);
   const [revelado, setRevelado] = useState(false);
   const [acertos, setAcertos] = useState(0);
   const [total, setTotal] = useState(0);
   const [finalizado, setFinalizado] = useState(false);
+  const [timeoutActive, setTimeoutActive] = useState(false);
+  const [selecionadoIdx, setSelecionadoIdx] = useState<number | null>(null);
 
   useEffect(() => {
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -49,17 +51,31 @@ export default function QuemSouBiblico() {
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
+  const gerarOpcoes = (correctName: string) => {
+    const outros = personagens.filter(p => p.nome !== correctName).map(p => p.nome);
+    const sortedOutros = [...outros].sort(() => Math.random() - 0.5);
+    const distratores = sortedOutros.slice(0, 2);
+    const misturadas = [correctName, ...distratores].sort(() => Math.random() - 0.5);
+    return misturadas;
+  };
+
   const iniciarJogo = () => {
     const filtered = personagens.filter(p => p.dificuldade === dificuldade);
-    setShuffled([...filtered].sort(() => Math.random() - 0.5));
+    const shuffledPersonagens = [...filtered].sort(() => Math.random() - 0.5);
+    
+    setShuffled(shuffledPersonagens);
     setIsSetup(false);
     setPersonagemIdx(0);
     setDicaIdx(0);
-    setPalpite("");
+    if(shuffledPersonagens.length > 0){
+      setOpcoes(gerarOpcoes(shuffledPersonagens[0].nome));
+    }
     setRevelado(false);
     setAcertos(0);
     setTotal(0);
     setFinalizado(false);
+    setTimeoutActive(false);
+    setSelecionadoIdx(null);
 
     if (!document.fullscreenElement && window.innerWidth < 1024) {
       containerRef.current?.requestFullscreen().catch(() => {});
@@ -73,12 +89,29 @@ export default function QuemSouBiblico() {
 
   const atual = shuffled[personagemIdx];
 
-  const verificar = () => {
+  const verificar = (idxOpcao: number) => {
+    if (revelado) return;
+    setSelecionadoIdx(idxOpcao);
     setTotal((p) => p + 1);
-    if (palpite.trim().toLowerCase() === atual?.nome.toLowerCase()) {
+    
+    const isCorrect = opcoes[idxOpcao] === atual?.nome;
+    if (timeoutActive && !revelado) {
+        // Just mark incorrectly internally or ignore if timeout doesn't force loss
+        // Since catechist clicks to reveal, we apply points normally or as 0 if timed out?
+        // Let's just track normal score.
+    }
+
+    if (isCorrect) {
       setAcertos((p) => p + 1);
     }
+    
     setRevelado(true);
+    setTimeoutActive(false); // Stop showing timeout warning
+  };
+
+  const handleTimeUp = () => {
+    if (revelado) return;
+    setTimeoutActive(true);
   };
 
   const proximaDica = () => {
@@ -91,12 +124,17 @@ export default function QuemSouBiblico() {
     if (personagemIdx + 1 >= shuffled.length) {
       setFinalizado(true);
     } else {
-      setPersonagemIdx((p) => p + 1);
+      const nextIdx = personagemIdx + 1;
+      setPersonagemIdx(nextIdx);
       setDicaIdx(0);
-      setPalpite("");
+      setOpcoes(gerarOpcoes(shuffled[nextIdx].nome));
       setRevelado(false);
+      setTimeoutActive(false);
+      setSelecionadoIdx(null);
     }
   };
+
+  const letras = ["A", "B", "C", "D"];
 
   return (
     <div ref={containerRef} className={cn("space-y-5 flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background p-6" : "")}>
@@ -173,22 +211,34 @@ export default function QuemSouBiblico() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full">
+        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full relative pt-10">
           {!isFullscreen && (
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-6">
+            <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-6 absolute top-0">
               <div className="h-full bg-liturgical rounded-full transition-all duration-500" style={{ width: `${((personagemIdx + 1) / shuffled.length) * 100}%` }} />
             </div>
           )}
 
-          <div className="float-card p-6 sm:p-8 space-y-6 animate-float-up shadow-xl shadow-black/5">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-liturgical/10 flex items-center justify-center mx-auto mb-3">
-                <span className="text-3xl">❓</span>
+          <div className="float-card p-6 sm:p-8 space-y-6 animate-float-up shadow-xl shadow-black/5 relative overflow-hidden">
+            {timeoutActive && !revelado && (
+                <div className="absolute inset-0 bg-destructive/5 pointer-events-none animate-pulse z-0" />
+            )}
+            
+            <div className="flex items-start justify-between gap-4 relative z-10">
+              <div className="text-left w-full">
+                <div className="w-12 h-12 rounded-full bg-liturgical/10 flex items-center justify-center mb-3">
+                  <span className="text-2xl">❓</span>
+                </div>
+                <h2 className="text-lg font-black text-foreground">Quem sou eu?</h2>
               </div>
-              <h2 className="text-lg font-black text-foreground">Quem sou eu?</h2>
+              <GameTimerButton 
+                key={personagemIdx} 
+                onTimeUp={handleTimeUp} 
+                disabled={revelado} 
+                duration={10} 
+              />
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 relative z-10">
               {atual?.dicas.slice(0, dicaIdx + 1).map((dica, i) => (
                 <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-muted/50 border border-border/50 animate-in slide-in-from-left-4">
                   <Lightbulb className="h-5 w-5 text-gold mt-0.5 shrink-0" />
@@ -198,41 +248,65 @@ export default function QuemSouBiblico() {
             </div>
 
             {!revelado && dicaIdx < atual?.dicas.length - 1 && (
-              <Button variant="outline" onClick={proximaDica} className="w-full h-12 gap-2 font-bold mt-2">
+              <Button variant="outline" onClick={proximaDica} className="w-full h-12 gap-2 font-bold mt-2 relative z-10">
                 <Eye className="h-4 w-4" /> Mais uma dica ({dicaIdx + 1}/{atual.dicas.length})
               </Button>
             )}
 
-            {!revelado ? (
-              <div className="space-y-3 pt-4 border-t border-border/50">
-                <Input
-                  value={palpite}
-                  onChange={(e) => setPalpite(e.target.value)}
-                  placeholder="Digite seu palpite aqui..."
-                  onKeyDown={(e) => e.key === "Enter" && palpite.trim() && verificar()}
-                  className="h-14 text-center font-bold text-lg rounded-xl bg-background shadow-inner"
-                  autoFocus
-                />
-                <Button onClick={verificar} disabled={!palpite.trim()} className="w-full h-14 rounded-xl font-bold text-base shadow-lg bg-liturgical hover:bg-liturgical/90 text-white">
-                  Confirmar Resposta
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4 animate-fade-in pt-4 border-t border-border/50">
-                <div className={cn(
-                  "p-6 rounded-2xl text-center shadow-inner",
-                  palpite.trim().toLowerCase() === atual?.nome.toLowerCase() ? "bg-success/10 border-2 border-success/30" : "bg-destructive/10 border-2 border-destructive/30"
-                )}>
-                  <p className="text-sm font-bold uppercase tracking-wider mb-2 opacity-80 text-foreground">
-                    {palpite.trim().toLowerCase() === atual?.nome.toLowerCase() ? "🎉 Você Acertou!" : `❌ Incorreto. Era:`}
-                  </p>
-                  <p className="text-3xl font-black text-foreground">{atual?.nome}</p>
-                </div>
-                <Button onClick={proximo} className="w-full h-14 rounded-xl font-bold text-base shadow-lg bg-liturgical hover:bg-liturgical/90 text-white">
-                  {personagemIdx + 1 >= shuffled.length ? "Ver Resultado Final" : "Próximo Personagem"}
-                </Button>
+            <div className="space-y-3 pt-4 border-t border-border/50 relative z-10">
+              {opcoes.map((op, i) => {
+                 let btnClass = "border-border hover:bg-muted/50 bg-background";
+                 let letterClass = "bg-muted text-muted-foreground";
+                 
+                 if (revelado) {
+                   if (op === atual?.nome) {
+                     btnClass = "border-success bg-success/10 text-success-foreground shadow-md shadow-success/10";
+                     letterClass = "bg-success text-white";
+                   } else if (selecionadoIdx === i) {
+                     btnClass = "border-destructive bg-destructive/10 text-destructive shadow-sm";
+                     letterClass = "bg-destructive text-white";
+                   } else {
+                     btnClass = "opacity-50";
+                   }
+                 } else if (timeoutActive) {
+                    btnClass = "border-amber-500/30 hover:bg-amber-500/10";
+                 }
+
+                 return (
+                   <button
+                     key={i}
+                     disabled={revelado}
+                     onClick={() => verificar(i)}
+                     className={cn(
+                       "w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-4 group cursor-pointer",
+                       btnClass
+                     )}
+                   >
+                     <span className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors shrink-0", letterClass)}>
+                       {letras[i]}
+                     </span>
+                     <span className="font-semibold text-sm leading-relaxed">{op}</span>
+                   </button>
+                 );
+              })}
+            </div>
+
+            {timeoutActive && !revelado && (
+              <div className="text-center mt-4 animate-fade-in slide-in-from-bottom-2 relative z-10">
+                  <span className="inline-flex items-center px-4 py-2 bg-destructive/10 text-destructive rounded-full text-xs font-black uppercase tracking-widest gap-2">
+                      ⏱️ Tempo Esgotado!
+                  </span>
               </div>
             )}
+
+            {revelado && (
+               <div className="pt-4 mt-4 border-t border-border/50 animate-fade-in relative z-10">
+                 <Button onClick={proximo} className="w-full h-14 rounded-xl font-bold text-base shadow-lg bg-liturgical hover:bg-liturgical/90 text-white">
+                   {personagemIdx + 1 >= shuffled.length ? "Ver Resultado Final" : "Próximo Personagem"}
+                 </Button>
+               </div>
+            )}
+            
           </div>
         </div>
       )}

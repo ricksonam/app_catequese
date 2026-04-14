@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, XCircle, RotateCcw, Trophy, PlayCircle, Minimi
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { GameTimerButton } from "@/components/GameTimerButton";
 
 interface Pergunta {
   pergunta: string;
@@ -68,6 +69,7 @@ export default function QuizBiblico() {
   const [acertos, setAcertos] = useState(0);
   const [respondidas, setRespondidas] = useState(0);
   const [finalizado, setFinalizado] = useState(false);
+  const [timeoutActive, setTimeoutActive] = useState(false);
 
   useEffect(() => {
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -84,6 +86,7 @@ export default function QuizBiblico() {
     setAcertos(0);
     setRespondidas(0);
     setFinalizado(false);
+    setTimeoutActive(false);
 
     if (!document.fullscreenElement && window.innerWidth < 1024) {
       containerRef.current?.requestFullscreen().catch(() => {});
@@ -99,7 +102,7 @@ export default function QuizBiblico() {
   const respondeu = selecionada !== null;
 
   const responder = (idx: number) => {
-    if (respondeu) return;
+    if (respondeu || timeoutActive) return;
     setSelecionada(idx);
     setRespondidas((p) => p + 1);
     if (idx === atual?.correta) setAcertos((p) => p + 1);
@@ -111,7 +114,13 @@ export default function QuizBiblico() {
     } else {
       setPerguntaIdx((p) => p + 1);
       setSelecionada(null);
+      setTimeoutActive(false);
     }
+  };
+
+  const handleTimeUp = () => {
+    if (respondeu) return;
+    setTimeoutActive(true);
   };
 
   const reiniciar = () => {
@@ -196,41 +205,57 @@ export default function QuizBiblico() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full">
+        <div className="flex-1 flex flex-col max-w-lg mx-auto w-full relative pt-10">
           {!isFullscreen && (
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-6">
+            <div className="w-full h-2 rounded-full bg-muted overflow-hidden mb-6 absolute top-0">
               <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${((perguntaIdx + 1) / shuffled.length) * 100}%` }} />
             </div>
           )}
 
-          <div className="float-card p-6 sm:p-8 space-y-6 animate-float-up shadow-xl shadow-black/5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black shrink-0">
-                {perguntaIdx + 1}
+          <div className="float-card p-6 sm:p-8 space-y-6 animate-float-up shadow-xl shadow-black/5 relative overflow-hidden">
+            {timeoutActive && !respondeu && (
+                <div className="absolute inset-0 bg-destructive/5 pointer-events-none animate-pulse z-0" />
+            )}
+
+            <div className="flex items-start justify-between gap-4 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black shrink-0">
+                  {perguntaIdx + 1}
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">{atual?.pergunta}</h2>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold text-foreground leading-relaxed">{atual?.pergunta}</h2>
+              <GameTimerButton 
+                key={perguntaIdx} 
+                onTimeUp={handleTimeUp} 
+                disabled={respondeu} 
+                duration={10} 
+              />
             </div>
 
-            <div className="space-y-3 pt-4">
+            <div className="space-y-3 pt-4 relative z-10">
               {atual?.opcoes.map((opcao, i) => {
                 let cls = "w-full text-left px-5 py-4 rounded-xl border-2 transition-all font-medium text-sm sm:text-base flex items-center gap-4 group ";
-                if (!respondeu) {
+                if (!respondeu && !timeoutActive) {
                   cls += "border-border hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98]";
-                } else if (i === atual.correta) {
-                  cls += "border-success bg-success/10 text-success shadow-lg shadow-success/10 scale-[1.02] z-10";
-                } else if (i === selecionada) {
-                  cls += "border-destructive bg-destructive/10 text-destructive";
-                } else {
-                  cls += "border-border opacity-30 grayscale";
+                } else if (respondeu) {
+                  if (i === atual.correta) {
+                    cls += "border-success bg-success/10 text-success shadow-lg shadow-success/10 scale-[1.02] z-10";
+                  } else if (i === selecionada) {
+                    cls += "border-destructive bg-destructive/10 text-destructive";
+                  } else {
+                    cls += "border-border opacity-30 grayscale";
+                  }
+                } else if (timeoutActive) {
+                   cls += "border-border opacity-50 grayscale cursor-not-allowed";
                 }
 
                 return (
-                  <button key={i} onClick={() => responder(i)} className={cls} disabled={respondeu}>
+                  <button key={i} onClick={() => responder(i)} className={cls} disabled={respondeu || timeoutActive}>
                     <span className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 transition-colors",
-                      !respondeu ? "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary" :
-                      i === atual.correta ? "bg-success text-success-foreground" :
-                      i === selecionada ? "bg-destructive text-destructive-foreground" : "bg-muted text-muted-foreground"
+                      !respondeu && !timeoutActive ? "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary" :
+                      respondeu && i === atual.correta ? "bg-success text-success-foreground" :
+                      respondeu && i === selecionada ? "bg-destructive text-destructive-foreground" : "bg-muted text-muted-foreground"
                     )}>
                       {String.fromCharCode(65 + i)}
                     </span>
@@ -242,15 +267,24 @@ export default function QuizBiblico() {
               })}
             </div>
 
-            {respondeu && (
-              <div className="p-4 rounded-xl bg-muted/50 animate-fade-in border border-border/50">
-                <p className="text-sm text-foreground/80 leading-relaxed font-medium">💡 <span className="font-bold">Explicação:</span> {atual.explicacao}</p>
+            {timeoutActive && !respondeu && (
+              <div className="text-center mt-6 animate-fade-in slide-in-from-bottom-2 relative z-10">
+                  <span className="inline-flex items-center px-4 py-2 bg-destructive/10 text-destructive rounded-full text-xs font-black uppercase tracking-widest gap-2">
+                      ⏱️ Tempo Esgotado!
+                  </span>
+                  <p className="text-xs text-muted-foreground mt-2 font-medium">Revele a resposta ou pule.</p>
               </div>
             )}
 
             {respondeu && (
-              <Button onClick={proxima} className="w-full h-14 rounded-xl font-bold text-base shadow-lg bg-primary hover:bg-primary/90 mt-4 animate-in slide-in-from-bottom-4">
-                {perguntaIdx + 1 >= shuffled.length ? "Ver Resultado Final" : "Próxima Pergunta"}
+              <div className="p-4 rounded-xl bg-muted/50 animate-fade-in border border-border/50 relative z-10 mx-auto">
+                <p className="text-sm text-foreground/80 leading-relaxed font-medium">💡 <span className="font-bold">Explicação:</span> {atual.explicacao}</p>
+              </div>
+            )}
+
+            {(respondeu || timeoutActive) && (
+              <Button onClick={proxima} variant={timeoutActive && !respondeu ? "outline" : "default"} className="w-full h-14 rounded-xl font-bold text-base shadow-lg hover:opacity-90 mt-4 animate-in slide-in-from-bottom-4 relative z-10 mx-auto bg-primary text-primary-foreground">
+                {perguntaIdx + 1 >= shuffled.length ? "Ver Resultado Final" : (timeoutActive && !respondeu ? "Pular Pergunta" : "Próxima Pergunta")}
               </Button>
             )}
           </div>
