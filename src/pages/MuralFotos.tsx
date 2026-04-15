@@ -9,7 +9,6 @@ import { useMuralFotos, useMuralFotoMutation, useDeleteMuralFoto, useTurmas, use
 import { type MuralFoto } from "@/lib/store";
 import { compressImage } from "@/lib/utils";
 import { uploadFile } from "@/lib/supabaseStore";
-import { PhotoEditor } from "@/components/PhotoEditor";
 import { Studio } from "@/components/Studio";
 
 export default function MuralFotos() {
@@ -27,10 +26,7 @@ export default function MuralFotos() {
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
   
-  // State for normal post creator
   const [pendingFile, setPendingFile] = useState<{ file: File; preview: string } | null>(null);
-  // State for Photo Editor flow
-  const [editorFile, setEditorFile] = useState<{ file: File; preview: string } | null>(null);
   
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -39,7 +35,6 @@ export default function MuralFotos() {
   
   const cameraRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const editorFileRef = useRef<HTMLInputElement>(null);
 
   const toggleSelection = (id: string) => {
     setSelectedIds(prev => 
@@ -150,11 +145,7 @@ export default function MuralFotos() {
         const finalFile = new File([compressedBlob], "photo.jpg", { type: "image/jpeg" });
         const preview = URL.createObjectURL(finalFile);
         
-        if (isEditorFlow) {
-           setEditorFile({ file: finalFile, preview });
-        } else {
            setPendingFile({ file: finalFile, preview });
-        }
 
         setResumo(""); // reseta legenda
         
@@ -173,12 +164,9 @@ export default function MuralFotos() {
 
   const clearFiles = () => {
     if (pendingFile) URL.revokeObjectURL(pendingFile.preview);
-    if (editorFile) URL.revokeObjectURL(editorFile.preview);
     setPendingFile(null);
-    setEditorFile(null);
     if (cameraRef.current) cameraRef.current.value = '';
     if (fileRef.current) fileRef.current.value = '';
-    if (editorFileRef.current) editorFileRef.current.value = '';
   };
 
   // Publisher function for BOTH Normal photos and Editor photos
@@ -418,9 +406,8 @@ export default function MuralFotos() {
         </div>
       )}
 
-      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
+      <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
-      <input ref={editorFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, true)} />
 
       {/* Studio Modal */}
       {studioPhotos && (
@@ -428,15 +415,6 @@ export default function MuralFotos() {
           photos={studioPhotos}
           onClose={() => setStudioPhotos(null)}
           onSave={(blob, legenda) => publishPhoto(blob, legenda, true)}
-        />
-      )}
-
-      {/* Editor Modal */}
-      {editorFile && (
-        <PhotoEditor 
-          imageSrc={editorFile.preview}
-          onClose={clearFiles}
-          onSave={(blob, legenda, isCriatividade) => publishPhoto(blob, legenda, isCriatividade)}
         />
       )}
 
@@ -518,8 +496,8 @@ export default function MuralFotos() {
             <div className="relative">
               <button onClick={() => setViewFoto(null)} className="absolute top-4 right-4 z-50 p-2 bg-black/40 text-white rounded-full hover:bg-black/60"><X className="w-5 h-5"/></button>
               
-              <div className="aspect-[3/4] w-full bg-black/10 flex items-center justify-center overflow-hidden">
-                <img src={viewFoto.url} alt={viewFoto.legenda} className="w-full h-full object-cover" />
+              <div className="h-[50vh] w-full bg-black flex items-center justify-center overflow-hidden">
+                <img src={viewFoto.url} alt={viewFoto.legenda} className="max-w-full max-h-full object-contain" />
               </div>
               
               <div className="p-6 space-y-6">
@@ -542,7 +520,7 @@ export default function MuralFotos() {
                   <button 
                     onClick={() => {
                       setViewFoto(null);
-                      setEditorFile({ file: new File([], "placeholder"), preview: viewFoto.url });
+                      setStudioPhotos([viewFoto]);
                     }}
                     className="flex flex-col items-center justify-center gap-1 bg-primary/10 text-primary py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-primary/20"
                   >

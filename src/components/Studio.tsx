@@ -12,8 +12,11 @@ interface StudioProps {
 
 type StudioTool = 'colagem' | 'slideshow' | 'moldura' | 'texto' | 'ferramentas';
 
+export type FrameType = 'nenhuma' | 'aniversario' | 'infantil_menina' | 'infantil_menino' | 'eucaristia' | 'retiro';
+
 export function Studio({ photos, onClose, onSave }: StudioProps) {
   const [activeTool, setActiveTool] = useState<StudioTool>('colagem');
+  const [frame, setFrame] = useState<FrameType>('nenhuma');
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedLayout, setSelectedLayout] = useState(0);
   const [textOverlay, setTextOverlay] = useState('');
@@ -125,7 +128,9 @@ export function Studio({ photos, onClose, onSave }: StudioProps) {
           {(activeTool === 'moldura' || activeTool === 'ferramentas') && (
             <div className="w-full h-full relative">
                <img src={photos[0].url} className="w-full h-full object-cover" />
-               {activeTool === 'moldura' && <div className="absolute inset-0 border-[20px] border-primary/30 mix-blend-overlay" />}
+               <div className="absolute inset-0 pointer-events-none">
+                 <FrameOverlay type={frame} />
+               </div>
             </div>
           )}
         </div>
@@ -141,7 +146,7 @@ export function Studio({ photos, onClose, onSave }: StudioProps) {
            <ToolBtn active={activeTool === 'ferramentas'} icon={Wrench} label="Ferramentas" onClick={() => setActiveTool('ferramentas')} />
         </div>
 
-        <div className="h-40 px-6 flex items-center justify-center animation-in fade-in slide-in-from-bottom-2">
+        <div className="h-32 px-6 flex items-center justify-center animation-in fade-in slide-in-from-bottom-2">
           {activeTool === 'colagem' && (
             <div className="flex gap-4">
               {layouts.map((_, idx) => (
@@ -153,6 +158,17 @@ export function Studio({ photos, onClose, onSave }: StudioProps) {
                   <Layout className="w-6 h-6 opacity-60" />
                 </button>
               ))}
+            </div>
+          )}
+
+          {activeTool === 'moldura' && (
+            <div className="flex gap-4 min-w-max px-2 overflow-x-auto hide-scrollbar w-full">
+              <FrameThumb type="nenhuma" active={frame === 'nenhuma'} onClick={() => setFrame('nenhuma')} />
+              <FrameThumb type="aniversario" active={frame === 'aniversario'} onClick={() => setFrame('aniversario')} />
+              <FrameThumb type="infantil_menina" active={frame === 'infantil_menina'} onClick={() => setFrame('infantil_menina')} />
+              <FrameThumb type="infantil_menino" active={frame === 'infantil_menino'} onClick={() => setFrame('infantil_menino')} />
+              <FrameThumb type="eucaristia" active={frame === 'eucaristia'} onClick={() => setFrame('eucaristia')} />
+              <FrameThumb type="retiro" active={frame === 'retiro'} onClick={() => setFrame('retiro')} />
             </div>
           )}
 
@@ -214,18 +230,114 @@ function SlideshowPreview({ photos }: { photos: MuralFoto[] }) {
     return () => clearInterval(timer);
   }, [photos]);
 
-  return (
-    <div className="w-full h-full relative">
-       <img 
-         key={photos[idx].id}
-         src={photos[idx].url} 
-         className="w-full h-full object-cover animate-in fade-in duration-1000" 
-       />
-       <div className="absolute bottom-4 left-4 right-4 flex gap-1 justify-center">
-         {photos.map((_, i) => (
-           <div key={i} className={`h-1 rounded-full transition-all ${i === idx ? 'w-4 bg-primary' : 'w-1 bg-white/30'}`} />
-         ))}
-       </div>
     </div>
+  );
+}
+
+function FrameOverlay({ type }: { type: FrameType }) {
+  if (type === 'nenhuma') return null;
+  if (type === 'aniversario') {
+    return (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="380" height="380" fill="none" stroke="#FBBF24" strokeWidth="8" rx="20" opacity="0.9"/>
+        <path d="M0,0 L100,0 L0,100 Z" fill="#FBBF24" opacity="0.8"/>
+        <path d="M400,0 L300,0 L400,100 Z" fill="#F472B6" opacity="0.8"/>
+        <path d="M0,400 L100,400 L0,300 Z" fill="#60A5FA" opacity="0.8"/>
+        <path d="M400,400 L300,400 L400,300 Z" fill="#34D399" opacity="0.8"/>
+        <g transform="translate(200, 350)">
+          <path d="M-120,-20 L120,-20 L130,0 L120,20 L-120,20 L-130,0 Z" fill="#FBBF24" filter="drop-shadow(0 4px 3px rgb(0 0 0 / 0.3))" />
+          <text x="0" y="6" fontFamily="Inter, sans-serif" fontWeight="900" fontSize="18" fill="white" textAnchor="middle">FELIZ ANIVERSÁRIO</text>
+        </g>
+      </svg>
+    );
+  }
+  
+  if (type === 'infantil_menina') {
+    return (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="400" height="400" fill="none" stroke="#F472B6" strokeWidth="20" opacity="0.8"/>
+        <rect x="15" y="15" width="370" height="370" fill="none" stroke="white" strokeWidth="2" strokeDasharray="8 8" opacity="0.9"/>
+        <path d="M40,60 A1,1 0 0,0 60,60 A1,1 0 0,0 80,60 Q80,80 60,100 Q40,80 40,60" fill="#FBCFE8" />
+        <path d="M320,60 A1,1 0 0,0 340,60 A1,1 0 0,0 360,60 Q360,80 340,100 Q320,80 320,60" fill="#FBCFE8" />
+        <path d="M40,320 A1,1 0 0,0 60,320 A1,1 0 0,0 80,320 Q80,340 60,360 Q40,340 40,320" fill="#FBCFE8" />
+        <path d="M320,320 A1,1 0 0,0 340,320 A1,1 0 0,0 360,320 Q360,340 340,360 Q320,340 320,320" fill="#FBCFE8" />
+      </svg>
+    );
+  }
+
+  if (type === 'infantil_menino') {
+    return (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="400" height="400" fill="none" stroke="#3B82F6" strokeWidth="24" opacity="0.9"/>
+        <polygon points="50,30 56,45 72,45 59,54 64,69 50,60 36,69 41,54 28,45 44,45" fill="#FCD34D" />
+        <polygon points="350,30 356,45 372,45 359,54 364,69 350,60 336,69 341,54 328,45 344,45" fill="#FCD34D" />
+        <polygon points="50,330 56,345 72,345 59,354 64,369 50,360 36,369 41,354 28,345 44,345" fill="#FCD34D" />
+        <polygon points="350,330 356,345 372,345 359,354 364,369 350,360 336,369 341,354 328,345 344,345" fill="#FCD34D" />
+      </svg>
+    );
+  }
+
+  if (type === 'eucaristia') {
+    return (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="380" height="380" fill="none" stroke="#FEF3C7" strokeWidth="6" rx="8" opacity="0.8"/>
+        <g transform="translate(200, 40)" fill="#D97706" opacity="0.9">
+          <rect x="-3" y="-20" width="6" height="50" rx="2" />
+          <rect x="-15" y="-5" width="30" height="6" rx="2" />
+        </g>
+        <g transform="translate(200, 360)">
+          <rect x="-100" y="-15" width="200" height="30" rx="15" fill="#FEF3C7" opacity="0.9"/>
+          <text x="0" y="5" fontFamily="serif" fontWeight="bold" fontSize="16" fill="#92400E" textAnchor="middle">PRIMEIRA EUCARISTIA</text>
+        </g>
+      </svg>
+    );
+  }
+
+  if (type === 'retiro') {
+    return (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+         <defs>
+          <linearGradient id="gradRetiro" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style={{ stopColor: '#000000', stopOpacity: 0.8 }} />
+            <stop offset="20%" style={{ stopColor: '#000000', stopOpacity: 0 }} />
+            <stop offset="70%" style={{ stopColor: '#000000', stopOpacity: 0 }} />
+            <stop offset="100%" style={{ stopColor: '#000000', stopOpacity: 0.9 }} />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="400" height="400" fill="url(#gradRetiro)" />
+        <text x="20" y="370" fontFamily="Inter, sans-serif" fontWeight="900" fontSize="24" fill="white" letterSpacing="2">A PAZ DE CRISTO</text>
+        <text x="22" y="385" fontFamily="Inter, sans-serif" fontWeight="500" fontSize="10" fill="#D1D5DB">MOMENTO DE RETIRO</text>
+      </svg>
+    );
+  }
+
+  return null;
+}
+
+function FrameThumb({ type, active, onClick }: { type: FrameType, active: boolean, onClick: () => void }) {
+  const labels: Record<FrameType, string> = {
+    nenhuma: 'Limpa',
+    aniversario: 'Aniv.',
+    infantil_menina: 'Menina',
+    infantil_menino: 'Menino',
+    eucaristia: 'Comunhão',
+    retiro: 'Retiro'
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col items-center gap-2 snap-center transition-all ${active ? 'scale-110' : 'opacity-60 grayscale'}`}
+    >
+      <div className="w-16 h-16 shrink-0 rounded-2xl bg-zinc-800 overflow-hidden border-2 flex items-center justify-center relative" style={{ borderColor: active ? 'var(--primary)' : 'transparent' }}>
+        <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-gradient-to-br from-zinc-700 to-zinc-900" />
+        <div className="absolute inset-0 origin-top-left pointer-events-none" style={{ transform: 'scale(0.16)' }}>
+          <div className="w-[400px] h-[400px] relative">
+            <FrameOverlay type={type} />
+          </div>
+        </div>
+      </div>
+      <span className="text-[10px] font-bold uppercase tracking-wider">{labels[type]}</span>
+    </button>
   );
 }
