@@ -1,6 +1,7 @@
 import { ArrowLeft, Plus, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useMuralFotos, useMuralFotoMutation, useDeleteMuralFoto, useTurmas } from "@/hooks/useSupabaseData";
@@ -9,6 +10,7 @@ import { type MuralFoto } from "@/lib/store";
 
 export default function MuralFotos() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: fotos = [], isLoading } = useMuralFotos();
   const { data: turmas = [] } = useTurmas();
   const mutation = useMuralFotoMutation();
@@ -21,10 +23,19 @@ export default function MuralFotos() {
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
 
+  // Força refetch ao entrar na página para garantir que a RLS do banco
+  // seja sempre consultada — usuários removidos de turmas não verão
+  // fotos daquela turma assim que abrirem o mural novamente.
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["turmas"] });
+    queryClient.invalidateQueries({ queryKey: ["mural_fotos"] });
+  }, []);
+
   const fotosVisiveis = useMemo(() => {
-    // Mostra fotos sem turma vinculada (globais) + fotos de turmas que o usuário tem acesso
-    // (próprias ou compartilhadas via código) + fotos de turmas compartilhadas mesmo que
-    // não estejam na lista local (ex: após sair da conta da turma compartilhada)
+    // Dupla camada de segurança:
+    // 1. RLS do banco já filtra fotos por ownership/membership ao buscar
+    // 2. Frontend filtra pelo conjunto de turmas atuais do usuário
+    //    (cobre o caso de cache desatualizado após remoção de acesso)
     const turmasIds = new Set(turmas.map(t => t.id));
     return fotos.filter((f) => !f.turmaId || turmasIds.has(f.turmaId));
   }, [fotos, turmas]);
