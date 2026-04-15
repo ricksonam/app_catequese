@@ -377,7 +377,7 @@ export default function MuralFotos() {
       </Tabs>
 
       {/* FIXED BOTTOM ACTION BAR - FLOATING BUTTONS */}
-      {!viewFoto && !pendingFile && !editorFile && !studioPhotos && (
+      {!viewFoto && !pendingFile && !studioPhotos && (
         <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
           <div className="flex-1 flex justify-start pointer-events-auto">
             <button 
