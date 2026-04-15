@@ -516,16 +516,7 @@ export default function MuralFotos() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <button 
-                    onClick={() => {
-                      setViewFoto(null);
-                      setStudioPhotos([viewFoto]);
-                    }}
-                    className="flex flex-col items-center justify-center gap-1 bg-primary/10 text-primary py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-primary/20"
-                  >
-                    <Sparkles className="w-4 h-4" /> Estúdio
-                  </button>
+                <div className="grid grid-cols-2 gap-2">
                   <button 
                     onClick={() => handleShare(viewFoto)}
                     disabled={isSharing}
