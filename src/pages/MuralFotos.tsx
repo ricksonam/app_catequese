@@ -22,6 +22,7 @@ export default function MuralFotos() {
   const deleteMutation = useDeleteMuralFoto();
   
   const [viewFoto, setViewFoto] = useState<MuralFoto | null>(null);
+  const [viewPerfil, setViewPerfil] = useState<any>(null);
   const [resumo, setResumo] = useState("");
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
@@ -139,14 +140,10 @@ export default function MuralFotos() {
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, isEditorFlow: boolean = false) => {
     const f = e.target.files?.[0];
     if (f) {
-      const toastId = toast.loading("Preparando câmera...");
+      const toastId = toast.loading("Carregando arquivo...");
       try {
-        const compressedBlob = await compressImage(f, 800, 0.7);
-        const finalFile = new File([compressedBlob], "photo.jpg", { type: "image/jpeg" });
-        const preview = URL.createObjectURL(finalFile);
-        
-           setPendingFile({ file: finalFile, preview });
-
+        const preview = URL.createObjectURL(f);
+        setPendingFile({ file: f, preview });
         setResumo(""); // reseta legenda
         
         if (turmas.length === 1) {
@@ -355,21 +352,27 @@ export default function MuralFotos() {
                {perfis.map((c, i) => {
                  const tNome = turmas.find(t => t.id === c.turmaId)?.nome;
                  return (
-                 <div key={c.id} className="flex flex-col items-center gap-2 animate-float-up" style={{ animationDelay: `${i * 30}ms` }}>
-                   <div className="w-full aspect-square rounded-full overflow-hidden bg-muted border-2 border-border shadow-sm">
-                     {c.foto ? (
-                       <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
-                     ) : (
-                       <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary">
-                         <User className="h-8 w-8 opacity-50" />
-                       </div>
-                     )}
-                   </div>
+                  <button 
+                    key={c.id} 
+                    onClick={() => {
+                        if (c.foto) setViewPerfil(c);
+                    }}
+                    className="flex flex-col items-center gap-2 animate-float-up group" style={{ animationDelay: `${i * 30}ms` }}
+                  >
+                    <div className="w-full aspect-square rounded-full overflow-hidden bg-muted border-2 border-border shadow-sm group-active:scale-95 transition-all">
+                      {c.foto ? (
+                        <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary">
+                          <User className="h-8 w-8 opacity-50" />
+                        </div>
+                      )}
+                    </div>
                    <div className="text-center">
                      <p className="text-[10px] font-bold text-foreground leading-tight line-clamp-1">{c.nome.split(' ')[0]}</p>
                      <p className="text-[9px] text-muted-foreground truncate max-w-full">{tNome}</p>
                    </div>
-                 </div>
+                 </button>
                )})}
              </div>
           )}
@@ -538,6 +541,61 @@ export default function MuralFotos() {
         </DialogContent>
       </Dialog>
 
+      {/* Modal View Perfil Foto */}
+      <Dialog open={!!viewPerfil} onOpenChange={(open) => !open && setViewPerfil(null)}>
+        <DialogContent className="max-w-[400px] w-[95vw] p-0 bg-zinc-950 border-white/10 rounded-[40px] overflow-hidden gap-0">
+          {viewPerfil?.foto && (
+            <div className="flex flex-col h-[85dvh] max-h-[800px] bg-zinc-950">
+              <div className="flex-none p-4 pb-2 flex items-center justify-between">
+                <button onClick={() => setViewPerfil(null)} className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md">
+                  <X className="w-5 h-5" />
+                </button>
+                <span className="text-white font-black uppercase tracking-widest text-[10px] bg-white/10 px-4 py-2 rounded-full">
+                  Perfil de Turma
+                </span>
+                <div className="w-11" />
+              </div>
+
+              <div className="flex-1 min-h-[50vh] flex items-center justify-center overflow-hidden p-2">
+                <img src={viewPerfil.foto} alt={viewPerfil.nome} className="max-w-full max-h-full object-contain rounded-xl" />
+              </div>
+              
+              <div className="p-6 space-y-6">
+                <div className="space-y-1 text-center">
+                  <p className="text-2xl font-black text-white leading-tight">{viewPerfil.nome}</p>
+                </div>
+
+                <div className="flex justify-center pt-2">
+                  <button 
+                    onClick={async () => {
+                        const toastId = toast.loading("Preparando compartilhamento...");
+                        try {
+                           const fotoData = await fetch(viewPerfil.foto).then(res => res.blob());
+                           const file = new File([fotoData], "perfil.jpg", { type: "image/jpeg" });
+                           if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                             await navigator.share({
+                               files: [file],
+                               title: "Catequizando " + viewPerfil.nome
+                             });
+                           } else {
+                             await navigator.share({
+                               title: viewPerfil.nome,
+                               url: viewPerfil.foto
+                             });
+                           }
+                           toast.success("Enviado!", { id: toastId });
+                        } catch (e) { toast.dismiss(toastId); }
+                    }}
+                    className="flex flex-col items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white min-w-[200px] py-4 rounded-full text-sm font-black uppercase tracking-widest transition-all"
+                  >
+                    <Share2 className="w-5 h-5" /> Compartilhar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
