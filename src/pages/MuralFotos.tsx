@@ -1,4 +1,4 @@
-import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X, Loader2, Send, Users, Sparkles, User, UserCircle } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X, Check, Loader2, Send, Users, Sparkles, User, UserCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { type MuralFoto } from "@/lib/store";
 import { compressImage } from "@/lib/utils";
 import { uploadFile } from "@/lib/supabaseStore";
 import { PhotoEditor } from "@/components/PhotoEditor";
+import { Studio } from "@/components/Studio";
 
 export default function MuralFotos() {
   const navigate = useNavigate();
@@ -33,9 +34,34 @@ export default function MuralFotos() {
   
   const [isPublishing, setIsPublishing] = useState(false);
 
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  
   const cameraRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const editorFileRef = useRef<HTMLInputElement>(null);
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const startStudio = () => {
+    if (isSelectionMode && selectedIds.length > 0) {
+      setStudioPhotos(fotos.filter(f => selectedIds.includes(f.id)));
+      setIsSelectionMode(false);
+      setSelectedIds([]);
+    } else if (isSelectionMode) {
+      setIsSelectionMode(false);
+      setSelectedIds([]);
+    } else {
+      setIsSelectionMode(true);
+      toast.info("Selecione fotos para levar ao Estúdio");
+    }
+  };
+
+  const [studioPhotos, setStudioPhotos] = useState<MuralFoto[] | null>(null);
 
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["turmas"] });
@@ -163,7 +189,6 @@ export default function MuralFotos() {
     const turmaIdToUse = turmas.length === 1 ? turmas[0].id : selectedTurmaId;
     if (!turmaIdToUse) {
       toast.error("Por favor, selecione uma turma nas opções.");
-      if (pendingFile) {} // Show fallback selection if needed, but in Editor we might not have the select UI easily accessible.
       return;
     }
     
@@ -213,10 +238,24 @@ export default function MuralFotos() {
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Mural Smart</h1>
+            <h1 className="text-xl font-bold text-foreground">Mural de fotos</h1>
             <p className="text-xs text-muted-foreground">{fotosTurma.length + fotosCriatividades.length} memórias</p>
           </div>
         </div>
+        <button 
+          onClick={startStudio}
+          className={`p-2.5 rounded-2xl flex items-center gap-2 transition-all active:scale-95 shadow-sm ${isSelectionMode ? 'bg-primary text-white scale-110 shadow-lg' : 'bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 text-primary hover:bg-primary/20'}`}
+        >
+          {isSelectionMode ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+          <span className="text-xs font-bold uppercase tracking-wider">
+            {isSelectionMode ? (selectedIds.length > 0 ? "Confirmar" : "Cancelar") : "Estúdio"}
+          </span>
+          {isSelectionMode && selectedIds.length > 0 && (
+            <span className="ml-1 bg-white text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-black">
+              {selectedIds.length}
+            </span>
+          )}
+        </button>
       </div>
 
       <Tabs defaultValue="turma" className="w-full animate-fade-in">
@@ -246,17 +285,31 @@ export default function MuralFotos() {
                      <div className="flex-1 h-px bg-border/40" />
                    </div>
                    
-                   <div className="grid grid-cols-3 gap-2.5">
-                     {group.items.map((foto, i) => (
-                       <button 
-                         key={foto.id} 
-                         onClick={() => setViewFoto(foto)} 
-                         className="relative aspect-square rounded-2xl overflow-hidden bg-muted shadow-sm hover:shadow-md transition-all active:scale-[0.97] animate-float-up group" 
-                         style={{ animationDelay: `${(groupIdx * 3 + i) * 40}ms` }}
-                       >
-                         <img src={foto.url} alt={foto.legenda} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                       </button>
-                     ))}
+                   <div className="grid grid-cols-4 gap-2">
+                     {group.items.map((foto, i) => {
+                       const isSelected = selectedIds.includes(foto.id);
+                       return (
+                        <button 
+                          key={foto.id} 
+                          onClick={() => {
+                            if (isSelectionMode) {
+                              toggleSelection(foto.id);
+                            } else {
+                              setViewFoto(foto);
+                            }
+                          }} 
+                          className={`relative aspect-square rounded-xl overflow-hidden bg-muted shadow-sm hover:shadow-md transition-all active:scale-[0.97] animate-float-up group ${isSelected ? 'ring-4 ring-primary ring-inset' : ''}`} 
+                          style={{ animationDelay: `${(groupIdx * 4 + i) * 30}ms` }}
+                        >
+                          <img src={foto.url} alt={foto.legenda} className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? 'scale-90 opacity-80' : 'group-hover:scale-110'}`} />
+                          {isSelected && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-primary/30 backdrop-blur-[2px]">
+                              <Check className="w-10 h-10 text-white drop-shadow-xl" />
+                            </div>
+                          )}
+                        </button>
+                       );
+                     })}
                    </div>
                  </div>
                ))}
@@ -338,42 +391,43 @@ export default function MuralFotos() {
         </TabsContent>
       </Tabs>
 
-      {/* FIXED BOTTOM ACTION BAR */}
-      <div className="fixed bottom-[80px] left-0 right-0 px-4 z-[90] flex justify-center pb-safe">
-        <div className="bg-foreground/95 p-1.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.3)] backdrop-blur-md flex items-center gap-1 border border-white/10">
+      {/* FIXED BOTTOM ACTION BAR - FLOATING BUTTONS */}
+      <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
+        <div className="flex-1 flex justify-start pointer-events-auto">
           <button 
             onClick={() => fileRef.current?.click()}
-            className="w-12 h-12 flex flex-col items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-16 h-16 flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-primary/20 shadow-xl text-primary hover:bg-primary/5 transition-all active:scale-90 animate-in fade-in slide-in-from-left-4 duration-500"
           >
-            <ImageIcon className="w-5 h-5 mb-0.5" />
-            <span className="text-[8px] font-black uppercase">Galeria</span>
-          </button>
-          
-          <button 
-            onClick={() => cameraRef.current?.click()}
-            className="w-12 h-12 flex flex-col items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-          >
-            <Camera className="w-5 h-5 mb-0.5" />
-            <span className="text-[8px] font-black uppercase">Foto</span>
-          </button>
-
-          <div className="w-px h-8 bg-zinc-700 mx-1" />
-
-          {/* ESTÚDIO MÁGICO BUTTON */}
-          <button 
-            onClick={() => editorFileRef.current?.click()}
-            className="h-12 px-6 bg-gradient-to-r from-primary to-accent rounded-full flex gap-2 items-center text-white shadow-inner mx-1 ml-1 active:scale-95 transition-all hover:opacity-90 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
-            <Sparkles className="w-5 h-5 animate-pulse" />
-            <span className="text-xs font-black uppercase tracking-wider">Estúdio</span>
+            <ImageIcon className="w-6 h-6 mb-1" />
+            <span className="text-[9px] font-black uppercase tracking-tighter">Galeria</span>
           </button>
         </div>
+        
+        <div className="flex-0 pointer-events-auto">
+          <button 
+            onClick={() => cameraRef.current?.click()}
+            className="w-20 h-20 flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-primary via-accent to-primary bg-[length:200%_200%] animate-shimmer shadow-[0_15px_30px_rgba(var(--primary-rgb),0.3)] text-white hover:shadow-primary/40 transition-all active:scale-95 border-4 border-white animate-in zoom-in slide-in-from-bottom-6 duration-700"
+          >
+            <Camera className="w-8 h-8" />
+            <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Câmera</span>
+          </button>
+        </div>
+
+        <div className="flex-1" />
       </div>
 
       <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={editorFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, true)} />
+
+      {/* Studio Modal */}
+      {studioPhotos && (
+        <Studio 
+          photos={studioPhotos}
+          onClose={() => setStudioPhotos(null)}
+          onSave={(blob, legenda) => publishPhoto(blob, legenda, true)}
+        />
+      )}
 
       {/* Editor Modal */}
       {editorFile && (
@@ -389,59 +443,68 @@ export default function MuralFotos() {
         <DialogContent className="fixed inset-0 min-h-[100dvh] w-full max-w-none m-0 p-0 rounded-none bg-black flex flex-col z-[100] border-none data-[state=open]:animate-in data-[state=closed]:animate-out sm:max-w-none">
           {pendingFile && (
             <div className="flex flex-col h-[100dvh] w-full">
-              <div className="flex-1 min-h-0 relative flex items-center justify-center bg-black">
+              <div className="flex-1 min-h-0 relative flex items-center justify-center bg-zinc-900/50">
                  <button 
                    onClick={clearFiles} 
                    disabled={isPublishing}
-                   className="absolute top-4 right-4 z-[110] p-3 bg-black/50 hover:bg-black/70 rounded-full text-white backdrop-blur-md transition-colors disabled:opacity-50"
+                   className="absolute top-6 right-6 z-[110] p-4 bg-black/60 hover:bg-black/80 rounded-full text-white backdrop-blur-xl transition-all active:scale-95 disabled:opacity-50 border border-white/10"
                  >
-                   <X className="w-5 h-5" />
+                   <X className="w-6 h-6" />
                  </button>
-                 <img src={pendingFile.preview} className="w-full h-full object-contain pointer-events-none" />
+                 <div className="w-full h-full p-4 flex items-center justify-center">
+                   <img src={pendingFile.preview} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl shadow-black/50" />
+                 </div>
               </div>
 
-              <div className="shrink-0 bg-zinc-950 p-5 space-y-4 rounded-t-3xl border-t border-zinc-800 shadow-[0_-10px_20px_rgba(0,0,0,0.8)] z-50 pb-8">
-                 <input 
-                   type="text" 
-                   placeholder="Escreva uma legenda simples..." 
-                   value={resumo} 
-                   onChange={(e) => setResumo(e.target.value)} 
-                   disabled={isPublishing}
-                   className="w-full bg-zinc-900 border border-zinc-800 text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary h-12 px-5 text-[15px] rounded-xl outline-none transition-all disabled:opacity-50" 
-                 />
-                 
-                 {turmas.length > 1 ? (
-                    <div className="relative">
-                      <select 
-                        value={selectedTurmaId} 
-                        onChange={(e) => setSelectedTurmaId(e.target.value)} 
-                        disabled={isPublishing}
-                        className="w-full bg-zinc-900 border border-zinc-800 text-white focus:border-primary h-12 px-5 text-[15px] rounded-xl appearance-none outline-none transition-all disabled:opacity-50"
-                      >
-                         <option value="" disabled className="bg-zinc-900 text-zinc-400">-- Para qual turma? --</option>
-                         {turmas.map(t => (
-                           <option key={t.id} value={t.id} className="bg-zinc-900 text-white">{t.nome}</option>
-                         ))}
-                      </select>
-                      <Users className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
-                    </div>
-                 ) : turmas.length === 1 ? (
-                    <div className="text-white/60 text-xs text-center flex justify-center items-center gap-1.5 py-1">
-                      <Users className="w-4 h-4 text-primary"/>
-                      Publicar para: <strong className="text-white">{turmas[0].nome}</strong>
-                    </div>
-                 ) : null}
-
-                 <div className="flex items-center gap-3 pt-2">
-                    <button 
-                      onClick={() => publishPhoto(pendingFile.file, resumo, false)} 
-                      disabled={isPublishing || turmas.length === 0} 
-                      className="flex-1 h-12 text-primary-foreground font-black bg-primary hover:bg-primary/90 rounded-xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] shadow-lg shadow-primary/20 disabled:opacity-50 disabled:shadow-none"
-                    >
-                       {isPublishing ? <Loader2 className="w-[18px] h-[18px] animate-spin"/> : <Send className="w-[18px] h-[18px]"/>} 
-                       {isPublishing ? "Salvando..." : "Salvar no Mural Normal"}
-                    </button>
+              <div className="shrink-0 bg-white p-6 space-y-5 rounded-t-[40px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] z-50 pb-10 animate-in slide-in-from-bottom-full duration-500">
+                 <div className="space-y-4">
+                   <h3 className="text-xl font-black text-foreground text-center">Registrar Memória</h3>
+                   
+                   <input 
+                     type="text" 
+                     placeholder="Dê um nome ou legenda para esta foto..." 
+                     value={resumo} 
+                     onChange={(e) => setResumo(e.target.value)} 
+                     disabled={isPublishing}
+                     className="w-full bg-zinc-100 border-2 border-transparent focus:border-primary focus:bg-white text-foreground placeholder-zinc-400 h-14 px-6 text-[16px] rounded-2xl outline-none transition-all disabled:opacity-50 font-medium" 
+                   />
+                   
+                   {turmas.length > 1 ? (
+                      <div className="relative">
+                        <select 
+                          value={selectedTurmaId} 
+                          onChange={(e) => setSelectedTurmaId(e.target.value)} 
+                          disabled={isPublishing}
+                          className="w-full bg-zinc-100 border-2 border-transparent focus:border-primary h-14 px-6 text-[16px] rounded-2xl appearance-none outline-none transition-all disabled:opacity-50 font-bold text-primary"
+                        >
+                           <option value="" disabled>Selecione a Turma</option>
+                           {turmas.map(t => (
+                             <option key={t.id} value={t.id}>{t.nome}</option>
+                           ))}
+                        </select>
+                        <Users className="w-6 h-6 absolute right-5 top-1/2 -translate-y-1/2 text-primary/40 pointer-events-none" />
+                      </div>
+                   ) : turmas.length === 1 ? (
+                      <div className="bg-primary/5 rounded-2xl p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Users className="w-5 h-5 text-primary"/>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] uppercase font-black text-primary/60 tracking-widest">Postando em</span>
+                          <span className="text-sm font-bold text-foreground">{turmas[0].nome}</span>
+                        </div>
+                      </div>
+                   ) : null}
                  </div>
+
+                 <button 
+                   onClick={() => publishPhoto(pendingFile.file, resumo, false)} 
+                   disabled={isPublishing || turmas.length === 0} 
+                   className="w-full h-16 text-white font-black bg-gradient-to-r from-primary to-accent rounded-2xl flex justify-center gap-3 items-center transition-all active:scale-[0.98] shadow-xl shadow-primary/20 disabled:opacity-50 disabled:shadow-none text-lg"
+                 >
+                    {isPublishing ? <Loader2 className="w-6 h-6 animate-spin"/> : <Send className="w-6 h-6"/>} 
+                    {isPublishing ? "Salvando..." : "Salvar no Mural"}
+                 </button>
               </div>
             </div>
           )}
@@ -475,20 +538,29 @@ export default function MuralFotos() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-2">
+                  <button 
+                    onClick={() => {
+                      setViewFoto(null);
+                      setEditorFile({ file: new File([], "placeholder"), preview: viewFoto.url });
+                    }}
+                    className="flex flex-col items-center justify-center gap-1 bg-primary/10 text-primary py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-primary/20"
+                  >
+                    <Sparkles className="w-4 h-4" /> Estúdio
+                  </button>
                   <button 
                     onClick={() => handleShare(viewFoto)}
                     disabled={isSharing}
-                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-lg shadow-primary/20"
+                    className="flex flex-col items-center justify-center gap-1 bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
                   >
-                    {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="h-4 h-4" />} Compartilhar
+                    {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />} Compartilhar
                   </button>
                   <button 
                     onClick={() => handleDelete(viewFoto.id)} 
                     disabled={deleteMutation.isPending}
-                    className="flex items-center justify-center gap-2 text-destructive bg-destructive/10 px-4 py-3.5 rounded-2xl hover:bg-destructive/20 text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                    className="flex flex-col items-center justify-center gap-1 text-destructive bg-destructive/10 py-3 rounded-2xl hover:bg-destructive/20 text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
                   >
-                    {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 w-4" />} Remover
+                    {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />} Excluir
                   </button>
                 </div>
               </div>
