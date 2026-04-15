@@ -36,9 +36,10 @@ export default function TurmasList() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col items-center gap-3 animate-fade-in">
         <h1 className="text-xl font-bold text-foreground">Turmas</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between w-full">
           <button
             onClick={() => setJoinModalOpen(true)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all active:scale-95"

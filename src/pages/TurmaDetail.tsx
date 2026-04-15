@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, ChevronRight, Pencil, Copy, Link2, LogOut } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export default function TurmaDetail() {
   const { id } = useParams();
@@ -26,6 +27,7 @@ export default function TurmaDetail() {
   const leaveMutation = useLeaveTurma();
 
   const turma = turmas.find((t) => t.id === id);
+  const [codeVisible, setCodeVisible] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -241,29 +243,63 @@ export default function TurmaDetail() {
 
       {/* Código de Acesso - apenas para dono */}
       {!turma.isShared && turma.codigoAcesso && (
-        <div className="float-card p-4 animate-float-up border-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-900/10" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
-                <Link2 className="h-4 w-4 text-emerald-700" />
+        <div className="animate-float-up" style={{ animationDelay: '500ms' }}>
+          {!codeVisible ? (
+            // Chip fechado — clica para revelar
+            <button
+              onClick={() => setCodeVisible(true)}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-500/25 hover:border-emerald-500/50 hover:bg-emerald-100/50 transition-all active:scale-[0.98] group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                  <Link2 className="h-4 w-4 text-emerald-700" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[11px] font-black uppercase tracking-[0.15em] text-emerald-700">Código de Compartilhamento</p>
+                  <p className="text-[9px] text-muted-foreground mt-0.5">Toque para revelar o código</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700">Código de Compartilhamento</p>
-                <p className="text-[9px] text-muted-foreground">Compartilhe para dar acesso a outro catequista</p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-black tracking-[0.3em] text-emerald-700/40 select-none">••••••••</span>
+                <Eye className="h-4 w-4 text-emerald-600 group-hover:scale-110 transition-transform" />
+              </div>
+            </button>
+          ) : (
+            // Código revelado
+            <div className="float-card p-4 border-2 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-900/10">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                    <Link2 className="h-4 w-4 text-emerald-700" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700">Código de Acesso</p>
+                    <p className="text-[9px] text-muted-foreground">Compartilhe com outro catequista</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleCopyCode}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 text-[10px] font-black uppercase tracking-wide border border-emerald-500/20 hover:bg-emerald-500/25 transition-all active:scale-95"
+                  >
+                    <Copy className="h-3 w-3" /> Copiar
+                  </button>
+                  <button
+                    onClick={() => setCodeVisible(false)}
+                    className="w-7 h-7 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-all active:scale-95"
+                  >
+                    <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+              <div className="py-3 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center">
+                <span className="text-3xl font-black tracking-[0.5em] text-emerald-700 select-all">{turma.codigoAcesso}</span>
               </div>
             </div>
-            <button
-              onClick={handleCopyCode}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/15 text-emerald-700 text-[10px] font-black uppercase tracking-wide border border-emerald-500/20 hover:bg-emerald-500/25 transition-all active:scale-95"
-            >
-              <Copy className="h-3 w-3" /> Copiar
-            </button>
-          </div>
-          <div className="mt-3 py-2 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center">
-            <span className="text-2xl font-black tracking-[0.4em] text-emerald-700">{turma.codigoAcesso}</span>
-          </div>
+          )}
         </div>
       )}
+
     </div>
   );
 }

@@ -7,7 +7,8 @@ function gerarCodigoTurma(nome: string): string {
   const palavras = nome.trim().split(/\s+/);
   const letra1 = (palavras[0]?.[0] || 'A').toUpperCase();
   const letra2 = (palavras[1]?.[0] || palavras[0]?.[1] || 'B').toUpperCase();
-  const digitos = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
+  // 100000-999999: always exactly 6 digits, no padding needed → total 8 chars
+  const digitos = (Math.floor(Math.random() * 900000) + 100000).toString();
   return `${letra1}${letra2}${digitos}`;
 }
 
