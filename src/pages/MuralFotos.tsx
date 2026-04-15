@@ -215,7 +215,7 @@ export default function MuralFotos() {
     }
   };
 
-  if (isLoading) return <div className="flex items-center justify-center py-20"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
+  if (isLoading) return <div className="flex items-center justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
 
   return (
     <div className="space-y-4 pb-32">
@@ -275,7 +275,7 @@ export default function MuralFotos() {
                            className={`w-full h-full relative rounded-xl overflow-hidden bg-muted shadow-sm hover:shadow-md transition-all active:scale-[0.97] animate-float-up group ${isSelected ? 'ring-4 ring-primary ring-inset' : ''}`} 
                            style={{ animationDelay: `${(groupIdx * 4 + i) * 30}ms` }}
                          >
-                           <img src={foto.url} alt={foto.legenda} className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? 'scale-90 opacity-80' : 'group-hover:scale-110'}`} />
+                           <img src={foto.url} alt={foto.legenda} loading="lazy" decoding="async" className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? 'scale-90 opacity-80' : 'group-hover:scale-110'}`} />
                            {isSelected && (
                              <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[1px] pointer-events-none">
                              </div>
@@ -330,7 +330,7 @@ export default function MuralFotos() {
                          className="relative aspect-[3/4] rounded-3xl overflow-hidden bg-muted shadow-md hover:shadow-xl transition-all active:scale-[0.97] animate-float-up group border border-border/5" 
                          style={{ animationDelay: `${i * 50}ms` }}
                        >
-                         <img src={foto.url} alt={foto.legenda} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]" />
+                         <img src={foto.url} alt={foto.legenda} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]" />
                          <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
                            <p className="text-white text-xs font-black truncate">{foto.legenda}</p>
                          </div>

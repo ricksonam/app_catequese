@@ -23,7 +23,7 @@ export default function RelatoriosTurma() {
   const turma = turmas.find(t => t.id === id);
 
   if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom) {
-    return <div className="flex justify-center py-20"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
+    return <div className="flex justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
   if (!turma) {

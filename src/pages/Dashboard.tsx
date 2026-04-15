@@ -135,7 +135,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" />
       </div>
     );
