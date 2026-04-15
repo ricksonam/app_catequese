@@ -343,7 +343,7 @@ export async function fetchMuralFotos(): Promise<MuralFoto[]> {
   if (error) throw error;
   return (data || []).map((f: any) => ({
     id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
-    data: f.data, criadoEm: f.criado_em, turmaId: f.turma_id
+    data: f.data, criadoEm: f.criado_em, turmaId: f.turma_id, tipo: f.tipo
   }));
 }
 
@@ -354,6 +354,7 @@ export async function upsertMuralFoto(f: MuralFoto) {
   const { error } = await (supabase.from as any)("mural_fotos").upsert({
     id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
     data: f.data, criado_em: f.criadoEm, turma_id: f.turmaId || null,
+    tipo: f.tipo || 'comum',
     user_id: user.id
   });
   if (error) throw error;

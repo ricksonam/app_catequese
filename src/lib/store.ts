@@ -175,6 +175,7 @@ export interface MuralFoto {
   data: string;
   criadoEm: string;
   turmaId?: string;
+  tipo?: 'comum' | 'criatividade';
 }
 
 export interface TurmaMembro {
