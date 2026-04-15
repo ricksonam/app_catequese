@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useMuralFotos, useMuralFotoMutation, useDeleteMuralFoto } from "@/hooks/useSupabaseData";
+import { useMuralFotos, useMuralFotoMutation, useDeleteMuralFoto, useTurmas } from "@/hooks/useSupabaseData";
 import { ImagePicker } from "@/components/ImagePicker";
 import { type MuralFoto } from "@/lib/store";
 
 export default function MuralFotos() {
   const navigate = useNavigate();
   const { data: fotos = [], isLoading } = useMuralFotos();
+  const { data: turmas = [] } = useTurmas();
   const mutation = useMuralFotoMutation();
   const deleteMutation = useDeleteMuralFoto();
   
@@ -18,13 +19,19 @@ export default function MuralFotos() {
   const [resumo, setResumo] = useState("");
   const [showResumoDialog, setShowResumoDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
+
+  const fotosVisiveis = useMemo(() => {
+    const turmasIds = turmas.map(t => t.id);
+    return fotos.filter((f) => !f.turmaId || turmasIds.includes(f.turmaId));
+  }, [fotos, turmas]);
 
   // Agrupamento por mÃªs
   const groupedFotos = useMemo(() => {
     const groups: Record<string, { label: string; items: MuralFoto[] }> = {};
     
     // Ordena por data (mais recente primeiro)
-    const sorted = [...fotos].sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    const sorted = [...fotosVisiveis].sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
     
     sorted.forEach(f => {
       const d = new Date(f.data);
@@ -39,7 +46,7 @@ export default function MuralFotos() {
     });
     
     return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [fotos]);
+  }, [fotosVisiveis]);
 
   const handleShare = async (foto: MuralFoto) => {
     if (!navigator.share) {
@@ -91,6 +98,7 @@ export default function MuralFotos() {
   const handleImagePicked = (url: string) => {
     setPendingUrl(url);
     setResumo("");
+    setSelectedTurmaId("");
     setShowResumoDialog(true);
   };
 
@@ -103,6 +111,7 @@ export default function MuralFotos() {
       resumo: resumo,
       data: new Date().toISOString(),
       criadoEm: new Date().toISOString(),
+      turmaId: selectedTurmaId || undefined,
     };
     
     try {
@@ -134,7 +143,7 @@ export default function MuralFotos() {
         <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <div>
           <h1 className="text-xl font-bold text-foreground">Mural de Fotos</h1>
-          <p className="text-xs text-muted-foreground">{fotos.length} fotos</p>
+          <p className="text-xs text-muted-foreground">{fotosVisiveis.length} fotos</p>
         </div>
       </div>
 
@@ -147,7 +156,7 @@ export default function MuralFotos() {
         />
       </div>
 
-      {fotos.length === 0 ? (
+      {fotosVisiveis.length === 0 ? (
         <div className="empty-state animate-float-up" style={{ animationDelay: '100ms' }}>
           <div className="icon-box bg-primary/15 text-primary mx-auto mb-3"><ImageIcon className="h-6 w-6" /></div>
           <p className="text-sm font-medium text-muted-foreground">Nenhuma foto adicionada</p>
@@ -205,6 +214,21 @@ export default function MuralFotos() {
                 placeholder="Descreva o momento..."
               />
             </div>
+            {turmas.length > 0 && (
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Vincular a Turma (Opcional)</label>
+                <select 
+                  value={selectedTurmaId}
+                  onChange={(e) => setSelectedTurmaId(e.target.value)}
+                  className="form-input"
+                >
+                  <option value="">-- Foto Global (Sem vínculo) --</option>
+                  {turmas.map(t => (
+                    <option key={t.id} value={t.id}>{t.nome}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="flex gap-2">
               <button 
                 onClick={() => { setShowResumoDialog(false); setPendingUrl(null); }} 

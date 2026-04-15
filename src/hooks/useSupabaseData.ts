@@ -35,6 +35,16 @@ export function useLeaveTurma() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: leaveTurma, onSuccess: () => { qc.invalidateQueries({ queryKey: ["turmas"] }); } });
 }
+export function useTurmaMembros(turmaId: string) {
+  return useQuery({ queryKey: ["turma_membros", turmaId], queryFn: () => fetchTurmaMembros(turmaId), enabled: !!turmaId });
+}
+export function useRemoveTurmaMembro() {
+  const qc = useQueryClient();
+  return useMutation({ 
+    mutationFn: ({ turmaId, userId }: { turmaId: string, userId: string }) => removeTurmaMembro(turmaId, userId), 
+    onSuccess: (_, variables) => { qc.invalidateQueries({ queryKey: ["turma_membros", variables.turmaId] }); } 
+  });
+}
 
 // ===== CATEQUIZANDOS =====
 export function useCatequizandos(turmaId?: string) {

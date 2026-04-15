@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff } from "lucide-react";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro } from "@/hooks/useSupabaseData";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -25,6 +25,8 @@ export default function TurmaDetail() {
   const { data: atividades = [] } = useAtividades(id);
   const deleteMutation = useDeleteTurma();
   const leaveMutation = useLeaveTurma();
+  const removeMembroMutation = useRemoveTurmaMembro();
+  const { data: membros = [] } = useTurmaMembros(id!);
 
   const turma = turmas.find((t) => t.id === id);
   const [codeVisible, setCodeVisible] = useState(false);
@@ -53,6 +55,15 @@ export default function TurmaDetail() {
     if (turma?.codigoAcesso) {
       navigator.clipboard.writeText(turma.codigoAcesso);
       toast.success("Código copiado!");
+    }
+  };
+
+  const handleRemoveMembro = async (userId: string) => {
+    try {
+      await removeMembroMutation.mutateAsync({ turmaId: id!, userId });
+      toast.success("Acesso removido com sucesso.");
+    } catch (error: any) {
+      toast.error("Erro ao remover: " + error.message);
     }
   };
 
@@ -243,7 +254,7 @@ export default function TurmaDetail() {
 
       {/* Código de Acesso - apenas para dono */}
       {!turma.isShared && turma.codigoAcesso && (
-        <div className="animate-float-up" style={{ animationDelay: '500ms' }}>
+        <div className="animate-float-up space-y-4" style={{ animationDelay: '500ms' }}>
           {!codeVisible ? (
             // Chip fechado — clica para revelar
             <button
@@ -294,6 +305,51 @@ export default function TurmaDetail() {
               </div>
               <div className="py-3 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center">
                 <span className="text-3xl font-black tracking-[0.5em] text-emerald-700 select-all">{turma.codigoAcesso}</span>
+              </div>
+            </div>
+          )}
+
+          {membros.length > 0 && (
+            <div className="float-card p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Catequistas Vinculados</p>
+                  <p className="text-[9px] text-muted-foreground">Usuários com acesso à turma</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {membros.map((m: any) => (
+                  <div key={m.user_id} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/50">
+                    <div>
+                      <p className="text-xs font-semibold text-foreground truncate max-w-[180px]">{m.email}</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">Desde {new Date(m.joined_at).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all active:scale-95">
+                          <UserMinus className="h-3.5 w-3.5" />
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="rounded-2xl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remover Acesso</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Deseja remover o acesso de <b>{m.email}</b> a esta turma? O usuário não poderá mais acessá-la.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleRemoveMembro(m.user_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
+                            Confirmar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                ))}
               </div>
             </div>
           )}

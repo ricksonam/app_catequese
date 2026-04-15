@@ -343,20 +343,39 @@ export async function fetchMuralFotos(): Promise<MuralFoto[]> {
   if (error) throw error;
   return (data || []).map((f: any) => ({
     id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
-    data: f.data, criadoEm: f.criado_em,
+    data: f.data, criadoEm: f.criado_em, turmaId: f.turma_id
   }));
 }
 
 export async function upsertMuralFoto(f: MuralFoto) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+
   const { error } = await (supabase.from as any)("mural_fotos").upsert({
     id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
-    data: f.data, criado_em: f.criadoEm,
+    data: f.data, criado_em: f.criadoEm, turma_id: f.turmaId || null,
+    user_id: user.id
   });
   if (error) throw error;
 }
 
 export async function removeMuralFoto(id: string) {
   const { error } = await (supabase.from as any)("mural_fotos").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ========== MEMBROS DA TURMA ==========
+export async function fetchTurmaMembros(turmaId: string) {
+  const { data, error } = await supabase.rpc('get_turma_membros', { p_turma_id: turmaId });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function removeTurmaMembro(turmaId: string, userId: string) {
+  const { error } = await (supabase.from as any)("turma_membros")
+    .delete()
+    .eq("turma_id", turmaId)
+    .eq("user_id", userId);
   if (error) throw error;
 }
 

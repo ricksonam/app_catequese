@@ -174,6 +174,13 @@ export interface MuralFoto {
   resumo: string;
   data: string;
   criadoEm: string;
+  turmaId?: string;
+}
+
+export interface TurmaMembro {
+  user_id: string;
+  email: string;
+  joined_at: string;
 }
 
 export interface CitacaoBiblica {
