@@ -115,17 +115,28 @@ export default function MuralFotos() {
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
-      const preview = URL.createObjectURL(f);
-      setPendingFile({ file: f, preview });
-      setResumo(""); // reseta legenda
-      
-      if (turmas.length === 1) {
-        setSelectedTurmaId(turmas[0].id);
-      } else if (turmas.length > 1 && !selectedTurmaId) {
-        setSelectedTurmaId(turmas[0].id);
+      const toastId = toast.loading("Preparando câmera...");
+      try {
+        // COMRIME IMEDIATAMENTE para evitar gargalos e memory crashes (OOM) no Safari/Chrome Mobile
+        const compressedBlob = await compressImage(f, 800, 0.7);
+        const finalFile = new File([compressedBlob], "photo.jpg", { type: "image/jpeg" });
+        const preview = URL.createObjectURL(finalFile);
+        
+        setPendingFile({ file: finalFile, preview });
+        setResumo(""); // reseta legenda
+        
+        if (turmas.length === 1) {
+          setSelectedTurmaId(turmas[0].id);
+        } else if (turmas.length > 1 && !selectedTurmaId) {
+          setSelectedTurmaId(turmas[0].id);
+        }
+        toast.dismiss(toastId);
+      } catch (err) {
+        console.error(err);
+        toast.error("Erro ao otimizar foto. Tente novamente.", { id: toastId });
       }
     }
   };
@@ -150,9 +161,9 @@ export default function MuralFotos() {
     const toastId = toast.loading("Salvando foto...");
     
     try {
-      const compressedBlob = await compressImage(pendingFile.file, 800, 0.7);
+      // Já está comprimido! Fazemos o upload direto!
       const fileName = `${crypto.randomUUID()}.jpg`;
-      const finalUrl = await uploadFile(compressedBlob, "mural", fileName);
+      const finalUrl = await uploadFile(pendingFile.file, "mural", fileName);
       
       const nova: MuralFoto = {
         id: crypto.randomUUID(),
@@ -268,28 +279,28 @@ export default function MuralFotos() {
       <Dialog open={!!pendingFile} onOpenChange={(o) => { if(!o && !isPublishing) clearPendingFile(); }}>
         <DialogContent className="fixed inset-0 min-h-[100dvh] w-full max-w-none m-0 p-0 rounded-none bg-black flex flex-col z-[100] border-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 sm:max-w-none">
           {pendingFile && (
-            <>
+            <div className="flex flex-col h-[100dvh] w-full">
               {/* Image Preview Container */}
-              <div className="flex-1 relative flex items-center justify-center bg-black overflow-hidden pt-6">
+              <div className="flex-1 min-h-0 relative flex items-center justify-center bg-black">
                  <button 
                    onClick={clearPendingFile} 
                    disabled={isPublishing}
-                   className="absolute top-6 right-6 z-50 p-2.5 bg-black/40 hover:bg-black/60 rounded-full text-white backdrop-blur-md transition-colors disabled:opacity-50"
+                   className="absolute top-4 right-4 z-[110] p-3 bg-black/50 hover:bg-black/70 rounded-full text-white backdrop-blur-md transition-colors disabled:opacity-50"
                  >
-                   <X className="w-6 h-6" />
+                   <X className="w-5 h-5" />
                  </button>
-                 <img src={pendingFile.preview} className="w-full h-full object-contain" />
+                 <img src={pendingFile.preview} className="w-full h-full object-contain pointer-events-none" />
               </div>
 
               {/* Action Panel */}
-              <div className="bg-gradient-to-t from-zinc-950 via-zinc-900 to-zinc-900/90 p-6 pt-8 pb-10 space-y-4 rounded-t-[2.5rem] border-t border-white/10 -mt-8 relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+              <div className="shrink-0 bg-zinc-950 p-5 space-y-4 rounded-t-3xl border-t border-zinc-800 shadow-[0_-10px_20px_rgba(0,0,0,0.8)] z-50 pb-8">
                  <input 
                    type="text" 
                    placeholder="Escreva uma legenda..." 
                    value={resumo} 
                    onChange={(e) => setResumo(e.target.value)} 
                    disabled={isPublishing}
-                   className="w-full bg-white/5 border border-white/10 text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary h-14 px-5 text-base rounded-2xl outline-none transition-all disabled:opacity-50" 
+                   className="w-full bg-zinc-900 border border-zinc-800 text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary h-12 px-5 text-[15px] rounded-xl outline-none transition-all disabled:opacity-50" 
                  />
                  
                  {turmas.length > 1 ? (
@@ -298,45 +309,45 @@ export default function MuralFotos() {
                         value={selectedTurmaId} 
                         onChange={(e) => setSelectedTurmaId(e.target.value)} 
                         disabled={isPublishing}
-                        className="w-full bg-white/5 border border-white/10 text-white focus:border-primary h-14 px-5 text-base rounded-2xl appearance-none outline-none transition-all disabled:opacity-50"
+                        className="w-full bg-zinc-900 border border-zinc-800 text-white focus:border-primary h-12 px-5 text-[15px] rounded-xl appearance-none outline-none transition-all disabled:opacity-50"
                       >
                          <option value="" disabled className="bg-zinc-900 text-zinc-400">-- Para qual turma? --</option>
                          {turmas.map(t => (
                            <option key={t.id} value={t.id} className="bg-zinc-900 text-white">{t.nome}</option>
                          ))}
                       </select>
-                      <Users className="w-5 h-5 absolute right-5 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+                      <Users className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
                     </div>
                  ) : turmas.length === 1 ? (
                     <div className="text-white/60 text-xs text-center flex justify-center items-center gap-1.5 py-1">
                       <Users className="w-4 h-4 text-primary"/>
-                      Será publicado diretamente para a turma <strong className="text-white ml-1">{turmas[0].nome}</strong>
+                      Será publicado diretamente para <strong className="text-white shrink-0 truncate max-w-[200px]">{turmas[0].nome}</strong>
                     </div>
                  ) : (
                     <div className="text-red-400/80 bg-red-400/10 border border-red-400/20 rounded-xl p-3 text-xs text-center font-medium">
-                      Nenhuma turma cadastrada. Você precisa de uma turma para postar.
+                      Você precisa estar em uma turma para postar.
                     </div>
                  )}
 
-                 <div className="flex items-center gap-3 pt-4">
+                 <div className="flex items-center gap-3 pt-2">
                     <button 
                       onClick={clearPendingFile} 
                       disabled={isPublishing}
-                      className="flex-1 h-14 text-white font-bold bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] disabled:opacity-50"
+                      className="flex-1 h-12 text-white font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] disabled:opacity-50"
                     >
-                       <Trash2 className="w-5 h-5 text-red-400"/> Excluir
+                       <Trash2 className="w-[18px] h-[18px] text-red-500"/>
                     </button>
                     <button 
                       onClick={handlePublish} 
                       disabled={isPublishing || turmas.length === 0} 
-                      className="flex-[2] h-14 text-primary-foreground font-black bg-primary hover:bg-primary/90 rounded-2xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] shadow-lg shadow-primary/30 disabled:opacity-50 disabled:shadow-none"
+                      className="flex-[3] h-12 text-primary-foreground font-black bg-primary hover:bg-primary/90 rounded-xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] shadow-lg shadow-primary/20 disabled:opacity-50 disabled:shadow-none"
                     >
-                       {isPublishing ? <Loader2 className="w-5 h-5 animate-spin"/> : <Send className="w-5 h-5"/>} 
+                       {isPublishing ? <Loader2 className="w-[18px] h-[18px] animate-spin"/> : <Send className="w-[18px] h-[18px]"/>} 
                        {isPublishing ? "Salvando..." : "Salvar no Mural"}
                     </button>
                  </div>
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
