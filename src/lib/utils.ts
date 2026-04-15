@@ -18,37 +18,48 @@ export function formatarDataVigente(dataStr: string, options?: Intl.DateTimeForm
  */
 export async function compressImage(file: File, maxWidth = 1000, quality = 0.7): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
 
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
 
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0, width, height);
 
-        canvas.toBlob(
-          (blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error("Erro ao comprimir imagem"));
-          },
-          "image/jpeg",
-          quality
-        );
-      };
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error("Erro ao comprimir imagem"));
+          }
+          // Limpa o canvas da memoria
+          canvas.width = 0;
+          canvas.height = 0;
+        },
+        "image/jpeg",
+        quality
+      );
     };
-    reader.onerror = (err) => reject(err);
+
+    img.onerror = (err) => {
+      URL.revokeObjectURL(objectUrl);
+      reject(err);
+    };
+
+    img.src = objectUrl;
   });
 }
 /**

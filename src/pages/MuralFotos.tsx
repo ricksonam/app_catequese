@@ -1,4 +1,4 @@
-import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X, Check, Loader2, Send, Users, Sparkles, User, UserCircle } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X, Check, Loader2, Send, Users, Sparkles, User, UserCircle, Aperture } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -406,9 +406,9 @@ export default function MuralFotos() {
         <div className="flex-0 pointer-events-auto">
           <button 
             onClick={() => cameraRef.current?.click()}
-            className="w-20 h-20 flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-primary via-accent to-primary bg-[length:200%_200%] animate-shimmer shadow-[0_15px_30px_rgba(var(--primary-rgb),0.3)] text-white hover:shadow-primary/40 transition-all active:scale-95 border-4 border-white animate-in zoom-in slide-in-from-bottom-6 duration-700"
+            className="w-20 h-20 flex flex-col items-center justify-center rounded-full bg-primary shadow-xl shadow-primary/30 text-white hover:shadow-primary/50 transition-all active:scale-95 border-[3px] border-white animate-in zoom-in slide-in-from-bottom-6 duration-700"
           >
-            <Camera className="w-8 h-8" />
+            <Aperture className="w-8 h-8" />
             <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Câmera</span>
           </button>
         </div>
@@ -440,10 +440,10 @@ export default function MuralFotos() {
 
       {/* Normal Post Dialog */}
       <Dialog open={!!pendingFile} onOpenChange={(o) => { if(!o && !isPublishing) clearFiles(); }}>
-        <DialogContent className="fixed inset-0 min-h-[100dvh] w-full max-w-none m-0 p-0 rounded-none bg-black flex flex-col z-[100] border-none data-[state=open]:animate-in data-[state=closed]:animate-out sm:max-w-none">
+        <DialogContent className="fixed inset-0 h-[100dvh] w-full max-w-none m-0 p-0 rounded-none bg-black flex flex-col z-[100] border-none data-[state=open]:animate-in data-[state=closed]:animate-out sm:max-w-none overflow-hidden">
           {pendingFile && (
-            <div className="flex flex-col h-[100dvh] w-full">
-              <div className="flex-1 min-h-0 relative flex items-center justify-center bg-zinc-900/50">
+            <div className="flex flex-col h-full w-full">
+              <div className="flex-1 min-h-[40vh] relative flex items-center justify-center bg-zinc-900/50">
                  <button 
                    onClick={clearFiles} 
                    disabled={isPublishing}
@@ -456,7 +456,7 @@ export default function MuralFotos() {
                  </div>
               </div>
 
-              <div className="shrink-0 bg-white p-6 space-y-5 rounded-t-[40px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] z-50 pb-10 animate-in slide-in-from-bottom-full duration-500">
+              <div className="shrink-0 bg-white p-6 space-y-5 rounded-t-[40px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] z-50 animate-in slide-in-from-bottom-full duration-500 max-h-[50dvh] overflow-y-auto pb-10">
                  <div className="space-y-4">
                    <h3 className="text-xl font-black text-foreground text-center">Registrar Memória</h3>
                    
