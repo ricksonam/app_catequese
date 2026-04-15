@@ -360,7 +360,8 @@ export async function upsertMuralFoto(f: MuralFoto) {
 }
 
 export async function removeMuralFoto(id: string) {
-  const { error } = await (supabase.from as any)("mural_fotos").delete().eq("id", id);
+  // Usa RPC SECURITY DEFINER para contornar RLS em fotos antigas sem user_id
+  const { error } = await supabase.rpc('delete_mural_foto', { p_foto_id: id });
   if (error) throw error;
 }
 

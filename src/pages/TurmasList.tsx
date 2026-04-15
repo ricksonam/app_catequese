@@ -2,7 +2,7 @@ import { useTurmas, useEncontros, useCatequizandos, useJoinTurma } from "@/hooks
 import { ETAPAS_CATEQUESE } from "@/lib/store";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, ChevronRight, Plus, CalendarDays, Users, Link2, X, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function TurmasList() {
@@ -14,6 +14,20 @@ export default function TurmasList() {
 
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [code, setCode] = useState("");
+
+  // Esconde a barra de navegação inferior quando o modal de código estiver aberto
+  useEffect(() => {
+    const nav = document.getElementById('bottom-nav-bar');
+    if (!nav) return;
+    if (joinModalOpen) {
+      nav.style.display = 'none';
+    } else {
+      nav.style.display = '';
+    }
+    return () => { nav.style.display = ''; };
+  }, [joinModalOpen]);
+
+  const closeJoinModal = () => { setJoinModalOpen(false); setCode(""); };
 
   const handleJoin = async () => {
     if (code.trim().length < 8) {
@@ -123,14 +137,17 @@ export default function TurmasList() {
 
       {/* ── Modal Entrar com Código ── */}
       {joinModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/50 backdrop-blur-sm animate-fade-in"
+          onClick={(e) => { if (e.target === e.currentTarget) closeJoinModal(); }}
+        >
           <div className="w-full max-w-sm bg-card rounded-[32px] shadow-2xl p-6 space-y-5 animate-float-up">
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-xl font-black text-foreground">Entrar com Código</h2>
                 <p className="text-xs text-muted-foreground mt-1">Digite o código de 8 caracteres da turma</p>
               </div>
-              <button onClick={() => { setJoinModalOpen(false); setCode(""); }} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
+              <button onClick={closeJoinModal} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
                 <X className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
@@ -143,6 +160,7 @@ export default function TurmasList() {
                 onKeyDown={e => e.key === 'Enter' && handleJoin()}
                 placeholder="Ex: TP847293"
                 maxLength={8}
+                autoFocus
                 className="w-full px-4 py-3.5 rounded-2xl border-2 border-border bg-background text-foreground text-center text-2xl font-black tracking-[0.3em] uppercase placeholder:text-muted-foreground/40 placeholder:text-base placeholder:tracking-normal focus:outline-none focus:border-primary transition-colors"
               />
               <p className="text-[10px] text-center text-muted-foreground">
