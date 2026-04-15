@@ -48,16 +48,13 @@ export default function MuralFotos() {
   };
 
   const startStudio = () => {
-    if (isSelectionMode && selectedIds.length > 0) {
+    if (selectedIds.length > 0) {
       setStudioPhotos(fotos.filter(f => selectedIds.includes(f.id)));
-      setIsSelectionMode(false);
       setSelectedIds([]);
-    } else if (isSelectionMode) {
       setIsSelectionMode(false);
-      setSelectedIds([]);
     } else {
       setIsSelectionMode(true);
-      toast.info("Selecione fotos para levar ao Estúdio");
+      toast.info("Marque as caixinhas nas fotos e clique neste botão novamente!");
     }
   };
 
@@ -244,17 +241,12 @@ export default function MuralFotos() {
         </div>
         <button 
           onClick={startStudio}
-          className={`p-2.5 rounded-2xl flex items-center gap-2 transition-all active:scale-95 shadow-sm ${isSelectionMode ? 'bg-primary text-white scale-110 shadow-lg' : 'bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 text-primary hover:bg-primary/20'}`}
+          className={`p-2.5 px-4 rounded-2xl flex items-center gap-2 transition-all active:scale-95 shadow-sm ${selectedIds.length > 0 ? 'bg-primary text-white scale-105 shadow-xl shadow-primary/30' : 'bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 text-primary hover:bg-primary/20'}`}
         >
-          {isSelectionMode ? <Check className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+          <Sparkles className="h-4 w-4 animate-pulse" />
           <span className="text-xs font-bold uppercase tracking-wider">
-            {isSelectionMode ? (selectedIds.length > 0 ? "Confirmar" : "Cancelar") : "Estúdio"}
+            {selectedIds.length > 0 ? `Ao Estúdio (${selectedIds.length})` : "Estúdio"}
           </span>
-          {isSelectionMode && selectedIds.length > 0 && (
-            <span className="ml-1 bg-white text-primary rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-black">
-              {selectedIds.length}
-            </span>
-          )}
         </button>
       </div>
 
@@ -289,25 +281,30 @@ export default function MuralFotos() {
                      {group.items.map((foto, i) => {
                        const isSelected = selectedIds.includes(foto.id);
                        return (
-                        <button 
-                          key={foto.id} 
-                          onClick={() => {
-                            if (isSelectionMode) {
-                              toggleSelection(foto.id);
-                            } else {
-                              setViewFoto(foto);
-                            }
-                          }} 
-                          className={`relative aspect-square rounded-xl overflow-hidden bg-muted shadow-sm hover:shadow-md transition-all active:scale-[0.97] animate-float-up group ${isSelected ? 'ring-4 ring-primary ring-inset' : ''}`} 
-                          style={{ animationDelay: `${(groupIdx * 4 + i) * 30}ms` }}
-                        >
-                          <img src={foto.url} alt={foto.legenda} className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? 'scale-90 opacity-80' : 'group-hover:scale-110'}`} />
-                          {isSelected && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-primary/30 backdrop-blur-[2px]">
-                              <Check className="w-10 h-10 text-white drop-shadow-xl" />
-                            </div>
+                         <div className="relative aspect-square">
+                         <button 
+                           onClick={() => setViewFoto(foto)} 
+                           className={`w-full h-full relative rounded-xl overflow-hidden bg-muted shadow-sm hover:shadow-md transition-all active:scale-[0.97] animate-float-up group ${isSelected ? 'ring-4 ring-primary ring-inset' : ''}`} 
+                           style={{ animationDelay: `${(groupIdx * 4 + i) * 30}ms` }}
+                         >
+                           <img src={foto.url} alt={foto.legenda} className={`w-full h-full object-cover transition-transform duration-500 ${isSelected ? 'scale-90 opacity-80' : 'group-hover:scale-110'}`} />
+                           {isSelected && (
+                             <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[1px] pointer-events-none">
+                             </div>
+                           )}
+                         </button>
+                         {isSelectionMode && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleSelection(foto.id);
+                              }}
+                              className={`absolute top-2 right-2 w-7 h-7 rounded-full border-[2.5px] border-white shadow-xl flex items-center justify-center z-10 transition-all ${isSelected ? 'bg-primary scale-110' : 'bg-black/50 hover:bg-black/70 backdrop-blur-md'}`}
+                            >
+                              {isSelected && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
+                            </button>
                           )}
-                        </button>
+                         </div>
                        );
                      })}
                    </div>
@@ -392,31 +389,36 @@ export default function MuralFotos() {
       </Tabs>
 
       {/* FIXED BOTTOM ACTION BAR - FLOATING BUTTONS */}
-      <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
-        <div className="flex-1 flex justify-start pointer-events-auto">
-          <button 
-            onClick={() => fileRef.current?.click()}
-            className="w-16 h-16 flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-primary/20 shadow-xl text-primary hover:bg-primary/5 transition-all active:scale-90 animate-in fade-in slide-in-from-left-4 duration-500"
-          >
-            <ImageIcon className="w-6 h-6 mb-1" />
-            <span className="text-[9px] font-black uppercase tracking-tighter">Galeria</span>
-          </button>
-        </div>
-        
-        <div className="flex-0 pointer-events-auto">
-          <button 
-            onClick={() => cameraRef.current?.click()}
-            className="w-20 h-20 flex flex-col items-center justify-center rounded-full bg-primary shadow-xl shadow-primary/30 text-white hover:shadow-primary/50 transition-all active:scale-95 border-[3px] border-white animate-in zoom-in slide-in-from-bottom-6 duration-700"
-          >
-            <Aperture className="w-8 h-8" />
-            <span className="text-[10px] font-black uppercase tracking-widest mt-0.5">Câmera</span>
-          </button>
-        </div>
+      {!viewFoto && !pendingFile && !editorFile && !studioPhotos && (
+        <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
+          <div className="flex-1 flex justify-start pointer-events-auto">
+            <button 
+              onClick={() => fileRef.current?.click()}
+              className="w-16 h-16 flex flex-col items-center justify-center rounded-2xl bg-white border-2 border-primary/20 shadow-xl text-primary hover:bg-primary/5 transition-all active:scale-90 animate-in fade-in slide-in-from-left-4 duration-500"
+            >
+              <ImageIcon className="w-6 h-6 mb-1" />
+              <span className="text-[9px] font-black uppercase tracking-tighter">Galeria</span>
+            </button>
+          </div>
+          
+          <div className="flex-0 pointer-events-auto relative mt-2">
+            <button 
+              onClick={() => cameraRef.current?.click()}
+              className="w-20 h-20 flex items-center justify-center rounded-full bg-white text-primary border border-zinc-200 shadow-2xl transition-all active:scale-95 group relative"
+            >
+              <div className="absolute inset-1.5 rounded-full border-[5px] border-primary group-hover:bg-primary group-hover:border-primary/10 transition-all duration-300"></div>
+              <Camera className="w-7 h-7 relative z-10 group-hover:text-white transition-colors duration-300" strokeWidth={2.5} />
+            </button>
+            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-widest text-primary drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)] pointer-events-none whitespace-nowrap">
+               FOTO
+            </span>
+          </div>
 
-        <div className="flex-1" />
-      </div>
+          <div className="flex-1" />
+        </div>
+      )}
 
-      <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={editorFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, true)} />
 

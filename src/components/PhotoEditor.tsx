@@ -296,8 +296,10 @@ function FrameThumb({ type, active, onClick }: { type: FrameType, active: boolea
     >
       <div className="w-16 h-16 rounded-2xl bg-zinc-800 overflow-hidden border-2 flex items-center justify-center relative" style={{ borderColor: active ? 'var(--primary)' : 'transparent' }}>
         <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-gradient-to-br from-zinc-700 to-zinc-900" />
-        <div className="scale-[0.2] origin-center -ml-12 pointer-events-none">
-          <FrameOverlay type={type} />
+        <div className="absolute inset-0 origin-top-left pointer-events-none" style={{ transform: 'scale(0.16)' }}>
+          <div className="w-[400px] h-[400px] relative">
+            <FrameOverlay type={type} />
+          </div>
         </div>
       </div>
       <span className="text-[10px] font-bold uppercase tracking-wider">{labels[type]}</span>
