@@ -1,12 +1,13 @@
-import { ArrowLeft, Plus, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X, Loader2, Send, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useMuralFotos, useMuralFotoMutation, useDeleteMuralFoto, useTurmas } from "@/hooks/useSupabaseData";
-import { ImagePicker } from "@/components/ImagePicker";
 import { type MuralFoto } from "@/lib/store";
+import { compressImage } from "@/lib/utils";
+import { uploadFile } from "@/lib/supabaseStore";
 
 export default function MuralFotos() {
   const navigate = useNavigate();
@@ -17,11 +18,16 @@ export default function MuralFotos() {
   const deleteMutation = useDeleteMuralFoto();
   
   const [viewFoto, setViewFoto] = useState<MuralFoto | null>(null);
-  const [pendingUrl, setPendingUrl] = useState<string | null>(null);
   const [resumo, setResumo] = useState("");
-  const [showResumoDialog, setShowResumoDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
+  
+  // Novo State para Foto Dinâmica
+  const [pendingFile, setPendingFile] = useState<{ file: File; preview: string } | null>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   // Força refetch ao entrar na página para garantir que a RLS do banco
   // seja sempre consultada — usuários removidos de turmas não verão
@@ -109,33 +115,62 @@ export default function MuralFotos() {
     }
   };
 
-  const handleImagePicked = (url: string) => {
-    setPendingUrl(url);
-    setResumo("");
-    setSelectedTurmaId("");
-    setShowResumoDialog(true);
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) {
+      const preview = URL.createObjectURL(f);
+      setPendingFile({ file: f, preview });
+      setResumo(""); // reseta legenda
+      
+      if (turmas.length === 1) {
+        setSelectedTurmaId(turmas[0].id);
+      } else if (turmas.length > 1 && !selectedTurmaId) {
+        setSelectedTurmaId(turmas[0].id);
+      }
+    }
   };
 
-  const handleSaveFoto = async () => {
-    if (!pendingUrl) return;
-    const nova: MuralFoto = {
-      id: crypto.randomUUID(),
-      url: pendingUrl,
-      legenda: resumo.split('\n')[0] || "Foto",
-      resumo: resumo,
-      data: new Date().toISOString(),
-      criadoEm: new Date().toISOString(),
-      turmaId: selectedTurmaId || undefined,
-    };
+  const clearPendingFile = () => {
+    if (pendingFile) URL.revokeObjectURL(pendingFile.preview);
+    setPendingFile(null);
+    if (cameraRef.current) cameraRef.current.value = '';
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const handlePublish = async () => {
+    if (!pendingFile) return;
+    const turmaIdToUse = turmas.length === 1 ? turmas[0].id : selectedTurmaId;
+    
+    if (!turmaIdToUse) {
+      toast.error("Por favor, selecione uma turma");
+      return;
+    }
+    
+    setIsPublishing(true);
+    const toastId = toast.loading("Salvando foto...");
     
     try {
+      const compressedBlob = await compressImage(pendingFile.file, 800, 0.7);
+      const fileName = `${crypto.randomUUID()}.jpg`;
+      const finalUrl = await uploadFile(compressedBlob, "mural", fileName);
+      
+      const nova: MuralFoto = {
+        id: crypto.randomUUID(),
+        url: finalUrl,
+        legenda: resumo.trim() || "Nova Foto",
+        resumo: resumo.trim(),
+        data: new Date().toISOString(),
+        criadoEm: new Date().toISOString(),
+        turmaId: turmaIdToUse
+      };
+      
       await mutation.mutateAsync(nova);
-      setPendingUrl(null);
-      setResumo("");
-      setShowResumoDialog(false);
-      toast.success("Foto adicionada ao mural!");
-    } catch (error: any) {
-      toast.error("Erro ao salvar: " + error.message);
+      clearPendingFile();
+      toast.success("Foto postada com sucesso!", { id: toastId });
+    } catch(e: any) {
+      toast.error("Erro ao publicar: " + e.message, { id: toastId });
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -161,14 +196,31 @@ export default function MuralFotos() {
         </div>
       </div>
 
-      <div className="float-card p-5 animate-float-up">
-        <ImagePicker 
-          onImageUpload={handleImagePicked} 
-          folder="mural" 
-          label="Adicionar Nova Foto"
-          className="w-full"
-        />
+      {/* Modern Picture Inputs */}
+      <div className="grid grid-cols-2 gap-3 animate-float-up">
+        <button
+          onClick={() => cameraRef.current?.click()}
+          className="flex flex-col items-center justify-center gap-3 p-5 rounded-[2rem] bg-gradient-to-b from-primary/10 to-transparent border border-primary/20 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <div className="w-14 h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
+            <Camera className="w-7 h-7" />
+          </div>
+          <span className="text-xs font-black uppercase tracking-widest text-foreground">Tirar Foto</span>
+        </button>
+
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="flex flex-col items-center justify-center gap-3 p-5 rounded-[2rem] bg-gradient-to-b from-gold/10 to-transparent border border-gold/20 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <div className="w-14 h-14 bg-gold text-white rounded-full flex items-center justify-center shadow-lg shadow-gold/30">
+            <ImageIcon className="w-7 h-7" />
+          </div>
+          <span className="text-xs font-black uppercase tracking-widest text-foreground">Galeria</span>
+        </button>
       </div>
+
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileSelect} />
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
 
       {fotosVisiveis.length === 0 ? (
         <div className="empty-state animate-float-up" style={{ animationDelay: '100ms' }}>
@@ -212,50 +264,80 @@ export default function MuralFotos() {
         </div>
       )}
 
-      {/* Resumo dialog */}
-      <Dialog open={showResumoDialog} onOpenChange={(o) => { if (!o) { setShowResumoDialog(false); setPendingUrl(null); } }}>
-        <DialogContent className="rounded-2xl max-w-sm border-border/30">
-          <div className="space-y-4">
-            {pendingUrl && (
-              <img src={pendingUrl} className="w-full max-h-48 object-contain rounded-xl bg-muted" alt="" />
-            )}
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground mb-1 block">Legenda/Resumo (opcional)</label>
-              <textarea
-                value={resumo}
-                onChange={(e) => setResumo(e.target.value)}
-                className="form-input min-h-[80px] resize-none"
-                placeholder="Descreva o momento..."
-              />
-            </div>
-            {turmas.length > 0 && (
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Vincular a Turma (Opcional)</label>
-                <select 
-                  value={selectedTurmaId}
-                  onChange={(e) => setSelectedTurmaId(e.target.value)}
-                  className="form-input"
-                >
-                  <option value="">-- Foto Global (Sem vínculo) --</option>
-                  {turmas.map(t => (
-                    <option key={t.id} value={t.id}>{t.nome}</option>
-                  ))}
-                </select>
+      {/* Fullscreen Post Creator Dialog */}
+      <Dialog open={!!pendingFile} onOpenChange={(o) => { if(!o && !isPublishing) clearPendingFile(); }}>
+        <DialogContent className="fixed inset-0 min-h-[100dvh] w-full max-w-none m-0 p-0 rounded-none bg-black flex flex-col z-[100] border-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 sm:max-w-none">
+          {pendingFile && (
+            <>
+              {/* Image Preview Container */}
+              <div className="flex-1 relative flex items-center justify-center bg-black overflow-hidden pt-6">
+                 <button 
+                   onClick={clearPendingFile} 
+                   disabled={isPublishing}
+                   className="absolute top-6 right-6 z-50 p-2.5 bg-black/40 hover:bg-black/60 rounded-full text-white backdrop-blur-md transition-colors disabled:opacity-50"
+                 >
+                   <X className="w-6 h-6" />
+                 </button>
+                 <img src={pendingFile.preview} className="w-full h-full object-contain" />
               </div>
-            )}
-            <div className="flex gap-2">
-              <button 
-                onClick={() => { setShowResumoDialog(false); setPendingUrl(null); }} 
-                disabled={mutation.isPending}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground hover:bg-muted transition-colors disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-              <button onClick={handleSaveFoto} disabled={mutation.isPending} className="flex-1 action-btn">
-                {mutation.isPending ? "Salvando..." : "Postar no Mural"}
-              </button>
-            </div>
-          </div>
+
+              {/* Action Panel */}
+              <div className="bg-gradient-to-t from-zinc-950 via-zinc-900 to-zinc-900/90 p-6 pt-8 pb-10 space-y-4 rounded-t-[2.5rem] border-t border-white/10 -mt-8 relative z-10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                 <input 
+                   type="text" 
+                   placeholder="Escreva uma legenda..." 
+                   value={resumo} 
+                   onChange={(e) => setResumo(e.target.value)} 
+                   disabled={isPublishing}
+                   className="w-full bg-white/5 border border-white/10 text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary h-14 px-5 text-base rounded-2xl outline-none transition-all disabled:opacity-50" 
+                 />
+                 
+                 {turmas.length > 1 ? (
+                    <div className="relative">
+                      <select 
+                        value={selectedTurmaId} 
+                        onChange={(e) => setSelectedTurmaId(e.target.value)} 
+                        disabled={isPublishing}
+                        className="w-full bg-white/5 border border-white/10 text-white focus:border-primary h-14 px-5 text-base rounded-2xl appearance-none outline-none transition-all disabled:opacity-50"
+                      >
+                         <option value="" disabled className="bg-zinc-900 text-zinc-400">-- Para qual turma? --</option>
+                         {turmas.map(t => (
+                           <option key={t.id} value={t.id} className="bg-zinc-900 text-white">{t.nome}</option>
+                         ))}
+                      </select>
+                      <Users className="w-5 h-5 absolute right-5 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+                    </div>
+                 ) : turmas.length === 1 ? (
+                    <div className="text-white/60 text-xs text-center flex justify-center items-center gap-1.5 py-1">
+                      <Users className="w-4 h-4 text-primary"/>
+                      Será publicado diretamente para a turma <strong className="text-white ml-1">{turmas[0].nome}</strong>
+                    </div>
+                 ) : (
+                    <div className="text-red-400/80 bg-red-400/10 border border-red-400/20 rounded-xl p-3 text-xs text-center font-medium">
+                      Nenhuma turma cadastrada. Você precisa de uma turma para postar.
+                    </div>
+                 )}
+
+                 <div className="flex items-center gap-3 pt-4">
+                    <button 
+                      onClick={clearPendingFile} 
+                      disabled={isPublishing}
+                      className="flex-1 h-14 text-white font-bold bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] disabled:opacity-50"
+                    >
+                       <Trash2 className="w-5 h-5 text-red-400"/> Excluir
+                    </button>
+                    <button 
+                      onClick={handlePublish} 
+                      disabled={isPublishing || turmas.length === 0} 
+                      className="flex-[2] h-14 text-primary-foreground font-black bg-primary hover:bg-primary/90 rounded-2xl flex justify-center gap-2 items-center transition-all active:scale-[0.98] shadow-lg shadow-primary/30 disabled:opacity-50 disabled:shadow-none"
+                    >
+                       {isPublishing ? <Loader2 className="w-5 h-5 animate-spin"/> : <Send className="w-5 h-5"/>} 
+                       {isPublishing ? "Salvando..." : "Salvar no Mural"}
+                    </button>
+                 </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
