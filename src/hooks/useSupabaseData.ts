@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchTurmas, upsertTurma, removeTurma, joinTurmaByCode, leaveTurma,
+  fetchTurmaMembros, removeTurmaMembro,
   fetchCatequizandos, upsertCatequizando, removeCatequizando,
   fetchEncontros, upsertEncontro, removeEncontro,
   fetchAtividades, upsertAtividade, removeAtividade,

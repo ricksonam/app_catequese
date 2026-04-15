@@ -372,10 +372,10 @@ export async function fetchTurmaMembros(turmaId: string) {
 }
 
 export async function removeTurmaMembro(turmaId: string, userId: string) {
-  const { error } = await (supabase.from as any)("turma_membros")
-    .delete()
-    .eq("turma_id", turmaId)
-    .eq("user_id", userId);
+  const { error } = await supabase.rpc('remove_turma_membro', {
+    p_turma_id: turmaId,
+    p_user_id: userId,
+  });
   if (error) throw error;
 }
 

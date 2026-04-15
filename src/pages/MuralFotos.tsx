@@ -22,8 +22,11 @@ export default function MuralFotos() {
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
 
   const fotosVisiveis = useMemo(() => {
-    const turmasIds = turmas.map(t => t.id);
-    return fotos.filter((f) => !f.turmaId || turmasIds.includes(f.turmaId));
+    // Mostra fotos sem turma vinculada (globais) + fotos de turmas que o usuário tem acesso
+    // (próprias ou compartilhadas via código) + fotos de turmas compartilhadas mesmo que
+    // não estejam na lista local (ex: após sair da conta da turma compartilhada)
+    const turmasIds = new Set(turmas.map(t => t.id));
+    return fotos.filter((f) => !f.turmaId || turmasIds.has(f.turmaId));
   }, [fotos, turmas]);
 
   // Agrupamento por mÃªs
