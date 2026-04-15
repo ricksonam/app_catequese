@@ -93,34 +93,23 @@ export async function removeTurma(id: string) {
 
 export async function joinTurmaByCode(code: string): Promise<{ turmaId: string; nome: string }> {
   const normalizedCode = code.trim().toUpperCase();
-  const { data, error } = await (supabase.from as any)("turmas")
-    .select("id, nome")
-    .eq("codigo_acesso", normalizedCode)
-    .single();
-  if (error || !data) throw new Error("Código inválido. Verifique e tente novamente.");
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Usuário não autenticado.");
+  // Uses SECURITY DEFINER RPC to bypass RLS — the function validates ownership and membership server-side
+  const { data, error } = await supabase.rpc('join_turma_by_code', { p_code: normalizedCode });
 
-  // Check if already owner
-  const { data: owned } = await (supabase.from as any)("turmas")
-    .select("id")
-    .eq("id", data.id)
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (owned) throw new Error("Você já é o proprietário desta turma.");
-
-  // Join
-  const { error: joinError } = await (supabase.from as any)("turma_membros").insert({
-    turma_id: data.id,
-    user_id: user.id,
-  });
-  if (joinError) {
-    if (joinError.code === '23505') throw new Error("Você já tem acesso a esta turma.");
-    throw joinError;
+  if (error) {
+    // Extract the human-readable message from the Postgres exception
+    const msg = error.message || '';
+    if (msg.includes('inválido')) throw new Error('Código inválido. Verifique e tente novamente.');
+    if (msg.includes('proprietário')) throw new Error('Você já é o proprietário desta turma.');
+    if (msg.includes('acesso')) throw new Error('Você já tem acesso a esta turma.');
+    throw new Error('Erro ao entrar na turma. Tente novamente.');
   }
-  return { turmaId: data.id, nome: data.nome };
+
+  const result = data as { turmaId: string; nome: string };
+  return result;
 }
+
 
 export async function leaveTurma(turmaId: string) {
   const { data: { user } } = await supabase.auth.getUser();
