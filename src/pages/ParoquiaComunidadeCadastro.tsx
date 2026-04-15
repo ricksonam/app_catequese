@@ -61,16 +61,22 @@ export default function ParoquiaComunidadeCadastro() {
   });
 
   const activeGroup = viewPId ? groups.find(g => g.p.id === viewPId) : null;
+  const editingGroup = editingIds ? groups.find(g => g.p.id === editingIds.pId) : null;
 
   const handleSave = async () => {
-    if (!form.pNome || !form.cNome) {
-      toast.error("Nomes da Paróquia e da Comunidade são obrigatórios");
+    if (!form.pNome) {
+      toast.error("Nome da Paróquia é obrigatório");
+      return;
+    }
+    
+    // Only require cNome on Create
+    if (!editingIds && !form.cNome) {
+      toast.error("Nome da Comunidade Inicial é obrigatório");
       return;
     }
 
     try {
       const pId = editingIds?.pId || crypto.randomUUID();
-      const cId = editingIds?.cId || crypto.randomUUID();
 
       // 1. Save Paroquia
       await pMutation.mutateAsync({
@@ -84,22 +90,25 @@ export default function ParoquiaComunidadeCadastro() {
         observacao: form.pObservacao,
       });
 
-      // 2. Save Comunidade linked to this pId
-      await cMutation.mutateAsync({
-        id: cId,
-        nome: form.cNome,
-        tipo: form.cTipo as any,
-        paroquiaId: pId,
-        endereco: form.cEndereco,
-        responsavel: form.cResponsavel,
-        telefone: form.cTelefone,
-        observacao: form.cObservacao,
-      });
+      // 2. Save Comunidade ONLY IF Create mode
+      if (!editingIds) {
+        const cId = crypto.randomUUID();
+        await cMutation.mutateAsync({
+          id: cId,
+          nome: form.cNome,
+          tipo: form.cTipo as any,
+          paroquiaId: pId,
+          endereco: form.cEndereco,
+          responsavel: form.cResponsavel,
+          telefone: form.cTelefone,
+          observacao: form.cObservacao,
+        });
+      }
 
       setForm({ ...emptyForm });
       setEditingIds(null);
       setOpen(false);
-      toast.success("Cadastro realizado com sucesso!");
+      toast.success(editingIds ? "Paróquia atualizada com sucesso!" : "Cadastro realizado com sucesso!");
     } catch (err: any) {
       toast.error("Erro ao salvar: " + err.message);
     }
@@ -119,12 +128,12 @@ export default function ParoquiaComunidadeCadastro() {
     }
   };
 
-  const openEdit = (p: Paroquia, c?: Comunidade) => {
+  const openEdit = (p: Paroquia) => {
     setForm({
       pNome: p.nome, pTipo: p.tipo, pEndereco: p.endereco, pTelefone: p.telefone, pEmail: p.email, pResponsavel: p.responsavel, pObservacao: p.observacao,
-      cNome: c?.nome || "", cTipo: c?.tipo || "Comunidade", cEndereco: c?.endereco || "", cResponsavel: c?.responsavel || "", cTelefone: c?.telefone || "", cObservacao: c?.observacao || "",
+      cNome: "", cTipo: "Comunidade", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
     });
-    setEditingIds({ pId: p.id, cId: c?.id || "" });
+    setEditingIds({ pId: p.id, cId: "" });
     setViewPId(null);
     setOpen(true);
   };
@@ -256,27 +265,84 @@ export default function ParoquiaComunidadeCadastro() {
             </div>
 
             {/* Section 2: Community */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-1 border-b border-border/50">
-                <Users className="h-4 w-4 text-accent-foreground" />
-                <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Comunidade / Núcleo</h3>
+            {!editingIds ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 pb-1 border-b border-border/50">
+                  <Users className="h-4 w-4 text-accent-foreground" />
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Comunidade / Núcleo</h3>
+                </div>
+                <FieldInput label="Nome da Comunidade *" value={form.cNome} onChange={(v) => updateField("cNome", v)} />
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo da Comunidade</label>
+                  <select value={form.cTipo} onChange={(e) => updateField("cTipo", e.target.value)} className="form-input">
+                    <option>Comunidade</option>
+                    <option>Núcleo</option>
+                    <option>Grupo</option>
+                  </select>
+                </div>
+                <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} />
+                <div className="grid grid-cols-2 gap-2">
+                  <FieldInput label="Responsável" value={form.cResponsavel} onChange={(v) => updateField("cResponsavel", v)} />
+                  <FieldInput label="Telefone" type="tel" value={form.cTelefone} onChange={(v) => updateField("cTelefone", mascaraTelefone(v))} />
+                </div>
+                <FieldTextArea label="Observação da Comunidade" value={form.cObservacao} onChange={(v) => updateField("cObservacao", v)} />
               </div>
-              <FieldInput label="Nome da Comunidade *" value={form.cNome} onChange={(v) => updateField("cNome", v)} />
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo da Comunidade</label>
-                <select value={form.cTipo} onChange={(e) => updateField("cTipo", e.target.value)} className="form-input">
-                  <option>Comunidade</option>
-                  <option>Núcleo</option>
-                  <option>Grupo</option>
-                </select>
+            ) : (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between pb-1 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-accent-foreground" />
+                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Comunidades Vinculadas</h3>
+                  </div>
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCForm({ id: "", paroquiaId: editingIds.pId, nome: "", tipo: "Comunidade", endereco: "", responsavel: "", telefone: "", observacao: "" });
+                      setCFormOpen(true);
+                    }}
+                    className="text-[10px] font-black text-accent-foreground bg-accent/10 hover:bg-accent/20 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
+                  >
+                    <Plus className="h-3 w-3" /> Nova
+                  </button>
+                </div>
+                
+                {editingGroup?.cList.length === 0 && (
+                  <p className="text-xs text-muted-foreground text-center py-2">Nenhuma comunidade vinculada.</p>
+                )}
+
+                {editingGroup?.cList.map(c => (
+                  <div key={c.id} className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-muted/30">
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold truncate text-foreground">{c.nome}</p>
+                      <p className="text-[10px] text-muted-foreground">{c.tipo}</p>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCForm({ id: c.id, paroquiaId: c.paroquiaId, nome: c.nome, tipo: c.tipo, endereco: c.endereco || "", responsavel: c.responsavel || "", telefone: c.telefone || "", observacao: c.observacao || "" });
+                          setCFormOpen(true);
+                        }}
+                        className="text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded-lg transition-colors active:scale-95"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                      <button 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if(window.confirm('Excluir esta comunidade/núcleo?')) {
+                            cDelete.mutateAsync(c.id).then(() => toast.success("Comunidade deletada!"));
+                          }
+                        }}
+                        className="text-destructive bg-destructive/10 hover:bg-destructive/20 p-2 rounded-lg transition-colors active:scale-95"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} />
-              <div className="grid grid-cols-2 gap-2">
-                <FieldInput label="Responsável" value={form.cResponsavel} onChange={(v) => updateField("cResponsavel", v)} />
-                <FieldInput label="Telefone" type="tel" value={form.cTelefone} onChange={(v) => updateField("cTelefone", mascaraTelefone(v))} />
-              </div>
-              <FieldTextArea label="Observação da Comunidade" value={form.cObservacao} onChange={(v) => updateField("cObservacao", v)} />
-            </div>
+            )}
 
             <div className="flex gap-2 pt-2">
               <button onClick={() => setOpen(false)} className="flex-1 py-3 px-4 rounded-xl border border-border text-sm font-semibold hover:bg-muted transition-colors">Voltar</button>
@@ -285,18 +351,9 @@ export default function ParoquiaComunidadeCadastro() {
                 disabled={pMutation.isPending || cMutation.isPending} 
                 className="flex-[2] action-btn"
               >
-                {(pMutation.isPending || cMutation.isPending) ? "Salvando..." : editingIds ? "Atualizar" : "Salvar Tudo"}
+                {(pMutation.isPending || cMutation.isPending) ? "Salvando..." : editingIds ? "Salvar Alterações" : "Salvar Tudo"}
               </button>
             </div>
-            
-            {editingIds && (
-              <button 
-                onClick={() => handleDelete(editingIds.pId)}
-                className="w-full flex items-center justify-center gap-2 p-3 text-destructive/70 hover:text-destructive hover:bg-destructive/5 rounded-xl text-xs font-bold transition-all"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Excluir todo o cadastro
-              </button>
-            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -330,14 +387,9 @@ export default function ParoquiaComunidadeCadastro() {
               <div className="px-6 pb-8 space-y-5">
                 {/* Paróquia Info */}
                 <div className="float-card p-5 space-y-4 border-[hsl(var(--liturgical))]/20 bg-white/50 dark:bg-black/20">
-                  <div className="flex items-center justify-between border-b border-border/50 pb-3">
-                    <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2.5 border-b border-border/50 pb-3">
                       <Church className="h-4 w-4 text-[hsl(var(--liturgical))]" />
                       <h3 className="text-xs font-black text-foreground uppercase tracking-widest">Detalhes da Sede</h3>
-                    </div>
-                    <button onClick={() => openEdit(activeGroup.p, activeGroup.cList[0])} className="text-[10px] font-bold text-primary hover:text-primary/70 uppercase flex items-center gap-1 transition-colors">
-                      <Pencil className="h-3 w-3" /> Info
-                    </button>
                   </div>
                   
                   <div className="space-y-4">
@@ -350,48 +402,18 @@ export default function ParoquiaComunidadeCadastro() {
                 </div>
 
                 {/* Separação e Título de Comunidades */}
-                <div className="flex items-center justify-between pt-3">
-                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Vinculadas ({activeGroup.cList.length})</h3>
-                  <button 
-                    onClick={() => {
-                      setCForm({ id: "", paroquiaId: activeGroup.p.id, nome: "", tipo: "Comunidade", endereco: "", responsavel: "", telefone: "", observacao: "" });
-                      setCFormOpen(true);
-                    }}
-                    className="flex items-center gap-1.5 text-[10px] font-black text-accent-foreground bg-accent/10 hover:bg-accent/20 px-3 py-1.5 rounded-full transition-colors active:scale-95"
-                  >
-                    <Plus className="h-3 w-3" /> Nova Comunidade
-                  </button>
-                </div>
+                {activeGroup.cList.length > 0 && (
+                  <div className="flex items-center gap-2.5 pt-2">
+                    <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Vinculadas ({activeGroup.cList.length})</h3>
+                  </div>
+                )}
 
                 {/* Comunidades Info Loop */}
                 {activeGroup.cList.map(c => (
                   <div key={c.id} className="float-card p-5 space-y-4 border-accent/20 bg-white/50 dark:bg-black/20">
-                    <div className="flex items-center justify-between border-b border-border/50 pb-3">
-                      <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2.5 border-b border-border/50 pb-3">
                         <Users className="h-4 w-4 text-accent-foreground" />
                         <h3 className="text-xs font-black text-foreground uppercase tracking-widest">{c.nome} <span className="text-[9px] text-muted-foreground ml-1">({c.tipo})</span></h3>
-                      </div>
-                      <div className="flex gap-1.5">
-                        <button 
-                          onClick={() => {
-                            setCForm({ id: c.id, paroquiaId: c.paroquiaId, nome: c.nome, tipo: c.tipo, endereco: c.endereco || "", responsavel: c.responsavel || "", telefone: c.telefone || "", observacao: c.observacao || "" });
-                            setCFormOpen(true);
-                          }}
-                          className="text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded-xl transition-colors active:scale-95"
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </button>
-                        <button 
-                          onClick={() => {
-                            if(window.confirm('Excluir esta comunidade/núcleo?')) {
-                              cDelete.mutateAsync(c.id).then(() => toast.success("Comunidade deletada!"));
-                            }
-                          }}
-                          className="text-destructive bg-destructive/10 hover:bg-destructive/20 p-2 rounded-xl transition-colors active:scale-95"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
                     </div>
                     
                     <div className="space-y-4">
@@ -403,16 +425,22 @@ export default function ParoquiaComunidadeCadastro() {
                   </div>
                 ))}
 
-                <div className="pt-3">
+                <div className="flex gap-2 pt-3">
+                  <button 
+                    onClick={() => openEdit(activeGroup.p)} 
+                    className="flex-1 flex items-center justify-center gap-2 bg-primary/10 text-primary py-3.5 rounded-2xl hover:bg-primary/20 text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+                  >
+                    <Pencil className="h-4 w-4" /> Editar
+                  </button>
                   <button 
                     onClick={() => {
                       if(window.confirm('Tem certeza que deseja excluir a Sede e TODAS as comunidades vinculadas a ela?')) {
                         handleDelete(activeGroup.p.id);
                       }
                     }} 
-                    className="w-full flex items-center justify-center gap-2 text-destructive bg-destructive/10 px-6 py-3.5 rounded-2xl hover:bg-destructive/20 text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+                    className="flex-[0.6] flex items-center justify-center gap-2 text-destructive bg-destructive/10 px-6 py-3.5 rounded-2xl hover:bg-destructive/20 text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98]"
                   >
-                    <Trash2 className="h-4 w-4" /> Excluir Sede e Vinculadas
+                    <Trash2 className="h-4 w-4" /> Excluir
                   </button>
                 </div>
               </div>
