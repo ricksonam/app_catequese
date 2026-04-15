@@ -416,7 +416,7 @@ export default function MuralFotos() {
         <div className="flex-1" />
       </div>
 
-      <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
+      <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, false)} />
       <input ref={editorFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, true)} />
 
@@ -438,10 +438,9 @@ export default function MuralFotos() {
         />
       )}
 
-      {/* Normal Post Dialog */}
-      <Dialog open={!!pendingFile} onOpenChange={(o) => { if(!o && !isPublishing) clearFiles(); }}>
-        <DialogContent className="fixed inset-0 h-[100dvh] w-full max-w-none m-0 p-0 rounded-none bg-black flex flex-col z-[100] border-none data-[state=open]:animate-in data-[state=closed]:animate-out sm:max-w-none overflow-hidden">
-          {pendingFile && (
+      {/* Normal Post Dialog - Fixed Overlay (No Radix override issues) */}
+      {pendingFile && (
+        <div className="fixed inset-0 z-[100] flex flex-col bg-black h-[100dvh] w-full animate-in fade-in duration-300 overflow-hidden">
             <div className="flex flex-col h-full w-full">
               <div className="flex-1 min-h-[40vh] relative flex items-center justify-center bg-zinc-900/50">
                  <button 
@@ -456,7 +455,7 @@ export default function MuralFotos() {
                  </div>
               </div>
 
-              <div className="shrink-0 bg-white p-6 space-y-5 rounded-t-[40px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] z-50 animate-in slide-in-from-bottom-full duration-500 max-h-[50dvh] overflow-y-auto pb-10">
+              <div className="shrink-0 bg-white p-6 space-y-5 rounded-t-[40px] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] z-50 animate-in slide-in-from-bottom-full duration-500 max-h-[60dvh] overflow-y-auto pb-10 overscroll-contain">
                  <div className="space-y-4">
                    <h3 className="text-xl font-black text-foreground text-center">Registrar Memória</h3>
                    
@@ -507,9 +506,8 @@ export default function MuralFotos() {
                  </button>
               </div>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
       {/* View dialog for both Types */}
       <Dialog open={!!viewFoto} onOpenChange={() => setViewFoto(null)}>
