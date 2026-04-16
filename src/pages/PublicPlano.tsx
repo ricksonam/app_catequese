@@ -38,8 +38,8 @@ export default function PublicPlano() {
 
   const groupedItems = (() => {
     const rawItems = [
-      ...encontros.map((e: any) => ({ ...e, tipo: 'encontro', cor: 'bg-primary' })),
-      ...atividades.map((a: any) => ({ ...a, tipo: 'atividade', cor: 'bg-accent' })),
+      ...encontros.map((e: any) => ({ ...e, tipo: 'encontro', cor: 'bg-primary', borda: 'border-l-primary' })),
+      ...atividades.map((a: any) => ({ ...a, tipo: 'atividade', cor: 'bg-blue-500', borda: 'border-l-blue-500' })),
     ].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
 
     const groups: Record<string, any[]> = {};
@@ -143,7 +143,7 @@ export default function PublicPlano() {
                           {/* Dot */}
                           <div className={`absolute left-[-2px] top-6 w-3 h-3 rounded-full ${item.cor} border-2 border-white ring-4 ring-primary/5 z-10`} />
                           
-                          <div className="bg-white dark:bg-zinc-900 p-5 rounded-[2rem] border border-border/50 shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                          <div className={`bg-white dark:bg-zinc-900 p-5 rounded-[2rem] border-2 border-border/40 ${item.borda} shadow-lg shadow-black/[0.03] hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.98]`}>
                             <div className="flex justify-between items-start mb-3">
                                <div className="flex items-center gap-2">
                                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${item.tipo === 'encontro' ? 'bg-primary/10 text-primary' : 'bg-accent/15 text-accent-foreground'}`}>
@@ -202,16 +202,27 @@ export default function PublicPlano() {
                             </div>
 
                             {item.descricao && (
-                              <div className="mt-4 pt-4 border-t border-border/30">
-                                <p className="text-[11px] text-muted-foreground leading-relaxed italic line-clamp-2">
+                              <div className={`mt-4 pt-4 border-t border-border/30 ${
+                                (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) 
+                                ? "bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-4 -mx-1 border-none" 
+                                : ""
+                              }`}>
+                                <p className={`text-[11px] leading-relaxed ${
+                                  (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao')))
+                                  ? "text-blue-700 dark:text-blue-300 font-bold not-italic" 
+                                  : "text-muted-foreground italic"
+                                }`}>
+                                  {(item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) && (
+                                    <span className="block text-[9px] font-black uppercase tracking-widest text-blue-500 mb-2">Pauta da Reunião</span>
+                                  )}
                                   "{item.descricao}"
                                 </p>
                               </div>
                             )}
 
                             <div className="mt-4 flex justify-end">
-                               <div className="w-6 h-6 rounded-full bg-muted/30 flex items-center justify-center text-muted-foreground">
-                                  <ArrowRight className="h-3 w-3" />
+                               <div className={`w-7 h-7 rounded-full ${item.cor}/10 flex items-center justify-center text-${item.cor === 'bg-primary' ? 'primary' : 'blue-600'}`}>
+                                  <ArrowRight className="h-3.5 w-3.5" />
                                </div>
                             </div>
                           </div>

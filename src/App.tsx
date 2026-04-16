@@ -63,6 +63,7 @@ const AppRoutes = () => (
     <Route path="/auth" element={<AuthPage />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
+    <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
     <Route
       element={
         <ProtectedRoute>

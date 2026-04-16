@@ -87,7 +87,7 @@ export default function PlanoTurma() {
       toast.error("Turma sem código de acesso.");
       return;
     }
-    const url = `${window.location.origin}/plano-pais/${turma.codigoAcesso}`;
+    const url = `${window.location.origin}/plano-da-turma/${turma.codigoAcesso}`;
     navigator.clipboard.writeText(url);
     toast.success("Link copiado! Envie para os pais no WhatsApp.", {
       description: "Eles verão apenas o cronograma, sem acesso a ferramentas.",
