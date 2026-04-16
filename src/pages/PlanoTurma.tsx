@@ -105,18 +105,30 @@ export default function PlanoTurma() {
             <p className="text-xs text-muted-foreground">{totalAlunos} catequizandos</p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex items-center gap-2">
           {id && <ReportModule context="plano" turmaId={id} />}
-          {turma?.codigoAcesso && (
-            <button 
-              onClick={shareWithParents}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all font-bold text-[10px] sm:text-xs"
-            >
-              <Share2 className="h-4 w-4 shrink-0" />
-              <span>Compartilhar com Pais</span>
-            </button>
-          )}
         </div>
+      </div>
+
+      {turma?.codigoAcesso && (
+        <div className="animate-fade-in stagger-1">
+          <button 
+            onClick={shareWithParents}
+            className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-primary/20 hover:border-primary/40 text-primary shadow-lg shadow-primary/5 hover:shadow-primary/10 transition-all group active:scale-[0.98]"
+          >
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Share2 className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-70 leading-none mb-1">Público</p>
+              <p className="text-sm font-black tracking-tight leading-none">Compartilhar com Pais</p>
+            </div>
+            <div className="ml-auto w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shadow-md shadow-primary/20">
+              <ArrowLeft className="h-4 w-4 rotate-180" />
+            </div>
+          </button>
+        </div>
+      )}
       </div>
 
       <div className="flex gap-2 p-1 bg-muted/30 rounded-2xl animate-fade-in">

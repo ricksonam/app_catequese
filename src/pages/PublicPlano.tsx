@@ -71,7 +71,7 @@ export default function PublicPlano() {
             </div>
             <div>
               <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Calendário de Encontros</p>
-              <h1 className="text-2xl font-black text-foreground tracking-tight leading-tight">
+              <h1 className="text-2xl font-black text-foreground tracking-tight leading-tight bg-gradient-to-r from-primary via-blue-400 to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm pb-1">
                 Plano da Turma {turma.nome}
               </h1>
               {turma.comunidade_nome && (
@@ -147,11 +147,12 @@ export default function PublicPlano() {
                           {/* Dot */}
                           <div className={`absolute left-[-2px] top-6 w-3 h-3 rounded-full ${item.cor} border-2 border-white ring-4 ring-primary/5 z-10`} />
                           
-                    <div className={`p-4.5 rounded-[1.8rem] border-2 border-border/40 ${item.borda} shadow-[0_15px_40px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] hover:scale-[1.015] transition-all duration-500 active:scale-[0.98] relative overflow-hidden ${
+                    <div className={`p-5 rounded-[1.8rem] border-2 border-border/30 ${item.borda} shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_45px_rgba(0,0,0,0.1)] hover:scale-[1.01] transition-all duration-500 active:scale-[0.98] relative overflow-hidden ${
                       item.tipo === 'encontro' 
-                        ? 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-l-blue-500/40' 
-                        : 'bg-gradient-to-br from-yellow-50/90 via-white to-yellow-50/40 border-l-yellow-500/40'
+                        ? 'bg-white dark:bg-zinc-900 border-l-primary' 
+                        : 'bg-white dark:bg-zinc-900 border-l-blue-500'
                     }`}>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-10 -mt-10 blur-2xl opacity-50" />
                       <div className="flex flex-col items-center gap-2.5 mb-3.5">
                          <div className="w-full flex justify-center">
                             <span className={`px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] shadow-sm ${

@@ -294,7 +294,7 @@ export default function Dashboard() {
         </div>
       ) : (
         <div 
-          className="float-card overflow-hidden animate-card-activate border-[4px] border-yellow-400 relative group transition-all cursor-pointer h-full shadow-[0_15px_40px_rgba(250,204,21,0.2)] bg-white/50 backdrop-blur-sm"
+          className="float-card overflow-hidden animate-card-activate border-[4px] border-yellow-400 relative group transition-all cursor-pointer h-full shadow-[0_15px_45px_rgba(250,204,21,0.25)] bg-white/50 backdrop-blur-sm hover:shadow-[0_20px_60px_rgba(250,204,21,0.35)]"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
@@ -352,8 +352,8 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border-4 relative overflow-hidden",
-                stat.color.includes("text-primary") && "border-primary bg-primary/5 ring-4 ring-primary/10"
+                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border border-black/5 dark:border-white/5 relative overflow-hidden",
+                stat.color.includes("text-primary") && "bg-primary/5 shadow-md shadow-primary/5"
               )}
               style={{ animationDelay: `${i * 80}ms` }}
             >
@@ -394,8 +394,8 @@ export default function Dashboard() {
             onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
             className={`w-full text-left animate-float-up transition-all active:scale-[0.98] overflow-hidden ${
               isUrgent
-                ? "float-card border-destructive/50 bg-destructive/5 shadow-lg shadow-destructive/10 ring-1 ring-destructive/30"
-                : "float-card"
+                ? "float-card border-destructive/30 bg-destructive/5 shadow-lg shadow-destructive/10"
+                : "float-card border-black/5 dark:border-white/5 shadow-sm"
             }`}
             style={{ animationDelay: '220ms' }}
           >
