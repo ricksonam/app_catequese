@@ -147,52 +147,58 @@ export default function PublicPlano() {
                           {/* Dot */}
                           <div className={`absolute left-[-2px] top-6 w-3 h-3 rounded-full ${item.cor} border-2 border-white ring-4 ring-primary/5 z-10`} />
                           
-                    <div className={`p-4 rounded-[1.8rem] border-2 border-border/40 ${item.borda} shadow-lg shadow-black/[0.03] hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.98] ${
-                      item.tipo === 'encontro' ? 'bg-blue-50/70 border-l-blue-500' : 'bg-yellow-50/70 border-l-yellow-500'
+                    <div className={`p-5 rounded-[2rem] border-2 border-border/40 ${item.borda} shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] hover:scale-[1.02] transition-all duration-500 active:scale-[0.98] relative overflow-hidden ${
+                      item.tipo === 'encontro' 
+                        ? 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/50 border-l-blue-500/50' 
+                        : 'bg-gradient-to-br from-yellow-50/90 via-white to-yellow-50/50 border-l-yellow-500/50'
                     }`}>
-                      <div className="flex justify-between items-start mb-2.5">
-                         <div className="flex items-center gap-2">
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
-                              item.tipo === 'encontro' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
+                      <div className="flex flex-col items-center gap-3 mb-4">
+                         <div className="w-full flex justify-center">
+                            <span className={`px-4 py-1 rounded-full text-[11px] font-black uppercase tracking-[0.1em] shadow-sm ${
+                              item.tipo === 'encontro' ? 'bg-blue-100/80 text-blue-700 border border-blue-200' : 'bg-yellow-100/80 text-yellow-700 border border-yellow-200'
                             }`}>
                               {item.tipo}
                             </span>
+                         </div>
+                         
+                         <div className="flex items-center gap-2">
                             {item.modalidade === 'externa' && (
-                              <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[9px] font-black uppercase tracking-tighter">
-                                Externo
+                              <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-black uppercase tracking-tighter">
+                                Evento Externo
                               </span>
                             )}
                          </div>
-                         <div className="text-right">
-                            <p className="text-base font-black text-foreground leading-none">{dateStr.split(' ')[0]}</p>
-                            <p className="text-[9px] font-black text-muted-foreground uppercase">{dateStr.split(' ')[2]?.replace('.', '')}</p>
+
+                         <div className="flex flex-col items-center">
+                            <p className="text-2xl font-black text-foreground leading-none tracking-tighter">{dateStr.split(' ')[0]}</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{dateStr.split(' ')[2]?.replace('.', '')}</p>
                          </div>
                       </div>
 
-                      <h4 className="text-sm font-black text-foreground mb-2 leading-tight tracking-tight">
+                      <h4 className="text-base font-black text-foreground mb-4 leading-tight tracking-tight text-center px-2">
                         {item.tema || item.nome}
                       </h4>
 
-                      <div className="space-y-2">
-                         <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/80">
-                           <div className="w-5 h-5 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                              <Clock className="h-3 w-3" />
+                      <div className="space-y-3 bg-white/40 backdrop-blur-sm rounded-2xl p-4 border border-white/60">
+                         <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground/90">
+                           <div className="w-7 h-7 rounded-xl bg-muted/50 flex items-center justify-center shrink-0 shadow-sm">
+                              <Clock className="h-3.5 w-3.5" />
                            </div>
                            {item.horario || turma.horario}
                          </div>
                          
                          {checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" ? (
-                           <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/80">
-                             <div className="w-5 h-5 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                                <MapPin className="h-3 w-3" />
+                           <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground/90">
+                             <div className="w-7 h-7 rounded-xl bg-muted/50 flex items-center justify-center shrink-0 shadow-sm">
+                                <MapPin className="h-3.5 w-3.5" />
                              </div>
                              <span className="truncate">{checkLocal(item.local || turma.local)}</span>
                            </div>
                          ) : (
                            item.leitura_biblica && (
-                             <div className="flex items-center gap-2 text-[10px] font-bold text-primary/80">
-                               <div className="w-5 h-5 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
-                                  <BookOpen className="h-3 w-3" />
+                             <div className="flex items-center gap-3 text-[11px] font-bold text-primary/90">
+                               <div className="w-7 h-7 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 shadow-sm">
+                                  <BookOpen className="h-3.5 w-3.5" />
                                </div>
                                <span className="italic">Leitura: {item.leitura_biblica}</span>
                              </div>
@@ -200,9 +206,9 @@ export default function PublicPlano() {
                          )}
 
                          {(item.leitura_biblica || item.material_apoio) && checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" && (
-                           <div className="flex items-center gap-2 text-[10px] font-bold text-primary/80">
-                             <div className="w-5 h-5 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
-                                <BookOpen className="h-3 w-3" />
+                           <div className="flex items-center gap-3 text-[11px] font-bold text-primary/90">
+                             <div className="w-7 h-7 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 shadow-sm">
+                                <BookOpen className="h-3.5 w-3.5" />
                              </div>
                              {item.leitura_biblica || item.material_apoio}
                            </div>
@@ -210,18 +216,18 @@ export default function PublicPlano() {
                       </div>
 
                       {item.descricao && (
-                        <div className={`mt-3 pt-3 border-t border-border/30 ${
+                        <div className={`mt-4 pt-4 border-t border-border/30 ${
                           (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) 
-                          ? "bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-3 -mx-1 border-none" 
+                          ? "bg-blue-50/60 dark:bg-blue-900/10 rounded-2xl p-4 -mx-1 border-none shadow-inner" 
                           : ""
                         }`}>
-                          <p className={`text-[10px] leading-relaxed ${
+                          <p className={`text-[11px] leading-relaxed text-center px-4 ${
                             (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao')))
                             ? "text-blue-700 dark:text-blue-300 font-bold not-italic" 
                             : "text-muted-foreground italic"
                           }`}>
                             {(item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) && (
-                              <span className="block text-[8px] font-black uppercase tracking-widest text-blue-500 mb-1.5">Pauta da Reunião</span>
+                              <span className="block text-[9px] font-black uppercase tracking-widest text-blue-500 mb-2">Pauta da Reunião</span>
                             )}
                             "{item.descricao}"
                           </p>
