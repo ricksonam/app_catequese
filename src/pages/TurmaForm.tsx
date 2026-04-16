@@ -29,6 +29,7 @@ export default function TurmaForm() {
     outrosDados: "",
     comunidadeId: "",
     catequistasIds: [] as string[],
+    codigoAcesso: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,6 +46,7 @@ export default function TurmaForm() {
         outrosDados: existingTurma.outrosDados || "",
         comunidadeId: existingTurma.comunidadeId || "",
         catequistasIds: existingTurma.catequistasIds || [],
+        codigoAcesso: existingTurma.codigoAcesso || "",
       });
     }
   }, [isEditing, existingTurma]);

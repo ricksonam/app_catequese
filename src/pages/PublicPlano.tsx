@@ -71,7 +71,19 @@ export default function PublicPlano() {
             </div>
             <div>
               <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Calendário de Encontros</p>
-              <h1 className="text-2xl font-black text-foreground tracking-tight">Plano da Turma de {turma.nome}</h1>
+              <h1 className="text-2xl font-black text-foreground tracking-tight leading-tight">
+                Plano da Turma {turma.nome}
+                {turma.comunidade_nome && <span className="text-primary/70 block sm:inline"> - {turma.comunidade_nome}</span>}
+              </h1>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+                 <span className="px-2 py-0.5 rounded-md bg-primary/5 text-primary text-[10px] font-black uppercase border border-primary/10">
+                   {turma.ano}
+                 </span>
+                 <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
+                   <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+                   Etapa: <span className="text-foreground uppercase">{turma.etapa?.replace('-', ' ')}</span>
+                 </span>
+              </div>
             </div>
           </div>
           
@@ -161,14 +173,25 @@ export default function PublicPlano() {
                                  {item.horario || turma.horario}
                                </div>
                                
-                               <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80">
-                                 <div className="w-6 h-6 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                                    <MapPin className="h-3 w-3" />
+                               {checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" ? (
+                                 <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80">
+                                   <div className="w-6 h-6 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                                      <MapPin className="h-3 w-3" />
+                                   </div>
+                                   <span className="truncate">{checkLocal(item.local || turma.local)}</span>
                                  </div>
-                                 <span className="truncate">{checkLocal(item.local || turma.local)}</span>
-                               </div>
+                               ) : (
+                                 item.leitura_biblica && (
+                                   <div className="flex items-center gap-2 text-[11px] font-bold text-primary/80">
+                                     <div className="w-6 h-6 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
+                                        <BookOpen className="h-3 w-3" />
+                                     </div>
+                                     <span className="italic">Leitura: {item.leitura_biblica}</span>
+                                   </div>
+                                 )
+                               )}
 
-                               {(item.leitura_biblica || item.material_apoio) && (
+                               {(item.leitura_biblica || item.material_apoio) && checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" && (
                                  <div className="flex items-center gap-2 text-[11px] font-bold text-primary/80">
                                    <div className="w-6 h-6 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
                                       <BookOpen className="h-3 w-3" />
