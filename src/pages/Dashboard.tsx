@@ -1,4 +1,4 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
@@ -36,14 +36,54 @@ export default function Dashboard() {
     }
   }, [loading, turmas.length]);
 
-  // Se tiver turmas e nenhuma selecionada (ou "all"), tenta selecionar a primeira para foco inicial
   useEffect(() => {
     if (!loading && turmas.length > 0 && selectedTurmaId === "all") {
-       // Opcional: manter "all" ou focar na primeira.
-       // O usuário quer que o card se transforme no card da turma, então melhor focar em uma se existir.
        setSelectedTurmaId(turmas[0].id);
     }
-  }, [loading, turmas.length]);
+  }, [loading, turmas.length, selectedTurmaId]);
+
+  const LiturgicalIcon = ({ type, className }: { type?: string, className?: string }) => {
+    const t = type?.toLowerCase() || "";
+    
+    // Bíblia / Pré-Catequese
+    if (t.includes("pre-catecumenato") || t.includes("biblia") || t.includes("pré")) {
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          <path d="M12 7v6" />
+          <path d="M10 9h4" />
+        </svg>
+      );
+    }
+    
+    // Eucaristia / Cálice
+    if (t.includes("eucaristia")) {
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M7 3h10v5c0 3-2 5-5 5s-5-2-5-5V3z" />
+          <path d="M12 13v6" />
+          <path d="M9 21h6" />
+          <circle cx="12" cy="7" r="1.5" fill="currentColor" className="opacity-40" />
+        </svg>
+      );
+    }
+    
+    // Crisma / Fogo
+    if (t.includes("crisma") || t.includes("adulto") || t.includes("espírito")) {
+      return <Flame className={className} strokeWidth={2.5} />;
+    }
+    
+    return <Sparkles className={className} strokeWidth={2.5} />;
+  };
+
+  const getEtapaColor = (etapa?: string) => {
+    const e = etapa?.toLowerCase() || "";
+    if (e.includes("pre") || e.includes("biblia")) return "text-emerald-600 bg-emerald-50 border-emerald-100";
+    if (e.includes("eucaristia")) return "text-amber-600 bg-amber-50 border-amber-100";
+    if (e.includes("crisma") || e.includes("adulto")) return "text-red-600 bg-red-50 border-red-100";
+    return "text-primary bg-primary/10 border-primary/20";
+  };
 
   const hoje = useMemo(() => {
     const d = new Date();
@@ -58,7 +98,6 @@ export default function Dashboard() {
     return new Date(dataStr);
   };
 
-  // Filtragem baseada na turma selecionada
   const filteredCatequizandos = useMemo(() => {
     if (selectedTurmaId === "all") return catequizandos;
     return catequizandos.filter(c => c.turmaId === selectedTurmaId);
@@ -74,7 +113,8 @@ export default function Dashboard() {
     return turmas.find(t => t.id === selectedTurmaId);
   }, [turmas, selectedTurmaId]);
 
-  // Apenas o PRÓXIMO encontro mais próximo (da turma selecionada)
+  const heroColors = getEtapaColor(selectedTurma?.etapa);
+
   const proximoEncontro = useMemo(() => {
     const pendentes = filteredEncontros
       .filter((e) => parseDataLocal(e.data) >= hoje && e.status === 'pendente')
@@ -82,13 +122,10 @@ export default function Dashboard() {
     return pendentes[0] || null;
   }, [filteredEncontros, hoje]);
 
-  // Aniversariantes: prioriza semana atual, fallback para o mais próximo
-  const { aniversariantesSemana, fallbackAniversario } = useMemo(() => {
-    const fimSemana = new Date(hoje);
-    fimSemana.setDate(fimSemana.getDate() + 7);
+  const proximosAniversariantes = useMemo(() => {
     const thisYear = hoje.getFullYear();
 
-    const todos = filteredCatequizandos
+    return filteredCatequizandos
       .filter((c) => c.dataNascimento)
       .map((c) => {
         const bday = new Date(c.dataNascimento);
@@ -96,13 +133,8 @@ export default function Dashboard() {
         if (nextBday < hoje) nextBday = new Date(thisYear + 1, bday.getMonth(), bday.getDate());
         return { ...c, proximoAniversario: nextBday };
       })
-      .sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime());
-
-    const semana = todos.filter((c) => c.proximoAniversario >= hoje && c.proximoAniversario <= fimSemana);
-    return {
-      aniversariantesSemana: semana,
-      fallbackAniversario: semana.length === 0 && todos.length > 0 ? todos[0] : null,
-    };
+      .sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime())
+      .slice(0, 3);
   }, [filteredCatequizandos, hoje]);
 
   function getDiasRestantes(dataStr: string) {
@@ -192,7 +224,6 @@ export default function Dashboard() {
     <div className="space-y-6">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
 
-
       {/* ── ATIVAR NOTIFICAÇÕES ── */}
       {permission === "default" && (
         <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 shadow-xl shadow-blue-500/20 p-1">
@@ -257,16 +288,19 @@ export default function Dashboard() {
         </div>
       ) : (
         <div 
-          className="float-card overflow-hidden animate-card-activate border-2 border-primary/20 relative group hover:border-primary/40 transition-all cursor-pointer"
+          className="float-card overflow-hidden animate-card-activate border-2 border-primary/20 relative group hover:border-primary/40 transition-all cursor-pointer shimmer-effect h-full"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
-          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
-             <Flame className="w-24 h-24 text-primary" />
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
+             <LiturgicalIcon type={selectedTurma?.etapa} className="w-32 h-32" />
           </div>
 
-          <div className="p-5 flex flex-col items-center gap-4 text-center">
-            <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center shrink-0 border-2 border-primary/20 group-hover:scale-110 transition-transform duration-500 shadow-inner">
-              <Flame className="h-8 w-8 text-primary" />
+          <div className="p-6 flex flex-col items-center gap-5 text-center relative z-10">
+            <div className={cn(
+              "w-20 h-20 rounded-[28px] flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-xl",
+              heroColors
+            )}>
+              <LiturgicalIcon type={selectedTurma?.etapa} className="h-10 w-10" />
             </div>
             
             <div className="space-y-1 w-full">
@@ -309,41 +343,18 @@ export default function Dashboard() {
               onClick={stat.action} 
               className={cn(
                 "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border-4 relative overflow-hidden",
-                stat.isTurma 
-                  ? "border-primary bg-primary/5 shadow-2xl shadow-primary/20 ring-4 ring-primary/10 animate-pulse-subtle" 
-                  : "border-transparent"
+                stat.color.includes("text-primary") && "border-primary bg-primary/5 ring-4 ring-primary/10"
               )}
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              {stat.isTurma && (
-                <div className="absolute top-0 right-0 p-1.5 bg-primary text-white rounded-bl-xl shadow-lg">
-                  <ChevronRight className="h-3.5 w-3.5 animate-bounce-horizontal" />
-                </div>
-              )}
-
-
               <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10`}>
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
-              <p className={cn(
-                "font-bold leading-tight truncate",
-                stat.isTurma && selectedTurmaId !== "all" ? "text-xs sm:text-sm mb-1 text-primary" : "text-xl sm:text-2xl text-foreground"
-              )} title={String(stat.value)}>
+              <p className="text-xl sm:text-2xl font-bold text-foreground leading-tight truncate">
                 {stat.value}
               </p>
               <div className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 leading-tight break-words">
-                {stat.isTurma ? (
-                  <div className="flex flex-col items-center gap-0.5">
-                    {selectedTurmaId === "all" ? (
-                      <span className="text-muted-foreground">{stat.label}</span>
-                    ) : (
-                       <span className="text-[9px] text-muted-foreground/80 capitalize font-medium">{stat.label}</span>
-                    )}
-                    <span className="flex items-center justify-center gap-1 text-primary animate-pulse pt-0.5">
-                      {selectedTurmaId === "all" ? "● SELECIONAR" : "● TROCAR"}
-                    </span>
-                  </div>
-                ) : stat.label}
+                {stat.label}
               </div>
             </button>
           );
@@ -378,9 +389,7 @@ export default function Dashboard() {
             }`}
             style={{ animationDelay: '220ms' }}
           >
-            {/* Faixa do status no topo */}
             <div className={`h-1 w-full ${isUrgent ? "bg-gradient-to-r from-destructive to-red-400" : "bg-gradient-to-r from-primary/40 to-primary/10"}`} />
-
             <div className="flex items-stretch">
               <div className="flex flex-col items-center justify-center px-5 py-4 bg-gradient-to-b from-primary/5 to-primary/10 shrink-0 min-w-[68px]">
                 <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">
@@ -393,13 +402,11 @@ export default function Dashboard() {
                   {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
                 </span>
               </div>
-
               <div className="flex-1 px-4 py-4 min-w-0">
                 <p className="text-sm font-bold text-foreground truncate mb-1">{proximoEncontro.tema}</p>
                 <p className="text-xs text-muted-foreground">{turmaEncontro?.nome}</p>
                 <p className="text-xs text-muted-foreground">{formatarDataVigente(proximoEncontro.data)}</p>
               </div>
-
               <div className="flex flex-col items-center justify-center gap-2 px-4 py-4 shrink-0">
                 <span className={`text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse ${
                   isUrgent
@@ -416,79 +423,71 @@ export default function Dashboard() {
       </div>
 
       {/* ── ANIVERSARIANTES ── */}
-      {(aniversariantesSemana.length > 0 || fallbackAniversario) && (
+      {proximosAniversariantes.length > 0 && (
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md animate-bounce" style={{ animationDelay: '500ms' }}>
+        <div className="flex items-center gap-2.5 mb-4 group cursor-pointer" onClick={() => navigate("/catequizandos")}>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
               <Cake className="h-4 w-4 text-white" />
             </div>
-            <p className="text-lg font-black text-foreground uppercase tracking-tight mb-0">
-              {aniversariantesSemana.length > 0 ? "Aniversariantes desta Semana" : "Próximo Aniversário"}
-            </p>
+            <p className="text-lg font-black text-foreground uppercase tracking-tight mb-0 group-hover:text-primary transition-colors">Próximos Aniversários</p>
           </div>
 
-          {aniversariantesSemana.length > 0 ? (
-            <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-              {aniversariantesSemana.map((c, i) => {
-                const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-                const isHoje = diasAte === 0;
-                return (
-                  <div
-                    key={c.id}
-                    className={`shrink-0 flex flex-col items-center text-center p-4 rounded-2xl border-2 w-28 animate-float-up ${
-                      isHoje
-                        ? "bg-gradient-to-b from-primary/20 to-violet-500/10 border-primary/50 shadow-lg shadow-primary/15"
-                        : "bg-card border-black/10"
-                    }`}
-                    style={{ animationDelay: `${(i + 5) * 60}ms` }}
-                  >
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-black mb-2 shadow-sm ${
-                      isHoje
-                        ? "bg-gradient-to-br from-primary to-violet-600 text-white"
-                        : "bg-gradient-to-br from-primary/20 to-primary/10 text-primary"
-                    }`}>
-                      {c.nome?.charAt(0).toUpperCase()}
-                    </div>
-                    <p className="text-xs font-bold text-foreground leading-tight break-words w-full">
+          <div className={cn(
+            "grid gap-3 transition-all",
+            proximosAniversariantes.length === 3 ? "grid-cols-3" : "flex overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide"
+          )}>
+            {proximosAniversariantes.map((c, i) => {
+              const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+              const isHoje = diasAte === 0;
+              return (
+                <div
+                  key={c.id}
+                  className={cn(
+                    "flex flex-col items-center text-center p-4 rounded-3xl border-2 transition-all hover:scale-105 active:scale-95 duration-300",
+                    isHoje
+                      ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-300 shadow-lg shadow-amber-200/50 ring-2 ring-amber-200 ring-offset-2"
+                      : "bg-white border-zinc-100 shadow-sm",
+                    proximosAniversariantes.length !== 3 && "shrink-0 w-28"
+                  )}
+                  style={{ animation: `float-up 0.5s ease-out ${(i + 5) * 0.06}s both` }}
+                >
+                  <div className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black mb-3 shadow-md transition-transform group-hover:rotate-6",
+                    isHoje
+                      ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 text-white shadow-orange-200"
+                      : "bg-gradient-to-br from-primary/10 to-primary/20 text-primary"
+                  )}>
+                    {c.nome?.charAt(0).toUpperCase()}
+                    {isHoje && (
+                      <div className="absolute -top-1 -right-1">
+                        <Star className="h-5 w-5 text-amber-500 fill-amber-500 animate-pulse" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-0.5">
+                    <p className="text-[11px] font-black text-foreground leading-tight truncate px-1">
                       {c.nome?.split(" ")[0]}
                     </p>
-                    <p className={`text-[10px] font-black mt-1 ${isHoje ? "text-primary" : "text-muted-foreground"}`}>
-                      {isHoje ? "🎉 Hoje!" : `em ${diasAte} dia${diasAte !== 1 ? "s" : ""}`}
-                    </p>
-                    {isHoje && <Star className="h-3 w-3 text-primary mt-1 animate-pulse" />}
-                  </div>
-                );
-              })}
-            </div>
-          ) : fallbackAniversario ? (
-            (() => {
-              const fb = fallbackAniversario;
-              const diasAte = Math.round((fb.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-              return (
-                <div className="float-card flex items-center gap-4 px-5 py-4 border-black/10">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-base font-black text-primary shrink-0">
-                    {fb.nome?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground">{fb.nome}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {fb.proximoAniversario.toLocaleDateString("pt-BR", { weekday: 'long', day: '2-digit', month: 'long' })}
+                    <p className={cn(
+                      "text-[9px] font-black uppercase tracking-widest",
+                      isHoje ? "text-orange-600" : "text-muted-foreground/60"
+                    )}>
+                      {isHoje ? "🎉 Parabéns!" : `${diasAte} dia${diasAte !== 1 ? "s" : ""}`}
                     </p>
                   </div>
-                  <span className="text-[10px] font-black text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20 shrink-0">
-                    em {diasAte}d
-                  </span>
+                  
+                  {isHoje && (
+                    <div className="mt-2 w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full animate-pulse" />
+                  )}
                 </div>
               );
-            })()
-          ) : null}
+            })}
+          </div>
         </div>
       )}
 
-
-
-
-      {/* Turma intelligence picker dialog */}
+      {/* Turma picker dialog */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
         <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">
           <DialogHeader>
@@ -508,19 +507,6 @@ export default function Dashboard() {
               <div className="flex-1">
                 <p className="font-bold text-foreground">Todas as Turmas</p>
                 <p className="text-xs text-muted-foreground">Visão geral completa</p>
-              </div>
-            </button>
-
-            <button
-               onClick={() => { setTurmaPickerOpen(false); navigate("/turmas"); }}
-               className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all active:scale-[0.98] text-left border-2 border-dashed border-primary/30 hover:bg-primary/5 hover:border-primary/50"
-            >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="font-bold text-primary">Tenho um Código</p>
-                <p className="text-[10px] uppercase font-black tracking-widest text-primary/60">Entrar em turma criada</p>
               </div>
             </button>
 
@@ -553,7 +539,8 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-      {/* ── MODAL ENTRAR COM CÓDIGO ── */}
+
+      {/* MODAL ENTRAR COM CÓDIGO */}
       <Dialog open={joinModalOpen} onOpenChange={setJoinModalOpen}>
         <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none">
           <DialogHeader>
@@ -563,7 +550,6 @@ export default function Dashboard() {
             <p className="text-xs text-center text-muted-foreground px-4">
               Peça o código de 8 caracteres ao catequista responsável pela turma.
             </p>
-            
             <div className="space-y-2">
               <input
                 type="text"
@@ -575,7 +561,6 @@ export default function Dashboard() {
                 className="w-full px-4 py-4 rounded-2xl border-2 border-border bg-background text-foreground text-center text-2xl font-black tracking-[0.3em] uppercase focus:outline-none focus:border-primary transition-colors"
               />
             </div>
-
             <button
               onClick={handleJoinByCode}
               disabled={joinMutation.isPending || joinCode.trim().length < 8}
