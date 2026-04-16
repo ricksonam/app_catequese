@@ -140,10 +140,14 @@ export default function MuralFotos() {
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, isEditorFlow: boolean = false) => {
     const f = e.target.files?.[0];
     if (f) {
-      const toastId = toast.loading("Carregando arquivo...");
+      const toastId = toast.loading("Carregando e otimizando arquivo...");
       try {
-        const preview = URL.createObjectURL(f);
-        setPendingFile({ file: f, preview });
+        // Reducao brutal do raw image do Celular para 800px para o app aguentar o envio
+        const compressedBlob = await compressImage(f, 800, 0.7);
+        const finalFile = new File([compressedBlob], "photo.jpg", { type: "image/jpeg" });
+        const preview = URL.createObjectURL(finalFile);
+
+        setPendingFile({ file: finalFile, preview });
         setResumo(""); // reseta legenda
         
         if (turmas.length === 1) {
@@ -236,10 +240,10 @@ export default function MuralFotos() {
       </div>
 
       <Tabs defaultValue="turma" className="w-full animate-fade-in">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/60 p-1.5 rounded-2xl">
-          <TabsTrigger value="turma" className="rounded-xl text-xs font-bold uppercase tracking-wider py-2">Turma</TabsTrigger>
-          <TabsTrigger value="criatividades" className="rounded-xl text-xs font-bold uppercase tracking-wider py-2">Criações</TabsTrigger>
-          <TabsTrigger value="perfis" className="rounded-xl text-xs font-bold uppercase tracking-wider py-2">Perfis</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mb-6 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50">
+          <TabsTrigger value="turma" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Turma</TabsTrigger>
+          <TabsTrigger value="criatividades" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Criações</TabsTrigger>
+          <TabsTrigger value="perfis" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Perfis</TabsTrigger>
         </TabsList>
 
         {/* ===================== ABA TURMA ===================== */}
@@ -380,7 +384,7 @@ export default function MuralFotos() {
       </Tabs>
 
       {/* FIXED BOTTOM ACTION BAR - FLOATING BUTTONS */}
-      {!viewFoto && !pendingFile && !studioPhotos && (
+      {!viewFoto && !pendingFile && !studioPhotos && !viewPerfil && (
         <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
           <div className="flex-1 flex justify-start pointer-events-auto">
             <button 
