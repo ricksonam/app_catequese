@@ -63,19 +63,23 @@ export default function PublicPlano() {
   return (
     <div className="min-h-screen bg-[#F8F9FE] dark:bg-zinc-950 pb-20">
       {/* Header Premium */}
-      <div className="bg-white dark:bg-zinc-900 border-b border-border/50 px-6 py-8 shadow-sm">
-        <div className="max-w-2xl mx-auto space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+      <div className="bg-white dark:bg-zinc-900 border-b border-border/50 px-6 py-6 shadow-sm">
+        <div className="max-w-2xl mx-auto text-center space-y-4">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner mb-2">
                <CalendarDays className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Calendário de Encontros</p>
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Calendário de Encontros</p>
               <h1 className="text-2xl font-black text-foreground tracking-tight leading-tight">
                 Plano da Turma {turma.nome}
-                {turma.comunidade_nome && <span className="text-primary/70 block sm:inline"> - {turma.comunidade_nome}</span>}
               </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+              {turma.comunidade_nome && (
+                <p className="text-[11px] font-bold text-muted-foreground mt-1 uppercase tracking-wide">
+                  Comunidade {turma.comunidade_nome}
+                </p>
+              )}
+              <div className="flex items-center justify-center gap-x-3 gap-y-1 mt-3">
                  <span className="px-2 py-0.5 rounded-md bg-primary/5 text-primary text-[10px] font-black uppercase border border-primary/10">
                    {turma.ano}
                  </span>
@@ -87,7 +91,7 @@ export default function PublicPlano() {
             </div>
           </div>
           
-          <div className="flex flex-wrap gap-3 py-2">
+          <div className="flex flex-wrap justify-center gap-3 py-2">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/50 text-[11px] font-bold text-muted-foreground border border-border/50">
                <Clock className="h-3.5 w-3.5" /> {turma.dia_catequese} às {turma.horario}
             </div>
@@ -97,9 +101,9 @@ export default function PublicPlano() {
           </div>
 
           {catequistas && catequistas.length > 0 && (
-            <div className="pt-4 border-t border-border/30">
+            <div className="pt-3 border-t border-border/30 flex flex-col items-center">
                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-2">Equipe de Catequese</p>
-               <div className="flex flex-wrap gap-2">
+               <div className="flex flex-wrap justify-center gap-2">
                  {catequistas.map((nome: string, i: number) => (
                    <div key={i} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/5 text-primary text-[10px] font-black uppercase border border-primary/10">
                      <UserCircle2 className="h-3 w-3" />
@@ -143,89 +147,87 @@ export default function PublicPlano() {
                           {/* Dot */}
                           <div className={`absolute left-[-2px] top-6 w-3 h-3 rounded-full ${item.cor} border-2 border-white ring-4 ring-primary/5 z-10`} />
                           
-                          <div className={`bg-white dark:bg-zinc-900 p-5 rounded-[2rem] border-2 border-border/40 ${item.borda} shadow-lg shadow-black/[0.03] hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.98]`}>
-                            <div className="flex justify-between items-start mb-3">
-                               <div className="flex items-center gap-2">
-                                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${item.tipo === 'encontro' ? 'bg-primary/10 text-primary' : 'bg-accent/15 text-accent-foreground'}`}>
-                                    {item.tipo}
-                                  </span>
-                                  {item.modalidade === 'externa' && (
-                                    <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[9px] font-black uppercase tracking-tighter">
-                                      Externo
-                                    </span>
-                                  )}
-                               </div>
-                               <div className="text-right">
-                                  <p className="text-lg font-black text-foreground leading-none">{dateStr.split(' ')[0]}</p>
-                                  <p className="text-[9px] font-black text-muted-foreground uppercase">{dateStr.split(' ')[2]?.replace('.', '')}</p>
-                               </div>
-                            </div>
-
-                            <h4 className="text-base font-black text-foreground mb-3 leading-tight tracking-tight">
-                              {item.tema || item.nome}
-                            </h4>
-
-                            <div className="space-y-2.5">
-                               <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80">
-                                 <div className="w-6 h-6 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                                    <Clock className="h-3 w-3" />
-                                 </div>
-                                 {item.horario || turma.horario}
-                               </div>
-                               
-                               {checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" ? (
-                                 <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80">
-                                   <div className="w-6 h-6 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                                      <MapPin className="h-3 w-3" />
-                                   </div>
-                                   <span className="truncate">{checkLocal(item.local || turma.local)}</span>
-                                 </div>
-                               ) : (
-                                 item.leitura_biblica && (
-                                   <div className="flex items-center gap-2 text-[11px] font-bold text-primary/80">
-                                     <div className="w-6 h-6 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
-                                        <BookOpen className="h-3 w-3" />
-                                     </div>
-                                     <span className="italic">Leitura: {item.leitura_biblica}</span>
-                                   </div>
-                                 )
-                               )}
-
-                               {(item.leitura_biblica || item.material_apoio) && checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" && (
-                                 <div className="flex items-center gap-2 text-[11px] font-bold text-primary/80">
-                                   <div className="w-6 h-6 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
-                                      <BookOpen className="h-3 w-3" />
-                                   </div>
-                                   {item.leitura_biblica || item.material_apoio}
-                                 </div>
-                               )}
-                            </div>
-
-                            {item.descricao && (
-                              <div className={`mt-4 pt-4 border-t border-border/30 ${
-                                (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) 
-                                ? "bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-4 -mx-1 border-none" 
-                                : ""
-                              }`}>
-                                <p className={`text-[11px] leading-relaxed ${
-                                  (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao')))
-                                  ? "text-blue-700 dark:text-blue-300 font-bold not-italic" 
-                                  : "text-muted-foreground italic"
-                                }`}>
-                                  {(item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) && (
-                                    <span className="block text-[9px] font-black uppercase tracking-widest text-blue-500 mb-2">Pauta da Reunião</span>
-                                  )}
-                                  "{item.descricao}"
-                                </p>
-                              </div>
+                    <div className={`p-4 rounded-[1.8rem] border-2 border-border/40 ${item.borda} shadow-lg shadow-black/[0.03] hover:shadow-xl hover:scale-[1.01] transition-all active:scale-[0.98] ${
+                      item.tipo === 'encontro' ? 'bg-blue-50/70 border-l-blue-500' : 'bg-yellow-50/70 border-l-yellow-500'
+                    }`}>
+                      <div className="flex justify-between items-start mb-2.5">
+                         <div className="flex items-center gap-2">
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
+                              item.tipo === 'encontro' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
+                            }`}>
+                              {item.tipo}
+                            </span>
+                            {item.modalidade === 'externa' && (
+                              <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[9px] font-black uppercase tracking-tighter">
+                                Externo
+                              </span>
                             )}
+                         </div>
+                         <div className="text-right">
+                            <p className="text-base font-black text-foreground leading-none">{dateStr.split(' ')[0]}</p>
+                            <p className="text-[9px] font-black text-muted-foreground uppercase">{dateStr.split(' ')[2]?.replace('.', '')}</p>
+                         </div>
+                      </div>
 
-                            <div className="mt-4 flex justify-end">
-                               <div className={`w-7 h-7 rounded-full ${item.cor}/10 flex items-center justify-center text-${item.cor === 'bg-primary' ? 'primary' : 'blue-600'}`}>
-                                  <ArrowRight className="h-3.5 w-3.5" />
+                      <h4 className="text-sm font-black text-foreground mb-2 leading-tight tracking-tight">
+                        {item.tema || item.nome}
+                      </h4>
+
+                      <div className="space-y-2">
+                         <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/80">
+                           <div className="w-5 h-5 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                              <Clock className="h-3 w-3" />
+                           </div>
+                           {item.horario || turma.horario}
+                         </div>
+                         
+                         {checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" ? (
+                           <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/80">
+                             <div className="w-5 h-5 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                                <MapPin className="h-3 w-3" />
+                             </div>
+                             <span className="truncate">{checkLocal(item.local || turma.local)}</span>
+                           </div>
+                         ) : (
+                           item.leitura_biblica && (
+                             <div className="flex items-center gap-2 text-[10px] font-bold text-primary/80">
+                               <div className="w-5 h-5 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
+                                  <BookOpen className="h-3 w-3" />
                                </div>
-                            </div>
-                          </div>
+                               <span className="italic">Leitura: {item.leitura_biblica}</span>
+                             </div>
+                           )
+                         )}
+
+                         {(item.leitura_biblica || item.material_apoio) && checkLocal(item.local || turma.local) !== "Encontro Externo (consulte o catequista)" && (
+                           <div className="flex items-center gap-2 text-[10px] font-bold text-primary/80">
+                             <div className="w-5 h-5 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
+                                <BookOpen className="h-3 w-3" />
+                             </div>
+                             {item.leitura_biblica || item.material_apoio}
+                           </div>
+                         )}
+                      </div>
+
+                      {item.descricao && (
+                        <div className={`mt-3 pt-3 border-t border-border/30 ${
+                          (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) 
+                          ? "bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-3 -mx-1 border-none" 
+                          : ""
+                        }`}>
+                          <p className={`text-[10px] leading-relaxed ${
+                            (item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao')))
+                            ? "text-blue-700 dark:text-blue-300 font-bold not-italic" 
+                            : "text-muted-foreground italic"
+                          }`}>
+                            {(item.tipo === 'atividade' && (item.nome?.toLowerCase().includes('reunião') || item.nome?.toLowerCase().includes('reuniao'))) && (
+                              <span className="block text-[8px] font-black uppercase tracking-widest text-blue-500 mb-1.5">Pauta da Reunião</span>
+                            )}
+                            "{item.descricao}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
                         </div>
                       );
                     })}

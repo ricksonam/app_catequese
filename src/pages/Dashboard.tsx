@@ -79,9 +79,15 @@ export default function Dashboard() {
 
   const getEtapaColor = (etapa?: string) => {
     const e = etapa?.toLowerCase() || "";
-    if (e.includes("pre") || e.includes("biblia")) return "text-emerald-600 bg-emerald-50 border-emerald-100";
-    if (e.includes("eucaristia")) return "text-amber-600 bg-amber-50 border-amber-100";
-    if (e.includes("crisma") || e.includes("adulto")) return "text-red-600 bg-red-50 border-red-100";
+    // Pré-Catequese: Azul claro
+    if (e.includes("pre") || e.includes("biblia")) return "text-blue-600 bg-blue-50 border-blue-100";
+    // Eucaristia: Amarelo claro
+    if (e.includes("eucaristia")) return "text-yellow-600 bg-yellow-50 border-yellow-100";
+    // Crisma / Pré-Crisma: Vermelho claro
+    if (e.includes("crisma")) return "text-red-600 bg-red-50 border-red-100";
+    // Adultos: Verde claro
+    if (e.includes("adulto")) return "text-emerald-600 bg-emerald-50 border-emerald-100";
+    
     return "text-primary bg-primary/10 border-primary/20";
   };
 
@@ -295,30 +301,23 @@ export default function Dashboard() {
              <LiturgicalIcon type={selectedTurma?.etapa} className="w-32 h-32" />
           </div>
 
-          <div className="p-6 flex flex-col items-center gap-5 text-center relative z-10">
+          <div className="p-4 flex items-center gap-4 text-left relative z-10">
             <div className={cn(
-              "w-20 h-20 rounded-[28px] flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-xl",
+              "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-lg",
               heroColors
             )}>
-              <LiturgicalIcon type={selectedTurma?.etapa} className="h-10 w-10" />
+              <LiturgicalIcon type={selectedTurma?.etapa} className="h-7 w-7" />
             </div>
             
-            <div className="space-y-1 w-full">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
-              <h3 className="text-2xl font-black text-foreground leading-tight tracking-tight">
+            <div className="space-y-0.5 min-w-0 flex-1">
+              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
+              <h3 className="text-xl font-black text-foreground leading-tight tracking-tight truncate">
                 {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
               </h3>
-              <p className="text-xs text-muted-foreground font-medium">
+              <p className="text-[10px] text-muted-foreground font-medium truncate">
                 {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
               </p>
             </div>
-            
-            <button 
-              onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary/25 hover:bg-primary/90 active:scale-95 transition-all"
-            >
-              Abrir Turma
-            </button>
           </div>
 
           {(turmas.length > 1 || selectedTurmaId === "all") && (
