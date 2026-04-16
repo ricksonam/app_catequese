@@ -128,6 +128,17 @@ export default function TurmaForm() {
                 </select>
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-black/5">
+              <div className="space-y-2">
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Horário *</label>
+                <input type="time" value={form.horario} onChange={(e) => update("horario", e.target.value)} className="form-input h-11" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Local *</label>
+                <input type="text" value={form.local} onChange={(e) => update("local", e.target.value)} className="form-input h-11" placeholder="Ex: Salão Paroquial" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -215,10 +226,10 @@ export default function TurmaForm() {
                       </div>
 
                       <div className={cn(
-                        "w-6 h-6 rounded-full flex items-center justify-center transition-all",
-                        isSelected ? "bg-blue-500 text-white" : "bg-muted/30 text-muted-foreground group-hover:bg-blue-100/50 group-hover:text-blue-500"
+                        "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
+                        isSelected ? "bg-blue-500 border-blue-500 shadow-sm" : "bg-white border-muted/50"
                       )}>
-                        {isSelected ? <UserCheck className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />}
+                        {isSelected && <Check className="h-3.5 w-3.5 text-white" strokeWidth={4} />}
                       </div>
                     </button>
                   );
@@ -233,24 +244,14 @@ export default function TurmaForm() {
           </div>
         </div>
 
-        {/* LOGÍSTICA E TEMPO */}
+        {/* TEMPO DA CATEQUESE */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-orange-500 font-bold px-1">
-            <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">📅</div>
-            <span className="text-sm uppercase tracking-wider">Logística e Etapa</span>
+            <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">⏳</div>
+            <span className="text-sm uppercase tracking-wider">Tempo da Catequese</span>
           </div>
 
           <div className="float-card p-5 space-y-6 animate-float-up" style={{ animationDelay: '200ms' }}>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Horário *</label>
-                <input type="time" value={form.horario} onChange={(e) => update("horario", e.target.value)} className="form-input h-11" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Local *</label>
-                <input type="text" value={form.local} onChange={(e) => update("local", e.target.value)} className="form-input h-11" placeholder="Salão paroquial" />
-              </div>
-            </div>
 
             <div className="space-y-3">
               <label className="text-xs font-black text-muted-foreground uppercase tracking-widest block">Etapa do Tempo da Catequese</label>

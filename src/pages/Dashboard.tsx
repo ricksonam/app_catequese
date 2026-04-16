@@ -9,16 +9,18 @@ import WelcomeModal from "@/components/WelcomeModal";
 import { cn } from "@/lib/utils";
 import { useJoinTurma } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
-import { Link2, Loader2, RefreshCw } from "lucide-react";
+import { Link2, Loader2, RefreshCw, Flame, Sparkles } from "lucide-react";
+import { useAtividades } from "@/hooks/useSupabaseData";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
-  const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
+  const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
@@ -26,7 +28,7 @@ export default function Dashboard() {
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
-  const loading = tLoading || eLoading || cLoading;
+  const loading = tLoading || eLoading || cLoading || aLoading;
 
   useEffect(() => {
     if (!loading && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
@@ -111,13 +113,17 @@ export default function Dashboard() {
 
   const stats = [
     { 
-      label: selectedTurmaId === "all" ? "Turmas" : (selectedTurma?.etapa || ""),
-      value: selectedTurmaId === "all" ? turmas.length : (selectedTurma?.nome || "Turma"),
-      icon: BookOpen,
+      label: "Atividades e Eventos", 
+      value: atividades.length, 
+      icon: Sparkles, 
       color: "bg-primary/10 text-primary",
-      isTurma: true,
-      action: () => setTurmaPickerOpen(true),
-      isInteractive: true
+      action: () => {
+        if (selectedTurmaId !== "all") {
+          navigate(`/turmas/${selectedTurmaId}/atividades`);
+        } else {
+          setTurmaPickerOpen(true);
+        }
+      } 
     },
     { 
       label: "Catequizandos", 
@@ -255,37 +261,41 @@ export default function Dashboard() {
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
-             <BookOpen className="w-24 h-24 text-primary" />
+             <Flame className="w-24 h-24 text-primary" />
           </div>
 
-          <div className="p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 group-hover:scale-110 transition-transform duration-500">
-                <BookOpen className="h-7 w-7 text-primary" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Turma Selecionada</p>
-                <h3 className="text-xl font-black text-foreground leading-tight tracking-tight">
-                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
-                </p>
-              </div>
+          <div className="p-5 flex flex-col items-center gap-4 text-center">
+            <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center shrink-0 border-2 border-primary/20 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+              <Flame className="h-8 w-8 text-primary" />
+            </div>
+            
+            <div className="space-y-1 w-full">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
+              <h3 className="text-2xl font-black text-foreground leading-tight tracking-tight">
+                {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+              </h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
+              </p>
             </div>
             
             <button 
-              onClick={(e) => { e.stopPropagation(); setTurmaPickerOpen(true); }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary/20 active:scale-95 transition-all shrink-0"
+              onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary text-white text-[11px] font-black uppercase tracking-widest shadow-lg shadow-primary/25 hover:bg-primary/90 active:scale-95 transition-all"
             >
-              Restante <RefreshCw className="h-3 w-3" /> Trocar
+              Abrir Turma
             </button>
           </div>
 
-          <div className="bg-primary/5 px-5 py-2.5 flex items-center justify-between border-t border-primary/10">
-            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Clique para abrir módulos</span>
-            <ChevronRight className="h-4 w-4 text-primary animate-bounce-horizontal" />
-          </div>
+          {(turmas.length > 1 || selectedTurmaId === "all") && (
+            <div 
+              onClick={(e) => { e.stopPropagation(); setTurmaPickerOpen(true); }}
+              className="bg-primary/5 px-5 py-3 flex items-center justify-between border-t border-primary/10 hover:bg-primary/10 transition-colors"
+            >
+              <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Trocar de Turma</span>
+              <RefreshCw className="h-4 w-4 text-primary" />
+            </div>
+          )}
         </div>
       )}
 

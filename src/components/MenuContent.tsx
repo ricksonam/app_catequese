@@ -15,9 +15,9 @@ interface MenuContentProps {
 }
 
 const cadastros = [
-  { label: "Turmas de Catequese", icon: BookOpen, path: "/turmas", color: "bg-primary/10 text-primary" },
   { label: "Paróquia e Comunidade", icon: Church, path: "/cadastros/paroquia-comunidade", color: "bg-liturgical/10 text-liturgical" },
   { label: "Catequistas", icon: UserCheck, path: "/cadastros/catequistas", color: "bg-success/10 text-success" },
+  { label: "Turmas de Catequese", icon: BookOpen, path: "/turmas", color: "bg-primary/10 text-primary" },
 ];
 
 const modulosGlobais = [
