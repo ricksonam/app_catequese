@@ -26,6 +26,14 @@ export default function MuralFotos() {
   const [resumo, setResumo] = useState("");
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("turma");
+  const [selectedTurmaPerfilId, setSelectedTurmaPerfilId] = useState<string>("all");
+
+  useEffect(() => {
+    if (turmas.length === 1) {
+      setSelectedTurmaPerfilId(turmas[0].id);
+    }
+  }, [turmas]);
   
   const [pendingFile, setPendingFile] = useState<{ file: File; preview: string } | null>(null);
   
@@ -77,6 +85,11 @@ export default function MuralFotos() {
   const perfis = useMemo(() => {
     return catequizandos.filter(c => turmasIds.has(c.turmaId));
   }, [catequizandos, turmasIds]);
+
+  const perfisFiltrados = useMemo(() => {
+    if (selectedTurmaPerfilId === "all") return perfis;
+    return perfis.filter(c => c.turmaId === selectedTurmaPerfilId);
+  }, [perfis, selectedTurmaPerfilId]);
 
   const agruparFotos = (lista: MuralFoto[]) => {
     const groups: Record<string, { label: string; items: MuralFoto[] }> = {};
@@ -248,11 +261,11 @@ export default function MuralFotos() {
         </button>
       </div>
 
-      <Tabs defaultValue="turma" className="w-full animate-fade-in">
+      <Tabs defaultValue="turma" value={activeTab} onValueChange={setActiveTab} className="w-full animate-fade-in">
         <TabsList className="grid w-full grid-cols-3 mb-6 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50">
-          <TabsTrigger value="turma" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Turma</TabsTrigger>
-          <TabsTrigger value="criatividades" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Criações</TabsTrigger>
-          <TabsTrigger value="perfis" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Perfis</TabsTrigger>
+          <TabsTrigger value="turma" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Turma</TabsTrigger>
+          <TabsTrigger value="criatividades" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Criações</TabsTrigger>
+          <TabsTrigger value="perfis" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Perfis</TabsTrigger>
         </TabsList>
 
         {/* ===================== ABA TURMA ===================== */}
@@ -355,14 +368,32 @@ export default function MuralFotos() {
 
         {/* ===================== ABA PERFIS ===================== */}
         <TabsContent value="perfis" className="space-y-6 mt-0">
-          {perfis.length === 0 ? (
+          <div className="flex flex-col items-center gap-3">
+             <h2 className="text-lg font-black text-foreground text-center px-4">
+               Fotos dos perfis dos catequizandos
+             </h2>
+             {turmas.length > 1 && (
+               <select
+                 value={selectedTurmaPerfilId}
+                 onChange={(e) => setSelectedTurmaPerfilId(e.target.value)}
+                 className="p-2.5 px-4 rounded-xl text-sm font-bold bg-white dark:bg-zinc-800 border-2 border-primary/20 text-primary focus:outline-none focus:border-primary shadow-sm"
+               >
+                 <option value="all">Todas as turmas</option>
+                 {turmas.map(t => (
+                   <option key={t.id} value={t.id}>{t.nome}</option>
+                 ))}
+               </select>
+             )}
+          </div>
+
+          {perfisFiltrados.length === 0 ? (
             <div className="empty-state">
               <div className="icon-box bg-muted text-muted-foreground mx-auto mb-3"><UserCircle className="h-6 w-6" /></div>
               <p className="text-sm font-medium text-muted-foreground">Nenhum catequizando na turma</p>
             </div>
           ) : (
              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-               {perfis.map((c, i) => {
+               {perfisFiltrados.map((c, i) => {
                  const tNome = turmas.find(t => t.id === c.turmaId)?.nome;
                  return (
                   <button 
@@ -393,7 +424,7 @@ export default function MuralFotos() {
       </Tabs>
 
       {/* FIXED BOTTOM ACTION BAR - FLOATING BUTTONS */}
-      {!viewFoto && !pendingFile && !studioPhotos && !viewPerfil && (
+      {!viewFoto && !pendingFile && !studioPhotos && !viewPerfil && activeTab !== 'perfis' && (
         <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
           <div className="flex-1 flex justify-start pointer-events-auto">
             <button 
