@@ -129,7 +129,6 @@ export default function PlanoTurma() {
           </button>
         </div>
       )}
-      </div>
 
       <div className="flex gap-2 p-1 bg-muted/30 rounded-2xl animate-fade-in">
         {(['all', 'encontro', 'atividade'] as const).map((f) => (
