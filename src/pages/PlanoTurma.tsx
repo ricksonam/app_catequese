@@ -105,17 +105,17 @@ export default function PlanoTurma() {
             <p className="text-xs text-muted-foreground">{totalAlunos} catequizandos</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-end gap-2">
+          {id && <ReportModule context="plano" turmaId={id} />}
           {turma?.codigoAcesso && (
             <button 
               onClick={shareWithParents}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all font-bold text-xs"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all font-bold text-[10px] sm:text-xs"
             >
-              <Share2 className="h-4 w-4" />
+              <Share2 className="h-4 w-4 shrink-0" />
               <span>Compartilhar com Pais</span>
             </button>
           )}
-          {id && <ReportModule context="plano" turmaId={id} />}
         </div>
       </div>
 

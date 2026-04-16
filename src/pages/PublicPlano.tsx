@@ -70,8 +70,8 @@ export default function PublicPlano() {
                <CalendarDays className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Plano da Turma</p>
-              <h1 className="text-2xl font-black text-foreground tracking-tight">{turma.nome}</h1>
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-0.5">Calendário de Encontros</p>
+              <h1 className="text-2xl font-black text-foreground tracking-tight">Plano da Turma de {turma.nome}</h1>
             </div>
           </div>
           
