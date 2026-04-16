@@ -294,36 +294,38 @@ export default function Dashboard() {
         </div>
       ) : (
         <div 
-          className="float-card overflow-hidden animate-card-activate border-[2.5px] border-yellow-400 relative group hover:border-yellow-500 transition-all cursor-pointer h-full shadow-[0_10px_30px_rgba(250,204,21,0.15)] bg-white/50 backdrop-blur-sm"
+          className="float-card overflow-hidden animate-card-activate border-[4px] border-yellow-400 relative group transition-all cursor-pointer h-full shadow-[0_15px_40px_rgba(250,204,21,0.2)] bg-white/50 backdrop-blur-sm"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
              <LiturgicalIcon type={selectedTurma?.etapa} className="w-32 h-32" />
           </div>
 
-          <div className="px-5 pt-5 pb-3 flex items-center gap-4 text-left relative z-10">
+          <div className="px-5 pt-6 pb-3 flex items-center relative z-10">
+            {/* Ícone fixo à esquerda */}
             <div className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-lg",
+              "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-lg absolute left-5",
               heroColors
             )}>
               <LiturgicalIcon type={selectedTurma?.etapa} className="h-7 w-7" />
             </div>
             
-            <div className="space-y-0.5 min-w-0 flex-1">
+            {/* Texto centralizado no card */}
+            <div className="space-y-0.5 min-w-0 flex-1 text-center">
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
-              <h3 className="text-xl font-black text-foreground leading-tight tracking-tight truncate">
+              <h3 className="text-xl font-black text-foreground leading-tight tracking-tight truncate px-16">
                 {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
               </h3>
-              <p className="text-[10px] text-muted-foreground font-medium truncate">
+              <p className="text-[10px] text-muted-foreground font-medium truncate px-16">
                 {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
               </p>
             </div>
           </div>
 
-          <div className="px-5 pb-5 flex justify-center">
+          <div className="px-5 pb-6 flex justify-center">
             <button 
               onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
-              className="flex items-center gap-2 px-8 py-2 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+              className="flex items-center gap-2 px-10 py-2.5 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all z-20"
             >
               Abrir Turma
             </button>
