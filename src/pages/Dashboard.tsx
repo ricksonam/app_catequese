@@ -7,6 +7,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { formatarDataVigente } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
 import { cn } from "@/lib/utils";
+import { useJoinTurma } from "@/hooks/useSupabaseData";
+import { toast } from "sonner";
+import { Link2, Loader2, RefreshCw } from "lucide-react";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -17,14 +20,26 @@ export default function Dashboard() {
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
+  const joinMutation = useJoinTurma();
 
   const loading = tLoading || eLoading || cLoading;
 
   useEffect(() => {
     if (!loading && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
       setWelcomeOpen(true);
+    }
+  }, [loading, turmas.length]);
+
+  // Se tiver turmas e nenhuma selecionada (ou "all"), tenta selecionar a primeira para foco inicial
+  useEffect(() => {
+    if (!loading && turmas.length > 0 && selectedTurmaId === "all") {
+       // Opcional: manter "all" ou focar na primeira.
+       // O usuário quer que o card se transforme no card da turma, então melhor focar em uma se existir.
+       setSelectedTurmaId(turmas[0].id);
     }
   }, [loading, turmas.length]);
 
@@ -151,6 +166,22 @@ export default function Dashboard() {
     ? (dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()])
     : "";
 
+  const handleJoinByCode = async () => {
+    if (joinCode.trim().length < 8) {
+      toast.error("O código deve ter 8 caracteres.");
+      return;
+    }
+    try {
+      const result = await joinMutation.mutateAsync(joinCode.trim());
+      toast.success(`Acesso concedido à turma "${result.nome}"!`);
+      setJoinModalOpen(false);
+      setJoinCode("");
+      setSelectedTurmaId(result.id);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao entrar na turma.");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
@@ -186,6 +217,77 @@ export default function Dashboard() {
           <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao iCatequese</p>
         </div>
       </div>
+
+      {/* ── CARD PRINCIPAL DE TURMA (TOPO) ── */}
+      {turmas.length === 0 ? (
+        <div 
+          className="float-card p-8 text-center animate-card-activate border-2 border-primary/20 bg-primary/5"
+          onClick={() => navigate("/turmas/nova")}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="icon-box bg-primary/20 text-primary mx-auto mb-4 scale-110 animate-bounce-subtle">
+            <BookOpen className="h-6 w-6" />
+          </div>
+          
+          <h3 className="text-lg font-black text-foreground mb-2">Comece criando sua turma</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto leading-relaxed">
+            Tudo pronto! Crie sua primeira turma ou entre com um código para começar.
+          </p>
+
+          <div className="flex flex-col gap-3 justify-center max-w-xs mx-auto">
+             <button 
+               onClick={(e) => { e.stopPropagation(); navigate("/turmas/nova"); }}
+               className="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm bg-primary text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all"
+             >
+               Criar Nova Turma
+             </button>
+             <button
+               onClick={(e) => { e.stopPropagation(); setJoinModalOpen(true); }}
+               className="w-full bg-emerald-500 text-white font-black text-sm px-6 py-3.5 rounded-2xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+             >
+               Entrar com Código
+             </button>
+          </div>
+        </div>
+      ) : (
+        <div 
+          className="float-card overflow-hidden animate-card-activate border-2 border-primary/20 relative group hover:border-primary/40 transition-all cursor-pointer"
+          onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
+        >
+          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
+             <BookOpen className="w-24 h-24 text-primary" />
+          </div>
+
+          <div className="p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4 text-center sm:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 group-hover:scale-110 transition-transform duration-500">
+                <BookOpen className="h-7 w-7 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Turma Selecionada</p>
+                <h3 className="text-xl font-black text-foreground leading-tight tracking-tight">
+                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={(e) => { e.stopPropagation(); setTurmaPickerOpen(true); }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20 hover:bg-primary/20 active:scale-95 transition-all shrink-0"
+            >
+              Restante <RefreshCw className="h-3 w-3" /> Trocar
+            </button>
+          </div>
+
+          <div className="bg-primary/5 px-5 py-2.5 flex items-center justify-between border-t border-primary/10">
+            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Clique para abrir módulos</span>
+            <ChevronRight className="h-4 w-4 text-primary animate-bounce-horizontal" />
+          </div>
+        </div>
+      )}
 
       {/* Stats Inteligentes */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -373,48 +475,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {turmas.length === 0 && (
-        <div 
-          className="float-card p-8 text-center animate-card-activate"
-          onClick={() => navigate("/turmas/nova")}
-          style={{ cursor: 'pointer' }}
-        >
-          <div className="icon-box bg-primary/20 text-primary mx-auto mb-4 scale-110 animate-bounce-subtle">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          
-          <h3 className="text-lg font-black text-foreground mb-2">Comece criando sua turma</h3>
-          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto leading-relaxed">
-            Tudo pronto! Crie sua primeira turma e comece a organizar seus encontros de catequese.
-          </p>
-
-          <div className="flex flex-col gap-3 justify-center max-w-xs mx-auto">
-             <button 
-               onClick={(e) => { e.stopPropagation(); navigate("/turmas/nova"); }}
-               className="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm bg-primary text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all animate-soft-pulse"
-             >
-               <span className="relative flex h-2 w-2 mr-1">
-                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-               </span>
-               Criar Nova Turma
-             </button>
-             <button
-               onClick={(e) => { e.stopPropagation(); navigate("/turmas"); }}
-               className="w-full bg-muted/60 border border-primary/10 text-primary font-bold text-sm px-6 py-3 rounded-2xl hover:bg-primary/5 transition-all"
-               title="Recebeu um código? Entre por ele!"
-             >
-               Entrar com Código
-             </button>
-          </div>
-
-          <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-primary uppercase tracking-[0.2em] animate-pulse">
-            <span>✦</span>
-            <span>Acesso Liberado</span>
-            <span>✦</span>
-          </div>
-        </div>
-      )}
 
 
 
@@ -480,6 +540,40 @@ export default function Dashboard() {
                 </button>
               );
             })}
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* ── MODAL ENTRAR COM CÓDIGO ── */}
+      <Dialog open={joinModalOpen} onOpenChange={setJoinModalOpen}>
+        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black tracking-tight text-center">Entrar com Código</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 mt-4">
+            <p className="text-xs text-center text-muted-foreground px-4">
+              Peça o código de 8 caracteres ao catequista responsável pela turma.
+            </p>
+            
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={joinCode}
+                onChange={e => setJoinCode(e.target.value.toUpperCase())}
+                placeholder="Ex: TP847293"
+                maxLength={8}
+                autoFocus
+                className="w-full px-4 py-4 rounded-2xl border-2 border-border bg-background text-foreground text-center text-2xl font-black tracking-[0.3em] uppercase focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+
+            <button
+              onClick={handleJoinByCode}
+              disabled={joinMutation.isPending || joinCode.trim().length < 8}
+              className="w-full py-4 rounded-2xl bg-emerald-500 text-white font-black text-sm uppercase tracking-wider hover:bg-emerald-600 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+            >
+              {joinMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+              {joinMutation.isPending ? "Verificando..." : "Entrar na Turma"}
+            </button>
           </div>
         </DialogContent>
       </Dialog>
