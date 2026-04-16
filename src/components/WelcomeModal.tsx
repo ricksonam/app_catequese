@@ -81,8 +81,8 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
           <p className="text-lg font-bold text-foreground mt-2 mb-2 animate-in slide-in-from-bottom duration-500 delay-150">
             Olá, Catequista! 🙏
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs animate-in slide-in-from-bottom duration-500 delay-300">
-            Antes de ter o acesso completo a plataforma primeiro faça os <strong>cadastros básicos</strong> da paróquia e dos catequistas e em seguida você ja pode criar a sua turma.
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4 max-w-xs animate-in slide-in-from-bottom duration-500 delay-300">
+            Antes de ter o acesso completo primeiro faça os <strong>cadastros básicos</strong> da paróquia e catequistas para poder criar sua turma. Se foi convidado por um colega, você pode <strong>acessar uma Turma Compartilhada</strong> com o código no menu de turmas!
           </p>
 
           <p className="text-[11px] text-primary/70 font-medium mb-4 animate-in fade-in duration-700 delay-500">

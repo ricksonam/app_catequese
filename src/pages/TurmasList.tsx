@@ -45,7 +45,14 @@ export default function TurmasList() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
+           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando...</p>
+      </div>
+    );
   }
 
   return (
@@ -143,9 +150,18 @@ export default function TurmasList() {
         >
           <div className="w-full max-w-sm bg-card rounded-[32px] shadow-2xl p-6 space-y-5 animate-float-up">
             <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-xl font-black text-foreground">Entrar com Código</h2>
-                <p className="text-xs text-muted-foreground mt-1">Digite o código de 8 caracteres da turma</p>
+              <div className="flex-1 pr-4">
+                <div className="flex items-center gap-2">
+                   <h2 className="text-xl font-black text-foreground">Entrar com Código</h2>
+                   <div className="group relative">
+                     <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-xs cursor-help">?</span>
+                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-foreground text-background text-[11px] font-medium rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-50 shadow-xl">
+                       A <strong>Turma Compartilhada</strong> é um recurso onde um colega catequista que já criou a turma lhe passa um <em>código</em>, para que você possa entrar na mesma equipe de ensino e colaborar juntos!
+                       <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-foreground" />
+                     </div>
+                   </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Colegue o código de 8 caracteres da turma parceira</p>
               </div>
               <button onClick={closeJoinModal} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
                 <X className="h-4 w-4 text-muted-foreground" />

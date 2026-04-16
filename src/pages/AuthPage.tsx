@@ -93,18 +93,18 @@ function ConsentModal({
         </div>
         {/* Footer */}
         <div className="px-6 pb-6 pt-4 border-t border-black/10 dark:border-white/10 space-y-3">
-          <label className="flex items-start gap-3 cursor-pointer">
+          <label className="flex items-center gap-4 cursor-pointer bg-primary/5 p-4 rounded-xl border border-primary/20 hover:bg-primary/10 transition-colors">
             <button
               type="button"
               onClick={() => setAgreed((v) => !v)}
-              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
-                agreed ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600"
+              className={`w-7 h-7 rounded-lg border-[3px] flex items-center justify-center shrink-0 transition-all ${
+                agreed ? "bg-primary border-primary scale-110 shadow-lg shadow-primary/30" : "border-gray-400 bg-white dark:border-gray-500"
               }`}
             >
-              {agreed && <Check className="h-3 w-3 text-white" />}
+              <Check className={`h-5 w-5 text-white transition-opacity ${agreed ? "opacity-100" : "opacity-0"}`} strokeWidth={3} />
             </button>
-            <span className="text-sm text-foreground leading-snug">
-              Li e concordo com os <strong>Termos de Uso</strong> e a <strong>Política de Privacidade</strong> do iCatequese.
+            <span className="text-sm text-foreground leading-snug font-medium">
+              Li e concordo com os <strong className="text-primary">Termos de Uso</strong> e <strong className="text-primary">Privacidade</strong>.
             </span>
           </label>
           <Button

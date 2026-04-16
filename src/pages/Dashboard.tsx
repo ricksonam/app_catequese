@@ -135,8 +135,11 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
+           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando...</p>
       </div>
     );
   }
@@ -385,16 +388,25 @@ export default function Dashboard() {
             Tudo pronto! Crie sua primeira turma e comece a organizar seus encontros de catequese.
           </p>
 
-          <button 
-            onClick={(e) => { e.stopPropagation(); navigate("/turmas/nova"); }}
-            className="mx-auto flex items-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm bg-primary text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all animate-soft-pulse"
-          >
-            <span className="relative flex h-2 w-2 mr-1">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-            </span>
-            Criar Turma
-          </button>
+          <div className="flex flex-col gap-3 justify-center max-w-xs mx-auto">
+             <button 
+               onClick={(e) => { e.stopPropagation(); navigate("/turmas/nova"); }}
+               className="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm bg-primary text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all animate-soft-pulse"
+             >
+               <span className="relative flex h-2 w-2 mr-1">
+                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+               </span>
+               Criar Nova Turma
+             </button>
+             <button
+               onClick={(e) => { e.stopPropagation(); navigate("/turmas"); }}
+               className="w-full bg-muted/60 border border-primary/10 text-primary font-bold text-sm px-6 py-3 rounded-2xl hover:bg-primary/5 transition-all"
+               title="Recebeu um código? Entre por ele!"
+             >
+               Entrar com Código
+             </button>
+          </div>
 
           <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-bold text-primary uppercase tracking-[0.2em] animate-pulse">
             <span>✦</span>
@@ -426,6 +438,19 @@ export default function Dashboard() {
               <div className="flex-1">
                 <p className="font-bold text-foreground">Todas as Turmas</p>
                 <p className="text-xs text-muted-foreground">Visão geral completa</p>
+              </div>
+            </button>
+
+            <button
+               onClick={() => { setTurmaPickerOpen(false); navigate("/turmas"); }}
+               className="w-full flex items-center gap-4 p-4 rounded-2xl transition-all active:scale-[0.98] text-left border-2 border-dashed border-primary/30 hover:bg-primary/5 hover:border-primary/50"
+            >
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-primary">Tenho um Código</p>
+                <p className="text-[10px] uppercase font-black tracking-widest text-primary/60">Entrar em turma criada</p>
               </div>
             </button>
 
