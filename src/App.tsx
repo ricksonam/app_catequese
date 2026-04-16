@@ -37,6 +37,7 @@ import ParoquiaComunidadeCadastro from "@/pages/ParoquiaComunidadeCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 import PlaceholderPage from "@/pages/PlaceholderPage";
+import PublicPlano from "@/pages/PublicPlano";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -61,6 +62,7 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/auth" element={<AuthPage />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
+    <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
     <Route
       element={
         <ProtectedRoute>

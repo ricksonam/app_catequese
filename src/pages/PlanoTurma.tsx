@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeMutation, useEncontroMutation } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car } from "lucide-react";
+import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
@@ -82,6 +82,19 @@ export default function PlanoTurma() {
     setViewItem({ ...viewItem, presencas: updated, itemOriginal: { ...viewItem.itemOriginal, presencas: updated } });
   };
 
+  const shareWithParents = () => {
+    if (!turma?.codigoAcesso) {
+      toast.error("Turma sem código de acesso.");
+      return;
+    }
+    const url = `${window.location.origin}/plano-pais/${turma.codigoAcesso}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copiado! Envie para os pais no WhatsApp.", {
+      description: "Eles verão apenas o cronograma, sem acesso a ferramentas.",
+      duration: 5000,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between animate-fade-in">
@@ -93,6 +106,15 @@ export default function PlanoTurma() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {turma?.codigoAcesso && (
+            <button 
+              onClick={shareWithParents}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all font-bold text-xs"
+            >
+              <Share2 className="h-4 w-4" />
+              <span>Compartilhar com Pais</span>
+            </button>
+          )}
           {id && <ReportModule context="plano" turmaId={id} />}
         </div>
       </div>

@@ -433,3 +433,10 @@ export async function fetchBingoModelos(): Promise<BingoModelo[]> {
   if (error) throw error;
   return data || [];
 }
+
+// ========== PLANO PÚBLICO (PAIS) ==========
+export async function fetchPublicPlanoByCode(code: string) {
+  const { data, error } = await supabase.rpc('get_public_plano', { p_code: code.trim().toUpperCase() });
+  if (error) throw error;
+  return data;
+}
