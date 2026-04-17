@@ -14,7 +14,7 @@ import {
   fetchCitacoes, fetchHistoricoCitacoes, saveSorteioHistorico,
   fetchBingoModelos, fetchMissoesFamilia,
 } from "@/lib/supabaseStore";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "@/lib/store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ===== TURMAS =====
@@ -245,4 +245,11 @@ export function useSaveHistoricoCitacao() {
 // ===== BINGO BÍBLICO =====
 export function useBingoModelos() {
   return useQuery({ queryKey: ["bingo_modelos"], queryFn: fetchBingoModelos });
+}
+
+export function useMissoesFamilia(turmaId?: string) {
+  return useQuery({
+    queryKey: ["missoesFamilia", turmaId],
+    queryFn: () => fetchMissoesFamilia(turmaId),
+  });
 }
