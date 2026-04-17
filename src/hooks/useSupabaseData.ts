@@ -15,10 +15,16 @@ import {
   fetchBingoModelos,
 } from "@/lib/supabaseStore";
 import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "@/lib/store";
+import { useAuth } from "@/contexts/AuthContext";
 
 // ===== TURMAS =====
 export function useTurmas() {
-  return useQuery({ queryKey: ["turmas"], queryFn: fetchTurmas });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["turmas", user?.id], 
+    queryFn: () => fetchTurmas(user?.id),
+    enabled: !!user
+  });
 }
 export function useTurmaMutation() {
   const qc = useQueryClient();
@@ -49,7 +55,12 @@ export function useRemoveTurmaMembro() {
 
 // ===== CATEQUIZANDOS =====
 export function useCatequizandos(turmaId?: string) {
-  return useQuery({ queryKey: ["catequizandos", turmaId], queryFn: () => fetchCatequizandos(turmaId) });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["catequizandos", user?.id, turmaId], 
+    queryFn: () => fetchCatequizandos(turmaId),
+    enabled: !!user 
+  });
 }
 export function useCatequizandoMutation() {
   const qc = useQueryClient();
@@ -62,7 +73,12 @@ export function useDeleteCatequizando() {
 
 // ===== ENCONTROS =====
 export function useEncontros(turmaId?: string) {
-  return useQuery({ queryKey: ["encontros", turmaId], queryFn: () => fetchEncontros(turmaId) });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["encontros", user?.id, turmaId], 
+    queryFn: () => fetchEncontros(turmaId),
+    enabled: !!user
+  });
 }
 export function useEncontroMutation() {
   const qc = useQueryClient();
@@ -75,7 +91,12 @@ export function useDeleteEncontro() {
 
 // ===== ATIVIDADES =====
 export function useAtividades(turmaId?: string) {
-  return useQuery({ queryKey: ["atividades", turmaId], queryFn: () => fetchAtividades(turmaId) });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["atividades", user?.id, turmaId], 
+    queryFn: () => fetchAtividades(turmaId),
+    enabled: !!user
+  });
 }
 export function useAtividadeMutation() {
   const qc = useQueryClient();
@@ -88,7 +109,12 @@ export function useDeleteAtividade() {
 
 // ===== PAROQUIAS =====
 export function useParoquias() {
-  return useQuery({ queryKey: ["paroquias"], queryFn: fetchParoquias });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["paroquias", user?.id], 
+    queryFn: fetchParoquias,
+    enabled: !!user
+  });
 }
 export function useParoquiaMutation() {
   const qc = useQueryClient();
@@ -101,7 +127,12 @@ export function useDeleteParoquia() {
 
 // ===== COMUNIDADES =====
 export function useComunidades() {
-  return useQuery({ queryKey: ["comunidades"], queryFn: fetchComunidades });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["comunidades", user?.id], 
+    queryFn: fetchComunidades,
+    enabled: !!user
+  });
 }
 export function useComunidadeMutation() {
   const qc = useQueryClient();
@@ -114,7 +145,12 @@ export function useDeleteComunidade() {
 
 // ===== CATEQUISTAS =====
 export function useCatequistas() {
-  return useQuery({ queryKey: ["catequistas"], queryFn: fetchCatequistas });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["catequistas", user?.id], 
+    queryFn: fetchCatequistas,
+    enabled: !!user
+  });
 }
 export function useCatequistaMutation() {
   const qc = useQueryClient();
@@ -127,7 +163,12 @@ export function useDeleteCatequista() {
 
 // ===== OCORRENCIAS =====
 export function useOcorrencias(turmaId?: string) {
-  return useQuery({ queryKey: ["ocorrencias", turmaId], queryFn: () => fetchOcorrencias(turmaId) });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["ocorrencias", user?.id, turmaId], 
+    queryFn: () => fetchOcorrencias(turmaId),
+    enabled: !!user
+  });
 }
 export function useOcorrenciaMutation() {
   const qc = useQueryClient();
@@ -140,7 +181,12 @@ export function useDeleteOcorrencia() {
 
 // ===== CALENDARIO NOTAS =====
 export function useCalendarioNotas() {
-  return useQuery({ queryKey: ["calendario_notas"], queryFn: fetchCalendarioNotas });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["calendario_notas", user?.id], 
+    queryFn: fetchCalendarioNotas,
+    enabled: !!user
+  });
 }
 export function useCalendarioNotaMutation() {
   const qc = useQueryClient();
@@ -153,7 +199,12 @@ export function useDeleteCalendarioNota() {
 
 // ===== MURAL FOTOS =====
 export function useMuralFotos() {
-  return useQuery({ queryKey: ["mural_fotos"], queryFn: fetchMuralFotos });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["mural_fotos", user?.id], 
+    queryFn: fetchMuralFotos,
+    enabled: !!user
+  });
 }
 export function useMuralFotoMutation() {
   const qc = useQueryClient();
@@ -166,13 +217,20 @@ export function useDeleteMuralFoto() {
 
 // ===== CITACOES BIBLICAS =====
 export function useCitacoes() {
-  return useQuery({ queryKey: ["citacoes_biblicas"], queryFn: fetchCitacoes });
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["citacoes_biblicas", user?.id], 
+    queryFn: fetchCitacoes,
+    enabled: !!user
+  });
 }
 
 export function useHistoricoCitacoes(turmaId?: string) {
+  const { user } = useAuth();
   return useQuery({ 
-    queryKey: ["sorteios_historico", turmaId], 
-    queryFn: () => fetchHistoricoCitacoes(turmaId) 
+    queryKey: ["sorteios_historico", user?.id, turmaId], 
+    queryFn: () => fetchHistoricoCitacoes(turmaId),
+    enabled: !!user
   });
 }
 

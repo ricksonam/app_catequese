@@ -12,21 +12,26 @@ function gerarCodigoTurma(nome: string): string {
   return `${letra1}${letra2}${digitos}`;
 }
 
-export async function fetchTurmas(): Promise<Turma[]> {
+export async function fetchTurmas(userId?: string): Promise<Turma[]> {
+
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+  const finalUserId = userId || user.id;
+
+
   if (!user) return [];
 
   // Fetch owned turmas
   const { data: ownedData, error: ownedError } = await (supabase.from as any)("turmas")
     .select("*, turma_catequistas(catequista_id)")
-    .eq("user_id", user.id)
+    .eq("user_id", finalUserId)
     .order("criado_em", { ascending: false });
   if (ownedError) throw ownedError;
 
   // Fetch turmas where user is a member (shared)
   const { data: memberData, error: memberError } = await (supabase.from as any)("turma_membros")
     .select("turma_id")
-    .eq("user_id", user.id);
+    .eq("user_id", finalUserId);
   if (memberError) throw memberError;
 
   const sharedIds = (memberData || []).map((m: any) => m.turma_id);

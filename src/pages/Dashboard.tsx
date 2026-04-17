@@ -1,4 +1,4 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
@@ -11,13 +11,14 @@ import { useJoinTurma } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { Link2, Loader2, RefreshCw, Flame, Sparkles } from "lucide-react";
 import { useAtividades } from "@/hooks/useSupabaseData";
+import { Button } from "@/components/ui/button";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
-  const { data: turmas = [], isLoading: tLoading } = useTurmas();
+  const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
@@ -31,10 +32,10 @@ export default function Dashboard() {
   const loading = tLoading || eLoading || cLoading || aLoading;
 
   useEffect(() => {
-    if (!loading && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
+    if (!loading && !tError && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
       setWelcomeOpen(true);
     }
-  }, [loading, turmas.length]);
+  }, [loading, tError, turmas.length]);
 
   useEffect(() => {
     if (!loading && turmas.length > 0 && selectedTurmaId === "all") {
@@ -199,6 +200,28 @@ export default function Dashboard() {
            <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
         <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando...</p>
+      </div>
+    );
+  }
+
+  if (tError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-6 text-center animate-fade-in">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-500 mb-2 shadow-lg shadow-red-500/10">
+          <AlertTriangle className="h-8 w-8" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-lg font-black text-foreground">Erro ao carregar dados</h3>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            Não conseguimos conectar com o servidor para buscar suas turmas. Verifique sua conexão.
+          </p>
+        </div>
+        <Button 
+          onClick={() => tRefetch()} 
+          className="rounded-2xl px-8 h-12 font-black uppercase tracking-widest bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-95"
+        >
+          Tentar Novamente
+        </Button>
       </div>
     );
   }
