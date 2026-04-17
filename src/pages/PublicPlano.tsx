@@ -143,7 +143,7 @@ export default function PublicPlano() {
                       const dateStr = item.data ? new Date(item.data + 'T12:00:00').toLocaleDateString("pt-BR", { day: '2-digit', month: 'short' }) : '---';
                       
                       return (
-                        <div className="flex gap-4 items-center group animate-float-up" style={{ animationDelay: `${i * 50}ms` }}>
+                        <div key={`${item.tipo}-${item.id}`} className="flex gap-4 items-center group animate-float-up" style={{ animationDelay: `${i * 50}ms` }}>
                           {/* Calendar Block (Losango/Calendário style) */}
                           <div className="shrink-0 w-16 h-16 shadow-lg shadow-primary/5 bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden border-2 border-primary/20 group-hover:scale-105 transition-all duration-500 flex flex-col items-stretch">
                             <div className={`h-6 flex items-center justify-center ${item.tipo === 'encontro' ? 'bg-primary' : 'bg-blue-600'} relative`}>
@@ -185,7 +185,6 @@ export default function PublicPlano() {
                                </div>
                             </div>
                           </div>
-                        </div>
                         </div>
                       );
                     })}
