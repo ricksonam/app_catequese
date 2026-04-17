@@ -391,8 +391,8 @@ export default function Dashboard() {
                 className="p-5 group cursor-pointer active:scale-[0.98] transition-all"
               >
                 <div className="flex gap-4 items-stretch">
-                  {/* Chip de Data Litúrgico (Separado) - Cor Salmão Suave */}
-                  <div className="flex flex-col items-center justify-center w-16 bg-gradient-to-b from-[#FFA07A] to-[#FF7F50] rounded-3xl shadow-xl shadow-rose-500/10 border-b-4 border-rose-600/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden">
+                  {/* Chip de Data Litúrgico (Separado) - Cor Amarela/Âmbar */}
+                  <div className="flex flex-col items-center justify-center w-16 bg-gradient-to-b from-amber-400 to-amber-500 rounded-3xl shadow-xl shadow-amber-500/10 border-b-4 border-amber-600/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden">
                     <div className="absolute top-0 inset-x-0 h-1 bg-white/20" />
                     <span className="text-[10px] font-black text-amber-900/40 uppercase tracking-widest leading-none mb-1">
                       {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
@@ -414,7 +414,7 @@ export default function Dashboard() {
                     
                     <div className="flex items-center gap-2 mb-2">
                       <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse ${
-                        isUrgent ? "bg-destructive text-white" : "bg-[#FF7F50] text-white shadow-lg shadow-rose-500/20"
+                        isUrgent ? "bg-destructive text-white" : "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
                       }`}>
                         {diaLabel}
                       </span>
@@ -442,14 +442,9 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Divisor Elegante se houver dois conteúdos */}
-            {proximoEncontro && proximosAniversariantes.length > 0 && (
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-            )}
-
-            {/* Seção de Aniversariantes com Conectores de Mapa Mental */}
+            {/* Seção de Aniversariantes com Conectores de Mapa Mental (Azuis) */}
             {proximosAniversariantes.length > 0 && (
-              <div className="p-6 bg-gradient-to-b from-transparent to-amber-500/5 relative">
+              <div className="p-6 bg-gradient-to-b from-transparent to-amber-500/5 relative pt-10">
                 <div className="flex flex-col items-center gap-1.5 mb-8 text-center relative z-10">
                   <div className="flex items-center gap-2">
                     <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
@@ -459,19 +454,19 @@ export default function Dashboard() {
                   <div className="h-1 w-12 bg-amber-400/30 rounded-full" />
                 </div>
 
-                {/* Linhas do Mapa Mental */}
-                <div className="absolute top-[68px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
-                   {/* Linha Vertical Central */}
-                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-gradient-to-b from-amber-400/30 to-amber-400/20" />
+                {/* Linhas do Mapa Mental (Cor Azul) */}
+                <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
+                   {/* Linha Vertical Central que nasce do título */}
+                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-6 bg-blue-400/40" />
                    {/* Linha Horizontal de Ligação */}
-                   <div className="absolute top-4 left-4 right-4 h-[2px] bg-amber-400/20 rounded-full" />
+                   <div className="absolute top-6 left-4 right-4 h-[2px] bg-blue-400/30 rounded-full" />
                    {/* Pequenas Descidas para cada Coluna */}
-                   <div className="absolute top-4 left-[16.66%] w-[2px] h-3 bg-amber-400/20" />
-                   <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[2px] h-3 bg-amber-400/20" />
-                   <div className="absolute top-4 right-[16.66%] w-[2px] h-3 bg-amber-400/20" />
+                   <div className="absolute top-6 left-[16.66%] w-[2px] h-4 bg-blue-400/30" />
+                   <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-blue-400/30" />
+                   <div className="absolute top-6 right-[16.66%] w-[2px] h-4 bg-blue-400/30" />
                 </div>
                 
-                <div className="grid grid-cols-3 gap-3 relative z-10">
+                <div className="grid grid-cols-3 gap-3 relative z-10 pt-2">
                   {proximosAniversariantes.map((c, i) => {
                     const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
                     const isHoje = diasAte === 0;
