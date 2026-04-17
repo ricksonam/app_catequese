@@ -153,17 +153,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-zinc-950">
-      {/* Menu Header */}
-      <div className="p-6 pb-2">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
-             <Settings className="w-6 h-6 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-foreground">Ajustes</h2>
-            <p className="text-[11px] font-medium text-muted-foreground truncate max-w-[180px]">{user?.email}</p>
-          </div>
-        </div>
+      {/* Nome do Usuário Logado */}
+      <div className="p-6 pb-2 border-b border-black/5 mb-2">
+        <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-1">Conta Ativa</p>
+        <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 pb-6 scrollbar-hide">
@@ -171,12 +164,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           
           {/* SEÇÃO: CADASTROS BÁSICOS */}
           <AccordionItem value="cadastros" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
                <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
                  <div className="icon-box bg-primary/10 text-primary">
                    <Church className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-sm font-bold text-foreground text-left uppercase tracking-tight">Cadastros Básicos</span>
+                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Cadastros Básicos</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -186,10 +179,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                   onClick={() => go(item.path)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.color}`}>
-                    <item.icon className="h-4 w-4" />
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.color} shadow-sm border border-black/5`}>
+                    <item.icon className="h-5 w-5" />
                   </div>
-                  <span className="text-xs font-semibold text-foreground/80">{item.label}</span>
+                  <span className="text-sm font-bold text-foreground/80">{item.label}</span>
                 </button>
               ))}
             </AccordionContent>
@@ -197,12 +190,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: MÓDULOS GLOBAIS */}
           <AccordionItem value="modulos" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
                <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
                  <div className="icon-box bg-gold/15 text-gold">
                    <Sparkles className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-sm font-bold text-foreground text-left uppercase tracking-tight">Módulos Globais</span>
+                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Globais</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -212,10 +205,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                   onClick={() => go(item.path)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.color}`}>
-                    <item.icon className="h-4 w-4" />
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.color} shadow-sm border border-black/5`}>
+                    <item.icon className="h-5 w-5" />
                   </div>
-                  <span className="text-xs font-semibold text-foreground/80">{item.label}</span>
+                  <span className="text-sm font-bold text-foreground/80">{item.label}</span>
                 </button>
               ))}
             </AccordionContent>
@@ -223,33 +216,33 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: CONTA */}
           <AccordionItem value="conta" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
                <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
                  <div className="icon-box bg-blue-500/10 text-blue-500">
                    <Users className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-sm font-bold text-foreground text-left uppercase tracking-tight">Minha Conta</span>
+                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Conta</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
               <button onClick={() => setShowPasswordDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><KeyRound className="h-4 w-4" /></div>
-                <span className="text-xs font-semibold text-foreground/80">Alterar Senha</span>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5"><KeyRound className="h-5 w-5" /></div>
+                <span className="text-sm font-bold text-foreground/80">Alterar Senha</span>
               </button>
               
               <button onClick={() => setShowNotificationDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center"><Bell className="h-4 w-4" /></div>
-                <span className="text-xs font-semibold text-foreground/80">Notificações</span>
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center shadow-sm border border-black/5"><Bell className="h-5 w-5" /></div>
+                <span className="text-sm font-bold text-foreground/80">Notificações</span>
               </button>
 
               <button onClick={() => setShowSuggestionDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><MessageSquare className="h-4 w-4" /></div>
-                <span className="text-xs font-semibold text-foreground/80">Dar Sugestão</span>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shadow-sm border border-black/5"><MessageSquare className="h-5 w-5" /></div>
+                <span className="text-sm font-bold text-foreground/80">Dar Sugestão</span>
               </button>
 
               <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
-                <div className="w-8 h-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center"><Trash className="h-4 w-4" /></div>
-                <span className="text-xs font-bold">Excluir Usuário</span>
+                <div className="w-10 h-10 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center shadow-sm border border-black/5"><Trash className="h-5 w-5" /></div>
+                <span className="text-sm font-black">Excluir Usuário</span>
               </button>
             </AccordionContent>
           </AccordionItem>
