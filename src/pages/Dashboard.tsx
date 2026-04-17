@@ -391,16 +391,16 @@ export default function Dashboard() {
                 className="p-5 group cursor-pointer active:scale-[0.98] transition-all"
               >
                 <div className="flex gap-4 items-stretch">
-                  {/* Chip de Data Litúrgico (Separado) - Cor Amarela/Âmbar */}
-                  <div className="flex flex-col items-center justify-center w-16 bg-gradient-to-b from-amber-400 to-amber-500 rounded-3xl shadow-xl shadow-amber-500/10 border-b-4 border-amber-600/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-white/20" />
-                    <span className="text-[10px] font-black text-amber-900/40 uppercase tracking-widest leading-none mb-1">
+                  {/* Chip de Data Litúrgico (Separado) - Cor Amarela/Âmbar Suave */}
+                  <div className="flex flex-col items-center justify-center w-16 bg-gradient-to-b from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/40 rounded-3xl shadow-md border-b-2 border-amber-200 dark:border-amber-800/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-white/40" />
+                    <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest leading-none mb-1">
                       {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
                     </span>
-                    <span className="text-3xl font-black text-white leading-none drop-shadow-sm">
+                    <span className="text-3xl font-black text-amber-600 dark:text-amber-200 leading-none drop-shadow-sm">
                       {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                     </span>
-                    <span className="text-[10px] font-black text-white/90 uppercase tracking-widest mt-1">
+                    <span className="text-[10px] font-black text-amber-600/80 dark:text-amber-400/80 uppercase tracking-widest mt-1">
                       {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
                     </span>
                   </div>
@@ -458,8 +458,8 @@ export default function Dashboard() {
                 <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
                    {/* Linha Vertical Central que nasce do título */}
                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-6 bg-blue-400/40" />
-                   {/* Linha Horizontal de Ligação */}
-                   <div className="absolute top-6 left-4 right-4 h-[2px] bg-blue-400/30 rounded-full" />
+                   {/* Linha Horizontal de Ligação - Ajustada para não ultrapassar */}
+                   <div className="absolute top-6 left-[16.66%] right-[16.66%] h-[2px] bg-blue-400/30 rounded-full" />
                    {/* Pequenas Descidas para cada Coluna */}
                    <div className="absolute top-6 left-[16.66%] w-[2px] h-4 bg-blue-400/30" />
                    <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-blue-400/30" />
