@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMissoesFamilia } from "@/hooks/useSupabaseData";
 import { Heart, Plus, Share2, Copy, Sparkles, BookOpen, Dice5, HelpCircle, ArrowLeft, Trophy, Trash2, CheckCircle2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -196,8 +197,17 @@ export default function MissoesFamilia() {
                       <Share2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <h3 className="font-bold text-foreground leading-tight mb-1">{missao.titulo}</h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">{missao.descricao}</p>
+                  <div className="text-center flex flex-col items-center">
+                    <h3 className="font-bold text-foreground leading-tight mb-1 text-center">{missao.titulo}</h3>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mb-3 leading-relaxed text-center">{missao.descricao}</p>
+                    <button 
+                      onClick={() => handleShare(missao.codigoCompartilhamento)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 border border-blue-500/20 rounded-full text-[10px] font-black uppercase tracking-wider hover:bg-blue-500/20 transition-colors mb-4"
+                    >
+                      <Copy className="h-3 w-3" />
+                      Copiar Link da Missão
+                    </button>
+                  </div>
                   
                   <div className="pt-4 border-t border-border/50 flex flex-col gap-3">
                     <div className="flex items-center justify-between">
@@ -211,9 +221,6 @@ export default function MissoesFamilia() {
                          </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigoCompartilhamento)}>
-                          <Copy className="h-3 w-3 mr-1.5" /> Link
-                        </Button>
                         {!missao.finalizada && (
                           <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-rose-500 hover:text-rose-600 hover:bg-rose-50" onClick={() => setMissaoToDelete(missao.id)}>
                             <Trash2 className="h-4 w-4" />
@@ -269,71 +276,71 @@ export default function MissoesFamilia() {
 
           <div className="space-y-5">
             {/* Categoria Selector */}
-            <div>
-               <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">Categoria da Semana</label>
-               <div className="grid grid-cols-2 gap-2">
-                 {categoriasMissao.map(cat => (
-                   <button
-                     key={cat.id}
-                     type="button"
-                     onClick={() => setSelectedCategoria(cat.id)}
-                     className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all border ${
-                       selectedCategoria === cat.id 
-                         ? `${cat.color} text-white border-transparent shadow-md` 
-                         : "bg-transparent text-muted-foreground hover:bg-muted border-border/50"
-                     }`}
-                   >
-                     {cat.label}
-                   </button>
-                 ))}
-               </div>
+            {/* Categoria Selector */}
+            <div className="flex flex-col items-center">
+               <label className="text-[10px] font-black tracking-widest text-muted-foreground uppercase mb-2">Categoria da Semana</label>
+               <Select value={selectedCategoria} onValueChange={setSelectedCategoria}>
+                 <SelectTrigger className="w-full h-12 rounded-2xl bg-muted/30 border-2 border-border/50 font-bold justify-center text-center focus:ring-rose-500">
+                   <SelectValue placeholder="Selecione uma categoria" />
+                 </SelectTrigger>
+                 <SelectContent className="rounded-2xl">
+                   {categoriasMissao.map(cat => (
+                     <SelectItem key={cat.id} value={cat.id} className="font-bold cursor-pointer rounded-xl py-2">
+                       {cat.label}
+                     </SelectItem>
+                   ))}
+                 </SelectContent>
+               </Select>
             </div>
 
             {/* Campos de Texto com Sugestão Mágica */}
-            <div className="relative">
-               <div className="flex items-center justify-between mb-2">
-                 <label className="text-xs font-bold text-muted-foreground uppercase">Título e Missão</label>
+            <div className="relative p-5 bg-muted/10 border-2 border-border/30 rounded-[28px]">
+               <div className="flex flex-col items-center mb-4 space-y-2">
+                 <label className="text-sm font-black text-foreground uppercase tracking-wider text-center flex items-center gap-2">
+                   <BookOpen className="h-4 w-4 text-rose-500" />
+                   Título e Missão
+                 </label>
                  <Button 
                    type="button" 
                    variant="ghost" 
                    size="sm" 
                    onClick={handleSugestaoMagica}
                    disabled={isGenerating}
-                   className={`h-7 px-2 text-[10px] font-black rounded-full uppercase tracking-wider bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20 ${isGenerating ? 'animate-pulse' : ''}`}
+                   className={`h-8 px-4 text-[10px] font-black rounded-full uppercase tracking-wider bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20 shadow-sm ${isGenerating ? 'animate-pulse' : ''}`}
                  >
-                   <Sparkles className={`h-3 w-3 mr-1 ${isGenerating ? 'animate-spin' : ''}`} /> 
-                   Sugestão Mágica
+                   <Sparkles className={`h-3 w-3 mr-1.5 ${isGenerating ? 'animate-spin' : ''}`} /> 
+                   Usar Sugestão Mágica
                  </Button>
                </div>
                
                <Input 
                  placeholder="Ex: Noite de Filmes Santos" 
-                 className="font-bold mb-3 bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl"
+                 className="font-black text-center h-12 text-[15px] mb-4 bg-white dark:bg-zinc-900 border-2 border-border/50 focus-visible:ring-rose-500 rounded-2xl shadow-sm"
                  value={titulo}
                  onChange={(e) => setTitulo(e.target.value)}
                />
                <Textarea 
                  placeholder="Descreva o que a família precisará fazer..." 
-                 className="min-h-[100px] resize-none bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl mb-3"
+                 className="min-h-[120px] resize-none font-medium mb-4 bg-white dark:bg-zinc-900 border-2 border-border/50 focus-visible:ring-rose-500 rounded-2xl p-4 shadow-sm text-center leading-relaxed"
                  value={descricao}
                  onChange={(e) => setDescricao(e.target.value)}
                />
                
-               <div className="grid grid-cols-2 gap-3 mt-2">
+               <div className="grid grid-cols-2 gap-3 mt-4">
                  <div>
-                   <label className="text-[10px] font-bold text-muted-foreground uppercase opacity-80 mb-1 block">Duração Estimada</label>
+                   <label className="text-[10px] font-black text-muted-foreground uppercase opacity-80 mb-2 block text-center">Duração Estimada</label>
                    <Input 
                      placeholder="Ex: 15 min" 
-                     className="bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm"
+                     className="bg-white dark:bg-zinc-900 border-2 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm font-bold text-center shadow-sm"
                      value={duracao}
                      onChange={(e) => setDuracao(e.target.value)}
                    />
                  </div>
                  <div>
-                   <label className="text-[10px] font-bold text-muted-foreground uppercase opacity-80 mb-1 block">Materiais</label>
+                   <label className="text-[10px] font-black text-muted-foreground uppercase opacity-80 mb-2 block text-center">Materiais</label>
                    <Input 
                      placeholder="Bíblia, lápis..." 
-                     className="bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm"
+                     className="bg-white dark:bg-zinc-900 border-2 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm font-bold text-center shadow-sm"
                      value={materiais}
                      onChange={(e) => setMateriais(e.target.value)}
                    />
