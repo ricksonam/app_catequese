@@ -160,14 +160,51 @@ export default function AuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
+    
+    // Check if configuration is missing
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+      toast({ 
+        title: "Erro de Configuração", 
+        description: "As chaves do Supabase não foram encontradas. Verifique as variáveis de ambiente no Vercel.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     setLoading(true);
     const loginEmail = savedEmail || email;
-    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
-    if (error) {
-      toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email: loginEmail, 
+        password 
+      });
+
+      if (error) {
+        let msg = error.message;
+        if (msg === "Failed to fetch") {
+          msg = "Não foi possível conectar ao servidor. Verifique sua internet ou tente novamente em instantes.";
+        } else if (msg.includes("Invalid login credentials")) {
+          msg = "Email ou senha incorretos.";
+        }
+        
+        toast({ title: "Erro ao entrar", description: msg, variant: "destructive" });
+        setLoading(false);
+      } else {
+        localStorage.setItem(SAVED_EMAIL_KEY, loginEmail);
+        // Successful login will be handled by the session listener in AuthContext
+      }
+    } catch (err: any) {
+      console.error("[iCatequese] Login exception:", err);
+      const isNetworkError = err.message === "Failed to fetch" || err.name === "TypeError";
+      toast({ 
+        title: "Erro de Conexão", 
+        description: isNetworkError 
+          ? "Falha na rede. O servidor do Supabase parece inacessível no momento."
+          : "Ocorreu um erro inesperado ao tentar entrar.",
+        variant: "destructive" 
+      });
       setLoading(false);
-    } else {
-      localStorage.setItem(SAVED_EMAIL_KEY, loginEmail);
     }
   };
 
