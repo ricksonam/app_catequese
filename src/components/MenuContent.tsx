@@ -54,7 +54,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   // Queries
   const { data: turmas = [], isLoading: isLoadingTurmas } = useQuery({
     queryKey: ["menu-turmas"],
-    queryFn: fetchTurmas,
+    queryFn: () => fetchTurmas(),
     enabled: !!user
   });
 
@@ -82,8 +82,8 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [savingSuggestion, setSavingSuggestion] = useState(false);
 
   // Notificações
-  const [pushEnabled, setPushEnabled] = useState(true);
-  const [emailEnabled, setEmailEnabled] = useState(true);
+  const [birthdaysEnabled, setBirthdaysEnabled] = useState(true);
+  const [meetingsEnabled, setMeetingsEnabled] = useState(true);
 
   // Exclusão
   const [exitReason, setExitReason] = useState("");
@@ -411,16 +411,16 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
                <div className="flex items-center gap-3">
                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center"><Bell className="w-5 h-5"/></div>
-                 <div><p className="text-sm font-bold leading-none">Alertas no App</p><p className="text-[10px] text-muted-foreground mt-1">Sinos e Push</p></div>
+                 <div><p className="text-sm font-bold leading-none">Aviso de Aniversariantes</p><p className="text-[10px] text-muted-foreground mt-1">Lembretes no Celular</p></div>
                </div>
-               <Switch checked={pushEnabled} onCheckedChange={setPushEnabled} />
+               <Switch checked={birthdaysEnabled} onCheckedChange={setBirthdaysEnabled} />
              </div>
              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
                <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><Mail className="w-5 h-5"/></div>
-                 <div><p className="text-sm font-bold leading-none">Notificações por E-mail</p><p className="text-[10px] text-muted-foreground mt-1">Relatórios e Resumos</p></div>
+                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><CalendarDays className="w-5 h-5"/></div>
+                 <div><p className="text-sm font-bold leading-none">Aviso de Encontros</p><p className="text-[10px] text-muted-foreground mt-1">Lembretes no Celular</p></div>
                </div>
-               <Switch checked={emailEnabled} onCheckedChange={setEmailEnabled} />
+               <Switch checked={meetingsEnabled} onCheckedChange={setMeetingsEnabled} />
              </div>
              <Button onClick={() => { toast({title: "Preferências Salvas!"}); setShowNotificationDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-orange-500 hover:bg-orange-600">Salvar Preferências</Button>
           </div>
