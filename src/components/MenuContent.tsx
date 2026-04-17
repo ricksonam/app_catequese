@@ -173,8 +173,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    onClose();
+    try {
+      await signOut();
+    } finally {
+      onClose();
+      navigate("/auth", { replace: true });
+    }
   };
 
   return (

@@ -175,6 +175,19 @@ export default function AuthPage() {
     const loginEmail = savedEmail || email;
     
     try {
+      // Teste rápido de conectividade antes de tentar o auth pesado
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/`, { 
+          method: 'GET', 
+          signal: controller.signal 
+        }).catch(() => { /* ignora erro de rest, só queremos saber se o domínio responde */ });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
       const { error } = await supabase.auth.signInWithPassword({ 
         email: loginEmail, 
         password 
@@ -183,12 +196,16 @@ export default function AuthPage() {
       if (error) {
         let msg = error.message;
         if (msg === "Failed to fetch") {
-          msg = "Não foi possível conectar ao servidor. Verifique sua internet ou tente novamente em instantes.";
-        } else if (msg.includes("Invalid login credentials")) {
-          msg = "Email ou senha incorretos.";
+          msg = "O servidor do iCatequese não respondeu. Verifique se seu firewall ou antivírus não está bloqueando o domínio do Supabase.";
+        } else if (msg.includes("Invalid login credentials") || msg.includes("Invalid credentials")) {
+          msg = "Email ou senha incorretos. Verifique os dados e tente novamente.";
         }
         
-        toast({ title: "Erro ao entrar", description: msg, variant: "destructive" });
+        toast({ 
+          title: "Não foi possível entrar", 
+          description: msg, 
+          variant: "destructive" 
+        });
         setLoading(false);
       } else {
         localStorage.setItem(SAVED_EMAIL_KEY, loginEmail);
@@ -196,12 +213,16 @@ export default function AuthPage() {
       }
     } catch (err: any) {
       console.error("[iCatequese] Login exception:", err);
+      const isTimeout = err.name === "AbortError";
       const isNetworkError = err.message === "Failed to fetch" || err.name === "TypeError";
+      
       toast({ 
         title: "Erro de Conexão", 
-        description: isNetworkError 
-          ? "Falha na rede. O servidor do Supabase parece inacessível no momento."
-          : "Ocorreu um erro inesperado ao tentar entrar.",
+        description: isTimeout 
+          ? "A conexão demorou demais. Sua internet pode estar muito lenta no momento."
+          : (isNetworkError 
+              ? "Falha total na rede. O navegador não conseguiu alcançar o servidor do banco de dados."
+              : "Ocorreu um erro inesperado ao tentar entrar."),
         variant: "destructive" 
       });
       setLoading(false);

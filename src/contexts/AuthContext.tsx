@@ -77,7 +77,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      // Tenta deslogar no servidor
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error("[iCatequese] Erro ao deslogar no servidor:", err);
+    } finally {
+      // SEMPRE limpa o estado local para não travar o usuário
+      setSession(null);
+      // Opcional: Limpar localStorage manualmente se o supabase.auth não o fizer
+      localStorage.removeItem("supabase.auth.token");
+      localStorage.removeItem("ivc_saved_email");
+    }
   };
 
   return (
