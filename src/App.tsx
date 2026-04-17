@@ -51,10 +51,10 @@ import { useState, useEffect } from "react";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
-      retryDelay: 1000,
-      staleTime: 60 * 1000,
-      gcTime: 5 * 60 * 1000,
+      retry: 3,
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000),
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
     mutations: {

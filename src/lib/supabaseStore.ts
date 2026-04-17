@@ -13,13 +13,13 @@ function gerarCodigoTurma(nome: string): string {
 }
 
 export async function fetchTurmas(userId?: string): Promise<Turma[]> {
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Usuário não autenticado.");
-  const finalUserId = userId || user.id;
-
-
-  if (!user) return [];
+  let finalUserId = userId;
+  if (!finalUserId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Usuário não autenticado.");
+    finalUserId = user.id;
+  }
+  if (!finalUserId) return [];
 
   // Fetch owned turmas
   const { data: ownedData, error: ownedError } = await (supabase.from as any)("turmas")
