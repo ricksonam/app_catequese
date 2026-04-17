@@ -495,142 +495,133 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Seção de Aniversariantes com Conectores de Mapa Mental (Azuis) */}
-            {proximosAniversariantes.length > 0 && (
-              <div className="p-6 bg-gradient-to-b from-transparent to-amber-500/5 relative pt-10">
-                <div className="flex flex-col items-center gap-1.5 mb-8 text-center relative z-10">
-                  <div className="flex items-center gap-2">
-                    <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
-                    <h3 className="text-base font-black text-foreground uppercase tracking-widest">Próximos aniversários</h3>
-                    <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
-                  </div>
-                  <div className="h-1 w-12 bg-amber-400/30 rounded-full" />
+            {/* Seção de Aniversários de Nascimento */}
+            <div className="p-6 bg-gradient-to-b from-transparent to-amber-500/5 relative pt-10">
+              <div className="flex flex-col items-center gap-1.5 mb-8 text-center relative z-10">
+                <div className="flex items-center gap-2">
+                  <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
+                  <h3 className="text-base font-black text-foreground uppercase tracking-widest">Próximos Aniversários</h3>
+                  <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
                 </div>
-
-                {/* Linhas do Mapa Mental (Cor Azul) */}
-                <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
-                   {/* Linha Vertical Central que nasce do título */}
-                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-6 bg-blue-400/40" />
-                   {/* Linha Horizontal de Ligação - Ajustada para não ultrapassar */}
-                   <div className="absolute top-6 left-[16.66%] right-[16.66%] h-[2px] bg-blue-400/30 rounded-full" />
-                   {/* Pequenas Descidas para cada Coluna */}
-                   <div className="absolute top-6 left-[16.66%] w-[2px] h-4 bg-blue-400/30" />
-                   <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-blue-400/30" />
-                   <div className="absolute top-6 right-[16.66%] w-[2px] h-4 bg-blue-400/30" />
-                </div>
-                
-                <div className="grid grid-cols-3 gap-3 relative z-10 pt-2">
-                  {proximosAniversariantes.map((c, i) => {
-                    const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-                    const isHoje = diasAte === 0;
-                    
-                    return (
-                      <div 
-                        key={c.id}
-                        className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${
-                          isHoje ? "bg-amber-400/10 ring-2 ring-amber-400/40 shadow-xl shadow-amber-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"
-                        }`}
-                      >
-                        <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${
-                           isHoje ? "border-amber-400 animate-soft-pulse scale-105" : "border-background shadow-md"
-                        }`}>
-                          {c.foto ? (
-                            <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className={`w-full h-full flex items-center justify-center text-xl font-black ${
-                              isHoje ? "bg-amber-100 text-amber-600" : "bg-primary/10 text-primary"
-                            }`}>
-                              {c.nome?.charAt(0).toUpperCase()}
-                            </div>
-                          )}
-                          {isHoje && (
-                            <div className="absolute top-0 right-0 p-1 bg-amber-400 rounded-bl-xl shadow-sm">
-                              <Star className="h-3 w-3 text-white fill-white" />
-                            </div>
-                          )}
-                        </div>
-                        
-                        <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">
-                          {c.nome?.split(" ")[0]}
-                        </p>
-                        <p className={`text-[9px] font-black uppercase tracking-widest ${
-                          isHoje ? "text-amber-600" : "text-muted-foreground/60"
-                        }`}>
-                          {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+                <div className="h-1 w-12 bg-amber-400/30 rounded-full" />
               </div>
-            )}
 
-            {/* Seção de Aniversariantes de Batismo */}
-            {proximosAniversariantesBatismo.length > 0 && (
-              <div className="p-6 bg-gradient-to-b from-transparent to-blue-500/5 relative pt-4">
-                <div className="flex flex-col items-center gap-1.5 mb-8 text-center relative z-10">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-blue-500 animate-pulse" />
-                    <h3 className="text-base font-black text-foreground uppercase tracking-widest">Aniversários de Batismo</h3>
-                    <Star className="h-5 w-5 text-blue-500 animate-pulse" />
+              {proximosAniversariantes.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-3xl">🎂</div>
+                  <p className="text-sm font-bold text-muted-foreground/70">Nenhum aniversário próximo</p>
+                  <p className="text-xs text-muted-foreground/50 max-w-[200px] leading-relaxed">
+                    Cadastre os catequizandos com a data de nascimento para ver os aniversários aqui.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-6 bg-blue-400/40" />
+                    <div className="absolute top-6 left-[16.66%] right-[16.66%] h-[2px] bg-blue-400/30 rounded-full" />
+                    <div className="absolute top-6 left-[16.66%] w-[2px] h-4 bg-blue-400/30" />
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-blue-400/30" />
+                    <div className="absolute top-6 right-[16.66%] w-[2px] h-4 bg-blue-400/30" />
                   </div>
-                  <div className="h-1 w-12 bg-blue-400/30 rounded-full" />
-                </div>
-
-                {/* Linhas do Mapa Mental (Cor Azul) */}
-                <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
-                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-6 bg-blue-400/40" />
-                   <div className="absolute top-6 left-[16.66%] right-[16.66%] h-[2px] bg-blue-400/30 rounded-full" />
-                   <div className="absolute top-6 left-[16.66%] w-[2px] h-4 bg-blue-400/30" />
-                   <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-blue-400/30" />
-                   <div className="absolute top-6 right-[16.66%] w-[2px] h-4 bg-blue-400/30" />
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 relative z-10 pt-2">
-                  {proximosAniversariantesBatismo.map((c, i) => {
-                    const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-                    const isHoje = diasAte === 0;
-                    
-                    return (
-                      <div 
-                        key={`batismo-${c.id}`}
-                        className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${
-                          isHoje ? "bg-blue-400/10 ring-2 ring-blue-400/40 shadow-xl shadow-blue-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"
-                        }`}
-                      >
-                        <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${
-                           isHoje ? "border-blue-400 animate-soft-pulse scale-105" : "border-background shadow-md"
-                        }`}>
-                          {c.foto ? (
-                            <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className={`w-full h-full flex items-center justify-center text-xl font-black ${
-                              isHoje ? "bg-blue-100 text-blue-600" : "bg-primary/10 text-primary"
-                            }`}>
-                              {c.nome?.charAt(0).toUpperCase()}
-                            </div>
-                          )}
-                          {isHoje && (
-                            <div className="absolute top-0 right-0 p-1 bg-blue-400 rounded-bl-xl shadow-sm">
-                              <Star className="h-3 w-3 text-white fill-white" />
-                            </div>
-                          )}
+                  <div className="grid grid-cols-3 gap-3 relative z-10 pt-2">
+                    {proximosAniversariantes.map((c) => {
+                      const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+                      const isHoje = diasAte === 0;
+                      return (
+                        <div key={c.id} className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${isHoje ? "bg-amber-400/10 ring-2 ring-amber-400/40 shadow-xl shadow-amber-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"}`}>
+                          <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${isHoje ? "border-amber-400 animate-soft-pulse scale-105" : "border-background shadow-md"}`}>
+                            {c.foto ? (
+                              <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className={`w-full h-full flex items-center justify-center text-xl font-black ${isHoje ? "bg-amber-100 text-amber-600" : "bg-primary/10 text-primary"}`}>
+                                {c.nome?.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            {isHoje && (
+                              <div className="absolute top-0 right-0 p-1 bg-amber-400 rounded-bl-xl shadow-sm">
+                                <Star className="h-3 w-3 text-white fill-white" />
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">{c.nome?.split(" ")[0]}</p>
+                          <p className={`text-[9px] font-black uppercase tracking-widest ${isHoje ? "text-amber-600" : "text-muted-foreground/60"}`}>
+                            {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
+                          </p>
                         </div>
-                        
-                        <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">
-                          {c.nome?.split(" ")[0]}
-                        </p>
-                        <p className={`text-[9px] font-black uppercase tracking-widest ${
-                          isHoje ? "text-blue-600" : "text-muted-foreground/60"
-                        }`}>
-                          {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
-                        </p>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Seção de Aniversários de Batismo */}
+            <div className="p-6 bg-gradient-to-b from-transparent to-blue-500/5 relative pt-4">
+              <div className="flex flex-col items-center gap-1.5 mb-8 text-center relative z-10">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate' }}>🕯️</span>
+                  <h3 className="text-base font-black text-foreground uppercase tracking-widest">Aniversários de Batismo</h3>
+                  <span className="text-xl" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate', animationDelay: '0.4s' }}>🕯️</span>
                 </div>
+                <div className="h-1 w-12 bg-blue-400/30 rounded-full" />
               </div>
-            )}
+
+              {proximosAniversariantesBatismo.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-3xl">🕯️</div>
+                  <p className="text-sm font-bold text-muted-foreground/70">Nenhum batismo próximo</p>
+                  <p className="text-xs text-muted-foreground/50 max-w-[200px] leading-relaxed">
+                    Cadastre a data de batismo nos dados pastorais dos catequizandos para ver aqui.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="absolute top-[80px] left-1/2 -translate-x-1/2 w-full h-12 flex items-start pointer-events-none overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-6 bg-blue-400/40" />
+                    <div className="absolute top-6 left-[16.66%] right-[16.66%] h-[2px] bg-blue-400/30 rounded-full" />
+                    <div className="absolute top-6 left-[16.66%] w-[2px] h-4 bg-blue-400/30" />
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[2px] h-4 bg-blue-400/30" />
+                    <div className="absolute top-6 right-[16.66%] w-[2px] h-4 bg-blue-400/30" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 relative z-10 pt-2">
+                    {proximosAniversariantesBatismo.map((c) => {
+                      const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+                      const isHoje = diasAte === 0;
+                      return (
+                        <div key={`batismo-${c.id}`} className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${isHoje ? "bg-blue-400/10 ring-2 ring-blue-400/40 shadow-xl shadow-blue-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"}`}>
+                          <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${isHoje ? "border-blue-400 animate-soft-pulse scale-105" : "border-background shadow-md"}`}>
+                            {c.foto ? (
+                              <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className={`w-full h-full flex items-center justify-center text-xl font-black ${isHoje ? "bg-blue-100 text-blue-600" : "bg-primary/10 text-primary"}`}>
+                                {c.nome?.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            {isHoje && (
+                              <div className="absolute top-0 right-0 p-1 bg-blue-400 rounded-bl-xl shadow-sm flex items-center justify-center">
+                                <span className="text-[10px]" style={{ animation: 'candle-flicker 1.2s ease-in-out infinite alternate' }}>🕯️</span>
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">{c.nome?.split(" ")[0]}</p>
+                          <p className={`text-[9px] font-black uppercase tracking-widest ${isHoje ? "text-blue-600" : "text-muted-foreground/60"}`}>
+                            {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+              <style>{`
+                @keyframes candle-flicker {
+                  0%   { transform: scaleY(1)   rotate(-2deg); opacity: 0.85; }
+                  30%  { transform: scaleY(1.08) rotate(2deg);  opacity: 1;    }
+                  60%  { transform: scaleY(0.96) rotate(-1deg); opacity: 0.90; }
+                  100% { transform: scaleY(1.04) rotate(3deg);  opacity: 0.95; }
+                }
+              `}</style>
+            </div>
           </div>
         </div>
       )}
