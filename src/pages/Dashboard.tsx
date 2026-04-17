@@ -492,9 +492,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-          </div>
-        </div>
-      )}
 
       {/* Turma picker dialog */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
