@@ -459,6 +459,8 @@ export async function fetchMissoesFamilia(turmaId?: string): Promise<MissaoFamil
     titulo: m.titulo,
     categoria: m.categoria,
     descricao: m.descricao,
+    duracao: m.duracao,
+    materiais: m.materiais,
     codigoCompartilhamento: m.codigo_compartilhamento,
     concluidas: m.concluidas || 0,
     criadoPor: m.criado_por,

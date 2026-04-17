@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-import { Heart, Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Heart, Sparkles, AlertCircle, CheckCircle2, Clock, Package } from "lucide-react";
 import Spinner from "@/components/ui/spinner";
 import { categoriasMissao } from "@/lib/missoesTemplates";
 import { Button } from "@/components/ui/button";
@@ -124,9 +124,36 @@ export default function PublicMissao() {
 
            <div className="w-12 h-1 bg-slate-100 mx-auto rounded-full mb-6" />
 
-           <p className="text-slate-600 font-medium text-lg leading-relaxed mix-blend-multiply">
+           <p className="text-slate-600 font-medium text-[17px] leading-relaxed mix-blend-multiply text-balance mb-6">
              {missao.descricao}
            </p>
+
+           {/* Novas Opções: Duração e Materiais */}
+           <div className="flex flex-col gap-3 mt-8">
+             {missao.duracao && (
+               <div className="flex items-center gap-3 bg-slate-50 border border-slate-100 p-3.5 rounded-2xl text-left">
+                 <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                   <Clock className="h-5 w-5 text-orange-500" />
+                 </div>
+                 <div>
+                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Duração Estimada</p>
+                   <p className="text-sm font-bold text-slate-700">{missao.duracao}</p>
+                 </div>
+               </div>
+             )}
+             
+             {missao.materiais && (
+               <div className="flex items-center gap-3 bg-slate-50 border border-slate-100 p-3.5 rounded-2xl text-left">
+                 <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center shrink-0">
+                   <Package className="h-5 w-5 text-sky-500" />
+                 </div>
+                 <div>
+                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Materiais Necessários</p>
+                   <p className="text-sm font-bold text-slate-700">{missao.materiais}</p>
+                 </div>
+               </div>
+             )}
+           </div>
          </div>
 
       </div>

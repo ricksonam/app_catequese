@@ -28,6 +28,8 @@ export default function MissoesFamilia() {
   const [selectedCategoria, setSelectedCategoria] = useState("familia");
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [duracao, setDuracao] = useState("");
+  const [materiais, setMateriais] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Fetch missoes
@@ -44,6 +46,8 @@ export default function MissoesFamilia() {
         titulo,
         categoria: selectedCategoria,
         descricao,
+        duracao,
+        materiais,
         codigo_compartilhamento: generateCode(),
         criado_por: user?.id,
       });
@@ -56,6 +60,8 @@ export default function MissoesFamilia() {
       // Reset form
       setTitulo("");
       setDescricao("");
+      setDuracao("");
+      setMateriais("");
     },
     onError: (error: any) => {
       toast({ title: "Erro ao criar missão", description: error.message, variant: "destructive" });
@@ -156,7 +162,7 @@ export default function MissoesFamilia() {
                     <span className={`px-2.5 py-1 ${catObj.color}/10 ${catObj.textClass} rounded-full text-[10px] font-black uppercase tracking-wider`}>
                       {catObj.label}
                     </span>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => handleShare(missao.codigo_compartilhamento)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => handleShare(missao.codigoCompartilhamento)}>
                       <Share2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -174,7 +180,7 @@ export default function MissoesFamilia() {
                        </div>
                     </div>
                     
-                    <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigo_compartilhamento)}>
+                    <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigoCompartilhamento)}>
                       <Copy className="h-3 w-3 mr-1.5" /> Link
                     </Button>
                   </div>
@@ -242,13 +248,34 @@ export default function MissoesFamilia() {
                />
                <Textarea 
                  placeholder="Descreva o que a família precisará fazer..." 
-                 className="min-h-[100px] resize-none bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl"
+                 className="min-h-[100px] resize-none bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl mb-3"
                  value={descricao}
                  onChange={(e) => setDescricao(e.target.value)}
                />
+               
+               <div className="grid grid-cols-2 gap-3 mt-2">
+                 <div>
+                   <label className="text-[10px] font-bold text-muted-foreground uppercase opacity-80 mb-1 block">Duração Estimada</label>
+                   <Input 
+                     placeholder="Ex: 15 min" 
+                     className="bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm"
+                     value={duracao}
+                     onChange={(e) => setDuracao(e.target.value)}
+                   />
+                 </div>
+                 <div>
+                   <label className="text-[10px] font-bold text-muted-foreground uppercase opacity-80 mb-1 block">Materiais</label>
+                   <Input 
+                     placeholder="Bíblia, lápis..." 
+                     className="bg-muted/30 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm"
+                     value={materiais}
+                     onChange={(e) => setMateriais(e.target.value)}
+                   />
+                 </div>
+               </div>
             </div>
 
-            <Button 
+            <Button  
                className="w-full h-12 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-black text-sm uppercase tracking-wider"
                disabled={!titulo || !descricao || createMissao.isPending}
                onClick={() => createMissao.mutate()}

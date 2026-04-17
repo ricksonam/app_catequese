@@ -220,6 +220,8 @@ export interface MissaoFamilia {
   titulo: string;
   categoria: string;
   descricao: string;
+  duracao?: string;
+  materiais?: string;
   codigoCompartilhamento: string;
   concluidas: number;
   criadoPor: string;
