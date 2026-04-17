@@ -192,7 +192,8 @@ export default function TurmaDetail() {
               key={mod.label}
               className={cn(
                 "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[150px]",
-                `bg-gradient-to-br ${mod.bgGradient}`
+                `bg-gradient-to-br ${mod.bgGradient}`,
+                i === modulos.length - 1 ? "col-span-2 mx-auto w-[calc(50%-0.375rem)]" : ""
               )}
               style={{ animationDelay: `${i * 100}ms` }}
               onClick={() => navigate(mod.path)}

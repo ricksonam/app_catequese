@@ -199,34 +199,39 @@ export default function MissoesFamilia() {
                   <h3 className="font-bold text-foreground leading-tight mb-1">{missao.titulo}</h3>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-4 leading-relaxed">{missao.descricao}</p>
                   
-                  <div className="pt-4 border-t border-border/50 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm font-bold">
-                       <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-                         <Trophy className="h-4 w-4" />
-                       </div>
-                       <div className="flex flex-col">
-                         <span className="text-foreground leading-none">{missao.concluidas}</span>
-                         <span className="text-[9px] text-muted-foreground uppercase opacity-70">Concluídas</span>
-                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {missao.finalizada ? (
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          <span className="text-[10px] font-black uppercase tracking-wider">Concluída</span>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigoCompartilhamento)}>
-                            <Copy className="h-3 w-3 mr-1.5" /> Link
-                          </Button>
-                          <Button size="sm" className="h-8 rounded-full text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => concluirMissaoAdmin.mutate(missao.id)}>
-                            <CheckCircle2 className="h-3 w-3 mr-1.5" /> Concluir
-                          </Button>
+                  <div className="pt-4 border-t border-border/50 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm font-bold">
+                         <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                           <Trophy className="h-4 w-4" />
+                         </div>
+                         <div className="flex flex-col">
+                           <span className="text-foreground leading-none">{missao.concluidas}</span>
+                           <span className="text-[9px] text-muted-foreground uppercase opacity-70">Concluídas</span>
+                         </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigoCompartilhamento)}>
+                          <Copy className="h-3 w-3 mr-1.5" /> Link
+                        </Button>
+                        {!missao.finalizada && (
                           <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-rose-500 hover:text-rose-600 hover:bg-rose-50" onClick={() => setMissaoToDelete(missao.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center w-full">
+                      {missao.finalizada ? (
+                        <div className="w-full flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span className="text-[11px] font-black uppercase tracking-wider">Missão Concluída</span>
                         </div>
+                      ) : (
+                        <Button size="sm" className="w-full h-10 rounded-xl text-sm font-bold bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm" onClick={() => concluirMissaoAdmin.mutate(missao.id)}>
+                          <CheckCircle2 className="h-4 w-4 mr-2" /> Marcar como Concluída
+                        </Button>
                       )}
                     </div>
                   </div>
