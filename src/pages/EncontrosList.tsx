@@ -7,7 +7,7 @@ import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string }> = {
-  pendente:    { label: "Pendente",    bg: "bg-muted/60",         text: "text-muted-foreground",  dot: "bg-muted-foreground", gradient: "from-slate-400/20 to-slate-500/10" },
+  pendente:    { label: "Pendente",    bg: "bg-blue-500/15",      text: "text-blue-700",          dot: "bg-blue-500",         gradient: "from-blue-500/20 to-indigo-500/10" },
   realizado:   { label: "Realizado",   bg: "bg-emerald-500/15",   text: "text-emerald-700",       dot: "bg-emerald-500",      gradient: "from-emerald-500/20 to-teal-500/10" },
   transferido: { label: "Transferido", bg: "bg-amber-500/15",     text: "text-amber-700",         dot: "bg-amber-500",        gradient: "from-amber-500/20 to-orange-500/10" },
   cancelado:   { label: "Cancelado",   bg: "bg-destructive/15",   text: "text-destructive",       dot: "bg-destructive",      gradient: "from-destructive/20 to-red-500/10"  },

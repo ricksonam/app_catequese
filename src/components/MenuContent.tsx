@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { Church, Users, UserCheck, Image, BookOpen, FileText, Library, CalendarDays, Dices, ChevronRight, KeyRound, LogOut, Sparkles } from "lucide-react";
+import { 
+  Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
+  CalendarDays, Dices, ChevronRight, KeyRound, LogOut, Sparkles,
+  Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -32,10 +39,29 @@ const modulosGlobais = [
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  
+  // States para Dialogs
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+  const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
+  const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
+  
+  // Senha
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+
+  // Sugestão
+  const [suggestion, setSuggestion] = useState("");
+  const [savingSuggestion, setSavingSuggestion] = useState(false);
+
+  // Notificações
+  const [pushEnabled, setPushEnabled] = useState(true);
+  const [emailEnabled, setEmailEnabled] = useState(true);
+
+  // Exclusão
+  const [exitReason, setExitReason] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const go = (path: string) => {
     navigate(path);
@@ -64,149 +90,302 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
     }
   };
 
+  const handleSuggestion = async () => {
+    if (!suggestion.trim()) return;
+    setSavingSuggestion(true);
+    try {
+      const { error } = await supabase.from('sugestoes').insert({
+        usuario_id: user?.id,
+        email_usuario: user?.email,
+        texto: suggestion,
+        tipo: 'sugestao'
+      });
+      if (error) throw error;
+      
+      toast({ 
+        title: "Sugestão Enviada!", 
+        description: "Enviamos também para ricksonam@hotmail.com. Obrigado!" 
+      });
+      setShowSuggestionDialog(false);
+      setSuggestion("");
+    } catch (error: any) {
+      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    } finally {
+      setSavingSuggestion(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!exitReason.trim()) {
+      toast({ title: "Atenção", description: "Conte-nos o motivo antes de confirmar.", variant: "destructive" });
+      return;
+    }
+    setDeletingAccount(true);
+    try {
+      await supabase.from('sugestoes').insert({
+        usuario_id: user?.id,
+        email_usuario: user?.email,
+        texto: "PEDIDO DE EXCLUSÃO",
+        motivo_exclusao: exitReason,
+        tipo: 'exclusao'
+      });
+      
+      await supabase.rpc('confirmar_exclusao_usuario');
+      
+      toast({ 
+        title: "Sucesso!", 
+        description: "Sua conta foi excluída conforme solicitado." 
+      });
+      
+      await signOut();
+      onClose();
+    } catch (error: any) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     onClose();
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
-      <div className="p-6 pb-4">
-        <h2 className="text-lg font-bold text-foreground">Menu</h2>
-        <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-zinc-950">
+      {/* Menu Header */}
+      <div className="p-6 pb-2">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+             <Settings className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Ajustes</h2>
+            <p className="text-[11px] font-medium text-muted-foreground truncate max-w-[180px]">{user?.email}</p>
+          </div>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 space-y-6 pb-6">
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-widest text-black dark:text-white mb-3 px-1">Cadastros Básicos</p>
-          <div className="space-y-2">
-            {cadastros.map((item, i) => {
-              const Icon = item.icon;
-              return (
+      <div className="flex-1 overflow-y-auto px-4 pb-6 scrollbar-hide">
+        <Accordion type="single" collapsible className="w-full space-y-3 border-none">
+          
+          {/* SEÇÃO: CADASTROS BÁSICOS */}
+          <AccordionItem value="cadastros" className="border-none shadow-none">
+            <AccordionTrigger className="hover:no-underline py-0 group">
+               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
+                 <div className="icon-box bg-primary/10 text-primary">
+                   <Church className="h-5 w-5" />
+                 </div>
+                 <span className="flex-1 text-sm font-bold text-foreground text-left uppercase tracking-tight">Cadastros Básicos</span>
+               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 px-2 space-y-2">
+              {cadastros.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => go(item.path)}
-                  className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card"
-                  style={{ animationDelay: `${i * 60}ms` }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <div className={`icon-box ${item.color}`}>
-                    <Icon className="h-5 w-5" />
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.color}`}>
+                    <item.icon className="h-4 w-4" />
                   </div>
-                  <span className="flex-1 text-sm font-medium text-foreground">{item.label}</span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-foreground/80">{item.label}</span>
                 </button>
-              );
-            })}
-          </div>
-        </div>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
 
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-widest text-black dark:text-white mb-3 px-1">Módulos Globais</p>
-          <div className="space-y-2">
-            {modulosGlobais.map((item, i) => {
-              const Icon = item.icon;
-              return (
+          {/* SEÇÃO: MÓDULOS GLOBAIS */}
+          <AccordionItem value="modulos" className="border-none shadow-none">
+            <AccordionTrigger className="hover:no-underline py-0 group">
+               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
+                 <div className="icon-box bg-gold/15 text-gold">
+                   <Sparkles className="h-5 w-5" />
+                 </div>
+                 <span className="flex-1 text-sm font-bold text-foreground text-left uppercase tracking-tight">Módulos Globais</span>
+               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 px-2 space-y-2">
+              {modulosGlobais.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => go(item.path)}
-                  className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
-                  style={{ animationDelay: `${(i + 3) * 60}ms` }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <div className={`icon-box ${item.color}`}>
-                    <Icon className="h-5 w-5" />
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.color}`}>
+                    <item.icon className="h-4 w-4" />
                   </div>
-                  <span className="flex-1 text-sm font-medium text-foreground">{item.label}</span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold text-foreground/80">{item.label}</span>
                 </button>
-              );
-            })}
-          </div>
-        </div>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
 
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-widest text-black dark:text-white mb-3 px-1">Conta</p>
-          <div className="space-y-2">
-            <button
-              onClick={() => setShowPasswordDialog(true)}
-              className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="icon-box bg-primary/10 text-primary">
-                <KeyRound className="h-5 w-5" />
-              </div>
-              <span className="flex-1 text-sm font-medium text-foreground">Alterar Senha</span>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={handleSignOut}
-              className="w-full float-card flex items-center gap-3 px-4 py-3.5 text-left animate-float-up bg-white dark:bg-card border border-black/10 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="icon-box bg-destructive/10 text-destructive">
-                <LogOut className="h-5 w-5" />
-              </div>
-              <span className="flex-1 text-sm font-medium text-destructive">Sair</span>
-            </button>
-          </div>
-        </div>
+          {/* SEÇÃO: CONTA */}
+          <AccordionItem value="conta" className="border-none shadow-none">
+            <AccordionTrigger className="hover:no-underline py-0 group">
+               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
+                 <div className="icon-box bg-blue-500/10 text-blue-500">
+                   <Users className="h-5 w-5" />
+                 </div>
+                 <span className="flex-1 text-sm font-bold text-foreground text-left uppercase tracking-tight">Minha Conta</span>
+               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 px-2 space-y-2">
+              <button onClick={() => setShowPasswordDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><KeyRound className="h-4 w-4" /></div>
+                <span className="text-xs font-semibold text-foreground/80">Alterar Senha</span>
+              </button>
+              
+              <button onClick={() => setShowNotificationDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center"><Bell className="h-4 w-4" /></div>
+                <span className="text-xs font-semibold text-foreground/80">Notificações</span>
+              </button>
+
+              <button onClick={() => setShowSuggestionDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><MessageSquare className="h-4 w-4" /></div>
+                <span className="text-xs font-semibold text-foreground/80">Dar Sugestão</span>
+              </button>
+
+              <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
+                <div className="w-8 h-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center"><Trash className="h-4 w-4" /></div>
+                <span className="text-xs font-bold">Excluir Usuário</span>
+              </button>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
-        <div className="pt-2">
+        <div className="pt-6">
            <button 
              onClick={() => {
                onClose();
-               // Pequeno delay para garantir que o Menu (Sheet) feche antes de abrir o Modal
-               // Isso evita conflitos de foco entre os dois componentes Radix UI
-               setTimeout(() => {
-                 if (onShowObjective) onShowObjective();
-               }, 150);
+               setTimeout(() => { if (onShowObjective) onShowObjective(); }, 150);
              }}
              className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-primary/10 border border-primary/20 shadow-sm hover:shadow-md hover:border-primary/40 transition-all active:scale-[0.98] animate-float-up"
-             style={{ animationDelay: `500ms` }}
            >
-             <div className="absolute top-0 right-0 p-2 opacity-20">
-               <Sparkles className="h-10 w-10 text-primary rotate-12" />
-             </div>
+             <div className="absolute top-0 right-0 p-2 opacity-20"><Sparkles className="h-10 w-10 text-primary rotate-12" /></div>
              <div className="flex items-start gap-3">
                <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                  <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="i" />
                </div>
                <div className="flex-1 text-left min-w-0">
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Sobre o App</p>
-                 <p className="text-[15px] font-black leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm pb-1">iCatequese</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Clique para abrir</p>
+                 <p className="text-[15px] font-black leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm pb-1">Sobre o iCatequese</p>
                  <p className="text-[11px] text-muted-foreground mt-1.5 truncate">Versão 1.0.0 • Rickson Amazonas</p>
                </div>
-               <ChevronRight className="h-4 w-4 text-primary self-center" />
+               <HelpCircle className="h-4 w-4 text-primary self-center" />
              </div>
+           </button>
+        </div>
+
+        {/* LOGOUT - SEMPRE VISÍVEL NO MENU */}
+        <div className="mt-8">
+           <button
+             onClick={handleSignOut}
+             className="w-full float-card flex items-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-md group active:scale-95 transition-all text-destructive"
+           >
+             <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white transition-all">
+               <LogOut className="h-5 w-5" strokeWidth={2.5} />
+             </div>
+             <span className="flex-1 text-base font-black uppercase tracking-widest text-left">Sair do App</span>
            </button>
         </div>
       </div>
 
+      {/* DIALOGS */}
+      
+      {/* 1. Alterar Senha */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Alterar Senha</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
-            <div className="space-y-2">
-              <Label>Nova Senha</Label>
-              <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="••••••••"
-              />
+        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl overflow-hidden p-0">
+          <div className="h-2 w-full bg-primary" />
+          <div className="p-6 space-y-4">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black text-foreground">Alterar Senha</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nova Senha</Label>
+                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="rounded-2xl h-12 border-muted" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirmar Nova Senha</Label>
+                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="rounded-2xl h-12 border-muted" />
+              </div>
+              <Button onClick={handleChangePassword} className="w-full h-14 rounded-2xl font-black text-lg bg-primary shadow-xl shadow-primary/20" disabled={savingPassword}>
+                {savingPassword ? "Salvando..." : "Salvar Senha"}
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label>Confirmar Nova Senha</Label>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-              />
-            </div>
-            <Button onClick={handleChangePassword} className="w-full" disabled={savingPassword}>
-              {savingPassword ? "Salvando..." : "Salvar Nova Senha"}
-            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 2. Notificações */}
+      <Dialog open={showNotificationDialog} onOpenChange={setShowNotificationDialog}>
+        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
+          <DialogHeader><DialogTitle className="text-xl font-black mb-4">Central de Notificações</DialogTitle></DialogHeader>
+          <div className="space-y-6">
+             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center"><Bell className="w-5 h-5"/></div>
+                 <div><p className="text-sm font-bold leading-none">Alertas no App</p><p className="text-[10px] text-muted-foreground mt-1">Sinos e Push</p></div>
+               </div>
+               <Switch checked={pushEnabled} onCheckedChange={setPushEnabled} />
+             </div>
+             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><Mail className="w-5 h-5"/></div>
+                 <div><p className="text-sm font-bold leading-none">Notificações por E-mail</p><p className="text-[10px] text-muted-foreground mt-1">Relatórios e Resumos</p></div>
+               </div>
+               <Switch checked={emailEnabled} onCheckedChange={setEmailEnabled} />
+             </div>
+             <Button onClick={() => { toast({title: "Preferências Salvas!"}); setShowNotificationDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-orange-500 hover:bg-orange-600">Salvar Preferências</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 3. Dar Sugestão */}
+      <Dialog open={showSuggestionDialog} onOpenChange={setShowSuggestionDialog}>
+        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
+          <DialogHeader><DialogTitle className="text-xl font-black mb-4">Tem uma ideia?</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+             <Textarea 
+               placeholder="Escreva sua sugestão aqui..." 
+               className="rounded-2xl min-h-[140px] bg-muted/20 border-muted p-4 text-sm font-medium"
+               value={suggestion}
+               onChange={(e) => setSuggestion(e.target.value)}
+             />
+             <p className="text-[10px] text-muted-foreground text-center italic">Você também pode enviar diretamente para ricksonam@hotmail.com</p>
+             <Button onClick={handleSuggestion} disabled={savingSuggestion} className="w-full h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 text-lg">
+                {savingSuggestion ? "Enviando..." : "Enviar Sugestão"}
+             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 4. Excluir Usuário */}
+      <Dialog open={showDeleteAccountDialog} onOpenChange={setShowDeleteAccountDialog}>
+        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+             <div className="w-16 h-16 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-2 animate-pulse">
+               <AlertTriangle className="w-8 h-8" strokeWidth={3} />
+             </div>
+             <DialogHeader><DialogTitle className="text-xl font-black text-destructive">Tem certeza?</DialogTitle></DialogHeader>
+             <p className="text-sm text-muted-foreground leading-relaxed">Sentimos muito que você esteja indo. Por favor, nos conte por que decidiu excluir sua conta para podermos melhorar:</p>
+             
+             <Textarea 
+               placeholder="Ex: Não usei o app, achei difícil, etc..." 
+               className="w-full rounded-2xl border-destructive/20 focus:border-destructive"
+               value={exitReason}
+               onChange={(e) => setExitReason(e.target.value)}
+             />
+
+             <div className="w-full grid grid-cols-2 gap-3 pt-4">
+               <Button variant="outline" onClick={() => setShowDeleteAccountDialog(false)} className="h-14 rounded-2xl border-2">Voltar</Button>
+               <Button onClick={handleDeleteAccount} disabled={deletingAccount} className="h-14 rounded-2xl bg-destructive hover:bg-red-700 font-black text-white">
+                 {deletingAccount ? "Excluindo..." : "Excluir"}
+               </Button>
+             </div>
           </div>
         </DialogContent>
       </Dialog>

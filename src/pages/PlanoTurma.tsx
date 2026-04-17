@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import ReportModule from "@/components/reports/ReportModule";
 
 type TimelineItem = { id: string; tipo: 'encontro' | 'atividade'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
-const statusColors: Record<string, string> = { pendente: 'bg-muted-foreground', realizado: 'bg-success', transferido: 'bg-caution', cancelado: 'bg-destructive' };
+const statusColors: Record<string, string> = { pendente: 'bg-primary', realizado: 'bg-success', transferido: 'bg-caution', cancelado: 'bg-destructive' };
 
 export default function PlanoTurma() {
   const { id } = useParams();
