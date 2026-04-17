@@ -464,6 +464,7 @@ export async function fetchMissoesFamilia(turmaId?: string): Promise<MissaoFamil
     codigoCompartilhamento: m.codigo_compartilhamento,
     concluidas: m.concluidas || 0,
     criadoPor: m.criado_por,
-    criadoEm: m.criado_em
+    criadoEm: m.criado_em,
+    finalizada: m.finalizada || false
   }));
 }

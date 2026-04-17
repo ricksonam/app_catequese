@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMissoesFamilia } from "@/hooks/useSupabaseData";
-import { Heart, Plus, Share2, Copy, Sparkles, BookOpen, Dice5, HelpCircle, ArrowLeft, Trophy } from "lucide-react";
+import { Heart, Plus, Share2, Copy, Sparkles, BookOpen, Dice5, HelpCircle, ArrowLeft, Trophy, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,9 +31,39 @@ export default function MissoesFamilia() {
   const [duracao, setDuracao] = useState("");
   const [materiais, setMateriais] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [missaoToDelete, setMissaoToDelete] = useState<string | null>(null);
 
   // Fetch missoes
   const { data: missoes = [], isLoading } = useMissoesFamilia(turmaId);
+
+  const deleteMissao = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("missoes_familia").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["missoesFamilia", turmaId] });
+      toast({ title: "Missão excluída" });
+      setMissaoToDelete(null);
+    },
+    onError: (error: any) => {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+    }
+  });
+
+  const concluirMissaoAdmin = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("missoes_familia").update({ finalizada: true }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["missoesFamilia", turmaId] });
+      toast({ title: "Missão marcada como concluída" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
+    }
+  });
 
   const generateCode = () => {
     return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -179,10 +209,26 @@ export default function MissoesFamilia() {
                          <span className="text-[9px] text-muted-foreground uppercase opacity-70">Concluídas</span>
                        </div>
                     </div>
-                    
-                    <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigoCompartilhamento)}>
-                      <Copy className="h-3 w-3 mr-1.5" /> Link
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {missao.finalizada ? (
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-black uppercase tracking-wider">Concluída</span>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" className="h-8 rounded-full text-xs font-bold" onClick={() => handleShare(missao.codigoCompartilhamento)}>
+                            <Copy className="h-3 w-3 mr-1.5" /> Link
+                          </Button>
+                          <Button size="sm" className="h-8 rounded-full text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => concluirMissaoAdmin.mutate(missao.id)}>
+                            <CheckCircle2 className="h-3 w-3 mr-1.5" /> Concluir
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-rose-500 hover:text-rose-600 hover:bg-rose-50" onClick={() => setMissaoToDelete(missao.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
@@ -190,6 +236,21 @@ export default function MissoesFamilia() {
           </div>
         )}
       </div>
+
+      {/* Modal Confirmar Exclusão */}
+      <Dialog open={!!missaoToDelete} onOpenChange={() => setMissaoToDelete(null)}>
+        <DialogContent className="max-w-xs rounded-3xl p-6 text-center">
+          <div className="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Trash2 className="h-8 w-8" />
+          </div>
+          <DialogTitle className="text-xl font-black mb-2">Excluir Missão?</DialogTitle>
+          <p className="text-sm text-muted-foreground mb-6">Esta ação não pode ser desfeita e o link deixará de funcionar.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" onClick={() => setMissaoToDelete(null)} className="rounded-xl">Cancelar</Button>
+            <Button variant="destructive" className="rounded-xl bg-rose-500 hover:bg-rose-600" onClick={() => missaoToDelete && deleteMissao.mutate(missaoToDelete)}>Excluir</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Modal de Criação */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>

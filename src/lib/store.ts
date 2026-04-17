@@ -226,6 +226,7 @@ export interface MissaoFamilia {
   concluidas: number;
   criadoPor: string;
   criadoEm: string;
+  finalizada?: boolean;
 }
 
 export const ORACAO_TIPOS: OracaoTipo[] = [

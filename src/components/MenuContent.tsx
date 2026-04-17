@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { 
   Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
-  CalendarDays, Dices, ChevronRight, KeyRound, LogOut, Sparkles,
+  CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
   GraduationCap, ChevronLeft, Heart
 } from "lucide-react";
@@ -194,12 +194,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           
           {/* SEÇÃO: CADASTROS BÁSICOS */}
           <AccordionItem value="cadastros" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
-               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
-                 <div className="icon-box bg-primary/10 text-primary">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
+                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                    <Church className="h-5 w-5" />
                  </div>
                  <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Cadastros Básicos</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -220,12 +221,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: MÓDULOS GLOBAIS */}
           <AccordionItem value="modulos" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
-               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
-                 <div className="icon-box bg-gold/15 text-gold">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
+                 <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0">
                    <Sparkles className="h-5 w-5" />
                  </div>
                  <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Globais</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -246,12 +248,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: MINHA TURMA (DINÂMICA) */}
           <AccordionItem value="minha-turma" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
-               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
-                 <div className="icon-box bg-success/10 text-success">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
+                 <div className="w-10 h-10 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
                    <GraduationCap className="h-5 w-5" />
                  </div>
                  <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Turma</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -302,12 +305,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: CONTA */}
           <AccordionItem value="conta" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden">
-               <div className="w-full float-card flex items-center gap-3 px-4 py-4 bg-white dark:bg-zinc-900 border border-black/5">
-                 <div className="icon-box bg-blue-500/10 text-blue-500">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
+                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
                    <Users className="h-5 w-5" />
                  </div>
                  <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Conta</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
