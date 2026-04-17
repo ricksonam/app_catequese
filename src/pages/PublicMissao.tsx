@@ -24,15 +24,7 @@ export default function PublicMissao() {
   const { data: missao, isLoading, error } = useQuery({
     queryKey: ["public_missao", codigo],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("missoes_familia")
-        .select(`
-          *,
-          turma:turmas(nome, comunidade_nome)
-        `)
-        .eq("codigo_compartilhamento", codigo)
-        .maybeSingle();
-
+      const { data, error } = await supabase.rpc("get_public_missao", { p_codigo: codigo });
       if (error) throw error;
       return data;
     },
