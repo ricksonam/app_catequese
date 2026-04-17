@@ -383,48 +383,45 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="float-card p-0 overflow-hidden border-2 border-primary/10 shadow-xl shadow-primary/5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md">
+          <div className="float-card p-0 overflow-hidden border-2 border-primary/20 shadow-xl shadow-primary/5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md">
             {/* Seção de Próximo Encontro */}
             {proximoEncontro && (
               <div 
                 onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                className="group cursor-pointer active:scale-[0.99] transition-all"
+                className="group cursor-pointer active:scale-[0.99] transition-all p-4"
               >
-                <div className="p-4 flex items-center gap-4">
-                  {/* Calendário Compacto */}
-                  <div className={`shrink-0 w-14 h-14 rounded-2xl flex flex-col items-center justify-center border-2 transition-all group-hover:scale-105 ${
-                    isUrgent ? "bg-destructive/5 border-destructive/20" : "bg-primary/5 border-primary/20"
+                <div className="p-4 rounded-[2rem] border-2 border-primary/20 bg-primary/5 flex items-center gap-5 group-hover:border-primary/40 group-hover:bg-primary/10 transition-all">
+                  {/* Calendário Simplificado */}
+                  <div className={`shrink-0 w-14 h-14 rounded-2xl flex flex-col items-center justify-center border-2 transition-all group-hover:scale-110 ${
+                    isUrgent ? "bg-destructive/10 border-destructive/20" : "bg-white border-primary/20 shadow-sm"
                   }`}>
-                    <span className={`text-[8px] font-black uppercase tracking-widest ${isUrgent ? "text-destructive" : "text-primary"}`}>
-                      {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
-                    </span>
-                    <span className="text-2xl font-black text-foreground leading-none py-0.5">
+                    <span className="text-2xl font-black text-foreground leading-none">
                       {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                     </span>
-                    <span className="text-[8px] font-bold text-muted-foreground uppercase">
+                    <span className="text-[9px] font-black text-muted-foreground uppercase mt-0.5">
                       {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
                     </span>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider ${
-                        isUrgent ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                        isUrgent ? "bg-destructive text-white" : "bg-primary text-white"
                       }`}>
                         {diaLabel}
                       </span>
-                      <span className="text-[10px] font-bold text-muted-foreground truncate uppercase opacity-60">Próximo Encontro</span>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Próximo Encontro</span>
                     </div>
-                    <h3 className="text-sm font-black text-foreground truncate leading-tight group-hover:text-primary transition-colors">
+                    <h3 className="text-base font-black text-foreground leading-tight group-hover:text-primary transition-colors">
                       {proximoEncontro.tema}
                     </h3>
-                    <p className="text-[10px] text-muted-foreground truncate mt-0.5 font-medium">
-                      {turmaEncontro?.nome} • {formatarDataVigente(proximoEncontro.data)}
+                    <p className="text-xs text-muted-foreground truncate mt-1 font-bold">
+                      {turmaEncontro?.nome}
                     </p>
                   </div>
                   
-                  <div className="w-8 h-8 rounded-full bg-muted/30 flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                  <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 border border-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                    <ChevronRight className="h-5 w-5" />
                   </div>
                 </div>
               </div>
@@ -432,21 +429,22 @@ export default function Dashboard() {
 
             {/* Divisor Elegante se houver dois conteúdos */}
             {proximoEncontro && proximosAniversariantes.length > 0 && (
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
+              <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
             )}
 
             {/* Seção de Aniversariantes */}
             {proximosAniversariantes.length > 0 && (
-              <div className="p-4 bg-gradient-to-b from-transparent to-primary/5">
-                <div className="flex items-center justify-between mb-3 px-1">
-                  <div className="flex items-center gap-1.5">
-                    <Cake className="h-3.5 w-3.5 text-amber-500 animate-bounce-subtle" />
-                    <span className="text-[10px] font-black text-foreground uppercase tracking-widest">Aniversariantes Próximos</span>
+              <div className="p-6 bg-gradient-to-b from-transparent to-amber-500/5">
+                <div className="flex flex-col items-center gap-1.5 mb-6 text-center">
+                  <div className="flex items-center gap-2">
+                    <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
+                    <h3 className="text-base font-black text-foreground uppercase tracking-widest">Próximos aniversários</h3>
+                    <Cake className="h-5 w-5 text-amber-500 animate-bounce" />
                   </div>
-                  <button onClick={() => navigate("/catequizandos")} className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">Ver lista</button>
+                  <div className="h-1 w-12 bg-amber-400/30 rounded-full" />
                 </div>
                 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {proximosAniversariantes.map((c, i) => {
                     const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
                     const isHoje = diasAte === 0;
@@ -454,36 +452,36 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={c.id}
-                        className={`p-2 rounded-2xl flex flex-col items-center text-center transition-all hover:scale-105 ${
-                          isHoje ? "bg-amber-400/10 ring-1 ring-amber-400/30" : "bg-white/40 dark:bg-zinc-800/40"
+                        className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${
+                          isHoje ? "bg-amber-400/10 ring-2 ring-amber-400/40 shadow-xl shadow-amber-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"
                         }`}
                       >
-                        <div className={`relative w-11 h-11 rounded-xl mb-1.5 overflow-hidden border-2 ${
-                           isHoje ? "border-amber-400 animate-soft-pulse" : "border-background shadow-sm"
+                        <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${
+                           isHoje ? "border-amber-400 animate-soft-pulse scale-105" : "border-background shadow-md"
                         }`}>
                           {c.foto ? (
                             <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                           ) : (
-                            <div className={`w-full h-full flex items-center justify-center text-sm font-black ${
+                            <div className={`w-full h-full flex items-center justify-center text-xl font-black ${
                               isHoje ? "bg-amber-100 text-amber-600" : "bg-primary/10 text-primary"
                             }`}>
                               {c.nome?.charAt(0).toUpperCase()}
                             </div>
                           )}
                           {isHoje && (
-                            <div className="absolute top-0 right-0 p-0.5 bg-amber-400 rounded-bl-lg shadow-sm">
-                              <Star className="h-2 w-2 text-white fill-white" />
+                            <div className="absolute top-0 right-0 p-1 bg-amber-400 rounded-bl-xl shadow-sm">
+                              <Star className="h-3 w-3 text-white fill-white" />
                             </div>
                           )}
                         </div>
                         
-                        <p className="text-[10px] font-black text-foreground truncate w-full px-1 leading-none mb-1">
+                        <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">
                           {c.nome?.split(" ")[0]}
                         </p>
-                        <p className={`text-[8px] font-black uppercase tracking-tight ${
-                          isHoje ? "text-amber-600" : "text-muted-foreground"
+                        <p className={`text-[9px] font-black uppercase tracking-widest ${
+                          isHoje ? "text-amber-600" : "text-muted-foreground/60"
                         }`}>
-                          {isHoje ? "Hoje!" : `${diasAte}d`}
+                          {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
                         </p>
                       </div>
                     );
@@ -491,6 +489,9 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
           </div>
         </div>
       )}
