@@ -173,18 +173,20 @@ export default function PublicPlano() {
                                   )}
                                </div>
                                
-                               <h4 className="text-sm font-black text-foreground leading-tight px-0.5">
+                               <h4 className="text-sm font-black text-foreground leading-tight px-0.5 text-center">
                                  {item.tema || item.nome}
                                </h4>
                                
-                               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                               <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-1">
                                   <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
                                     <Clock className="h-3 w-3 text-muted-foreground/50" />
                                     {item.horario || turma.horario}
                                   </div>
                                   <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
                                     <MapPin className="h-3 w-3 text-muted-foreground/50" />
-                                    <span className="truncate max-w-[120px]">{checkLocal(item.local || turma.local)}</span>
+                                    <span className="truncate">
+                                      {item.modalidade === 'externa' ? 'Atividade Externa' : 'Igreja Santo Expedito'}
+                                    </span>
                                   </div>
                                </div>
                             </div>
