@@ -388,36 +388,55 @@ export default function Dashboard() {
             {proximoEncontro && (
               <div 
                 onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                className="group cursor-pointer active:scale-[0.99] transition-all p-4"
+                className="p-5 group cursor-pointer active:scale-[0.98] transition-all"
               >
-                <div className="p-6 rounded-[2rem] border-2 border-primary/20 bg-primary/5 flex flex-col items-center text-center gap-4 group-hover:border-primary/40 group-hover:bg-primary/10 transition-all">
-                  {/* Calendário Simplificado e Reduzido */}
-                  <div className={`shrink-0 w-12 h-12 rounded-2xl flex flex-col items-center justify-center border-2 transition-all group-hover:scale-110 ${
-                    isUrgent ? "bg-destructive/10 border-destructive/20" : "bg-white border-primary/20 shadow-sm"
-                  }`}>
-                    <span className="text-xl font-black text-foreground leading-none">
+                <div className="flex gap-4 items-stretch">
+                  {/* Chip de Data Litúrgico (Separado) */}
+                  <div className="flex flex-col items-center justify-center w-16 bg-gradient-to-b from-amber-400 to-amber-600 rounded-3xl shadow-xl shadow-amber-500/20 border-b-4 border-amber-700/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden">
+                    <div className="absolute top-0 inset-x-0 h-1 bg-white/20" />
+                    <span className="text-[10px] font-black text-amber-900/40 uppercase tracking-widest leading-none mb-1">
+                      {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
+                    </span>
+                    <span className="text-3xl font-black text-white leading-none drop-shadow-sm">
                       {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                     </span>
-                    <span className="text-[8px] font-black text-muted-foreground uppercase mt-0.5">
+                    <span className="text-[10px] font-black text-white/90 uppercase tracking-widest mt-1">
                       {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
                     </span>
                   </div>
 
-                  <div className="w-full">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
-                        isUrgent ? "bg-destructive text-white" : "bg-primary text-white"
+                  {/* Card de Informações Principal */}
+                  <div className="flex-1 float-card bg-white/80 dark:bg-zinc-900/80 border-2 border-amber-100 dark:border-amber-900/30 p-4 flex flex-col justify-center relative overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
+                    {/* Watermark Litúrgico */}
+                    <div className="absolute -right-2 -bottom-2 opacity-[0.03] transform scale-150 rotate-12">
+                      <Flame className="w-16 h-16 text-amber-500" />
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse ${
+                        isUrgent ? "bg-destructive text-white" : "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
                       }`}>
                         {diaLabel}
                       </span>
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Próximo Encontro</span>
+                      <div className="flex items-center gap-1 opacity-40 uppercase text-[8px] font-black tracking-widest text-muted-foreground mr-1">
+                        <Flame className="h-2.5 w-2.5 text-amber-500" />
+                        Próximo Encontro
+                      </div>
                     </div>
-                    <h3 className="text-base font-black text-foreground leading-tight px-4 group-hover:text-primary transition-colors">
+
+                    <h3 className="text-base font-black text-foreground drop-shadow-sm leading-tight mb-1 group-hover:text-amber-600 transition-colors">
                       {proximoEncontro.tema}
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-2 font-bold opacity-80">
-                      {turmaEncontro?.nome}
-                    </p>
+                    
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/70">
+                      <span className="bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg border border-amber-100/50 dark:border-amber-900/30">
+                        {turmaEncontro?.nome}
+                      </span>
+                    </div>
+
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/20 text-amber-600 transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-1">
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
                   </div>
                 </div>
               </div>
