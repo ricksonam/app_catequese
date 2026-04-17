@@ -76,8 +76,8 @@ export default function AppLayout() {
 
       {/* Tab Bar */}
       {!isPresentationMode && currentPath !== "/modulos/mural" && (
-        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto max-w-md flex items-center justify-around h-20 px-1.5 rounded-3xl bg-amber-50/95 dark:bg-zinc-900/95 backdrop-blur-2xl border-2 border-blue-500/70 dark:border-blue-400/50 shadow-2xl shadow-blue-500/20">
+        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-3 pt-1 print:hidden transition-all duration-200">
+          <div className="mx-auto max-w-md flex items-center justify-around h-16 px-1 rounded-[24px] bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/20 dark:border-zinc-800/20 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
             {tabs.map((tab) => {
               const isActive =
                 tab.path === "/"
@@ -89,16 +89,19 @@ export default function AppLayout() {
                 <button
                   key={tab.path}
                   onClick={() => navigate(tab.path)}
-                  className={`group relative flex flex-col items-center justify-center gap-1 w-16 h-16 rounded-2xl transition-all duration-300 active:scale-90 ${
+                  className={`group relative flex flex-col items-center justify-center gap-0.5 w-13 h-13 rounded-2xl transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-blue-100 dark:bg-blue-900/50 shadow-md border border-blue-300/50 dark:border-blue-700/50`
-                      : "text-muted-foreground hover:bg-muted/50"
+                      ? `${tab.color} bg-blue-50 dark:bg-blue-900/30 font-black`
+                      : "text-muted-foreground hover:bg-muted/30"
                   }`}
                 >
-                  <Icon className={`h-6 w-6 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
-                  <span className={`text-[10px] tracking-tight transition-all ${isActive ? "font-bold opacity-100" : "font-medium opacity-70"}`}>
+                  <Icon className={`h-5 w-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
+                  <span className={`text-[9px] tracking-tight transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
                     {tab.label}
                   </span>
+                  {isActive && (
+                    <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-blue-500 animate-pulse" />
+                  )}
                 </button>
               );
             })}
