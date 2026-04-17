@@ -390,21 +390,21 @@ export default function Dashboard() {
                 onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
                 className="group cursor-pointer active:scale-[0.99] transition-all p-4"
               >
-                <div className="p-4 rounded-[2rem] border-2 border-primary/20 bg-primary/5 flex items-center gap-5 group-hover:border-primary/40 group-hover:bg-primary/10 transition-all">
-                  {/* Calendário Simplificado */}
-                  <div className={`shrink-0 w-14 h-14 rounded-2xl flex flex-col items-center justify-center border-2 transition-all group-hover:scale-110 ${
+                <div className="p-6 rounded-[2rem] border-2 border-primary/20 bg-primary/5 flex flex-col items-center text-center gap-4 group-hover:border-primary/40 group-hover:bg-primary/10 transition-all">
+                  {/* Calendário Simplificado e Reduzido */}
+                  <div className={`shrink-0 w-12 h-12 rounded-2xl flex flex-col items-center justify-center border-2 transition-all group-hover:scale-110 ${
                     isUrgent ? "bg-destructive/10 border-destructive/20" : "bg-white border-primary/20 shadow-sm"
                   }`}>
-                    <span className="text-2xl font-black text-foreground leading-none">
+                    <span className="text-xl font-black text-foreground leading-none">
                       {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                     </span>
-                    <span className="text-[9px] font-black text-muted-foreground uppercase mt-0.5">
+                    <span className="text-[8px] font-black text-muted-foreground uppercase mt-0.5">
                       {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
                     </span>
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="w-full">
+                    <div className="flex items-center justify-center gap-2 mb-2">
                       <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
                         isUrgent ? "bg-destructive text-white" : "bg-primary text-white"
                       }`}>
@@ -412,16 +412,12 @@ export default function Dashboard() {
                       </span>
                       <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Próximo Encontro</span>
                     </div>
-                    <h3 className="text-base font-black text-foreground leading-tight group-hover:text-primary transition-colors">
+                    <h3 className="text-base font-black text-foreground leading-tight px-4 group-hover:text-primary transition-colors">
                       {proximoEncontro.tema}
                     </h3>
-                    <p className="text-xs text-muted-foreground truncate mt-1 font-bold">
+                    <p className="text-xs text-muted-foreground mt-2 font-bold opacity-80">
                       {turmaEncontro?.nome}
                     </p>
-                  </div>
-                  
-                  <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 border border-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
-                    <ChevronRight className="h-5 w-5" />
                   </div>
                 </div>
               </div>
