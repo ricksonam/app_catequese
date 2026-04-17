@@ -1,6 +1,6 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useMissoesFamilia } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,6 +22,7 @@ export default function Dashboard() {
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
+  const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
@@ -29,7 +30,7 @@ export default function Dashboard() {
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
-  const loading = tLoading || eLoading || cLoading || aLoading;
+  const loading = tLoading || eLoading || cLoading || aLoading || mLoading;
 
   useEffect(() => {
     if (!loading && !tError && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
@@ -188,6 +189,19 @@ export default function Dashboard() {
           navigate(`/turmas/${selectedTurmaId}/encontros`);
         } else {
           navigate("/turmas");
+        }
+      } 
+    },
+    { 
+      label: "Missões em Família", 
+      value: missoes.length, 
+      icon: Heart, 
+      color: "bg-rose-500/10 text-rose-500", 
+      action: () => {
+        if (selectedTurmaId !== "all") {
+          navigate(`/turmas/${selectedTurmaId}/familia`);
+        } else {
+          setTurmaPickerOpen(true);
         }
       } 
     },
@@ -367,7 +381,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats Inteligentes */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (

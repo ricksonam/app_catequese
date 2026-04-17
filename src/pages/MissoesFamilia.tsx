@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useMissoesFamilia } from "@/hooks/useSupabaseData";
 import { Heart, Plus, Share2, Copy, Sparkles, BookOpen, Dice5, HelpCircle, ArrowLeft, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,20 +31,7 @@ export default function MissoesFamilia() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Fetch missoes
-  const { data: missoes = [], isLoading } = useQuery({
-    queryKey: ["missoes_familia", turmaId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("missoes_familia")
-        .select("*")
-        .eq("turma_id", turmaId)
-        .order("criado_em", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!turmaId,
-  });
+  const { data: missoes = [], isLoading } = useMissoesFamilia(turmaId);
 
   const generateCode = () => {
     return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -62,7 +50,7 @@ export default function MissoesFamilia() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["missoes_familia", turmaId] });
+      queryClient.invalidateQueries({ queryKey: ["missoesFamilia", turmaId] });
       toast({ title: "Missão criada com sucesso!" });
       setIsCreateModalOpen(false);
       // Reset form

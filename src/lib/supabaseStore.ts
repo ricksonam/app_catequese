@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "./store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia } from "./store";
 
 // ========== TURMAS ==========
 
@@ -444,4 +444,24 @@ export async function fetchPublicPlanoByCode(code: string) {
   const { data, error } = await supabase.rpc('get_public_plano', { p_code: code.trim().toUpperCase() });
   if (error) throw error;
   return data;
+}
+
+// ========== MISSÕES EM FAMÍLIA ==========
+export async function fetchMissoesFamilia(turmaId?: string): Promise<MissaoFamilia[]> {
+  let q = supabase.from("missoes_familia").select("*").order("criado_em", { ascending: false });
+  if (turmaId) q = q.eq("turma_id", turmaId);
+  const { data, error } = await q;
+  if (error) throw error;
+
+  return (data || []).map((m: any) => ({
+    id: m.id,
+    turmaId: m.turma_id,
+    titulo: m.titulo,
+    categoria: m.categoria,
+    descricao: m.descricao,
+    codigoCompartilhamento: m.codigo_compartilhamento,
+    concluidas: m.concluidas || 0,
+    criadoPor: m.criado_por,
+    criadoEm: m.criado_em
+  }));
 }

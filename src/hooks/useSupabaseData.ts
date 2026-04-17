@@ -12,7 +12,7 @@ import {
   fetchCalendarioNotas, upsertCalendarioNota, removeCalendarioNota,
   fetchMuralFotos, upsertMuralFoto, removeMuralFoto,
   fetchCitacoes, fetchHistoricoCitacoes, saveSorteioHistorico,
-  fetchBingoModelos,
+  fetchBingoModelos, fetchMissoesFamilia,
 } from "@/lib/supabaseStore";
 import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";

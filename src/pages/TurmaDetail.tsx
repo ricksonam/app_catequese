@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus } from "lucide-react";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia } from "@/hooks/useSupabaseData";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ export default function TurmaDetail() {
   const { data: encontros = [] } = useEncontros(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
+  const { data: missoes = [] } = useMissoesFamilia(id);
   const deleteMutation = useDeleteTurma();
   const leaveMutation = useLeaveTurma();
   const removeMembroMutation = useRemoveTurmaMembro();
@@ -80,11 +81,11 @@ export default function TurmaDetail() {
     );
   }
 
-  const modulos = [
-    { label: "Encontros", desc: "Calendário e freq.", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${id}/encontros`, color: "bg-primary text-white", bg: "bg-primary/10", border: "border-primary/20", gradient: "from-primary/15 to-white" },
-    { label: "Catequizandos", desc: "Perfis e acompanhamento", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${id}/catequizandos`, color: "bg-emerald-600 text-white", bg: "bg-emerald-500/10", border: "border-emerald-500/20", gradient: "from-emerald-500/15 to-white" },
-    { label: "Atividades", desc: "Eventos e projetos", icon: ListChecks, count: atividades.length, unit: "atividade", path: `/turmas/${id}/atividades`, color: "bg-amber-600 text-white", bg: "bg-amber-500/10", border: "border-amber-500/20", gradient: "from-amber-500/15 to-white" },
-    { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bg: "bg-sky-500/10", border: "border-sky-500/20", gradient: "from-sky-500/15 to-white" },
+    { label: "Encontros", desc: "Calendário e freq.", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${id}/encontros`, color: "bg-primary text-white", bgGradient: "from-primary/60 via-primary/30 to-white", gradient: "from-primary/15 to-white", textColor: "text-blue-700" },
+    { label: "Catequizandos", desc: "Perfis e acompanhamento", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${id}/catequizandos`, color: "bg-emerald-600 text-white", bgGradient: "from-emerald-500/60 via-emerald-500/30 to-white", gradient: "from-emerald-500/15 to-white", textColor: "text-emerald-700" },
+    { label: "Atividades", desc: "Eventos e projetos", icon: ListChecks, count: atividades.length, unit: "atividade", path: `/turmas/${id}/atividades`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700" },
+    { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700" },
+    { label: "Catequese em Família", desc: "Missões e integração", icon: Heart, count: missoes.length, unit: "missão", path: `/turmas/${id}/familia`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700" },
   ];
 
   const relatorioModulo = { label: "Relatórios", icon: PieChart, path: `/turmas/${id}/relatorios` };
@@ -191,10 +192,7 @@ export default function TurmaDetail() {
               key={mod.label}
               className={cn(
                 "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[150px]",
-                mod.label === "Encontros" ? "bg-gradient-to-br from-primary/60 via-primary/30 to-white" :
-                mod.label === "Catequizandos" ? "bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white" :
-                mod.label === "Atividades" ? "bg-gradient-to-br from-amber-500/60 via-amber-500/30 to-white" :
-                "bg-gradient-to-br from-sky-500/60 via-sky-500/30 to-white"
+                `bg-gradient-to-br ${mod.bgGradient}`
               )}
               style={{ animationDelay: `${i * 100}ms` }}
               onClick={() => navigate(mod.path)}
@@ -225,10 +223,7 @@ export default function TurmaDetail() {
                   {(mod.count !== null || isPlan) && (
                     <div className={cn(
                       "mt-2 flex flex-col items-center justify-center min-w-[75px] transition-colors mx-auto",
-                      mod.label === "Encontros" ? "text-blue-700" :
-                      mod.label === "Catequizandos" ? "text-emerald-700" :
-                      mod.label === "Atividades" ? "text-amber-700" :
-                      "text-sky-700"
+                      mod.textColor
                     )}>
                       <span className={cn("font-black leading-none", isPlan ? "text-[10px]" : "text-lg")}>
                         {isPlan ? (turma.etapa || "N/A") : mod.count}

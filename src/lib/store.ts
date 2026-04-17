@@ -214,6 +214,18 @@ export interface BingoModelo {
   criado_em?: string;
 }
 
+export interface MissaoFamilia {
+  id: string;
+  turmaId: string;
+  titulo: string;
+  categoria: string;
+  descricao: string;
+  codigoCompartilhamento: string;
+  concluidas: number;
+  criadoPor: string;
+  criadoEm: string;
+}
+
 export const ORACAO_TIPOS: OracaoTipo[] = [
   'Ofício Divino', 'Leitura Orante', 'Celebrativo', 'Oração Simples', 'Louvor',
 ];
