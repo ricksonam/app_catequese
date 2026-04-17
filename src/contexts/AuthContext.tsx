@@ -31,12 +31,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const initialized = useRef(false);
   const resolved = useRef(false);
 
-  const resolve = (s: Session | null) => {
-    if (resolved.current) return; // Evita dupla resolução
-    resolved.current = true;
+  const handleSession = (s: Session | null) => {
     setSession(s);
-    setLoading(false);
-    setIsReady(true);
+    if (!resolved.current) {
+      resolved.current = true;
+      setLoading(false);
+      setIsReady(true);
+    }
   };
 
   useEffect(() => {
@@ -47,26 +48,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const safetyTimeout = setTimeout(() => {
       if (!resolved.current) {
         console.warn("[iCatequese] Auth timeout atingido. Liberando app sem sessão.");
-        resolve(null);
+        handleSession(null);
       }
     }, AUTH_TIMEOUT_MS);
 
     // Set up listener FIRST (before getSession)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        resolve(session);
+        handleSession(session);
       }
     );
 
     // Then restore session from storage
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
-        resolve(session);
+        handleSession(session);
       })
       .catch((err) => {
         console.error("[iCatequese] Erro ao recuperar sessão:", err);
         logError("auth_error", err instanceof Error ? err : new Error(String(err)));
-        resolve(null);
+        handleSession(null);
       });
 
     return () => {
