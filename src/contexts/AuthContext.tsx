@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { logError } from "@/lib/errorLogger";
 
 interface AuthContextType {
   session: Session | null;
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch((err) => {
         console.error("[iCatequese] Erro ao recuperar sessão:", err);
+        logError("auth_error", err instanceof Error ? err : new Error(String(err)));
         resolve(null);
       });
 

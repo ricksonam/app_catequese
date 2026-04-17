@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { logError, initGlobalErrorCapture } from "@/lib/errorLogger";
 import AppLayout from "@/components/AppLayout";
 import AuthPage from "@/pages/AuthPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
@@ -48,11 +49,16 @@ import { useState, useEffect } from "react";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,                    // Apenas 1 retry (era 3 → salvava 6s de espera)
-      retryDelay: 1000,            // 1s entre retries (fixo, sem backoff exponencial)
-      staleTime: 60 * 1000,       // 60s: dados ficam "frescos" por 1 minuto (evita re-fetch ao navegar)
-      gcTime: 5 * 60 * 1000,      // 5min: mantém dados em cache por 5 min
-      refetchOnWindowFocus: false, // Não refaz queries ao voltar ao app (evita lag)
+      retry: 1,
+      retryDelay: 1000,
+      staleTime: 60 * 1000,
+      gcTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      onError: (error) => {
+        logError("api_error", error instanceof Error ? error : new Error(String(error)));
+      },
     },
   },
 });
@@ -131,6 +137,7 @@ const App = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2200);
+    initGlobalErrorCapture(); // Captura global de erros JS
     return () => clearTimeout(timer);
   }, []);
 

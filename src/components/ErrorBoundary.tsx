@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from "react";
+import { logError } from "@/lib/errorLogger";
 
 interface Props {
   children: ReactNode;
@@ -21,6 +22,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("[iCatequese] Erro capturado pelo ErrorBoundary:", error, errorInfo);
+    logError("render_crash", error, { componentStack: errorInfo.componentStack?.slice(0, 500) });
   }
 
   handleRetry = () => {
