@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import AppLayout from "@/components/AppLayout";
 import AuthPage from "@/pages/AuthPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
@@ -40,16 +41,32 @@ import PlaceholderPage from "@/pages/PlaceholderPage";
 import PublicPlano from "@/pages/PublicPlano";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import SplashScreen from "@/components/SplashScreen";
+import { useState, useEffect } from "react";
 
-const queryClient = new QueryClient();
+// QueryClient com configuração de resiliência
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,                    // Apenas 1 retry (era 3 → salvava 6s de espera)
+      retryDelay: 1000,            // 1s entre retries (fixo, sem backoff exponencial)
+      staleTime: 60 * 1000,       // 60s: dados ficam "frescos" por 1 minuto (evita re-fetch ao navegar)
+      gcTime: 5 * 60 * 1000,      // 5min: mantém dados em cache por 5 min
+      refetchOnWindowFocus: false, // Não refaz queries ao voltar ao app (evita lag)
+    },
+  },
+});
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-32 h-32 rounded-3xl overflow-hidden animate-float transform-gpu">
-          <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain" />
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-32 h-32 rounded-3xl overflow-hidden animate-float transform-gpu">
+            <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+          <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Conectando...</p>
         </div>
       </div>
     );
@@ -109,31 +126,30 @@ const AppRoutes = () => (
   </Routes>
 );
 
-import SplashScreen from "@/components/SplashScreen";
-import { useState, useEffect } from "react";
-
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2200); // 2.2s for smooth fade out
+    const timer = setTimeout(() => setShowSplash(false), 2200);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        {showSplash && <SplashScreen />}
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <ScrollToTop />
-            <AppRoutes />
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          {showSplash && <SplashScreen />}
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <ScrollToTop />
+              <AppRoutes />
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

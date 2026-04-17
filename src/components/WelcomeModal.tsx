@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, MapPin, UserCheck, CheckCircle2, Dove } from "lucide-react";
+import { X, MapPin, UserCheck, CheckCircle2, Dove, ChevronRight } from "lucide-react";
 
 const WELCOME_SEEN_KEY = "ivc_welcome_seen";
 
@@ -169,4 +169,3 @@ export default function WelcomeModal({ open, onClose }: WelcomeModalProps) {
   );
 }
 
-import { ChevronRight } from "lucide-react";
