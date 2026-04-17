@@ -352,8 +352,8 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border border-black/5 dark:border-white/5 relative overflow-hidden",
-                stat.color.includes("text-primary") && "bg-primary/5 shadow-md shadow-primary/5"
+                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border-2 border-primary/20 relative overflow-hidden shadow-sm",
+                stat.color.includes("text-primary") && "bg-primary/5 shadow-md shadow-primary/10 border-primary"
               )}
               style={{ animationDelay: `${i * 80}ms` }}
             >
