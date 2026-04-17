@@ -3,6 +3,7 @@ import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeM
 import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { formatarDataVigente } from "@/lib/utils";
 import { toast } from "sonner";
 import ReportModule from "@/components/reports/ReportModule";
@@ -130,13 +131,13 @@ export default function PlanoTurma() {
         </div>
       )}
 
-      <div className="flex gap-2 p-1 bg-muted/30 rounded-2xl animate-fade-in">
-        {(['all', 'encontro', 'atividade'] as const).map((f) => (
-          <button key={f} onClick={() => setActiveFilter(f)} className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeFilter === f ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted/50'}`}>
-            {f === 'all' ? 'Tudo' : f === 'encontro' ? 'Encontros' : 'Atividades'}
-          </button>
-        ))}
-      </div>
+      <Tabs defaultValue="all" value={activeFilter} onValueChange={(v) => setActiveFilter(v as any)} className="w-full animate-fade-in">
+        <TabsList className="grid w-full grid-cols-3 mb-8 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50 h-auto">
+          <TabsTrigger value="all" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Tudo</TabsTrigger>
+          <TabsTrigger value="encontro" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Encontros</TabsTrigger>
+          <TabsTrigger value="atividade" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Atividades</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       {groupedItems.length === 0 ? (
         <div className="empty-state animate-float-up"><div className="icon-box bg-primary/10 text-primary mx-auto mb-3"><CalendarDays className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhum item encontrado</p></div>
