@@ -343,15 +343,7 @@ export default function AuthPage() {
           ))}
         </div>
 
-        {/* Botão compartilhar icônico e animado no canto superior direito */}
-        <button
-          id="btn-compartilhar"
-          onClick={handleShare}
-          className="fixed top-8 right-8 z-[100] w-12 h-12 rounded-full bg-white/70 backdrop-blur-md border border-primary/20 text-primary shadow-2xl shadow-primary/20 flex items-center justify-center active:scale-90 transition-all hover:bg-white hover:border-primary/40 animate-glow-pulse shimmer-effect group"
-          title="Compartilhar iCatequese"
-        >
-          <Share2 className="h-5 w-5 transition-transform group-hover:rotate-12 group-active:scale-110" />
-        </button>
+
 
         {/* ── Conteúdo ── */}
         <div className="relative z-10 flex flex-col items-center justify-center flex-1 w-full max-w-sm mx-auto px-6 text-center py-10">
@@ -408,8 +400,17 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* ── Footer ── */}
-        <div className="relative z-10 pb-6 text-center">
+        {/* ── Footer com chip de compartilhar animado ── */}
+        <div className="relative z-10 pb-6 flex flex-col items-center gap-3">
+          <button
+            id="btn-compartilhar"
+            onClick={handleShare}
+            className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-white/10 backdrop-blur-md border border-primary/25 text-primary shadow-lg shadow-primary/15 hover:shadow-primary/30 hover:border-primary/50 hover:bg-white active:scale-95 transition-all group"
+            style={{ animation: 'share-chip-pulse 2.8s ease-in-out infinite' }}
+          >
+            <Share2 className="h-4 w-4 transition-transform group-hover:rotate-12 group-hover:scale-110" />
+            <span className="text-xs font-black tracking-wide text-primary">Se gostou do App, compartilhe!</span>
+          </button>
           <p className="text-slate-400 font-bold text-[10px] tracking-widest uppercase">Versão 1.0.0 · Rickson Amazonas</p>
         </div>
 
@@ -422,6 +423,11 @@ export default function AuthPage() {
           @keyframes logo-breathe {
             0%, 100% { transform: scale(1); box-shadow: 0 0 30px 8px rgba(37,99,235,0.1); }
             50% { transform: scale(1.03); box-shadow: 0 0 50px 15px rgba(37,99,235,0.2); }
+          }
+          @keyframes share-chip-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(37,99,235,0.15); }
+            40% { transform: scale(1.04); box-shadow: 0 6px 28px rgba(37,99,235,0.30); }
+            60% { transform: scale(1.02); box-shadow: 0 5px 24px rgba(37,99,235,0.22); }
           }
         `}</style>
       </div>
