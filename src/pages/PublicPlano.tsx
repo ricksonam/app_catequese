@@ -144,23 +144,27 @@ export default function PublicPlano() {
                       
                       return (
                         <div key={`${item.tipo}-${item.id}`} className="flex gap-4 items-center group animate-float-up" style={{ animationDelay: `${i * 50}ms` }}>
-                          {/* Calendar Block (Losango/Calendário style) */}
-                          <div className="shrink-0 w-16 h-16 shadow-lg shadow-primary/5 bg-white dark:bg-zinc-800 rounded-2xl overflow-hidden border-2 border-primary/20 group-hover:scale-105 transition-all duration-500 flex flex-col items-stretch">
-                            <div className={`h-6 flex items-center justify-center ${item.tipo === 'encontro' ? 'bg-primary' : 'bg-blue-600'} relative`}>
+                          {/* Calendar Block (Shrinked) */}
+                          <div className={`shrink-0 w-14 h-14 shadow-lg shadow-black/5 bg-white dark:bg-zinc-800 rounded-xl overflow-hidden border-2 transition-all duration-500 flex flex-col items-stretch ${
+                            item.tipo === 'encontro' ? 'border-blue-500/30' : 'border-amber-400/30'
+                          }`}>
+                            <div className={`h-5 flex items-center justify-center ${item.tipo === 'encontro' ? 'bg-blue-600' : 'bg-amber-500'} relative`}>
                               <div className="absolute inset-0 bg-white/20 animate-shimmer bg-[length:200%_auto]" />
-                              <span className="text-[8px] font-black text-white uppercase tracking-wider">{dateStr.split(' ')[2]?.replace('.', '').toUpperCase()}</span>
+                              <span className="text-[7px] font-black text-white uppercase tracking-wider">{dateStr.split(' ')[2]?.replace('.', '').toUpperCase()}</span>
                             </div>
                             <div className="flex-1 flex flex-col items-center justify-center leading-none bg-white dark:bg-zinc-900">
-                              <span className="text-xl font-black text-foreground">{dateStr.split(' ')[0]}</span>
+                              <span className="text-lg font-black text-foreground">{dateStr.split(' ')[0]}</span>
                             </div>
                           </div>
 
-                          {/* Details Card - Compact */}
-                          <div className={`flex-1 p-3.5 rounded-2xl border-2 border-border/40 ${item.borda} shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-500 active:scale-[0.98] relative overflow-hidden bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm min-w-0`}>
+                          {/* Details Card - Compact but with full title and visible borders */}
+                          <div className={`flex-1 p-3.5 rounded-2xl border-2 shadow-sm hover:shadow-md transition-all duration-500 active:scale-[0.98] relative overflow-hidden bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm min-w-0 ${
+                            item.tipo === 'encontro' ? 'border-blue-500/50 hover:border-blue-500' : 'border-amber-400/50 hover:border-amber-400'
+                          }`}>
                             <div className="flex flex-col gap-1 min-w-0">
                                <div className="flex items-center justify-between gap-2 mb-1">
                                   <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider ${
-                                    item.tipo === 'encontro' ? 'bg-primary/10 text-primary' : 'bg-blue-100 text-blue-700'
+                                    item.tipo === 'encontro' ? 'bg-blue-100/50 text-blue-700' : 'bg-amber-100/50 text-amber-700'
                                   }`}>
                                     {item.tipo}
                                   </span>
@@ -169,17 +173,17 @@ export default function PublicPlano() {
                                   )}
                                </div>
                                
-                               <h4 className="text-sm font-black text-foreground leading-tight truncate px-0.5">
+                               <h4 className="text-sm font-black text-foreground leading-tight px-0.5">
                                  {item.tema || item.nome}
                                </h4>
                                
                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
                                   <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
-                                    <Clock className="h-3 w-3 text-primary/50" />
+                                    <Clock className="h-3 w-3 text-muted-foreground/50" />
                                     {item.horario || turma.horario}
                                   </div>
                                   <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
-                                    <MapPin className="h-3 w-3 text-primary/50" />
+                                    <MapPin className="h-3 w-3 text-muted-foreground/50" />
                                     <span className="truncate max-w-[120px]">{checkLocal(item.local || turma.local)}</span>
                                   </div>
                                </div>
