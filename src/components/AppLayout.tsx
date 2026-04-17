@@ -89,14 +89,14 @@ export default function AppLayout() {
                 <button
                   key={tab.path}
                   onClick={() => navigate(tab.path)}
-                  className={`group relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-500 active:scale-90 ${
+                  className={`group relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-blue-100 dark:bg-blue-900/50 scale-105 shadow-md`
-                      : "text-muted-foreground hover:bg-muted/30"
+                      ? `${tab.color} bg-blue-100 dark:bg-blue-900/50 scale-105 shadow-sm`
+                      : "text-muted-foreground hover:bg-muted/20"
                   }`}
                 >
-                  <Icon className={`h-5 w-5 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
-                  <span className={`text-[8px] font-black uppercase tracking-tighter transition-all ${isActive ? "opacity-100 mt-0.5" : "hidden"}`}>
+                  <Icon className={`h-5 w-5 mb-0.5 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
+                  <span className={`text-[7px] font-black uppercase tracking-[0.05em] text-center transition-all ${isActive ? "opacity-100 text-blue-600 dark:text-blue-400" : "opacity-60"}`}>
                     {tab.label}
                   </span>
                 </button>
