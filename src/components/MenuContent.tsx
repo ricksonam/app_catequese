@@ -40,10 +40,10 @@ const modulosGlobais = [
 ];
 
 const classModules = [
-  { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
+  { label: "Encontros", icon: CalendarDays, getPath: (id: string) => `/turmas/${id}/encontros`, color: "bg-blue-500/10 text-blue-500" },
   { label: "Catequizandos", icon: Users, getPath: (id: string) => `/turmas/${id}/catequizandos`, color: "bg-success/10 text-success" },
-  { label: "Encontros Realizados", icon: CalendarDays, getPath: (id: string) => `/turmas/${id}/encontros`, color: "bg-blue-500/10 text-blue-500" },
-  { label: "Relatórios", icon: FileText, getPath: (id: string) => `/turmas/${id}/relatorios`, color: "bg-liturgical/10 text-liturgical" },
+  { label: "Atividades e Eventos", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/atividades`, color: "bg-amber-500/10 text-amber-500" },
+  { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
 ];
 
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
@@ -194,7 +194,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="icon-box bg-primary/10 text-primary">
                    <Church className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Cadastros Básicos</span>
+                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Cadastros Básicos</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -220,7 +220,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="icon-box bg-gold/15 text-gold">
                    <Sparkles className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Globais</span>
+                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Globais</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -246,7 +246,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="icon-box bg-success/10 text-success">
                    <GraduationCap className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Turma</span>
+                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Turma</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
@@ -302,7 +302,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="icon-box bg-blue-500/10 text-blue-500">
                    <Users className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[10px] font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Conta</span>
+                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Conta</span>
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-2 px-2 space-y-2">
