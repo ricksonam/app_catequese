@@ -413,12 +413,12 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all min-w-0 border-2 border-primary/20 relative overflow-hidden shadow-sm",
-                stat.color.includes("text-primary") && "bg-primary/5 shadow-md shadow-primary/10 border-primary"
+                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl min-w-0 border-2 border-primary/20 relative overflow-hidden shadow-md bg-white dark:bg-zinc-900",
+                stat.color.includes("text-primary") && "bg-primary/5 shadow-primary/10 border-primary"
               )}
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10`}>
+              <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10 animate-bounce-subtle`}>
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               <p className="text-xl sm:text-2xl font-bold text-foreground leading-tight truncate">
@@ -508,22 +508,22 @@ export default function Dashboard() {
       <div className="grid gap-6">
         {/* Aniversários de Nascimento */}
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
-          <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-sm mb-2">
-              <Cake className="h-6 w-6 text-amber-600" />
+          <div className="flex items-center justify-center gap-3 px-1 mb-3 text-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-sm animate-bounce-subtle shrink-0">
+              <Cake className="h-5 w-5 text-amber-600" />
             </div>
-            <div>
-              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">ANIVERSÁRIOS de NASCIMENTO</h2>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Próximos aniversarios</p>
+            <div className="text-left">
+              <h2 className="text-[13px] font-black text-foreground uppercase tracking-tight leading-none mb-0.5">ANIVERSÁRIOS de NASCIMENTO</h2>
+              <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Próximos aniversários</p>
             </div>
           </div>
 
-          <div className="relative p-[2px] rounded-[32px] bg-gradient-to-br from-amber-400/60 via-amber-500/40 to-amber-600/40 shadow-[0_15px_45px_rgba(0,0,0,0.06)] overflow-hidden">
-            <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
+          <div className="relative p-[1.5px] rounded-[28px] bg-gradient-to-br from-amber-400/60 via-amber-500/40 to-amber-600/40 shadow-[0_12px_35px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="absolute inset-[2.5px] rounded-[26px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
             
-            <div className="relative p-6 rounded-[30px] bg-white dark:bg-zinc-900 border-2 border-amber-500/10 shadow-xl shadow-amber-500/5 backdrop-blur-md text-center overflow-hidden">
-              <div className="absolute -right-4 -bottom-4 opacity-[0.03] transform scale-150 rotate-12">
-                <Cake className="w-24 h-24 text-amber-500" />
+            <div className="relative p-4 rounded-[26px] bg-white dark:bg-zinc-900 border-2 border-amber-500/5 shadow-xl shadow-amber-500/5 backdrop-blur-md text-center overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 opacity-[0.02] transform scale-150 rotate-12">
+                <Cake className="w-20 h-20 text-amber-500" />
               </div>
 
               {proximosAniversariantes.length === 0 ? (
@@ -567,22 +567,22 @@ export default function Dashboard() {
 
         {/* Aniversários de Batismo */}
         <div className="animate-float-up" style={{ animationDelay: '400ms' }}>
-          <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-sm mb-2">
-              <Flame className="h-6 w-6 text-blue-600" />
+          <div className="flex items-center justify-center gap-3 px-1 mb-3 text-center">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-sm animate-bounce-subtle shrink-0">
+               <span className="text-lg" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate' }}>🕯️</span>
             </div>
-            <div>
-              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">ANIVERSÁRIOS DE BATISMO</h2>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">proximos aniversarios</p>
+            <div className="text-left">
+              <h2 className="text-[13px] font-black text-foreground uppercase tracking-tight leading-none mb-0.5">ANIVERSÁRIOS DE BATISMO</h2>
+              <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest leading-none">próximos aniversários</p>
             </div>
           </div>
 
-          <div className="relative p-[2px] rounded-[32px] bg-gradient-to-br from-blue-400/60 via-blue-500/40 to-blue-600/40 shadow-[0_15px_45px_rgba(0,0,0,0.06)] overflow-hidden">
-            <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
+          <div className="relative p-[1.5px] rounded-[28px] bg-gradient-to-br from-blue-400/60 via-blue-500/40 to-blue-600/40 shadow-[0_12px_35px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="absolute inset-[2.5px] rounded-[26px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
             
-            <div className="relative p-6 rounded-[30px] bg-white dark:bg-zinc-900 border-2 border-blue-500/10 shadow-xl shadow-blue-500/5 backdrop-blur-md text-center overflow-hidden">
-              <div className="absolute -right-4 -bottom-4 opacity-[0.03] transform scale-150 rotate-12">
-                <Flame className="w-24 h-24 text-blue-500" />
+            <div className="relative p-4 rounded-[26px] bg-white dark:bg-zinc-900 border-2 border-blue-500/5 shadow-xl shadow-blue-500/5 backdrop-blur-md text-center overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 opacity-[0.02] transform scale-150 rotate-12">
+                 <span className="text-4xl opacity-20">🕯️</span>
               </div>
 
               {proximosAniversariantesBatismo.length === 0 ? (
