@@ -498,7 +498,13 @@ export default function Dashboard() {
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
-              </div>      {/* ── CARD DE ANIVERSÁRIOS INDEPENDENTES ── */}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CARD DE ANIVERSÁRIOS INDEPENDENTES ── */}
       <div className="grid gap-6">
         {/* Aniversários de Nascimento */}
         <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
