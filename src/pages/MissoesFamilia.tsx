@@ -273,9 +273,7 @@ export default function MissoesFamilia() {
                 </div>
               </div>
             ))}
-          </div>
         )}
-}
       </div>
 
       {/* Modal Confirmar Exclusão */}
