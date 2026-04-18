@@ -242,7 +242,7 @@ export default function MissoesFamilia() {
                           </span>
                           <div className="flex gap-2">
                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-muted/30" onClick={() => openEditModal(missao)}>
-                              <Sparkles className="h-3.5 w-3.5 text-rose-500" />
+                              <PencilLine className="h-3.5 w-3.5 text-rose-500" />
                             </Button>
                           </div>
                         </div>

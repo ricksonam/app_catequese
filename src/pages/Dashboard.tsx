@@ -513,8 +513,8 @@ export default function Dashboard() {
               <Cake className="h-6 w-6 text-amber-600" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Aniversários</h2>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Celebre a vida</p>
+              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">ANIVERSÁRIOS de NASCIMENTO</h2>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Próximos aniversarios</p>
             </div>
           </div>
 
@@ -572,8 +572,8 @@ export default function Dashboard() {
               <Flame className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Batismos</h2>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Aniversário de fé</p>
+              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">ANIVERSÁRIOS DE BATISMO</h2>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">proximos aniversarios</p>
             </div>
           </div>
 
