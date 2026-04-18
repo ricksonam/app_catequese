@@ -347,13 +347,13 @@ export default function Dashboard() {
         </div>
       ) : (
         <div 
-          className="relative p-[2px] rounded-[32px] bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_15px_45px_rgba(0,0,0,0.08)] animate-card-activate transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group overflow-hidden"
+          className="relative p-[1.5px] rounded-[32px] bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white shadow-[0_15px_45px_rgba(0,0,0,0.08)] animate-card-activate transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group overflow-hidden"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
           {/* Moldura litúrgica interna */}
           <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
           
-          <div className="relative flex flex-col p-0 rounded-[30px] bg-card w-full h-full overflow-hidden">
+          <div className="relative flex flex-col p-0 rounded-[30px] bg-white bg-gradient-to-b from-emerald-500/15 to-white w-full h-full overflow-hidden">
             {/* Marca d'água de fundo */}
             <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
                <BookOpen className="w-32 h-32 text-primary" />
