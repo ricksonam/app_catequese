@@ -4,21 +4,22 @@ import {
   BookOpen,
   Menu,
   Image,
-  Library,
   Dices,
+  Heart,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuContent } from "./MenuContent";
 import BirthdayBell from "./BirthdayBell";
 import { ObjectiveModal } from "./ObjectiveModal";
+import { useTurmas } from "@/hooks/useSupabaseData";
 
-const tabs = [
+const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-liturgical" },
   { path: "/jogos", icon: Dices, label: "Jogos", color: "text-gold" },
   { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-success" },
-  { path: "/modulos/biblioteca", icon: Library, label: "Modelos", color: "text-liturgical" },
+  { path: "__familia__", icon: Heart, label: "Família", color: "text-rose-500" },
 ];
 
 export default function AppLayout() {
@@ -26,12 +27,23 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showObjective, setShowObjective] = useState(false);
+  const { data: turmas = [] } = useTurmas();
 
   const currentPath = location.pathname;
+
+  // Resolve the família path dynamically based on first turma
+  const familiaPath = useMemo(() => {
+    if (turmas.length > 0) return `/turmas/${turmas[0].id}/familia`;
+    return "/turmas";
+  }, [turmas]);
+
+  const tabs = useMemo(() => baseTabs.map(tab => 
+    tab.path === "__familia__" ? { ...tab, path: familiaPath } : tab
+  ), [familiaPath]);
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
-    <div className="min-h-screen bg-background flex flex-col print:block print:min-h-0 print:bg-white">
+    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
       {/* Header */}
       {!isPresentationMode && (
         <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0 print:hidden">
@@ -77,7 +89,7 @@ export default function AppLayout() {
       {/* Tab Bar */}
       {!isPresentationMode && currentPath !== "/modulos/mural" && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-3 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto max-w-md flex items-center justify-around h-16 px-1.5 rounded-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border-2 border-blue-500 shadow-[0_10px_30px_rgba(59,130,246,0.3)] dark:shadow-[0_10px_30px_rgba(59,130,246,0.4)]">
+          <div className="mx-auto max-w-md flex items-center justify-around h-[72px] px-2 rounded-full bg-amber-50/95 dark:bg-amber-900/30 backdrop-blur-xl border-2 border-amber-300 shadow-[0_10px_30px_rgba(251,191,36,0.25)] dark:shadow-[0_10px_30px_rgba(251,191,36,0.15)]">
             {tabs.map((tab) => {
               const isActive =
                 tab.path === "/"
@@ -89,14 +101,14 @@ export default function AppLayout() {
                 <button
                   key={tab.path}
                   onClick={() => navigate(tab.path)}
-                  className={`group relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 active:scale-90 ${
+                  className={`group relative flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-blue-100 dark:bg-blue-900/50 scale-105 shadow-sm`
-                      : "text-muted-foreground hover:bg-muted/20"
+                      ? `${tab.color} bg-amber-200/60 dark:bg-amber-800/40 scale-110 shadow-sm`
+                      : "text-gray-600 dark:text-gray-400 hover:bg-amber-100/50"
                   }`}
                 >
-                  <Icon className={`h-5 w-5 mb-0.5 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
-                  <span className={`text-[7px] font-black uppercase tracking-[0.05em] text-center transition-all ${isActive ? "opacity-100 text-blue-600 dark:text-blue-400" : "opacity-60"}`}>
+                  <Icon className={`h-6 w-6 mb-0.5 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
+                  <span className={`text-[8px] font-black uppercase tracking-[0.05em] text-center transition-all text-black dark:text-white ${isActive ? "opacity-100" : "opacity-70"}`}>
                     {tab.label}
                   </span>
                 </button>
