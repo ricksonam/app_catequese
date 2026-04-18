@@ -177,25 +177,26 @@ export default function MissoesFamilia() {
             <p className="text-[10px] text-muted-foreground font-medium truncate">Missões e Engajamento</p>
           </div>
           <div className="flex-1" />
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            size="sm"
-            className="rounded-xl h-9 px-4 bg-rose-500 hover:bg-rose-600 font-black uppercase tracking-widest text-[9px] shrink-0"
-          >
-            <Plus className="h-3.5 w-3.5 mr-1" /> Novo
-          </Button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-3xl mx-auto p-4 space-y-6">
         {/* Simplified Intro Balloon */}
-        <div className="flex justify-center animate-fade-in pt-4">
+        <div className="flex flex-col items-center gap-4 animate-fade-in pt-4">
           <div className="relative bg-white dark:bg-zinc-900 border border-border p-4 rounded-3xl shadow-lg max-w-sm">
             <p className="text-xs font-medium text-muted-foreground leading-relaxed text-center">
               Crie missões semanais e envie o link para engajar as famílias! 🚀
             </p>
           </div>
+          
+          <Button 
+            onClick={() => setIsCreateModalOpen(true)}
+            size="sm"
+            className="rounded-2xl h-10 px-6 shadow-lg shadow-rose-500/20 bg-rose-500 hover:bg-rose-600 font-black uppercase tracking-widest text-[10px] transition-all hover:scale-105 active:scale-95"
+          >
+            <Plus className="h-4 w-4 mr-2" /> Nova Missão
+          </Button>
         </div>
 
         {/* Lista de Missões */}
@@ -241,10 +242,7 @@ export default function MissoesFamilia() {
                           </span>
                           <div className="flex gap-2">
                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-muted/30" onClick={() => openEditModal(missao)}>
-                              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-muted/30" onClick={() => handleShare(missao.codigoCompartilhamento)}>
-                              <Share2 className="h-3.5 w-3.5" />
+                              <Sparkles className="h-3.5 w-3.5 text-rose-500" />
                             </Button>
                           </div>
                         </div>
