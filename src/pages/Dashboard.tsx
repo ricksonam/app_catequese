@@ -427,74 +427,66 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up" style={{ animationDelay: '200ms' }}>
-          <div className="flex items-center justify-between px-1 mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center border border-amber-200 shadow-sm">
-                <Flame className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div>
-                <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Prepare seu material</p>
-              </div>
+          <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center border border-blue-200 shadow-sm mb-2">
+              <BookOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <button 
-              onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-              className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity"
-            >
-              Ver Detalhes
-            </button>
+            <div>
+              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Prepare seu material</p>
+            </div>
           </div>
 
           <div 
-            className="float-card p-0 overflow-hidden border-2 border-amber-300 shadow-xl shadow-amber-500/10 bg-gradient-to-br from-amber-50/80 to-white/90 dark:from-amber-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
+            className="float-card p-0 overflow-hidden border-2 border-blue-300 shadow-xl shadow-blue-500/10 bg-gradient-to-br from-blue-50/80 to-white/90 dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
             onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
           >
             <div className="p-5 active:scale-[0.99] transition-all">
               <div className="flex gap-4 items-stretch">
                 {/* Chip de Data */}
-                <div className="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-b from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/40 rounded-2xl shadow-md border-b-2 border-amber-200 dark:border-amber-800/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden self-center">
+                <div className="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-b from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/40 rounded-2xl shadow-md border-b-2 border-blue-200 dark:border-blue-800/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden self-center">
                   <div className="absolute top-0 inset-x-0 h-1 bg-white/40" />
-                  <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest leading-none mb-0.5 mt-1">
+                  <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none mb-0.5 mt-1">
                     {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
                   </span>
-                  <span className="text-xl font-black text-amber-600 dark:text-amber-200 leading-none drop-shadow-sm">
+                  <span className="text-xl font-black text-blue-600 dark:text-blue-200 leading-none drop-shadow-sm">
                     {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                   </span>
-                  <span className="text-[8px] font-black text-amber-600/80 dark:text-amber-400/80 uppercase tracking-widest mt-0.5 mb-1">
+                  <span className="text-[8px] font-black text-blue-600/80 dark:text-blue-400/80 uppercase tracking-widest mt-0.5 mb-1">
                     {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
                   </span>
                 </div>
 
                 {/* Card de Informações Principal */}
-                <div className="flex-1 float-card bg-white/80 dark:bg-zinc-900/80 border-2 border-amber-100 dark:border-amber-900/30 p-4 flex flex-col justify-center relative overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
+                <div className="flex-1 float-card bg-white/80 dark:bg-zinc-900/80 border-2 border-blue-100 dark:border-blue-900/30 p-4 flex flex-col justify-center relative overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
                   {/* Watermark Litúrgico */}
                   <div className="absolute -right-2 -bottom-2 opacity-[0.03] transform scale-150 rotate-12">
-                    <Flame className="w-16 h-16 text-amber-500" />
+                    <BookOpen className="w-16 h-16 text-blue-500" />
                   </div>
                   
                   <div className="flex items-center gap-2 mb-2">
                     <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse ${
-                      isUrgent ? "bg-destructive text-white" : "bg-amber-500 text-white shadow-lg shadow-amber-500/20"
+                      isUrgent ? "bg-destructive text-white" : "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
                     }`}>
                       {diaLabel}
                     </span>
-                    <div className="flex items-center gap-1 uppercase text-[9px] font-black tracking-widest text-amber-600 dark:text-amber-500 mr-1">
-                      <Flame className="h-2.5 w-2.5" />
+                    <div className="flex items-center gap-1 uppercase text-[9px] font-black tracking-widest text-blue-600 dark:text-blue-500 mr-1">
+                      <BookOpen className="h-2.5 w-2.5" />
                       Próximo Encontro
                     </div>
                   </div>
 
-                  <h3 className="text-base font-black text-foreground drop-shadow-sm leading-tight mb-1 group-hover:text-amber-600 transition-colors">
+                  <h3 className="text-base font-black text-foreground drop-shadow-sm leading-tight mb-1 group-hover:text-blue-600 transition-colors">
                     {proximoEncontro.tema}
                   </h3>
                   
                   <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/70">
-                    <span className="bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg border border-amber-100/50 dark:border-amber-900/30">
+                    <span className="bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-lg border border-blue-100/50 dark:border-blue-900/30">
                       {turmaEncontro?.nome}
                     </span>
                   </div>
 
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/20 text-amber-600 transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-1">
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-1">
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
@@ -506,9 +498,9 @@ export default function Dashboard() {
 
       {/* ── CARD DE ANIVERSÁRIOS ── */}
       <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
-        <div className="flex items-center gap-2 px-1 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
-            <Cake className="h-5 w-5 text-primary" />
+        <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm mb-2">
+            <Cake className="h-6 w-6 text-primary" />
           </div>
           <div>
             <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Aniversários</h2>
@@ -578,7 +570,7 @@ export default function Dashboard() {
             <div className="flex flex-col items-center gap-1.5 mb-8 relative z-10">
               <div className="flex items-center gap-3">
                 <span className="text-2xl" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate' }}>🕯️</span>
-                <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em]">Caminhada na Fé (Batismo)</h3>
+                <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em]">Aniversários de batismo</h3>
                 <span className="text-2xl" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate', animationDelay: '0.4s' }}>✨</span>
               </div>
               <div className="h-1 w-20 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-50" />
