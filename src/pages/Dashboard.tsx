@@ -359,29 +359,28 @@ export default function Dashboard() {
                <BookOpen className="w-32 h-32 text-primary" />
             </div>
 
-            <div className="px-5 pt-8 pb-4 flex flex-col items-center relative z-10 text-center">
-              {/* Ícone centralizado */}
-              <div className={cn(
-                "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-lg mb-4",
-                heroColors
-              )}>
-                <LiturgicalIcon type={selectedTurma?.etapa} className="h-8 w-8" />
-              </div>
-              
-              <div className="space-y-1 min-w-0 flex-1">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
-                <h3 className="text-2xl font-black text-foreground leading-tight tracking-tight truncate px-4">
+            <div className="px-5 py-6 flex flex-col items-center relative z-10 text-center">
+              <div className="space-y-2 min-w-0 flex-1">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                   <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
+                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-3.5 w-3.5" />
+                   </div>
+                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
+                </div>
+                
+                <h3 className="text-xl font-black text-foreground leading-tight tracking-tight truncate px-4">
                   {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
                 </h3>
+                
                 <p className="text-xs text-muted-foreground font-medium truncate px-8">
                   {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
                 </p>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-4">
                 <button 
                   onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
-                  className="flex items-center gap-2 px-12 py-3 rounded-2xl bg-primary text-white text-xs font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  className="flex items-center gap-2 px-10 py-2.5 rounded-2xl bg-primary text-white text-[10px] font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                 >
                   Abrir Turma
                 </button>
@@ -499,140 +498,131 @@ export default function Dashboard() {
                     <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
-              </div>
+              </div>      {/* ── CARD DE ANIVERSÁRIOS INDEPENDENTES ── */}
+      <div className="grid gap-6">
+        {/* Aniversários de Nascimento */}
+        <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
+          <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 shadow-sm mb-2">
+              <Cake className="h-6 w-6 text-amber-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Aniversários</h2>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Celebre a vida</p>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* ── CARD DE ANIVERSÁRIOS ── */}
-      <div className="animate-float-up" style={{ animationDelay: '300ms' }}>
-        <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm mb-2">
-            <Cake className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Aniversários</h2>
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Celebre a vida</p>
-          </div>
-        </div>
-
-        <div className="float-card p-0 overflow-hidden border-2 border-primary/20 shadow-xl shadow-primary/5 bg-white/80 dark:bg-zinc-900/50 backdrop-blur-md">
-          {/* Seção de Aniversários de Nascimento */}
-          <div className="p-6 bg-gradient-to-b from-transparent to-amber-500/5 relative pt-6 text-center">
-            <div className="flex flex-col items-center gap-1.5 mb-8 relative z-10">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl animate-bounce-subtle">🎂</span>
-                <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em]">Próximos Aniversariantes</h3>
-                <span className="text-2xl animate-bounce-subtle" style={{ animationDelay: '300ms' }}>🎉</span>
+          <div className="relative p-[2px] rounded-[32px] bg-gradient-to-br from-amber-400/60 via-amber-500/40 to-amber-600/40 shadow-[0_15px_45px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
+            
+            <div className="relative p-6 rounded-[30px] bg-white dark:bg-zinc-900 border-2 border-amber-500/10 shadow-xl shadow-amber-500/5 backdrop-blur-md text-center overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 opacity-[0.03] transform scale-150 rotate-12">
+                <Cake className="w-24 h-24 text-amber-500" />
               </div>
-              <div className="h-1 w-20 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full opacity-50" />
-            </div>
 
-            {proximosAniversariantes.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-3xl">🎂</div>
-                <p className="text-sm font-bold text-muted-foreground/70">Nenhum aniversário próximo</p>
-                <p className="text-xs text-muted-foreground/50 max-w-[200px] leading-relaxed">
-                  Cadastre os catequizandos com a data de nascimento para ver os aniversários aqui.
-                </p>
-              </div>
-            ) : (
-              <>
+              {proximosAniversariantes.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-3xl">🎂</div>
+                  <p className="text-sm font-bold text-muted-foreground/70">Nenhum aniversário próximo</p>
+                </div>
+              ) : (
                 <div className="grid grid-cols-3 gap-3 relative z-10">
                   {proximosAniversariantes.map((c) => {
                     const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
                     const isHoje = diasAte === 0;
                     return (
-                      <div key={c.id} className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${isHoje ? "bg-amber-400/10 ring-2 ring-amber-400/40 shadow-xl shadow-amber-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"}`}>
-                        <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${isHoje ? "border-amber-400 animate-soft-pulse scale-105" : "border-background shadow-md"}`}>
+                      <div key={c.id} className={`p-3 rounded-2xl flex flex-col items-center text-center transition-all hover:scale-105 ${isHoje ? "bg-amber-400/10 ring-2 ring-amber-400/40 shadow-lg" : "bg-muted/30 border border-black/5"}`}>
+                        <div className={`relative w-14 h-14 rounded-xl mb-2 overflow-hidden border-2 ${isHoje ? "border-amber-400 animate-soft-pulse scale-105" : "border-background shadow-sm"}`}>
                           {c.foto ? (
                             <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                           ) : (
-                            <div className={`w-full h-full flex items-center justify-center text-xl font-black ${isHoje ? "bg-amber-100 text-amber-600" : "bg-primary/10 text-primary"}`}>
+                            <div className={`w-full h-full flex items-center justify-center text-lg font-black ${isHoje ? "bg-amber-100 text-amber-600" : "bg-primary/10 text-primary"}`}>
                               {c.nome?.charAt(0).toUpperCase()}
                             </div>
                           )}
                           {isHoje && (
-                            <div className="absolute top-0 right-0 p-1 bg-amber-400 rounded-bl-xl shadow-sm">
-                              <Star className="h-3 w-3 text-white fill-white" />
+                            <div className="absolute top-0 right-0 p-1 bg-amber-400 rounded-bl-xl">
+                              <Star className="h-2.5 w-2.5 text-white fill-white" />
                             </div>
                           )}
                         </div>
-                        <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">{c.nome?.split(" ")[0]}</p>
-                        <p className={`text-[9px] font-black uppercase tracking-widest ${isHoje ? "text-amber-600" : "text-muted-foreground/60"}`}>
+                        <p className="text-[10px] font-black text-foreground truncate w-full px-1 mb-0.5">{c.nome?.split(" ")[0]}</p>
+                        <p className={`text-[8px] font-black uppercase tracking-widest ${isHoje ? "text-amber-600" : "text-muted-foreground/50"}`}>
                           {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
                         </p>
                       </div>
                     );
                   })}
                 </div>
-              </>
-            )}
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Aniversários de Batismo */}
+        <div className="animate-float-up" style={{ animationDelay: '400ms' }}>
+          <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-sm mb-2">
+              <Flame className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Batismos</h2>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Aniversário de fé</p>
+            </div>
           </div>
 
-          {/* Divisor visual */}
-          <div className="mx-6 h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent" />
-
-          {/* Seção de Aniversários de Batismo */}
-          <div className="p-6 bg-gradient-to-b from-transparent to-blue-500/5 relative pt-8 text-center border-t border-black/5 dark:border-white/5">
-            <div className="flex flex-col items-center gap-1.5 mb-8 relative z-10">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate' }}>🕯️</span>
-                <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em]">Aniversários de batismo</h3>
-                <span className="text-2xl" style={{ animation: 'candle-flicker 1.5s ease-in-out infinite alternate', animationDelay: '0.4s' }}>✨</span>
+          <div className="relative p-[2px] rounded-[32px] bg-gradient-to-br from-blue-400/60 via-blue-500/40 to-blue-600/40 shadow-[0_15px_45px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
+            
+            <div className="relative p-6 rounded-[30px] bg-white dark:bg-zinc-900 border-2 border-blue-500/10 shadow-xl shadow-blue-500/5 backdrop-blur-md text-center overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 opacity-[0.03] transform scale-150 rotate-12">
+                <Flame className="w-24 h-24 text-blue-500" />
               </div>
-              <div className="h-1 w-20 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full opacity-50" />
-            </div>
 
-            {proximosAniversariantesBatismo.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-3xl">🕯️</div>
-                <p className="text-sm font-bold text-muted-foreground/70">Nenhum batismo próximo</p>
-                <p className="text-xs text-muted-foreground/50 max-w-[200px] leading-relaxed">
-                  Cadastre a data de batismo nos dados pastorais dos catequizandos para ver aqui.
-                </p>
-              </div>
-            ) : (
-              <>
+              {proximosAniversariantesBatismo.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-3xl">🕯️</div>
+                  <p className="text-sm font-bold text-muted-foreground/70">Nenhum batismo próximo</p>
+                </div>
+              ) : (
                 <div className="grid grid-cols-3 gap-3 relative z-10">
                   {proximosAniversariantesBatismo.map((c) => {
                     const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
                     const isHoje = diasAte === 0;
                     return (
-                      <div key={`batismo-${c.id}`} className={`p-3 rounded-3xl flex flex-col items-center text-center transition-all hover:scale-110 ${isHoje ? "bg-blue-400/10 ring-2 ring-blue-400/40 shadow-xl shadow-blue-500/10" : "bg-white/60 dark:bg-zinc-800/60 border border-black/5"}`}>
-                        <div className={`relative w-16 h-16 rounded-2xl mb-2.5 overflow-hidden border-2 ${isHoje ? "border-blue-400 animate-soft-pulse scale-105" : "border-background shadow-md"}`}>
+                      <div key={`batismo-${c.id}`} className={`p-3 rounded-2xl flex flex-col items-center text-center transition-all hover:scale-105 ${isHoje ? "bg-blue-400/10 ring-2 ring-blue-400/40 shadow-lg" : "bg-muted/30 border border-black/5"}`}>
+                        <div className={`relative w-14 h-14 rounded-xl mb-2 overflow-hidden border-2 ${isHoje ? "border-blue-400 animate-soft-pulse scale-105" : "border-background shadow-sm"}`}>
                           {c.foto ? (
                             <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                           ) : (
-                            <div className={`w-full h-full flex items-center justify-center text-xl font-black ${isHoje ? "bg-blue-100 text-blue-600" : "bg-primary/10 text-primary"}`}>
+                            <div className={`w-full h-full flex items-center justify-center text-lg font-black ${isHoje ? "bg-blue-100 text-blue-600" : "bg-primary/10 text-primary"}`}>
                               {c.nome?.charAt(0).toUpperCase()}
                             </div>
                           )}
                           {isHoje && (
-                            <div className="absolute top-0 right-0 p-1 bg-blue-400 rounded-bl-xl shadow-sm flex items-center justify-center">
+                            <div className="absolute top-0 right-0 p-1 bg-blue-400 rounded-bl-xl text-white flex items-center justify-center">
                               <span className="text-[10px]" style={{ animation: 'candle-flicker 1.2s ease-in-out infinite alternate' }}>🕯️</span>
                             </div>
                           )}
                         </div>
-                        <p className="text-[11px] font-black text-foreground truncate w-full px-1 leading-tight mb-1">{c.nome?.split(" ")[0]}</p>
-                        <p className={`text-[9px] font-black uppercase tracking-widest ${isHoje ? "text-blue-600" : "text-muted-foreground/60"}`}>
+                        <p className="text-[10px] font-black text-foreground truncate w-full px-1 mb-0.5">{c.nome?.split(" ")[0]}</p>
+                        <p className={`text-[8px] font-black uppercase tracking-widest ${isHoje ? "text-blue-600" : "text-muted-foreground/50"}`}>
                           {isHoje ? "🎉 HOJE!" : `${diasAte} DIAS`}
                         </p>
                       </div>
                     );
                   })}
                 </div>
-              </>
-            )}
-            <style>{`
-              @keyframes candle-flicker {
-                0%   { transform: scaleY(1)   rotate(-2deg); opacity: 0.85; }
-                30%  { transform: scaleY(1.08) rotate(2deg);  opacity: 1;    }
-                60%  { transform: scaleY(0.96) rotate(-1deg); opacity: 0.90; }
-                100% { transform: scaleY(1.04) rotate(3deg);  opacity: 0.95; }
-              }
-            `}</style>
+              )}
+              <style>{`
+                @keyframes candle-flicker {
+                  0%   { transform: scaleY(1)   rotate(-2deg); opacity: 0.85; }
+                  30%  { transform: scaleY(1.08) rotate(2deg);  opacity: 1;    }
+                  60%  { transform: scaleY(0.96) rotate(-1deg); opacity: 0.90; }
+                  100% { transform: scaleY(1.04) rotate(3deg);  opacity: 0.95; }
+                }
+              `}</style>
+            </div>
           </div>
         </div>
       </div>
