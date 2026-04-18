@@ -347,54 +347,63 @@ export default function Dashboard() {
         </div>
       ) : (
         <div 
-          className="float-card overflow-hidden animate-card-activate border-[4px] border-yellow-400 relative group transition-all cursor-pointer h-full shadow-[0_15px_45px_rgba(250,204,21,0.25)] bg-white/50 backdrop-blur-sm hover:shadow-[0_20px_60px_rgba(250,204,21,0.35)]"
+          className="relative p-[2px] rounded-[32px] bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_15px_45px_rgba(0,0,0,0.08)] animate-card-activate transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group overflow-hidden"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
-          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:opacity-10 transition-all duration-700">
-             <LiturgicalIcon type={selectedTurma?.etapa} className="w-32 h-32" />
-          </div>
-
-          <div className="px-5 pt-6 pb-3 flex items-center relative z-10">
-            {/* Ícone fixo à esquerda */}
-            <div className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-lg absolute left-5",
-              heroColors
-            )}>
-              <LiturgicalIcon type={selectedTurma?.etapa} className="h-7 w-7" />
+          {/* Moldura litúrgica interna */}
+          <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
+          
+          <div className="relative flex flex-col p-0 rounded-[30px] bg-card w-full h-full overflow-hidden">
+            {/* Marca d'água de fundo */}
+            <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
+               <BookOpen className="w-32 h-32 text-primary" />
             </div>
-            
-            {/* Texto centralizado no card */}
-            <div className="space-y-0.5 min-w-0 flex-1 text-center">
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
-              <h3 className="text-xl font-black text-foreground leading-tight tracking-tight truncate px-16">
-                {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
-              </h3>
-              <p className="text-[10px] text-muted-foreground font-medium truncate px-16">
-                {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
-              </p>
-            </div>
-          </div>
 
-          <div className="px-5 pb-6 flex justify-center">
-            <button 
-              onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
-              className="flex items-center gap-2 px-10 py-2.5 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all z-20"
-            >
-              Abrir Turma
-            </button>
-          </div>
+            <div className="px-5 pt-8 pb-4 flex flex-col items-center relative z-10 text-center">
+              {/* Ícone centralizado */}
+              <div className={cn(
+                "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border-2 group-hover:scale-110 transition-all duration-500 shadow-lg mb-4",
+                heroColors
+              )}>
+                <LiturgicalIcon type={selectedTurma?.etapa} className="h-8 w-8" />
+              </div>
+              
+              <div className="space-y-1 min-w-0 flex-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Turma Selecionada</p>
+                <h3 className="text-2xl font-black text-foreground leading-tight tracking-tight truncate px-4">
+                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+                </h3>
+                <p className="text-xs text-muted-foreground font-medium truncate px-8">
+                  {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
+                </p>
+              </div>
 
-          {(turmas.length > 1 || selectedTurmaId === "all") && (
-            <div 
-              onClick={(e) => { e.stopPropagation(); setTurmaPickerOpen(true); }}
-              className="bg-primary/5 px-5 py-3 flex items-center justify-between border-t border-primary/10 hover:bg-primary/10 transition-colors"
-            >
-              <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Trocar de Turma</span>
-              <RefreshCw className="h-4 w-4 text-primary" />
+              <div className="mt-6">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
+                  className="flex items-center gap-2 px-12 py-3 rounded-2xl bg-primary text-white text-xs font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                >
+                  Abrir Turma
+                </button>
+              </div>
             </div>
-          )}
+
+            {(turmas.length > 1 || selectedTurmaId === "all") && (
+              <div 
+                onClick={(e) => { e.stopPropagation(); setTurmaPickerOpen(true); }}
+                className="bg-primary/5 px-6 py-4 flex items-center justify-between border-t border-primary/10 hover:bg-primary/10 transition-colors mt-auto"
+              >
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="h-3.5 w-3.5 text-primary animate-spin-slow" />
+                  <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Trocar de Turma</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-primary/40" />
+              </div>
+            )}
+          </div>
         </div>
       )}
+
 
       {/* Stats Inteligentes */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
