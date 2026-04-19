@@ -299,22 +299,22 @@ export default function Dashboard() {
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
       {proximasQuatro.length > 0 && (
-        <div className="relative py-12 mb-8 animate-fade-in overflow-hidden">
+        <div className="relative pt-4 pb-12 mb-4 animate-fade-in overflow-hidden">
           {/* Título da Seção */}
-          <div className="flex items-center justify-between px-1 mb-10">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">Aniversários no Varal</h2>
+          <div className="flex items-center justify-between px-1 mb-6">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">Próximos Aniversários</h2>
             <div className="h-px flex-1 bg-gradient-to-r from-muted/40 to-transparent ml-4"></div>
           </div>
 
           {/* O Varal (Arame) */}
-          <svg className="absolute top-16 left-0 w-full h-20 pointer-events-none opacity-20" preserveAspectRatio="none" viewBox="0 0 400 100">
-            <path d="M 0 20 Q 200 80 400 20" fill="transparent" stroke="currentColor" strokeWidth="2" strokeDasharray="4 2" />
+          <svg className="absolute top-10 left-0 w-full h-16 pointer-events-none opacity-20" preserveAspectRatio="none" viewBox="0 0 400 100">
+            <path d="M 0 20 Q 200 70 400 20" fill="transparent" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" />
           </svg>
 
           {/* Container dos Polaroids */}
-          <div className="flex justify-around items-start gap-2 relative z-10 px-2 min-h-[160px]">
+          <div className="flex justify-center items-start gap-1 sm:gap-4 relative z-10 px-1 min-h-[140px]">
             {proximasQuatro.map((c, i) => {
-              const rotations = ['-4deg', '3deg', '-2deg', '5deg'];
+              const rotations = ['-3deg', '2deg', '-1deg', '3deg'];
               const delays = ['0s', '0.4s', '0.2s', '0.6s'];
               const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
               const isHoje = diasAte === 0;
@@ -322,7 +322,7 @@ export default function Dashboard() {
               return (
                 <div 
                   key={`${c.id}-${i}`}
-                  className="flex-1 flex justify-center"
+                  className="flex justify-center"
                   style={{ 
                     animation: `welcome-float 4s ease-in-out infinite`,
                     animationDelay: delays[i]
@@ -334,48 +334,51 @@ export default function Dashboard() {
                     style={{ transform: `rotate(${rotations[i]})` }}
                   >
                     {/* Pregador (Clothespin) */}
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-7 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm overflow-hidden">
-                       <div className="w-full h-px bg-[#b89a71] mt-2 opacity-50" />
-                       <div className="w-full h-px bg-[#b89a71] mt-2 opacity-50" />
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-2.5 h-6 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm overflow-hidden opacity-90">
+                       <div className="w-full h-px bg-[#b89a71] mt-1.5 opacity-50" />
+                       <div className="w-full h-px bg-[#b89a71] mt-1.5 opacity-50" />
                     </div>
 
                     {/* Moldura Polaroid */}
-                    <div className="bg-white p-2 pb-6 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-black/5 relative">
-                      <div className="w-16 h-16 sm:w-24 sm:h-24 overflow-hidden bg-muted relative">
+                    <div className="bg-white p-1.5 pb-4 shadow-[0_8px_25px_rgba(0,0,0,0.12)] border border-black/5 relative">
+                      <div className="w-14 h-14 sm:w-20 sm:h-20 overflow-hidden bg-muted relative">
                         {c.foto ? (
                           <img src={c.foto} alt={c.nome} className="w-full h-full object-cover rounded-sm" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-2xl font-black">
+                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-xl font-black">
                             {c.nome.charAt(0)}
                           </div>
                         )}
-                        
-                        {/* Overlay Gradiente */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
 
                       {/* Info do Aniversariante */}
-                      <div className="mt-2 text-center">
-                        <p className="text-[10px] font-black text-foreground truncate max-w-full">{c.nome.split(' ')[0]}</p>
-                        <div className="flex items-center justify-center gap-1 mt-1">
+                      <div className="mt-1.5 text-center px-0.5">
+                        <p className="text-[9px] font-black text-foreground truncate max-w-[55px] sm:max-w-none mx-auto leading-tight">{c.nome.split(' ')[0]}</p>
+                        <p className={cn(
+                          "text-[7px] font-black uppercase tracking-tighter mb-0.5",
+                          c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600"
+                        )}>
+                          {c.tipo === 'nascimento' ? "Nascimento" : "Batismo"}
+                        </p>
+                        <div className="flex items-center justify-center gap-0.5">
                           {c.tipo === 'nascimento' ? (
-                            <Cake className="w-2.5 h-2.5 text-amber-500" />
+                            <Cake className="w-2 h-2 text-amber-500" />
                           ) : (
-                            <span className="text-[10px]">🕯️</span>
+                            <span className="text-[8px]">🕯️</span>
                           )}
                           <span className={cn(
-                            "text-[8px] font-black uppercase tracking-tighter",
+                            "text-[8px] font-bold uppercase",
                             isHoje ? "text-amber-500" : "text-muted-foreground"
                           )}>
-                            {isHoje ? "HOJE!" : `${diasAte}d`}
+                            {isHoje ? "HOJE" : `${diasAte}d`}
                           </span>
                         </div>
                       </div>
 
                       {/* Selo Especial se for Hoje */}
                       {isHoje && (
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
-                           <Star className="w-3 h-3 text-white fill-white" />
+                        <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
+                           <Star className="w-2.5 h-2.5 text-white fill-white" />
                         </div>
                       )}
                     </div>
