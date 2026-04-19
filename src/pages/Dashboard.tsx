@@ -305,75 +305,87 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── BARRA DE ANIVERSARIANTES (PÍLULA SIMÉTRICA) ── */}
+      {/* ── SEÇÃO DE ANIVERSARIANTES REFINADA ── */}
       {closestOverall && (
-        <div className="animate-card-activate">
-          <div className="relative overflow-hidden rounded-[32px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-white/20 dark:border-white/5 p-2 px-4 flex items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="space-y-3 animate-fade-in mb-4">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">Aniversários</h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-muted/40 to-transparent ml-4"></div>
+          </div>
+          
+          <div className="group relative p-[2px] rounded-[32px] overflow-hidden">
+            {/* Animação de Borda (Glow) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-amber-400 to-primary bg-[length:200%_auto] animate-[shimmer-slide_4s_linear_infinite] opacity-40 group-hover:opacity-100 transition-opacity"></div>
             
-            {/* Esquerda: Nascimento */}
-            <div className="flex -space-x-3 items-center">
-              {birthSide.map((c, i) => (
-                <button 
-                  key={`birth-${c.id}-${i}`}
-                  onClick={() => setSelectedCatequizando(c)}
-                  className="relative w-8 h-8 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm hover:scale-110 active:scale-95 transition-all z-10"
-                >
-                  <div className="w-full h-full rounded-full overflow-hidden">
-                    {c.foto ? <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] font-black">{c.nome.charAt(0)}</div>}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <Cake className="w-2 h-2 text-amber-500" />
-                  </div>
-                </button>
-              ))}
-              {birthSide.length > 0 && <span className="ml-4 text-[8px] font-black text-muted-foreground uppercase tracking-widest hidden sm:block">Birth</span>}
-            </div>
-
-            {/* Centro: Destaque Principal */}
-            <button 
-              onClick={() => setSelectedCatequizando(closestOverall)}
-              className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/80 dark:bg-zinc-800/80 shadow-md border border-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all relative z-50 group"
-            >
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full border-2 border-primary overflow-hidden shadow-lg group-hover:animate-soft-pulse">
-                  {closestOverall.foto ? <img src={closestOverall.foto} alt={closestOverall.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-primary text-white flex items-center justify-center text-lg font-black">{closestOverall.nome.charAt(0)}</div>}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-md">
-                   {closestOverall.tipo === 'nascimento' ? <Cake className="w-3 h-3 text-amber-500" /> : <span className="text-xs">🕯️</span>}
+            <div className="relative rounded-[30px] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-6">
+              
+              {/* Coluna Nascimento */}
+              <div className="flex-1 flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
+                <span className="text-[9px] font-black uppercase tracking-widest text-amber-600/60 ml-1">Nascimento</span>
+                <div className="flex flex-wrap md:flex-nowrap gap-2 items-center justify-center md:justify-start w-full">
+                  {birthSide.length > 0 ? birthSide.map((c, i) => (
+                    <button 
+                      key={`birth-${c.id}-${i}`}
+                      onClick={() => setSelectedCatequizando(c)}
+                      className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200/50 hover:border-amber-400 transition-all active:scale-95 group/chip"
+                    >
+                      <div className="w-7 h-7 rounded-full overflow-hidden border border-amber-200">
+                        {c.foto ? <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] font-black">{c.nome.charAt(0)}</div>}
+                      </div>
+                      <span className="text-[10px] font-black text-amber-950 dark:text-amber-200 truncate max-w-[60px]">{c.nome.split(' ')[0]}</span>
+                    </button>
+                  )) : (
+                    <div className="text-[9px] text-muted-foreground italic px-2">Nenhum próximo</div>
+                  )}
                 </div>
               </div>
-              <div className="text-left">
-                <p className="text-[11px] font-black text-foreground leading-none">{closestOverall.nome.split(' ')[0]}</p>
-                <div className="flex items-center gap-1.5 mt-1">
+
+              {/* Centro: Destaque Principal */}
+              <button 
+                onClick={() => setSelectedCatequizando(closestOverall)}
+                className="relative z-10 flex flex-col items-center gap-2 px-6 py-4 rounded-[28px] bg-white dark:bg-zinc-800 shadow-xl border-2 border-primary/20 hover:scale-105 active:scale-95 transition-all group/main shadow-primary/5"
+              >
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full border-4 border-white dark:border-zinc-700 overflow-hidden shadow-2xl group-hover/main:animate-soft-pulse ring-4 ring-primary/10">
+                    {closestOverall.foto ? <img src={closestOverall.foto} alt={closestOverall.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-primary text-white flex items-center justify-center text-2xl font-black">{closestOverall.nome.charAt(0)}</div>}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-lg border-2 border-primary/20">
+                     {closestOverall.tipo === 'nascimento' ? <Cake className="w-4 h-4 text-amber-500" /> : <span className="text-sm">🕯️</span>}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-black text-foreground mb-1">{closestOverall.nome}</p>
                   <span className={cn(
-                    "px-1.5 py-0.5 rounded flex items-center gap-1 text-[8px] font-black uppercase tracking-widest",
-                    Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000) === 0 ? "bg-amber-400 text-amber-950" : "bg-primary text-white"
+                    "px-3 py-1 rounded-lg flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest shadow-sm",
+                    Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000) === 0 ? "bg-amber-400 text-amber-950 animate-pulse" : "bg-primary text-white"
                   )}>
-                    {Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000) === 0 ? "Hoje!" : `${Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000)} dias`}
+                    {Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000) === 0 ? "É Hoje!" : `Em ${Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000)} dias`}
                   </span>
                 </div>
+              </button>
+
+              {/* Coluna Batismo */}
+              <div className="flex-1 flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
+                <span className="text-[9px] font-black uppercase tracking-widest text-blue-600/60 mr-1">Batismo</span>
+                <div className="flex flex-wrap md:flex-nowrap gap-2 items-center justify-center md:justify-end w-full">
+                  {baptismSide.length > 0 ? baptismSide.map((c, i) => (
+                    <button 
+                      key={`baptism-${c.id}-${i}`}
+                      onClick={() => setSelectedCatequizando(c)}
+                      className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-blue-50 dark:bg-blue-900/10 border border-blue-200/50 hover:border-blue-400 transition-all active:scale-95 group/chip"
+                    >
+                      <div className="w-7 h-7 rounded-full overflow-hidden border border-blue-200">
+                        {c.foto ? <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black">{c.nome.charAt(0)}</div>}
+                      </div>
+                      <span className="text-[10px] font-black text-blue-950 dark:text-blue-200 truncate max-w-[60px]">{c.nome.split(' ')[0]}</span>
+                    </button>
+                  )) : (
+                    <div className="text-[9px] text-muted-foreground italic px-2">Nenhum próximo</div>
+                  )}
+                </div>
               </div>
-            </button>
 
-            {/* Direita: Batismo */}
-            <div className="flex -space-x-3 items-center justify-end">
-              {baptismSide.length > 0 && <span className="mr-4 text-[8px] font-black text-muted-foreground uppercase tracking-widest hidden sm:block">Batismo</span>}
-              {baptismSide.map((c, i) => (
-                <button 
-                  key={`baptism-${c.id}-${i}`}
-                  onClick={() => setSelectedCatequizando(c)}
-                  className="relative w-8 h-8 rounded-full border-2 border-white dark:border-zinc-800 shadow-sm hover:scale-110 active:scale-95 transition-all z-10"
-                >
-                  <div className="w-full h-full rounded-full overflow-hidden">
-                    {c.foto ? <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black">{c.nome.charAt(0)}</div>}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <span className="text-[8px]">🕯️</span>
-                  </div>
-                </button>
-              ))}
             </div>
-
           </div>
         </div>
       )}
