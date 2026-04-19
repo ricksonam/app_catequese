@@ -169,23 +169,10 @@ export default function Dashboard() {
 
   const stats = [
     { 
-      label: "Atividades e Eventos", 
-      value: atividades.length, 
-      icon: Sparkles, 
-      color: "bg-primary/10 text-primary",
-      action: () => {
-        if (selectedTurmaId !== "all") {
-          navigate(`/turmas/${selectedTurmaId}/atividades`);
-        } else {
-          setTurmaPickerOpen(true);
-        }
-      } 
-    },
-    { 
       label: "Catequizandos", 
       value: filteredCatequizandos.length, 
       icon: Users, 
-      color: "bg-accent/15 text-accent-foreground", 
+      color: "bg-amber-500/10 text-amber-600", 
       action: () => {
         if (selectedTurmaId !== "all") {
           navigate(`/turmas/${selectedTurmaId}/catequizandos`);
@@ -199,25 +186,12 @@ export default function Dashboard() {
       label: "Encontros", 
       value: filteredEncontros.filter((e) => e.status === 'pendente').length, 
       icon: CalendarDays, 
-      color: "bg-success/10 text-success", 
+      color: "bg-blue-500/10 text-blue-600", 
       action: () => {
         if (selectedTurmaId !== "all") {
           navigate(`/turmas/${selectedTurmaId}/encontros`);
         } else {
           navigate("/turmas");
-        }
-      } 
-    },
-    { 
-      label: "Missões em Família", 
-      value: missoes.length, 
-      icon: Heart, 
-      color: "bg-rose-500/10 text-rose-500", 
-      action: () => {
-        if (selectedTurmaId !== "all") {
-          navigate(`/turmas/${selectedTurmaId}/familia`);
-        } else {
-          setTurmaPickerOpen(true);
         }
       } 
     },
@@ -404,28 +378,52 @@ export default function Dashboard() {
       )}
 
 
-      {/* Stats Inteligentes */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
+          const isCatequizandos = stat.label === "Catequizandos";
+          
           return (
             <button 
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "float-card p-2.5 sm:p-4 text-center animate-float-up active:scale-95 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl min-w-0 border-2 border-primary/20 relative overflow-hidden shadow-md bg-white dark:bg-zinc-900",
-                stat.color.includes("text-primary") && "bg-primary/5 shadow-primary/10 border-primary"
+                "group relative p-[2px] rounded-[24px] animate-float-up transition-all duration-500 hover:-translate-y-1.5 active:scale-95",
+                isCatequizandos 
+                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-lg shadow-amber-500/20" 
+                  : "bg-gradient-to-br from-blue-400 via-blue-50 to-blue-600 shadow-lg shadow-blue-500/20"
               )}
-              style={{ animationDelay: `${i * 80}ms` }}
+              style={{ animationDelay: `${i * 150}ms` }}
             >
-              <div className={`icon-box ${stat.color} mx-auto mb-1.5 sm:mb-2.5 w-9 h-9 sm:w-10 sm:h-10 animate-bounce-subtle`}>
-                <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-              </div>
-              <p className="text-xl sm:text-2xl font-bold text-foreground leading-tight truncate">
-                {stat.value}
-              </p>
-              <div className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 leading-tight break-words">
-                {stat.label}
+              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[22px] p-4 sm:p-6 overflow-hidden flex flex-col items-center text-center">
+                {/* Decorative background elements */}
+                <div className={cn(
+                  "absolute -right-2 -top-2 w-16 h-16 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity",
+                  isCatequizandos ? "text-amber-500" : "text-blue-500"
+                )}>
+                  <Icon className="w-full h-full rotate-12" />
+                </div>
+
+                <div className={cn(
+                  "icon-box mx-auto mb-3 w-12 h-12 shadow-sm border group-hover:scale-110 transition-transform duration-300",
+                  stat.color,
+                  isCatequizandos ? "border-amber-200" : "border-blue-200"
+                )}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                
+                <p className="text-2xl sm:text-3xl font-black text-foreground leading-tight tracking-tight">
+                  {stat.value}
+                </p>
+                <div className="text-[10px] sm:text-[11px] text-muted-foreground font-black uppercase tracking-[0.15em] mt-1.5 leading-tight">
+                  {stat.label}
+                </div>
+
+                {/* Bottom highlight bar */}
+                <div className={cn(
+                  "absolute bottom-0 inset-x-0 h-1 opacity-50",
+                  isCatequizandos ? "bg-amber-500" : "bg-blue-500"
+                )} />
               </div>
             </button>
           );
