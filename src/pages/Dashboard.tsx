@@ -161,19 +161,11 @@ export default function Dashboard() {
       .slice(0, 3);
   }, [filteredCatequizandos, hoje]);
 
-  const { closestOverall, birthSide, baptismSide } = useMemo(() => {
+  const proximasQuatro = useMemo(() => {
     const births = proximosAniversariantes.map(c => ({ ...c, tipo: 'nascimento' as const }));
     const baptisms = proximosAniversariantesBatismo.map(c => ({ ...c, tipo: 'batismo' as const }));
-    
     const combined = [...births, ...baptisms].sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime());
-    
-    if (combined.length === 0) return { closestOverall: null, birthSide: [], baptismSide: [] };
-    
-    const closest = combined[0];
-    const bSide = births.filter(c => !(c.id === closest.id && closest.tipo === 'nascimento')).slice(0, 2);
-    const baSide = baptisms.filter(c => !(c.id === closest.id && closest.tipo === 'batismo')).slice(0, 2);
-    
-    return { closestOverall: closest, birthSide: bSide, baptismSide: baSide };
+    return combined.slice(0, 4);
   }, [proximosAniversariantes, proximosAniversariantesBatismo]);
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
@@ -305,87 +297,92 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── SEÇÃO DE ANIVERSARIANTES REFINADA ── */}
-      {closestOverall && (
-        <div className="space-y-3 animate-fade-in mb-4">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">Aniversários</h2>
+      {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
+      {proximasQuatro.length > 0 && (
+        <div className="relative py-12 mb-8 animate-fade-in overflow-hidden">
+          {/* Título da Seção */}
+          <div className="flex items-center justify-between px-1 mb-10">
+            <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">Aniversários no Varal</h2>
             <div className="h-px flex-1 bg-gradient-to-r from-muted/40 to-transparent ml-4"></div>
           </div>
-          
-          <div className="group relative p-[2px] rounded-[32px] overflow-hidden">
-            {/* Animação de Borda (Glow) */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-amber-400 to-primary bg-[length:200%_auto] animate-[shimmer-slide_4s_linear_infinite] opacity-40 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="relative rounded-[30px] bg-white/90 dark:bg-zinc-900/90 backdrop-blur-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-6">
-              
-              {/* Coluna Nascimento */}
-              <div className="flex-1 flex flex-col items-center md:items-start gap-2 w-full md:w-auto">
-                <span className="text-[9px] font-black uppercase tracking-widest text-amber-600/60 ml-1">Nascimento</span>
-                <div className="flex flex-wrap md:flex-nowrap gap-2 items-center justify-center md:justify-start w-full">
-                  {birthSide.length > 0 ? birthSide.map((c, i) => (
-                    <button 
-                      key={`birth-${c.id}-${i}`}
-                      onClick={() => setSelectedCatequizando(c)}
-                      className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-amber-50 dark:bg-amber-900/10 border border-amber-200/50 hover:border-amber-400 transition-all active:scale-95 group/chip"
-                    >
-                      <div className="w-7 h-7 rounded-full overflow-hidden border border-amber-200">
-                        {c.foto ? <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] font-black">{c.nome.charAt(0)}</div>}
+
+          {/* O Varal (Arame) */}
+          <svg className="absolute top-16 left-0 w-full h-20 pointer-events-none opacity-20" preserveAspectRatio="none" viewBox="0 0 400 100">
+            <path d="M 0 20 Q 200 80 400 20" fill="transparent" stroke="currentColor" strokeWidth="2" strokeDasharray="4 2" />
+          </svg>
+
+          {/* Container dos Polaroids */}
+          <div className="flex justify-around items-start gap-2 relative z-10 px-2 min-h-[160px]">
+            {proximasQuatro.map((c, i) => {
+              const rotations = ['-4deg', '3deg', '-2deg', '5deg'];
+              const delays = ['0s', '0.4s', '0.2s', '0.6s'];
+              const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
+              const isHoje = diasAte === 0;
+
+              return (
+                <div 
+                  key={`${c.id}-${i}`}
+                  className="flex-1 flex justify-center"
+                  style={{ 
+                    animation: `welcome-float 4s ease-in-out infinite`,
+                    animationDelay: delays[i]
+                  }}
+                >
+                  <button
+                    onClick={() => setSelectedCatequizando(c)}
+                    className="relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95"
+                    style={{ transform: `rotate(${rotations[i]})` }}
+                  >
+                    {/* Pregador (Clothespin) */}
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-7 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm overflow-hidden">
+                       <div className="w-full h-px bg-[#b89a71] mt-2 opacity-50" />
+                       <div className="w-full h-px bg-[#b89a71] mt-2 opacity-50" />
+                    </div>
+
+                    {/* Moldura Polaroid */}
+                    <div className="bg-white p-2 pb-6 shadow-[0_10px_30px_rgba(0,0,0,0.15)] border border-black/5 relative">
+                      <div className="w-16 h-16 sm:w-24 sm:h-24 overflow-hidden bg-muted relative">
+                        {c.foto ? (
+                          <img src={c.foto} alt={c.nome} className="w-full h-full object-cover rounded-sm" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-2xl font-black">
+                            {c.nome.charAt(0)}
+                          </div>
+                        )}
+                        
+                        {/* Overlay Gradiente */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <span className="text-[10px] font-black text-amber-950 dark:text-amber-200 truncate max-w-[60px]">{c.nome.split(' ')[0]}</span>
-                    </button>
-                  )) : (
-                    <div className="text-[9px] text-muted-foreground italic px-2">Nenhum próximo</div>
-                  )}
-                </div>
-              </div>
 
-              {/* Centro: Destaque Principal */}
-              <button 
-                onClick={() => setSelectedCatequizando(closestOverall)}
-                className="relative z-10 flex flex-col items-center gap-2 px-6 py-4 rounded-[28px] bg-white dark:bg-zinc-800 shadow-xl border-2 border-primary/20 hover:scale-105 active:scale-95 transition-all group/main shadow-primary/5"
-              >
-                <div className="relative">
-                  <div className="w-16 h-16 rounded-full border-4 border-white dark:border-zinc-700 overflow-hidden shadow-2xl group-hover/main:animate-soft-pulse ring-4 ring-primary/10">
-                    {closestOverall.foto ? <img src={closestOverall.foto} alt={closestOverall.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-primary text-white flex items-center justify-center text-2xl font-black">{closestOverall.nome.charAt(0)}</div>}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white dark:bg-zinc-900 rounded-full flex items-center justify-center shadow-lg border-2 border-primary/20">
-                     {closestOverall.tipo === 'nascimento' ? <Cake className="w-4 h-4 text-amber-500" /> : <span className="text-sm">🕯️</span>}
-                  </div>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm font-black text-foreground mb-1">{closestOverall.nome}</p>
-                  <span className={cn(
-                    "px-3 py-1 rounded-lg flex items-center justify-center gap-1.5 text-[9px] font-black uppercase tracking-widest shadow-sm",
-                    Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000) === 0 ? "bg-amber-400 text-amber-950 animate-pulse" : "bg-primary text-white"
-                  )}>
-                    {Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000) === 0 ? "É Hoje!" : `Em ${Math.round((closestOverall.proximoAniversario.getTime() - hoje.getTime()) / 86400000)} dias`}
-                  </span>
-                </div>
-              </button>
-
-              {/* Coluna Batismo */}
-              <div className="flex-1 flex flex-col items-center md:items-end gap-2 w-full md:w-auto">
-                <span className="text-[9px] font-black uppercase tracking-widest text-blue-600/60 mr-1">Batismo</span>
-                <div className="flex flex-wrap md:flex-nowrap gap-2 items-center justify-center md:justify-end w-full">
-                  {baptismSide.length > 0 ? baptismSide.map((c, i) => (
-                    <button 
-                      key={`baptism-${c.id}-${i}`}
-                      onClick={() => setSelectedCatequizando(c)}
-                      className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-blue-50 dark:bg-blue-900/10 border border-blue-200/50 hover:border-blue-400 transition-all active:scale-95 group/chip"
-                    >
-                      <div className="w-7 h-7 rounded-full overflow-hidden border border-blue-200">
-                        {c.foto ? <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] font-black">{c.nome.charAt(0)}</div>}
+                      {/* Info do Aniversariante */}
+                      <div className="mt-2 text-center">
+                        <p className="text-[10px] font-black text-foreground truncate max-w-full">{c.nome.split(' ')[0]}</p>
+                        <div className="flex items-center justify-center gap-1 mt-1">
+                          {c.tipo === 'nascimento' ? (
+                            <Cake className="w-2.5 h-2.5 text-amber-500" />
+                          ) : (
+                            <span className="text-[10px]">🕯️</span>
+                          )}
+                          <span className={cn(
+                            "text-[8px] font-black uppercase tracking-tighter",
+                            isHoje ? "text-amber-500" : "text-muted-foreground"
+                          )}>
+                            {isHoje ? "HOJE!" : `${diasAte}d`}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-black text-blue-950 dark:text-blue-200 truncate max-w-[60px]">{c.nome.split(' ')[0]}</span>
-                    </button>
-                  )) : (
-                    <div className="text-[9px] text-muted-foreground italic px-2">Nenhum próximo</div>
-                  )}
-                </div>
-              </div>
 
-            </div>
+                      {/* Selo Especial se for Hoje */}
+                      {isHoje && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
+                           <Star className="w-3 h-3 text-white fill-white" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
