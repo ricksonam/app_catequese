@@ -182,14 +182,14 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   };
 
   return (
-    <div className="flex flex-col h-auto max-h-full bg-slate-100 dark:bg-zinc-950 overflow-hidden">
+    <div className="flex flex-col h-auto bg-slate-100 dark:bg-zinc-950 overflow-hidden rounded-b-[32px]">
       {/* Nome do Usuário Logado */}
       <div className="p-4 pb-1 border-b border-black/5 mb-1">
         <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
         <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-4 scrollbar-hide">
+      <div className="overflow-y-auto px-4 pb-0 scrollbar-hide">
         <Accordion type="single" collapsible className="w-full space-y-1.5 border-none">
           
           {/* SEÇÃO: CADASTROS BÁSICOS */}
@@ -363,10 +363,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </div>
 
         {/* LOGOUT - SEMPRE VISÍVEL NO MENU */}
-        <div className="mt-4 pb-2">
+        <div className="mt-4 pb-4 px-0">
            <button
              onClick={handleSignOut}
-             className="w-full float-card flex items-center gap-3 px-6 py-3 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-md group active:scale-95 transition-all text-destructive"
+             className="w-full float-card flex items-center gap-3 px-6 py-3 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-md group active:scale-95 transition-all text-destructive mb-1"
            >
              <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white transition-all">
                <LogOut className="h-5 w-5" strokeWidth={2.5} />
