@@ -323,3 +323,12 @@
   animation: bounce-short 1.5s ease-in-out infinite;
 }
 
+@keyframes liturgical-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.05); }
+}
+
+.animate-liturgical-float {
+  animation: liturgical-float 4s ease-in-out infinite;
+}
+

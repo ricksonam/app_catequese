@@ -328,11 +328,11 @@ export default function Dashboard() {
                       "bg-white p-1 pb-3 shadow-[0_8px_25px_rgba(0,0,0,0.12)] border relative overflow-hidden transition-colors",
                       isHoje ? "border-amber-400 ring-2 ring-amber-400/20" : "border-black/5"
                     )}>
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden bg-muted relative">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden bg-muted relative">
                         {c.foto ? (
                           <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-2xl font-black">
+                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-xl font-black">
                             {c.nome.charAt(0)}
                           </div>
                         )}
@@ -385,6 +385,21 @@ export default function Dashboard() {
             </div>
 
             <div className="px-5 py-5 flex flex-col items-center relative z-10 text-center">
+              {/* Detalhes nos lados */}
+              {selectedTurmaId !== "all" && selectedTurma && (
+                <>
+                  <div className="absolute top-2 left-3 flex flex-col items-start gap-0.5 opacity-40">
+                    <span className="text-[7px] font-black uppercase tracking-widest text-primary">{selectedTurma.ano || "2024"}</span>
+                  </div>
+                  <div className="absolute top-2 right-3 flex flex-col items-end gap-0.5 opacity-40">
+                    <span className="text-[7px] font-black uppercase tracking-widest text-primary">{selectedTurma.horario}</span>
+                  </div>
+                  <div className="absolute bottom-16 left-3 max-w-[80px] text-left opacity-30">
+                    <span className="text-[6px] font-bold uppercase tracking-tight leading-tight truncate block">{selectedTurma.local}</span>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-1 min-w-0 flex-1">
                 <div className="flex items-center justify-center gap-2 mb-1">
                    <div className={cn("w-5 h-5 rounded-lg flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
@@ -444,11 +459,13 @@ export default function Dashboard() {
             >
               <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[23px] p-3 overflow-hidden flex flex-col items-center text-center">
                 <div className={cn(
-                  "icon-box mx-auto mb-1 w-8 h-8 shadow-sm border group-hover:animate-icon-pulse transition-transform duration-300",
+                  "icon-box mx-auto mb-1 w-9 h-9 shadow-sm border animate-liturgical-float transition-all duration-500",
                   stat.color,
-                  isCatequizandos ? "border-amber-200" : "border-blue-200"
+                  isCatequizandos 
+                    ? "border-amber-200 bg-gradient-to-br from-amber-50 to-white dark:from-amber-900/20 shadow-amber-200/50" 
+                    : "border-blue-200 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 shadow-blue-200/50"
                 )}>
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                 </div>
                 
                 <p className="text-xl font-black text-foreground leading-tight tracking-tight">
