@@ -153,17 +153,17 @@ export default function ComunicacaoDetail() {
             <p className="text-xs text-muted-foreground mt-0.5">Visualize ou exporte as respostas abaixo</p>
           </div>
         </div>
-        <div className="flex flex-row items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-row items-center gap-2 w-full sm:w-auto bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5">
           <button 
             onClick={handleShareResultsSummaryWhatsApp}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20 font-bold text-[10px] tracking-widest uppercase"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#25D366] text-white hover:bg-[#25D366]/90 transition-all shadow-sm font-bold text-[10px] tracking-widest uppercase active:scale-95"
           >
             <Share2 className="h-3.5 w-3.5" />
             Compartilhar
           </button>
           <button 
             onClick={handlePrint}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border border-black/5 font-bold text-[10px] tracking-widest uppercase"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-zinc-800 text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all border border-black/10 shadow-sm font-bold text-[10px] tracking-widest uppercase active:scale-95"
           >
             <Printer className="h-3.5 w-3.5" />
             PDF
