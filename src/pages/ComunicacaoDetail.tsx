@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer } from "lucide-react";
+import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer, PieChart } from "lucide-react";
 import { fetchComunicacaoRespostas, fetchPublicComunicacaoForm } from "@/lib/supabaseStore";
 import { toast } from "sonner";
 import { formatarDataVigente } from "@/lib/utils";
@@ -111,6 +111,59 @@ export default function ComunicacaoDetail() {
         <h1 className="text-2xl font-black">{form.titulo}</h1>
         <p className="text-sm text-gray-500 mt-2">Relatório de Respostas - Gerado em {new Date().toLocaleDateString()}</p>
       </div>
+
+      {/* Estatísticas (Resumo) */}
+      {!loadingRespostas && respostas.length > 0 && form.campos.some(c => ['radio', 'checkbox', 'rating'].includes(c.type)) && (
+        <div className="space-y-4 mb-6 print:mb-8">
+           <h2 className="text-sm font-black uppercase tracking-widest text-foreground pl-2 flex items-center gap-2 print:text-black">
+             <PieChart className="h-4 w-4 text-purple-500" />
+             Resumo das Respostas
+           </h2>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             {form.campos.filter(c => ['radio', 'checkbox', 'rating'].includes(c.type)).map(campo => {
+                // Calcular frequência das respostas
+                const frequencia: Record<string, number> = {};
+                respostas.forEach(r => {
+                  const val = r.respostas[campo.id];
+                  if (val !== undefined && val !== null && val !== '') {
+                    if (Array.isArray(val)) {
+                      val.forEach(v => { frequencia[v] = (frequencia[v] || 0) + 1; });
+                    } else {
+                      frequencia[val] = (frequencia[val] || 0) + 1;
+                    }
+                  }
+                });
+
+                const totalRespondido = Object.values(frequencia).reduce((a, b) => a + b, 0);
+
+                return (
+                  <div key={`stats-${campo.id}`} className="float-card p-4 border border-black/5 flex flex-col gap-3">
+                    <p className="text-xs font-bold text-foreground line-clamp-2 leading-snug">{campo.label}</p>
+                    <div className="space-y-2 mt-auto">
+                      {Object.entries(frequencia).sort((a,b) => b[1] - a[1]).map(([resposta, qtd]) => {
+                        const porcentagem = totalRespondido > 0 ? Math.round((qtd / totalRespondido) * 100) : 0;
+                        return (
+                          <div key={resposta} className="space-y-1">
+                            <div className="flex justify-between text-[10px] font-bold">
+                              <span className="truncate max-w-[70%]">{resposta}</span>
+                              <span className="text-muted-foreground">{qtd} ({porcentagem}%)</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-black/5 rounded-full overflow-hidden">
+                              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${porcentagem}%` }}></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {Object.keys(frequencia).length === 0 && (
+                        <p className="text-[10px] text-muted-foreground italic">Nenhuma resposta quantitativa ainda.</p>
+                      )}
+                    </div>
+                  </div>
+                );
+             })}
+           </div>
+        </div>
+      )}
 
       {/* Responses List */}
       <div className="space-y-4">

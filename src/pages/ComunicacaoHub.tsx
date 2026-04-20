@@ -169,6 +169,20 @@ export default function ComunicacaoHub() {
                     {form.descricao}
                   </p>
                 )}
+
+                {/* Chip com o Link Público */}
+                <div className="flex justify-center my-4">
+                  <div 
+                    onClick={(e) => copyLink(form.codigo_acesso, e)}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-zinc-800 rounded-full border border-black/5 hover:border-purple-500/30 hover:bg-purple-500/10 transition-colors group/link"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover/link:text-purple-600 transition-colors" />
+                    <span className="text-[10px] sm:text-[11px] font-bold text-muted-foreground group-hover/link:text-purple-600 transition-colors truncate max-w-[150px] sm:max-w-[200px]">
+                      {`${window.location.origin}/f/${form.codigo_acesso}`}
+                    </span>
+                    <Copy className="h-3 w-3 text-muted-foreground opacity-50 group-hover/link:opacity-100 group-hover/link:text-purple-600 transition-opacity" />
+                  </div>
+                </div>
               </div>
               
               <div className="pt-4 mt-2 border-t border-black/5 flex items-center justify-between">

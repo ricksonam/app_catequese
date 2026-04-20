@@ -34,6 +34,24 @@ export default function PublicFormResponder() {
     });
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.replace(/\D/g, ''); // limpa tudo que não é número
+    
+    // Aplica a máscara: (00) 00000-0000 ou (00) 0000-0000
+    if (val.length > 11) val = val.slice(0, 11);
+    
+    if (val.length > 2) {
+      val = `(${val.slice(0, 2)}) ${val.slice(2)}`;
+    }
+    if (val.length > 9) { // (11) 99999-9999
+      val = `${val.slice(0, 10)}-${val.slice(10)}`;
+    } else if (val.length > 8 && val.length <= 9) { // (11) 9999-9999
+      val = `${val.slice(0, 9)}-${val.slice(9)}`;
+    }
+    
+    setTelefone(val);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
@@ -146,8 +164,9 @@ export default function PublicFormResponder() {
               <input 
                 type="tel" 
                 value={telefone}
-                onChange={e => setTelefone(e.target.value)}
+                onChange={handlePhoneChange}
                 placeholder="(00) 00000-0000"
+                maxLength={15}
                 className="w-full bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl border-2 border-transparent focus:border-liturgical outline-none transition-colors text-base font-medium"
               />
             </div>
