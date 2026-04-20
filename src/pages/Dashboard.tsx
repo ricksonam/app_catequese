@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [apoieOpen, setApoieOpen] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
@@ -304,6 +305,52 @@ export default function Dashboard() {
     <div className="space-y-2.5">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
 
+      <Dialog open={apoieOpen} onOpenChange={setApoieOpen}>
+        <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 border-2 border-black/5 p-0 overflow-hidden rounded-[32px]">
+          <div className="bg-gradient-to-br from-red-500 to-rose-600 p-8 text-white text-center relative overflow-hidden">
+             <div className="absolute -top-10 -right-10 p-4 opacity-20">
+               <Heart className="w-48 h-48 fill-white" />
+             </div>
+             <Heart className="w-16 h-16 fill-white text-white mx-auto mb-4 animate-bounce-subtle relative z-10" />
+             <h2 className="text-2xl font-black relative z-10">Apoie o iCatequese!</h2>
+          </div>
+          <div className="p-6 text-center space-y-4">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              O iCatequese é um projeto independente, mantido com recursos próprios do desenvolvedor para cobrir os custos de servidor e de hospedagem da plataforma.
+            </p>
+            <p className="text-sm text-foreground font-medium leading-relaxed">
+              Sua doação generosa nos ajuda a manter esta ferramenta no ar, <strong>gratuita para todos</strong>.
+            </p>
+            
+            <div className="mt-6">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Chave PIX (E-mail)</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <span className="font-bold text-lg text-foreground tracking-wide select-all">
+                  ricksonam@hotmail.com
+                </span>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText("ricksonam@hotmail.com");
+                    toast.success("Chave PIX copiada!");
+                  }}
+                  className="px-4 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest"
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setApoieOpen(false)}
+              className="mt-4 text-xs font-bold text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
+            >
+              Fechar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
       {/* ── ATIVAR NOTIFICAÇÕES ── */}
       {permission === "default" && (
         <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600 shadow-xl shadow-blue-500/20 p-1">
@@ -333,6 +380,13 @@ export default function Dashboard() {
           <h1 className="text-xl font-bold text-foreground">Olá, Catequista! 👋</h1>
           <p className="text-muted-foreground text-[10px] mt-0.5">Bem-vindo ao iCatequese</p>
         </div>
+        <button 
+          onClick={() => setApoieOpen(true)}
+          className="group flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 active:scale-95 transition-all shadow-lg shadow-red-500/30 font-bold border border-red-400"
+        >
+          <Heart className="h-4 w-4 fill-white text-white transition-transform animate-heartbeat" />
+          <span className="text-xs tracking-widest uppercase">Apoie</span>
+        </button>
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}

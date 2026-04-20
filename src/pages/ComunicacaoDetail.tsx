@@ -43,6 +43,46 @@ export default function ComunicacaoDetail() {
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
   };
 
+  const handleShareResultsSummaryWhatsApp = () => {
+    if (!form || respostas.length === 0) {
+      toast.error("Não há respostas para compartilhar ainda.");
+      return;
+    }
+
+    let texto = `*📊 Resultado: ${form.titulo}*\n`;
+    texto += `Total de respostas recebidas: *${respostas.length}*\n\n`;
+
+    const camposAvaliados = form.campos.filter(c => ['radio', 'checkbox', 'rating'].includes(c.type));
+    
+    if (camposAvaliados.length > 0) {
+      camposAvaliados.forEach(campo => {
+        texto += `*${campo.label}*\n`;
+        const frequencia: Record<string, number> = {};
+        respostas.forEach(r => {
+          const val = r.respostas[campo.id];
+          if (val) {
+            if (Array.isArray(val)) {
+              val.forEach(v => { frequencia[v] = (frequencia[v] || 0) + 1; });
+            } else {
+              frequencia[val] = (frequencia[val] || 0) + 1;
+            }
+          }
+        });
+
+        const totalRespondido = Object.values(frequencia).reduce((a, b) => a + b, 0);
+        Object.entries(frequencia).sort((a,b) => b[1] - a[1]).forEach(([resposta, qtd]) => {
+          const porcentagem = totalRespondido > 0 ? Math.round((qtd / totalRespondido) * 100) : 0;
+          texto += `- ${resposta}: ${qtd} (${porcentagem}%)\n`;
+        });
+        texto += `\n`;
+      });
+    }
+
+    texto += `_Gerado pelo iCatequese_`;
+
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(getLinkPublico());
     toast.success("Link copiado para a área de transferência!");
@@ -113,7 +153,7 @@ export default function ComunicacaoDetail() {
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
           <button 
-            onClick={handleShareWhatsApp}
+            onClick={handleShareResultsSummaryWhatsApp}
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20 font-bold text-xs tracking-widest uppercase"
           >
             <Share2 className="h-4 w-4" />
