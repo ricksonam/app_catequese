@@ -337,16 +337,16 @@ export default function Dashboard() {
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
       {aniversariantesMes.length > 0 ? (
-        <div className="relative pt-0 pb-2 mb-0 animate-fade-in overflow-hidden">
+        <div className="relative pt-0 pb-1 mb-0 animate-fade-in overflow-hidden">
           {/* Título da Seção */}
-          <div className="flex flex-col items-center justify-center mb-2">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60">Próximos Aniversários</h2>
-            <div className="h-0.5 w-6 bg-primary/40 rounded-full mt-0.5"></div>
+          <div className="flex flex-col items-center justify-center mb-1">
+            <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-black/50">Próximos Aniversários</h2>
+            <div className="h-0.5 w-5 bg-primary/30 rounded-full"></div>
           </div>
 
           {/* Container dos Cards */}
           <div className={cn(
-            "flex gap-3 relative z-10 px-1 min-h-[140px]",
+            "flex gap-3 relative z-10 px-1 min-h-[110px]",
             aniversariantesMes.length === 1 ? "justify-center" : "justify-center sm:gap-6"
           )}>
             {aniversariantesMes.map((c, i) => {
@@ -373,10 +373,10 @@ export default function Dashboard() {
 
                     {/* Moldura Polaroid */}
                     <div className={cn(
-                      "bg-white p-1 pb-3 shadow-[0_8px_25px_rgba(0,0,0,0.12)] border relative overflow-hidden transition-colors",
-                      isHoje ? "border-amber-400 ring-2 ring-amber-400/20" : "border-black/5"
+                      "bg-white p-1 pb-2 shadow-md border relative overflow-hidden transition-colors",
+                      isHoje ? "border-amber-400 ring-1 ring-amber-400/20" : "border-black/5"
                     )}>
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 overflow-hidden bg-muted relative">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 overflow-hidden bg-muted relative">
                         {c.foto ? (
                           <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                         ) : (
@@ -423,9 +423,9 @@ export default function Dashboard() {
           </div>
         </div>
       ) : proximasAtividades.length > 0 ? (
-        <div className="animate-fade-in mb-2">
-          <div className="liturgical-frame p-1 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
-             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-4 relative overflow-hidden">
+        <div className="animate-fade-in mb-1">
+          <div className="liturgical-frame p-0.5 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
+             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden">
                 <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
