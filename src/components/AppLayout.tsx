@@ -56,14 +56,12 @@ export default function AppLayout() {
               </SheetTrigger>
               <SheetContent 
                 side="left" 
-                className="w-[280px] sm:w-80 p-0 bg-transparent border-none shadow-none h-fit top-16 left-4 data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left transition-all duration-300"
+                className="w-80 p-0 bg-slate-100 dark:bg-zinc-950 border-r border-black/5 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left transition-transform duration-300"
               >
-                <div className="rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-black/50 border border-white/20 dark:border-white/5">
-                  <MenuContent 
-                    onClose={() => setMenuOpen(false)} 
-                    onShowObjective={() => setShowObjective(true)} 
-                  />
-                </div>
+                <MenuContent 
+                  onClose={() => setMenuOpen(false)} 
+                  onShowObjective={() => setShowObjective(true)} 
+                />
               </SheetContent>
             </Sheet>
             

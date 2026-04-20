@@ -182,38 +182,39 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   };
 
   return (
-    <div className="flex flex-col h-auto bg-slate-100 dark:bg-zinc-950">
+  return (
+    <div className="flex flex-col h-full bg-slate-100 dark:bg-zinc-950 overflow-hidden">
       {/* Nome do Usuário Logado */}
       <div className="p-4 pb-1 border-b border-black/5 mb-1">
         <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
         <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
       </div>
 
-      <div className="overflow-y-auto px-4 pb-0 scrollbar-hide">
-        <Accordion type="single" collapsible className="w-full space-y-1.5 border-none">
+      <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-hide">
+        <Accordion type="single" collapsible className="w-full space-y-2 border-none">
           
           {/* SEÇÃO: CADASTROS BÁSICOS */}
           <AccordionItem value="cadastros" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
-                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                    <Church className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Cadastros Básicos</span>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Cadastros</span>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
-            <AccordionContent className="pt-2 px-2 space-y-2">
+            <AccordionContent className="pt-1 px-1 space-y-1">
               {cadastros.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => go(item.path)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.color} shadow-sm border border-black/5`}>
-                    <item.icon className="h-5 w-5" />
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
+                    <item.icon className="h-4 w-4" />
                   </div>
-                  <span className="text-sm font-bold text-foreground/80">{item.label}</span>
+                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
                 </button>
               ))}
             </AccordionContent>
@@ -222,25 +223,25 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: MÓDULOS GLOBAIS */}
           <AccordionItem value="modulos" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
-                 <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+                 <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <Sparkles className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Globais</span>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos</span>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
-            <AccordionContent className="pt-2 px-2 space-y-2">
+            <AccordionContent className="pt-1 px-1 space-y-1">
               {modulosGlobais.map((item) => (
                 <button
                   key={item.path}
                   onClick={() => go(item.path)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.color} shadow-sm border border-black/5`}>
-                    <item.icon className="h-5 w-5" />
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
+                    <item.icon className="h-4 w-4" />
                   </div>
-                  <span className="text-sm font-bold text-foreground/80">{item.label}</span>
+                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
                 </button>
               ))}
             </AccordionContent>
@@ -306,33 +307,33 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: CONTA */}
           <AccordionItem value="conta" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
-                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                    <Users className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-xs font-black text-foreground text-left uppercase tracking-[0.2em]">Minha Conta</span>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Configurações</span>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
-            <AccordionContent className="pt-2 px-2 space-y-2">
-              <button onClick={() => setShowPasswordDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5"><KeyRound className="h-5 w-5" /></div>
-                <span className="text-sm font-bold text-foreground/80">Alterar Senha</span>
+            <AccordionContent className="pt-1 px-1 space-y-1">
+              <button onClick={() => setShowPasswordDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:rotate-12 transition-transform"><KeyRound className="h-4 w-4" /></div>
+                <span className="text-sm font-bold text-foreground/80 text-left">Alterar Senha</span>
               </button>
               
-              <button onClick={() => setShowNotificationDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center shadow-sm border border-black/5"><Bell className="h-5 w-5" /></div>
-                <span className="text-sm font-bold text-foreground/80">Notificações</span>
+              <button onClick={() => setShowNotificationDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:animate-icon-pulse"><Bell className="h-4 w-4" /></div>
+                <span className="text-sm font-bold text-foreground/80 text-left">Notificações</span>
               </button>
 
-              <button onClick={() => setShowSuggestionDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shadow-sm border border-black/5"><MessageSquare className="h-5 w-5" /></div>
-                <span className="text-sm font-bold text-foreground/80">Dar Sugestão</span>
+              <button onClick={() => setShowSuggestionDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform"><MessageSquare className="h-4 w-4" /></div>
+                <span className="text-sm font-bold text-foreground/80 text-left">Dar Sugestão</span>
               </button>
 
-              <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
-                <div className="w-10 h-10 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center shadow-sm border border-black/5"><Trash className="h-5 w-5" /></div>
-                <span className="text-sm font-black">Excluir Usuário</span>
+              <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
+                <div className="w-9 h-9 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:skew-x-6 transition-transform"><Trash className="h-4 w-4" /></div>
+                <span className="text-sm font-black text-left">Excluir Usuário</span>
               </button>
             </AccordionContent>
           </AccordionItem>
@@ -363,12 +364,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </div>
 
         {/* LOGOUT - SEMPRE VISÍVEL NO MENU */}
-        <div className="mt-4 pb-4 px-0">
+        <div className="mt-4 pb-8">
            <button
              onClick={handleSignOut}
-             className="w-full float-card flex items-center gap-3 px-6 py-3 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-md group active:scale-95 transition-all text-destructive mb-1"
+             className="w-full group flex items-center gap-3 px-5 py-4 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-sm rounded-2xl active:scale-95 transition-all text-destructive"
            >
-             <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white transition-all">
+             <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white group-hover:rotate-12 transition-all duration-300">
                <LogOut className="h-5 w-5" strokeWidth={2.5} />
              </div>
              <span className="flex-1 text-base font-black uppercase tracking-widest text-left">Sair do App</span>
