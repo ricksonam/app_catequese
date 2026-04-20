@@ -314,7 +314,7 @@ export default function Dashboard() {
              <Heart className="w-16 h-16 fill-white text-white mx-auto mb-4 animate-bounce-subtle relative z-10" />
              <h2 className="text-2xl font-black relative z-10">Apoie o iCatequese!</h2>
           </div>
-          <div className="p-6 text-center space-y-4">
+          <div className="p-4 sm:p-6 text-center space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
             <p className="text-sm text-muted-foreground leading-relaxed">
               O iCatequese é um projeto independente, mantido com recursos próprios do desenvolvedor para cobrir os custos de servidor e de hospedagem da plataforma.
             </p>
@@ -322,10 +322,10 @@ export default function Dashboard() {
               Sua doação generosa nos ajuda a manter esta ferramenta no ar, <strong>gratuita para todos</strong>.
             </p>
             
-            <div className="mt-6">
+            <div className="mt-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Chave PIX (E-mail)</p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <span className="font-bold text-lg text-foreground tracking-wide select-all">
+              <div className="flex flex-col items-center justify-center gap-3">
+                <span className="font-bold text-base sm:text-lg text-foreground tracking-wide select-all break-all">
                   ricksonam@hotmail.com
                 </span>
                 <button 
@@ -333,19 +333,12 @@ export default function Dashboard() {
                     navigator.clipboard.writeText("ricksonam@hotmail.com");
                     toast.success("Chave PIX copiada!");
                   }}
-                  className="px-4 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest"
+                  className="px-6 py-2 rounded-full bg-primary text-white hover:bg-primary/90 hover:-translate-y-0.5 shadow-md active:scale-95 transition-all text-[11px] font-black uppercase tracking-widest"
                 >
-                  Copiar
+                  Copiar Chave
                 </button>
               </div>
             </div>
-            
-            <button 
-              onClick={() => setApoieOpen(false)}
-              className="mt-4 text-xs font-bold text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
-            >
-              Fechar
-            </button>
           </div>
         </DialogContent>
       </Dialog>

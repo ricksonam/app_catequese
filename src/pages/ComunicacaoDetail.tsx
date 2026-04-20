@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer, PieChart } from "lucide-react";
-import { fetchComunicacaoRespostas, fetchPublicComunicacaoForm } from "@/lib/supabaseStore";
+import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer, PieChart, ChevronDown, ChevronUp } from "lucide-react";
+import { fetchComunicacaoRespostas } from "@/lib/supabaseStore";
 import { toast } from "sonner";
 import { formatarDataVigente } from "@/lib/utils";
 import type { ComunicacaoResposta, ComunicacaoForm } from "@/lib/store";
@@ -9,6 +10,7 @@ import type { ComunicacaoResposta, ComunicacaoForm } from "@/lib/store";
 export default function ComunicacaoDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [expandedResponse, setExpandedResponse] = useState<string | null>(null);
 
   // In a real scenario we might have a specific hook fetching form by ID,
   // but we can use the public fetcher since this page is for the owner too and the form is public
@@ -151,20 +153,20 @@ export default function ComunicacaoDetail() {
             <p className="text-xs text-muted-foreground mt-0.5">Visualize ou exporte as respostas abaixo</p>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-row items-center gap-2 w-full sm:w-auto">
           <button 
             onClick={handleShareResultsSummaryWhatsApp}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20 font-bold text-xs tracking-widest uppercase"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20 font-bold text-[10px] tracking-widest uppercase"
           >
-            <Share2 className="h-4 w-4" />
+            <Share2 className="h-3.5 w-3.5" />
             Compartilhar
           </button>
           <button 
             onClick={handlePrint}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border border-black/5 font-bold text-xs tracking-widest uppercase"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border border-black/5 font-bold text-[10px] tracking-widest uppercase"
           >
-            <Printer className="h-4 w-4" />
-            Imprimir PDF
+            <Printer className="h-3.5 w-3.5" />
+            PDF
           </button>
         </div>
       </div>
@@ -243,42 +245,63 @@ export default function ComunicacaoDetail() {
              <p className="text-sm text-muted-foreground mt-2">Compartilhe o link com as famílias para começar a receber respostas.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 print:gap-1.5">
-            {respostas.map((resp, i) => (
-              <div key={resp.id} className="float-card p-5 print:p-2 group flex flex-col gap-4 print:gap-1 border-l-4 border-success print:border-black print:border-l-[1.5px] print:shadow-none print:break-inside-avoid">
-                <div className="flex justify-between items-start border-b border-black/5 pb-3 print:pb-1 print:border-black/20">
-                  <div>
-                    <h3 className="font-bold text-lg print:text-xs leading-none">{resp.nome_respondente}</h3>
-                    {resp.telefone && <p className="text-sm print:text-[9px] text-muted-foreground mt-0.5">{resp.telefone}</p>}
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs print:text-[9px] font-bold text-foreground">{resp.criado_em ? formatarDataVigente(resp.criado_em) : '-'}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-4 print:space-y-0.5">
-                  {form.campos.map(campo => {
-                    const respostaUser = resp.respostas[campo.id];
-                    return (
-                      <div key={campo.id} className="bg-muted/30 p-3 print:px-0 print:py-0.5 rounded-xl border border-black/5 print:bg-transparent print:border-none print:flex print:items-baseline print:gap-1.5 print:rounded-none">
-                        <p className="text-xs print:text-[9px] font-bold text-muted-foreground mb-1 print:mb-0 leading-tight print:min-w-fit">{campo.label}:</p>
-                        <p className="text-sm print:text-[9px] font-medium text-foreground leading-snug">
-                          {Array.isArray(respostaUser) ? respostaUser.join(', ') : (respostaUser || <span className="italic opacity-50">Sem resposta</span>)}
-                        </p>
+          <div className="grid grid-cols-1 gap-2 print:gap-1.5">
+            {respostas.map((resp, i) => {
+              const isExpanded = expandedResponse === resp.id;
+              return (
+                <div key={resp.id} className="float-card overflow-hidden group border-l-4 border-success print:border-black print:border-l-[1.5px] print:shadow-none print:break-inside-avoid shadow-sm border border-black/5">
+                  <button 
+                    onClick={() => setExpandedResponse(isExpanded ? null : resp.id)}
+                    className="w-full flex justify-between items-center p-4 print:p-2 bg-white dark:bg-zinc-900 group-hover:bg-muted/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                        <UserCircle className="h-5 w-5 text-success" />
                       </div>
-                    );
-                  })}
-                </div>
-                
-                {resp.pontuacao !== undefined && (
-                  <div className="mt-2 print:mt-0 text-right">
-                    <span className="inline-block px-3 py-1 print:px-1.5 print:py-0 bg-purple-500/10 print:bg-transparent text-purple-600 print:text-black font-black text-xs print:text-[8px] uppercase tracking-widest rounded-lg border border-purple-500/20 print:border-black/30">
-                      Pontuação: {resp.pontuacao}
-                    </span>
+                      <div className="text-left">
+                        <h3 className="font-bold text-sm print:text-xs leading-none">{resp.nome_respondente}</h3>
+                        {resp.telefone && <p className="text-[10px] print:text-[8px] text-muted-foreground mt-1">{resp.telefone}</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="hidden sm:block text-right">
+                        <span className="text-[10px] print:text-[9px] font-bold text-muted-foreground">{resp.criado_em ? formatarDataVigente(resp.criado_em) : '-'}</span>
+                      </div>
+                      <div className="print:hidden">
+                        {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                      </div>
+                    </div>
+                  </button>
+
+                  <div className={cn(
+                    "px-4 pb-4 print:block print:pb-1 print:px-2 space-y-4 print:space-y-0.5",
+                    isExpanded ? "block animate-fade-in" : "hidden"
+                  )}>
+                    <div className="pt-2 border-t border-black/5 print:border-black/20">
+                      {form.campos.map(campo => {
+                        const respostaUser = resp.respostas[campo.id];
+                        return (
+                          <div key={campo.id} className="bg-muted/30 p-3 print:px-0 print:py-0.5 rounded-xl border border-black/5 print:bg-transparent print:border-none print:flex print:items-baseline print:gap-1.5 print:rounded-none mb-2 last:mb-0">
+                            <p className="text-xs print:text-[9px] font-bold text-muted-foreground mb-1 print:mb-0 leading-tight print:min-w-fit">{campo.label}:</p>
+                            <p className="text-sm print:text-[9px] font-medium text-foreground leading-snug">
+                              {Array.isArray(respostaUser) ? respostaUser.join(', ') : (respostaUser || <span className="italic opacity-50">Sem resposta</span>)}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    {resp.pontuacao !== undefined && (
+                      <div className="mt-2 print:mt-0 text-right">
+                        <span className="inline-block px-3 py-1 print:px-1.5 print:py-0 bg-purple-500/10 print:bg-transparent text-purple-600 print:text-black font-black text-[10px] print:text-[8px] uppercase tracking-widest rounded-lg border border-purple-500/20 print:border-black/30">
+                          Pontuação: {resp.pontuacao}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
