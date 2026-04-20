@@ -170,8 +170,11 @@ export default function Dashboard() {
     return Array.from(people.values())
       .map(p => {
         const sortedEvents = p.events.sort((a: any, b: any) => a.day - b.day);
-        // Próximo evento ou o primeiro se todos passarem
-        const primaryEvent = sortedEvents.find((e: any) => e.day >= hoje.getDate()) || sortedEvents[0];
+        // Apenas eventos futuros ou hoje
+        const futureEvents = sortedEvents.filter((e: any) => e.day >= hoje.getDate());
+        if (futureEvents.length === 0) return null;
+
+        const primaryEvent = futureEvents[0];
         return { 
           ...p, 
           day: primaryEvent.day, 
@@ -181,7 +184,8 @@ export default function Dashboard() {
           allEvents: sortedEvents
         };
       })
-      .sort((a, b) => a.day - b.day)
+      .filter(p => p !== null)
+      .sort((a, b) => (a as any).day - (b as any).day)
       .slice(0, 4);
   }, [catequizandos, catequistas, mesAtual, hoje]);
 
@@ -297,7 +301,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2.5">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
 
       {/* ── ATIVAR NOTIFICAÇÕES ── */}
@@ -324,20 +328,20 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="animate-fade-in flex items-start justify-between mb-1">
+      <div className="animate-fade-in flex items-start justify-between mb-0.5">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
-          <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao iCatequese</p>
+          <h1 className="text-xl font-bold text-foreground">Olá, Catequista! 👋</h1>
+          <p className="text-muted-foreground text-[10px] mt-0.5">Bem-vindo ao iCatequese</p>
         </div>
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
       {aniversariantesMes.length > 0 ? (
-        <div className="relative pt-0 pb-4 mb-0 animate-fade-in overflow-hidden">
+        <div className="relative pt-0 pb-2 mb-0 animate-fade-in overflow-hidden">
           {/* Título da Seção */}
-          <div className="flex flex-col items-center justify-center mb-4">
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">Próximos Aniversários</h2>
-            <div className="h-0.5 w-8 bg-primary rounded-full mt-1 animate-soft-pulse"></div>
+          <div className="flex flex-col items-center justify-center mb-2">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60">Próximos Aniversários</h2>
+            <div className="h-0.5 w-6 bg-primary/40 rounded-full mt-0.5"></div>
           </div>
 
           {/* Container dos Cards */}
@@ -468,7 +472,7 @@ export default function Dashboard() {
       {/* ── CARD PRINCIPAL DE TURMA ── */}
       {turmas.length > 0 && (
         <div 
-          className="relative p-[1.5px] rounded-[32px] bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white shadow-[0_15px_45px_rgba(0,0,0,0.08)] animate-card-activate transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group overflow-hidden"
+          className="relative p-[1.5px] rounded-[32px] bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white shadow-lg animate-card-activate transition-all duration-300 hover:-translate-y-1 cursor-pointer group overflow-hidden -mt-2"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
           <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
@@ -478,12 +482,12 @@ export default function Dashboard() {
                <BookOpen className="w-24 h-24 text-primary" />
             </div>
 
-            <div className="px-5 py-5 flex flex-col items-center relative z-10 text-center">
-                <div className="flex items-center justify-center gap-1.5 mb-1 mt-[-6px]">
-                   <div className={cn("w-4 h-4 rounded-md flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
-                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-2.5 w-2.5" />
+            <div className="px-5 py-4 flex flex-col items-center relative z-10 text-center">
+                <div className="flex items-center justify-center gap-1.5 mb-1 mt-[-2px]">
+                   <div className={cn("w-3.5 h-3.5 rounded-md flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
+                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-2 w-2" />
                    </div>
-                   <p className="text-[7px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
+                   <p className="text-[6px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
                 </div>
                 
                 <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
@@ -540,7 +544,7 @@ export default function Dashboard() {
       )}
 
       {/* ── STATS CARDS ── */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 mt-[-8px]">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           const isCatequizandos = stat.label === "Catequizandos";
@@ -550,28 +554,28 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "group relative p-[1px] rounded-[24px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95",
+                "group relative p-[1px] rounded-[20px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95",
                 isCatequizandos 
-                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-md shadow-amber-500/10" 
-                  : "bg-gradient-to-br from-blue-400 via-blue-200 to-blue-600 shadow-md shadow-blue-500/10"
+                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-sm" 
+                  : "bg-gradient-to-br from-blue-400 via-blue-200 to-blue-600 shadow-sm"
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[23px] p-3 overflow-hidden flex flex-col items-center text-center">
+              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[19px] p-2 overflow-hidden flex flex-col items-center text-center">
                 <div className={cn(
-                  "icon-box mx-auto mb-1 w-9 h-9 shadow-sm border animate-liturgical-float transition-all duration-500",
+                  "icon-box mx-auto mb-0.5 w-7 h-7 shadow-sm border animate-liturgical-float transition-all duration-500",
                   stat.color,
                   isCatequizandos 
                     ? "border-amber-200 bg-gradient-to-br from-amber-50 to-white dark:from-amber-900/20 shadow-amber-200/50" 
                     : "border-blue-200 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 shadow-blue-200/50"
                 )}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4" />
                 </div>
                 
-                <p className="text-xl font-black text-foreground leading-tight tracking-tight">
+                <p className="text-lg font-black text-foreground leading-tight tracking-tight">
                   {stat.value}
                 </p>
-                <div className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.1em] mt-0.5">
+                <div className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.1em]">
                   {stat.label}
                 </div>
               </div>
@@ -583,22 +587,22 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up" style={{ animationDelay: '200ms' }}>
-          <div className="flex flex-col items-center justify-center px-1 mb-3 text-center">
-            <h2 className="text-sm font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
+          <div className="flex flex-col items-center justify-center px-1 mb-1.5 text-center">
+            <h2 className="text-[10px] font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
           </div>
 
           <div 
             className="float-card p-0 overflow-hidden border-2 border-blue-200 shadow-lg shadow-blue-500/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
             onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
           >
-            <div className="p-4 active:scale-[0.99] transition-all">
-              <div className="flex gap-3 items-center">
+            <div className="p-3 active:scale-[0.99] transition-all">
+              <div className="flex gap-2.5 items-center">
                 {/* Chip de Data */}
-                <div className="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm border border-blue-100 shrink-0 transform group-hover:scale-105 transition-transform">
-                  <span className="text-[8px] font-black text-blue-600 uppercase leading-none mb-0.5">
+                <div className="flex flex-col items-center justify-center w-10 h-10 bg-white rounded-xl shadow-sm border border-blue-100 shrink-0 transform group-hover:scale-105 transition-transform">
+                  <span className="text-[7px] font-black text-blue-600 uppercase leading-none mb-0.5">
                     {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay() === 0 ? 6 : parseDataLocal(proximoEncontro.data).getDay() - 1].slice(0, 3)}
                   </span>
-                  <span className="text-lg font-black text-blue-600 leading-none">
+                  <span className="text-base font-black text-blue-600 leading-none">
                     {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                   </span>
                 </div>
