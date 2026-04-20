@@ -110,7 +110,7 @@ export default function TurmaForm() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Etapas da Catequese *</label>
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Ano/Ciclo *</label>
                 <select value={form.ano} onChange={(e) => update("ano", e.target.value)} className="form-input h-11">
                   <option value="1° Ano">1° Ano</option>
                   <option value="2° Ano">2° Ano</option>

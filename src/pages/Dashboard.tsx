@@ -401,7 +401,7 @@ export default function Dashboard() {
                       "px-2 py-0.5 rounded-full text-[8px] font-black uppercase border",
                       heroColors
                     )}>
-                      {selectedTurma.etapa}
+                      {selectedTurma.ano || selectedTurma.etapa}
                     </span>
                   )}
                 </div>
@@ -685,7 +685,7 @@ export default function Dashboard() {
                   onClick={() => setSelectedCatequizando(null)}
                   className="w-full h-12 bg-black text-white hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl transition-all active:scale-95 border-none"
                 >
-                  Fechar Celebração
+                  Parabéns!!
                 </Button>
               </div>
             </div>
