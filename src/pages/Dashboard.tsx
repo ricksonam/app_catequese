@@ -133,30 +133,74 @@ export default function Dashboard() {
 
   const mesAtual = hoje.getMonth();
   const aniversariantesMes = useMemo(() => {
+    const people = new Map<string, any>();
+
+    // Processar Nascimento (Catequizandos e Catequistas)
+    [...catequizandos.map(c => ({...c, isCatequista: false})), ...catequistas.map(c => ({...c, isCatequista: true}))].forEach(p => {
+      const dataStr = p.dataNascimento;
+      if (!dataStr) return;
+      
+      const bday = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
+      if (bday.getMonth() === mesAtual) {
+        if (!people.has(p.id)) {
+          people.set(p.id, { ...p, events: [] });
+        }
+        people.get(p.id).events.push({ tipo: 'nascimento', day: bday.getDate(), month: bday.getMonth() });
+      }
+    });
+
+    // Processar Batismo (Apenas Catequizandos)
+    catequizandos.filter(c => c.sacramentos?.batismo?.data).forEach(c => {
+      const dataStr = c.sacramentos?.batismo?.data;
+      if (!dataStr) return;
+      
+      const bday = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
+      if (bday.getMonth() === mesAtual) {
+        if (!people.has(c.id)) {
+          people.set(c.id, { ...c, events: [] });
+        }
+        // Evitar duplicar se por algum motivo for o mesmo ID
+        const alreadyHasBatismo = people.get(c.id).events.some((e: any) => e.tipo === 'batismo');
+        if (!alreadyHasBatismo) {
+          people.get(c.id).events.push({ tipo: 'batismo', day: bday.getDate(), month: bday.getMonth() });
+        }
+      }
+    });
+
+    return Array.from(people.values())
+      .map(p => {
+        const sortedEvents = p.events.sort((a: any, b: any) => a.day - b.day);
+        // Próximo evento ou o primeiro se todos passarem
+        const primaryEvent = sortedEvents.find((e: any) => e.day >= hoje.getDate()) || sortedEvents[0];
+        return { 
+          ...p, 
+          day: primaryEvent.day, 
+          month: primaryEvent.month, 
+          tipo: primaryEvent.tipo,
+          hasBoth: sortedEvents.length > 1,
+          allEvents: sortedEvents
+        };
+      })
+      .sort((a, b) => a.day - b.day)
+      .slice(0, 4);
+  }, [catequizandos, catequistas, mesAtual, hoje]);
+
+  const proximasAtividades = useMemo(() => {
+    if (aniversariantesMes.length > 0) return [];
+    
     const combined = [
-      ...catequizandos.map(c => ({ ...c, tipo: 'nascimento' as const, isCatequista: false })),
-      ...catequistas.map(c => ({ ...c, tipo: 'nascimento' as const, isCatequista: true })),
-      ...catequizandos.filter(c => c.sacramentos?.batismo?.data).map(c => ({ ...c, tipo: 'batismo' as const, isCatequista: false }))
+      ...atividades.map(a => ({ ...a, itemType: 'atividade' as const })),
+      ...missoes.map(m => ({ ...m, data: m.criadoEm, itemType: 'missao' as const }))
     ];
 
     return combined
       .filter(item => {
-        const dataStr = item.tipo === 'nascimento' ? item.dataNascimento : item.sacramentos?.batismo?.data;
-        if (!dataStr) return false;
-        // Use a safe date parsing for comparison
-        const data = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
-        return data.getMonth() === mesAtual;
+        const d = parseDataLocal(item.data);
+        return d >= hoje;
       })
-      .map(item => {
-        const dataStr = item.tipo === 'nascimento' ? item.dataNascimento : item.sacramentos?.batismo?.data;
-        const bday = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
-        const day = bday.getDate();
-        const month = bday.getMonth();
-        return { ...item, day, month };
-      })
-      .sort((a, b) => a.day - b.day)
-      .slice(0, 4);
-  }, [catequizandos, catequistas, mesAtual]);
+      .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime())
+      .slice(0, 2);
+  }, [atividades, missoes, aniversariantesMes.length, hoje]);
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
 
@@ -288,7 +332,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
-      {aniversariantesMes.length > 0 && (
+      {aniversariantesMes.length > 0 ? (
         <div className="relative pt-0 pb-4 mb-0 animate-fade-in overflow-hidden">
           {/* Título da Seção */}
           <div className="flex flex-col items-center justify-center mb-4">
@@ -308,7 +352,7 @@ export default function Dashboard() {
 
               return (
                 <div 
-                  key={`${c.id}-${i}-${c.tipo}`}
+                  key={`${c.id}-${i}`}
                   className="flex justify-center"
                   style={{ 
                     animation: `welcome-float 4s ease-in-out infinite`,
@@ -336,28 +380,33 @@ export default function Dashboard() {
                             {c.nome.charAt(0)}
                           </div>
                         )}
+                        {c.hasBoth && (
+                          <div className="absolute top-0 right-0 bg-amber-400 text-white p-0.5 rounded-bl-lg shadow-sm">
+                            <Sparkles className="w-2.5 h-2.5" />
+                          </div>
+                        )}
                       </div>
 
                       {/* Info do Aniversariante */}
                       <div className="mt-1.5 text-center px-0.5">
-                        <p className="text-[11px] font-black text-black leading-tight uppercase tracking-tighter truncate w-full px-1">
+                        <p className="text-[10px] font-black text-black leading-tight uppercase tracking-tighter truncate w-full px-1">
                           {c.nome.split(' ')[0]}
                         </p>
                         
                         <div className="flex flex-col items-center mt-1">
-                          <span className="text-[14px] font-black text-foreground/90 tabular-nums">
+                          <span className="text-[13px] font-black text-foreground/90 tabular-nums leading-none">
                             {dateStr}
                           </span>
                           {isHoje ? (
-                            <span className="text-[8px] font-black bg-amber-400 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-0.5">
+                            <span className="text-[7px] font-black bg-amber-400 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">
                               HOJE
                             </span>
                           ) : (
                             <p className={cn(
-                              "text-[7px] font-black uppercase tracking-tighter",
+                              "text-[7px] font-black uppercase tracking-tighter mt-0.5",
                               c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600"
                             )}>
-                              {c.tipo === 'nascimento' ? "Parabéns" : "Batismo"}
+                              {c.hasBoth ? "🎉 Duplo!" : (c.tipo === 'nascimento' ? "Parabéns" : "Batismo")}
                             </p>
                           )}
                         </div>
@@ -369,7 +418,52 @@ export default function Dashboard() {
             })}
           </div>
         </div>
-      )}
+      ) : proximasAtividades.length > 0 ? (
+        <div className="animate-fade-in mb-2">
+          <div className="liturgical-frame p-1 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
+             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-4 relative overflow-hidden">
+                <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Próximos Eventos</h2>
+                    <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2 w-full mt-1">
+                    {proximasAtividades.map((item, idx) => {
+                      const isMissao = item.itemType === 'missao';
+                      return (
+                        <div key={item.id} className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border border-primary/5 shadow-sm hover:border-primary/20 transition-all group">
+                          <div className={cn(
+                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105",
+                            isMissao ? "bg-amber-100 border-amber-200 text-amber-600" : "bg-emerald-100 border-emerald-200 text-emerald-600"
+                          )}>
+                             {isMissao ? <Trophy className="h-5 w-5" /> : <Star className="h-5 w-5" />}
+                          </div>
+                          <div className="flex-1 text-left min-w-0">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground tracking-tighter mb-0.5 leading-none">
+                              {isMissao ? "Missão em Família" : (item as any).tipo || "Atividade"}
+                            </p>
+                            <h4 className="text-xs font-black text-foreground truncate uppercase leading-tight">
+                              {isMissao ? (item as any).titulo : (item as any).nome}
+                            </h4>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-[10px] font-black text-primary/80 tabular-nums">
+                              {formatarDataVigente(item.data).split(' ')[0]}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+             </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* ── CARD PRINCIPAL DE TURMA ── */}
       {turmas.length > 0 && (
