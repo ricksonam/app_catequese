@@ -598,28 +598,34 @@ export default function Dashboard() {
             <div className="p-3 active:scale-[0.99] transition-all">
               <div className="flex gap-2.5 items-center">
                 {/* Chip de Data */}
-                <div className="flex flex-col items-center justify-center w-10 h-10 bg-white rounded-xl shadow-sm border border-blue-100 shrink-0 transform group-hover:scale-105 transition-transform">
-                  <span className="text-[7px] font-black text-blue-600 uppercase leading-none mb-0.5">
+                <div className="flex flex-col items-center justify-center w-11 h-11 bg-white rounded-xl shadow-sm border border-blue-100 shrink-0 transform group-hover:scale-105 transition-all mt-1">
+                  <span className="text-[6px] font-black text-blue-600/60 uppercase leading-none mb-1 animate-sacred-pulse">
                     {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay() === 0 ? 6 : parseDataLocal(proximoEncontro.data).getDay() - 1].slice(0, 3)}
                   </span>
-                  <span className="text-base font-black text-blue-600 leading-none">
+                  <span className="text-lg font-black text-blue-600 leading-none">
                     {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                   </span>
                 </div>
 
                 {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-1">
                     <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest",
-                      isUrgent ? "bg-destructive text-white" : "bg-blue-500 text-white"
+                      "px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest",
+                      isUrgent ? "bg-destructive text-white shadow-sm shadow-destructive/20" : "bg-blue-500 text-white shadow-sm shadow-blue-500/20"
                     )}>
                       {diaLabel}
                     </span>
                   </div>
-                  <h3 className="text-sm font-black text-foreground truncate leading-tight">
+                  <h3 className="text-xs font-black text-foreground truncate leading-tight uppercase tracking-tight">
                     {proximoEncontro.tema}
                   </h3>
+                  {proximoEncontro.leituraBiblica && (
+                    <p className="text-[9px] text-muted-foreground font-bold truncate mt-0.5 italic flex items-center gap-1">
+                      <BookOpen className="w-2.5 h-2.5 text-primary/40" />
+                      {proximoEncontro.leituraBiblica}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
