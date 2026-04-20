@@ -1,6 +1,6 @@
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useMissoesFamilia } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useCatequistas } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -21,6 +21,7 @@ export default function Dashboard() {
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
+  const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
   const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Dashboard() {
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
-  const loading = tLoading || eLoading || cLoading || aLoading || mLoading;
+  const loading = tLoading || eLoading || cLoading || catLoading || aLoading || mLoading;
 
   useEffect(() => {
     if (!loading && !tError && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
@@ -130,43 +131,32 @@ export default function Dashboard() {
     return pendentes[0] || null;
   }, [filteredEncontros, hoje]);
 
-  const proximosAniversariantes = useMemo(() => {
-    const thisYear = hoje.getFullYear();
+  const mesAtual = hoje.getMonth();
+  const aniversariantesMes = useMemo(() => {
+    const combined = [
+      ...catequizandos.map(c => ({ ...c, tipo: 'nascimento' as const, isCatequista: false })),
+      ...catequistas.map(c => ({ ...c, tipo: 'nascimento' as const, isCatequista: true })),
+      ...catequizandos.filter(c => c.sacramentos?.batismo?.data).map(c => ({ ...c, tipo: 'batismo' as const, isCatequista: false }))
+    ];
 
-    return filteredCatequizandos
-      .filter((c) => c.dataNascimento)
-      .map((c) => {
-        const bday = new Date(c.dataNascimento);
-        let nextBday = new Date(thisYear, bday.getMonth(), bday.getDate());
-        if (nextBday < hoje) nextBday = new Date(thisYear + 1, bday.getMonth(), bday.getDate());
-        return { ...c, proximoAniversario: nextBday };
+    return combined
+      .filter(item => {
+        const dataStr = item.tipo === 'nascimento' ? item.dataNascimento : item.sacramentos?.batismo?.data;
+        if (!dataStr) return false;
+        // Use a safe date parsing for comparison
+        const data = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
+        return data.getMonth() === mesAtual;
       })
-      .sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime())
-      .slice(0, 3);
-  }, [filteredCatequizandos, hoje]);
-
-  const proximosAniversariantesBatismo = useMemo(() => {
-    const thisYear = hoje.getFullYear();
-
-    return filteredCatequizandos
-      .filter((c) => c.sacramentos?.batismo?.data)
-      .map((c) => {
-        const bday = new Date(c.sacramentos!.batismo!.data);
-        // Correct for timezone offsets by getting UTC values if needed, but local is fine here since it only matters for month/day
-        let nextBday = new Date(thisYear, bday.getUTCMonth(), bday.getUTCDate());
-        if (nextBday < hoje) nextBday = new Date(thisYear + 1, bday.getUTCMonth(), bday.getUTCDate());
-        return { ...c, proximoAniversario: nextBday };
+      .map(item => {
+        const dataStr = item.tipo === 'nascimento' ? item.dataNascimento : item.sacramentos?.batismo?.data;
+        const bday = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
+        const day = bday.getDate();
+        const month = bday.getMonth();
+        return { ...item, day, month };
       })
-      .sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime())
-      .slice(0, 3);
-  }, [filteredCatequizandos, hoje]);
-
-  const proximasQuatro = useMemo(() => {
-    const births = proximosAniversariantes.map(c => ({ ...c, tipo: 'nascimento' as const }));
-    const baptisms = proximosAniversariantesBatismo.map(c => ({ ...c, tipo: 'batismo' as const }));
-    const combined = [...births, ...baptisms].sort((a, b) => a.proximoAniversario.getTime() - b.proximoAniversario.getTime());
-    return combined.slice(0, 4);
-  }, [proximosAniversariantes, proximosAniversariantesBatismo]);
+      .sort((a, b) => a.day - b.day)
+      .slice(0, 4);
+  }, [catequizandos, catequistas, mesAtual]);
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
 
@@ -176,7 +166,6 @@ export default function Dashboard() {
     return Math.round((d.getTime() - hoje.getTime()) / 86400000);
   }
 
-  const stats = [
     { 
       label: "Catequizandos", 
       value: filteredCatequizandos.length, 
@@ -298,54 +287,51 @@ export default function Dashboard() {
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
-      {proximasQuatro.length > 0 && (
-        <div className="relative pt-4 pb-12 mb-4 animate-fade-in overflow-hidden">
+      {aniversariantesMes.length > 0 && (
+        <div className="relative pt-2 pb-6 mb-2 animate-fade-in overflow-hidden">
           {/* Título da Seção */}
-          <div className="flex items-center justify-between px-1 mb-6">
-            <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">Próximos Aniversários</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-muted/40 to-transparent ml-4"></div>
+          <div className="flex flex-col items-center justify-center mb-6">
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">Próximos Aniversários</h2>
+            <div className="h-1 w-12 bg-primary rounded-full mt-1.5 animate-soft-pulse"></div>
           </div>
 
-          {/* O Varal (Arame) */}
-          <svg className="absolute top-10 left-0 w-full h-16 pointer-events-none opacity-20" preserveAspectRatio="none" viewBox="0 0 400 100">
-            <path d="M 0 20 Q 200 70 400 20" fill="transparent" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 2" />
-          </svg>
-
-          {/* Container dos Polaroids */}
-          <div className="flex justify-center items-start gap-1 sm:gap-4 relative z-10 px-1 min-h-[140px]">
-            {proximasQuatro.map((c, i) => {
-              const rotations = ['-3deg', '2deg', '-1deg', '3deg'];
-              const delays = ['0s', '0.4s', '0.2s', '0.6s'];
-              const diasAte = Math.round((c.proximoAniversario.getTime() - hoje.getTime()) / 86400000);
-              const isHoje = diasAte === 0;
+          {/* Container dos Cards */}
+          <div className={cn(
+            "flex gap-3 relative z-10 px-1 min-h-[140px]",
+            aniversariantesMes.length === 1 ? "justify-center" : "justify-center sm:gap-6"
+          )}>
+            {aniversariantesMes.map((c, i) => {
+              const rotations = ['-2deg', '2deg', '-1deg', '3deg'];
+              const isHoje = c.day === hoje.getDate();
+              const dateStr = `${String(c.day).padStart(2, '0')}/${String(c.month + 1).padStart(2, '0')}`;
 
               return (
                 <div 
-                  key={`${c.id}-${i}`}
+                  key={`${c.id}-${i}-${c.tipo}`}
                   className="flex justify-center"
                   style={{ 
                     animation: `welcome-float 4s ease-in-out infinite`,
-                    animationDelay: delays[i]
+                    animationDelay: `${i * 0.2}s`
                   }}
                 >
                   <button
                     onClick={() => setSelectedCatequizando(c)}
                     className="relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95"
-                    style={{ transform: `rotate(${rotations[i]})` }}
+                    style={{ transform: `rotate(${rotations[i % 4]})` }}
                   >
-                    {/* Pregador (Clothespin) */}
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-2.5 h-6 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm overflow-hidden opacity-90">
-                       <div className="w-full h-px bg-[#b89a71] mt-1.5 opacity-50" />
-                       <div className="w-full h-px bg-[#b89a71] mt-1.5 opacity-50" />
-                    </div>
+                    {/* Pregador */}
+                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-5 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
 
                     {/* Moldura Polaroid */}
-                    <div className="bg-white p-1.5 pb-4 shadow-[0_8px_25px_rgba(0,0,0,0.12)] border border-black/5 relative">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 overflow-hidden bg-muted relative">
+                    <div className={cn(
+                      "bg-white p-1 pb-3 shadow-[0_8px_25px_rgba(0,0,0,0.12)] border relative overflow-hidden transition-colors",
+                      isHoje ? "border-amber-400 ring-2 ring-amber-400/20" : "border-black/5"
+                    )}>
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden bg-muted relative">
                         {c.foto ? (
-                          <img src={c.foto} alt={c.nome} className="w-full h-full object-cover rounded-sm" />
+                          <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-xl font-black">
+                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-2xl font-black">
                             {c.nome.charAt(0)}
                           </div>
                         )}
@@ -353,34 +339,28 @@ export default function Dashboard() {
 
                       {/* Info do Aniversariante */}
                       <div className="mt-1.5 text-center px-0.5">
-                        <p className="text-[9px] font-black text-foreground truncate max-w-[55px] sm:max-w-none mx-auto leading-tight">{c.nome.split(' ')[0]}</p>
-                        <p className={cn(
-                          "text-[7px] font-black uppercase tracking-tighter mb-0.5",
-                          c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600"
-                        )}>
-                          {c.tipo === 'nascimento' ? "Nascimento" : "Batismo"}
+                        <p className="text-[11px] font-black text-black leading-tight uppercase tracking-tighter truncate w-full px-1">
+                          {c.nome.split(' ')[0]}
                         </p>
-                        <div className="flex items-center justify-center gap-0.5">
-                          {c.tipo === 'nascimento' ? (
-                            <Cake className="w-2 h-2 text-amber-500" />
-                          ) : (
-                            <span className="text-[8px]">🕯️</span>
-                          )}
-                          <span className={cn(
-                            "text-[8px] font-bold uppercase",
-                            isHoje ? "text-amber-500" : "text-muted-foreground"
-                          )}>
-                            {isHoje ? "HOJE" : `${diasAte}d`}
+                        
+                        <div className="flex flex-col items-center mt-1">
+                          <span className="text-[14px] font-black text-foreground/90 tabular-nums">
+                            {dateStr}
                           </span>
+                          {isHoje ? (
+                            <span className="text-[8px] font-black bg-amber-400 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-0.5">
+                              HOJE
+                            </span>
+                          ) : (
+                            <p className={cn(
+                              "text-[7px] font-black uppercase tracking-tighter",
+                              c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600"
+                            )}>
+                              {c.tipo === 'nascimento' ? "Parabéns" : "Batismo"}
+                            </p>
+                          )}
                         </div>
                       </div>
-
-                      {/* Selo Especial se for Hoje */}
-                      {isHoje && (
-                        <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
-                           <Star className="w-2.5 h-2.5 text-white fill-white" />
-                        </div>
-                      )}
                     </div>
                   </button>
                 </div>
@@ -390,124 +370,37 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* MODAL DE DETALHES DO CATEQUIZANDO */}
-      <Dialog open={!!selectedCatequizando} onOpenChange={(o) => !o && setSelectedCatequizando(null)}>
-        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
-          {selectedCatequizando && (
-            <div className="bg-white dark:bg-zinc-900">
-              <div className="relative h-32 bg-gradient-to-br from-primary via-primary/80 to-blue-600">
-                <div className="absolute top-4 right-4">
-                  <button onClick={() => setSelectedCatequizando(null)} className="w-8 h-8 rounded-full bg-black/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
-                   <div className="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-900 shadow-xl overflow-hidden bg-muted">
-                      {selectedCatequizando.foto ? <img src={selectedCatequizando.foto} alt={selectedCatequizando.nome} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl font-black text-primary/30 uppercase">{selectedCatequizando.nome.charAt(0)}</div>}
-                   </div>
-                </div>
-              </div>
-
-              <div className="pt-16 pb-8 px-6 text-center">
-                <h3 className="text-xl font-black text-foreground">{selectedCatequizando.nome}</h3>
-                <p className="text-xs text-muted-foreground font-medium mb-4">{selectedCatequizando.responsavel ? `Responsável: ${selectedCatequizando.responsavel}` : "Sem responsável cadastrado"}</p>
-                
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="p-3 rounded-2xl bg-muted/30 border border-black/5 text-left">
-                    <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Aniversário</p>
-                    <p className="text-sm font-black text-foreground">{selectedCatequizando.dataNascimento ? new Date(selectedCatequizando.dataNascimento + 'T00:00').toLocaleDateString('pt-BR') : "--/--/----"}</p>
-                  </div>
-                  <div className="p-3 rounded-2xl bg-muted/30 border border-black/5 text-left">
-                    <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Batismo</p>
-                    <p className="text-sm font-black text-foreground">{selectedCatequizando.sacramentos?.batismo?.data ? new Date(selectedCatequizando.sacramentos.batismo.data + 'T00:00').toLocaleDateString('pt-BR') : "Pendente"}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <button 
-                    onClick={() => {
-                        const turmaId = selectedCatequizando.turmaId;
-                        setSelectedCatequizando(null);
-                        navigate(`/turmas/${turmaId}/catequizandos`);
-                    }}
-                    className="w-full py-3.5 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
-                  >
-                    Ver Ficha Completa
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* ── CARD PRINCIPAL DE TURMA (TOPO) ── */}
-      {turmas.length === 0 ? (
-        <div 
-          className="float-card p-8 text-center animate-card-activate border-2 border-primary/20 bg-primary/5"
-          onClick={() => navigate("/turmas/nova")}
-          style={{ cursor: 'pointer' }}
-        >
-          <div className="icon-box bg-primary/20 text-primary mx-auto mb-4 scale-110 animate-bounce-subtle">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          
-          <h3 className="text-lg font-black text-foreground mb-2">Comece criando sua turma</h3>
-          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto leading-relaxed">
-            Tudo pronto! Crie sua primeira turma ou entre com um código para começar.
-          </p>
-
-          <div className="flex flex-col gap-3 justify-center max-w-xs mx-auto">
-             <button 
-               onClick={(e) => { e.stopPropagation(); navigate("/turmas/nova"); }}
-               className="w-full flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-black text-sm bg-primary text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all"
-             >
-               Criar Nova Turma
-             </button>
-             <button
-               onClick={(e) => { e.stopPropagation(); setJoinModalOpen(true); }}
-               className="w-full bg-emerald-500 text-white font-black text-sm px-6 py-3.5 rounded-2xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
-             >
-               Entrar com Código
-             </button>
-          </div>
-        </div>
-      ) : (
+      {/* ── CARD PRINCIPAL DE TURMA ── */}
+      {turmas.length > 0 && (
         <div 
           className="relative p-[1.5px] rounded-[32px] bg-gradient-to-br from-emerald-500/60 via-emerald-500/30 to-white shadow-[0_15px_45px_rgba(0,0,0,0.08)] animate-card-activate transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group overflow-hidden"
           onClick={() => selectedTurmaId !== "all" && navigate(`/turmas/${selectedTurmaId}`)}
         >
-          {/* Moldura litúrgica interna */}
           <div className="absolute inset-[3px] rounded-[30px] border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
           
           <div className="relative flex flex-col p-0 rounded-[30px] bg-white bg-gradient-to-b from-emerald-500/15 to-white w-full h-full overflow-hidden">
-            {/* Marca d'água de fundo */}
             <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
-               <BookOpen className="w-32 h-32 text-primary" />
+               <BookOpen className="w-24 h-24 text-primary" />
             </div>
 
-            <div className="px-5 py-6 flex flex-col items-center relative z-10 text-center">
-              <div className="space-y-2 min-w-0 flex-1">
+            <div className="px-5 py-5 flex flex-col items-center relative z-10 text-center">
+              <div className="space-y-1 min-w-0 flex-1">
                 <div className="flex items-center justify-center gap-2 mb-1">
-                   <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
-                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-3.5 w-3.5" />
+                   <div className={cn("w-5 h-5 rounded-lg flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
+                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-3 w-3" />
                    </div>
-                   <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
+                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
                 </div>
                 
-                <h3 className="text-xl font-black text-foreground leading-tight tracking-tight truncate px-4">
+                <h3 className="text-lg font-black text-foreground leading-tight tracking-tight truncate px-4">
                   {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
                 </h3>
-                
-                <p className="text-xs text-muted-foreground font-medium truncate px-8">
-                  {selectedTurmaId === "all" ? "Visão geral do seu trabalho" : `${selectedTurma?.etapa || 'Catequese'} • ${filteredCatequizandos.length} catequizandos`}
-                </p>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-3">
                 <button 
                   onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
-                  className="flex items-center gap-2 px-10 py-2.5 rounded-2xl bg-primary text-white text-[10px] font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  className="flex items-center gap-2 px-8 py-2 rounded-2xl bg-primary text-white text-[9px] font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                 >
                   Abrir Turma
                 </button>
@@ -517,21 +410,21 @@ export default function Dashboard() {
             {(turmas.length > 1 || selectedTurmaId === "all") && (
               <div 
                 onClick={(e) => { e.stopPropagation(); setTurmaPickerOpen(true); }}
-                className="bg-primary/5 px-6 py-4 flex items-center justify-between border-t border-primary/10 hover:bg-primary/10 transition-colors mt-auto"
+                className="bg-primary/5 px-6 py-3 flex items-center justify-between border-t border-primary/10 hover:bg-primary/10 transition-colors mt-auto"
               >
                 <div className="flex items-center gap-2">
-                  <RefreshCw className="h-3.5 w-3.5 text-primary animate-spin-slow" />
-                  <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Trocar de Turma</span>
+                  <RefreshCw className="h-3 w-3 text-primary animate-spin-slow" />
+                  <span className="text-[9px] font-black text-primary/60 uppercase tracking-widest">Trocar</span>
                 </div>
-                <ChevronRight className="h-4 w-4 text-primary/40" />
+                <ChevronRight className="h-3.5 w-3.5 text-primary/40" />
               </div>
             )}
           </div>
         </div>
       )}
 
-
-      <div className="grid grid-cols-2 gap-4">
+      {/* ── STATS CARDS ── */}
+      <div className="grid grid-cols-2 gap-3">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           const isCatequizandos = stat.label === "Catequizandos";
@@ -541,42 +434,28 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "group relative p-[2px] rounded-[24px] animate-float-up transition-all duration-500 hover:-translate-y-1.5 active:scale-95",
+                "group relative p-[1px] rounded-[24px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95",
                 isCatequizandos 
-                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-lg shadow-amber-500/20" 
-                  : "bg-gradient-to-br from-blue-400 via-blue-50 to-blue-600 shadow-lg shadow-blue-500/20"
+                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-md shadow-amber-500/10" 
+                  : "bg-gradient-to-br from-blue-400 via-blue-200 to-blue-600 shadow-md shadow-blue-500/10"
               )}
-              style={{ animationDelay: `${i * 150}ms` }}
+              style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[22px] p-4 sm:p-6 overflow-hidden flex flex-col items-center text-center">
-                {/* Decorative background elements */}
+              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[23px] p-4 overflow-hidden flex flex-col items-center text-center">
                 <div className={cn(
-                  "absolute -right-2 -top-2 w-16 h-16 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity",
-                  isCatequizandos ? "text-amber-500" : "text-blue-500"
-                )}>
-                  <Icon className="w-full h-full rotate-12" />
-                </div>
-
-                <div className={cn(
-                  "icon-box mx-auto mb-3 w-12 h-12 shadow-sm border group-hover:scale-110 transition-transform duration-300",
+                  "icon-box mx-auto mb-2 w-10 h-10 shadow-sm border group-hover:animate-icon-pulse transition-transform duration-300",
                   stat.color,
                   isCatequizandos ? "border-amber-200" : "border-blue-200"
                 )}>
-                  <Icon className="h-6 w-6" />
+                  <Icon className="h-5 w-5" />
                 </div>
                 
-                <p className="text-2xl sm:text-3xl font-black text-foreground leading-tight tracking-tight">
+                <p className="text-xl font-black text-foreground leading-tight tracking-tight">
                   {stat.value}
                 </p>
-                <div className="text-[10px] sm:text-[11px] text-muted-foreground font-black uppercase tracking-[0.15em] mt-1.5 leading-tight">
+                <div className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.1em] mt-0.5">
                   {stat.label}
                 </div>
-
-                {/* Bottom highlight bar */}
-                <div className={cn(
-                  "absolute bottom-0 inset-x-0 h-1 opacity-50",
-                  isCatequizandos ? "bg-amber-500" : "bg-blue-500"
-                )} />
               </div>
             </button>
           );
@@ -586,75 +465,39 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up" style={{ animationDelay: '200ms' }}>
-          <div className="flex flex-col items-center justify-center px-1 mb-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center border border-blue-200 shadow-sm mb-2">
-              <BookOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Prepare seu material</p>
-            </div>
+          <div className="flex flex-col items-center justify-center px-1 mb-3 text-center">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
           </div>
 
           <div 
-            className="float-card p-0 overflow-hidden border-2 border-blue-300 shadow-xl shadow-blue-500/10 bg-gradient-to-br from-blue-50/80 to-white/90 dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
+            className="float-card p-0 overflow-hidden border-2 border-blue-200 shadow-lg shadow-blue-500/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
             onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
           >
-            <div className="p-5 active:scale-[0.99] transition-all">
-              <div className="flex gap-4 items-stretch">
+            <div className="p-4 active:scale-[0.99] transition-all">
+              <div className="flex gap-3 items-center">
                 {/* Chip de Data */}
-                <div className="flex flex-col items-center justify-center w-14 h-14 bg-gradient-to-b from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/40 rounded-2xl shadow-md border-b-2 border-blue-200 dark:border-blue-800/50 shrink-0 transform group-hover:-translate-y-1 transition-transform animate-float-up relative overflow-hidden self-center">
-                  <div className="absolute top-0 inset-x-0 h-1 bg-white/40" />
-                  <span className="text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest leading-none mb-0.5 mt-1">
-                    {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()]}
+                <div className="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm border border-blue-100 shrink-0 transform group-hover:scale-105 transition-transform">
+                  <span className="text-[8px] font-black text-blue-600 uppercase leading-none mb-0.5">
+                    {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay() === 0 ? 6 : parseDataLocal(proximoEncontro.data).getDay() - 1].slice(0, 3)}
                   </span>
-                  <span className="text-xl font-black text-blue-600 dark:text-blue-200 leading-none drop-shadow-sm">
+                  <span className="text-lg font-black text-blue-600 leading-none">
                     {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                   </span>
-                  <span className="text-[8px] font-black text-blue-600/80 dark:text-blue-400/80 uppercase tracking-widest mt-0.5 mb-1">
-                    {parseDataLocal(proximoEncontro.data).toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
-                  </span>
                 </div>
 
-                {/* Card de Informações Principal */}
-                <div className="flex-1 float-card bg-white/80 dark:bg-zinc-900/80 border-2 border-blue-100 dark:border-blue-900/30 p-4 flex flex-col justify-center relative overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
-                  {/* Watermark Litúrgico */}
-                  <div className="absolute -right-2 -bottom-2 opacity-[0.03] transform scale-150 rotate-12">
-                    <BookOpen className="w-16 h-16 text-blue-500" />
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse ${
-                      isUrgent ? "bg-destructive text-white" : "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
-                    }`}>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest",
+                      isUrgent ? "bg-destructive text-white" : "bg-blue-500 text-white"
+                    )}>
                       {diaLabel}
                     </span>
-                    <div className="flex items-center gap-1 uppercase text-[9px] font-black tracking-widest text-blue-600 dark:text-blue-500 mr-1">
-                      <BookOpen className="h-2.5 w-2.5" />
-                      Próximo Encontro
-                    </div>
                   </div>
-
-                  <h3 className="text-base font-black text-foreground drop-shadow-sm leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-sm font-black text-foreground truncate leading-tight">
                     {proximoEncontro.tema}
                   </h3>
-                  
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/70">
-                    <span className="bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-lg border border-blue-100/50 dark:border-blue-900/30">
-                      {turmaEncontro?.nome}
-                    </span>
-                  </div>
-
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 transition-all opacity-0 group-hover:opacity-100 group-hover:translate-x-1">
-                    <ChevronRight className="h-4 w-4" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
 
 
       {/* Turma picker dialog */}
