@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   FileText, Plus, MessageSquare, ListTodo, Search, Filter, 
-  MoreVertical, Copy, Eye, Trash2, PieChart, ExternalLink
+  MoreVertical, Copy, Eye, Trash2, PieChart, ExternalLink, Pencil
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useComunicacaoForms, useDeleteComunicacaoForm } from "@/hooks/useSupabaseData";
@@ -151,17 +151,21 @@ export default function ComunicacaoHub() {
                     {form.tipo}
                   </div>
                   
-                  <div className="flex gap-1">
+                  <div className="flex gap-4">
                     <button 
-                      onClick={(e) => copyLink(form.codigo_acesso, e)}
-                      className="p-2 rounded-xl text-muted-foreground hover:bg-black/5 hover:text-foreground transition-colors"
-                      title="Copiar Link"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/comunicacao/${form.id}/editar`);
+                      }}
+                      className="p-2 rounded-xl text-muted-foreground hover:bg-purple-500/10 hover:text-purple-600 transition-all active:scale-95 shadow-sm border border-transparent hover:border-purple-500/20"
+                      title="Editar"
                     >
-                      <ExternalLink className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </button>
                     <button 
                       onClick={(e) => handleDelete(form.id, e)}
-                      className="p-2 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      className="p-2 rounded-xl text-destructive hover:bg-destructive/10 transition-all active:scale-95 shadow-sm border border-transparent hover:border-destructive/20"
+                      title="Excluir"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

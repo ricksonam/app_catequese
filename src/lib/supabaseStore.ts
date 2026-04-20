@@ -494,6 +494,28 @@ export async function fetchComunicacaoForms(): Promise<ComunicacaoForm[]> {
   }));
 }
 
+export async function fetchComunicacaoFormById(id: string): Promise<ComunicacaoForm | null> {
+  const { data, error } = await supabase.from("comunicacao_forms")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+    
+  if (error) throw error;
+  if (!data) return null;
+  
+  return {
+    id: data.id,
+    user_id: data.user_id,
+    titulo: data.titulo,
+    descricao: data.descricao,
+    tipo: data.tipo,
+    codigo_acesso: data.codigo_acesso,
+    campos: data.campos,
+    configuracoes: data.configuracoes,
+    criado_em: data.criado_em
+  };
+}
+
 export async function fetchPublicComunicacaoForm(codigoAcesso: string): Promise<ComunicacaoForm | null> {
   const { data, error } = await supabase.from("comunicacao_forms")
     .select("*")

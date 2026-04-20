@@ -1,12 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Save, Plus, Trash2, GripVertical, Settings2, HelpCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useComunicacaoFormMutation } from "@/hooks/useSupabaseData";
+import { fetchComunicacaoFormById } from "@/lib/supabaseStore";
 import { toast } from "sonner";
 import type { ComunicacaoFormType, ComunicacaoFormField } from "@/lib/store";
 
 export default function ComunicacaoBuilder() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditing = !!id;
   const formMutation = useComunicacaoFormMutation();
   
   const [titulo, setTitulo] = useState("");
@@ -14,6 +18,24 @@ export default function ComunicacaoBuilder() {
   const [tipo, setTipo] = useState<ComunicacaoFormType>("pesquisa");
   const [campos, setCampos] = useState<ComunicacaoFormField[]>([]);
   const [mostrarPontuacao, setMostrarPontuacao] = useState(false);
+  const [codigoAcessoOriginal, setCodigoAcessoOriginal] = useState("");
+
+  const { data: existingForm, isLoading: loadingExisting } = useQuery({
+    queryKey: ['fetch_form_edit', id],
+    queryFn: () => fetchComunicacaoFormById(id!),
+    enabled: isEditing
+  });
+
+  useEffect(() => {
+    if (existingForm) {
+      setTitulo(existingForm.titulo);
+      setDescricao(existingForm.descricao || "");
+      setTipo(existingForm.tipo);
+      setCampos(existingForm.campos);
+      setMostrarPontuacao(existingForm.configuracoes?.mostrarPontuacao || false);
+      setCodigoAcessoOriginal(existingForm.codigo_acesso);
+    }
+  }, [existingForm]);
 
   const handleAddCampo = (tipoCampo: ComunicacaoFormField['type']) => {
     const novoCampo: ComunicacaoFormField = {
@@ -86,10 +108,11 @@ export default function ComunicacaoBuilder() {
     }
 
     try {
-      const codigoAcesso = `${tipo.substring(0,3)}${Math.floor(Math.random()*90000)+10000}`.toUpperCase();
+      const finalId = id || crypto.randomUUID();
+      const codigoAcesso = isEditing ? codigoAcessoOriginal : `${tipo.substring(0,3)}${Math.floor(Math.random()*90000)+10000}`.toUpperCase();
       
       await formMutation.mutateAsync({
-        id: crypto.randomUUID(),
+        id: finalId,
         titulo,
         descricao,
         tipo,
@@ -101,10 +124,10 @@ export default function ComunicacaoBuilder() {
         }
       });
       
-      toast.success("Formulário criado com sucesso!");
+      toast.success(isEditing ? "Formulário atualizado com sucesso!" : "Formulário criado com sucesso!");
       navigate('/comunicacao');
     } catch (err) {
-      toast.error("Erro ao salvar formulário");
+      toast.error(isEditing ? "Erro ao atualizar formulário" : "Erro ao salvar formulário");
     }
   };
 
@@ -117,7 +140,7 @@ export default function ComunicacaoBuilder() {
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div>
-            <h1 className="text-xl font-black text-foreground">Novo Formulário</h1>
+            <h1 className="text-xl font-black text-foreground">{isEditing ? "Editar Formulário" : "Novo Formulário"}</h1>
             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Módulo de Comunicação</p>
           </div>
         </div>

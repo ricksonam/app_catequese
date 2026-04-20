@@ -138,6 +138,7 @@ const AppRoutes = () => (
       <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
       <Route path="/comunicacao" element={<ComunicacaoHub />} />
       <Route path="/comunicacao/novo" element={<ComunicacaoBuilder />} />
+      <Route path="/comunicacao/:id/editar" element={<ComunicacaoBuilder />} />
       <Route path="/comunicacao/:id" element={<ComunicacaoDetail />} />
     </Route>
     <Route path="*" element={<NotFound />} />

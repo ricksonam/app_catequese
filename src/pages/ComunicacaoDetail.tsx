@@ -149,7 +149,11 @@ export default function ComunicacaoDetail() {
              <CheckCircle2 className="h-6 w-6 text-purple-600" />
           </div>
           <div>
-            <h2 className="text-sm font-black text-foreground uppercase tracking-widest">Resultado da Pesquisa</h2>
+            <h2 className="text-sm font-black text-foreground uppercase tracking-widest">
+              {form.tipo === 'pesquisa' ? 'Resultado da Pesquisa' : 
+               form.tipo === 'questionario' ? 'Resultado do Questionário' : 
+               'Resultado da Avaliação'}
+            </h2>
             <p className="text-xs text-muted-foreground mt-0.5">Visualize ou exporte as respostas abaixo</p>
           </div>
         </div>
