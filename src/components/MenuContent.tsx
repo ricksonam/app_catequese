@@ -182,7 +182,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   };
 
   return (
-    <div className="flex flex-col h-auto bg-slate-100 dark:bg-zinc-950 overflow-hidden rounded-b-[32px]">
+    <div className="flex flex-col h-auto bg-slate-100 dark:bg-zinc-950">
       {/* Nome do Usuário Logado */}
       <div className="p-4 pb-1 border-b border-black/5 mb-1">
         <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
