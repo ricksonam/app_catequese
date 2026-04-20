@@ -115,7 +115,7 @@ export default function ComunicacaoDetail() {
               <FileText className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <h1 className="text-lg font-black text-foreground truncate max-w-[200px] sm:max-w-md">{form.titulo}</h1>
+              <h1 className="text-lg font-black text-foreground leading-tight">{form.titulo}</h1>
               <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
                 {respostas.length} {respostas.length === 1 ? 'Resposta' : 'Respostas'}
               </p>
@@ -127,14 +127,14 @@ export default function ComunicacaoDetail() {
         <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
           <button 
             onClick={handleShareWhatsApp}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20 whitespace-nowrap"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all border-2 border-[#25D366]/40 whitespace-nowrap active:scale-95 shadow-sm"
           >
             <Share2 className="h-4 w-4" />
             <span className="text-[11px] font-black tracking-widest uppercase">WhatsApp</span>
           </button>
           <button 
             onClick={handleCopyLink}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition-colors border border-blue-500/20 whitespace-nowrap"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 transition-all border-2 border-blue-500/40 whitespace-nowrap active:scale-95 shadow-sm"
           >
             <ExternalLink className="h-4 w-4" />
             <span className="text-[11px] font-black tracking-widest uppercase">Copiar Link</span>
