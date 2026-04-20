@@ -166,6 +166,7 @@ export default function Dashboard() {
     return Math.round((d.getTime() - hoje.getTime()) / 86400000);
   }
 
+  const stats = [
     { 
       label: "Catequizandos", 
       value: filteredCatequizandos.length, 
