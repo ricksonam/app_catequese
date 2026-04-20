@@ -98,19 +98,27 @@ export default function ComunicacaoHub() {
         </div>
         
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {(['todos', 'pesquisa', 'questionario', 'avaliacao'] as const).map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-2 ${
-                filter === f 
-                  ? 'bg-purple-600 text-white border-purple-600 shadow-md' 
-                  : 'bg-white dark:bg-zinc-900 text-muted-foreground border-transparent hover:border-black/5'
-              }`}
-            >
-              {f}
-            </button>
-          ))}
+          {(['todos', 'pesquisa', 'questionario', 'avaliacao'] as const).map(f => {
+            const labelMap: Record<string, string> = {
+              'todos': 'Todos',
+              'pesquisa': 'Pesquisas',
+              'questionario': 'Questionários',
+              'avaliacao': 'Avaliações'
+            };
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-2 ${
+                  filter === f 
+                    ? 'bg-purple-600 text-white border-purple-600 shadow-md' 
+                    : 'bg-white dark:bg-zinc-900 text-muted-foreground border-transparent hover:border-black/5'
+                }`}
+              >
+                {labelMap[f]}
+              </button>
+            )
+          })}
         </div>
       </div>
 
