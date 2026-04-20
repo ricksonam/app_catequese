@@ -253,7 +253,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
 
       {/* ── ATIVAR NOTIFICAÇÕES ── */}
@@ -280,7 +280,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="animate-fade-in flex items-start justify-between">
+      <div className="animate-fade-in flex items-start justify-between mb-1">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Olá, Catequista! 👋</h1>
           <p className="text-muted-foreground text-sm mt-1">Bem-vindo ao iCatequese</p>
@@ -289,11 +289,11 @@ export default function Dashboard() {
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
       {aniversariantesMes.length > 0 && (
-        <div className="relative pt-2 pb-6 mb-2 animate-fade-in overflow-hidden">
+        <div className="relative pt-0 pb-4 mb-0 animate-fade-in overflow-hidden">
           {/* Título da Seção */}
-          <div className="flex flex-col items-center justify-center mb-6">
+          <div className="flex flex-col items-center justify-center mb-4">
             <h2 className="text-sm font-black uppercase tracking-[0.2em] text-black">Próximos Aniversários</h2>
-            <div className="h-1 w-12 bg-primary rounded-full mt-1.5 animate-soft-pulse"></div>
+            <div className="h-0.5 w-8 bg-primary rounded-full mt-1 animate-soft-pulse"></div>
           </div>
 
           {/* Container dos Cards */}
@@ -442,13 +442,13 @@ export default function Dashboard() {
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[23px] p-4 overflow-hidden flex flex-col items-center text-center">
+              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[23px] p-3 overflow-hidden flex flex-col items-center text-center">
                 <div className={cn(
-                  "icon-box mx-auto mb-2 w-10 h-10 shadow-sm border group-hover:animate-icon-pulse transition-transform duration-300",
+                  "icon-box mx-auto mb-1 w-8 h-8 shadow-sm border group-hover:animate-icon-pulse transition-transform duration-300",
                   stat.color,
                   isCatequizandos ? "border-amber-200" : "border-blue-200"
                 )}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4" />
                 </div>
                 
                 <p className="text-xl font-black text-foreground leading-tight tracking-tight">
