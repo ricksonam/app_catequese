@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer, PieChart, ChevronDown, ChevronUp } from "lucide-react";
 import { fetchComunicacaoRespostas } from "@/lib/supabaseStore";
 import { toast } from "sonner";
-import { formatarDataVigente } from "@/lib/utils";
+import { formatarDataVigente, cn } from "@/lib/utils";
 import type { ComunicacaoResposta, ComunicacaoForm } from "@/lib/store";
 
 export default function ComunicacaoDetail() {
