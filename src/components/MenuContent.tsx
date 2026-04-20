@@ -182,19 +182,19 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-100 dark:bg-zinc-950">
+    <div className="flex flex-col h-auto max-h-full bg-slate-100 dark:bg-zinc-950 overflow-hidden">
       {/* Nome do Usuário Logado */}
-      <div className="p-6 pb-2 border-b border-black/5 mb-2">
-        <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-1">Conta Ativa</p>
-        <p className="text-sm font-bold text-foreground truncate">{user?.email}</p>
+      <div className="p-4 pb-1 border-b border-black/5 mb-1">
+        <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
+        <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-6 scrollbar-hide">
-        <Accordion type="single" collapsible className="w-full space-y-3 border-none">
+      <div className="flex-1 overflow-y-auto px-4 pb-4 scrollbar-hide">
+        <Accordion type="single" collapsible className="w-full space-y-1.5 border-none">
           
           {/* SEÇÃO: CADASTROS BÁSICOS */}
           <AccordionItem value="cadastros" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
                <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
                  <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                    <Church className="h-5 w-5" />
@@ -221,7 +221,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: MÓDULOS GLOBAIS */}
           <AccordionItem value="modulos" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
                <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
                  <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0">
                    <Sparkles className="h-5 w-5" />
@@ -248,7 +248,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: MINHA TURMA (DINÂMICA) */}
           <AccordionItem value="minha-turma" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
                <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
                  <div className="w-10 h-10 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
                    <GraduationCap className="h-5 w-5" />
@@ -305,7 +305,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* SEÇÃO: CONTA */}
           <AccordionItem value="conta" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-2">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
                <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
                    <Users className="h-5 w-5" />
@@ -339,7 +339,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </Accordion>
 
         {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
-        <div className="pt-6">
+        <div className="pt-3">
            <button 
              onClick={() => {
                onClose();
@@ -363,10 +363,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </div>
 
         {/* LOGOUT - SEMPRE VISÍVEL NO MENU */}
-        <div className="mt-8">
+        <div className="mt-4 pb-2">
            <button
              onClick={handleSignOut}
-             className="w-full float-card flex items-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-md group active:scale-95 transition-all text-destructive"
+             className="w-full float-card flex items-center gap-3 px-6 py-3 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-md group active:scale-95 transition-all text-destructive"
            >
              <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white transition-all">
                <LogOut className="h-5 w-5" strokeWidth={2.5} />
