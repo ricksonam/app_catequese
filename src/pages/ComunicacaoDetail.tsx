@@ -111,13 +111,22 @@ export default function ComunicacaoDetail() {
             <p className="text-xs text-muted-foreground mt-0.5">Visualize ou exporte as respostas abaixo</p>
           </div>
         </div>
-        <button 
-          onClick={handlePrint}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border border-black/5 font-bold text-xs tracking-widest uppercase"
-        >
-          <Printer className="h-4 w-4" />
-          Imprimir PDF
-        </button>
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+          <button 
+            onClick={handleShareWhatsApp}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20 font-bold text-xs tracking-widest uppercase"
+          >
+            <Share2 className="h-4 w-4" />
+            Compartilhar
+          </button>
+          <button 
+            onClick={handlePrint}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border border-black/5 font-bold text-xs tracking-widest uppercase"
+          >
+            <Printer className="h-4 w-4" />
+            Imprimir PDF
+          </button>
+        </div>
       </div>
 
       <div className="hidden print:block mb-8 border-b-2 border-black pb-4 text-center">
@@ -194,27 +203,26 @@ export default function ComunicacaoDetail() {
              <p className="text-sm text-muted-foreground mt-2">Compartilhe o link com as famílias para começar a receber respostas.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 print:gap-1.5">
             {respostas.map((resp, i) => (
-              <div key={resp.id} className="float-card p-5 group flex flex-col gap-4 border-l-4 border-success print:border-black print:shadow-none print:break-inside-avoid">
-                <div className="flex justify-between items-start border-b border-black/5 pb-3">
+              <div key={resp.id} className="float-card p-5 print:p-2 group flex flex-col gap-4 print:gap-1 border-l-4 border-success print:border-black print:border-l-[1.5px] print:shadow-none print:break-inside-avoid">
+                <div className="flex justify-between items-start border-b border-black/5 pb-3 print:pb-1 print:border-black/20">
                   <div>
-                    <h3 className="font-bold text-lg">{resp.nome_respondente}</h3>
-                    {resp.telefone && <p className="text-sm text-muted-foreground">{resp.telefone}</p>}
+                    <h3 className="font-bold text-lg print:text-xs leading-none">{resp.nome_respondente}</h3>
+                    {resp.telefone && <p className="text-sm print:text-[9px] text-muted-foreground mt-0.5">{resp.telefone}</p>}
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest block">Recebido em</span>
-                    <span className="text-xs font-bold text-foreground">{resp.criado_em ? formatarDataVigente(resp.criado_em) : '-'}</span>
+                    <span className="text-xs print:text-[9px] font-bold text-foreground">{resp.criado_em ? formatarDataVigente(resp.criado_em) : '-'}</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 print:space-y-0.5">
                   {form.campos.map(campo => {
                     const respostaUser = resp.respostas[campo.id];
                     return (
-                      <div key={campo.id} className="bg-muted/30 p-3 rounded-xl border border-black/5 print:bg-white print:border-black/20">
-                        <p className="text-xs font-bold text-muted-foreground mb-1">{campo.label}</p>
-                        <p className="text-sm font-medium text-foreground">
+                      <div key={campo.id} className="bg-muted/30 p-3 print:px-0 print:py-0.5 rounded-xl border border-black/5 print:bg-transparent print:border-none print:flex print:items-baseline print:gap-1.5 print:rounded-none">
+                        <p className="text-xs print:text-[9px] font-bold text-muted-foreground mb-1 print:mb-0 leading-tight print:min-w-fit">{campo.label}:</p>
+                        <p className="text-sm print:text-[9px] font-medium text-foreground leading-snug">
                           {Array.isArray(respostaUser) ? respostaUser.join(', ') : (respostaUser || <span className="italic opacity-50">Sem resposta</span>)}
                         </p>
                       </div>
@@ -223,8 +231,8 @@ export default function ComunicacaoDetail() {
                 </div>
                 
                 {resp.pontuacao !== undefined && (
-                  <div className="mt-2 text-right">
-                    <span className="inline-block px-3 py-1 bg-purple-500/10 text-purple-600 font-black text-xs uppercase tracking-widest rounded-lg border border-purple-500/20">
+                  <div className="mt-2 print:mt-0 text-right">
+                    <span className="inline-block px-3 py-1 print:px-1.5 print:py-0 bg-purple-500/10 print:bg-transparent text-purple-600 print:text-black font-black text-xs print:text-[8px] uppercase tracking-widest rounded-lg border border-purple-500/20 print:border-black/30">
                       Pontuação: {resp.pontuacao}
                     </span>
                   </div>

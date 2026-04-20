@@ -188,7 +188,8 @@
     min-height: auto !important;
   }
   #root {
-    display: none !important;
+    /* display: none !important; Disabled so that we can use print:* tailwind classes freely */
+    display: block !important;
   }
   .print-wrapper {
     position: static !important;
