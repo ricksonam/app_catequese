@@ -499,8 +499,12 @@ export default function Dashboard() {
                   <h3 className="text-sm font-black text-foreground truncate leading-tight">
                     {proximoEncontro.tema}
                   </h3>
-
-
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Turma picker dialog */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
         <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">
