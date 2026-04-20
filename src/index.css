@@ -332,3 +332,32 @@
   animation: liturgical-float 4s ease-in-out infinite;
 }
 
+/* ── PREMIUN LITURGICAL THEMES ── */
+.liturgical-frame {
+  position: relative;
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #FFD700, #DAA520, #FFD700, #B8860B) border-box;
+  box-shadow: 0 10px 30px -10px rgba(184, 134, 11, 0.3);
+}
+
+.liturgical-rays-bg {
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+}
+
+.birthday-corner-item {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  opacity: 0.6;
+}
+
+@keyframes sacred-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.2; }
+}
+
+.animate-sacred-rays {
+  animation: sacred-pulse 5s ease-in-out infinite;
+}
+

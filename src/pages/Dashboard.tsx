@@ -385,42 +385,48 @@ export default function Dashboard() {
             </div>
 
             <div className="px-5 py-5 flex flex-col items-center relative z-10 text-center">
-              {/* Detalhes nos lados */}
-              {selectedTurmaId !== "all" && selectedTurma && (
-                <>
-                  <div className="absolute top-2 left-3 flex flex-col items-start gap-0.5 opacity-40">
-                    <span className="text-[7px] font-black uppercase tracking-widest text-primary">{selectedTurma.ano || "2024"}</span>
-                  </div>
-                  <div className="absolute top-2 right-3 flex flex-col items-end gap-0.5 opacity-40">
-                    <span className="text-[7px] font-black uppercase tracking-widest text-primary">{selectedTurma.horario}</span>
-                  </div>
-                  <div className="absolute bottom-16 left-3 max-w-[80px] text-left opacity-30">
-                    <span className="text-[6px] font-bold uppercase tracking-tight leading-tight truncate block">{selectedTurma.local}</span>
-                  </div>
-                </>
-              )}
-
-              <div className="space-y-1 min-w-0 flex-1">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                   <div className={cn("w-5 h-5 rounded-lg flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
-                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-3 w-3" />
+                <div className="flex items-center justify-center gap-1.5 mb-1 mt-[-6px]">
+                   <div className={cn("w-4 h-4 rounded-md flex items-center justify-center shrink-0 border shadow-sm", heroColors)}>
+                     <LiturgicalIcon type={selectedTurma?.etapa} className="h-2.5 w-2.5" />
                    </div>
-                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
+                   <p className="text-[7px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
                 </div>
                 
-                <h3 className="text-lg font-black text-foreground leading-tight tracking-tight truncate px-4">
-                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
-                </h3>
-              </div>
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
+                  <h3 className="text-xl font-black text-foreground leading-tight tracking-tight">
+                    {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+                  </h3>
+                  {selectedTurmaId !== "all" && selectedTurma && (
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-[8px] font-black uppercase border",
+                      heroColors
+                    )}>
+                      {selectedTurma.etapa}
+                    </span>
+                  )}
+                </div>
 
-              <div className="mt-3">
-                <button 
-                  onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
-                  className="flex items-center gap-2 px-8 py-2 rounded-2xl bg-primary text-white text-[9px] font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
-                >
-                  Abrir Turma
-                </button>
-              </div>
+                {selectedTurmaId !== "all" && selectedTurma && (
+                  <div className="flex items-center justify-center gap-4 text-muted-foreground/60 text-[9px] font-bold uppercase tracking-wider mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarDays className="w-3.5 h-3.5 text-primary/40" />
+                      <span>{selectedTurma.horario}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-primary/40" />
+                      <span className="truncate max-w-[100px]">{selectedTurma.local}</span>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mt-1">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); if (selectedTurmaId !== "all") navigate(`/turmas/${selectedTurmaId}`); }}
+                    className="flex items-center gap-2 px-8 py-2 rounded-2xl bg-primary text-white text-[9px] font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Abrir Turma
+                  </button>
+                </div>
             </div>
 
             {(turmas.length > 1 || selectedTurmaId === "all") && (
@@ -604,6 +610,85 @@ export default function Dashboard() {
               {joinMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
               {joinMutation.isPending ? "Verificando..." : "Entrar na Turma"}
             </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* ── MODAL DE ANIVERSÁRIO LITÚRGICO ── */}
+      <Dialog open={!!selectedCatequizando} onOpenChange={() => setSelectedCatequizando(null)}>
+        <DialogContent className="max-w-[340px] mx-auto rounded-[32px] p-0 border-none shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+          <div className="liturgical-frame w-full h-full p-2">
+            <div className="bg-white dark:bg-zinc-900 rounded-[24px] overflow-hidden relative">
+              {/* Background Litúrgico */}
+              <div className="absolute inset-0 liturgical-rays-bg animate-sacred-rays pointer-events-none" />
+              
+              <DialogHeader className="p-6 pb-2 text-center relative z-10">
+                <div className="flex justify-center mb-4">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full border-4 border-amber-400 overflow-hidden shadow-xl shadow-amber-500/20">
+                      {selectedCatequizando?.foto ? (
+                        <img src={selectedCatequizando.foto} alt={selectedCatequizando.nome} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-amber-50 flex items-center justify-center text-amber-500 text-3xl font-black">
+                          {selectedCatequizando?.nome?.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    {/* Estrela de Aniversário */}
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-400 text-white rounded-full flex items-center justify-center shadow-lg animate-bounce-subtle">
+                      <Cake className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+                
+                <h2 className="text-2xl font-black text-black dark:text-white leading-tight uppercase tracking-tight px-2">
+                  {selectedCatequizando?.nome}
+                </h2>
+                <div className="mt-1 flex items-center justify-center gap-2">
+                  <span className={cn(
+                    "px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest",
+                    selectedCatequizando?.isCatequista ? "bg-primary text-white" : "bg-emerald-500 text-white"
+                  )}>
+                    {selectedCatequizando?.isCatequista ? "Catequista" : "Catequizando"}
+                  </span>
+                </div>
+              </DialogHeader>
+
+              <div className="p-6 pt-2 space-y-4 relative z-10">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-2xl border border-amber-100 dark:border-amber-900/20 text-center">
+                    <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-1">Aniversário</p>
+                    <p className="text-sm font-black text-black dark:text-white">
+                      {selectedCatequizando?.dataNascimento ? formatarDataVigente(selectedCatequizando.dataNascimento) : "--"}
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl border border-blue-100 dark:border-blue-900/20 text-center">
+                    <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1">Batismo</p>
+                    <p className="text-sm font-black text-black dark:text-white">
+                      {selectedCatequizando?.sacramentos?.batismo?.data ? formatarDataVigente(selectedCatequizando.sacramentos.batismo.data) : "Não inf."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center gap-4">
+                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm", heroColors)}>
+                    <LiturgicalIcon type={selectedTurma?.etapa} className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Turma</p>
+                    <p className="text-sm font-black text-foreground">
+                      {selectedTurmaId === "all" ? "Múltiplas Turmas" : selectedTurma?.nome}
+                    </p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setSelectedCatequizando(null)}
+                  className="w-full h-12 bg-black text-white hover:bg-zinc-800 text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl transition-all active:scale-95 border-none"
+                >
+                  Fechar Celebração
+                </Button>
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
