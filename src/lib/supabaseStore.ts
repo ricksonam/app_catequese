@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia } from "./store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "./store";
 
 // ========== TURMAS ==========
 
@@ -467,4 +467,103 @@ export async function fetchMissoesFamilia(turmaId?: string): Promise<MissaoFamil
     criadoEm: m.criado_em,
     finalizada: m.finalizada || false
   }));
+}
+
+// ========== COMUNICAÇÃO (FORMULÁRIOS E PESQUISAS) ==========
+export async function fetchComunicacaoForms(): Promise<ComunicacaoForm[]> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  
+  const { data, error } = await supabase.from("comunicacao_forms")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("criado_em", { ascending: false });
+    
+  if (error) throw error;
+  
+  return (data || []).map((f: any) => ({
+    id: f.id,
+    user_id: f.user_id,
+    titulo: f.titulo,
+    descricao: f.descricao,
+    tipo: f.tipo,
+    codigo_acesso: f.codigo_acesso,
+    campos: f.campos,
+    configuracoes: f.configuracoes,
+    criado_em: f.criado_em
+  }));
+}
+
+export async function fetchPublicComunicacaoForm(codigoAcesso: string): Promise<ComunicacaoForm | null> {
+  const { data, error } = await supabase.from("comunicacao_forms")
+    .select("*")
+    .eq("codigo_acesso", codigoAcesso)
+    .maybeSingle();
+    
+  if (error) throw error;
+  if (!data) return null;
+  
+  return {
+    id: data.id,
+    user_id: data.user_id,
+    titulo: data.titulo,
+    descricao: data.descricao,
+    tipo: data.tipo,
+    codigo_acesso: data.codigo_acesso,
+    campos: data.campos,
+    configuracoes: data.configuracoes,
+    criado_em: data.criado_em
+  };
+}
+
+export async function upsertComunicacaoForm(f: Omit<ComunicacaoForm, 'user_id' | 'criado_em'>) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+
+  const { error } = await supabase.from("comunicacao_forms").upsert({
+    id: f.id,
+    user_id: user.id,
+    titulo: f.titulo,
+    descricao: f.descricao,
+    tipo: f.tipo,
+    codigo_acesso: f.codigo_acesso,
+    campos: f.campos as any,
+    configuracoes: f.configuracoes as any,
+  });
+  if (error) throw error;
+}
+
+export async function removeComunicacaoForm(id: string) {
+  const { error } = await supabase.from("comunicacao_forms").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function fetchComunicacaoRespostas(formId: string): Promise<ComunicacaoResposta[]> {
+  const { data, error } = await supabase.from("comunicacao_respostas")
+    .select("*")
+    .eq("form_id", formId)
+    .order("criado_em", { ascending: false });
+    
+  if (error) throw error;
+  
+  return (data || []).map((r: any) => ({
+    id: r.id,
+    form_id: r.form_id,
+    nome_respondente: r.nome_respondente,
+    telefone: r.telefone,
+    respostas: r.respostas,
+    pontuacao: r.pontuacao,
+    criado_em: r.criado_em
+  }));
+}
+
+export async function insertComunicacaoResposta(r: Omit<ComunicacaoResposta, 'id' | 'criado_em'>) {
+  const { error } = await supabase.from("comunicacao_respostas").insert({
+    form_id: r.form_id,
+    nome_respondente: r.nome_respondente,
+    telefone: r.telefone,
+    respostas: r.respostas as any,
+    pontuacao: r.pontuacao
+  });
+  if (error) throw error;
 }

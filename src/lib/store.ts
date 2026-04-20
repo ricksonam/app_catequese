@@ -385,3 +385,38 @@ export const ETAPAS_CATEQUESE = [
   { id: 'purificacao', label: 'Purificação e Iluminação', ordem: 3, cor: 'hsl(var(--liturgical))' },
   { id: 'mistagogia', label: 'Mistagogia', ordem: 4, cor: 'hsl(var(--success))' },
 ];
+
+export type ComunicacaoFormType = 'pesquisa' | 'questionario' | 'avaliacao';
+
+export interface ComunicacaoFormField {
+  id: string;
+  type: 'text' | 'textarea' | 'radio' | 'checkbox' | 'rating';
+  label: string;
+  required: boolean;
+  options?: string[]; // For radio and checkbox
+}
+
+export interface ComunicacaoForm {
+  id: string;
+  user_id?: string;
+  titulo: string;
+  descricao: string;
+  tipo: ComunicacaoFormType;
+  codigo_acesso: string;
+  campos: ComunicacaoFormField[];
+  configuracoes: {
+    mostrarPontuacao?: boolean;
+    aceitandoRespostas?: boolean;
+  };
+  criado_em?: string;
+}
+
+export interface ComunicacaoResposta {
+  id: string;
+  form_id: string;
+  nome_respondente: string;
+  telefone?: string;
+  respostas: Record<string, any>;
+  pontuacao?: number;
+  criado_em?: string;
+}

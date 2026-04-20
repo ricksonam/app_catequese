@@ -13,8 +13,10 @@ import {
   fetchMuralFotos, upsertMuralFoto, removeMuralFoto,
   fetchCitacoes, fetchHistoricoCitacoes, saveSorteioHistorico,
   fetchBingoModelos, fetchMissoesFamilia,
+  fetchComunicacaoForms, fetchPublicComunicacaoForm, upsertComunicacaoForm, removeComunicacaoForm,
+  fetchComunicacaoRespostas, insertComunicacaoResposta
 } from "@/lib/supabaseStore";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia } from "@/lib/store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ===== TURMAS =====
@@ -253,3 +255,56 @@ export function useMissoesFamilia(turmaId?: string) {
     queryFn: () => fetchMissoesFamilia(turmaId),
   });
 }
+
+// ===== COMUNICAÇÃO =====
+export function useComunicacaoForms() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["comunicacao_forms", user?.id],
+    queryFn: () => fetchComunicacaoForms(),
+    enabled: !!user
+  });
+}
+
+export function usePublicComunicacaoForm(codigoAcesso: string) {
+  return useQuery({
+    queryKey: ["public_comunicacao_form", codigoAcesso],
+    queryFn: () => fetchPublicComunicacaoForm(codigoAcesso),
+    enabled: !!codigoAcesso
+  });
+}
+
+export function useComunicacaoFormMutation() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: upsertComunicacaoForm,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["comunicacao_forms", user?.id] })
+  });
+}
+
+export function useDeleteComunicacaoForm() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: removeComunicacaoForm,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["comunicacao_forms", user?.id] })
+  });
+}
+
+export function useComunicacaoRespostas(formId: string) {
+  return useQuery({
+    queryKey: ["comunicacao_respostas", formId],
+    queryFn: () => fetchComunicacaoRespostas(formId),
+    enabled: !!formId
+  });
+}
+
+export function useComunicacaoRespostaMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: insertComunicacaoResposta,
+    onSuccess: (_, variables) => queryClient.invalidateQueries({ queryKey: ["comunicacao_respostas", variables.form_id] })
+  });
+}
+

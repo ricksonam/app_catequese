@@ -179,3 +179,42 @@ BEGIN
           );
     END IF;
 END $$;
+
+-- 11. Comunicação (Pesquisas, Questionários, Avaliações)
+CREATE TABLE IF NOT EXISTS public.comunicacao_forms (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL DEFAULT auth.uid(),
+  titulo TEXT NOT NULL,
+  descricao TEXT NOT NULL DEFAULT '',
+  tipo TEXT NOT NULL DEFAULT 'pesquisa', -- 'pesquisa', 'questionario', 'avaliacao'
+  codigo_acesso TEXT NOT NULL UNIQUE,
+  campos JSONB NOT NULL DEFAULT '[]', -- Array of form fields
+  configuracoes JSONB NOT NULL DEFAULT '{}',
+  criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE public.comunicacao_forms ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users manage own comunicacao_forms" ON public.comunicacao_forms FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+-- Allow public select by access code
+CREATE POLICY "Public select comunicacao_forms by access code" ON public.comunicacao_forms FOR SELECT USING (true);
+
+
+CREATE TABLE IF NOT EXISTS public.comunicacao_respostas (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  form_id UUID REFERENCES public.comunicacao_forms(id) ON DELETE CASCADE NOT NULL,
+  nome_respondente TEXT NOT NULL DEFAULT 'Anônimo',
+  telefone TEXT,
+  respostas JSONB NOT NULL DEFAULT '{}',
+  pontuacao INTEGER,
+  criado_em TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE public.comunicacao_respostas ENABLE ROW LEVEL SECURITY;
+-- Owners can read/delete responses for their forms
+CREATE POLICY "Users manage own comunicacao_respostas" ON public.comunicacao_respostas 
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM public.comunicacao_forms
+      WHERE id = form_id AND user_id = auth.uid()
+    )
+  );
+-- Anyone can insert a response
+CREATE POLICY "Public insert comunicacao_respostas" ON public.comunicacao_respostas FOR INSERT WITH CHECK (true);

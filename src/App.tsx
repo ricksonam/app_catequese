@@ -42,6 +42,10 @@ import CatequistasCadastro from "@/pages/CatequistasCadastro";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import PublicPlano from "@/pages/PublicPlano";
+import ComunicacaoHub from "@/pages/ComunicacaoHub";
+import ComunicacaoBuilder from "@/pages/ComunicacaoBuilder";
+import ComunicacaoDetail from "@/pages/ComunicacaoDetail";
+import PublicFormResponder from "@/pages/PublicFormResponder";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import SplashScreen from "@/components/SplashScreen";
@@ -90,6 +94,7 @@ const AppRoutes = () => (
     <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
     <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
     <Route path="/missao/:codigo" element={<PublicMissao />} />
+    <Route path="/f/:codigo" element={<PublicFormResponder />} />
     <Route
       element={
         <ProtectedRoute>
@@ -131,6 +136,9 @@ const AppRoutes = () => (
       <Route path="/jogos/mimica" element={<Mimica />} />
       <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
       <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
+      <Route path="/comunicacao" element={<ComunicacaoHub />} />
+      <Route path="/comunicacao/novo" element={<ComunicacaoBuilder />} />
+      <Route path="/comunicacao/:id" element={<ComunicacaoDetail />} />
     </Route>
     <Route path="*" element={<NotFound />} />
   </Routes>

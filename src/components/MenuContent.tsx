@@ -47,6 +47,11 @@ const classModules = [
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
 ];
 
+const comunicacao = [
+  { label: "Painel de Comunicação", icon: MessageSquare, path: "/comunicacao", color: "bg-purple-500/10 text-purple-500" },
+  { label: "Criar Novo", icon: FileText, path: "/comunicacao/novo", color: "bg-liturgical/10 text-liturgical" },
+];
+
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -245,6 +250,34 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               ))}
             </AccordionContent>
           </AccordionItem>
+
+          {/* SEÇÃO: COMUNICAÇÃO */}
+          <AccordionItem value="comunicacao" className="border-none shadow-none">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+                   <MessageSquare className="h-5 w-5" />
+                 </div>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Comunicação</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
+               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-1 px-1 space-y-1">
+              {comunicacao.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => go(item.path)}
+                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
+                    <item.icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
+                </button>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+
 
           {/* SEÇÃO: MINHA TURMA (DINÂMICA) */}
           <AccordionItem value="minha-turma" className="border-none shadow-none">
