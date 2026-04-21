@@ -20,7 +20,7 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveMod
           <X className="h-5 w-5" />
         </button>
 
-        <div className="max-h-[85vh] overflow-y-auto overflow-x-hidden scrollbar-hide flex flex-col">
+        <div className="max-h-[80vh] overflow-y-auto overflow-x-hidden flex flex-col premium-scrollbar">
           {/* Header with Background Pattern */}
           <div className="relative h-44 sm:h-52 bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center overflow-hidden shrink-0">
             <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -115,12 +115,17 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveMod
           .animate-float-float {
             animation: float-float 4s ease-in-out infinite;
           }
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+          .premium-scrollbar::-webkit-scrollbar {
+            width: 5px;
           }
-          .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+          .premium-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+          }
+          .premium-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+            opacity: 0.5;
           }
         `}</style>
       </DialogContent>

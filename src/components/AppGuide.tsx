@@ -80,7 +80,7 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[440px] w-[95vw] p-0 overflow-hidden border-none rounded-[40px] shadow-2xl bg-white dark:bg-zinc-950">
-        <div className="relative h-[620px] flex flex-col items-center overflow-hidden">
+        <div className="relative min-h-[640px] flex flex-col items-center">
           
           {/* Close button */}
           <button 
@@ -100,7 +100,7 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
               className="flex-1 flex flex-col items-center w-full"
             >
               {/* Image Container */}
-              <div className={`w-full h-[320px] ${current.bgColor} flex items-center justify-center relative`}>
+              <div className={`w-full h-[280px] ${current.bgColor} flex items-center justify-center relative shrink-0`}>
                 <div className="absolute inset-0 opacity-30 select-none pointer-events-none">
                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl bg-white/50" />
                 </div>
@@ -181,8 +181,11 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
                 </Button>
               )}
               <Button 
-                onClick={next}
-                className={`flex-1 h-14 rounded-2xl font-black text-lg shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] gap-2 flex items-center justify-center ${current.accent} text-white shadow-${current.accent.split('-')[1]}/30`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  next();
+                }}
+                className={`flex-1 h-14 rounded-2xl font-black text-lg shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] gap-2 flex items-center justify-center ${current.accent} text-white`}
               >
                 {currentStep === steps.length - 1 ? (
                   <>Começar Agora <CheckCircle2 className="h-5 w-5" /></>
