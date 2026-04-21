@@ -12,7 +12,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MenuContent } from "./MenuContent";
 import { ObjectiveModal } from "./ObjectiveModal";
-import AppGuide from "./AppGuide";
 import { useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 
@@ -29,7 +28,6 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showObjective, setShowObjective] = useState(false);
-  const [showAppGuide, setShowAppGuide] = useState(false);
   const [apoieOpen, setApoieOpen] = useState(false);
   const { data: turmas = [] } = useTurmas();
 
@@ -65,7 +63,6 @@ export default function AppLayout() {
                 <MenuContent 
                   onClose={() => setMenuOpen(false)} 
                   onShowObjective={() => setShowObjective(true)} 
-                  onShowGuide={() => setShowAppGuide(true)}
                 />
               </SheetContent>
             </Sheet>
@@ -92,9 +89,7 @@ export default function AppLayout() {
           <ObjectiveModal 
             open={showObjective} 
             onOpenChange={setShowObjective} 
-            onStartTour={() => setShowAppGuide(true)} 
           />
-          <AppGuide open={showAppGuide} onOpenChange={setShowAppGuide} />
 
           {/* Dialog Apoie o iCatequese */}
           <Dialog open={apoieOpen} onOpenChange={setApoieOpen}>
@@ -158,7 +153,7 @@ export default function AppLayout() {
                   onClick={() => navigate(tab.path)}
                   className={`group relative flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-blue-500/10 dark:bg-blue-500/20 scale-110 shadow-sm shadow-blue-500/10`
+                      ? \`\${tab.color} bg-blue-500/10 dark:bg-blue-500/20 scale-110 shadow-sm shadow-blue-500/10\`
                       : "text-gray-600 dark:text-gray-400 hover:bg-amber-100/50"
                   }`}
                 >
@@ -174,4 +169,5 @@ export default function AppLayout() {
       )}
     </div>
   );
+}  );
 }

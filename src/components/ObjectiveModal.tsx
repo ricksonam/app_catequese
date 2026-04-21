@@ -1,6 +1,8 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Sparkles, Heart, Church, X, ChevronRight } from "lucide-react";
+import { Mail, Sparkles, Church, X, Users, Dices, Share2, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ObjectiveModalProps {
   open: boolean;
@@ -8,131 +10,130 @@ interface ObjectiveModalProps {
   onStartTour?: () => void;
 }
 
-export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveModalProps) {
+const steps = [
+  {
+    title: "Trabalho em Equipe",
+    description: "Compartilhe sua turma com outros catequistas. Gerenciem juntos os mesmos dados em tempo real.",
+    icon: Users,
+    color: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-emerald-500/10",
+  },
+  {
+    title: "Módulos Interativos",
+    description: "Jogos Bíblicos, Bíblia Online e Biblioteca de Modelos. Tudo o que você precisa.",
+    icon: Dices,
+    color: "text-amber-600 dark:text-amber-400",
+    bgColor: "bg-amber-500/10",
+  },
+  {
+    title: "Acompanhamento Seguro",
+    description: "Envie cronogramas e plano de encontros aos pais através de links públicos.",
+    icon: Share2,
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-500/10",
+  },
+  {
+    title: "Catequese em Família",
+    description: "Crie enquetes e missões familiares para maior engajamento fora do encontro.",
+    icon: MessageSquare,
+    color: "text-purple-600 dark:text-purple-400",
+    bgColor: "bg-purple-500/10",
+  }
+];
+
+export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg w-[94vw] p-0 overflow-hidden border-none bg-background/95 backdrop-blur-xl shadow-2xl rounded-[32px] animate-in zoom-in-95 duration-300 ring-1 ring-black/5">
-        {/* Close Button - More visible for mobile */}
+      <DialogContent className="max-w-md w-[95vw] h-[90vh] p-0 overflow-y-auto overflow-x-hidden border-2 border-black/5 dark:border-white/5 rounded-[32px] sm:rounded-[40px] shadow-2xl bg-[#FFF0EC] dark:bg-zinc-950 premium-scrollbar">
+        {/* Close Button */}
         <button 
           onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/10 backdrop-blur-md flex items-center justify-center text-white sm:text-foreground sm:bg-muted/60 hover:bg-muted transition-all active:scale-90"
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md flex items-center justify-center text-foreground hover:bg-black/10 dark:hover:bg-white/20 transition-all active:scale-90"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="max-h-[80vh] overflow-y-auto overflow-x-hidden flex flex-col premium-scrollbar">
-          {/* Header with Background Pattern */}
-          <div className="relative h-44 sm:h-52 bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center overflow-hidden shrink-0">
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
-               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/30 via-transparent to-transparent animate-pulse" />
-            </div>
-            
-            <div className="relative group perspective-1000">
-              <div className="absolute -inset-6 bg-white/20 rounded-full blur-2xl animate-pulse scale-125 opacity-50 transform-gpu" />
-              <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-[44px] overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/40 shadow-2xl animate-float-float transform-gpu will-change-transform">
-                <img src="/app-logo.png" className="w-full h-full object-cover" alt="Logo iCatequese" />
-              </div>
-            </div>
+        <div className="flex flex-col min-h-full pb-10">
+          
+          {/* Header Area */}
+          <div className="w-full pt-12 pb-6 px-6 flex flex-col items-center text-center relative">
+             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[32px] overflow-hidden bg-white shadow-xl mb-5 border border-black/5 animate-float-float relative z-10 shrink-0 p-2">
+               <img src="/app-logo.png" className="w-full h-full object-contain" alt="Logo iCatequese" />
+             </div>
+
+             <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter mb-2 z-10">iCatequese</h2>
+             <div className="flex items-center justify-center gap-2 mb-6 z-10">
+               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+               <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">Gestão Inteligente</p>
+               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+             </div>
+
+             <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md rounded-[28px] p-6 border border-black/5 dark:border-white/5 shadow-sm relative text-left w-full mt-2">
+               <div className="absolute -top-4 -left-2 bg-primary text-white rounded-xl p-2.5 shadow-lg rotate-[-10deg]">
+                 <Church className="h-5 w-5" />
+               </div>
+               <p className="text-sm leading-relaxed text-foreground/80 italic font-medium pt-2">
+                 "Semear a Palavra e cultivar o Reino. Uma plataforma desenhada para auxiliar catequistas a organizar seus encontros e inovar o processo educativo da fé."
+               </p>
+             </div>
           </div>
 
-          <div className="px-6 sm:px-10 pt-8 pb-10 space-y-8 flex-1">
-            <div className="text-center space-y-1">
-              <h2 className="text-4xl sm:text-5xl font-black text-primary tracking-tighter drop-shadow-md bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent">iCatequese</h2>
-              <div className="flex items-center justify-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] text-muted-foreground">Gestão Inteligente para Catequistas</p>
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-              </div>
-            </div>
+          {/* Destaques (Módulos / Apresentação em Cards Brancos) */}
+          <div className="w-full px-6 mb-8 flex-1">
+             <div className="flex items-center gap-3 mb-5 opacity-60">
+                <div className="h-px bg-foreground/20 flex-1" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-foreground text-center">Tudo em um só lugar</span>
+                <div className="h-px bg-foreground/20 flex-1" />
+             </div>
 
-            {/* Main Liturgical Text */}
-            <div className="relative bg-primary/5 rounded-[32px] p-6 sm:p-8 border border-primary/10 shadow-sm overflow-hidden group">
-              <div className="absolute -top-3 -left-3 bg-primary text-white rounded-xl p-2.5 shadow-lg group-hover:scale-110 transition-transform">
-                <Church className="h-5 w-5" />
-              </div>
-              <p className="text-base sm:text-lg leading-relaxed text-foreground/90 italic font-medium text-center">
-                "Semear a Palavra e cultivar o Reino. O iCatequese é uma plataforma para auxiliar catequistas a organizar seus encontros de catequese e sua missão evangelizadora, com recursos didáticos que inovam o processo educativo da fé."
-              </p>
-            </div>
-
-            {/* Features highlight */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-               <button 
-                 onClick={() => {
-                   onOpenChange(false);
-                   if (onStartTour) setTimeout(() => onStartTour(), 300);
-                 }}
-                 className="w-full flex items-center gap-4 p-4 rounded-[24px] bg-emerald-500/10 dark:bg-emerald-500/5 shadow-md shadow-emerald-500/5 border-2 border-emerald-500/25 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all active:scale-[0.98] group text-left relative overflow-hidden"
-               >
-                 <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
-                   <Sparkles className="h-10 w-10 text-emerald-600" />
-                 </div>
-                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                   <Sparkles className="h-6 w-6" />
-                 </div>
-                 <div className="flex-1 min-w-0">
-                   <span className="text-[12px] font-black text-emerald-700 uppercase tracking-widest block leading-tight">Conheça os Módulos</span>
-                   <span className="text-[10px] font-bold text-emerald-600/70 uppercase">Ferramentas do iCatequese</span>
-                 </div>
-                 <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform shrink-0">
-                   <ChevronRight className="h-5 w-5" />
-                 </div>
-               </button>
-
-               <button 
-                 onClick={() => onOpenChange(false)}
-                 className="w-full flex items-center gap-4 p-4 rounded-[24px] bg-rose-500/10 dark:bg-rose-500/5 shadow-md shadow-rose-500/5 border-2 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/50 transition-all active:scale-[0.98] group text-left relative overflow-hidden"
-               >
-                 <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
-                   <Heart className="h-10 w-10 text-rose-500" />
-                 </div>
-                 <div className="w-12 h-12 rounded-2xl bg-rose-500/20 flex items-center justify-center text-rose-600 shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                   <Heart className="h-6 w-6" />
-                 </div>
-                 <div className="flex-1 min-w-0">
-                   <span className="text-[12px] font-black text-rose-700 uppercase tracking-widest block leading-tight">Catequese em Família</span>
-                   <span className="text-[10px] font-bold text-rose-600/70 uppercase">Missões e engajamento</span>
-                 </div>
-                 <div className="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform shrink-0">
-                   <ChevronRight className="h-5 w-5" />
-                 </div>
-               </button>
-            </div>
-
-            {/* Contact Section */}
-            <div className="pt-8 border-t border-border/60">
-              <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left bg-muted/30 p-5 rounded-[24px]">
-                <Avatar className="h-16 w-16 border-4 border-white dark:border-zinc-800 shadow-xl shrink-0">
-                  <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
-                  <AvatarFallback className="bg-primary text-white font-black text-xl">RA</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-lg font-black text-foreground">Rickson Amazonas</p>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-black mb-2">Desenvolvedor & Catequista</p>
-                  <div className="flex items-center justify-center sm:justify-start gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg">
-                      <Mail className="h-4 w-4 text-white" />
+             <div className="grid gap-3">
+                {steps.map((step, i) => (
+                  <div key={i} className="bg-white dark:bg-zinc-900 rounded-[28px] p-4 border border-black/5 dark:border-white/5 shadow-sm flex items-center gap-4 hover:shadow-md transition-all group">
+                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform", step.bgColor, step.color)}>
+                      <step.icon className="h-6 w-6" />
                     </div>
-                    <a 
-                      href="mailto:ricksonam@hotmail.com" 
-                      className="text-sm font-bold text-primary hover:underline truncate"
-                    >
-                      ricksonam@hotmail.com
-                    </a>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-black text-foreground">{step.title}</h3>
+                      <p className="text-[11px] text-muted-foreground leading-snug mt-0.5">{step.description}</p>
+                    </div>
                   </div>
+                ))}
+             </div>
+          </div>
+
+          {/* Start / Close Button */}
+          <div className="w-full px-6 mb-6">
+            <Button onClick={() => onOpenChange(false)} className="w-full h-14 rounded-2xl font-black text-base shadow-xl shadow-primary/20 text-white bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all gap-2">
+              Começar Agora <CheckCircle2 className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Contact Section */}
+          <div className="w-full px-6 mb-2">
+            <div className="flex items-center gap-4 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm p-4 rounded-[20px] border border-black/5 dark:border-white/5">
+              <Avatar className="h-10 w-10 border border-black/10 dark:border-white/10 shrink-0">
+                <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
+                <AvatarFallback className="bg-primary text-white font-black text-xs">RA</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-black text-foreground">Rickson Amazonas</p>
+                <div className="flex items-center gap-1.5 opacity-70">
+                  <Mail className="h-3 w-3" />
+                  <a href="mailto:ricksonam@hotmail.com" className="text-[10px] font-bold truncate hover:underline">ricksonam@hotmail.com</a>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <style>{`
           @keyframes float-float {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-10px) rotate(2deg); }
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
           }
           .animate-float-float {
-            animation: float-float 4s ease-in-out infinite;
+            animation: float-float 5s ease-in-out infinite;
           }
         `}</style>
       </DialogContent>
