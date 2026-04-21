@@ -117,7 +117,7 @@ export default function ComunicacaoDetail() {
             <div>
               <h1 className="text-lg font-black text-foreground leading-tight">{form.titulo}</h1>
               <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
-                Feedback Interativo
+                Partilha em Família
               </p>
             </div>
           </div>

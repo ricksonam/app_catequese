@@ -49,7 +49,7 @@ const steps = [
     accent: "bg-blue-500"
   },
   {
-    title: "Feedback Interativo",
+    title: "Partilha em Família",
     description: "Crie pesquisas e avaliações para os pais. Visualize resultados automáticos e melhore continuamente a experiência das famílias.",
     image: "/assets/guide/guide_feedback.png",
     color: "text-purple-600",

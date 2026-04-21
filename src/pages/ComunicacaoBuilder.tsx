@@ -141,7 +141,7 @@ export default function ComunicacaoBuilder() {
           </button>
           <div>
             <h1 className="text-xl font-black text-foreground">{isEditing ? "Editar Formulário" : "Novo Formulário"}</h1>
-            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Feedback Interativo</p>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Partilha em Família</p>
           </div>
         </div>
         <button 
