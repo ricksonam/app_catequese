@@ -5,9 +5,10 @@ import { Mail, Sparkles, Heart, Church, GraduationCap, X } from "lucide-react";
 interface ObjectiveModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onStartTour?: () => void;
 }
 
-export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
+export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg w-[94vw] p-0 overflow-hidden border-none bg-background/95 backdrop-blur-xl shadow-2xl rounded-[32px] animate-in zoom-in-95 duration-300 ring-1 ring-black/5">
@@ -52,21 +53,25 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
               <p className="text-base sm:text-lg leading-relaxed text-foreground/90 italic font-medium text-center">
                 "Semear a Palavra e cultivar o Reino. O iCatequese é uma plataforma para auxiliar catequistas a organizar seus encontros de catequese e sua missão evangelizadora, com recursos didáticos que inovam o processo educativo da fé."
               </p>
-              <div className="mt-6 pt-6 border-t border-primary/10">
-                <p className="text-sm sm:text-[15px] leading-relaxed text-muted-foreground font-medium text-center">
-                  Em cada encontro, buscamos preparar o terreno do coração para que a semente da fé encontre terra boa e frutifique em amor e serviço à comunidade.
-                </p>
-              </div>
             </div>
 
             {/* Features highlight */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-border/40 hover:border-primary/30 transition-colors">
-                 <div className="w-12 h-12 rounded-2xl bg-success/10 flex items-center justify-center text-success">
-                   <Heart className="h-6 w-6" />
+               <button 
+                 onClick={() => {
+                   onOpenChange(false);
+                   if (onStartTour) setTimeout(() => onStartTour(), 300);
+                 }}
+                 className="flex items-center gap-4 p-4 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/5 shadow-sm border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all active:scale-[0.95] group text-left"
+               >
+                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                   <Sparkles className="h-6 w-6" />
                  </div>
-                 <span className="text-[13px] font-black text-foreground uppercase tracking-tight">Foco no Cuidado</span>
-               </div>
+                 <div className="flex-1">
+                   <span className="text-[13px] font-black text-emerald-700 uppercase tracking-tight block">Foco no Cuidado</span>
+                   <span className="text-[10px] font-bold text-emerald-600/70 uppercase">Iniciar Tour Guiado</span>
+                 </div>
+               </button>
                <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-border/40 hover:border-primary/30 transition-colors">
                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
                    <GraduationCap className="h-6 w-6" />

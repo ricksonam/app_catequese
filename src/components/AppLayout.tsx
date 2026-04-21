@@ -83,7 +83,11 @@ export default function AppLayout() {
             <BirthdayBell />
           </div>
           
-          <ObjectiveModal open={showObjective} onOpenChange={setShowObjective} />
+          <ObjectiveModal 
+            open={showObjective} 
+            onOpenChange={setShowObjective} 
+            onStartTour={() => setShowAppGuide(true)} 
+          />
           <AppGuide open={showAppGuide} onOpenChange={setShowAppGuide} />
         </header>
       )}

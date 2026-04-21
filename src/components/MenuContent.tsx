@@ -369,34 +369,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                 <span className="text-sm font-black text-left">Excluir Usuário</span>
               </button>
             </AccordionContent>
-          </AccordionItem>
         </Accordion>
-
-        {/* GUIA INTERATIVO - EXPLORE O APP */}
-        <div className="pt-4">
-           <button 
-             onClick={() => {
-               onClose();
-               if (onShowGuide) setTimeout(() => onShowGuide(), 350);
-             }}
-             className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-emerald-500/10 border border-emerald-500/20 shadow-sm hover:shadow-md hover:border-emerald-500/40 transition-all active:scale-[0.98]"
-           >
-             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
-               <Sparkles className="h-10 w-10 text-emerald-600" />
-             </div>
-             <div className="flex items-center gap-3">
-               <div className="w-10 h-10 rounded-xl bg-white border border-emerald-500/20 flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform">
-                 <Sparkles className="h-5 w-5 text-emerald-600" />
-               </div>
-               <div className="flex-1 text-left min-w-0">
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700 mb-0.5">Explorar Recursos</p>
-                 <p className="text-[15px] font-black leading-none text-emerald-800">Conheça o App</p>
-                 <p className="text-[11px] text-emerald-600/70 mt-1.5 font-bold">Guia Rápido • 5 Passos</p>
-               </div>
-               <ChevronRight className="h-5 w-5 text-emerald-600 group-hover:translate-x-1 transition-transform" />
-             </div>
-           </button>
-        </div>
 
         {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
         <div className="pt-3">
