@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MenuContent } from "./MenuContent";
 import BirthdayBell from "./BirthdayBell";
 import { ObjectiveModal } from "./ObjectiveModal";
+import AppGuide from "./AppGuide";
 import { useTurmas } from "@/hooks/useSupabaseData";
 
 const baseTabs = [
@@ -27,6 +28,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showObjective, setShowObjective] = useState(false);
+  const [showAppGuide, setShowAppGuide] = useState(false);
   const { data: turmas = [] } = useTurmas();
 
   const currentPath = location.pathname;
@@ -61,6 +63,7 @@ export default function AppLayout() {
                 <MenuContent 
                   onClose={() => setMenuOpen(false)} 
                   onShowObjective={() => setShowObjective(true)} 
+                  onShowGuide={() => setShowAppGuide(true)}
                 />
               </SheetContent>
             </Sheet>
@@ -81,6 +84,7 @@ export default function AppLayout() {
           </div>
           
           <ObjectiveModal open={showObjective} onOpenChange={setShowObjective} />
+          <AppGuide open={showAppGuide} onOpenChange={setShowAppGuide} />
         </header>
       )}
 

@@ -18,11 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import AppGuide from "./AppGuide";
 
 interface MenuContentProps {
   onClose: () => void;
   onShowObjective?: () => void;
+  onShowGuide?: () => void;
 }
 
 const cadastros = [
@@ -69,7 +69,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
-  const [showAppGuide, setShowAppGuide] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | null>(null);
   
   // Auto-seleciona se houver apenas uma turma
@@ -378,7 +377,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
            <button 
              onClick={() => {
                onClose();
-               setTimeout(() => setShowAppGuide(true), 200);
+               if (onShowGuide) setTimeout(() => onShowGuide(), 350);
              }}
              className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-emerald-500/10 border border-emerald-500/20 shadow-sm hover:shadow-md hover:border-emerald-500/40 transition-all active:scale-[0.98]"
            >
@@ -534,8 +533,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </DialogContent>
       </Dialog>
       
-      {/* 5. Guia do App */}
-      <AppGuide open={showAppGuide} onOpenChange={setShowAppGuide} />
     </div>
   );
 }
