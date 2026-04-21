@@ -18,7 +18,7 @@ const steps = [
   {
     title: "Bem-vindo ao iCatequese!",
     description: "Sua plataforma completa para modernizar a catequese. Vamos transformar sua missão com tecnologia e amor.",
-    image: "/brain/f86b7291-39ef-4f3a-995e-2af3a47effef/guide_welcome_1776732265517.png",
+    image: "/assets/guide/guide_welcome.png",
     color: "text-primary",
     bgColor: "bg-primary/5",
     accent: "bg-primary"
@@ -26,7 +26,7 @@ const steps = [
   {
     title: "Trabalho em Equipe",
     description: "Compartilhe sua turma com outros catequistas. Use o código de acesso para que todos gerenciem os mesmos dados em tempo real.",
-    image: "/brain/f86b7291-39ef-4f3a-995e-2af3a47effef/guide_sharing_1776732278150.png",
+    image: "/assets/guide/guide_sharing.png",
     color: "text-emerald-600",
     bgColor: "bg-emerald-500/5",
     accent: "bg-emerald-500"
@@ -34,7 +34,7 @@ const steps = [
   {
     title: "Conheça os Módulos",
     description: "Acesse Jogos Bíblicos, Bíblia Online e Biblioteca de Modelos. Tudo o que você precisa disponível para todas as suas turmas.",
-    image: "/brain/f86b7291-39ef-4f3a-995e-2af3a47effef/guide_modules_3d_1776732423504.png",
+    image: "/assets/guide/guide_modules.png",
     color: "text-amber-600",
     bgColor: "bg-amber-500/5",
     accent: "bg-amber-500"
@@ -42,7 +42,7 @@ const steps = [
   {
     title: "Conexão com a Família",
     description: "Envie o cronograma de encontros para os pais através de um link público. Sem necessidade de senha ou cadastro para eles.",
-    image: "/brain/f86b7291-39ef-4f3a-995e-2af3a47effef/guide_family_1776732523929.png",
+    image: "/assets/guide/guide_family.png",
     color: "text-blue-600",
     bgColor: "bg-blue-500/5",
     accent: "bg-blue-500"
@@ -50,7 +50,7 @@ const steps = [
   {
     title: "Feedback Interativo",
     description: "Crie pesquisas e avaliações para os pais. Visualize resultados automáticos e melhore continuamente a experiência das famílias.",
-    image: "/brain/f86b7291-39ef-4f3a-995e-2af3a47effef/guide_feedback_3d_1776732542154.png",
+    image: "/assets/guide/guide_feedback.png",
     color: "text-purple-600",
     bgColor: "bg-purple-500/5",
     accent: "bg-purple-500"
