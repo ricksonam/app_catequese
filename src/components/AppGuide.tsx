@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface AppGuideProps {
   open: boolean;
@@ -81,7 +82,14 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[440px] w-[95vw] p-0 overflow-hidden border-none rounded-[40px] shadow-2xl bg-white dark:bg-zinc-950">
         <div className="relative min-h-[640px] flex flex-col items-center">
-          
+
+          {/* Close Button */}
+          <button
+            onClick={() => { onOpenChange(false); setTimeout(() => setCurrentStep(0), 500); }}
+            className="absolute top-4 right-4 z-50 w-9 h-9 rounded-full bg-black/10 dark:bg-white/10 backdrop-blur-md flex items-center justify-center text-black/60 dark:text-white/60 hover:bg-black/20 dark:hover:bg-white/20 transition-all active:scale-90"
+          >
+            <X className="h-4 w-4" />
+          </button>
 
 
           <AnimatePresence mode="wait">
@@ -94,9 +102,12 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
               className="flex-1 flex flex-col items-center w-full"
             >
               {/* Image Container */}
-              <div className={`w-full h-[280px] ${current.bgColor} flex items-center justify-center relative shrink-0`}>
-                <div className="absolute inset-0 opacity-30 select-none pointer-events-none">
-                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl bg-white/50" />
+              <div className={cn("w-full h-[280px] flex items-center justify-center relative shrink-0", current.bgColor)}>
+                {/* Glow layers */}
+                <div className="absolute inset-0 select-none pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl bg-white/40" />
+                  <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-zinc-950 to-transparent" />
                 </div>
                 <motion.img 
                   src={current.image} 
@@ -179,7 +190,10 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
                   e.preventDefault();
                   next();
                 }}
-                className={`flex-1 h-14 rounded-2xl font-black text-lg shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] gap-2 flex items-center justify-center ${current.accent} text-white`}
+                className={cn(
+                  "flex-1 h-14 rounded-2xl font-black text-lg shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] gap-2 flex items-center justify-center text-white",
+                  current.accent
+                )}
               >
                 {currentStep === steps.length - 1 ? (
                   <>Começar Agora <CheckCircle2 className="h-5 w-5" /></>

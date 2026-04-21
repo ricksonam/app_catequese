@@ -106,7 +106,7 @@ export default function AppLayout() {
                 <Heart className="w-16 h-16 fill-white text-white mx-auto mb-4 animate-heartbeat relative z-10" />
                 <h2 className="text-2xl font-black relative z-10">Apoie o iCatequese!</h2>
               </div>
-              <div className="p-4 sm:p-6 text-center space-y-4 max-h-[60vh] overflow-y-auto scrollbar-hide">
+              <div className="p-4 sm:p-6 text-center space-y-4 max-h-[60vh] overflow-y-auto premium-scrollbar">
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   O iCatequese é um projeto independente, mantido com recursos próprios do desenvolvedor para cobrir os custos de servidor e de hospedagem da plataforma.
                 </p>

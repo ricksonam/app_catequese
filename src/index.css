@@ -362,3 +362,40 @@
   animation: sacred-pulse 5s ease-in-out infinite;
 }
 
+/* ── PREMIUM SCROLLBAR ── */
+.premium-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.premium-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+}
+.premium-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.35);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.premium-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.55);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ── SCROLLBAR HIDE ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+

@@ -271,11 +271,9 @@ export default function MissoesFamilia() {
                                   <span className="text-[8px] text-muted-foreground font-black uppercase tracking-widest opacity-60">Concluídas</span>
                                 </div>
                              </div>
-                             {!missao.finalizada && (
-                               <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-rose-500 hover:text-rose-600 hover:bg-rose-50" onClick={() => setMissaoToDelete(missao.id)}>
-                                 <Trash2 className="h-4 w-4" />
-                               </Button>
-                             )}
+                             <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-rose-500 hover:text-rose-600 hover:bg-rose-50" onClick={() => setMissaoToDelete(missao.id)}>
+                               <Trash2 className="h-4 w-4" />
+                             </Button>
                           </div>
 
                           <div className="flex justify-center w-full">

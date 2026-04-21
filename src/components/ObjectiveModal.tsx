@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Sparkles, Heart, Church, GraduationCap, X, ChevronRight } from "lucide-react";
+import { Mail, Sparkles, Heart, Church, ChevronRight } from "lucide-react";
 
 interface ObjectiveModalProps {
   open: boolean;
@@ -56,26 +56,45 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveMod
             </div>
 
             {/* Features highlight */}
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                <button 
                  onClick={() => {
                    onOpenChange(false);
                    if (onStartTour) setTimeout(() => onStartTour(), 300);
                  }}
-                 className="w-full flex items-center gap-5 p-5 rounded-[28px] bg-emerald-500/10 dark:bg-emerald-500/5 shadow-xl shadow-emerald-500/5 border-2 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all active:scale-[0.98] group text-left relative overflow-hidden"
+                 className="w-full flex items-center gap-4 p-4 rounded-[24px] bg-emerald-500/10 dark:bg-emerald-500/5 shadow-md shadow-emerald-500/5 border-2 border-emerald-500/25 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all active:scale-[0.98] group text-left relative overflow-hidden"
                >
-                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
-                   <Sparkles className="h-12 w-12 text-emerald-600" />
+                 <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
+                   <Sparkles className="h-10 w-10 text-emerald-600" />
                  </div>
-                 <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 shadow-inner group-hover:scale-110 transition-transform">
-                   <Sparkles className="h-7 w-7" />
+                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                   <Sparkles className="h-6 w-6" />
                  </div>
-                 <div className="flex-1">
-                   <span className="text-[14px] font-black text-emerald-700 uppercase tracking-widest block">Conheça os Módulos</span>
-                   <span className="text-[11px] font-bold text-emerald-600/70 uppercase">Explore as Ferramentas do iCatequese</span>
+                 <div className="flex-1 min-w-0">
+                   <span className="text-[12px] font-black text-emerald-700 uppercase tracking-widest block leading-tight">Conheça os Módulos</span>
+                   <span className="text-[10px] font-bold text-emerald-600/70 uppercase">Ferramentas do iCatequese</span>
                  </div>
-                 <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform">
-                   <ChevronRight className="h-6 w-6" />
+                 <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform shrink-0">
+                   <ChevronRight className="h-5 w-5" />
+                 </div>
+               </button>
+
+               <button 
+                 onClick={() => onOpenChange(false)}
+                 className="w-full flex items-center gap-4 p-4 rounded-[24px] bg-rose-500/10 dark:bg-rose-500/5 shadow-md shadow-rose-500/5 border-2 border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/50 transition-all active:scale-[0.98] group text-left relative overflow-hidden"
+               >
+                 <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
+                   <Heart className="h-10 w-10 text-rose-500" />
+                 </div>
+                 <div className="w-12 h-12 rounded-2xl bg-rose-500/20 flex items-center justify-center text-rose-600 shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                   <Heart className="h-6 w-6" />
+                 </div>
+                 <div className="flex-1 min-w-0">
+                   <span className="text-[12px] font-black text-rose-700 uppercase tracking-widest block leading-tight">Catequese em Família</span>
+                   <span className="text-[10px] font-bold text-rose-600/70 uppercase">Missões e engajamento</span>
+                 </div>
+                 <div className="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform shrink-0">
+                   <ChevronRight className="h-5 w-5" />
                  </div>
                </button>
             </div>
@@ -114,24 +133,6 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveMod
           }
           .animate-float-float {
             animation: float-float 4s ease-in-out infinite;
-          }
-          .premium-scrollbar::-webkit-scrollbar {
-            width: 8px;
-          }
-          .premium-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.03);
-            border-radius: 10px;
-          }
-          .premium-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(var(--primary-rgb, 59, 130, 246), 0.4);
-            border-radius: 10px;
-            border: 2px solid transparent;
-            background-clip: content-box;
-          }
-          .premium-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(var(--primary-rgb, 59, 130, 246), 0.6);
-            border: 2px solid transparent;
-            background-clip: content-box;
           }
         `}</style>
       </DialogContent>
