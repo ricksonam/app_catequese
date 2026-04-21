@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Sparkles, Heart, Church, ChevronRight } from "lucide-react";
+import { Mail, Sparkles, Heart, Church, X, ChevronRight } from "lucide-react";
 
 interface ObjectiveModalProps {
   open: boolean;
