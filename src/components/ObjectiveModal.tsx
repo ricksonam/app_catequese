@@ -44,7 +44,7 @@ const steps = [
 export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md w-[95vw] h-[90vh] p-0 overflow-y-auto overflow-x-hidden border-2 border-black/5 dark:border-white/5 rounded-[32px] sm:rounded-[40px] shadow-2xl bg-[#FFF0EC] dark:bg-zinc-950 premium-scrollbar">
+      <DialogContent className="max-w-md w-[95vw] h-[90vh] p-0 overflow-y-auto overflow-x-hidden border-2 border-black/5 dark:border-white/5 rounded-[32px] sm:rounded-[40px] shadow-2xl bg-[#FFF5F0] dark:bg-zinc-950 premium-scrollbar">
         {/* Close Button */}
         <button 
           onClick={() => onOpenChange(false)}

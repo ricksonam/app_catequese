@@ -45,7 +45,7 @@ export default function AppLayout() {
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
+    <div className="min-h-screen bg-[#FFF5F0] dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
       {/* Header */}
       {!isPresentationMode && (
         <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0 print:hidden">
