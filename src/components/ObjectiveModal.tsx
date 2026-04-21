@@ -56,28 +56,28 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveMod
             </div>
 
             {/* Features highlight */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
                <button 
                  onClick={() => {
                    onOpenChange(false);
                    if (onStartTour) setTimeout(() => onStartTour(), 300);
                  }}
-                 className="flex items-center gap-4 p-4 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/5 shadow-sm border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all active:scale-[0.95] group text-left"
+                 className="w-full flex items-center gap-5 p-5 rounded-[28px] bg-emerald-500/10 dark:bg-emerald-500/5 shadow-xl shadow-emerald-500/5 border-2 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all active:scale-[0.98] group text-left relative overflow-hidden"
                >
-                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
-                   <Sparkles className="h-6 w-6" />
+                 <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
+                   <Sparkles className="h-12 w-12 text-emerald-600" />
+                 </div>
+                 <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-600 shadow-inner group-hover:scale-110 transition-transform">
+                   <Sparkles className="h-7 w-7" />
                  </div>
                  <div className="flex-1">
-                   <span className="text-[13px] font-black text-emerald-700 uppercase tracking-tight block">Foco no Cuidado</span>
-                   <span className="text-[10px] font-bold text-emerald-600/70 uppercase">Iniciar Tour Guiado</span>
+                   <span className="text-[14px] font-black text-emerald-700 uppercase tracking-widest block">Conheça os Módulos</span>
+                   <span className="text-[11px] font-bold text-emerald-600/70 uppercase">Explore as Ferramentas do iCatequese</span>
+                 </div>
+                 <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg group-hover:translate-x-1 transition-transform">
+                   <ChevronRight className="h-6 w-6" />
                  </div>
                </button>
-               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-border/40 hover:border-primary/30 transition-colors">
-                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
-                   <GraduationCap className="h-6 w-6" />
-                 </div>
-                 <span className="text-[13px] font-black text-foreground uppercase tracking-tight">Apoio Pastoral</span>
-               </div>
             </div>
 
             {/* Contact Section */}
