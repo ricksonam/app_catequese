@@ -201,7 +201,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: CADASTROS BÁSICOS */}
           <AccordionItem value="cadastros" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
                  <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                    <Church className="h-5 w-5" />
                  </div>
@@ -228,7 +228,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: MÓDULOS GLOBAIS */}
           <AccordionItem value="modulos" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
                  <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <Sparkles className="h-5 w-5" />
                  </div>
@@ -255,7 +255,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: FEEDBACK INTERATIVO */}
           <AccordionItem value="comunicacao" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <MessageSquare className="h-5 w-5" />
                  </div>
@@ -283,7 +283,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: MINHA TURMA (DINÂMICA) */}
           <AccordionItem value="minha-turma" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/20 group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/30 shadow-sm hover:shadow-md group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
                  <div className="w-10 h-10 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
                    <GraduationCap className="h-5 w-5" />
                  </div>
@@ -340,7 +340,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: CONTA */}
           <AccordionItem value="conta" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                    <Users className="h-5 w-5" />
                  </div>
@@ -379,7 +379,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                onClose();
                setTimeout(() => { if (onShowObjective) onShowObjective(); }, 150);
              }}
-             className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 hover:border-primary/30 hover:shadow-sm active:scale-[0.98] group"
+             className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 hover:border-primary/40 shadow-sm hover:shadow-md active:scale-[0.98] group"
            >
              <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="iCatequese" />
@@ -389,18 +389,19 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
            </button>
         </div>
 
-        {/* LOGOUT - SEMPRE VISÍVEL NO MENU */}
-        <div className="mt-4 pb-8">
-           <button
-             onClick={handleSignOut}
-             className="w-full group flex items-center gap-3 px-5 py-4 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-sm rounded-2xl active:scale-95 transition-all text-destructive"
-           >
-             <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white group-hover:rotate-12 transition-all duration-300">
-               <LogOut className="h-5 w-5" strokeWidth={2.5} />
-             </div>
-             <span className="flex-1 text-base font-black uppercase tracking-widest text-left">Sair do App</span>
-           </button>
-        </div>
+      </div>
+
+      {/* LOGOUT - FIXO NO RODAPÉ */}
+      <div className="p-4 border-t border-black/5 bg-slate-50 dark:bg-zinc-950 mt-auto shrink-0">
+         <button
+           onClick={handleSignOut}
+           className="w-full group flex items-center gap-3 px-4 py-3 bg-white dark:bg-zinc-900 border-2 border-destructive/10 hover:border-destructive/30 shadow-sm rounded-xl active:scale-95 transition-all text-destructive"
+         >
+           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center group-hover:bg-destructive group-hover:text-white group-hover:rotate-12 transition-all duration-300">
+             <LogOut className="h-4 w-4" strokeWidth={2.5} />
+           </div>
+           <span className="flex-1 text-xs font-black uppercase tracking-widest text-left">Sair do App</span>
+         </button>
       </div>
 
       {/* DIALOGS */}
