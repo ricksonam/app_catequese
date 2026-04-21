@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Sparkles, Church, X, Users, Dices, Share2, MessageSquare, CheckCircle2 } from "lucide-react";
+import { Mail, Sparkles, Church, X, Users, Dices, Share2, MessageSquare, CheckCircle2, CalendarDays, Gift, Image, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,29 +12,50 @@ interface ObjectiveModalProps {
 
 const steps = [
   {
-    title: "Trabalho em Equipe",
-    description: "Compartilhe sua turma com outros catequistas. Gerenciem juntos os mesmos dados em tempo real.",
-    icon: Users,
-    color: "text-emerald-600 dark:text-emerald-400",
-    bgColor: "bg-emerald-500/10",
-  },
-  {
-    title: "Módulos Interativos",
-    description: "Jogos Bíblicos, Bíblia Online e Biblioteca de Modelos. Tudo o que você precisa.",
-    icon: Dices,
-    color: "text-amber-600 dark:text-amber-400",
-    bgColor: "bg-amber-500/10",
-  },
-  {
-    title: "Acompanhamento Seguro",
-    description: "Envie cronogramas e plano de encontros aos pais através de links públicos.",
-    icon: Share2,
+    title: "Apresentar o Encontro",
+    description: "Planeje seus encontros com antecedência e registre a presença de todos facilmente.",
+    icon: CalendarDays,
     color: "text-blue-600 dark:text-blue-400",
     bgColor: "bg-blue-500/10",
   },
   {
+    title: "Aniversariantes Inteligente",
+    description: "Receba alertas lindos no painel sobre aniversários de nascimento e de batismo dos seus catequizandos.",
+    icon: Gift,
+    color: "text-rose-600 dark:text-rose-400",
+    bgColor: "bg-rose-500/10",
+  },
+  {
+    title: "Atividades e Eventos",
+    description: "Cadastre celebrações, retiros e atividades extras em um calendário exclusivo da turma.",
+    icon: ListChecks,
+    color: "text-amber-600 dark:text-amber-400",
+    bgColor: "bg-amber-500/10",
+  },
+  {
+    title: "Módulo de Jogos",
+    description: "Acesse uma biblioteca interativa de jogos educativos para deixar a catequese muito mais lúdica.",
+    icon: Dices,
+    color: "text-fuchsia-600 dark:text-fuchsia-400",
+    bgColor: "bg-fuchsia-500/10",
+  },
+  {
+    title: "Mural de Fotos",
+    description: "Eternize as memórias da sua turma com um mural de lembranças, guardando as fotos dos momentos.",
+    icon: Image,
+    color: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-emerald-500/10",
+  },
+  {
+    title: "Trabalho em Equipe",
+    description: "Compartilhe a sua turma usando um código. Outros catequistas podem gerir com você.",
+    icon: Users,
+    color: "text-sky-600 dark:text-sky-400",
+    bgColor: "bg-sky-500/10",
+  },
+  {
     title: "Catequese em Família",
-    description: "Crie enquetes e missões familiares para maior engajamento fora do encontro.",
+    description: "Crie enquetes e missões familiares incríveis para manter as famílias engajadas na fé.",
     icon: MessageSquare,
     color: "text-purple-600 dark:text-purple-400",
     bgColor: "bg-purple-500/10",
