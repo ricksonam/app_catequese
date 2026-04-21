@@ -369,6 +369,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                 <span className="text-sm font-black text-left">Excluir Usuário</span>
               </button>
             </AccordionContent>
+          </AccordionItem>
         </Accordion>
 
         {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
