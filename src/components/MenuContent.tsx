@@ -372,29 +372,20 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           </AccordionItem>
         </Accordion>
 
-        {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
+        {/* Sobre o Aplicativo */}
         <div className="pt-3">
           <button 
              onClick={() => {
                onClose();
                setTimeout(() => { if (onShowObjective) onShowObjective(); }, 150);
              }}
-             className="w-full relative group overflow-hidden rounded-[28px] p-4 bg-white dark:bg-zinc-900 border-2 border-primary/20 shadow-lg shadow-primary/5 hover:shadow-xl hover:border-primary/50 transition-all active:scale-[0.98] animate-float-up ring-1 ring-primary/5"
+             className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 hover:border-primary/30 hover:shadow-sm active:scale-[0.98] group"
            >
-             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
-               <Sparkles className="h-10 w-10 text-primary" />
+             <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+               <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="iCatequese" />
              </div>
-             <div className="flex items-start gap-3">
-               <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
-                 <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="i" />
-               </div>
-               <div className="flex-1 text-left min-w-0">
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 mb-0.5">Clique para abrir</p>
-                 <p className="text-[15px] font-black leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm pb-1">Sobre o iCatequese</p>
-                 <p className="text-[11px] text-muted-foreground mt-1.5 truncate">Versão 1.0.0 • Rickson Amazonas</p>
-               </div>
-               <HelpCircle className="h-4 w-4 text-primary self-center" />
-             </div>
+             <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Sobre o iCatequese</span>
+             <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
            </button>
         </div>
 
