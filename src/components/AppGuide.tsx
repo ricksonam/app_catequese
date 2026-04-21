@@ -18,7 +18,7 @@ const steps = [
   {
     title: "Bem-vindo ao iCatequese!",
     description: "Sua plataforma completa para modernizar a catequese. Vamos transformar sua missão com tecnologia e amor.",
-    image: "/assets/guide/guide_welcome.png",
+    image: "/app-logo.png",
     color: "text-primary",
     bgColor: "bg-primary/5",
     accent: "bg-primary"
@@ -34,7 +34,7 @@ const steps = [
   {
     title: "Conheça os Módulos",
     description: "Acesse Jogos Bíblicos, Bíblia Online e Biblioteca de Modelos. Tudo o que você precisa disponível para todas as suas turmas.",
-    image: "/assets/guide/guide_modules.png",
+    image: "/assets/guide/guide_modules_custom.png",
     color: "text-amber-600",
     bgColor: "bg-amber-500/5",
     accent: "bg-amber-500"
@@ -82,13 +82,7 @@ export default function AppGuide({ open, onOpenChange }: AppGuideProps) {
       <DialogContent className="max-w-[440px] w-[95vw] p-0 overflow-hidden border-none rounded-[40px] shadow-2xl bg-white dark:bg-zinc-950">
         <div className="relative min-h-[640px] flex flex-col items-center">
           
-          {/* Close button */}
-          <button 
-            onClick={() => onOpenChange(false)}
-            className="absolute top-6 right-6 z-50 w-10 h-10 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center transition-colors"
-          >
-            <X className="h-5 w-5 text-zinc-500" />
-          </button>
+
 
           <AnimatePresence mode="wait">
             <motion.div

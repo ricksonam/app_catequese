@@ -116,16 +116,22 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour }: ObjectiveMod
             animation: float-float 4s ease-in-out infinite;
           }
           .premium-scrollbar::-webkit-scrollbar {
-            width: 5px;
+            width: 8px;
           }
           .premium-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0,0,0,0.03);
             border-radius: 10px;
           }
           .premium-scrollbar::-webkit-scrollbar-thumb {
-            background: var(--primary);
+            background: rgba(var(--primary-rgb, 59, 130, 246), 0.4);
             border-radius: 10px;
-            opacity: 0.5;
+            border: 2px solid transparent;
+            background-clip: content-box;
+          }
+          .premium-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(var(--primary-rgb, 59, 130, 246), 0.6);
+            border: 2px solid transparent;
+            background-clip: content-box;
           }
         `}</style>
       </DialogContent>

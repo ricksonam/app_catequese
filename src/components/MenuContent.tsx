@@ -374,14 +374,16 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
         {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
         <div className="pt-3">
-           <button 
+          <button 
              onClick={() => {
                onClose();
                setTimeout(() => { if (onShowObjective) onShowObjective(); }, 150);
              }}
-             className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-primary/10 border border-primary/20 shadow-sm hover:shadow-md hover:border-primary/40 transition-all active:scale-[0.98] animate-float-up"
+             className="w-full relative group overflow-hidden rounded-[28px] p-4 bg-white dark:bg-zinc-900 border-2 border-primary/20 shadow-lg shadow-primary/5 hover:shadow-xl hover:border-primary/50 transition-all active:scale-[0.98] animate-float-up ring-1 ring-primary/5"
            >
-             <div className="absolute top-0 right-0 p-2 opacity-20"><Sparkles className="h-10 w-10 text-primary rotate-12" /></div>
+             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
+               <Sparkles className="h-10 w-10 text-primary" />
+             </div>
              <div className="flex items-start gap-3">
                <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                  <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="i" />
