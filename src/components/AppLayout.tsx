@@ -47,7 +47,7 @@ export default function AppLayout() {
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
+    <div className="min-h-screen bg-[#FFF0EC] dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
       {/* Header */}
       {!isPresentationMode && (
         <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0 print:hidden">
@@ -60,7 +60,7 @@ export default function AppLayout() {
               </SheetTrigger>
               <SheetContent 
                 side="left" 
-                className="w-80 p-0 bg-slate-100 dark:bg-zinc-950 border-r border-black/5 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left transition-transform duration-300"
+                className="w-80 p-0 bg-[#FFF0EC] dark:bg-zinc-950 border-r border-black/5 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left transition-transform duration-300"
               >
                 <MenuContent 
                   onClose={() => setMenuOpen(false)} 
@@ -72,14 +72,9 @@ export default function AppLayout() {
             
             <button 
               onClick={() => setShowObjective(true)}
-              className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 group hover:opacity-80 transition-all active:scale-[0.98]"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center group hover:opacity-80 transition-all active:scale-[0.98]"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center overflow-hidden bg-white border border-primary/20 shadow-sm shadow-primary/10 group-hover:shadow-md group-hover:border-primary/40 transition-all">
-                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-0.5 sm:p-1" />
-              </div>
-              <div className="flex flex-col items-start leading-none">
-                <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md pb-0.5">iCatequese</span>
-              </div>
+              <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
             </button>
 
             {/* Chip Apoie! */}
