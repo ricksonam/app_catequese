@@ -469,7 +469,7 @@ export async function fetchMissoesFamilia(turmaId?: string): Promise<MissaoFamil
   }));
 }
 
-// ========== COMUNICAÇÃO (FORMULÁRIOS E PESQUISAS) ==========
+// ========== FEEDBACK INTERATIVO (FORMULÁRIOS E PESQUISAS) ==========
 export async function fetchComunicacaoForms(): Promise<ComunicacaoForm[]> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];

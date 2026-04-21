@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import AppGuide from "./AppGuide";
 
 interface MenuContentProps {
   onClose: () => void;
@@ -48,8 +49,8 @@ const classModules = [
 ];
 
 const comunicacao = [
-  { label: "Painel de Comunicação", icon: MessageSquare, path: "/comunicacao", color: "bg-purple-500/10 text-purple-500" },
-  { label: "Criar Novo", icon: FileText, path: "/comunicacao/novo", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Painel de Feedback", icon: MessageSquare, path: "/comunicacao", color: "bg-purple-500/10 text-purple-500" },
+  { label: "Criar Novo Feedback", icon: FileText, path: "/comunicacao/novo", color: "bg-liturgical/10 text-liturgical" },
 ];
 
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
@@ -68,6 +69,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
+  const [showAppGuide, setShowAppGuide] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | null>(null);
   
   // Auto-seleciona se houver apenas uma turma
@@ -251,14 +253,14 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </AccordionContent>
           </AccordionItem>
 
-          {/* SEÇÃO: COMUNICAÇÃO */}
+          {/* SEÇÃO: FEEDBACK INTERATIVO */}
           <AccordionItem value="comunicacao" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
                <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/5 group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-sm group-hover:border-primary/30">
                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <MessageSquare className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Comunicação</span>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Feedback Interativo</span>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
@@ -370,6 +372,32 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+
+        {/* GUIA INTERATIVO - EXPLORE O APP */}
+        <div className="pt-4">
+           <button 
+             onClick={() => {
+               onClose();
+               setTimeout(() => setShowAppGuide(true), 200);
+             }}
+             className="w-full relative group overflow-hidden rounded-[24px] p-4 bg-emerald-500/10 border border-emerald-500/20 shadow-sm hover:shadow-md hover:border-emerald-500/40 transition-all active:scale-[0.98]"
+           >
+             <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-700">
+               <Sparkles className="h-10 w-10 text-emerald-600" />
+             </div>
+             <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-white border border-emerald-500/20 flex items-center justify-center shadow-lg shrink-0 group-hover:scale-110 transition-transform">
+                 <Sparkles className="h-5 w-5 text-emerald-600" />
+               </div>
+               <div className="flex-1 text-left min-w-0">
+                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700 mb-0.5">Explorar Recursos</p>
+                 <p className="text-[15px] font-black leading-none text-emerald-800">Conheça o App</p>
+                 <p className="text-[11px] text-emerald-600/70 mt-1.5 font-bold">Guia Rápido • 5 Passos</p>
+               </div>
+               <ChevronRight className="h-5 w-5 text-emerald-600 group-hover:translate-x-1 transition-transform" />
+             </div>
+           </button>
+        </div>
 
         {/* Sobre o Aplicativo - Estilizado como Chip Premium */}
         <div className="pt-3">
@@ -505,6 +533,9 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* 5. Guia do App */}
+      <AppGuide open={showAppGuide} onOpenChange={setShowAppGuide} />
     </div>
   );
 }

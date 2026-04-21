@@ -256,7 +256,7 @@ export function useMissoesFamilia(turmaId?: string) {
   });
 }
 
-// ===== COMUNICAÇÃO =====
+// ===== FEEDBACK INTERATIVO =====
 export function useComunicacaoForms() {
   const { user } = useAuth();
   return useQuery({

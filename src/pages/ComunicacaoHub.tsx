@@ -70,7 +70,7 @@ export default function ComunicacaoHub() {
             <MessageSquare className="h-6 w-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground">Comunicação</h1>
+            <h1 className="text-2xl font-black tracking-tight text-foreground">Feedback Interativo</h1>
             <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground mt-0.5">Pesquisas e Questionários</p>
           </div>
         </div>
