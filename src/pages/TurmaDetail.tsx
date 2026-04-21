@@ -99,7 +99,7 @@ export default function TurmaDetail() {
           <div className="flex items-center gap-2">
             <button 
               onClick={() => navigate(relatorioModulo.path)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gold/10 text-gold-700 text-[10px] font-black uppercase tracking-widest border border-gold/20 shadow-sm active:scale-95 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 border border-black/10 dark:border-white/10 shadow-sm active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
             >
               <PieChart className="h-3.5 w-3.5" />
               Relatórios

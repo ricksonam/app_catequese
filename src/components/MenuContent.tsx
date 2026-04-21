@@ -383,7 +383,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
              <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="iCatequese" />
              </div>
-             <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Sobre o iCatequese</span>
+             <span className="flex-1 text-[11px] font-black text-foreground text-left tracking-[0.2em]">Sobre o iCatequese</span>
              <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
            </button>
         </div>
