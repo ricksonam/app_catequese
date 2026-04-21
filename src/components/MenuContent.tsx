@@ -441,19 +441,42 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center"><Bell className="w-5 h-5"/></div>
                  <div><p className="text-sm font-bold leading-none">Aviso de Aniversariantes</p><p className="text-[10px] text-muted-foreground mt-1">Lembretes no Celular</p></div>
                </div>
-               <Switch checked={birthdaysEnabled} onCheckedChange={setBirthdaysEnabled} />
+               <Switch 
+                 checked={birthdaysEnabled} 
+                 onCheckedChange={(c) => {
+                   setBirthdaysEnabled(c);
+                   if (c && "Notification" in window && Notification.permission !== "granted") {
+                     Notification.requestPermission().then(p => {
+                       if (p === "granted") toast({ title: "Notificações Ativadas!" });
+                       else toast({ title: "Bloqueado pelo Navegador", description: "Desbloqueie nas configurações", variant: "destructive" });
+                     });
+                   }
+                 }} 
+               />
              </div>
              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
                <div className="flex items-center gap-3">
                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><CalendarDays className="w-5 h-5"/></div>
                  <div><p className="text-sm font-bold leading-none">Aviso de Encontros</p><p className="text-[10px] text-muted-foreground mt-1">Lembretes no Celular</p></div>
                </div>
-               <Switch checked={meetingsEnabled} onCheckedChange={setMeetingsEnabled} />
+               <Switch 
+                 checked={meetingsEnabled} 
+                 onCheckedChange={(c) => {
+                   setMeetingsEnabled(c);
+                   if (c && "Notification" in window && Notification.permission !== "granted") {
+                     Notification.requestPermission().then(p => {
+                       if (p === "granted") toast({ title: "Notificações Ativadas!" });
+                       else toast({ title: "Bloqueado pelo Navegador", description: "Desbloqueie nas configurações", variant: "destructive" });
+                     });
+                   }
+                 }} 
+               />
              </div>
-             <Button onClick={() => { toast({title: "Preferências Salvas!"}); setShowNotificationDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-orange-500 hover:bg-orange-600">Salvar Preferências</Button>
+             <Button onClick={() => { toast({title: "Preferências Salvas!"}); setShowNotificationDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-orange-500 hover:bg-orange-600 text-white">Salvar Preferências</Button>
           </div>
         </DialogContent>
       </Dialog>
+
 
       {/* 3. Dar Sugestão */}
       <Dialog open={showSuggestionDialog} onOpenChange={setShowSuggestionDialog}>
