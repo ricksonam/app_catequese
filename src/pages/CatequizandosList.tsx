@@ -499,7 +499,14 @@ export default function CatequizandosList() {
           return (
             <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className={cn("relative w-full group animate-float-up text-left", emAlerta && "ring-2 ring-destructive animate-pulse")} style={{ animationDelay: `${i * 50}ms` }}>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className={cn("relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98]", emAlerta ? "border-destructive/50 group-hover:shadow-md group-hover:border-destructive" : "border-black/5 group-hover:shadow-md group-hover:border-primary/20")}>
+              <div className={cn("relative flex flex-col bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98] overflow-hidden", emAlerta ? "border-destructive/50 group-hover:shadow-md group-hover:border-destructive" : "border-black/5 group-hover:shadow-md group-hover:border-primary/20")}>
+                {emAlerta && (
+                  <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse w-full">
+                    <BellRing className="w-3 h-3 text-destructive" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Atenção: Múltiplas Faltas</span>
+                  </div>
+                )}
+                <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 w-full">
                 <div className="relative shrink-0">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shadow-inner ring-2 ring-background">
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
@@ -543,6 +550,7 @@ export default function CatequizandosList() {
                   <div className="w-10 h-10 rounded-full bg-muted/50 flex flex-col items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all text-muted-foreground shadow-inner">
                     <ChevronRight className="h-5 w-5" />
                   </div>
+                </div>
                 </div>
               </div>
             </button>

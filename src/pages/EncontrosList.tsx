@@ -219,8 +219,7 @@ export default function EncontrosList() {
                       key={enc.id}
                       className={cn(
                         "relative p-[1.5px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)]",
-                        "bg-gradient-to-br from-primary/30 via-primary/10 to-transparent",
-                        hasNoPresenceAlert ? "border-destructive animate-pulse ring-2 ring-destructive" : "border-primary/20"
+                        "bg-gradient-to-br from-primary/30 via-primary/10 to-transparent border-primary/20"
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
@@ -241,9 +240,9 @@ export default function EncontrosList() {
 
                         <div className="flex flex-col">
                           {hasNoPresenceAlert && (
-                            <div className="bg-blue-50 border-b border-blue-100 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
-                              <BellRing className="w-3 h-3 text-blue-500" />
-                              <span className="text-[9px] font-black uppercase tracking-widest text-blue-500">Chamada pendente</span>
+                            <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                              <BellRing className="w-3 h-3 text-destructive" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Chamada pendente</span>
                             </div>
                           )}
                           <div className="flex items-stretch bg-white">
