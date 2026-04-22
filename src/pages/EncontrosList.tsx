@@ -207,13 +207,13 @@ export default function EncontrosList() {
             <div key={monthKey} className="space-y-3">
               {/* Separador de mês estilo litúrgico */}
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/25 to-primary/40" />
-                <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-200 to-slate-300" />
+                <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-sm">
                   <Feather className="w-3 h-3 text-primary/70" />
-                  <h3 className="text-xs font-extrabold text-primary uppercase tracking-[0.18em]">{monthLabel}</h3>
-                  <span className="text-[10px] font-bold text-primary/50 ml-1">({items.length})</span>
+                  <h3 className="text-xs font-extrabold text-slate-600 dark:text-slate-300 uppercase tracking-[0.18em]">{monthLabel}</h3>
+                  <span className="text-[10px] font-bold text-slate-400 ml-1">({items.length})</span>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/25 to-primary/40" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-slate-200 to-slate-300" />
               </div>
 
               {/* Cards Litúrgicos */}
@@ -284,7 +284,7 @@ export default function EncontrosList() {
                           )}
                           <div className="flex items-stretch bg-white">
                             {/* Coluna da data */}
-                            <div className="flex flex-col items-center justify-center px-4 py-5 border-r border-black/5 shrink-0 min-w-[70px]">
+                            <div className="flex flex-col items-center justify-center px-4 py-5 border-r-2 border-black/10 shrink-0 min-w-[70px]">
                               <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
                               <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
                               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
