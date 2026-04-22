@@ -198,7 +198,7 @@ export default function TurmaDetail() {
             <div 
               key={mod.label}
               className={cn(
-                "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[150px]",
+                "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[130px]",
                 `bg-gradient-to-br ${mod.bgGradient}`,
                 i === modulos.length - 1 ? "col-span-2 mx-auto w-[calc(50%-0.375rem)]" : ""
               )}
@@ -207,33 +207,33 @@ export default function TurmaDetail() {
             >
               <div className="absolute inset-[3px] rounded-[22px] border-2 border-white/40 z-20 pointer-events-none opacity-60"></div>
               
-              <div className={`relative flex flex-col items-center justify-between p-3.5 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
+              <div className={`relative flex flex-col items-center justify-between p-3 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
                 
-                <div className="absolute -right-3 -top-3 opacity-[0.05] pointer-events-none group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
-                   <Icon className="w-20 h-20" />
+                <div className="absolute -right-3 -top-3 opacity-[0.05] pointer-events-none group-hover:scale-125 group-hover:rotate-12 transition-transform duration-1000">
+                   <Icon className="w-16 h-16" />
                 </div>
 
                 <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 transition-transform group-hover:scale-110 duration-500",
+                  "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 transition-transform group-hover:scale-110 duration-500",
                   mod.color
                 )}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4.5 w-4.5" />
                 </div>
                 
                 <div className="relative z-30 flex-1 flex flex-col items-center justify-center w-full min-h-0">
-                  <div className="flex flex-col items-center justify-center mb-1">
-                    <h3 className="text-[13px] font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
+                  <div className="flex flex-col items-center justify-center mb-0.5">
+                    <h3 className="text-[12px] font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
                     {isPlan && (
-                      <p className="text-[8px] text-muted-foreground leading-tight mt-1 px-1 font-medium line-clamp-1">{mod.desc}</p>
+                      <p className="text-[7px] text-muted-foreground leading-tight mt-0.5 px-1 font-medium line-clamp-1">{mod.desc}</p>
                     )}
                   </div>
                   
                   {(mod.count !== null || isPlan) && (
                     <div className={cn(
-                      "mt-2 flex flex-col items-center justify-center min-w-[75px] transition-colors mx-auto",
+                      "mt-1 flex flex-col items-center justify-center min-w-[65px] transition-colors mx-auto",
                       mod.textColor
                     )}>
-                      <span className={cn("font-black leading-none", isPlan ? "text-[10px]" : "text-lg")}>
+                      <span className={cn("font-black leading-none", isPlan ? "text-[9px]" : "text-base")}>
                         {isPlan ? (turma.etapa || "N/A") : mod.count}
                       </span>
                       <span className="text-[7px] font-black uppercase tracking-wider mt-0.5 opacity-80">
