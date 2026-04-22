@@ -229,6 +229,25 @@ export default function Dashboard() {
     return Math.round((d.getTime() - hoje.getTime()) / 86400000);
   }
 
+  const catequizandosEmAlerta = useMemo(() => {
+    const pastEncontros = filteredEncontros
+      .filter(e => e.status === 'realizado')
+      .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+
+    let alertCount = 0;
+    filteredCatequizandos.forEach(c => {
+      const tEncontros = pastEncontros.filter(e => e.turmaId === c.turmaId).slice(0, 3);
+      if (tEncontros.length >= 3) {
+        const wasPresentInAny = tEncontros.some(e => e.presencas.includes(c.id));
+        if (!wasPresentInAny) {
+          alertCount++;
+        }
+      }
+    });
+
+    return alertCount;
+  }, [filteredEncontros, filteredCatequizandos]);
+
   const stats = [
     { 
       label: "Catequizandos", 
@@ -592,6 +611,11 @@ export default function Dashboard() {
                 <p className="text-lg font-black text-foreground leading-tight tracking-tight">
                   {stat.value}
                 </p>
+                {isCatequizandos && catequizandosEmAlerta > 0 && (
+                  <div className="absolute top-1 right-1 w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center animate-pulse shadow-sm" title={`${catequizandosEmAlerta} catequizando(s) com 3 ou mais faltas seguidas`}>
+                    <AlertTriangle className="h-2.5 w-2.5 text-white" />
+                  </div>
+                )}
                 <div className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.1em]">
                   {stat.label}
                 </div>

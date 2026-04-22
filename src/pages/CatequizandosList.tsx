@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake } from "lucide-react";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, Bell } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -230,14 +230,24 @@ export default function CatequizandosList() {
     );
   }
 
+  const aniversariantesDoMes = list.filter(c => isAniversarianteMes(c.dataNascimento));
+  const hasAniversariante = aniversariantesDoMes.length > 0;
+
   return (
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 animate-fade-in">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold text-foreground truncate">Catequizandos</h1>
-            <p className="text-xs text-muted-foreground truncate">{list.length} cadastrados</p>
+          <div className="min-w-0 flex items-center gap-2">
+            <div>
+              <h1 className="text-xl font-bold text-foreground truncate">Catequizandos</h1>
+              <p className="text-xs text-muted-foreground truncate">{list.length} cadastrados</p>
+            </div>
+            {hasAniversariante && (
+              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shadow-md border-2 border-amber-400 shrink-0" title={`${aniversariantesDoMes.length} aniversariante(s) neste mês!`}>
+                <Bell className="w-4 h-4 text-amber-600 animate-[bounce_1s_infinite]" />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
