@@ -151,47 +151,49 @@ export default function EncontroDetail() {
   const tempoTotal = encontro.roteiro.reduce((acc, s) => acc + s.tempo, 0);
 
   return (
-    <div className="space-y-5 pb-6">
-      <div className="page-header animate-fade-in">
-        <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold text-foreground truncate">{encontro.tema}</h1>
-          <p className="text-xs text-muted-foreground">{turma?.nome}</p>
+    <div className="space-y-4 pb-6">
+      <div className="page-header animate-fade-in items-start py-4">
+        <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn mt-1 hover:bg-muted/50"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+        <div className="flex-1 min-w-0 self-center">
+          <h1 className="text-xl font-bold text-foreground leading-tight">{encontro.tema}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">{turma?.nome}</p>
         </div>
-        <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center"><Trash2 className="h-4 w-4 text-destructive" /></button>
+        <div className="flex flex-col gap-1.5 shrink-0 ml-2">
+          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-10 h-10 rounded-[14px] bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors group">
+            <Edit className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+          </button>
+          <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-10 h-10 rounded-[14px] bg-destructive/10 border border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-colors group">
+            <Trash2 className="h-4 w-4 text-destructive group-hover:scale-110 transition-transform" />
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 animate-float-up">
+      <div className="grid grid-cols-3 gap-2 animate-float-up px-4">
         {/* Status */}
-        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 transition-all hover:scale-[1.02] active:scale-[0.98] bg-card shadow-sm group`}>
-           <div className={`w-10 h-10 rounded-2xl mb-2 flex items-center justify-center ${currentStatus.bg} border border-black/5 group-hover:scale-110 transition-transform`}>
-             <div className={`w-3 h-3 rounded-full ${currentStatus.text.replace('text-', 'bg-')}`} />
+        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 hover:border-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white shadow-sm group`}>
+           <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center ${currentStatus.bg} border border-current/10 group-hover:shadow-md transition-all`}>
+              {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-4 w-4 ${currentStatus.text}`} />}
            </div>
-           <span className={`text-[11px] font-black uppercase tracking-widest ${currentStatus.text}`}>{currentStatus.label} ▾</span>
+           <span className={`text-[9px] font-black uppercase tracking-widest ${currentStatus.text}`}>{currentStatus.label} ▾</span>
         </button>
         
-        {/* Editar */}
-        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 bg-card shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
-           <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-2xl mb-2 border border-black/5 group-hover:scale-110 transition-transform">
-             <Edit className="h-4 w-4 text-primary" />
-           </div>
-           <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Editar</span>
-        </button>
-
         {/* Presença */}
-        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 bg-card shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
-           <div className="w-10 h-10 flex items-center justify-center bg-emerald-500/10 rounded-2xl mb-2 border border-black/5 group-hover:scale-110 transition-transform">
+        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 bg-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-9 h-9 flex items-center justify-center bg-emerald-500/10 rounded-[12px] mb-1.5 border border-emerald-500/20 group-hover:shadow-md transition-all">
              <Users className="h-4 w-4 text-emerald-600" />
            </div>
-           <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Presença</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Presença</span>
         </button>
 
         {/* Apresentar */}
-        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 bg-card shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
-           <div className="w-10 h-10 flex items-center justify-center bg-liturgical/10 rounded-2xl mb-2 border border-black/5 group-hover:scale-110 transition-transform">
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 bg-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-9 h-9 flex items-center justify-center bg-liturgical/10 rounded-[12px] mb-1.5 border border-liturgical/20 group-hover:shadow-md transition-all">
              <Play className="h-4 w-4 text-liturgical" />
            </div>
-           <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Apresentar</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Apresentar</span>
         </button>
       </div>
 
@@ -583,30 +585,34 @@ export default function EncontroDetail() {
                 <div key={cat.id} className="flex gap-2">
                   <button
                     onClick={() => togglePresenca(cat.id)}
-                    className={`flex-1 flex items-center justify-between p-3 rounded-xl border-2 transition-colors ${present ? 'border-success bg-success/5' : 'border-muted/30 bg-muted/10 hover:border-muted/50'}`}
+                    className={`flex-1 flex items-center justify-between p-3 rounded-xl border-2 transition-colors ${present ? 'border-success bg-success/5' : (!present && justification ? 'border-primary/50 bg-primary/5' : 'border-muted/30 bg-muted/10 hover:border-muted/50')}`}
                   >
                     <div className="text-left">
-                      <p className={`text-sm font-bold ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{cat.nome}</p>
+                      <p className={`text-sm font-bold ${present ? 'text-foreground' : (!present && justification ? 'text-primary' : 'text-muted-foreground')}`}>{cat.nome}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">RM: {cat.id.substring(0,6)}</p>
+                         <p className={cn("text-[10px] uppercase font-semibold", present ? "text-muted-foreground" : (!present && justification ? 'text-primary/70' : "text-muted-foreground"))}>RM: {cat.id.substring(0,6)}</p>
                          {!present && justification && (
-                           <span className="text-[8px] bg-blue-100/80 text-blue-700 px-1.5 py-[1px] rounded font-black tracking-tight uppercase border border-blue-200">{justification}</span>
+                           <span className="text-[8px] bg-primary text-white px-2 py-0.5 rounded font-black tracking-widest uppercase shadow-sm">Justificado: {justification}</span>
                          )}
                       </div>
                     </div>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${present ? 'bg-success border-success scale-110 shadow-lg shadow-success/20' : 'border-muted-foreground/30'}`}>
-                      {present && <Users className="h-3 w-3 text-white" />}
+                    <div className="flex flex-col items-center justify-center gap-1.5">
+                      <span className={cn("text-[7px] font-black uppercase tracking-widest", present ? 'text-success' : 'text-muted-foreground/60')}>Presença</span>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${present ? 'bg-success border-success scale-110 shadow-lg shadow-success/20' : (!present && justification ? 'bg-background border-primary/40' : 'bg-background border-muted-foreground/30')}`}>
+                        {present && <Users className="h-3 w-3 text-white" />}
+                      </div>
                     </div>
                   </button>
                   {!present && (
                      <DropdownMenu>
                        <DropdownMenuTrigger asChild>
                          <button className={cn(
-                           "w-12 shrink-0 rounded-xl border-2 flex flex-col items-center justify-center transition-all",
+                           "w-14 shrink-0 rounded-xl border-2 flex flex-col items-center justify-center transition-all px-1 space-y-1.5 cursor-pointer",
                            justification 
-                             ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm" 
-                             : "border-muted/30 text-muted-foreground hover:bg-muted/10"
+                             ? "bg-primary/10 border-primary text-primary shadow-md shadow-primary/20" 
+                             : "border-muted/30 text-muted-foreground hover:bg-muted/10 hover:border-muted/50"
                          )}>
+                           <span className={cn("text-[7px] font-black uppercase tracking-widest leading-none", justification ? "text-primary": "opacity-60")}>Justificar</span>
                            <FileSignature className="w-4 h-4" />
                          </button>
                        </DropdownMenuTrigger>
@@ -624,9 +630,9 @@ export default function EncontroDetail() {
                            <DropdownMenuItem 
                              key={motivo} 
                              onClick={() => setJustificativa(cat.id, motivo)}
-                             className={cn("text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer flex items-center my-0.5", justification === motivo ? "bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 focus:bg-blue-100" : "")}
+                             className={cn("text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer flex items-center my-0.5", justification === motivo ? "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary focus:bg-primary/20" : "")}
                            >
-                              {motivo} {justification === motivo && <Check className="w-3.5 h-3.5 ml-auto text-blue-600" />}
+                              {motivo} {justification === motivo && <Check className="w-3.5 h-3.5 ml-auto text-primary" />}
                            </DropdownMenuItem>
                          ))}
                          {justification && (
