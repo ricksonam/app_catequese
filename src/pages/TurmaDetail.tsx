@@ -99,13 +99,7 @@ export default function TurmaDetail() {
           <button onClick={() => navigate("/turmas")} className="back-btn absolute left-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           
           <div className="w-full flex justify-center">
-            <button 
-              onClick={() => navigate(relatorioModulo.path)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 border-2 border-black shadow-md active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
-            >
-              <PieChart className="h-3.5 w-3.5" />
-              Relatórios da Turma
-            </button>
+            {/* Espaço central vazio - botão relatórios movido para baixo */}
           </div>
 
           <div className="absolute right-0 flex items-center gap-2">
@@ -167,21 +161,33 @@ export default function TurmaDetail() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
-           <h1 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm">{turma.nome}</h1>
+        <div className="flex flex-col items-center gap-1">
+           <h1 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm flex items-center gap-2">
+             {turma.nome}
+             <span className="text-[12px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-2 border-black/10">
+               {turma.ano}
+             </span>
+           </h1>
            <div className="h-1 w-12 bg-primary/20 rounded-full"></div>
         </div>
 
         {/* Barra de Informações Centralizada */}
-        <div className="space-y-2 w-full">
-          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-            <InfoBadge label="Ano" value={turma.ano} color="bg-white text-foreground border-2 border-black" />
+        <div className="space-y-4 w-full">
+          <div className="flex flex-wrap items-center justify-center gap-2 pb-0.5">
             <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-2 border-black" />
-          </div>
-          <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
             <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-2 border-black" />
             <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-2 border-black" />
             <InfoBadge label="Local" value={turma.local} color="bg-white text-foreground border-2 border-black" />
+          </div>
+
+          <div className="w-full flex justify-center pt-2">
+            <button 
+              onClick={() => navigate(relatorioModulo.path)}
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all font-black text-[11px] uppercase tracking-widest"
+            >
+              <PieChart className="h-4 w-4" />
+              Relatórios da Turma
+            </button>
           </div>
         </div>
       </div>
