@@ -202,7 +202,7 @@ export default function Dashboard() {
       .filter(p => p !== null)
       .sort((a, b) => (a as any).day - (b as any).day)
       .slice(0, 4);
-  }, [catequizandos, catequistas, mesAtual, hoje]);
+  }, [filteredCatequizandos, catequistas, mesAtual, hoje]);
 
   const proximasAtividades = useMemo(() => {
     if (aniversariantesMes.length > 0) return [];
