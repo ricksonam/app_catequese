@@ -3,7 +3,7 @@ import {
   Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, Heart, BarChart2
+  GraduationCap, ChevronLeft, Heart, BarChart2, X
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
@@ -64,19 +64,21 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
     enabled: !!user
   });
 
-  // States para Dialogs
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
-  const [selectedTurmaId, setSelectedTurmaId] = useState<string | null>(null);
-  
+  const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
+
+  // Lê a turma selecionada do localStorage (sincronizado com o Dashboard)
+  const selectedTurmaId = localStorage.getItem("ivc_selected_turma") || null;
+
   // Auto-seleciona se houver apenas uma turma
   useEffect(() => {
-    if (turmas.length === 1 && !selectedTurmaId) {
-      setSelectedTurmaId(turmas[0].id);
+    if (turmas.length === 1 && !localStorage.getItem("ivc_selected_turma")) {
+      localStorage.setItem("ivc_selected_turma", turmas[0].id);
     }
-  }, [turmas, selectedTurmaId]);
+  }, [turmas]);
 
   // Senha
   const [newPassword, setNewPassword] = useState("");
@@ -342,12 +344,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         <div className="mt-2 mb-2">
           <button
             onClick={() => {
-              if (selectedTurmaId) {
+              if (selectedTurmaId && turmas.find(t => t.id === selectedTurmaId)) {
                 go(`/turmas/${selectedTurmaId}/relatorios`);
               } else if (turmas.length === 1) {
                 go(`/turmas/${turmas[0].id}/relatorios`);
               } else if (turmas.length > 1) {
-                toast({ title: "Selecione uma turma", description: "Abra 'Minha Turma' e selecione a turma para ver os relatórios." });
+                setTurmaPickerOpen(true);
               } else {
                 toast({ title: "Nenhuma turma encontrada", description: "Crie uma turma primeiro.", variant: "destructive" });
               }
@@ -359,7 +361,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </div>
             <div className="flex-1 text-left">
               <span className="block text-[10px] font-black text-foreground uppercase tracking-[0.15em] whitespace-nowrap">Central de Relatórios</span>
-              {selectedTurmaId && (
+              {selectedTurmaId && turmas.find(t => t.id === selectedTurmaId) && (
                 <span className="block text-[9px] text-violet-500 font-bold mt-0.5 truncate">
                   {turmas.find(t => t.id === selectedTurmaId)?.nome}
                 </span>
@@ -368,6 +370,57 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             <ChevronRight className="h-4 w-4 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
           </button>
         </div>
+
+        {/* Modal: selecionar turma para os relatórios */}
+        {turmaPickerOpen && (
+          <div
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setTurmaPickerOpen(false)}
+          >
+            <div
+              className="w-full max-w-xs bg-white dark:bg-zinc-900 rounded-[2rem] shadow-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="h-1.5 w-full bg-gradient-to-r from-violet-400 to-purple-600" />
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-base font-black text-foreground">Escolher Turma</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Selecione para ver os relatórios</p>
+                  </div>
+                  <button
+                    onClick={() => setTurmaPickerOpen(false)}
+                    className="w-7 h-7 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-all"
+                  >
+                    <X className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {turmas.map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        localStorage.setItem("ivc_selected_turma", t.id);
+                        setTurmaPickerOpen(false);
+                        go(`/turmas/${t.id}/relatorios`);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl border-2 border-transparent bg-muted/30 hover:bg-violet-500/10 hover:border-violet-500/30 transition-all active:scale-[0.98] text-left"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0">
+                        <BarChart2 className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-black text-foreground truncate">{t.nome}</p>
+                        <p className="text-[9px] text-muted-foreground">{t.etapa} • {t.ano}</p>
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 text-violet-400" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <Accordion type="single" collapsible className="w-full space-y-2 border-none">
           {/* SEÇÃO: CONTA */}

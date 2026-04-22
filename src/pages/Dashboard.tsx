@@ -17,7 +17,16 @@ const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [selectedTurmaId, setSelectedTurmaId] = useState<string | "all">("all");
+  const [selectedTurmaId, setSelectedTurmaIdRaw] = useState<string | "all">(
+    () => localStorage.getItem("ivc_selected_turma") || "all"
+  );
+
+  // Persiste a turma selecionada no localStorage
+  const setSelectedTurmaId = (id: string | "all") => {
+    setSelectedTurmaIdRaw(id);
+    if (id === "all") localStorage.removeItem("ivc_selected_turma");
+    else localStorage.setItem("ivc_selected_turma", id);
+  };
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
@@ -40,10 +49,16 @@ export default function Dashboard() {
   }, [loading, tError, turmas.length]);
 
   useEffect(() => {
-    if (!loading && turmas.length > 0 && selectedTurmaId === "all") {
-       setSelectedTurmaId(turmas[0].id);
+    if (!loading && turmas.length > 0) {
+      const saved = localStorage.getItem("ivc_selected_turma");
+      // Se a turma salva ainda existe, usa ela; senão pega a primeira
+      if (saved && turmas.find(t => t.id === saved)) {
+        setSelectedTurmaIdRaw(saved);
+      } else if (selectedTurmaId === "all") {
+        setSelectedTurmaId(turmas[0].id);
+      }
     }
-  }, [loading, turmas.length, selectedTurmaId]);
+  }, [loading, turmas.length]);
 
   const LiturgicalIcon = ({ type, className }: { type?: string, className?: string }) => {
     const t = type?.toLowerCase() || "";
@@ -536,7 +551,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center gap-2">
                   <RefreshCw className="h-3 w-3 text-primary animate-spin-slow" />
-                  <span className="text-[9px] font-black text-primary/60 uppercase tracking-widest">Trocar</span>
+                  <span className="text-[9px] font-black text-primary/60 uppercase tracking-widest">Trocar de Turma</span>
                 </div>
                 <ChevronRight className="h-3.5 w-3.5 text-primary/40" />
               </div>
