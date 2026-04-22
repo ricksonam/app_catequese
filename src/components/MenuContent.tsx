@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
   Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
@@ -46,7 +46,6 @@ const classModules = [
   { label: "Atividades e Eventos", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/atividades`, color: "bg-amber-500/10 text-amber-500" },
   { label: "Catequese em Família", icon: Heart, getPath: (id: string) => `/turmas/${id}/familia`, color: "bg-rose-500/10 text-rose-500" },
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
-  { label: "Central de Relatórios", icon: BarChart2, getPath: (id: string) => `/turmas/${id}/relatorios`, color: "bg-violet-500/10 text-violet-500" },
 ];
 
 const comunicacao = [
@@ -202,7 +201,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: CADASTROS BÁSICOS */}
           <AccordionItem value="cadastros" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
                  <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                    <Church className="h-5 w-5" />
                  </div>
@@ -229,7 +228,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: MINHA TURMA (DINÂMICA) */}
           <AccordionItem value="minha-turma" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/30 shadow-sm hover:shadow-md group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:border-blue-500/50">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-blue-500/50 shadow-md hover:shadow-lg group-data-[state=open]:border-blue-500 group-data-[state=open]:shadow-[0_0_24px_rgba(59,130,246,0.25)] group-hover:border-blue-500/70">
                  <div className="w-10 h-10 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
                    <GraduationCap className="h-5 w-5" />
                  </div>
@@ -286,7 +285,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: MÓDULOS GLOBAIS */}
           <AccordionItem value="modulos" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
                  <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <Sparkles className="h-5 w-5" />
                  </div>
@@ -313,7 +312,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           {/* SEÇÃO: FEEDBACK INTERATIVO */}
           <AccordionItem value="comunicacao" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <MessageSquare className="h-5 w-5" />
                  </div>
@@ -337,10 +336,44 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </AccordionContent>
           </AccordionItem>
 
+          {/* CARD STANDALONE: CENTRAL DE RELATÓRIOS */}
+        </Accordion>
+
+        <div className="mt-2 mb-2">
+          <button
+            onClick={() => {
+              if (selectedTurmaId) {
+                go(`/turmas/${selectedTurmaId}/relatorios`);
+              } else if (turmas.length === 1) {
+                go(`/turmas/${turmas[0].id}/relatorios`);
+              } else if (turmas.length > 1) {
+                toast({ title: "Selecione uma turma", description: "Abra 'Minha Turma' e selecione a turma para ver os relatórios." });
+              } else {
+                toast({ title: "Nenhuma turma encontrada", description: "Crie uma turma primeiro.", variant: "destructive" });
+              }
+            }}
+            className="w-full group flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-violet-500/50 dark:border-violet-400/30 shadow-md hover:shadow-lg hover:border-violet-500/80 active:scale-[0.98]"
+          >
+            <div className="w-10 h-10 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+              <BarChart2 className="h-5 w-5" />
+            </div>
+            <div className="flex-1 text-left">
+              <span className="block text-[11px] font-black text-foreground uppercase tracking-[0.2em]">Central de Relatórios</span>
+              {selectedTurmaId && (
+                <span className="block text-[9px] text-violet-500 font-bold mt-0.5 truncate">
+                  {turmas.find(t => t.id === selectedTurmaId)?.nome}
+                </span>
+              )}
+            </div>
+            <ChevronRight className="h-4 w-4 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+          </button>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-2 border-none">
           {/* SEÇÃO: CONTA */}
           <AccordionItem value="conta" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 shadow-sm hover:shadow-md group-data-[state=open]:border-primary/50 group-data-[state=open]:shadow-md group-hover:border-primary/40">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                    <Users className="h-5 w-5" />
                  </div>
