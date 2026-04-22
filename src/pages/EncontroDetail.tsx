@@ -51,7 +51,7 @@ export default function EncontroDetail() {
       setLocalPresencas(encontro.presencas || []);
       setLocalJustificativas(encontro.justificativas || {});
     }
-  }, [encontro?.id, encontro?.justificativas, encontro?.presencas]); // Reset when encuentro data changes
+  }, [encontro?.id]); // Apenas inicializa quando o ID do encontro muda
 
   useEffect(() => {
     if (searchParams.get('eval') === 'true') {
