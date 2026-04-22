@@ -40,6 +40,27 @@ export default function Dashboard() {
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
+  const [alertConfig] = useState(() => {
+    const saved = localStorage.getItem('ivc_alertas_config');
+    const defaultState = {
+      moduloEncontros: { ativo: true, presenca: true, avaliacao: true, status: true },
+      moduloCatequizandos: { ativo: true, faltas: 3 }
+    };
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.ativos !== undefined) return defaultState;
+        return {
+          moduloEncontros: { ...defaultState.moduloEncontros, ...(parsed.moduloEncontros || {}) },
+          moduloCatequizandos: { ...defaultState.moduloCatequizandos, ...(parsed.moduloCatequizandos || {}) }
+        };
+      } catch (e) {
+        return defaultState;
+      }
+    }
+    return defaultState;
+  });
+
   const loading = tLoading || eLoading || cLoading || catLoading || aLoading || mLoading;
 
   useEffect(() => {
@@ -230,42 +251,69 @@ export default function Dashboard() {
   }
 
   const catequizandosEmAlerta = useMemo(() => {
+    const cfg = alertConfig.moduloCatequizandos;
+    if (!cfg?.ativo) return 0;
+    const limit = cfg.faltas ?? 3;
+    if (limit <= 0) return 0;
+
     const pastEncontros = filteredEncontros
       .filter(e => e.status === 'realizado')
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
     let alertCount = 0;
     filteredCatequizandos.forEach(c => {
-      const tEncontros = pastEncontros.filter(e => e.turmaId === c.turmaId).slice(0, 3);
-      if (tEncontros.length >= 3) {
-        const wasPresentInAny = tEncontros.some(e => e.presencas.includes(c.id));
-        if (!wasPresentInAny) {
+      const tEncontros = pastEncontros.filter(e => e.turmaId === c.turmaId).slice(0, limit);
+      if (tEncontros.length >= limit) {
+        const wasPresentOrJustifiedInAny = tEncontros.some(e => 
+          e.presencas.includes(c.id) || (e.justificativas && e.justificativas[c.id])
+        );
+        if (!wasPresentOrJustifiedInAny) {
           alertCount++;
         }
       }
     });
 
     return alertCount;
-  }, [filteredEncontros, filteredCatequizandos]);
+  }, [filteredEncontros, filteredCatequizandos, alertConfig.moduloCatequizandos]);
 
   const encontrosEmAlerta = useMemo(() => {
+    const cfg = alertConfig.moduloEncontros;
+    if (!cfg?.ativo) return 0;
+    const { presenca, status, avaliacao } = cfg;
+
     let count = 0;
     const nowTime = new Date().getTime();
     filteredEncontros.forEach(e => {
-       if (e.presencas.length > 0) return;
-       // Alerta se está realizado mas sem chamadas
-       if (e.status === 'realizado') {
+       const isPendente = e.status === 'pendente';
+       const isRealizado = e.status === 'realizado';
+       const noPresence = (e.presencas || []).length === 0;
+       const d = parseDataLocal(e.data);
+       const isPastPendente = isPendente && nowTime > d.getTime() + 86400000;
+       
+       let encounterHasAlert = false;
+
+       // Presença missing
+       if (presenca && noPresence && (isRealizado || isPastPendente)) {
+           encounterHasAlert = true;
+       }
+       
+       // Status pendente/atrasado 
+       if (status && isPastPendente) {
+           encounterHasAlert = true;
+       }
+
+       // Avaliacao missing
+       const hasEval = !!(e.avaliacao && (e.avaliacao.conclusao || e.avaliacao.pontosPositivos || e.avaliacao.pontosMelhorar));
+       if (avaliacao && isRealizado && !hasEval) {
+           encounterHasAlert = true;
+       }
+
+       if (encounterHasAlert) {
            count++;
-       } else if (e.status === 'pendente') {
-           // Se for pendente, alerta se for data passada (ontem ou antes, o que definitivamente garante +1hr do termino)
-           const d = parseDataLocal(e.data);
-           if (nowTime > d.getTime() + 86400000) { 
-               count++;
-           }
        }
     });
     return count;
-  }, [filteredEncontros]);
+  }, [filteredEncontros, alertConfig.moduloEncontros]);
 
   const stats = [
     { 

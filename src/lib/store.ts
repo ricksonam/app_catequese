@@ -78,6 +78,8 @@ export interface RoteiroStep {
   oracaoTipo?: OracaoTipo;
 }
 
+export type JustificativaTipo = 'Problema de saúde' | 'Motivos familiares ou pessoais' | 'Compromissos' | 'Conflitos com agenda escolar' | 'Força maior' | 'Outros';
+
 export interface Encontro {
   id: string;
   turmaId: string;
@@ -92,6 +94,7 @@ export interface Encontro {
   motivoCancelamento?: string;
   dataTransferida?: string;
   avaliacao?: AvaliacaoEncontro;
+  justificativas?: Record<string, JustificativaTipo>;
 }
 
 export interface RegistroOcorrencia {

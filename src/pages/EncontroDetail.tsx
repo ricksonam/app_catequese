@@ -1,10 +1,11 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation } from "@/hooks/useSupabaseData";
 import { type EncontroStatus, type RegistroOcorrencia, type AvaliacaoEncontro } from "@/lib/store";
-import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight, FileSignature, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -117,14 +118,35 @@ export default function EncontroDetail() {
   };
 
   const togglePresenca = (catId: string) => {
+  const togglePresenca = (catId: string) => {
+    if (!encontro) return;
     const isPresent = localPresencas.includes(catId);
-    const newPresencas = isPresent ? localPresencas.filter((p) => p !== catId) : [...localPresencas, catId];
+    let newPresencas = [];
+    if (isPresent) {
+      newPresencas = localPresencas.filter((p) => p !== catId);
+    } else {
+      newPresencas = [...localPresencas, catId];
+    }
     
-    // Update local state immediately
+    // Clear justificativa se ficou presente
+    const newJust = { ...(encontro.justificativas || {}) };
+    if (!isPresent && newJust[catId]) {
+      delete newJust[catId];
+    }
+
     setLocalPresencas(newPresencas);
-    
-    // Mutation in background
-    encontroMut.mutate({ ...encontro, presencas: newPresencas });
+    encontroMut.mutate({ ...encontro, presencas: newPresencas, justificativas: newJust });
+  };
+
+  const setJustificativa = (catId: string, motivo: any) => {
+    if (!encontro) return;
+    const currentJust = { ...(encontro.justificativas || {}) };
+    if (motivo === null) {
+      delete currentJust[catId];
+    } else {
+      currentJust[catId] = motivo;
+    }
+    encontroMut.mutate({ ...encontro, justificativas: currentJust });
   };
 
   const tempoTotal = encontro.roteiro.reduce((acc, s) => acc + s.tempo, 0);
@@ -555,21 +577,71 @@ export default function EncontroDetail() {
           </div>
           <div className="flex-1 overflow-y-auto space-y-2 pr-2">
             {catequizandos.map(cat => {
-              const present = encontro.presencas.includes(cat.id);
+              const present = localPresencas.includes(cat.id);
+              const justification = encontro.justificativas?.[cat.id];
+
               return (
-                <button
-                  key={cat.id}
-                  onClick={() => togglePresenca(cat.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-colors ${present ? 'border-success bg-success/5' : 'border-muted/30 bg-muted/10 hover:border-muted/50'}`}
-                >
-                  <div className="text-left">
-                    <p className={`text-sm font-bold ${localPresencas.includes(cat.id) ? 'text-foreground' : 'text-muted-foreground'}`}>{cat.nome}</p>
-                    <p className="text-[10px] uppercase text-muted-foreground font-semibold">RM: {cat.id.substring(0,6)}</p>
-                  </div>
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all ${localPresencas.includes(cat.id) ? 'bg-success border-success scale-110 shadow-lg shadow-success/20' : 'border-muted-foreground/30'}`}>
-                    {localPresencas.includes(cat.id) && <Users className="h-3 w-3 text-white" />}
-                  </div>
-                </button>
+                <div key={cat.id} className="flex gap-2">
+                  <button
+                    onClick={() => togglePresenca(cat.id)}
+                    className={`flex-1 flex items-center justify-between p-3 rounded-xl border-2 transition-colors ${present ? 'border-success bg-success/5' : 'border-muted/30 bg-muted/10 hover:border-muted/50'}`}
+                  >
+                    <div className="text-left">
+                      <p className={`text-sm font-bold ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{cat.nome}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                         <p className="text-[10px] uppercase text-muted-foreground font-semibold">RM: {cat.id.substring(0,6)}</p>
+                         {!present && justification && (
+                           <span className="text-[8px] bg-blue-100/80 text-blue-700 px-1.5 py-[1px] rounded font-black tracking-tight uppercase border border-blue-200">{justification}</span>
+                         )}
+                      </div>
+                    </div>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${present ? 'bg-success border-success scale-110 shadow-lg shadow-success/20' : 'border-muted-foreground/30'}`}>
+                      {present && <Users className="h-3 w-3 text-white" />}
+                    </div>
+                  </button>
+                  {!present && (
+                     <DropdownMenu>
+                       <DropdownMenuTrigger asChild>
+                         <button className={cn(
+                           "w-12 shrink-0 rounded-xl border-2 flex flex-col items-center justify-center transition-all",
+                           justification 
+                             ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm" 
+                             : "border-muted/30 text-muted-foreground hover:bg-muted/10"
+                         )}>
+                           <FileSignature className="w-4 h-4" />
+                         </button>
+                       </DropdownMenuTrigger>
+                       <DropdownMenuContent align="end" className="w-[260px] rounded-xl p-2 shadow-2xl border-muted/50">
+                         <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground tracking-widest px-2 py-1.5">Justificar Falta</DropdownMenuLabel>
+                         <DropdownMenuSeparator />
+                         {[
+                           'Problema de saúde',
+                           'Motivos familiares ou pessoais',
+                           'Compromissos',
+                           'Conflitos com agenda escolar',
+                           'Força maior',
+                           'Outros'
+                         ].map(motivo => (
+                           <DropdownMenuItem 
+                             key={motivo} 
+                             onClick={() => setJustificativa(cat.id, motivo)}
+                             className={cn("text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer flex items-center my-0.5", justification === motivo ? "bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 focus:bg-blue-100" : "")}
+                           >
+                              {motivo} {justification === motivo && <Check className="w-3.5 h-3.5 ml-auto text-blue-600" />}
+                           </DropdownMenuItem>
+                         ))}
+                         {justification && (
+                           <>
+                             <DropdownMenuSeparator />
+                             <DropdownMenuItem onClick={() => setJustificativa(cat.id, null)} className="text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 my-0.5">
+                               Remover Justificativa
+                             </DropdownMenuItem>
+                           </>
+                         )}
+                       </DropdownMenuContent>
+                     </DropdownMenu>
+                  )}
+                </div>
               );
             })}
           </div>

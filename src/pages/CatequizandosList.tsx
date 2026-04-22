@@ -171,8 +171,10 @@ export default function CatequizandosList() {
     const limit = cfg.faltas ?? 3;
     list.forEach(c => {
       if (pastEncontros.length >= limit && limit > 0) {
-        const wasPresentInAny = pastEncontros.some(e => e.presencas.includes(c.id));
-        if (!wasPresentInAny) alertas.add(c.id);
+        const wasPresentOrJustifiedInAny = pastEncontros.some(e => 
+            e.presencas.includes(c.id) || (e.justificativas && e.justificativas[c.id])
+        );
+        if (!wasPresentOrJustifiedInAny) alertas.add(c.id);
       }
     });
     return alertas;
