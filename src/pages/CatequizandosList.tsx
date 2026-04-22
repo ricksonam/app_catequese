@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando } from "@/hooks/useSupabaseData";
+import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
-import { mascaraTelefone } from "@/lib/utils";
+import { mascaraTelefone, cn } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -130,7 +130,27 @@ export default function CatequizandosList() {
   const [editMode, setEditMode] = useState(false);
   const [editForm, setEditForm] = useState<CatequizandoForm>({ ...emptyForm });
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
+  const [filterAniversarios, setFilterAniversarios] = useState(false);
+  
+  const { data: encontros = [] } = useEncontros(id);
 
+  const pastEncontros = useMemo(() => {
+    return encontros
+      .filter(e => e.status === 'realizado')
+      .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+      .slice(0, 3);
+  }, [encontros]);
+
+  const catequizandosEmAlerta = useMemo(() => {
+    const alertas = new Set<string>();
+    list.forEach(c => {
+      if (pastEncontros.length >= 3) {
+        const wasPresentInAny = pastEncontros.some(e => e.presencas.includes(c.id));
+        if (!wasPresentInAny) alertas.add(c.id);
+      }
+    });
+    return alertas;
+  }, [list, pastEncontros]);
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
 
@@ -232,6 +252,7 @@ export default function CatequizandosList() {
 
   const aniversariantesDoMes = list.filter(c => isAniversarianteMes(c.dataNascimento));
   const hasAniversariante = aniversariantesDoMes.length > 0;
+  const filteredList = filterAniversarios ? aniversariantesDoMes : list;
 
   return (
     <div className="space-y-5">
@@ -244,9 +265,16 @@ export default function CatequizandosList() {
               <p className="text-xs text-muted-foreground truncate">{list.length} cadastrados</p>
             </div>
             {hasAniversariante && (
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shadow-md border-2 border-amber-400 shrink-0" title={`${aniversariantesDoMes.length} aniversariante(s) neste mês!`}>
-                <BellRing className="w-4 h-4 text-amber-600 animate-[bounce_1s_infinite]" />
-              </div>
+              <button 
+                onClick={() => setFilterAniversarios(!filterAniversarios)}
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 shrink-0 transition-all active:scale-95",
+                  filterAniversarios ? "bg-amber-500 border-amber-600 shadow-amber-500/30" : "bg-amber-100 border-amber-400 shadow-amber-400/20"
+                )} 
+                title={filterAniversarios ? "Ver todos" : `${aniversariantesDoMes.length} aniversariante(s) neste mês! Clique para filtrar.`}
+              >
+                <BellRing className={cn("w-4 h-4 animate-[bounce_1s_infinite]", filterAniversarios ? "text-white" : "text-amber-600")} />
+              </button>
             )}
           </div>
         </div>
@@ -462,15 +490,16 @@ export default function CatequizandosList() {
         </div>
       </div>
 
-      {list.length === 0 ? (
-        <div className="empty-state animate-float-up"><div className="icon-box bg-accent/15 text-accent-foreground mx-auto mb-3"><UserPlus className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhum catequizando cadastrado</p></div>
+      {filteredList.length === 0 ? (
+        <div className="empty-state animate-float-up"><div className="icon-box bg-accent/15 text-accent-foreground mx-auto mb-3"><UserPlus className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">{filterAniversarios ? "Nenhum aniversariante encontrado" : "Nenhum catequizando cadastrado"}</p></div>
       ) : (
-        <div className="space-y-2">{list.map((c, i) => {
+        <div className="space-y-2">{filteredList.map((c, i) => {
           const st = statusConfig[c.status || 'ativo'];
+          const emAlerta = catequizandosEmAlerta.has(c.id);
           return (
-            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
+            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className={cn("relative w-full group animate-float-up text-left", emAlerta && "ring-2 ring-destructive animate-pulse")} style={{ animationDelay: `${i * 50}ms` }}>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98]">
+              <div className={cn("relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98]", emAlerta ? "border-destructive/50 group-hover:shadow-md group-hover:border-destructive" : "border-black/5 group-hover:shadow-md group-hover:border-primary/20")}>
                 <div className="relative shrink-0">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shadow-inner ring-2 ring-background">
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
@@ -502,7 +531,15 @@ export default function CatequizandosList() {
                   </div>
                 </div>
                 
-                <div className="shrink-0 pl-2">
+                <div className="shrink-0 pl-2 relative">
+                  {emAlerta && (
+                    <div className="absolute -top-3 -right-2 flex flex-col items-center animate-pulse z-10" title="Mais de 2 faltas seguidas!">
+                      <div className="w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center shadow-sm">
+                        <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
+                      </div>
+                      <span className="text-[6px] font-black uppercase text-destructive mt-[1px] tracking-tighter bg-white/80 px-1 rounded">Alerta!</span>
+                    </div>
+                  )}
                   <div className="w-10 h-10 rounded-full bg-muted/50 flex flex-col items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all text-muted-foreground shadow-inner">
                     <ChevronRight className="h-5 w-5" />
                   </div>

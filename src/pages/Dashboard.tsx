@@ -631,13 +631,19 @@ export default function Dashboard() {
                   {stat.value}
                 </p>
                 {isCatequizandos && catequizandosEmAlerta > 0 && (
-                  <div className="absolute top-1 right-1 w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center animate-pulse shadow-sm" title={`${catequizandosEmAlerta} catequizando(s) com 3 ou mais faltas seguidas`}>
-                    <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
+                  <div className="absolute top-1 right-1 flex flex-col items-center animate-pulse" title={`${catequizandosEmAlerta} catequizando(s) com 3 ou mais faltas seguidas`}>
+                    <div className="w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center shadow-sm">
+                      <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
+                    </div>
+                    <span className="text-[6px] font-black uppercase text-destructive mt-[1px] tracking-tighter">Alerta!</span>
                   </div>
                 )}
                 {!isCatequizandos && encontrosEmAlerta > 0 && (
-                  <div className="absolute top-1 right-1 w-5 h-5 bg-blue-500 border-[1.5px] border-white rounded-full flex items-center justify-center animate-pulse shadow-sm" title={`${encontrosEmAlerta} encontro(s) pendente(s) de chamada`}>
-                    <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
+                  <div className="absolute top-1 right-1 flex flex-col items-center animate-pulse" title={`${encontrosEmAlerta} encontro(s) pendente(s) de chamada`}>
+                    <div className="w-5 h-5 bg-blue-500 border-[1.5px] border-white rounded-full flex items-center justify-center shadow-sm">
+                      <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
+                    </div>
+                    <span className="text-[6px] font-black uppercase text-blue-500 mt-[1px] tracking-tighter">Alerta!</span>
                   </div>
                 )}
                 <div className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.1em]">

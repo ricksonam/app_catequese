@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText, BellRing } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
@@ -204,19 +204,38 @@ export default function EncontrosList() {
                   const hasEval = !!(enc.avaliacao && (enc.avaliacao.conclusao || enc.avaliacao.pontosPositivos || enc.avaliacao.pontosMelhorar));
                   const isAvaliado = hasEval;
 
+                  const nowTime = new Date().getTime();
+                  const noPresence = (enc.presencas || []).length === 0;
+                  let hasNoPresenceAlert = false;
+                  if (noPresence) {
+                    if (enc.status === 'realizado') hasNoPresenceAlert = true;
+                    else if (enc.status === 'pendente') {
+                       if (nowTime > d.getTime() + 86400000) hasNoPresenceAlert = true;
+                    }
+                  }
+
                   return (
                     <div
                       key={enc.id}
                       className={cn(
                         "relative p-[1.5px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)]",
-                        "bg-gradient-to-br from-primary/30 via-primary/10 to-transparent border-primary/20"
+                        "bg-gradient-to-br from-primary/30 via-primary/10 to-transparent",
+                        hasNoPresenceAlert ? "border-destructive animate-pulse ring-2 ring-destructive" : "border-primary/20"
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
-                      {/* Moldura litÃºrgica interna */}
+                      {/* Moldura litúrgica interna */}
                       <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
 
                       <div className="relative rounded-[14px] bg-card overflow-hidden">
+                        {hasNoPresenceAlert && (
+                           <div className="absolute top-2 right-2 flex flex-col items-center animate-pulse z-10" title="Chamada não realizada!">
+                             <div className="w-6 h-6 bg-blue-500 border-2 border-white rounded-full flex items-center justify-center shadow-lg">
+                               <BellRing className="h-3 w-3 text-white animate-wiggle" />
+                             </div>
+                             <span className="text-[7px] font-black uppercase text-blue-500 mt-[1px] tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded shadow-sm border border-blue-100">Alerta!</span>
+                           </div>
+                        )}
                         {/* Faixa de status no topo */}
                         <div className={`h-1 w-full bg-gradient-to-r ${status.gradient}`} />
 
