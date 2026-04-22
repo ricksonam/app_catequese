@@ -291,17 +291,17 @@ export default function EncontroDetail() {
       {encontro.materialApoio && (
         <div className="float-card p-5 animate-float-up" style={{ animationDelay: '120ms' }}>
           <p className="text-sm font-black text-blue-600 uppercase tracking-[0.2em] mb-3 text-center">Material de Apoio</p>
-          <p className="text-sm text-foreground whitespace-pre-wrap text-center bg-blue-50/30 p-3 rounded-xl border border-blue-100">{encontro.materialApoio}</p>
+          <p className="text-sm text-foreground whitespace-pre-wrap text-left bg-blue-50/20 p-4 rounded-xl border border-blue-100/50 leading-relaxed">{encontro.materialApoio}</p>
         </div>
       )}
 
       {/* Roteiro */}
-      <div className="animate-float-up" style={{ animationDelay: '180ms' }}>
+      <div className="animate-float-up mt-8" style={{ animationDelay: '180ms' }}>
         {/* Cabeçalho da seção */}
         <div className="flex flex-col items-center mb-6">
-          <h2 className="text-xl font-black text-black uppercase tracking-widest text-center">Roteiro do Encontro</h2>
-          <div className="h-1 w-12 bg-primary rounded-full mt-2 mb-3" />
-          <span className="text-[10px] font-black text-muted-foreground bg-muted/50 px-3 py-1 rounded-full uppercase tracking-tighter">
+          <h2 className="text-lg font-black text-black/80 uppercase tracking-widest text-center">Roteiro do Encontro</h2>
+          <div className="h-0.5 w-10 bg-primary/40 rounded-full mt-2 mb-3" />
+          <span className="text-[10px] font-bold text-muted-foreground bg-muted/30 px-3 py-1 rounded-full uppercase tracking-tighter">
             {encontro.roteiro.length} tópico{encontro.roteiro.length !== 1 ? 's' : ''} • {tempoTotal}min
           </span>
         </div>
