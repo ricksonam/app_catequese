@@ -53,11 +53,11 @@ export default function BirthdayBell() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="relative p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95"
+        className="relative p-2 transition-colors active:scale-95"
       >
-        <Bell className={`h-4.5 w-4.5 text-foreground ${count > 0 ? "animate-[wiggle_1s_ease-in-out_infinite]" : ""}`} />
+        <Bell className={`h-5 w-5 text-foreground ${count > 0 ? "animate-swing" : ""}`} />
         {count > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 animate-pulse">
+          <span className="absolute top-0 right-0 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 animate-pulse">
             {count}
           </span>
         )}

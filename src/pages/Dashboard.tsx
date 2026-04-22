@@ -657,10 +657,8 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "group relative p-[1px] rounded-[20px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95",
-                isCatequizandos 
-                  ? "bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-sm" 
-                  : "bg-gradient-to-br from-blue-400 via-blue-200 to-blue-600 shadow-sm"
+                "group relative p-[2px] rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 shadow-sm",
+                "bg-black"
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
@@ -711,7 +709,7 @@ export default function Dashboard() {
           </div>
 
           <div 
-            className="float-card p-0 overflow-hidden border-2 border-blue-200 shadow-lg shadow-blue-500/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
+            className="float-card p-0 overflow-hidden border-2 border-black shadow-lg shadow-black/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
             onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
           >
             <div className="p-3 active:scale-[0.99] transition-all">

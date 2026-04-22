@@ -234,8 +234,8 @@ export default function EncontrosList() {
                     <div
                       key={enc.id}
                       className={cn(
-                        "relative p-[1.5px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.10)]",
-                        "bg-gradient-to-br from-primary/30 via-primary/10 to-transparent border-primary/20"
+                        "relative p-[2px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.08)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.12)]",
+                        "bg-black"
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >

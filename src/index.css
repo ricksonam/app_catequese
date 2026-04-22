@@ -415,3 +415,16 @@
   animation: shimmer 3s ease-in-out infinite;
 }
 
+
+@keyframes swing {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-12deg); }
+  60% { transform: rotate(9deg); }
+  80% { transform: rotate(-6deg); }
+}
+
+.animate-swing {
+  animation: swing 2s ease-in-out infinite;
+  transform-origin: top center;
+}

@@ -95,23 +95,26 @@ export default function TurmaDetail() {
     <div className="space-y-6 pb-10">
       {/* Header Centralizado */}
       <div className="space-y-6 animate-fade-in flex flex-col items-center text-center">
-        <div className="w-full flex items-center justify-between">
-          <button onClick={() => navigate("/turmas")} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div className="flex items-center gap-2">
+        <div className="w-full relative flex items-center min-h-[44px]">
+          <button onClick={() => navigate("/turmas")} className="back-btn absolute left-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+          
+          <div className="w-full flex justify-center">
             <button 
               onClick={() => navigate(relatorioModulo.path)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 border border-black/10 dark:border-white/10 shadow-sm active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 border-2 border-black shadow-md active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
             >
               <PieChart className="h-3.5 w-3.5" />
-              Relatórios
+              Relatórios da Turma
             </button>
+          </div>
 
+          <div className="absolute right-0 flex items-center gap-2">
             {/* Conditionally show edit/delete (owner) or leave (shared) */}
             {turma.isShared ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 text-[10px] font-black uppercase tracking-widest">
-                    <LogOut className="h-3.5 w-3.5" /> Sair da Turma
+                    <LogOut className="h-3.5 w-3.5" />
                   </button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="rounded-2xl">
@@ -172,13 +175,13 @@ export default function TurmaDetail() {
         {/* Barra de Informações Centralizada */}
         <div className="space-y-2 w-full">
           <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-            <InfoBadge label="Ano" value={turma.ano} color="bg-primary/10 text-primary border-primary/20" />
-            <InfoBadge label="Etapa" value={turma.etapa} color="bg-liturgical/10 text-liturgical border-liturgical/20" />
+            <InfoBadge label="Ano" value={turma.ano} color="bg-white text-foreground border-2 border-black" />
+            <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-2 border-black" />
           </div>
           <div className="flex items-center justify-center gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-            <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-muted/10 text-muted-foreground border-black/10" />
-            <InfoBadge label="Hora" value={turma.horario} color="bg-muted/10 text-muted-foreground border-black/10" />
-            <InfoBadge label="Local" value={turma.local} color="bg-muted/10 text-muted-foreground border-black/10" />
+            <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-2 border-black" />
+            <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-2 border-black" />
+            <InfoBadge label="Local" value={turma.local} color="bg-white text-foreground border-2 border-black" />
           </div>
         </div>
       </div>
