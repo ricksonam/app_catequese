@@ -118,7 +118,6 @@ export default function EncontroDetail() {
   };
 
   const togglePresenca = (catId: string) => {
-  const togglePresenca = (catId: string) => {
     if (!encontro) return;
     const isPresent = localPresencas.includes(catId);
     let newPresencas = [];
