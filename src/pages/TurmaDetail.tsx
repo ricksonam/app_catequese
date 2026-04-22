@@ -93,26 +93,42 @@ export default function TurmaDetail() {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Header Centralizado */}
-      <div className="space-y-6 animate-fade-in flex flex-col items-center text-center">
-        <div className="flex flex-col items-center gap-1 mb-2">
-           <h1 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm flex items-center gap-2">
-             {turma.nome}
-             <span className="text-[12px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-2 border-black/10">
-               {turma.ano}
-             </span>
-           </h1>
-           <div className="h-1 w-12 bg-primary/20 rounded-full"></div>
+      {/* Header Compacto Reorganizado */}
+      <div className="space-y-4 animate-fade-in flex flex-col pt-2">
+        {/* Row 1: Back Button + Nome/Ano */}
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate("/turmas")} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all shrink-0">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          <div className="flex items-center gap-2 overflow-hidden">
+            <h1 className="text-xl font-black text-foreground tracking-tight flex items-center gap-2 truncate">
+              {turma.nome}
+            </h1>
+            <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-black/10">
+              {turma.ano}
+            </span>
+          </div>
         </div>
 
-        <div className="w-full relative flex items-center min-h-[44px]">
-          <button onClick={() => navigate("/turmas")} className="back-btn absolute left-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          
-          <div className="w-full flex justify-center">
-            {/* Espaço central vazio - botão relatórios movido para baixo */}
-          </div>
+        {/* Row 2: Info Chips (Logo abaixo do nome) */}
+        <div className="flex flex-wrap items-center gap-1.5 pl-[48px]"> {/* Alinhado com o início do nome (36px width + 12px gap) */}
+          <InfoBadge label="Etapa" value={turma.etapa} color="bg-white/50 text-foreground/80 border-black/5" />
+          <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white/50 text-foreground/80 border-black/5" />
+          <InfoBadge label="Hora" value={turma.horario} color="bg-white/50 text-foreground/80 border-black/5" />
+          <InfoBadge label="Local" value={turma.local} color="bg-white/50 text-foreground/80 border-black/5" />
+        </div>
 
-          <div className="absolute right-0 flex items-center gap-2">
+        {/* Row 3: Relatórios (Esquerda) + Ações (Direita) */}
+        <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
+          <button 
+            onClick={() => navigate(relatorioModulo.path)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-violet-600 dark:bg-violet-700 text-white shadow-md hover:shadow-lg active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
+          >
+            <PieChart className="h-3.5 w-3.5" />
+            Relatórios
+          </button>
+
+          <div className="flex items-center gap-2">
             {/* Conditionally show edit/delete (owner) or leave (shared) */}
             {turma.isShared ? (
               <AlertDialog>
@@ -168,27 +184,6 @@ export default function TurmaDetail() {
                 </AlertDialog>
               </>
             )}
-          </div>
-        </div>
-
-
-        {/* Barra de Informações Centralizada */}
-        <div className="space-y-4 w-full">
-          <div className="flex flex-wrap items-center justify-center gap-2 pb-0.5">
-            <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-2 border-black" />
-            <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-2 border-black" />
-            <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-2 border-black" />
-            <InfoBadge label="Local" value={turma.local} color="bg-white text-foreground border-2 border-black" />
-          </div>
-
-          <div className="w-full flex justify-center pt-2">
-            <button 
-              onClick={() => navigate(relatorioModulo.path)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-violet-600 dark:bg-violet-700 text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
-            >
-              <PieChart className="h-3.5 w-3.5" />
-              Relatórios da Turma
-            </button>
           </div>
         </div>
       </div>
