@@ -585,21 +585,56 @@ export default function EncontroDetail() {
                 <div key={cat.id} className="flex gap-2">
                   <button
                     onClick={() => togglePresenca(cat.id)}
-                    className={`flex-1 flex items-center justify-between p-3 rounded-xl border-2 transition-colors ${present ? 'border-success bg-success/5' : (!present && justification ? 'border-primary/50 bg-primary/5' : 'border-muted/30 bg-muted/10 hover:border-muted/50')}`}
+                    className={cn(
+                      "flex-1 flex items-center justify-between p-3 rounded-xl border-[2.5px] transition-all relative overflow-hidden",
+                      present 
+                        ? "border-emerald-500 bg-emerald-50/50 shadow-sm" 
+                        : (justification 
+                            ? "border-amber-500 bg-amber-50/60 shadow-sm" 
+                            : "border-muted/30 bg-muted/5 hover:border-muted/40")
+                    )}
                   >
-                    <div className="text-left">
-                      <p className={`text-sm font-bold ${present ? 'text-foreground' : (!present && justification ? 'text-primary' : 'text-muted-foreground')}`}>{cat.nome}</p>
+                    {/* Background indicator for justified */}
+                    {!present && justification && (
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full -mr-8 -mt-8" />
+                    )}
+                    
+                    <div className="text-left relative z-10">
+                      <p className={cn(
+                        "text-sm font-black tracking-tight",
+                        present ? "text-emerald-700" : (justification ? "text-amber-700" : "text-muted-foreground")
+                      )}>{cat.nome}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                         <p className={cn("text-[10px] uppercase font-semibold", present ? "text-muted-foreground" : (!present && justification ? 'text-primary/70' : "text-muted-foreground"))}>RM: {cat.id.substring(0,6)}</p>
+                         <p className={cn(
+                           "text-[10px] uppercase font-bold",
+                           present ? "text-emerald-600/60" : (justification ? "text-amber-600/60" : "text-muted-foreground/60")
+                         )}>RM: {cat.id.substring(0,6)}</p>
                          {!present && justification && (
-                           <span className="text-[8px] bg-primary text-white px-2 py-0.5 rounded font-black tracking-widest uppercase shadow-sm">Justificado: {justification}</span>
+                           <div className="flex items-center gap-1 bg-amber-500 px-2 py-0.5 rounded-full shadow-sm">
+                             <FileSignature className="w-2.5 h-2.5 text-white" />
+                             <span className="text-[8.5px] text-white font-black tracking-widest uppercase">{justification}</span>
+                           </div>
                          )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-1.5">
-                      <span className={cn("text-[7px] font-black uppercase tracking-widest", present ? 'text-success' : 'text-muted-foreground/60')}>Presença</span>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${present ? 'bg-success border-success scale-110 shadow-lg shadow-success/20' : (!present && justification ? 'bg-background border-primary/40' : 'bg-background border-muted-foreground/30')}`}>
-                        {present && <Users className="h-3 w-3 text-white" />}
+                    
+                    <div className="flex flex-col items-center justify-center gap-1.5 relative z-10">
+                      <span className={cn(
+                        "text-[8px] font-black uppercase tracking-tighter leading-none mb-0.5",
+                        present ? 'text-emerald-600' : (justification ? 'text-amber-600' : 'text-muted-foreground/40')
+                      )}>
+                        {present ? 'Presença' : (justification ? 'Justificado' : 'Ausente')}
+                      </span>
+                      <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all shrink-0 shadow-sm",
+                        present 
+                          ? "bg-emerald-500 border-white scale-110 shadow-emerald-200" 
+                          : (justification 
+                              ? "bg-amber-500 border-white scale-110 shadow-amber-200" 
+                              : "bg-white border-muted-foreground/20")
+                      )}>
+                        {present && <Users className="h-4 w-4 text-white" />}
+                        {!present && justification && <Check className="h-4 w-4 text-white font-bold" />}
                       </div>
                     </div>
                   </button>
@@ -607,13 +642,16 @@ export default function EncontroDetail() {
                      <DropdownMenu>
                        <DropdownMenuTrigger asChild>
                          <button className={cn(
-                           "w-14 shrink-0 rounded-xl border-2 flex flex-col items-center justify-center transition-all px-1 space-y-1.5 cursor-pointer",
+                           "w-14 shrink-0 rounded-xl border-[2.5px] flex flex-col items-center justify-center transition-all px-1 space-y-1.5 cursor-pointer shadow-sm",
                            justification 
-                             ? "bg-primary/10 border-primary text-primary shadow-md shadow-primary/20" 
-                             : "border-muted/30 text-muted-foreground hover:bg-muted/10 hover:border-muted/50"
+                             ? "bg-amber-100 border-amber-500 text-amber-600" 
+                             : "border-muted/30 text-muted-foreground hover:bg-muted/5 hover:border-muted-foreground/30"
                          )}>
-                           <span className={cn("text-[7px] font-black uppercase tracking-widest leading-none", justification ? "text-primary": "opacity-60")}>Justificar</span>
-                           <FileSignature className="w-4 h-4" />
+                           <span className={cn(
+                             "text-[8.5px] font-black uppercase tracking-tighter leading-none text-center", 
+                             justification ? "text-amber-700": "opacity-50"
+                           )}>Justificar</span>
+                           <FileSignature className={cn("w-4 h-4", justification ? "text-amber-600" : "text-muted-foreground/40")} />
                          </button>
                        </DropdownMenuTrigger>
                        <DropdownMenuContent align="end" className="w-[260px] rounded-xl p-2 shadow-2xl border-muted/50">
