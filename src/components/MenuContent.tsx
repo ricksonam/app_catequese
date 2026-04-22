@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface MenuContentProps {
   onClose: () => void;
@@ -96,8 +97,24 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   // Alertas Inteligentes
   const [showAlertsDialog, setShowAlertsDialog] = useState(false);
   const [alertConfig, setAlertConfig] = useState(() => {
+    const defaultState = {
+      moduloEncontros: { ativo: true, presenca: true, avaliacao: true, status: true },
+      moduloCatequizandos: { ativo: true, faltas: 3 }
+    };
     const saved = localStorage.getItem('ivc_alertas_config');
-    return saved ? JSON.parse(saved) : { ativos: true, faltas: 3, presenca: true };
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.ativos !== undefined) return defaultState; // if old flat shape detected, overwrite
+        return {
+          moduloEncontros: { ...defaultState.moduloEncontros, ...(parsed.moduloEncontros || {}) },
+          moduloCatequizandos: { ...defaultState.moduloCatequizandos, ...(parsed.moduloCatequizandos || {}) }
+        };
+      } catch (e) {
+        return defaultState;
+      }
+    }
+    return defaultState;
   });
 
   const saveAlertConfig = (newConfig: any) => {
@@ -585,52 +602,84 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
       {/* 2.5 Central de Alertas Inteligentes */}
       <Dialog open={showAlertsDialog} onOpenChange={setShowAlertsDialog}>
-        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
-          <DialogHeader><DialogTitle className="text-xl font-black mb-4">Central de Alertas</DialogTitle></DialogHeader>
-          <div className="space-y-6">
-             <div className="flex flex-col gap-4 p-4 bg-muted/30 rounded-2xl border border-muted">
+        <DialogContent className="max-w-[420px] rounded-[32px] border-none shadow-2xl p-6">
+          <DialogHeader><DialogTitle className="text-xl font-black mb-4 flex items-center justify-center gap-2"><AlertTriangle className="text-red-500 w-6 h-6"/> Central de Avisos</DialogTitle></DialogHeader>
+          <div className="space-y-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
+            
+             {/* MÓDULO ENCONTROS */}
+             <div className="flex flex-col gap-4 p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                <div className="flex items-center justify-between">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center"><AlertTriangle className="w-5 h-5"/></div>
-                   <div><p className="text-sm font-bold leading-none">Alertas Ativos</p><p className="text-[10px] text-muted-foreground mt-1">Exibir pendências no app</p></div>
+                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><CalendarDays className="w-5 h-5"/></div>
+                   <div><p className="text-sm font-bold leading-none text-blue-900 dark:text-blue-200">Alertas Módulo Encontros</p><p className="text-[10px] text-blue-600/70 dark:text-blue-400 mt-1 uppercase tracking-wider font-black">Ligar/Desligar Painel</p></div>
                  </div>
                  <Switch 
-                   checked={alertConfig.ativos} 
-                   onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, ativos: c })} 
+                   checked={alertConfig.moduloEncontros?.ativo ?? true} 
+                   onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, ativo: c } })} 
                  />
                </div>
                
-               {alertConfig.ativos && (
+               {(alertConfig.moduloEncontros?.ativo ?? true) && (
                  <>
-                   <div className="h-px bg-muted w-full" />
-                   <div>
-                     <Label className="text-xs font-bold text-muted-foreground mb-2 block">Quantidade de faltas para alertar</Label>
-                     <div className="flex items-center gap-3">
-                       <Input 
-                         type="number" 
-                         min={1} 
-                         max={10} 
-                         value={alertConfig.faltas} 
-                         onChange={(e) => saveAlertConfig({ ...alertConfig, faltas: parseInt(e.target.value) || 3 })}
-                         className="w-20 text-center font-bold"
-                       />
-                       <span className="text-sm font-semibold text-foreground">dias seguidos</span>
+                   <div className="h-px bg-blue-500/10 w-full" />
+                   <div className="space-y-4 px-1">
+                     <div className="flex items-center justify-between">
+                       <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de Presença</p>
+                       <Switch checked={alertConfig.moduloEncontros?.presenca ?? true} onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, presenca: c } })} />
                      </div>
-                   </div>
-                   
-                   <div className="h-px bg-muted w-full" />
-                   
-                   <div className="flex items-center justify-between">
-                     <p className="text-xs font-bold text-muted-foreground">Alertar encontros sem chamada</p>
-                     <Switch 
-                       checked={alertConfig.presenca !== false} 
-                       onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, presenca: c })} 
-                     />
+                     <div className="flex items-center justify-between">
+                       <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><Sparkles className="w-3.5 h-3.5"/> Alerta de Avaliação</p>
+                       <Switch checked={alertConfig.moduloEncontros?.avaliacao ?? true} onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, avaliacao: c } })} />
+                     </div>
+                     <div className="flex items-center justify-between">
+                       <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><AlertTriangle className="w-3.5 h-3.5"/> Alerta de Status</p>
+                       <Switch checked={alertConfig.moduloEncontros?.status ?? true} onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, status: c } })} />
+                     </div>
                    </div>
                  </>
                )}
              </div>
-             <Button onClick={() => { toast({title: "Alertas Configurados!"}); setShowAlertsDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20">Salvar Ajustes</Button>
+
+             {/* MÓDULO CATEQUIZANDOS */}
+             <div className="flex flex-col gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10">
+               <div className="flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center"><Users className="w-5 h-5"/></div>
+                   <div><p className="text-sm font-bold leading-none text-emerald-900 dark:text-emerald-200">Alertas Mod. Catequizandos</p><p className="text-[10px] text-emerald-600/70 dark:text-emerald-400 mt-1 uppercase tracking-wider font-black">Ligar/Desligar Painel</p></div>
+                 </div>
+                 <Switch 
+                   checked={alertConfig.moduloCatequizandos?.ativo ?? true} 
+                   onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloCatequizandos: { ...alertConfig.moduloCatequizandos, ativo: c } })} 
+                 />
+               </div>
+               
+               {(alertConfig.moduloCatequizandos?.ativo ?? true) && (
+                 <>
+                   <div className="h-px bg-emerald-500/10 w-full" />
+                   <div className="px-1">
+                     <Label className="text-[11px] font-bold text-muted-foreground mb-3 flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de faltas consecutivas</Label>
+                     <div className="flex items-center justify-between gap-1 mt-2">
+                       {[1, 2, 3, 4, 5].map(num => (
+                         <button
+                           key={num}
+                           onClick={() => saveAlertConfig({ ...alertConfig, moduloCatequizandos: { ...alertConfig.moduloCatequizandos, faltas: num } })}
+                           className={cn(
+                             "w-10 h-10 rounded-xl font-black text-sm flex items-center justify-center transition-all",
+                             (alertConfig.moduloCatequizandos?.faltas ?? 3) === num 
+                               ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-110" 
+                               : "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20"
+                           )}
+                         >
+                           {num}
+                         </button>
+                       ))}
+                     </div>
+                   </div>
+                 </>
+               )}
+             </div>
+
+             <Button onClick={() => { toast({title: "Alertas Configurados!"}); setShowAlertsDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-foreground text-background shadow-lg hover:scale-[1.02] transition-transform">Salvar Ajustes</Button>
           </div>
         </DialogContent>
       </Dialog>

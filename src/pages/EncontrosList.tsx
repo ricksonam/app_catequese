@@ -209,13 +209,24 @@ export default function EncontrosList() {
                   const hasEval = !!(enc.avaliacao && (enc.avaliacao.conclusao || enc.avaliacao.pontosPositivos || enc.avaliacao.pontosMelhorar));
                   const isAvaliado = hasEval;
 
+                  const cfg = alertConfig.moduloEncontros || { ativo: true, presenca: true, avaliacao: true, status: true };
                   const nowTime = new Date().getTime();
                   const noPresence = (enc.presencas || []).length === 0;
+                  
                   let hasNoPresenceAlert = false;
-                  if (noPresence && alertConfig.ativos && alertConfig.presenca !== false) {
-                    if (enc.status === 'realizado') hasNoPresenceAlert = true;
-                    else if (enc.status === 'pendente') {
-                       if (nowTime > d.getTime() + 86400000) hasNoPresenceAlert = true;
+                  let hasNoEvaluationAlert = false;
+                  let hasStatusAlert = false;
+                  
+                  if (cfg?.ativo) {
+                    if (cfg.presenca && noPresence) {
+                      if (enc.status === 'realizado') hasNoPresenceAlert = true;
+                      else if (enc.status === 'pendente' && nowTime > d.getTime() + 86400000) hasNoPresenceAlert = true;
+                    }
+                    if (cfg.avaliacao && enc.status === 'realizado' && !isAvaliado) {
+                       hasNoEvaluationAlert = true;
+                    }
+                    if (cfg.status && enc.status === 'pendente' && nowTime > d.getTime() + 86400000) {
+                       hasStatusAlert = true;
                     }
                   }
 
@@ -232,14 +243,6 @@ export default function EncontrosList() {
                       <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
 
                       <div className="relative rounded-[14px] bg-card overflow-hidden">
-                        {hasNoPresenceAlert && (
-                           <div className="absolute top-2 right-2 flex flex-col items-center animate-pulse z-10" title="Chamada não realizada!">
-                             <div className="w-6 h-6 bg-blue-500 border-2 border-white rounded-full flex items-center justify-center shadow-lg">
-                               <BellRing className="h-3 w-3 text-white animate-wiggle" />
-                             </div>
-                             <span className="text-[7px] font-black uppercase text-blue-500 mt-[1px] tracking-tighter bg-blue-50 px-1.5 py-0.5 rounded shadow-sm border border-blue-100">Alerta!</span>
-                           </div>
-                        )}
                         {/* Faixa de status no topo */}
                         <div className={`h-1 w-full bg-gradient-to-r ${status.gradient}`} />
 
@@ -248,6 +251,18 @@ export default function EncontrosList() {
                             <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
                               <BellRing className="w-3 h-3 text-destructive" />
                               <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Chamada pendente</span>
+                            </div>
+                          )}
+                          {hasNoEvaluationAlert && (
+                            <div className="bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                              <Sparkles className="w-3 h-3 text-amber-600" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-amber-600">Avaliação pendente</span>
+                            </div>
+                          )}
+                          {hasStatusAlert && (
+                            <div className="bg-orange-500/10 border-b border-orange-500/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                              <AlertTriangle className="w-3 h-3 text-orange-600" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-orange-600">Encontro atrasado</span>
                             </div>
                           )}
                           <div className="flex items-stretch bg-white">

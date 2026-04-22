@@ -134,30 +134,49 @@ export default function CatequizandosList() {
   
   const [alertConfig] = useState(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
-    return saved ? JSON.parse(saved) : { ativos: true, faltas: 3, presenca: true };
+    const defaultState = {
+      moduloEncontros: { ativo: true, presenca: true, avaliacao: true, status: true },
+      moduloCatequizandos: { ativo: true, faltas: 3 }
+    };
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.ativos !== undefined) return defaultState;
+        return {
+          moduloEncontros: { ...defaultState.moduloEncontros, ...(parsed.moduloEncontros || {}) },
+          moduloCatequizandos: { ...defaultState.moduloCatequizandos, ...(parsed.moduloCatequizandos || {}) }
+        };
+      } catch (e) {
+        return defaultState;
+      }
+    }
+    return defaultState;
   });
 
   const { data: encontros = [] } = useEncontros(id);
 
   const pastEncontros = useMemo(() => {
+    const limit = alertConfig.moduloCatequizandos?.faltas ?? 3;
     return encontros
       .filter(e => e.status === 'realizado')
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
-      .slice(0, alertConfig.faltas);
-  }, [encontros, alertConfig.faltas]);
+      .slice(0, limit);
+  }, [encontros, alertConfig.moduloCatequizandos?.faltas]);
 
   const catequizandosEmAlerta = useMemo(() => {
     const alertas = new Set<string>();
-    if (!alertConfig.ativos) return alertas;
+    const cfg = alertConfig.moduloCatequizandos;
+    if (!cfg?.ativo) return alertas;
 
+    const limit = cfg.faltas ?? 3;
     list.forEach(c => {
-      if (pastEncontros.length >= alertConfig.faltas && alertConfig.faltas > 0) {
+      if (pastEncontros.length >= limit && limit > 0) {
         const wasPresentInAny = pastEncontros.some(e => e.presencas.includes(c.id));
         if (!wasPresentInAny) alertas.add(c.id);
       }
     });
     return alertas;
-  }, [list, pastEncontros, alertConfig]);
+  }, [list, pastEncontros, alertConfig.moduloCatequizandos]);
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
 
@@ -546,14 +565,6 @@ export default function CatequizandosList() {
                 </div>
                 
                 <div className="shrink-0 pl-2 relative">
-                  {emAlerta && (
-                    <div className="absolute -top-3 -right-2 flex flex-col items-center animate-pulse z-10" title="Mais de 2 faltas seguidas!">
-                      <div className="w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center shadow-sm">
-                        <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
-                      </div>
-                      <span className="text-[6px] font-black uppercase text-destructive mt-[1px] tracking-tighter bg-white/80 px-1 rounded">Alerta!</span>
-                    </div>
-                  )}
                   <div className="w-10 h-10 rounded-full bg-muted/50 flex flex-col items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all text-muted-foreground shadow-inner">
                     <ChevronRight className="h-5 w-5" />
                   </div>
