@@ -161,15 +161,19 @@ export default function EncontroDetail() {
 
   return (
     <div className="space-y-4 pb-6">
-      <div className="page-header animate-fade-in items-start py-4">
-        <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn mt-1 hover:bg-muted/50"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-        <div className="flex-1 min-w-0 self-center">
-          <h1 className="text-xl font-bold text-foreground leading-tight">{encontro.tema}</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">{turma?.nome}</p>
+      <div className="page-header animate-fade-in items-start py-4 flex-col gap-3">
+        <div className="flex items-center w-full gap-3">
+          <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn shrink-0 hover:bg-muted/50"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold text-foreground truncate">{encontro.tema}</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">{turma?.nome}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0 ml-2">
-          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-10 h-10 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
+        
+        <div className="flex items-center gap-3 px-12">
+          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="px-4 h-10 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center gap-2 hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
             <Pencil className="h-4.5 w-4.5 text-primary group-hover:rotate-12 transition-transform" />
+            <span className="text-xs font-bold text-primary italic">Editar Encontro</span>
           </button>
           <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-10 h-10 rounded-[14px] bg-destructive/10 border-2 border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-all hover:scale-105 active:scale-95 group">
             <Trash2 className="h-4.5 w-4.5 text-destructive group-hover:rotate-12 transition-transform" />
@@ -284,14 +288,20 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      {encontro.materialApoio && <div className="float-card p-5 animate-float-up" style={{ animationDelay: '120ms' }}><p className="section-title mb-2">Material de Apoio</p><p className="text-sm text-foreground whitespace-pre-wrap">{encontro.materialApoio}</p></div>}
+      {encontro.materialApoio && (
+        <div className="float-card p-5 animate-float-up" style={{ animationDelay: '120ms' }}>
+          <p className="text-sm font-black text-blue-600 uppercase tracking-[0.2em] mb-3 text-center">Material de Apoio</p>
+          <p className="text-sm text-foreground whitespace-pre-wrap text-center bg-blue-50/30 p-3 rounded-xl border border-blue-100">{encontro.materialApoio}</p>
+        </div>
+      )}
 
       {/* Roteiro */}
       <div className="animate-float-up" style={{ animationDelay: '180ms' }}>
         {/* Cabeçalho da seção */}
-        <div className="flex items-center justify-between mb-3">
-          <p className="section-title mb-0">Roteiro do Encontro</p>
-          <span className="text-[10px] font-black text-muted-foreground bg-muted/50 px-2 py-1 rounded-lg">
+        <div className="flex flex-col items-center mb-6">
+          <h2 className="text-xl font-black text-black uppercase tracking-widest text-center">Roteiro do Encontro</h2>
+          <div className="h-1 w-12 bg-primary rounded-full mt-2 mb-3" />
+          <span className="text-[10px] font-black text-muted-foreground bg-muted/50 px-3 py-1 rounded-full uppercase tracking-tighter">
             {encontro.roteiro.length} tópico{encontro.roteiro.length !== 1 ? 's' : ''} • {tempoTotal}min
           </span>
         </div>
@@ -663,10 +673,6 @@ export default function EncontroDetail() {
                         present ? "text-emerald-800" : (justification ? "text-amber-800" : "text-muted-foreground")
                       )}>{cat.nome}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                         <p className={cn(
-                           "text-[10px] uppercase font-bold",
-                           present ? "text-emerald-700/60" : (justification ? "text-amber-700/60" : "text-muted-foreground/60")
-                         )}>RM: {cat.id.substring(0,6)}</p>
                          {!present && justification && (
                            <div className="flex items-center gap-1 bg-amber-600 px-2 py-0.5 rounded-full shadow-sm ring-1 ring-white/20">
                              <FileSignature className="w-2.5 h-2.5 text-white" />
