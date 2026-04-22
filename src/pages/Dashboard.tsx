@@ -151,7 +151,7 @@ export default function Dashboard() {
     const people = new Map<string, any>();
 
     // Processar Nascimento (Catequizandos e Catequistas)
-    [...catequizandos.map(c => ({...c, isCatequista: false})), ...catequistas.map(c => ({...c, isCatequista: true}))].forEach(p => {
+    [...filteredCatequizandos.map(c => ({...c, isCatequista: false})), ...catequistas.map(c => ({...c, isCatequista: true}))].forEach(p => {
       const dataStr = p.dataNascimento;
       if (!dataStr) return;
       
@@ -165,7 +165,7 @@ export default function Dashboard() {
     });
 
     // Processar Batismo (Apenas Catequizandos)
-    catequizandos.filter(c => c.sacramentos?.batismo?.data).forEach(c => {
+    filteredCatequizandos.filter(c => c.sacramentos?.batismo?.data).forEach(c => {
       const dataStr = c.sacramentos?.batismo?.data;
       if (!dataStr) return;
       
