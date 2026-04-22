@@ -1,8 +1,8 @@
 import { useTurmas, useEncontros, useCatequizandos, useJoinTurma } from "@/hooks/useSupabaseData";
 import { ETAPAS_CATEQUESE } from "@/lib/store";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, ChevronRight, Plus, CalendarDays, Users, Link2, X, Loader2, Camera, QrCode } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, X, Loader2, Camera } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
 export default function TurmasList() {
@@ -14,87 +14,109 @@ export default function TurmasList() {
 
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [code, setCode] = useState("");
-  const [scannerOpen, setScannerOpen] = useState(false);
-  const scannerRef = useRef<any>(null);
-  const scannerDivId = "qr-scanner-region";
+  const [tab, setTab] = useState<"codigo" | "camera">("codigo");
+  const [scanning, setScanning] = useState(false);
 
-  // Esconde a barra de navegação inferior quando o modal estiver aberto
+  const html5QrRef = useRef<any>(null);
+  const SCANNER_DIV_ID = "qr-scanner-div";
+
+  // Esconde navbar quando modal está aberto
   useEffect(() => {
-    const nav = document.getElementById('bottom-nav-bar');
+    const nav = document.getElementById("bottom-nav-bar");
     if (!nav) return;
-    if (joinModalOpen) {
-      nav.style.display = 'none';
-    } else {
-      nav.style.display = '';
-    }
-    return () => { nav.style.display = ''; };
+    nav.style.display = joinModalOpen ? "none" : "";
+    return () => { nav.style.display = ""; };
   }, [joinModalOpen]);
 
-  // Inicia / para o scanner de QR
-  useEffect(() => {
-    if (!scannerOpen) {
-      // Garante que o scanner seja destruído ao fechar
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(() => {}).finally(() => {
-          scannerRef.current?.clear();
-          scannerRef.current = null;
-        });
+  // Para o scanner de forma segura
+  const stopScanner = useCallback(async () => {
+    if (!html5QrRef.current) return;
+    try {
+      const state = html5QrRef.current.getState?.();
+      // Estado 2 = SCANNING
+      if (state === 2) {
+        await html5QrRef.current.stop();
       }
-      return;
+      html5QrRef.current.clear?.();
+    } catch (_) {
+      // ignora erros de cleanup
+    } finally {
+      html5QrRef.current = null;
+      setScanning(false);
     }
+  }, []);
 
-    // Aguarda o DOM renderizar o div antes de inicializar
-    const timeout = setTimeout(async () => {
+  // Inicia o scanner quando entra na aba câmera
+  useEffect(() => {
+    if (tab !== "camera" || !joinModalOpen) return;
+
+    let cancelled = false;
+
+    const startScanner = async () => {
+      // Aguarda o DOM criar o div
+      await new Promise(r => setTimeout(r, 200));
+      if (cancelled) return;
+
+      const el = document.getElementById(SCANNER_DIV_ID);
+      if (!el) return;
+
       try {
-        const { Html5QrcodeScanner } = await import("html5-qrcode");
-        const scanner = new Html5QrcodeScanner(
-          scannerDivId,
-          {
-            fps: 10,
-            qrbox: { width: 220, height: 220 },
-            rememberLastUsedCamera: true,
-            supportedScanTypes: [0], // SCAN_TYPE_CAMERA only
-          },
-          false
-        );
+        const { Html5Qrcode } = await import("html5-qrcode");
+        const scanner = new Html5Qrcode(SCANNER_DIV_ID);
+        html5QrRef.current = scanner;
 
-        scanner.render(
-          (decodedText: string) => {
-            // QR lido com sucesso
-            const cleaned = decodedText.trim().toUpperCase().slice(0, 8);
+        await scanner.start(
+          { facingMode: "environment" },           // câmera traseira
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          (decoded: string) => {
+            // Sucesso — preenche o código e volta para a aba de texto
+            const cleaned = decoded.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
             setCode(cleaned);
-            setScannerOpen(false);
-            toast.success("QR Code lido! Confirme para entrar na turma.");
+            setTab("codigo");
+            toast.success("QR Code lido com sucesso!");
           },
-          () => {} // erro silencioso (câmera não encontrou nada ainda)
+          () => {} // erros de frame ignorados
         );
 
-        scannerRef.current = scanner;
-      } catch (err) {
-        toast.error("Não foi possível acessar a câmera.");
-        setScannerOpen(false);
+        if (!cancelled) setScanning(true);
+      } catch (err: any) {
+        if (!cancelled) {
+          toast.error("Não foi possível acessar a câmera. Verifique as permissões.");
+          setTab("codigo");
+        }
       }
-    }, 100);
+    };
 
-    return () => clearTimeout(timeout);
-  }, [scannerOpen]);
+    startScanner();
 
-  const closeJoinModal = () => {
-    setScannerOpen(false);
+    return () => {
+      cancelled = true;
+      stopScanner();
+    };
+  }, [tab, joinModalOpen, stopScanner]);
+
+  // Ao fechar o modal, para o scanner
+  const closeModal = useCallback(async () => {
+    await stopScanner();
+    setTab("codigo");
     setJoinModalOpen(false);
     setCode("");
-  };
+  }, [stopScanner]);
+
+  // Ao trocar de aba, para o scanner se estava na câmera
+  const switchTab = useCallback(async (next: "codigo" | "camera") => {
+    if (tab === "camera" && next === "codigo") {
+      await stopScanner();
+    }
+    setTab(next);
+  }, [tab, stopScanner]);
 
   const handleJoin = async () => {
-    if (code.trim().length < 8) {
-      toast.error("O código deve ter 8 caracteres.");
-      return;
-    }
+    if (code.trim().length < 8) { toast.error("O código deve ter 8 caracteres."); return; }
     try {
       const result = await joinMutation.mutateAsync(code.trim());
       toast.success(`Acesso concedido à turma "${result.nome}"!`);
-      setJoinModalOpen(false);
-      setCode("");
+      closeModal();
     } catch (err: any) {
       toast.error(err.message || "Erro ao entrar na turma.");
     }
@@ -104,7 +126,7 @@ export default function TurmasList() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
-           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+          <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
         <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando...</p>
       </div>
@@ -123,7 +145,9 @@ export default function TurmasList() {
           >
             <Link2 className="h-3.5 w-3.5" /> Entrar com Código
           </button>
-          <button onClick={() => navigate("/turmas/nova")} className="action-btn-sm"><Plus className="h-4 w-4" /> Nova</button>
+          <button onClick={() => navigate("/turmas/nova")} className="action-btn-sm">
+            <Plus className="h-4 w-4" /> Nova
+          </button>
         </div>
       </div>
 
@@ -144,7 +168,7 @@ export default function TurmasList() {
           {turmas.map((turma, i) => {
             const tEncontros = encontros.filter(e => e.turmaId === turma.id);
             const tCatequizandos = catequizandos.filter(c => c.turmaId === turma.id);
-            const etapa = ETAPAS_CATEQUESE.find((e) => e.id === turma.etapa);
+            const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
             return (
               <div
                 key={turma.id}
@@ -152,20 +176,16 @@ export default function TurmasList() {
                 className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)] animate-float-up transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group"
                 style={{ animationDelay: `${i * 70}ms` }}
               >
-                <div className="absolute inset-[3px] rounded-xl border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay"></div>
-
+                <div className="absolute inset-[3px] rounded-xl border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay" />
                 <div className="relative flex flex-col p-4 rounded-[14px] bg-card w-full h-full overflow-hidden">
                   <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
                     <BookOpen className="w-32 h-32 text-primary" />
                   </div>
-
                   {turma.isShared && (
                     <div className="absolute top-3 right-3 z-30 flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">
-                      <Link2 className="h-2.5 w-2.5" />
-                      Compartilhada
+                      <Link2 className="h-2.5 w-2.5" /> Compartilhada
                     </div>
                   )}
-
                   <div className="flex flex-col items-center justify-center mb-5 relative z-30 text-center">
                     <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-3 group-hover:scale-110 transition-transform duration-500">
                       <BookOpen className="h-7 w-7 text-primary" />
@@ -177,7 +197,6 @@ export default function TurmasList() {
                       <p className="text-xs text-muted-foreground font-medium">{turma.diaCatequese} • {turma.horario} • {turma.local}</p>
                     </div>
                   </div>
-
                   <div className="flex items-center justify-center gap-2 flex-wrap relative z-30">
                     <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-primary bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/10 shadow-sm">
                       <CalendarDays className="h-3.5 w-3.5" /><span>{tEncontros.length} encontros</span>
@@ -198,90 +217,91 @@ export default function TurmasList() {
       {joinModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/50 backdrop-blur-sm animate-fade-in"
-          onClick={(e) => { if (e.target === e.currentTarget) closeJoinModal(); }}
+          onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
         >
           <div className="w-full max-w-sm bg-card rounded-[32px] shadow-2xl overflow-hidden animate-float-up">
-            {/* Barra colorida no topo */}
+            {/* Barra colorida */}
             <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
 
-            <div className="p-6 space-y-5">
-              {/* Header do modal */}
-              <div className="flex items-start justify-between">
-                <div className="flex-1 pr-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-xl font-black text-foreground">Entrar na Turma</h2>
-                    <div className="group relative">
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-xs cursor-help">?</span>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-foreground text-background text-[11px] font-medium rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all pointer-events-none z-50 shadow-xl">
-                        Digite o código fornecido pelo catequista responsável ou escaneie o QR Code da turma.
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-foreground" />
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Digite o código ou escaneie o QR Code</p>
+            <div className="p-6 space-y-4">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-black text-foreground">Entrar na Turma</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {tab === "codigo" ? "Digite o código de 8 caracteres" : "Aponte a câmera para o QR Code"}
+                  </p>
                 </div>
-                <button onClick={closeJoinModal} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors shrink-0">
+                <button
+                  onClick={closeModal}
+                  className="w-9 h-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors active:scale-95 shrink-0"
+                >
                   <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
 
-              {/* Tabs: Código | QR Code */}
+              {/* Tabs */}
               <div className="flex gap-2 p-1 bg-muted/40 rounded-2xl">
                 <button
-                  onClick={() => setScannerOpen(false)}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${!scannerOpen ? 'bg-white dark:bg-zinc-800 shadow-sm text-emerald-700' : 'text-muted-foreground hover:text-foreground'}`}
+                  onClick={() => switchTab("codigo")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${tab === "codigo" ? "bg-white dark:bg-zinc-800 shadow text-emerald-700" : "text-muted-foreground"}`}
                 >
                   <Link2 className="h-3.5 w-3.5" /> Código
                 </button>
                 <button
-                  onClick={() => setScannerOpen(true)}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${scannerOpen ? 'bg-white dark:bg-zinc-800 shadow-sm text-emerald-700' : 'text-muted-foreground hover:text-foreground'}`}
+                  onClick={() => switchTab("camera")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${tab === "camera" ? "bg-white dark:bg-zinc-800 shadow text-emerald-700" : "text-muted-foreground"}`}
                 >
                   <Camera className="h-3.5 w-3.5" /> Câmera QR
                 </button>
               </div>
 
-              {/* Conteúdo da tab */}
-              {!scannerOpen ? (
-                /* Tab: Digite o Código */
+              {/* Aba: Código Manual */}
+              {tab === "codigo" && (
                 <div className="space-y-2">
                   <input
                     type="text"
                     value={code}
-                    onChange={e => setCode(e.target.value.toUpperCase())}
-                    onKeyDown={e => e.key === 'Enter' && handleJoin()}
+                    onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
+                    onKeyDown={e => e.key === "Enter" && handleJoin()}
                     placeholder="Ex: TP847293"
                     maxLength={8}
                     autoFocus
-                    className="w-full px-4 py-3.5 rounded-2xl border-2 border-border bg-background text-foreground text-center text-2xl font-black tracking-[0.3em] uppercase placeholder:text-muted-foreground/40 placeholder:text-base placeholder:tracking-normal focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-4 py-4 rounded-2xl border-2 border-border bg-background text-foreground text-center text-2xl font-black tracking-[0.35em] uppercase placeholder:text-muted-foreground/30 placeholder:text-base placeholder:tracking-normal focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                   <p className="text-[10px] text-center text-muted-foreground">
-                    O código é fornecido pelo catequista responsável pela turma
+                    Código fornecido pelo catequista responsável pela turma
                   </p>
-                </div>
-              ) : (
-                /* Tab: Scanner QR */
-                <div className="space-y-2">
-                  <div
-                    id={scannerDivId}
-                    className="w-full rounded-2xl overflow-hidden border-2 border-emerald-500/30 bg-black min-h-[240px]"
-                  />
-                  <p className="text-[10px] text-center text-muted-foreground">
-                    Aponte a câmera para o QR Code da turma
-                  </p>
+                  <button
+                    onClick={handleJoin}
+                    disabled={joinMutation.isPending || code.trim().length < 8}
+                    className="w-full py-3.5 rounded-2xl bg-emerald-600 text-white font-black text-sm uppercase tracking-wider hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 mt-1"
+                  >
+                    {joinMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+                    {joinMutation.isPending ? "Verificando..." : "Entrar na Turma"}
+                  </button>
                 </div>
               )}
 
-              {/* Botão de ação */}
-              {!scannerOpen && (
-                <button
-                  onClick={handleJoin}
-                  disabled={joinMutation.isPending || code.trim().length < 8}
-                  className="w-full py-3.5 rounded-2xl bg-emerald-600 text-white font-black text-sm uppercase tracking-wider hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25"
-                >
-                  {joinMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
-                  {joinMutation.isPending ? "Verificando..." : "Entrar na Turma"}
-                </button>
+              {/* Aba: Scanner QR */}
+              {tab === "camera" && (
+                <div className="space-y-2">
+                  {/* O html5-qrcode injeta o vídeo aqui */}
+                  <div
+                    id={SCANNER_DIV_ID}
+                    className="w-full rounded-2xl overflow-hidden border-2 border-emerald-500/30"
+                    style={{ minHeight: 260 }}
+                  />
+                  {!scanning && (
+                    <div className="flex items-center justify-center gap-2 py-4 text-muted-foreground">
+                      <div className="w-4 h-4 border-2 border-emerald-500/40 border-t-emerald-500 rounded-full animate-spin" />
+                      <span className="text-xs font-bold">Iniciando câmera traseira...</span>
+                    </div>
+                  )}
+                  <p className="text-[10px] text-center text-muted-foreground">
+                    Centralize o QR Code da turma para leitura automática
+                  </p>
+                </div>
               )}
             </div>
           </div>

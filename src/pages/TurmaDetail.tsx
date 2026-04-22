@@ -317,7 +317,7 @@ export default function TurmaDetail() {
                     value={turma.codigoAcesso}
                     size={160}
                     bgColor="#ffffff"
-                    fgColor="#065f46"
+                    fgColor="#000000"
                     level="M"
                     includeMargin={false}
                   />
