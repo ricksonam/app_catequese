@@ -658,7 +658,7 @@ export default function Dashboard() {
               onClick={stat.action} 
               className={cn(
                 "group relative p-[2px] rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 shadow-sm",
-                "bg-black"
+                "bg-black/10 shadow-black/5"
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
@@ -709,7 +709,7 @@ export default function Dashboard() {
           </div>
 
           <div 
-            className="float-card p-0 overflow-hidden border-2 border-black shadow-lg shadow-black/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
+            className="float-card p-0 overflow-hidden border border-black/10 shadow-lg shadow-black/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
             onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
           >
             <div className="p-3 active:scale-[0.99] transition-all">

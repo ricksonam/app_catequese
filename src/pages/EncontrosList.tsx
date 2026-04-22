@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle, Feather } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
@@ -14,7 +14,7 @@ const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: s
 };
 
 const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
-const MESES_PT = ["Janeiro","Fevereiro","MarÃ§o","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const MESES_PT = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 function parseLocalDate(dateStr: string) {
   const [y, m, d] = dateStr.split("T")[0].split("-").map(Number);
@@ -44,7 +44,7 @@ export default function EncontrosList() {
     [encontros]
   );
 
-  // Meses disponÃ­veis
+  // Meses disponíveis
   const availableMonths = useMemo(() => {
     const seen = new Set<string>();
     sorted.forEach((enc) => {
@@ -72,7 +72,7 @@ export default function EncontrosList() {
     });
   }, [sorted, filterMonth, search]);
 
-  // Agrupa por mÃªs/ano (apÃ³s filtro)
+  // Agrupa por mês/ano (após filtro)
   const groups = useMemo(() => {
     const g: Record<string, { monthLabel: string; items: typeof filtered }> = {};
     filtered.forEach((enc) => {
@@ -145,7 +145,7 @@ export default function EncontrosList() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por tema, data ou leitura bÃ­blica..."
+              placeholder="Buscar por tema, data ou leitura bíblica..."
               className="w-full h-11 pl-10 pr-10 rounded-2xl border border-black/15 bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
             />
             {search && (
@@ -205,18 +205,18 @@ export default function EncontrosList() {
         <div className="space-y-8">
           {groups.map(([monthKey, { monthLabel, items }], gi) => (
             <div key={monthKey} className="space-y-3">
-              {/* Separador de mÃªs estilo litÃºrgico */}
+              {/* Separador de mês estilo litúrgico */}
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/25 to-primary/40" />
                 <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm">
-                  <span className="text-[9px] text-primary/70">âœ</span>
+                  <Feather className="w-3 h-3 text-primary/70" />
                   <h3 className="text-xs font-extrabold text-primary uppercase tracking-[0.18em]">{monthLabel}</h3>
                   <span className="text-[10px] font-bold text-primary/50 ml-1">({items.length})</span>
                 </div>
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/25 to-primary/40" />
               </div>
 
-              {/* Cards LitÃºrgicos */}
+              {/* Cards Litúrgicos */}
               <div className="space-y-4">
                 {items.map((enc, i) => {
                   const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
@@ -255,7 +255,7 @@ export default function EncontrosList() {
                       key={enc.id}
                       className={cn(
                         "relative p-[2px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.08)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.12)]",
-                        "bg-black"
+                        "bg-black/10 shadow-black/5"
                       )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
@@ -263,9 +263,6 @@ export default function EncontrosList() {
                       <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
 
                       <div className="relative rounded-[14px] bg-card overflow-hidden">
-                        {/* Faixa de status no topo */}
-                        <div className={`h-1 w-full bg-gradient-to-r ${status.gradient}`} />
-
                         <div className="flex flex-col">
                           {hasNoPresenceAlert && (
                             <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
@@ -293,7 +290,7 @@ export default function EncontrosList() {
                               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
                             </div>
 
-                            {/* ConteÃºdo principal */}
+                            {/* Conteúdo principal */}
                             <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
                               {/* Status badge */}
                               <div className="flex justify-center items-center gap-2 mb-2">
@@ -328,7 +325,7 @@ export default function EncontrosList() {
                             </div>
                           </div>
 
-                          {/* Chips AÃ§Ãµes Separadas na Base do Card */}
+                          {/* Chips Ações Separadas na Base do Card */}
                           <div className="px-3 pb-3">
                             <div className="flex flex-wrap items-center justify-center gap-2">
                                 <button
@@ -346,7 +343,7 @@ export default function EncontrosList() {
 
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-400 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
                                 >
                                   <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
                                 </button>
