@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
   Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
@@ -49,8 +49,8 @@ const classModules = [
 ];
 
 const comunicacao = [
-  { label: "Painel de Feedback", icon: MessageSquare, path: "/comunicacao", color: "bg-purple-500/10 text-purple-500" },
-  { label: "Criar Novo Feedback", icon: FileText, path: "/comunicacao/novo", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Painel", icon: MessageSquare, path: "/comunicacao", color: "bg-purple-500/10 text-purple-500" },
+  { label: "Criar Novo", icon: FileText, path: "/comunicacao/novo", color: "bg-liturgical/10 text-liturgical" },
 ];
 
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
@@ -316,7 +316,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <MessageSquare className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">iAVALIA</span>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left tracking-[0.2em]">iAVALIA</span>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>

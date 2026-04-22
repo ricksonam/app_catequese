@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { 
   FileText, Plus, MessageSquare, ListTodo, Search, Filter, 
-  MoreVertical, Copy, Eye, Trash2, PieChart, ExternalLink, Pencil
+  MoreVertical, Copy, Eye, Trash2, PieChart, ExternalLink, Pencil,
+  Info, X, BarChart2, Share2, ClipboardList
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useComunicacaoForms, useDeleteComunicacaoForm } from "@/hooks/useSupabaseData";
@@ -16,6 +17,7 @@ export default function ComunicacaoHub() {
   
   const [filter, setFilter] = useState<'todos' | 'pesquisa' | 'questionario' | 'avaliacao'>('todos');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showInfo, setShowInfo] = useState(false);
 
   const filteredForms = formularios.filter(f => {
     const matchesFilter = filter === 'todos' || f.tipo === filter;
@@ -63,15 +65,108 @@ export default function ComunicacaoHub() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in relative min-h-[80vh]">
+
+      {/* ── MODAL DE INFORMAÇÕES ── */}
+      {showInfo && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
+          onClick={() => setShowInfo(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-[2rem] shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Cabeçalho do modal */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600" />
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-500/15 text-purple-600 flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-black text-foreground">iAvalia</h2>
+                    <p className="text-[10px] uppercase tracking-widest text-purple-500 font-bold">Módulo de Avaliação</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowInfo(false)}
+                  className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-all active:scale-95"
+                >
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </div>
+
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                O <strong className="text-foreground">iAvalia</strong> permite criar{" "}
+                <strong>pesquisas</strong>, <strong>questionários</strong> e{" "}
+                <strong>avaliações</strong> para enviar às famílias e catequizandos de forma
+                simples e prática.
+              </p>
+
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-purple-500/8 border border-purple-500/15">
+                  <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-600 flex items-center justify-center shrink-0">
+                    <ClipboardList className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-foreground">1. Crie um formulário</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Adicione perguntas de múltipla escolha, texto livre ou notas.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-blue-500/8 border border-blue-500/15">
+                  <div className="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-600 flex items-center justify-center shrink-0">
+                    <Share2 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-foreground">2. Compartilhe o link</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Copie o link gerado e envie pelo WhatsApp para os responsáveis.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-emerald-500/8 border border-emerald-500/15">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center shrink-0">
+                    <BarChart2 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-foreground">3. Veja os resultados</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Acompanhe as respostas em tempo real pelo painel do catequista.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border-t border-purple-500/20 shadow-inner">
+          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shadow-inner">
             <MessageSquare className="h-6 w-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground">Partilha em Família</h1>
-            <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground mt-0.5">Pesquisas e Questionários</p>
+            {/* Título com ícone de info ao lado */}
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-black tracking-tight text-foreground">iAvalia</h1>
+              <button
+                onClick={() => setShowInfo(true)}
+                className="w-6 h-6 rounded-full bg-purple-500/15 text-purple-500 flex items-center justify-center hover:bg-purple-500/25 hover:scale-110 transition-all active:scale-95"
+                title="Saiba mais sobre o iAvalia"
+              >
+                <Info className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground mt-0.5">
+              Pesquisas e Questionários
+            </p>
           </div>
         </div>
         
