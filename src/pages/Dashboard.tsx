@@ -248,6 +248,25 @@ export default function Dashboard() {
     return alertCount;
   }, [filteredEncontros, filteredCatequizandos]);
 
+  const encontrosEmAlerta = useMemo(() => {
+    let count = 0;
+    const nowTime = new Date().getTime();
+    filteredEncontros.forEach(e => {
+       if (e.presencas.length > 0) return;
+       // Alerta se está realizado mas sem chamadas
+       if (e.status === 'realizado') {
+           count++;
+       } else if (e.status === 'pendente') {
+           // Se for pendente, alerta se for data passada (ontem ou antes, o que definitivamente garante +1hr do termino)
+           const d = parseDataLocal(e.data);
+           if (nowTime > d.getTime() + 86400000) { 
+               count++;
+           }
+       }
+    });
+    return count;
+  }, [filteredEncontros]);
+
   const stats = [
     { 
       label: "Catequizandos", 
@@ -613,7 +632,12 @@ export default function Dashboard() {
                 </p>
                 {isCatequizandos && catequizandosEmAlerta > 0 && (
                   <div className="absolute top-1 right-1 w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center animate-pulse shadow-sm" title={`${catequizandosEmAlerta} catequizando(s) com 3 ou mais faltas seguidas`}>
-                    <AlertTriangle className="h-2.5 w-2.5 text-white" />
+                    <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
+                  </div>
+                )}
+                {!isCatequizandos && encontrosEmAlerta > 0 && (
+                  <div className="absolute top-1 right-1 w-5 h-5 bg-blue-500 border-[1.5px] border-white rounded-full flex items-center justify-center animate-pulse shadow-sm" title={`${encontrosEmAlerta} encontro(s) pendente(s) de chamada`}>
+                    <BellRing className="h-2.5 w-2.5 text-white animate-wiggle" />
                   </div>
                 )}
                 <div className="text-[8px] text-muted-foreground font-black uppercase tracking-[0.1em]">
