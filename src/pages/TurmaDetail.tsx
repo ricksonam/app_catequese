@@ -94,30 +94,29 @@ export default function TurmaDetail() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header Compacto Reorganizado */}
-      <div className="space-y-3 animate-fade-in flex flex-col pt-2 relative">
+      <div className="space-y-1 animate-fade-in flex flex-col pt-2">
         {/* Row 1: Back Button + Nome/Ano (Centralizado) */}
-        <div className="flex items-center justify-center min-h-[44px] relative">
+        <div className="flex items-center justify-center min-h-[40px] relative">
           <button onClick={() => navigate("/turmas")} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           
-          <div className="flex flex-col items-center gap-0.5">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black text-foreground tracking-tight truncate max-w-[200px]">
-                {turma.nome}
-              </h1>
-              <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-black/10">
-                {turma.ano}
-              </span>
-            </div>
-            {/* Row 2: Info Chips (Logo abaixo do nome, centralizado) */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-1">
-              <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-black/10 shadow-sm" />
-              <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-black/10 shadow-sm" />
-              <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-black/10 shadow-sm" />
-              <InfoBadge label="Local" value={turma.local} color="bg-white text-foreground border-black/10 shadow-sm" />
-            </div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-foreground tracking-tight truncate max-w-[200px]">
+              {turma.nome}
+            </h1>
+            <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-black/10">
+              {turma.ano}
+            </span>
           </div>
+        </div>
+
+        {/* Row 2: Info Chips (Logo abaixo do nome, centralizado) */}
+        <div className="flex flex-wrap items-center justify-center gap-1.5 pb-2">
+          <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-black/10 shadow-sm" />
+          <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-black/10 shadow-sm" />
+          <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-black/10 shadow-sm" />
+          <InfoBadge label="Local" value={turma.local} color="bg-white text-foreground border-black/10 shadow-sm" />
         </div>
 
         {/* Row 3: Relatórios (Esquerda) + Ações (Direita) */}
