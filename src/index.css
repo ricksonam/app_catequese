@@ -399,3 +399,19 @@
   animation: spin-slow 3s linear infinite;
 }
 
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-shimmer-text {
+  background: linear-gradient(90deg, hsl(var(--primary)), #a855f7, #ec4899, #3b82f6, hsl(var(--primary)));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+

@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { 
   Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, Heart
+  GraduationCap, ChevronLeft, Heart, BarChart2
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
@@ -46,6 +46,7 @@ const classModules = [
   { label: "Atividades e Eventos", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/atividades`, color: "bg-amber-500/10 text-amber-500" },
   { label: "Catequese em Família", icon: Heart, getPath: (id: string) => `/turmas/${id}/familia`, color: "bg-rose-500/10 text-rose-500" },
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
+  { label: "Central de Relatórios", icon: BarChart2, getPath: (id: string) => `/turmas/${id}/relatorios`, color: "bg-violet-500/10 text-violet-500" },
 ];
 
 const comunicacao = [
@@ -316,7 +317,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
                    <MessageSquare className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Partilha em Família</span>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">iAvalia</span>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
@@ -383,7 +384,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
              <div className="w-10 h-10 rounded-xl bg-white border border-primary/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                <img src="/app-logo.png" className="w-full h-full object-contain p-1" alt="iCatequese" />
              </div>
-             <span className="flex-1 text-[11px] font-black text-foreground text-left tracking-[0.2em]">Sobre o iCatequese</span>
+             <span className="flex-1 text-sm font-black text-left tracking-wider animate-shimmer-text">Sobre o iCatequese</span>
+
+
+
              <ChevronRight className="h-4 w-4 text-muted-foreground opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
            </button>
         </div>
