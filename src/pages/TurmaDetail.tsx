@@ -95,6 +95,16 @@ export default function TurmaDetail() {
     <div className="space-y-6 pb-10">
       {/* Header Centralizado */}
       <div className="space-y-6 animate-fade-in flex flex-col items-center text-center">
+        <div className="flex flex-col items-center gap-1 mb-2">
+           <h1 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm flex items-center gap-2">
+             {turma.nome}
+             <span className="text-[12px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-2 border-black/10">
+               {turma.ano}
+             </span>
+           </h1>
+           <div className="h-1 w-12 bg-primary/20 rounded-full"></div>
+        </div>
+
         <div className="w-full relative flex items-center min-h-[44px]">
           <button onClick={() => navigate("/turmas")} className="back-btn absolute left-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           
@@ -161,15 +171,6 @@ export default function TurmaDetail() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-1">
-           <h1 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm flex items-center gap-2">
-             {turma.nome}
-             <span className="text-[12px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border-2 border-black/10">
-               {turma.ano}
-             </span>
-           </h1>
-           <div className="h-1 w-12 bg-primary/20 rounded-full"></div>
-        </div>
 
         {/* Barra de Informações Centralizada */}
         <div className="space-y-4 w-full">
@@ -183,9 +184,9 @@ export default function TurmaDetail() {
           <div className="w-full flex justify-center pt-2">
             <button 
               onClick={() => navigate(relatorioModulo.path)}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all font-black text-[11px] uppercase tracking-widest"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-violet-600 dark:bg-violet-700 text-white shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest"
             >
-              <PieChart className="h-4 w-4" />
+              <PieChart className="h-3.5 w-3.5" />
               Relatórios da Turma
             </button>
           </div>
