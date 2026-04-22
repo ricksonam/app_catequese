@@ -97,23 +97,43 @@ export default function EncontrosList() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Encontros</h1>
-            <p className="text-xs text-muted-foreground">{encontros.length} encontros</p>
+      {/* Header Compacto Reorganizado */}
+      <div className="space-y-3 animate-fade-in flex flex-col pt-2">
+        {/* Row 1: Back Button + Título (Centralizado) */}
+        <div className="flex items-center justify-center min-h-[40px] relative">
+          <button onClick={() => navigate(`/turmas/${id}`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          
+          <div className="flex flex-col items-center">
+            <h1 className="text-2xl font-black text-foreground tracking-tight">Encontros</h1>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{encontros.length} encontros</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {id && <ReportModule context="encontros" turmaId={id} />}
+
+        {/* Row 2: Relatórios (Esquerda) + Novo (Direita) */}
+        <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
+          {id && (
+            <ReportModule 
+              context="encontros" 
+              turmaId={id} 
+              trigger={
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 shadow-sm hover:shadow-md active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest">
+                  <FileText className="h-3.5 w-3.5" />
+                  Relatórios
+                </button>
+              }
+            />
+          )}
+
+          <button 
+            onClick={() => navigate(`/turmas/${id}/encontros/novo`)} 
+            className="action-btn-sm shrink-0 shadow-md hover:shadow-lg"
+          >
+            <Plus className="h-4 w-4" /> Novo
+          </button>
         </div>
       </div>
-
-      <button onClick={() => navigate(`/turmas/${id}/encontros/novo`)} className="w-full action-btn animate-float-up">
-        <Plus className="h-4 w-4" /> Novo Encontro
-      </button>
 
       {/* Busca e Filtros */}
       {encontros.length > 0 && (
