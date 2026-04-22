@@ -69,7 +69,7 @@ export default function ComunicacaoHub() {
       {/* ── MODAL DE INFORMAÇÕES ── */}
       {showInfo && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center p-4 pt-16"
           onClick={() => setShowInfo(false)}
         >
           <div
@@ -146,33 +146,32 @@ export default function ComunicacaoHub() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shadow-inner">
-            <MessageSquare className="h-6 w-6 text-purple-600" />
-          </div>
-          <div>
-            {/* Título com ícone de info ao lado */}
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black tracking-tight text-foreground">iAvalia</h1>
-              <button
-                onClick={() => setShowInfo(true)}
-                className="w-6 h-6 rounded-full bg-purple-500/15 text-purple-500 flex items-center justify-center hover:bg-purple-500/25 hover:scale-110 transition-all active:scale-95"
-                title="Saiba mais sobre o iAvalia"
-              >
-                <Info className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground mt-0.5">
-              Pesquisas e Questionários
-            </p>
-          </div>
+      {/* Header — título centralizado + botão info no canto direito */}
+      <div className="relative flex flex-col items-center gap-2">
+        {/* Botão de Info — canto superior direito */}
+        <button
+          onClick={() => setShowInfo(true)}
+          className="absolute right-0 top-0 w-8 h-8 rounded-full bg-purple-500/15 text-purple-500 flex items-center justify-center hover:bg-purple-500/30 hover:scale-110 transition-all active:scale-95 animate-bounce-subtle shadow-sm border border-purple-500/20"
+          title="Saiba mais sobre o iAvalia"
+        >
+          <Info className="h-4 w-4" />
+        </button>
+
+        {/* Ícone + Título centralizado */}
+        <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20 shadow-inner">
+          <MessageSquare className="h-7 w-7 text-purple-600" />
         </div>
-        
+        <div className="text-center">
+          <h1 className="text-2xl font-black tracking-tight text-foreground">iAvalia</h1>
+          <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground mt-0.5">
+            Pesquisas e Questionários
+          </p>
+        </div>
+
+        {/* Botão Criar Novo */}
         <button 
           onClick={() => navigate('/comunicacao/novo')}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all outline-none"
+          className="mt-2 flex items-center justify-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all outline-none"
         >
           <Plus className="h-5 w-5" />
           Criar Novo

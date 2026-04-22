@@ -358,7 +358,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               <BarChart2 className="h-5 w-5" />
             </div>
             <div className="flex-1 text-left">
-              <span className="block text-[11px] font-black text-foreground uppercase tracking-[0.2em]">Central de Relatórios</span>
+              <span className="block text-[10px] font-black text-foreground uppercase tracking-[0.15em] whitespace-nowrap">Central de Relatórios</span>
               {selectedTurmaId && (
                 <span className="block text-[9px] text-violet-500 font-bold mt-0.5 truncate">
                   {turmas.find(t => t.id === selectedTurmaId)?.nome}
