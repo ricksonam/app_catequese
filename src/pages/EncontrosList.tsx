@@ -7,7 +7,7 @@ import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string }> = {
-  pendente:    { label: "Pendente",    bg: "bg-blue-500/15",      text: "text-blue-700",          dot: "bg-blue-500",         gradient: "from-blue-500/20 to-indigo-500/10" },
+  pendente:    { label: "Pendente",    bg: "bg-slate-100/80",      text: "text-slate-600",          dot: "bg-slate-400",         gradient: "from-slate-200/50 to-slate-100/50" },
   realizado:   { label: "Realizado",   bg: "bg-emerald-500/15",   text: "text-emerald-700",       dot: "bg-emerald-500",      gradient: "from-emerald-500/20 to-teal-500/10" },
   transferido: { label: "Transferido", bg: "bg-amber-500/15",     text: "text-amber-700",         dot: "bg-amber-500",        gradient: "from-amber-500/20 to-orange-500/10" },
   cancelado:   { label: "Cancelado",   bg: "bg-destructive/15",   text: "text-destructive",       dot: "bg-destructive",      gradient: "from-destructive/20 to-red-500/10"  },
@@ -240,6 +240,12 @@ export default function EncontrosList() {
                         <div className={`h-1 w-full bg-gradient-to-r ${status.gradient}`} />
 
                         <div className="flex flex-col">
+                          {hasNoPresenceAlert && (
+                            <div className="bg-blue-50 border-b border-blue-100 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                              <BellRing className="w-3 h-3 text-blue-500" />
+                              <span className="text-[9px] font-black uppercase tracking-widest text-blue-500">Chamada pendente</span>
+                            </div>
+                          )}
                           <div className="flex items-stretch bg-white">
                             {/* Coluna da data */}
                             <div className="flex flex-col items-center justify-center px-4 py-5 border-r border-black/5 shrink-0 min-w-[70px]">

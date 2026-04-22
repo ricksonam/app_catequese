@@ -10,7 +10,7 @@ import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string }[] = [
-  { value: "pendente", label: "Pendente", bg: "bg-muted/10", text: "text-muted-foreground" },
+  { value: "pendente", label: "Pendente", bg: "bg-slate-100/80", text: "text-slate-600" },
   { value: "realizado", label: "Realizado", bg: "bg-emerald-500/10", text: "text-emerald-700" },
   { value: "transferido", label: "Transferido", bg: "bg-amber-500/10", text: "text-amber-700" },
   { value: "cancelado", label: "Cancelado", bg: "bg-destructive/10", text: "text-destructive" },
@@ -140,11 +140,38 @@ export default function EncontroDetail() {
         <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center"><Trash2 className="h-4 w-4 text-destructive" /></button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-float-up">
-        <button onClick={() => setShowStatus(true)} className={`pill-btn ${currentStatus.bg} ${currentStatus.text} border-2 border-current/20 justify-center`}>{currentStatus.label} ▾</button>
-        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="pill-btn bg-primary/10 text-primary flex items-center justify-center gap-1"><Edit className="h-3.5 w-3.5" /> Editar</button>
-        <button onClick={() => setShowPresenca(true)} className="pill-btn bg-success/10 text-success flex items-center justify-center gap-1"><Users className="h-3.5 w-3.5" /> Presença</button>
-        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="pill-btn bg-liturgical/10 text-liturgical flex items-center justify-center gap-1"><Play className="h-3.5 w-3.5" /> Apresentar</button>
+      <div className="grid grid-cols-2 gap-3 animate-float-up">
+        {/* Status */}
+        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 transition-all hover:scale-[1.02] active:scale-[0.98] bg-card shadow-sm group`}>
+           <div className={`w-10 h-10 rounded-2xl mb-2 flex items-center justify-center ${currentStatus.bg} border border-black/5 group-hover:scale-110 transition-transform`}>
+             <div className={`w-3 h-3 rounded-full ${currentStatus.text.replace('text-', 'bg-')}`} />
+           </div>
+           <span className={`text-[11px] font-black uppercase tracking-widest ${currentStatus.text}`}>{currentStatus.label} ▾</span>
+        </button>
+        
+        {/* Editar */}
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 bg-card shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-10 h-10 flex items-center justify-center bg-primary/10 rounded-2xl mb-2 border border-black/5 group-hover:scale-110 transition-transform">
+             <Edit className="h-4 w-4 text-primary" />
+           </div>
+           <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Editar</span>
+        </button>
+
+        {/* Presença */}
+        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 bg-card shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-10 h-10 flex items-center justify-center bg-emerald-500/10 rounded-2xl mb-2 border border-black/5 group-hover:scale-110 transition-transform">
+             <Users className="h-4 w-4 text-emerald-600" />
+           </div>
+           <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Presença</span>
+        </button>
+
+        {/* Apresentar */}
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center p-3 rounded-[24px] border border-black/5 bg-card shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-10 h-10 flex items-center justify-center bg-liturgical/10 rounded-2xl mb-2 border border-black/5 group-hover:scale-110 transition-transform">
+             <Play className="h-4 w-4 text-liturgical" />
+           </div>
+           <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Apresentar</span>
+        </button>
       </div>
 
       {/* Card de informações gerais */}
