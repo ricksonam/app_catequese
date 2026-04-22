@@ -132,25 +132,32 @@ export default function CatequizandosList() {
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
   const [filterAniversarios, setFilterAniversarios] = useState(false);
   
+  const [alertConfig] = useState(() => {
+    const saved = localStorage.getItem('ivc_alertas_config');
+    return saved ? JSON.parse(saved) : { ativos: true, faltas: 3, presenca: true };
+  });
+
   const { data: encontros = [] } = useEncontros(id);
 
   const pastEncontros = useMemo(() => {
     return encontros
       .filter(e => e.status === 'realizado')
       .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
-      .slice(0, 3);
-  }, [encontros]);
+      .slice(0, alertConfig.faltas);
+  }, [encontros, alertConfig.faltas]);
 
   const catequizandosEmAlerta = useMemo(() => {
     const alertas = new Set<string>();
+    if (!alertConfig.ativos) return alertas;
+
     list.forEach(c => {
-      if (pastEncontros.length >= 3) {
+      if (pastEncontros.length >= alertConfig.faltas && alertConfig.faltas > 0) {
         const wasPresentInAny = pastEncontros.some(e => e.presencas.includes(c.id));
         if (!wasPresentInAny) alertas.add(c.id);
       }
     });
     return alertas;
-  }, [list, pastEncontros]);
+  }, [list, pastEncontros, alertConfig]);
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
 
@@ -497,13 +504,13 @@ export default function CatequizandosList() {
           const st = statusConfig[c.status || 'ativo'];
           const emAlerta = catequizandosEmAlerta.has(c.id);
           return (
-            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className={cn("relative w-full group animate-float-up text-left", emAlerta && "ring-2 ring-destructive animate-pulse")} style={{ animationDelay: `${i * 50}ms` }}>
+            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className={cn("relative flex flex-col bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98] overflow-hidden", emAlerta ? "border-destructive/50 group-hover:shadow-md group-hover:border-destructive" : "border-black/5 group-hover:shadow-md group-hover:border-primary/20")}>
                 {emAlerta && (
                   <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse w-full">
                     <BellRing className="w-3 h-3 text-destructive" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Atenção: Múltiplas Faltas</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Catequizando com mais de {alertConfig.faltas} faltas</span>
                   </div>
                 )}
                 <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 w-full">

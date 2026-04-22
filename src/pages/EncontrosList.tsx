@@ -32,6 +32,11 @@ export default function EncontrosList() {
   const [search, setSearch] = useState("");
   const [filterMonth, setFilterMonth] = useState<string>("todos");
 
+  const [alertConfig] = useState(() => {
+    const saved = localStorage.getItem('ivc_alertas_config');
+    return saved ? JSON.parse(saved) : { ativos: true, faltas: 3, presenca: true };
+  });
+
   const totalAlunos = catequizandos.length || 1;
 
   const sorted = useMemo(
@@ -207,7 +212,7 @@ export default function EncontrosList() {
                   const nowTime = new Date().getTime();
                   const noPresence = (enc.presencas || []).length === 0;
                   let hasNoPresenceAlert = false;
-                  if (noPresence) {
+                  if (noPresence && alertConfig.ativos && alertConfig.presenca !== false) {
                     if (enc.status === 'realizado') hasNoPresenceAlert = true;
                     else if (enc.status === 'pendente') {
                        if (nowTime > d.getTime() + 86400000) hasNoPresenceAlert = true;
