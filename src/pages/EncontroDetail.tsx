@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation } from "@/hooks/useSupabaseData";
 import { type EncontroStatus, type RegistroOcorrencia, type AvaliacaoEncontro } from "@/lib/store";
-import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight, FileSignature, Check } from "lucide-react";
+import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight, FileSignature, Check, Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -44,12 +44,14 @@ export default function EncontroDetail() {
   const [searchParams] = useSearchParams();
   const [draftAvaliacao, setDraftAvaliacao] = useState<AvaliacaoEncontro | null>(null);
   const [localPresencas, setLocalPresencas] = useState<string[]>([]);
+  const [localJustificativas, setLocalJustificativas] = useState<Record<string, any>>({});
 
   useEffect(() => {
     if (encontro) {
-      setLocalPresencas(encontro.presencas);
+      setLocalPresencas(encontro.presencas || []);
+      setLocalJustificativas(encontro.justificativas || {});
     }
-  }, [encontro?.id]); // Only reset when changing encounters
+  }, [encontro?.id, encontro?.justificativas, encontro?.presencas]); // Reset when encuentro data changes
 
   useEffect(() => {
     if (searchParams.get('eval') === 'true') {
@@ -128,24 +130,31 @@ export default function EncontroDetail() {
     }
     
     // Clear justificativa se ficou presente
-    const newJust = { ...(encontro.justificativas || {}) };
+    const newJust = { ...localJustificativas };
     if (!isPresent && newJust[catId]) {
       delete newJust[catId];
     }
 
     setLocalPresencas(newPresencas);
+    setLocalJustificativas(newJust);
     encontroMut.mutate({ ...encontro, presencas: newPresencas, justificativas: newJust });
   };
 
   const setJustificativa = (catId: string, motivo: any) => {
     if (!encontro) return;
-    const currentJust = { ...(encontro.justificativas || {}) };
+    const currentJust = { ...localJustificativas };
     if (motivo === null) {
       delete currentJust[catId];
     } else {
       currentJust[catId] = motivo;
     }
-    encontroMut.mutate({ ...encontro, justificativas: currentJust });
+    
+    // Se justificou, garante que não está na presença
+    const newPresencas = localPresencas.filter(p => p !== catId);
+    
+    setLocalJustificativas(currentJust);
+    setLocalPresencas(newPresencas);
+    encontroMut.mutate({ ...encontro, presencas: newPresencas, justificativas: currentJust });
   };
 
   const tempoTotal = encontro.roteiro.reduce((acc, s) => acc + s.tempo, 0);
@@ -158,12 +167,12 @@ export default function EncontroDetail() {
           <h1 className="text-xl font-bold text-foreground leading-tight">{encontro.tema}</h1>
           <p className="text-xs text-muted-foreground mt-0.5">{turma?.nome}</p>
         </div>
-        <div className="flex flex-col gap-1.5 shrink-0 ml-2">
-          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-10 h-10 rounded-[14px] bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors group">
-            <Edit className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
+        <div className="flex items-center gap-3 shrink-0 ml-2">
+          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-10 h-10 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
+            <Pencil className="h-4.5 w-4.5 text-primary group-hover:rotate-12 transition-transform" />
           </button>
-          <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-10 h-10 rounded-[14px] bg-destructive/10 border border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-colors group">
-            <Trash2 className="h-4 w-4 text-destructive group-hover:scale-110 transition-transform" />
+          <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-10 h-10 rounded-[14px] bg-destructive/10 border-2 border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-all hover:scale-105 active:scale-95 group">
+            <Trash2 className="h-4.5 w-4.5 text-destructive group-hover:rotate-12 transition-transform" />
           </button>
         </div>
       </div>
@@ -574,24 +583,73 @@ export default function EncontroDetail() {
         <DialogContent className="rounded-2xl border-border/30 max-h-[85vh] flex flex-col">
           <div className="shrink-0 mb-4">
             <DialogTitle>Chamada do Encontro</DialogTitle>
-            <p className="text-xs text-muted-foreground mt-1">{encontro.presencas.length} de {catequizandos.length} alunos presentes</p>
+            <p className="text-xs text-muted-foreground mt-1">{localPresencas.length} de {catequizandos.length} alunos presentes</p>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
             {catequizandos.map(cat => {
               const present = localPresencas.includes(cat.id);
-              const justification = encontro.justificativas?.[cat.id];
+              const justification = localJustificativas[cat.id];
 
               return (
                 <div key={cat.id} className="flex gap-2">
+                  {/* Botão de Justificar (Agora na Esquerda) */}
+                  {!present && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className={cn(
+                          "w-16 shrink-0 rounded-xl border-[2.5px] flex flex-col items-center justify-center transition-all px-1 space-y-1 cursor-pointer shadow-sm active:scale-90",
+                          justification 
+                            ? "bg-amber-100 border-amber-600 text-amber-600 ring-2 ring-amber-500/20" 
+                            : "border-muted/30 text-muted-foreground hover:bg-muted/10 hover:border-muted-foreground/40 bg-white"
+                        )}>
+                          <span className={cn(
+                            "text-[8.5px] font-black uppercase tracking-tighter leading-none text-center", 
+                            justification ? "text-amber-800": "opacity-60"
+                          )}>Justificar</span>
+                          <FileSignature className={cn("w-5 h-5", justification ? "text-amber-600" : "text-muted-foreground/40")} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-[260px] rounded-xl p-2 shadow-2xl border-muted/50 bg-white z-[100]">
+                        <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground tracking-widest px-2 py-1.5">Justificar Falta</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {[
+                          'Problema de saúde',
+                          'Motivos familiares ou pessoais',
+                          'Compromissos',
+                          'Conflitos com agenda escolar',
+                          'Força maior',
+                          'Outros'
+                        ].map(motivo => (
+                          <DropdownMenuItem 
+                            key={motivo} 
+                            onClick={() => setJustificativa(cat.id, motivo)}
+                            className={cn("text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer flex items-center my-0.5", justification === motivo ? "bg-amber-100 text-amber-800 hover:bg-amber-200 focus:bg-amber-200" : "hover:bg-muted/50")}
+                          >
+                             {motivo} {justification === motivo && <Check className="w-3.5 h-3.5 ml-auto text-amber-600" />}
+                          </DropdownMenuItem>
+                        ))}
+                        {justification && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => setJustificativa(cat.id, null)} className="text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 my-0.5">
+                              Remover Justificativa
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  
+                  {/* Card de Presença */}
                   <button
                     onClick={() => togglePresenca(cat.id)}
                     className={cn(
-                      "flex-1 flex items-center justify-between p-3 rounded-xl border-[2.5px] transition-all relative overflow-hidden",
+                      "flex-1 flex items-center justify-between p-3 rounded-xl border-[2.5px] transition-all relative overflow-hidden active:scale-[0.98]",
                       present 
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-sm" 
+                        ? "border-emerald-600 bg-emerald-50 shadow-sm" 
                         : (justification 
-                            ? "border-amber-500 bg-amber-50/60 shadow-sm" 
-                            : "border-muted/30 bg-muted/5 hover:border-muted/40")
+                            ? "border-amber-600 bg-amber-50 shadow-sm" 
+                            : "border-muted/30 bg-muted/5 hover:border-muted/40 bg-white")
                     )}
                   >
                     {/* Background indicator for justified */}
@@ -602,15 +660,15 @@ export default function EncontroDetail() {
                     <div className="text-left relative z-10">
                       <p className={cn(
                         "text-sm font-black tracking-tight",
-                        present ? "text-emerald-700" : (justification ? "text-amber-700" : "text-muted-foreground")
+                        present ? "text-emerald-800" : (justification ? "text-amber-800" : "text-muted-foreground")
                       )}>{cat.nome}</p>
                       <div className="flex items-center gap-2 mt-0.5">
                          <p className={cn(
                            "text-[10px] uppercase font-bold",
-                           present ? "text-emerald-600/60" : (justification ? "text-amber-600/60" : "text-muted-foreground/60")
+                           present ? "text-emerald-700/60" : (justification ? "text-amber-700/60" : "text-muted-foreground/60")
                          )}>RM: {cat.id.substring(0,6)}</p>
                          {!present && justification && (
-                           <div className="flex items-center gap-1 bg-amber-500 px-2 py-0.5 rounded-full shadow-sm">
+                           <div className="flex items-center gap-1 bg-amber-600 px-2 py-0.5 rounded-full shadow-sm ring-1 ring-white/20">
                              <FileSignature className="w-2.5 h-2.5 text-white" />
                              <span className="text-[8.5px] text-white font-black tracking-widest uppercase">{justification}</span>
                            </div>
@@ -620,76 +678,30 @@ export default function EncontroDetail() {
                     
                     <div className="flex flex-col items-center justify-center gap-1.5 relative z-10">
                       <span className={cn(
-                        "text-[8px] font-black uppercase tracking-tighter leading-none mb-0.5",
-                        present ? 'text-emerald-600' : (justification ? 'text-amber-600' : 'text-muted-foreground/40')
+                        "text-[8.5px] font-black uppercase tracking-tighter leading-none mb-0.5 min-h-[10px]",
+                        present ? 'text-emerald-600' : (justification ? 'text-amber-600' : 'opacity-0 select-none')
                       )}>
-                        {present ? 'Presença' : (justification ? 'Justificado' : 'Ausente')}
+                        {present ? 'Presença' : (justification ? 'Justificado' : '-')}
                       </span>
                       <div className={cn(
-                        "w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all shrink-0 shadow-sm",
+                        "w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all shrink-0 shadow-md",
                         present 
-                          ? "bg-emerald-500 border-white scale-110 shadow-emerald-200" 
+                          ? "bg-emerald-600 border-white scale-110 shadow-emerald-200" 
                           : (justification 
-                              ? "bg-amber-500 border-white scale-110 shadow-amber-200" 
-                              : "bg-white border-muted-foreground/20")
+                              ? "bg-amber-600 border-white scale-110 shadow-amber-200" 
+                              : "bg-white border-muted-foreground/30")
                       )}>
-                        {present && <Users className="h-4 w-4 text-white" />}
-                        {!present && justification && <Check className="h-4 w-4 text-white font-bold" />}
+                        {present && <Users className="h-5 w-5 text-white" />}
+                        {!present && justification && <Check className="h-5 w-5 text-white font-black" />}
                       </div>
                     </div>
                   </button>
-                  {!present && (
-                     <DropdownMenu>
-                       <DropdownMenuTrigger asChild>
-                         <button className={cn(
-                           "w-14 shrink-0 rounded-xl border-[2.5px] flex flex-col items-center justify-center transition-all px-1 space-y-1.5 cursor-pointer shadow-sm",
-                           justification 
-                             ? "bg-amber-100 border-amber-500 text-amber-600" 
-                             : "border-muted/30 text-muted-foreground hover:bg-muted/5 hover:border-muted-foreground/30"
-                         )}>
-                           <span className={cn(
-                             "text-[8.5px] font-black uppercase tracking-tighter leading-none text-center", 
-                             justification ? "text-amber-700": "opacity-50"
-                           )}>Justificar</span>
-                           <FileSignature className={cn("w-4 h-4", justification ? "text-amber-600" : "text-muted-foreground/40")} />
-                         </button>
-                       </DropdownMenuTrigger>
-                       <DropdownMenuContent align="end" className="w-[260px] rounded-xl p-2 shadow-2xl border-muted/50">
-                         <DropdownMenuLabel className="text-[10px] uppercase font-black text-muted-foreground tracking-widest px-2 py-1.5">Justificar Falta</DropdownMenuLabel>
-                         <DropdownMenuSeparator />
-                         {[
-                           'Problema de saúde',
-                           'Motivos familiares ou pessoais',
-                           'Compromissos',
-                           'Conflitos com agenda escolar',
-                           'Força maior',
-                           'Outros'
-                         ].map(motivo => (
-                           <DropdownMenuItem 
-                             key={motivo} 
-                             onClick={() => setJustificativa(cat.id, motivo)}
-                             className={cn("text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer flex items-center my-0.5", justification === motivo ? "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary focus:bg-primary/20" : "")}
-                           >
-                              {motivo} {justification === motivo && <Check className="w-3.5 h-3.5 ml-auto text-primary" />}
-                           </DropdownMenuItem>
-                         ))}
-                         {justification && (
-                           <>
-                             <DropdownMenuSeparator />
-                             <DropdownMenuItem onClick={() => setJustificativa(cat.id, null)} className="text-xs font-bold py-2.5 px-3 rounded-lg cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10 my-0.5">
-                               Remover Justificativa
-                             </DropdownMenuItem>
-                           </>
-                         )}
-                       </DropdownMenuContent>
-                     </DropdownMenu>
-                  )}
                 </div>
               );
             })}
           </div>
           <div className="shrink-0 pt-4 mt-2 border-t border-border/10">
-            <button onClick={() => setShowPresenca(false)} className="w-full action-btn">
+            <button onClick={() => setShowPresenca(false)} className="w-full action-btn bg-primary text-white font-black uppercase tracking-widest py-3 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
               Concluído
             </button>
           </div>
