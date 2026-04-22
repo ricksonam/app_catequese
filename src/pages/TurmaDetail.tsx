@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart, QrCode } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -299,8 +300,28 @@ export default function TurmaDetail() {
                   </button>
                 </div>
               </div>
-              <div className="py-3 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center">
+
+              {/* Código texto */}
+              <div className="py-3 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center mb-4">
                 <span className="text-3xl font-black tracking-[0.5em] text-emerald-700 select-all">{turma.codigoAcesso}</span>
+              </div>
+
+              {/* QR Code */}
+              <div className="flex flex-col items-center gap-2 pt-3 border-t border-emerald-500/15">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <QrCode className="h-3.5 w-3.5 text-emerald-700" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.15em] text-emerald-700">QR Code — Aponte a câmera para escanear</p>
+                </div>
+                <div className="p-3 bg-white rounded-2xl border-2 border-emerald-500/20 shadow-sm">
+                  <QRCodeSVG
+                    value={turma.codigoAcesso}
+                    size={160}
+                    bgColor="#ffffff"
+                    fgColor="#065f46"
+                    level="M"
+                    includeMargin={false}
+                  />
+                </div>
               </div>
             </div>
           )}
