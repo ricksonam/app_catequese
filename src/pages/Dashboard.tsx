@@ -1,11 +1,12 @@
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useCatequistas } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useCatequistas, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
+import { ObjectiveModal } from "@/components/ObjectiveModal";
 import { cn } from "@/lib/utils";
 import { useJoinTurma } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
@@ -31,12 +32,15 @@ export default function Dashboard() {
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
+  const { data: paroquias = [] } = useParoquias();
+  const { data: comunidades = [] } = useComunidades();
   const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [objectiveOpen, setObjectiveOpen] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
@@ -64,8 +68,15 @@ export default function Dashboard() {
   const loading = tLoading || eLoading || cLoading || catLoading || aLoading || mLoading;
 
   useEffect(() => {
-    if (!loading && !tError && turmas.length === 0 && !localStorage.getItem("ivc_welcome_seen")) {
-      setWelcomeOpen(true);
+    if (!loading && !tError) {
+      const presentationSeen = localStorage.getItem("ivc_presentation_seen");
+      const welcomeSeen = localStorage.getItem("ivc_welcome_seen");
+      
+      if (!presentationSeen) {
+        setObjectiveOpen(true);
+      } else if (!welcomeSeen && turmas.length === 0) {
+        setWelcomeOpen(true);
+      }
     }
   }, [loading, tError, turmas.length]);
 
@@ -403,7 +414,21 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-2.5">
-      <WelcomeModal open={welcomeOpen} onClose={() => setWelcomeOpen(false)} />
+      <WelcomeModal 
+        open={welcomeOpen} 
+        onClose={() => setWelcomeOpen(false)} 
+        hasParoquia={paroquias.length > 0 || comunidades.length > 0}
+        hasCatequista={catequistas.length > 0}
+      />
+
+      <ObjectiveModal 
+        open={objectiveOpen} 
+        onOpenChange={setObjectiveOpen}
+        onStartTour={() => {
+          localStorage.setItem("ivc_presentation_seen", "true");
+          setWelcomeOpen(true);
+        }}
+      />
 
 
 

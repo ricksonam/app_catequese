@@ -124,7 +124,13 @@ export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
 
           {/* Start / Close Button */}
           <div className="w-full px-6 mb-6">
-            <Button onClick={() => onOpenChange(false)} className="w-full h-14 rounded-2xl font-black text-base shadow-xl shadow-primary/20 text-white bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all gap-2">
+            <Button 
+              onClick={() => {
+                onOpenChange(false);
+                if (onStartTour) onStartTour();
+              }} 
+              className="w-full h-14 rounded-2xl font-black text-base shadow-xl shadow-primary/20 text-white bg-primary hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all gap-2"
+            >
               Começar Agora <CheckCircle2 className="w-5 h-5" />
             </Button>
           </div>
