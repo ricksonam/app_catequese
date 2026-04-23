@@ -139,7 +139,7 @@ export default function AppLayout() {
       {/* Tab Bar */}
       {!isPresentationMode && currentPath !== "/modulos/mural" && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-3 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto max-w-md flex items-center justify-around h-[72px] px-2 rounded-full bg-white dark:bg-amber-900/30 backdrop-blur-xl border-2 border-amber-300 shadow-lg shadow-black/5 dark:shadow-none">
+          <div className="mx-auto max-w-md flex items-center justify-around h-[72px] px-2 rounded-full bg-white dark:bg-amber-900/30 backdrop-blur-xl border-2 border-purple-300 shadow-lg shadow-black/5 dark:shadow-none">
             {tabs.map((tab) => {
               const isActive =
                 tab.path === "/"
@@ -153,7 +153,7 @@ export default function AppLayout() {
                   onClick={() => navigate(tab.path)}
                   className={`group relative flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-blue-500/10 dark:bg-blue-500/20 scale-110 shadow-sm shadow-blue-500/10`
+                      ? `${tab.color} bg-red-500/10 dark:bg-red-500/20 scale-110 shadow-sm shadow-red-500/20`
                       : "text-gray-600 dark:text-gray-400 hover:bg-amber-100/50"
                   }`}
                 >
