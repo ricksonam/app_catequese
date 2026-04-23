@@ -94,9 +94,9 @@ export default function TurmaDetail() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header Compacto Reorganizado */}
-      <div className="space-y-1 animate-fade-in flex flex-col pt-2">
+      <div className="space-y-1 animate-fade-in flex flex-col -mt-4">
         {/* Row 1: Back Button + Nome/Ano (Centralizado) */}
-        <div className="flex items-center justify-center min-h-[40px] relative">
+        <div className="flex items-center justify-center min-h-[32px] relative">
           <button onClick={() => navigate("/turmas")} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
