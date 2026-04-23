@@ -790,11 +790,11 @@ export default function Dashboard() {
                         </h4>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="flex flex-col items-center justify-center w-11 h-11 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-[0.5px] border-blue-100 dark:border-blue-800/50">
-                          <span className="text-[13px] font-black text-blue-600 leading-none">
+                        <div className="flex flex-col items-center justify-center w-11 h-11 bg-red-50 dark:bg-red-900/20 rounded-lg border-[0.5px] border-red-100 dark:border-red-800/50">
+                          <span className="text-[13px] font-black text-red-600 leading-none">
                             {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                           </span>
-                          <span className="text-[7px] font-black text-blue-600/60 uppercase leading-none mt-1">
+                          <span className="text-[7px] font-black text-red-600/60 uppercase leading-none mt-1">
                             {MESES_ABREV[parseDataLocal(proximoEncontro.data).getMonth()]}
                           </span>
                         </div>
@@ -852,12 +852,12 @@ export default function Dashboard() {
                           <div className="text-right shrink-0">
                             <div className={cn(
                               "flex flex-col items-center justify-center w-11 h-11 rounded-lg border-[0.5px]",
-                              isMissao ? "bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/50" : "bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800/50"
+                              isMissao ? "bg-orange-50 border-orange-100 dark:bg-orange-900/20 dark:border-orange-800/50" : "bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800/50"
                             )}>
-                              <span className={cn("text-[13px] font-black leading-none", isMissao ? "text-blue-600" : "text-emerald-600")}>
+                              <span className={cn("text-[13px] font-black leading-none", isMissao ? "text-orange-600" : "text-emerald-600")}>
                                 {String(parseDataLocal(item.data).getDate()).padStart(2, "0")}
                               </span>
-                              <span className={cn("text-[7px] font-black uppercase leading-none mt-1", isMissao ? "text-blue-600/60" : "text-emerald-600/60")}>
+                              <span className={cn("text-[7px] font-black uppercase leading-none mt-1", isMissao ? "text-orange-600/60" : "text-emerald-600/60")}>
                                 {MESES_ABREV[parseDataLocal(item.data).getMonth()]}
                               </span>
                             </div>

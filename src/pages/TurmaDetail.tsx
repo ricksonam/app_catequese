@@ -32,6 +32,8 @@ export default function TurmaDetail() {
 
   const turma = turmas.find((t) => t.id === id);
   const [codeVisible, setCodeVisible] = useState(false);
+  const [shareWarningOpen, setShareWarningOpen] = useState(false);
+  const [shareWarningAccepted, setShareWarningAccepted] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -261,8 +263,9 @@ export default function TurmaDetail() {
         <div className="animate-float-up space-y-4" style={{ animationDelay: '500ms' }}>
           {!codeVisible ? (
             // Chip fechado — clica para revelar
+            <>
             <button
-              onClick={() => setCodeVisible(true)}
+              onClick={() => setShareWarningOpen(true)}
               className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-500/25 hover:border-emerald-500/50 hover:bg-emerald-100/50 transition-all active:scale-[0.98] group"
             >
               <div className="flex items-center gap-3">
@@ -279,6 +282,49 @@ export default function TurmaDetail() {
                 <Eye className="h-4 w-4 text-emerald-600 group-hover:scale-110 transition-transform" />
               </div>
             </button>
+
+            <AlertDialog open={shareWarningOpen} onOpenChange={setShareWarningOpen}>
+              <AlertDialogContent className="rounded-2xl max-w-sm">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-lg font-black tracking-tight text-emerald-700">Aviso de Responsabilidade</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-4 pt-2">
+                    <p className="text-sm text-foreground/80 leading-relaxed font-medium">
+                      Ao compartilhar o código de acesso, você está concedendo permissão para que outro catequista veja e edite as informações desta turma, incluindo os dados dos catequizandos.
+                    </p>
+                    <label className="flex items-start gap-3 cursor-pointer p-4 bg-muted/50 rounded-xl border border-black/5 hover:bg-muted/70 transition-colors">
+                      <input 
+                        type="checkbox" 
+                        className="mt-0.5 shrink-0 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600 shadow-sm"
+                        checked={shareWarningAccepted}
+                        onChange={(e) => setShareWarningAccepted(e.target.checked)}
+                      />
+                      <span className="text-xs font-semibold text-foreground leading-snug">
+                        Estou ciente e me responsabilizo pelo compartilhamento destas informações com terceiros.
+                      </span>
+                    </label>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="mt-2">
+                  <AlertDialogCancel onClick={() => { setShareWarningOpen(false); setShareWarningAccepted(false); }} className="rounded-xl font-bold">Cancelar</AlertDialogCancel>
+                  <AlertDialogAction 
+                    disabled={!shareWarningAccepted}
+                    onClick={(e) => {
+                      if (!shareWarningAccepted) {
+                        e.preventDefault();
+                        return;
+                      }
+                      setCodeVisible(true);
+                      setShareWarningOpen(false);
+                      setShareWarningAccepted(false);
+                    }} 
+                    className="bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl font-black tracking-wide disabled:opacity-50 disabled:grayscale transition-all"
+                  >
+                    Revelar Código
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            </>
           ) : (
             // Código revelado
             <div className="float-card p-4 border-2 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-900/10">
