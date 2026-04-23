@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
 import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
@@ -60,6 +60,16 @@ export default function AtividadesList() {
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<Atividade | null>(null);
+
+  // Auto-view item from URL param
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const viewId = params.get('view');
+    if (viewId && list.length > 0) {
+      const item = list.find(a => a.id === viewId);
+      if (item) setViewItem(item);
+    }
+  }, [list]);
   const [presencaOpen, setPresencaOpen] = useState(false);
   const [presencaItem, setPresencaItem] = useState<Atividade | null>(null);
 

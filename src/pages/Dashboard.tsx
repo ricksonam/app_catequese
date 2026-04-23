@@ -644,8 +644,8 @@ export default function Dashboard() {
                    <p className="text-[6px] font-black uppercase tracking-[0.2em] text-primary/60">Turma Selecionada</p>
                 </div>
                 
-                <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
-                  <h3 className="text-xl font-black text-foreground leading-tight tracking-tight text-center">
+                <div className="flex flex-col items-center justify-center mb-4">
+                  <h3 className="text-xl font-black text-foreground leading-tight tracking-tight text-center max-w-[280px]">
                     {selectedTurmaId === "all" 
                       ? "Todas as Turmas" 
                       : (selectedTurma?.nome.toLowerCase().includes("turma") 
@@ -653,12 +653,14 @@ export default function Dashboard() {
                           : `Turma de ${selectedTurma?.nome}`)}
                   </h3>
                   {selectedTurmaId !== "all" && selectedTurma && (
-                    <span className={cn(
-                      "px-2.5 py-1 rounded-full text-[10px] font-black uppercase border shadow-sm",
-                      heroColors
-                    )}>
-                      {selectedTurma.ano || "Ciclo"}
-                    </span>
+                    <div className="mt-2">
+                      <span className={cn(
+                        "px-4 py-1 rounded-full text-xs font-black uppercase border shadow-sm",
+                        heroColors
+                      )}>
+                        {selectedTurma.ano || "Ciclo"}
+                      </span>
+                    </div>
                   )}
                 </div>
 
@@ -823,9 +825,18 @@ export default function Dashboard() {
                   <div className="grid grid-cols-1 gap-2 w-full mt-1">
                     {proximasAtividades.map((item, idx) => {
                       const isMissao = item.itemType === 'missao';
-                      const colorClass = isMissao ? "blue" : "emerald";
                       return (
-                        <div key={item.id} className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border-[0.5px] border-black/5 shadow-sm hover:border-black/10 transition-all group">
+                        <div 
+                          key={item.id} 
+                          onClick={() => {
+                            if (isMissao) {
+                              navigate(`/turmas/${item.turmaId}/familia`);
+                            } else {
+                              navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
+                            }
+                          }}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-muted/30 border border-transparent hover:bg-muted/50 hover:border-black/5 transition-all cursor-pointer active:scale-95 group"
+                        >
                           <div className={cn(
                             "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-[0.5px] shadow-sm transition-transform group-hover:scale-105",
                             isMissao ? "bg-blue-100 border-blue-200 text-blue-600" : "bg-emerald-100 border-emerald-200 text-emerald-600"
