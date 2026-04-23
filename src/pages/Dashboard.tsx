@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma } from "@/hooks/useSupabaseData";
+import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostasCount } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -43,6 +43,34 @@ export default function Dashboard() {
   const [joinCode, setJoinCode] = useState("");
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
+
+  const { data: globalMissoes = [] } = useMissoesFamilia();
+  const { data: comunicacaoForms = [] } = useComunicacaoForms();
+  const formIds = useMemo(() => comunicacaoForms.map(f => f.id), [comunicacaoForms]);
+  const { data: respostasCount = 0 } = useAllRespostasCount(formIds);
+
+  const totalMissoesConcluidas = useMemo(() => globalMissoes.reduce((acc, m) => acc + (m.concluidas || 0), 0), [globalMissoes]);
+  const totalMensagens = totalMissoesConcluidas + respostasCount;
+
+  const [lastSeenMensagens, setLastSeenMensagens] = useState(() => {
+    return parseInt(localStorage.getItem('ivc_last_seen_mensagens') || '0', 10);
+  });
+  const [showNovaMensagem, setShowNovaMensagem] = useState(false);
+
+  useEffect(() => {
+    if (totalMensagens > lastSeenMensagens) {
+      setShowNovaMensagem(true);
+      const timer = setTimeout(() => {
+        setShowNovaMensagem(false);
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [totalMensagens, lastSeenMensagens]);
+
+  const handleMessagesClick = () => {
+    setLastSeenMensagens(totalMensagens);
+    localStorage.setItem('ivc_last_seen_mensagens', totalMensagens.toString());
+  };
 
   const [alertConfig] = useState(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
@@ -524,6 +552,24 @@ export default function Dashboard() {
           <h1 className="text-xl font-bold text-foreground">Olá, Catequista! 👋</h1>
           <p className="text-muted-foreground text-[10px] mt-0.5">Bem-vindo ao iCatequese</p>
         </div>
+        
+        {/* Ícone de mensagens */}
+        <button 
+          onClick={handleMessagesClick}
+          className="relative w-10 h-10 flex items-center justify-center rounded-full bg-muted/30 hover:bg-muted/50 transition-all border border-transparent hover:border-black/5"
+        >
+          <MessageCircle className={cn("h-5 w-5 text-foreground", totalMensagens > lastSeenMensagens && "animate-bounce-subtle text-red-500")} />
+          {totalMensagens > lastSeenMensagens && (
+            <>
+              <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-background animate-pulse" />
+              {showNovaMensagem && (
+                <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
+                  Nova Mensagem
+                </div>
+              )}
+            </>
+          )}
+        </button>
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
@@ -766,9 +812,9 @@ export default function Dashboard() {
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
+                    <Book className="w-4 h-4 text-blue-500 animate-bounce-subtle" />
                     <h2 className="text-[12px] font-black uppercase tracking-[0.2em] text-blue-600">Próximo Encontro</h2>
-                    <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
+                    <Book className="w-4 h-4 text-blue-500 animate-bounce-subtle" />
                   </div>
 
                   <div className="w-full mt-1">
@@ -790,11 +836,11 @@ export default function Dashboard() {
                         </h4>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="flex flex-col items-center justify-center w-11 h-11 bg-red-50 dark:bg-red-900/20 rounded-lg border-[0.5px] border-red-100 dark:border-red-800/50">
-                          <span className="text-[13px] font-black text-red-600 leading-none">
+                        <div className="flex flex-col items-center justify-center w-11 h-11 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-[0.5px] border-blue-100 dark:border-blue-800/50">
+                          <span className="text-[13px] font-black text-blue-600 leading-none">
                             {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                           </span>
-                          <span className="text-[7px] font-black text-red-600/60 uppercase leading-none mt-1">
+                          <span className="text-[7px] font-black text-blue-600/60 uppercase leading-none mt-1">
                             {MESES_ABREV[parseDataLocal(proximoEncontro.data).getMonth()]}
                           </span>
                         </div>

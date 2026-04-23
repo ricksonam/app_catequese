@@ -14,7 +14,7 @@ import {
   fetchCitacoes, fetchHistoricoCitacoes, saveSorteioHistorico,
   fetchBingoModelos, fetchMissoesFamilia,
   fetchComunicacaoForms, fetchPublicComunicacaoForm, upsertComunicacaoForm, removeComunicacaoForm,
-  fetchComunicacaoRespostas, insertComunicacaoResposta
+  fetchComunicacaoRespostas, insertComunicacaoResposta, fetchAllRespostasCount
 } from "@/lib/supabaseStore";
 import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
@@ -297,6 +297,14 @@ export function useComunicacaoRespostas(formId: string) {
     queryKey: ["comunicacao_respostas", formId],
     queryFn: () => fetchComunicacaoRespostas(formId),
     enabled: !!formId
+  });
+}
+
+export function useAllRespostasCount(formIds: string[]) {
+  return useQuery({
+    queryKey: ["todas_respostas_count", formIds],
+    queryFn: () => fetchAllRespostasCount(formIds),
+    enabled: formIds.length > 0
   });
 }
 

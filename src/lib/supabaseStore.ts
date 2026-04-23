@@ -581,6 +581,17 @@ export async function fetchComunicacaoRespostas(formId: string): Promise<Comunic
   }));
 }
 
+export async function fetchAllRespostasCount(formIds: string[]): Promise<number> {
+  if (formIds.length === 0) return 0;
+  const { count, error } = await supabase
+    .from("comunicacao_respostas")
+    .select("*", { count: 'exact', head: true })
+    .in("form_id", formIds);
+    
+  if (error) throw error;
+  return count || 0;
+}
+
 export async function insertComunicacaoResposta(r: Omit<ComunicacaoResposta, 'id' | 'criado_em'>) {
   const { error } = await supabase.from("comunicacao_respostas").insert({
     form_id: r.form_id,
