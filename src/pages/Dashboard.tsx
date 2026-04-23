@@ -42,18 +42,6 @@ export default function Dashboard() {
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
-  const handleJoinByCode = async () => {
-    if (!joinCode.trim()) return;
-    try {
-      await joinMutation.mutateAsync(joinCode.toUpperCase());
-      setJoinCode("");
-      setJoinModalOpen(false);
-      toast.success("Entrou na turma com sucesso!");
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao entrar na turma");
-    }
-  };
-
   const [alertConfig] = useState(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
     const defaultState = {
