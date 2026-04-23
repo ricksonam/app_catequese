@@ -645,8 +645,12 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
-                  <h3 className="text-xl font-black text-foreground leading-tight tracking-tight">
-                    {selectedTurmaId === "all" ? "Todas as Turmas" : (selectedTurma?.etapa ? `Turma de ${selectedTurma.etapa}` : selectedTurma?.nome)}
+                  <h3 className="text-xl font-black text-foreground leading-tight tracking-tight text-center">
+                    {selectedTurmaId === "all" 
+                      ? "Todas as Turmas" 
+                      : (selectedTurma?.nome.toLowerCase().includes("turma") 
+                          ? selectedTurma.nome 
+                          : `Turma de ${selectedTurma?.nome}`)}
                   </h3>
                   {selectedTurmaId !== "all" && selectedTurma && (
                     <span className={cn(
