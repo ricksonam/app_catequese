@@ -73,6 +73,7 @@ export default function Dashboard() {
       if (!presentationSeen) {
         setOnboardingStep("presentation");
       } else if (!onboardingCompleted && turmas.length === 0) {
+        // Ainda não concluiu o onboarding e não tem turma — direciona para o passo correto
         if (paroquias.length === 0 && comunidades.length === 0) {
           setOnboardingStep("paroquia");
         } else if (catequistas.length === 0) {
@@ -80,9 +81,12 @@ export default function Dashboard() {
         } else {
           setOnboardingStep("turma");
         }
-      } else {
+      } else if (onboardingCompleted) {
+        // Onboarding explicitamente concluído — libera o dashboard
         setOnboardingStep("none");
       }
+      // Se !onboardingCompleted && turmas.length > 0 → TurmaStep acabou de salvar,
+      // o "welcome" está ativo; não interferir — o WelcomeStep cuida de finalizar.
     }
   }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length]);
 
