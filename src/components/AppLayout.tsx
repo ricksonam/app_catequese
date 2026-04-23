@@ -138,8 +138,8 @@ export default function AppLayout() {
 
       {/* Tab Bar */}
       {!isPresentationMode && currentPath !== "/modulos/mural" && (
-        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 sm:px-4 sm:pb-5 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto w-full sm:max-w-md flex items-center justify-around h-[76px] px-2 sm:rounded-full rounded-t-[32px] bg-white dark:bg-zinc-900 backdrop-blur-xl border-t-2 sm:border-2 border-purple-300 shadow-2xl shadow-black/10 dark:shadow-none">
+        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 sm:px-4 sm:pb-5 pb-1 pt-1 print:hidden transition-all duration-200">
+          <div className="mx-auto w-full sm:max-w-md flex items-center justify-around h-[76px] px-2 sm:rounded-full rounded-t-[32px] bg-white dark:bg-zinc-900 backdrop-blur-xl border-2 border-purple-300 shadow-2xl shadow-black/10 dark:shadow-none">
             {tabs.map((tab) => {
               const isActive =
                 tab.path === "/"

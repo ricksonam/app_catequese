@@ -719,7 +719,7 @@ export default function Dashboard() {
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[21px] p-2 overflow-hidden flex flex-col items-center text-center">
+              <div className="relative h-full bg-[#FFFFFF] dark:bg-zinc-900 rounded-[21px] p-2 overflow-hidden flex flex-col items-center text-center shadow-inner">
                 <div className={cn(
                   "icon-box mx-auto mb-0.5 w-7 h-7 shadow-sm border animate-liturgical-float transition-all duration-500",
                   stat.color,
@@ -761,9 +761,8 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
-          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-sm">
-             <div className="bg-white dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
-                <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
+          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-xl">
+             <div className="bg-[#FFFFFF] dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
                   <div className="flex items-center gap-2 mb-2">
@@ -811,9 +810,8 @@ export default function Dashboard() {
       {/* ── PRÓXIMAS ATIVIDADES ── */}
       {proximasAtividades.length > 0 && (
         <div className="animate-fade-in mt-4 mb-2">
-          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-sm">
-             <div className="bg-white dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
-                <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
+          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-xl">
+             <div className="bg-[#FFFFFF] dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
                   <div className="flex items-center gap-2 mb-2">
