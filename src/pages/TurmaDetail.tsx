@@ -136,6 +136,7 @@ export default function TurmaDetail() {
                 <AlertDialogTrigger asChild>
                   <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 text-[10px] font-black uppercase tracking-widest">
                     <LogOut className="h-3.5 w-3.5" />
+                    <span>Sair da turma</span>
                   </button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="rounded-2xl">
