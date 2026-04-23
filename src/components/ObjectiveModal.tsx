@@ -8,6 +8,7 @@ interface ObjectiveModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onStartTour?: () => void;
+  hideClose?: boolean;
 }
 
 const steps = [
@@ -62,17 +63,19 @@ const steps = [
   }
 ];
 
-export function ObjectiveModal({ open, onOpenChange }: ObjectiveModalProps) {
+export function ObjectiveModal({ open, onOpenChange, onStartTour, hideClose }: ObjectiveModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md w-[95vw] h-[90vh] p-0 overflow-y-auto overflow-x-hidden border-2 border-black/5 dark:border-white/5 rounded-[32px] sm:rounded-[40px] shadow-2xl bg-[#FFF5F0] dark:bg-zinc-950 premium-scrollbar">
         {/* Close Button */}
-        <button 
-          onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md flex items-center justify-center text-foreground hover:bg-black/10 dark:hover:bg-white/20 transition-all active:scale-90"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        {!hideClose && (
+          <button 
+            onClick={() => onOpenChange(false)}
+            className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md flex items-center justify-center text-foreground hover:bg-black/10 dark:hover:bg-white/20 transition-all active:scale-90"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
 
         <div className="flex flex-col min-h-full pb-10">
           

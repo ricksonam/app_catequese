@@ -1,18 +1,17 @@
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useCatequistas, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useMemo, useState, useEffect } from "react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { formatarDataVigente } from "@/lib/utils";
-import WelcomeModal from "@/components/WelcomeModal";
-import { ObjectiveModal } from "@/components/ObjectiveModal";
-import { cn } from "@/lib/utils";
-import { useJoinTurma } from "@/hooks/useSupabaseData";
+import { formatarDataVigente, cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Link2, Loader2, RefreshCw, Flame, Sparkles } from "lucide-react";
-import { useAtividades } from "@/hooks/useSupabaseData";
 import { Button } from "@/components/ui/button";
+import { ObjectiveModal } from "@/components/ObjectiveModal";
+import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
+import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
+import { TurmaStep } from "@/components/Onboarding/TurmaStep";
+import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -38,9 +37,7 @@ export default function Dashboard() {
   const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
-  const [joinCode, setJoinCode] = useState("");
-  const [welcomeOpen, setWelcomeOpen] = useState(false);
-  const [objectiveOpen, setObjectiveOpen] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState<"none" | "presentation" | "paroquia" | "catequista" | "turma" | "welcome">("none");
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
 
@@ -70,15 +67,23 @@ export default function Dashboard() {
   useEffect(() => {
     if (!loading && !tError) {
       const presentationSeen = localStorage.getItem("ivc_presentation_seen");
-      const welcomeSeen = localStorage.getItem("ivc_welcome_seen");
+      const onboardingCompleted = localStorage.getItem("ivc_onboarding_completed");
       
       if (!presentationSeen) {
-        setObjectiveOpen(true);
-      } else if (!welcomeSeen && turmas.length === 0) {
-        setWelcomeOpen(true);
+        setOnboardingStep("presentation");
+      } else if (!onboardingCompleted && turmas.length === 0) {
+        if (paroquias.length === 0 && comunidades.length === 0) {
+          setOnboardingStep("paroquia");
+        } else if (catequistas.length === 0) {
+          setOnboardingStep("catequista");
+        } else {
+          setOnboardingStep("turma");
+        }
+      } else {
+        setOnboardingStep("none");
       }
     }
-  }, [loading, tError, turmas.length]);
+  }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length]);
 
   useEffect(() => {
     if (!loading && turmas.length > 0) {
@@ -414,20 +419,41 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-2.5">
-      <WelcomeModal 
-        open={welcomeOpen} 
-        onClose={() => setWelcomeOpen(false)} 
-        hasParoquia={paroquias.length > 0 || comunidades.length > 0}
-        hasCatequista={catequistas.length > 0}
-      />
-
+      {/* ONBOARDING FLOW */}
       <ObjectiveModal 
-        open={objectiveOpen} 
-        onOpenChange={setObjectiveOpen}
+        open={onboardingStep === "presentation"} 
+        onOpenChange={(open) => {
+          if (!open) localStorage.setItem("ivc_presentation_seen", "true");
+          setOnboardingStep("none");
+        }}
+        hideClose={true}
         onStartTour={() => {
           localStorage.setItem("ivc_presentation_seen", "true");
-          setWelcomeOpen(true);
+          setOnboardingStep("paroquia");
         }}
+      />
+
+      <ParoquiaStep 
+        open={onboardingStep === "paroquia"} 
+        onSuccess={() => setOnboardingStep("catequista")} 
+      />
+
+      <CatequistaStep 
+        open={onboardingStep === "catequista"} 
+        onSuccess={() => setOnboardingStep("turma")} 
+      />
+
+      <TurmaStep 
+        open={onboardingStep === "turma"} 
+        onSuccess={() => setOnboardingStep("welcome")} 
+      />
+
+      <WelcomeStep 
+        open={onboardingStep === "welcome"} 
+        onFinish={() => {
+          localStorage.setItem("ivc_onboarding_completed", "true");
+          setOnboardingStep("none");
+        }} 
       />
 
 
