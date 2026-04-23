@@ -88,11 +88,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!loading && turmas.length > 0) {
-      const saved = localStorage.getItem("ivc_selected_turma");
-      // Se a turma salva ainda existe, usa ela; senão pega a primeira
-      if (saved && turmas.find(t => t.id === saved)) {
-        setSelectedTurmaIdRaw(saved);
-      } else if (selectedTurmaId === "all") {
+      const currentIdExists = turmas.find(t => t.id === selectedTurmaId);
+      if (!currentIdExists) {
+        // selectedTurmaId é "all", inválido ou ID stale do localStorage — sempre usa a primeira turma disponível
         setSelectedTurmaId(turmas[0].id);
       }
     }
