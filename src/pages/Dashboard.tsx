@@ -646,27 +646,27 @@ export default function Dashboard() {
                 
                 <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
                   <h3 className="text-xl font-black text-foreground leading-tight tracking-tight">
-                    {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+                    {selectedTurmaId === "all" ? "Todas as Turmas" : (selectedTurma?.etapa ? `Turma de ${selectedTurma.etapa}` : selectedTurma?.nome)}
                   </h3>
                   {selectedTurmaId !== "all" && selectedTurma && (
                     <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[8px] font-black uppercase border",
+                      "px-2.5 py-1 rounded-full text-[10px] font-black uppercase border shadow-sm",
                       heroColors
                     )}>
-                      {selectedTurma.ano || selectedTurma.etapa}
+                      {selectedTurma.ano || "Ciclo"}
                     </span>
                   )}
                 </div>
 
                 {selectedTurmaId !== "all" && selectedTurma && (
-                  <div className="flex items-center justify-center gap-4 text-muted-foreground/60 text-[9px] font-bold uppercase tracking-wider mb-2">
+                  <div className="flex items-center justify-center gap-4 text-muted-foreground/80 text-[10px] font-bold uppercase tracking-wider mb-2">
                     <div className="flex items-center gap-1.5">
-                      <CalendarDays className="w-3.5 h-3.5 text-primary/40" />
-                      <span>{selectedTurma.horario}</span>
+                      <CalendarDays className="w-3.5 h-3.5 text-primary/60" />
+                      <span className="text-foreground font-black">{selectedTurma.horario}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-primary/40" />
-                      <span className="truncate max-w-[100px]">{selectedTurma.local}</span>
+                      <BookOpen className="w-3.5 h-3.5 text-primary/60" />
+                      <span className="truncate max-w-[120px] text-foreground font-black">{selectedTurma.diaCatequese}</span>
                     </div>
                   </div>
                 )}
@@ -755,8 +755,8 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
-          <div className="liturgical-frame p-0.5 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
-             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden border-[0.5px] border-blue-900/20 shadow-sm">
+          <div className="p-[2px] rounded-[32px] overflow-hidden bg-blue-900/10 backdrop-blur-sm shadow-sm border-[0.5px] border-blue-900/20">
+             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[30px] p-3 relative overflow-hidden">
                 <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
@@ -805,8 +805,8 @@ export default function Dashboard() {
       {/* ── PRÓXIMAS ATIVIDADES ── */}
       {proximasAtividades.length > 0 && (
         <div className="animate-fade-in mt-4 mb-2">
-          <div className="liturgical-frame p-0.5 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
-             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden">
+          <div className="p-[2px] rounded-[32px] overflow-hidden bg-black/5 backdrop-blur-sm shadow-sm border-[0.5px] border-black/10">
+             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[30px] p-3 relative overflow-hidden">
                 <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
