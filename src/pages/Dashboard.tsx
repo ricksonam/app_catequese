@@ -27,7 +27,7 @@ export default function Dashboard() {
     if (id === "all") localStorage.removeItem("ivc_selected_turma");
     else localStorage.setItem("ivc_selected_turma", id);
   };
-  const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch } = useTurmas();
+  const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch, isFetching: tFetching } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
@@ -451,9 +451,15 @@ export default function Dashboard() {
 
       <WelcomeStep 
         open={onboardingStep === "welcome"} 
-        onFinish={() => {
+        onFinish={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
           setOnboardingStep("none");
+          // Force refetch so new turma is available immediately
+          const result = await tRefetch();
+          const novas = result.data || [];
+          if (novas.length > 0) {
+            setSelectedTurmaId(novas[0].id);
+          }
         }} 
       />
 
@@ -490,16 +496,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── */}
-      {aniversariantesMes.length > 0 ? (
-        <div className="relative pt-0 pb-1 mb-0 animate-fade-in overflow-hidden">
-          {/* Título da Seção */}
-          <div className="flex flex-col items-center justify-center mb-1">
-            <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-black/50">Próximos Aniversários</h2>
-            <div className="h-0.5 w-5 bg-primary/30 rounded-full"></div>
-          </div>
+      {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
+      <div className="relative pt-0 pb-1 mb-0 animate-fade-in overflow-hidden">
+        {/* Título da Seção */}
+        <div className="flex flex-col items-center justify-center mb-1">
+          <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-black/50">Próximos Aniversários</h2>
+          <div className="h-0.5 w-5 bg-primary/30 rounded-full"></div>
+        </div>
 
-          {/* Container dos Cards */}
+        {aniversariantesMes.length > 0 ? (
+          /* Container dos Cards */
           <div className={cn(
             "flex gap-3 relative z-10 px-1 min-h-[110px]",
             aniversariantesMes.length === 1 ? "justify-center" : "justify-center sm:gap-6"
@@ -576,8 +582,19 @@ export default function Dashboard() {
               );
             })}
           </div>
-        </div>
-      ) : proximasAtividades.length > 0 ? (
+        ) : (
+          /* Estado vazio — sem aniversariantes este mês */
+          <div className="flex flex-col items-center justify-center py-3 px-4 min-h-[80px]">
+            <div className="flex items-center gap-2 text-muted-foreground/40">
+              <Cake className="w-5 h-5" />
+              <p className="text-[10px] font-black uppercase tracking-widest">Nenhum aniversário este mês</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── PRÓXIMOS EVENTOS (apenas se não há aniversariantes) ── */}
+      {aniversariantesMes.length === 0 && proximasAtividades.length > 0 && (
         <div className="animate-fade-in mb-1">
           <div className="liturgical-frame p-0.5 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
              <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden">
@@ -622,7 +639,7 @@ export default function Dashboard() {
              </div>
           </div>
         </div>
-      ) : null}
+      )}
 
       {/* ── CARD PRINCIPAL DE TURMA ── */}
       {turmas.length > 0 && (
