@@ -73,7 +73,7 @@ export function TurmaStep({ open, onSuccess }: TurmaStepProps) {
     c.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const canSave = form.nome && form.diaCatequese && form.horario && form.local;
+  const canSave = form.nome && form.diaCatequese && form.horario;
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
@@ -158,7 +158,7 @@ export function TurmaStep({ open, onSuccess }: TurmaStepProps) {
                 />
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Local *</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Local</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
                   <input
