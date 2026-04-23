@@ -529,8 +529,8 @@ export default function Dashboard() {
       <div className="relative pt-0 pb-1 mb-0 animate-fade-in overflow-hidden">
         {/* Título da Seção */}
         <div className="flex flex-col items-center justify-center mb-1">
-          <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-black/50">Próximos Aniversários</h2>
-          <div className="h-0.5 w-5 bg-primary/30 rounded-full"></div>
+          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600">Próximos Aniversários</h2>
+          <div className="h-0.5 w-5 bg-blue-600/30 rounded-full"></div>
         </div>
 
         {aniversariantesMes.length > 0 ? (
@@ -753,49 +753,43 @@ export default function Dashboard() {
 
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
-        <div className="animate-float-up" style={{ animationDelay: '200ms' }}>
-          <div className="flex flex-col items-center justify-center px-1 mb-1.5 text-center">
-            <h2 className="text-[10px] font-black text-foreground uppercase tracking-tight">Próximo Encontro</h2>
-          </div>
-
-          <div 
-            className="float-card p-0 overflow-hidden border border-black/10 shadow-lg shadow-black/5 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-zinc-900/80 backdrop-blur-md cursor-pointer group"
-            onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-          >
-            <div className="p-3 active:scale-[0.99] transition-all">
-              <div className="flex gap-2.5 items-center">
-                {/* Chip de Data */}
-                <div className="flex flex-col items-center justify-center w-11 h-11 bg-white rounded-xl shadow-sm border border-blue-100 shrink-0 transform group-hover:scale-105 transition-all mt-1">
-                  <span className="text-[6px] font-black text-blue-600/60 uppercase leading-none mb-1 animate-sacred-pulse">
-                    {DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay() === 0 ? 6 : parseDataLocal(proximoEncontro.data).getDay() - 1].slice(0, 3)}
-                  </span>
-                  <span className="text-lg font-black text-blue-600 leading-none">
-                    {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
-                  </span>
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest",
-                      isUrgent ? "bg-destructive text-white shadow-sm shadow-destructive/20" : "bg-blue-500 text-white shadow-sm shadow-blue-500/20"
-                    )}>
-                      {diaLabel}
-                    </span>
+        <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
+          <div className="liturgical-frame p-0.5 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
+             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden border border-black/5 shadow-sm">
+                <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Próximo Encontro</h2>
                   </div>
-                  <h3 className="text-xs font-black text-foreground truncate leading-tight uppercase tracking-tight">
-                    {proximoEncontro.tema}
-                  </h3>
-                  {proximoEncontro.leituraBiblica && (
-                    <p className="text-[9px] text-muted-foreground font-bold truncate mt-0.5 italic flex items-center gap-1">
-                      <BookOpen className="w-2.5 h-2.5 text-primary/40" />
-                      {proximoEncontro.leituraBiblica}
-                    </p>
-                  )}
+
+                  <div className="w-full mt-1">
+                    <div 
+                      onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
+                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border border-primary/5 shadow-sm hover:border-primary/20 transition-all group cursor-pointer"
+                    >
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105 bg-blue-100 border-blue-200 text-blue-600"
+                      )}>
+                         <CalendarDays className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground tracking-tighter mb-0.5 leading-none">
+                          {diaLabel}
+                        </p>
+                        <h4 className="text-xs font-black text-foreground truncate uppercase leading-tight">
+                          {proximoEncontro.tema}
+                        </h4>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-[10px] font-black text-primary/80 tabular-nums">
+                          {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}/{String(parseDataLocal(proximoEncontro.data).getMonth() + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+             </div>
           </div>
         </div>
       )}
