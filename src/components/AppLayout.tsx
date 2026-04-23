@@ -45,7 +45,7 @@ export default function AppLayout() {
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
-    <div className="min-h-screen bg-[#FFF5F0] dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
+    <div className="min-h-screen bg-slate-200 dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
       {/* Header */}
       {!isPresentationMode && (
         <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0 print:hidden">
@@ -138,8 +138,8 @@ export default function AppLayout() {
 
       {/* Tab Bar */}
       {!isPresentationMode && currentPath !== "/modulos/mural" && (
-        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 sm:px-4 sm:pb-5 pb-1 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto w-full sm:max-w-md flex items-center justify-around h-[76px] px-2 sm:rounded-full rounded-t-[32px] bg-white dark:bg-zinc-900 backdrop-blur-xl border-2 border-purple-300 shadow-2xl shadow-black/10 dark:shadow-none">
+        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
+          <div className="mx-auto w-full sm:max-w-md flex items-center justify-around h-[76px] px-2 rounded-[32px] sm:rounded-full bg-white dark:bg-zinc-900 backdrop-blur-xl border-2 border-purple-300 shadow-2xl shadow-black/20 dark:shadow-none">
             {tabs.map((tab) => {
               const isActive =
                 tab.path === "/"
