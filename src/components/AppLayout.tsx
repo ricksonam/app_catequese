@@ -153,7 +153,7 @@ export default function AppLayout() {
                   onClick={() => navigate(tab.path)}
                   className={`group relative flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-red-500/10 dark:bg-red-500/20 scale-110 shadow-sm shadow-red-500/20`
+                      ? `${tab.color} bg-yellow-400/20 dark:bg-yellow-500/20 scale-110 shadow-sm shadow-yellow-400/40`
                       : "text-gray-600 dark:text-gray-400 hover:bg-amber-100/50"
                   }`}
                 >
