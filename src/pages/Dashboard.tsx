@@ -774,7 +774,7 @@ export default function Dashboard() {
                   <div className="w-full mt-1">
                     <div 
                       onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border-[0.5px] border-blue-900/10 shadow-sm hover:border-blue-900/30 transition-all group cursor-pointer"
+                      className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/10 rounded-2xl border-[0.5px] border-red-500/20 shadow-sm hover:border-red-500/30 transition-all group cursor-pointer"
                     >
                       <div className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-[0.5px] shadow-sm transition-transform group-hover:scale-105 bg-blue-100 border-blue-200 text-blue-600"
@@ -833,7 +833,7 @@ export default function Dashboard() {
                               navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
                             }
                           }}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-muted/30 border border-transparent hover:bg-muted/50 hover:border-black/5 transition-all cursor-pointer active:scale-95 group"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-orange-50 dark:bg-orange-900/10 border border-orange-500/20 hover:bg-orange-100/50 hover:border-orange-500/30 transition-all cursor-pointer active:scale-95 group"
                         >
                           <div className={cn(
                             "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-[0.5px] shadow-sm transition-transform group-hover:scale-105",
