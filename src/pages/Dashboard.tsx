@@ -15,6 +15,7 @@ import { TurmaStep } from "@/components/Onboarding/TurmaStep";
 import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const MESES_ABREV = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -760,16 +761,16 @@ export default function Dashboard() {
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
                   <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Próximo Encontro</h2>
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Próximo Encontro</h2>
                   </div>
 
                   <div className="w-full mt-1">
                     <div 
                       onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border border-primary/5 shadow-sm hover:border-primary/20 transition-all group cursor-pointer"
+                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border-[0.5px] border-blue-200/50 shadow-sm hover:border-blue-300/50 transition-all group cursor-pointer"
                     >
                       <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105 bg-blue-100 border-blue-200 text-blue-600"
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-[0.5px] shadow-sm transition-transform group-hover:scale-105 bg-blue-100 border-blue-200 text-blue-600"
                       )}>
                          <CalendarDays className="h-5 w-5" />
                       </div>
@@ -782,9 +783,14 @@ export default function Dashboard() {
                         </h4>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-[10px] font-black text-primary/80 tabular-nums">
-                          {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}/{String(parseDataLocal(proximoEncontro.data).getMonth() + 1).padStart(2, "0")}
-                        </span>
+                        <div className="flex flex-col items-center justify-center w-9 h-9 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-[0.5px] border-blue-100 dark:border-blue-800/50">
+                          <span className="text-[11px] font-black text-blue-600 leading-none">
+                            {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
+                          </span>
+                          <span className="text-[6px] font-black text-blue-600/60 uppercase leading-none mt-0.5">
+                            {MESES_ABREV[parseDataLocal(proximoEncontro.data).getMonth()]}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -811,11 +817,12 @@ export default function Dashboard() {
                   <div className="grid grid-cols-1 gap-2 w-full mt-1">
                     {proximasAtividades.map((item, idx) => {
                       const isMissao = item.itemType === 'missao';
+                      const colorClass = isMissao ? "blue" : "emerald";
                       return (
-                        <div key={item.id} className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border border-primary/5 shadow-sm hover:border-primary/20 transition-all group">
+                        <div key={item.id} className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border-[0.5px] border-black/5 shadow-sm hover:border-black/10 transition-all group">
                           <div className={cn(
-                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105",
-                            isMissao ? "bg-amber-100 border-amber-200 text-amber-600" : "bg-emerald-100 border-emerald-200 text-emerald-600"
+                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-[0.5px] shadow-sm transition-transform group-hover:scale-105",
+                            isMissao ? "bg-blue-100 border-blue-200 text-blue-600" : "bg-emerald-100 border-emerald-200 text-emerald-600"
                           )}>
                              {isMissao ? <Trophy className="h-5 w-5" /> : <Star className="h-5 w-5" />}
                           </div>
@@ -828,9 +835,17 @@ export default function Dashboard() {
                             </h4>
                           </div>
                           <div className="text-right shrink-0">
-                            <span className="text-[10px] font-black text-primary/80 tabular-nums">
-                              {formatarDataVigente(item.data).split(' ')[0]}
-                            </span>
+                            <div className={cn(
+                              "flex flex-col items-center justify-center w-9 h-9 rounded-lg border-[0.5px]",
+                              isMissao ? "bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/50" : "bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800/50"
+                            )}>
+                              <span className={cn("text-[11px] font-black leading-none", isMissao ? "text-blue-600" : "text-emerald-600")}>
+                                {String(parseDataLocal(item.data).getDate()).padStart(2, "0")}
+                              </span>
+                              <span className={cn("text-[6px] font-black uppercase leading-none mt-0.5", isMissao ? "text-blue-600/60" : "text-emerald-600/60")}>
+                                {MESES_ABREV[parseDataLocal(item.data).getMonth()]}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       );
