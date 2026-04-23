@@ -714,12 +714,12 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "group relative p-[2px] rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 shadow-sm",
-                "bg-black/10 shadow-black/5"
+                "group relative p-[1px] rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 shadow-sm",
+                "bg-slate-300 shadow-black/5"
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[19px] p-2 overflow-hidden flex flex-col items-center text-center">
+              <div className="relative h-full bg-white dark:bg-zinc-900 rounded-[21px] p-2 overflow-hidden flex flex-col items-center text-center">
                 <div className={cn(
                   "icon-box mx-auto mb-0.5 w-7 h-7 shadow-sm border animate-liturgical-float transition-all duration-500",
                   stat.color,
@@ -761,8 +761,8 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
-          <div className="p-[2px] rounded-[32px] overflow-hidden bg-blue-900/10 backdrop-blur-sm shadow-sm border-[0.5px] border-blue-900/20">
-             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[30px] p-3 relative overflow-hidden">
+          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-sm">
+             <div className="bg-white dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
@@ -811,8 +811,8 @@ export default function Dashboard() {
       {/* ── PRÓXIMAS ATIVIDADES ── */}
       {proximasAtividades.length > 0 && (
         <div className="animate-fade-in mt-4 mb-2">
-          <div className="p-[2px] rounded-[32px] overflow-hidden bg-black/5 backdrop-blur-sm shadow-sm border-[0.5px] border-black/10">
-             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[30px] p-3 relative overflow-hidden">
+          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-sm">
+             <div className="bg-white dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
