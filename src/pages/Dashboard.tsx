@@ -756,18 +756,20 @@ export default function Dashboard() {
       {proximoEncontro && (
         <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
           <div className="liturgical-frame p-0.5 rounded-[32px] overflow-hidden bg-white/50 backdrop-blur-sm">
-             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden border border-black/5 shadow-sm">
+             <div className="bg-white/80 dark:bg-zinc-900/80 rounded-[24px] p-3 relative overflow-hidden border-[0.5px] border-blue-900/20 shadow-sm">
                 <div className="absolute inset-0 liturgical-rays-bg opacity-30 animate-sacred-rays pointer-events-none" />
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
                   <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Próximo Encontro</h2>
+                    <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
+                    <h2 className="text-[12px] font-black uppercase tracking-[0.2em] text-blue-600">Próximo Encontro</h2>
+                    <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
                   </div>
 
                   <div className="w-full mt-1">
                     <div 
                       onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border-[0.5px] border-blue-200/50 shadow-sm hover:border-blue-300/50 transition-all group cursor-pointer"
+                      className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-800 rounded-2xl border-[0.5px] border-blue-900/10 shadow-sm hover:border-blue-900/30 transition-all group cursor-pointer"
                     >
                       <div className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-[0.5px] shadow-sm transition-transform group-hover:scale-105 bg-blue-100 border-blue-200 text-blue-600"
@@ -783,11 +785,11 @@ export default function Dashboard() {
                         </h4>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="flex flex-col items-center justify-center w-9 h-9 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-[0.5px] border-blue-100 dark:border-blue-800/50">
-                          <span className="text-[11px] font-black text-blue-600 leading-none">
+                        <div className="flex flex-col items-center justify-center w-11 h-11 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-[0.5px] border-blue-100 dark:border-blue-800/50">
+                          <span className="text-[13px] font-black text-blue-600 leading-none">
                             {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
                           </span>
-                          <span className="text-[6px] font-black text-blue-600/60 uppercase leading-none mt-0.5">
+                          <span className="text-[7px] font-black text-blue-600/60 uppercase leading-none mt-1">
                             {MESES_ABREV[parseDataLocal(proximoEncontro.data).getMonth()]}
                           </span>
                         </div>
@@ -810,7 +812,7 @@ export default function Dashboard() {
                 <div className="relative z-10 flex flex-col items-center text-center">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Próximas Atividades</h2>
+                    <h2 className="text-[12px] font-black uppercase tracking-[0.2em] text-primary">Próximas Atividades</h2>
                     <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
                   </div>
 
@@ -836,13 +838,13 @@ export default function Dashboard() {
                           </div>
                           <div className="text-right shrink-0">
                             <div className={cn(
-                              "flex flex-col items-center justify-center w-9 h-9 rounded-lg border-[0.5px]",
+                              "flex flex-col items-center justify-center w-11 h-11 rounded-lg border-[0.5px]",
                               isMissao ? "bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800/50" : "bg-emerald-50 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-800/50"
                             )}>
-                              <span className={cn("text-[11px] font-black leading-none", isMissao ? "text-blue-600" : "text-emerald-600")}>
+                              <span className={cn("text-[13px] font-black leading-none", isMissao ? "text-blue-600" : "text-emerald-600")}>
                                 {String(parseDataLocal(item.data).getDate()).padStart(2, "0")}
                               </span>
-                              <span className={cn("text-[6px] font-black uppercase leading-none mt-0.5", isMissao ? "text-blue-600/60" : "text-emerald-600/60")}>
+                              <span className={cn("text-[7px] font-black uppercase leading-none mt-1", isMissao ? "text-blue-600/60" : "text-emerald-600/60")}>
                                 {MESES_ABREV[parseDataLocal(item.data).getMonth()]}
                               </span>
                             </div>
