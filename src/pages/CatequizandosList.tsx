@@ -349,8 +349,8 @@ export default function CatequizandosList() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 animate-fade-in">
-        <div className="flex items-center gap-3 w-full sm:w-auto overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 animate-fade-in">
+        <div className="flex items-center gap-3 w-full sm:w-auto overflow-hidden pt-1">
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div className="min-w-0 flex flex-1 items-center justify-between gap-2">
             <div>
@@ -371,12 +371,12 @@ export default function CatequizandosList() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 shrink-0">
-          <div className="flex-1 sm:flex-none">
-            {id && <ReportModule context="catequizandos" turmaId={id} />}
-          </div>
-          <button onClick={() => setShowFrequencia(true)} className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent"><CalendarDays className="h-4 w-4" /> Frequência</button>
-          <Dialog open={open} onOpenChange={setOpen}>
+        <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
+          <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
+            <div className="flex-1 sm:flex-none">
+              {id && <ReportModule context="catequizandos" turmaId={id} />}
+            </div>
+            <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[90vh] overflow-y-auto border-border/30 w-full max-w-2xl">
               <DialogHeader><DialogTitle className="text-2xl font-black">Ficha de Inscrição</DialogTitle></DialogHeader>
@@ -581,6 +581,8 @@ export default function CatequizandosList() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
+          <button onClick={() => setShowFrequencia(true)} className="action-btn-sm w-full justify-center whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-500/10"><CalendarDays className="h-4 w-4" /> Frequência</button>
         </div>
       </div>
 
@@ -616,9 +618,13 @@ export default function CatequizandosList() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm sm:text-base font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">{c.nome}</h3>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                    {c.responsavel && (
+                    {c.dataNascimento ? (
                       <span className="inline-flex items-center text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full truncate">
-                         Resp: <span className="text-foreground ml-1 truncate">{c.responsavel.split(' ')[0]}</span>
+                         Nasc: <span className="text-foreground ml-1">{new Date(c.dataNascimento + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center text-[10px] sm:text-xs font-semibold text-muted-foreground italic truncate">
+                        Nasc. não informado
                       </span>
                     )}
                     {c.dataNascimento && (
