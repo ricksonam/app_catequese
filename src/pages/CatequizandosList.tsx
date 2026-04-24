@@ -332,17 +332,6 @@ export default function CatequizandosList() {
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
-           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
-        </div>
-        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando Catequizandos...</p>
-      </div>
-    );
-  }
-
   const aniversariantesDoMes = useMemo(() => {
     const hoje = new Date();
     const diaAtual = hoje.getDate();
@@ -364,6 +353,17 @@ export default function CatequizandosList() {
 
   const hasAniversariante = aniversariantesDoMes.length > 0;
   const filteredList = filterAniversarios ? aniversariantesDoMes : list;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
+           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando Catequizandos...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
