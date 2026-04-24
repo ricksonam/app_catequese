@@ -459,27 +459,11 @@ export default function CatequizandosList() {
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 animate-fade-in">
         <div className="flex items-center gap-3 w-full sm:w-auto overflow-hidden pt-1">
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div className="min-w-0 flex flex-1 items-center justify-between gap-2">
+          <div className="min-w-0 flex flex-1 items-center gap-2">
             <div>
               <h1 className="text-xl font-bold text-foreground truncate">Catequizandos</h1>
               <p className="text-xs text-muted-foreground truncate">{list.length} cadastrados</p>
             </div>
-            
-            <button 
-              onClick={() => setShowCelebracoes(true)}
-              className={cn(
-                "px-3 py-1.5 rounded-full border flex items-center gap-2 transition-all active:scale-95 shadow-sm",
-                filterAniversarios || filterBatismos 
-                  ? "bg-amber-500 border-amber-600 text-white shadow-amber-500/20" 
-                  : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
-              )}
-            >
-              <Cake className={cn("w-3.5 h-3.5", (filterAniversarios || filterBatismos) ? "text-white" : "text-amber-600")} />
-              <span className="text-[10px] font-black uppercase tracking-tight">Aniversariantes</span>
-              {hasQualquerCelebracao && !filterAniversarios && !filterBatismos && (
-                <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-              )}
-            </button>
           </div>
         </div>
         <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
@@ -693,7 +677,17 @@ export default function CatequizandosList() {
             </DialogContent>
           </Dialog>
           </div>
-          <button onClick={() => setShowFrequencia(true)} className="action-btn-sm w-full justify-center whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-500/10"><CalendarDays className="h-4 w-4" /> Painel da frequência</button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <button onClick={() => setShowFrequencia(true)} className="action-btn-sm flex-1 justify-center whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-500/10">
+              <CalendarDays className="h-4 w-4" /> Painel da frequência
+            </button>
+            <button onClick={() => setShowCelebracoes(true)} className="relative action-btn-sm flex-1 justify-center whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white border-transparent shadow-md shadow-amber-500/10">
+              <Cake className="h-4 w-4" /> Painel dos aniversários
+              {hasQualquerCelebracao && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
