@@ -102,7 +102,7 @@ export default function AuthPage() {
         if (msg === "Failed to fetch") {
           msg = "O servidor do iCatequese não respondeu. Verifique se seu firewall ou antivírus não está bloqueando o domínio do Supabase.";
         } else if (msg.includes("Invalid login credentials") || msg.includes("Invalid credentials")) {
-          msg = "Email ou senha incorretos. Verifique os dados e tente novamente.";
+          msg = "Não conseguimos localizar seus dados em nosso sistema. Por favor, verifique se o e-mail e a senha estão corretos ou, se ainda não tem uma conta, convidamos você a realizar o seu cadastro.";
         }
         
         toast({ 
@@ -277,6 +277,13 @@ export default function AuthPage() {
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-primary/20" />
             <span className="text-primary/40 text-[10px] font-black tracking-[0.2em] uppercase">✝ Ad maiorem Dei gloriam ✝</span>
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-primary/20" />
+          </div>
+
+          {/* Convite Elegante */}
+          <div className="px-4 mb-8">
+            <p className="text-slate-600/80 font-medium text-xs leading-relaxed italic">
+              Bem-vindo ao <span className="text-primary font-black not-italic">iCatequese</span>! Se você já possui uma conta, basta clicar em <span className="text-primary font-black not-italic">Entrar</span>. Caso ainda não faça parte da nossa caminhada, sinta-se convidado a realizar o seu <span className="text-primary font-black not-italic">Cadastro</span>.
+            </p>
           </div>
 
           {/* Botões */}
