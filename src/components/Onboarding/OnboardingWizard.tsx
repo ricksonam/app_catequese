@@ -39,11 +39,11 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
 
   return (
     <Dialog open={currentStep !== "none" || showAbout} onOpenChange={() => {}}>
-      <DialogContent hideClose className="max-w-2xl w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl bg-white dark:bg-zinc-950 flex flex-col h-[90vh] sm:h-auto sm:max-h-[85vh]">
+      <DialogContent hideClose className="max-w-2xl w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl bg-zinc-50 dark:bg-zinc-950 flex flex-col h-[90vh] sm:h-auto sm:max-h-[85vh]">
         
         {/* Top Progress Bar */}
         {!showAbout && (
-          <div className="bg-zinc-50 dark:bg-zinc-900 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
+          <div className="bg-white dark:bg-zinc-900 px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 shrink-0">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -102,7 +102,8 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {!showAbout ? (
-            <div className="p-0">
+            <div className="p-4 sm:p-6">
+              <div className="bg-white dark:bg-zinc-900 rounded-[24px] shadow-sm border border-zinc-200/60 overflow-hidden animate-in fade-in zoom-in-95 duration-500">
               {currentStep === "paroquia" && (
                 <div className="animate-in fade-in slide-in-from-right-4 duration-500">
                   <ParoquiaStep embedded onSuccess={() => onStepChange("catequista")} />

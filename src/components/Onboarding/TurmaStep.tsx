@@ -103,22 +103,29 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
       <div className={cn("overflow-y-auto flex-1 px-6 pb-6 space-y-5", embedded ? "pt-2" : "pt-0")}>
         {/* Identificação */}
         <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-lg bg-primary/10 flex items-center justify-center text-[10px]">🏛️</div>
-              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary">Identificação da Turma</p>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-sm shadow-sm">🏛️</div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">Identificação da Turma</p>
             </div>
-            <div className="h-1 w-full bg-primary/10 rounded-full overflow-hidden">
-              <div className="h-full w-24 bg-primary rounded-full" />
+            <div className="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
+              <div className="h-full w-24 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.3)]" />
             </div>
           </div>
 
           <div>
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Nome da Turma *</label>
+          <div className="flex items-center gap-3 border-b pb-3 border-zinc-100">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-sm shadow-sm font-bold text-primary">01</div>
+            <p className="text-sm font-black uppercase tracking-widest text-foreground">Identificação</p>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">Nome da Turma *</label>
             <select
               value={form.nome}
               onChange={(e) => update("nome", e.target.value)}
-              className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-emerald-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
+              className="w-full h-12 px-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
             >
               <option value="">Selecione...</option>
               {NOMES_TURMA.map(n => <option key={n} value={n}>{n}</option>)}
@@ -127,11 +134,11 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Ano/Ciclo *</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">Ano/Ciclo *</label>
               <select
                 value={form.ano}
                 onChange={(e) => update("ano", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-emerald-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
+                className="w-full h-12 px-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
               >
                 <option value="1° Ano">1° Ano</option>
                 <option value="2° Ano">2° Ano</option>
@@ -182,23 +189,23 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
 
         {/* Comunidade e Catequistas */}
         <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-lg bg-blue-500/10 flex items-center justify-center text-[10px]">👥</div>
-              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-blue-500">Comunidade e Equipe</p>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-sm shadow-sm">👥</div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600">Comunidade e Equipe</p>
             </div>
-            <div className="h-1 w-full bg-blue-500/10 rounded-full overflow-hidden">
-              <div className="h-full w-32 bg-blue-500 rounded-full" />
+            <div className="h-1.5 w-full bg-blue-500/10 rounded-full overflow-hidden">
+              <div className="h-full w-32 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
             </div>
           </div>
 
           {comunidades.length > 0 && (
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Comunidade</label>
+              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">Comunidade</label>
               <select
                 value={form.comunidadeId}
                 onChange={(e) => update("comunidadeId", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-blue-100 focus:border-blue-400 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
+                className="w-full h-12 px-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
               >
                 <option value="">Selecione a comunidade...</option>
                 {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}

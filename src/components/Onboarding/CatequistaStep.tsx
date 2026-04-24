@@ -51,8 +51,14 @@ function calcAge(birth: string): number | null {
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">{label}</label>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-sky-500/50 focus:bg-background transition-all outline-none text-sm font-bold" />
+      <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">{label}</label>
+      <input 
+        type={type} 
+        value={value} 
+        onChange={(e) => onChange(e.target.value)} 
+        placeholder={placeholder} 
+        className="w-full h-12 px-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
+      />
     </div>
   );
 }
@@ -136,13 +142,15 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
 
         {/* Dados Pessoais */}
         <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-sky-600" />
-              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-sky-600">Dados Pessoais</p>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center">
+                <User className="h-4.5 w-4.5 text-sky-600" />
+              </div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-700">Dados Pessoais</p>
             </div>
-            <div className="h-1 w-full bg-sky-600/10 rounded-full overflow-hidden">
-              <div className="h-full w-24 bg-sky-600 rounded-full" />
+            <div className="h-1.5 w-full bg-sky-600/10 rounded-full overflow-hidden">
+              <div className="h-full w-24 bg-sky-600 rounded-full shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
             </div>
           </div>
 
@@ -155,7 +163,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
                 type="date"
                 value={form.dataNascimento}
                 onChange={(e) => updateField("dataNascimento", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-sky-500/50 focus:bg-background transition-all outline-none text-sm font-bold"
+                className="w-full h-12 px-4 rounded-2xl bg-white border-2 border-zinc-100 focus:border-sky-500 focus:bg-background transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md"
               />
             </div>
             <div>
@@ -169,13 +177,15 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
 
         {/* Endereço */}
         <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-indigo-500" />
-              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-indigo-500">Endereço</p>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center">
+                <MapPin className="h-4.5 w-4.5 text-indigo-600" />
+              </div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-700">Endereço</p>
             </div>
-            <div className="h-1 w-full bg-indigo-500/10 rounded-full overflow-hidden">
-              <div className="h-full w-16 bg-indigo-500 rounded-full" />
+            <div className="h-1.5 w-full bg-indigo-500/10 rounded-full overflow-hidden">
+              <div className="h-full w-16 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.3)]" />
             </div>
           </div>
 
@@ -193,13 +203,15 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
 
         {/* Contato e Profissão */}
         <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-sky-600" />
-              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-sky-600">Contato e Profissão</p>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center">
+                <Phone className="h-4.5 w-4.5 text-sky-600" />
+              </div>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-700">Contato e Profissão</p>
             </div>
-            <div className="h-1 w-full bg-sky-600/10 rounded-full overflow-hidden">
-              <div className="h-full w-28 bg-sky-600 rounded-full" />
+            <div className="h-1.5 w-full bg-sky-600/10 rounded-full overflow-hidden">
+              <div className="h-full w-28 bg-sky-600 rounded-full shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
             </div>
           </div>
 
