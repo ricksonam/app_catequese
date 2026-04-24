@@ -41,8 +41,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
         type={type} 
         value={value} 
         onChange={(e) => onChange(e.target.value)} 
-        placeholder={placeholder} 
-        className="w-full h-12 px-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
+        className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
       />
     </div>
   );
@@ -54,8 +53,7 @@ function FieldTextArea({ label, value, onChange }: { label: string; value: strin
       <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">{label}</label>
       <textarea 
         value={value} 
-        onChange={(e) => onChange(e.target.value)} 
-        className="w-full px-4 py-3 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold resize-none min-h-[80px] shadow-sm focus:shadow-md" 
+        className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold resize-none min-h-[80px] shadow-sm focus:shadow-md" 
       />
     </div>
   );

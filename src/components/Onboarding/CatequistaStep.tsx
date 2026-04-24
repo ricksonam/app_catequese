@@ -56,8 +56,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
         type={type} 
         value={value} 
         onChange={(e) => onChange(e.target.value)} 
-        placeholder={placeholder} 
-        className="w-full h-12 px-4 rounded-2xl bg-zinc-50/50 dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
+        className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
       />
     </div>
   );

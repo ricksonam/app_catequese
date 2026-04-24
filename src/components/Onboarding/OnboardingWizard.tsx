@@ -100,16 +100,16 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
         )}
 
         {/* Content Area */}
-        <div className="flex-1 flex flex-col relative bg-white dark:bg-zinc-950 rounded-b-[32px] overflow-hidden">
+        <div className="flex-1 flex flex-col relative bg-white dark:bg-zinc-950 rounded-b-[32px] overflow-hidden min-h-0">
           {!showAbout ? (
             <>
               {currentStep === "paroquia" && (
-                <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-right-4 duration-500">
                   <ParoquiaStep embedded onSuccess={() => onStepChange("catequista")} />
                 </div>
               )}
               {currentStep === "catequista" && (
-                <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-right-4 duration-500">
                    <div className="px-6 pt-6 pb-2 shrink-0 border-b border-black/5 dark:border-white/5">
                      <button 
                        onClick={() => onStepChange("paroquia")}
@@ -122,7 +122,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
                 </div>
               )}
               {currentStep === "turma" && (
-                <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex-1 flex flex-col min-h-0 animate-in fade-in slide-in-from-right-4 duration-500">
                    <div className="px-6 pt-6 pb-2 shrink-0 border-b border-black/5 dark:border-white/5">
                      <button 
                        onClick={() => onStepChange("catequista")}
