@@ -49,7 +49,7 @@ const TIPO_ICONES: Record<string, string> = {
 export default function AtividadesList() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: turmas = [] } = useTurmas();
+  const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: list = [], isLoading } = useAtividades(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
   const mutation = useAtividadeMutation();
@@ -112,7 +112,7 @@ export default function AtividadesList() {
     w.document.write('</body></html>'); w.document.close(); setTimeout(() => w.print(), 300);
   };
 
-  if (isLoading) {
+  if (isLoading || tLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">

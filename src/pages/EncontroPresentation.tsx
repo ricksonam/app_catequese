@@ -9,8 +9,8 @@ const STEP_COLORS: Record<string, string> = { oracao_inicial: "from-[hsl(270,45%
 export default function EncontroPresentation() {
   const { id, encontroId } = useParams();
   const navigate = useNavigate();
-  const { data: turmas = [] } = useTurmas();
-  const { data: encontros = [] } = useEncontros(id);
+  const { data: turmas = [], isLoading: tLoading } = useTurmas();
+  const { data: encontros = [], isLoading: eLoading } = useEncontros(id);
   const turma = turmas.find((t) => t.id === id);
   const encontro = encontros.find((e) => e.id === encontroId);
   const [currentStep, setCurrentStep] = useState(0);
@@ -43,6 +43,15 @@ export default function EncontroPresentation() {
   const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
   const handleTouchMove = (e: React.TouchEvent) => { touchEndX.current = e.touches[0].clientX; };
   const handleTouchEnd = () => { const diff = touchStartX.current - touchEndX.current; if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); } };
+
+  if (eLoading || tLoading) {
+    return (
+      <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center gap-4">
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="font-black uppercase tracking-widest text-muted-foreground text-xs animate-pulse">Iniciando apresentação...</p>
+      </div>
+    );
+  }
 
   if (!encontro || !step) return <div className="fixed inset-0 z-50 bg-background flex items-center justify-center"><p className="text-muted-foreground">Encontro não encontrado</p></div>;
 

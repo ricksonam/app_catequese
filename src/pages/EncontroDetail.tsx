@@ -20,9 +20,9 @@ const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: 
 export default function EncontroDetail() {
   const { id, encontroId } = useParams();
   const navigate = useNavigate();
-  const { data: turmas = [] } = useTurmas();
-  const { data: allEncontros = [] } = useEncontros(id);
-  const { data: catequizandos = [] } = useCatequizandos(id);
+  const { data: turmas = [], isLoading: tLoading } = useTurmas();
+  const { data: allEncontros = [], isLoading: eLoading } = useEncontros(id);
+  const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos(id);
   const { data: ocorrencias = [] } = useOcorrencias(id);
   const encontroMut = useEncontroMutation();
   const deleteMut = useDeleteEncontro();
@@ -67,8 +67,29 @@ export default function EncontroDetail() {
     }
   }, [showOcorrencias, encontro?.avaliacao]);
 
+  if (eLoading || tLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
+           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando encontro...</p>
+      </div>
+    );
+  }
+
   if (!encontro) {
-    return <div className="text-center py-20"><p className="text-muted-foreground">Encontro não encontrado</p><button onClick={() => navigate(-1)} className="text-primary text-sm mt-2 font-semibold">Voltar</button></div>;
+    return (
+      <div className="text-center py-20 flex flex-col items-center gap-4">
+        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+          <CalendarDays className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="text-muted-foreground font-medium">Encontro não encontrado</p>
+          <button onClick={() => navigate(-1)} className="text-primary text-sm mt-2 font-semibold hover:underline">Voltar para a lista</button>
+        </div>
+      </div>
+    );
   }
 
   const currentStatus = STATUS_OPTIONS.find((s) => s.value === encontro.status)!;

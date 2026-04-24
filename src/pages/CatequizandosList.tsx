@@ -129,7 +129,7 @@ const statusConfig: Record<CatequizandoStatus, { label: string; color: string }>
 export default function CatequizandosList() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: turmas = [] } = useTurmas();
+  const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: list = [], isLoading } = useCatequizandos(id);
   const mutation = useCatequizandoMutation();
   const deleteMut = useDeleteCatequizando();
@@ -459,7 +459,7 @@ export default function CatequizandosList() {
   }, [filterAniversarios, filterBatismos, list]);
 
 
-  if (isLoading) {
+  if (isLoading || tLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">

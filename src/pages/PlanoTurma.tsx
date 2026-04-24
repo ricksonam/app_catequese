@@ -14,10 +14,10 @@ const statusColors: Record<string, string> = { pendente: 'bg-primary', realizado
 export default function PlanoTurma() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: turmas = [] } = useTurmas();
-  const { data: encontros = [] } = useEncontros(id);
-  const { data: atividades = [] } = useAtividades(id);
-  const { data: catequizandos = [] } = useCatequizandos(id);
+  const { data: turmas = [], isLoading: tLoading } = useTurmas();
+  const { data: encontros = [], isLoading: eLoading } = useEncontros(id);
+  const { data: atividades = [], isLoading: aLoading } = useAtividades(id);
+  const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos(id);
   const turma = turmas.find(t => t.id === id);
 
   const [activeFilter, setActiveFilter] = useState<'all' | 'encontro' | 'atividade'>('all');
@@ -95,6 +95,17 @@ export default function PlanoTurma() {
       duration: 5000,
     });
   };
+
+  if (tLoading || eLoading || aLoading || cLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
+           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando plano...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
