@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, MapPin, ArrowRight, Sparkles, Check, Search } from "lucide-react";
+import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight } from "lucide-react";
 import { useTurmaMutation, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -238,16 +238,16 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                       key={cat.id}
                       onClick={() => toggleCatequista(cat.id)}
                       className={cn(
-                        "flex items-center gap-3 p-2.5 rounded-2xl border-2 transition-all active:scale-[0.98] text-left group",
+                        "flex items-center gap-3 p-3 rounded-2xl border-2 transition-all active:scale-[0.98] text-left w-full",
                         isSelected
-                          ? "bg-emerald-50/50 border-emerald-500 shadow-sm shadow-emerald-500/10"
-                          : "bg-background border-muted/40 hover:border-emerald-200"
+                          ? "bg-white border-emerald-500 shadow-md shadow-emerald-500/15"
+                          : "bg-white border-zinc-200 hover:border-emerald-300 hover:shadow-sm"
                       )}
                     >
-                      <div className="relative">
-                        <Avatar className={cn("h-10 w-10 border-2 transition-all", isSelected ? "border-emerald-500 ring-2 ring-emerald-500/20" : "border-muted/30")}>
+                      <div className="relative shrink-0">
+                        <Avatar className={cn("h-10 w-10 border-2 transition-all", isSelected ? "border-emerald-500 ring-2 ring-emerald-500/30" : "border-zinc-200")}>
                           <AvatarImage src={cat.foto} alt={cat.nome} />
-                          <AvatarFallback className={cn("font-black text-xs", isSelected ? "bg-emerald-500 text-white" : "bg-muted")}>
+                          <AvatarFallback className={cn("font-black text-xs", isSelected ? "bg-emerald-500 text-white" : "bg-zinc-100 text-zinc-700")}>
                             {cat.nome.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -258,15 +258,23 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={cn("text-sm font-bold truncate", isSelected ? "text-emerald-700" : "text-foreground")}>{cat.nome}</p>
+                        <p className="text-sm font-bold text-zinc-900 truncate">{cat.nome}</p>
                         <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">
                           {turmas.filter(t => t.catequistasIds?.includes(cat.id)).length > 0 
                             ? `Vinculado a ${turmas.filter(t => t.catequistasIds?.includes(cat.id)).length} turma(s)` 
                             : "Disponível"}
                         </p>
                       </div>
-                      <div className={cn("w-5 h-5 rounded-full border-[3px] flex items-center justify-center transition-all", isSelected ? "bg-emerald-500 border-emerald-500" : "bg-white border-slate-400 dark:border-slate-500")}>
-                        {isSelected && <Check className="h-3 w-3 text-white" strokeWidth={4} />}
+                      <div className={cn(
+                        "w-7 h-7 rounded-full border-[2.5px] flex items-center justify-center transition-all shrink-0",
+                        isSelected
+                          ? "bg-emerald-500 border-emerald-500 shadow-sm shadow-emerald-500/30"
+                          : "bg-white border-zinc-300"
+                      )}>
+                        {isSelected
+                          ? <Check className="h-3.5 w-3.5 text-white" strokeWidth={3.5} />
+                          : <ChevronRight className="h-3.5 w-3.5 text-zinc-400" strokeWidth={2.5} />
+                        }
                       </div>
                     </button>
                   );
