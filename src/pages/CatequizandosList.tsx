@@ -944,8 +944,24 @@ export default function CatequizandosList() {
               </div>
             </div>
 
+            {/* Tabs Control */}
+            <div className="flex items-center gap-2 mt-5 bg-black/5 p-1 rounded-xl">
+              <button 
+                onClick={() => setCelebracoesTab('nascimento')}
+                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'nascimento' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+              >
+                Nascimento ({aniversariantesFiltrados.length})
+              </button>
+              <button 
+                onClick={() => setCelebracoesTab('batismo')}
+                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'batismo' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+              >
+                Batismo ({batismosFiltrados.length})
+              </button>
+            </div>
+
             {/* Period Filter (Anual/Mensal) */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 mt-5">
               <div className="flex items-center gap-2 bg-black/5 p-1 rounded-xl">
                 <button 
                   onClick={() => setPeriodoCelebracao('anual')}
@@ -979,22 +995,7 @@ export default function CatequizandosList() {
                 </div>
               )}
             </div>
-            
-            {/* Tabs Control */}
-            <div className="flex items-center gap-2 mt-5 bg-black/5 p-1 rounded-xl">
-              <button 
-                onClick={() => setCelebracoesTab('nascimento')}
-                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'nascimento' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
-              >
-                Nascimento ({aniversariantesFiltrados.length})
-              </button>
-              <button 
-                onClick={() => setCelebracoesTab('batismo')}
-                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'batismo' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
-              >
-                Batismo ({batismosFiltrados.length})
-              </button>
-            </div>
+
           </div>
 
           <div className="flex-1 overflow-y-auto p-5 bg-black/[0.02]">
