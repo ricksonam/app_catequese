@@ -135,10 +135,15 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
         </div>
 
         {/* Dados Pessoais */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <User className="h-4 w-4 text-sky-600" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-sky-600">Dados Pessoais</p>
+        <div className="space-y-4 pt-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-sky-600" />
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-sky-600">Dados Pessoais</p>
+            </div>
+            <div className="h-1 w-full bg-sky-600/10 rounded-full overflow-hidden">
+              <div className="h-full w-24 bg-sky-600 rounded-full" />
+            </div>
           </div>
 
           <FieldInput label="Nome Completo *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Seu nome completo" />
@@ -163,10 +168,15 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
         </div>
 
         {/* Endereço */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <MapPin className="h-4 w-4 text-indigo-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Endereço</p>
+        <div className="space-y-4 pt-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-indigo-500" />
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-indigo-500">Endereço</p>
+            </div>
+            <div className="h-1 w-full bg-indigo-500/10 rounded-full overflow-hidden">
+              <div className="h-full w-16 bg-indigo-500 rounded-full" />
+            </div>
           </div>
 
           <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} placeholder="Rua, Avenida..." />
@@ -182,10 +192,15 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
         </div>
 
         {/* Contato e Profissão */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <Phone className="h-4 w-4 text-sky-600" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-sky-600">Contato e Profissão</p>
+        <div className="space-y-4 pt-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-sky-600" />
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-sky-600">Contato e Profissão</p>
+            </div>
+            <div className="h-1 w-full bg-sky-600/10 rounded-full overflow-hidden">
+              <div className="h-full w-28 bg-sky-600 rounded-full" />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

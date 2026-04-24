@@ -102,10 +102,15 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
       {/* Scrollable Form */}
       <div className={cn("overflow-y-auto flex-1 px-6 pb-6 space-y-5", embedded ? "pt-2" : "pt-0")}>
         {/* Identificação */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center text-sm">🏛️</div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary">Identificação</p>
+        <div className="space-y-4 pt-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-lg bg-primary/10 flex items-center justify-center text-[10px]">🏛️</div>
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary">Identificação da Turma</p>
+            </div>
+            <div className="h-1 w-full bg-primary/10 rounded-full overflow-hidden">
+              <div className="h-full w-24 bg-primary rounded-full" />
+            </div>
           </div>
 
           <div>
@@ -176,10 +181,15 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
         </div>
 
         {/* Comunidade e Catequistas */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <div className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center text-sm">👥</div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-blue-500">Comunidade e Equipe</p>
+        <div className="space-y-4 pt-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-lg bg-blue-500/10 flex items-center justify-center text-[10px]">👥</div>
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-blue-500">Comunidade e Equipe</p>
+            </div>
+            <div className="h-1 w-full bg-blue-500/10 rounded-full overflow-hidden">
+              <div className="h-full w-32 bg-blue-500 rounded-full" />
+            </div>
           </div>
 
           {comunidades.length > 0 && (

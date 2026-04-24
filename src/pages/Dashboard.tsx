@@ -160,13 +160,15 @@ export default function Dashboard() {
         return;
       }
 
-      // Direciona para o passo de cadastro correto baseado nos dados reais (sem tela de intro)
-      if (paroquias.length === 0 && comunidades.length === 0) {
-        setOnboardingStep("paroquia");
-      } else if (catequistas.length === 0) {
-        setOnboardingStep("catequista");
-      } else {
-        setOnboardingStep("turma");
+      // Direciona para o passo de cadastro correto baseado nos dados reais (somente se não estiver já no meio de um passo)
+      if (onboardingStep === "none") {
+        if (paroquias.length === 0 && comunidades.length === 0) {
+          setOnboardingStep("paroquia");
+        } else if (catequistas.length === 0) {
+          setOnboardingStep("catequista");
+        } else if (turmas.length === 0) {
+          setOnboardingStep("turma");
+        }
       }
     }
   }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length, user, isReady]);

@@ -46,25 +46,28 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
           <div className="bg-zinc-50 dark:bg-zinc-900 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Layout className="h-4 w-4 text-primary" />
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <Layout className="h-5 w-5 text-primary" />
                 </div>
-                <h2 className="font-black text-sm uppercase tracking-widest text-foreground">Configuração Inicial</h2>
+                <div className="flex flex-col">
+                  <h2 className="font-black text-sm uppercase tracking-widest text-foreground">Configuração</h2>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Cadastros Básicos</p>
+                </div>
               </div>
               <button 
                 onClick={() => signOut()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition-all active:scale-95 shadow-sm"
               >
-                <LogOut className="h-3 w-3" /> Sair
+                <LogOut className="h-3.5 w-3.5" /> Sair
               </button>
             </div>
 
             <div className="flex items-center justify-between relative px-2">
               {/* Line background */}
-              <div className="absolute top-4 left-0 w-full h-[2px] bg-zinc-200 dark:bg-zinc-800 z-0" />
+              <div className="absolute top-5 left-0 w-full h-[3px] bg-zinc-200 dark:bg-zinc-800 z-0 rounded-full" />
               {/* Active line */}
               <div 
-                className="absolute top-4 left-0 h-[2px] bg-primary z-0 transition-all duration-500" 
+                className="absolute top-5 left-0 h-[3px] bg-primary z-0 transition-all duration-700 ease-in-out rounded-full shadow-[0_0_8px_rgba(var(--primary),0.4)]" 
                 style={{ width: `${activeIndex === -1 ? 0 : (activeIndex / (steps.length - 1)) * 100}%` }}
               />
 
@@ -74,18 +77,18 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
                 const isActive = idx === activeIndex;
 
                 return (
-                  <div key={step.id} className="relative z-10 flex flex-col items-center gap-2">
+                  <div key={step.id} className="relative z-10 flex flex-col items-center gap-2.5">
                     <div className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                      isCompleted ? "bg-primary border-primary text-white" : 
-                      isActive ? "bg-white dark:bg-zinc-950 border-primary text-primary shadow-lg shadow-primary/20 scale-110" : 
-                      "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-muted-foreground"
+                      "w-10 h-10 rounded-2xl flex items-center justify-center border-2 transition-all duration-500",
+                      isCompleted ? "bg-primary border-primary text-white shadow-lg shadow-primary/20" : 
+                      isActive ? "bg-white dark:bg-zinc-950 border-primary text-primary shadow-xl shadow-primary/30 scale-110" : 
+                      "bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-muted-foreground/60"
                     )}>
-                      {isCompleted ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                      {isCompleted ? <Check className="h-5 w-5" strokeWidth={3} /> : <Icon className="h-5 w-5 opacity-80" />}
                     </div>
                     <span className={cn(
-                      "text-[9px] font-black uppercase tracking-tighter",
-                      isActive ? "text-primary" : "text-muted-foreground"
+                      "text-[10px] font-black uppercase tracking-widest transition-colors duration-300",
+                      isActive ? "text-primary" : isCompleted ? "text-primary/70" : "text-muted-foreground"
                     )}>
                       {step.label}
                     </span>

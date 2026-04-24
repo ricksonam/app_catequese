@@ -129,10 +129,15 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
       {/* Scrollable Form */}
       <div className={cn("overflow-y-auto flex-1 px-8 pb-6 space-y-5", embedded ? "pt-2" : "pt-0")}>
         {/* Seção Paróquia */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <Church className="h-4 w-4 text-violet-600" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-violet-600">Dados da Paróquia / Área / Escola</p>
+        <div className="space-y-4 pt-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Church className="h-4 w-4 text-violet-600" />
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">Dados da Paróquia / Sede</p>
+            </div>
+            <div className="h-1 w-full bg-violet-600/10 rounded-full overflow-hidden">
+              <div className="h-full w-24 bg-violet-600 rounded-full" />
+            </div>
           </div>
 
           <div>
@@ -189,10 +194,15 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
         </div>
 
         {/* Seção Comunidade */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <Users className="h-4 w-4 text-indigo-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Dados da Comunidade / Núcleo</p>
+        <div className="space-y-4 pt-4">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-indigo-500" />
+              <p className="text-[11px] font-black uppercase tracking-[0.15em] text-indigo-500">Dados da Comunidade / Capela</p>
+            </div>
+            <div className="h-1 w-full bg-indigo-500/10 rounded-full overflow-hidden">
+              <div className="h-full w-32 bg-indigo-500 rounded-full" />
+            </div>
           </div>
 
           <div>
