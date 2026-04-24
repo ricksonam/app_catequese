@@ -1,4 +1,4 @@
-import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X, Check, Loader2, Send, Users, Sparkles, User, UserCircle, Aperture } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X as XIcon, Check, Loader2, Send, Users, Sparkles, User, UserCircle, Aperture } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -475,7 +475,7 @@ export default function MuralFotos() {
                    disabled={isPublishing}
                    className="absolute top-6 right-6 z-[110] p-4 bg-black/60 hover:bg-black/80 rounded-full text-white backdrop-blur-xl transition-all active:scale-95 disabled:opacity-50 border border-white/10"
                  >
-                   <X className="w-6 h-6" />
+                   <XIcon className="w-6 h-6" />
                  </button>
                  <div className="w-full h-full p-4 flex items-center justify-center">
                    <img src={pendingFile.preview} className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl shadow-black/50" />
@@ -541,7 +541,7 @@ export default function MuralFotos() {
         <DialogContent className="rounded-3xl p-0 overflow-hidden max-w-md border-border/30 bg-background/95 backdrop-blur-3xl shadow-2xl">
           {viewFoto && (
             <div className="relative">
-              <button onClick={() => setViewFoto(null)} className="absolute top-4 right-4 z-50 p-2 bg-black/40 text-white rounded-full hover:bg-black/60"><X className="w-5 h-5"/></button>
+              <button onClick={() => setViewFoto(null)} className="absolute top-4 right-4 z-50 p-2 bg-black/40 text-white rounded-full hover:bg-black/60"><XIcon className="w-5 h-5"/></button>
               
               <div className="h-[50vh] w-full bg-black flex items-center justify-center overflow-hidden">
                 <img src={viewFoto.url} alt={viewFoto.legenda} className="max-w-full max-h-full object-contain" />
@@ -592,7 +592,7 @@ export default function MuralFotos() {
             <div className="flex flex-col h-[85dvh] max-h-[800px] bg-zinc-950">
               <div className="flex-none p-4 pb-2 flex items-center justify-between">
                 <button onClick={() => setViewPerfil(null)} className="p-3 bg-white/10 rounded-full text-white backdrop-blur-md">
-                  <X className="w-5 h-5" />
+                  <XIcon className="w-5 h-5" />
                 </button>
                 <span className="text-white font-black uppercase tracking-widest text-[10px] bg-white/10 px-4 py-2 rounded-full">
                   Perfil de Turma

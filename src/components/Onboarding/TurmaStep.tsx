@@ -14,7 +14,7 @@ interface TurmaStepProps {
   embedded?: boolean;
 }
 
-export function TurmaStep({ open, onSuccess }: TurmaStepProps) {
+export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
   const mutation = useTurmaMutation();
   const { data: comunidades = [] } = useComunidades();
   const { data: catequistas = [] } = useCatequistas();

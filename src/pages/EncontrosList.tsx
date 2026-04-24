@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle, Feather } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X as XIcon, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle, Feather } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
@@ -150,7 +150,7 @@ export default function EncontrosList() {
             />
             {search && (
               <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                <X className="h-4 w-4" />
+                <XIcon className="h-4 w-4" />
               </button>
             )}
           </div>

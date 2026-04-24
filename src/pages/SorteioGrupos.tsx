@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Users, Plus, X, Maximize, Minimize, Shuffle, RefreshCw, User } from "lucide-react";
+import { ArrowLeft, Users, Plus, X as XIcon, Maximize, Minimize, Shuffle, RefreshCw, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -270,7 +270,7 @@ export default function SorteioGrupos() {
                       <span key={p.nome} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-muted border-border text-foreground">
                         {p.nome}
                         <button onClick={() => removerParticipante(p.nome)} className="hover:text-destructive rounded-full transition-colors">
-                          <X className="h-3.5 w-3.5" />
+                          <XIcon className="h-3.5 w-3.5" />
                         </button>
                       </span>
                     ))}

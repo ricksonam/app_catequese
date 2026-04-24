@@ -1,7 +1,7 @@
 import { useTurmas, useEncontros, useCatequizandos, useJoinTurma } from "@/hooks/useSupabaseData";
 import { ETAPAS_CATEQUESE } from "@/lib/store";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Plus, CalendarDays, Users, Link2, X, Loader2, Camera } from "lucide-react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, X as XIcon, Loader2, Camera } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
@@ -236,7 +236,7 @@ export default function TurmasList() {
                   onClick={closeModal}
                   className="w-9 h-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors active:scale-95 shrink-0"
                 >
-                  <X className="h-4 w-4 text-muted-foreground" />
+                  <XIcon className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
 

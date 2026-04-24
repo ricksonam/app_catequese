@@ -14,7 +14,7 @@ import {
   Mail,
   Share2,
   ArrowLeft,
-  X,
+  X as XIcon,
   ChevronRight,
   Check,
 } from "lucide-react";
@@ -390,7 +390,7 @@ export default function AuthPage() {
                   className="text-slate-300 hover:text-slate-500 transition-colors"
                   title="Usar outra conta"
                 >
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </button>
               </div>
             )}

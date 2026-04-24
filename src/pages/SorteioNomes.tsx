@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Shuffle, Trash2, Plus, Users, Save, X, Maximize, Minimize } from "lucide-react";
+import { ArrowLeft, Shuffle, Trash2, Plus, Users, Save, X as XIcon, Maximize, Minimize } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -293,7 +293,7 @@ export default function SorteioNomes() {
                   <span key={nome} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-foreground">
                     {nome}
                     <button onClick={() => removerNome(nome)} className="text-muted-foreground hover:text-destructive">
-                      <X className="h-3 w-3" />
+                      <XIcon className="h-3 w-3" />
                     </button>
                   </span>
                 ))}
@@ -383,7 +383,7 @@ export default function SorteioNomes() {
                       <Save className="h-5 w-5" />
                     </Button>
                     <Button variant="outline" onClick={iniciarSorteio} size="icon" className="h-12 w-12 rounded-2xl border-2 hover:bg-destructive/10 hover:text-destructive transition-colors">
-                       <X className="h-5 w-5" />
+                       <XIcon className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>

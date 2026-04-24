@@ -57,7 +57,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
   );
 }
 
-export function CatequistaStep({ open, onSuccess }: CatequistaStepProps) {
+export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProps) {
   const mutation = useCatequistaMutation();
   const { data: comunidades = [] } = useComunidades();
 

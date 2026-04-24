@@ -6,7 +6,7 @@ import { fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore"
 
 import { 
   UserPlus, Calendar, Phone, Mail, MapPin, 
-  Plus, X, CheckCircle2, AlertCircle, 
+  Plus, X as XIcon, CheckCircle2, AlertCircle, 
   ArrowRight, Sparkles, Heart, Church, 
   Camera, Users, Info, LayoutDashboard
 } from "lucide-react";
@@ -365,7 +365,7 @@ export default function PublicInscricao() {
                       onClick={() => removeResponsavel(resp.id)}
                       className="absolute -top-2 -right-2 w-7 h-7 bg-white text-destructive rounded-full flex items-center justify-center shadow-md border-2 border-destructive/20 hover:bg-destructive hover:text-white transition-all"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <XIcon className="w-3.5 h-3.5" />
                     </button>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -51,7 +51,7 @@ function FieldTextArea({ label, value, onChange }: { label: string; value: strin
   );
 }
 
-export function ParoquiaStep({ open, onSuccess }: ParoquiaStepProps) {
+export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
   const pMutation = useParoquiaMutation();
   const cMutation = useComunidadeMutation();
 
