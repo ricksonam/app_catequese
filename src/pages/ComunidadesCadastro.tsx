@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { useComunidades, useComunidadeMutation, useDeleteComunidade, useParoquias } from "@/hooks/useSupabaseData";
 import { type Comunidade } from "@/lib/store";
 import { ArrowLeft, Plus, Users, Trash2, Eye } from "lucide-react";
@@ -46,12 +46,12 @@ export default function ComunidadesCadastro() {
             <DialogHeader><DialogTitle>Nova Comunidade / Núcleo</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome *" value={form.nome} onChange={(v) => updateField("nome", v)} />
-              <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo</label><select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input"><option>Comunidade</option><option>Núcleo</option><option>Grupo</option></select></div>
-              {paroquias.length > 0 && <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Paróquia vinculada</label><select value={form.paroquiaId} onChange={(e) => updateField("paroquiaId", e.target.value)} className="form-input"><option value="">Selecione...</option>{paroquias.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}</select></div>}
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo</label><select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input"><option>Comunidade</option><option>Núcleo</option><option>Grupo</option></select></div>
+              {paroquias.length > 0 && <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Paróquia vinculada</label><select value={form.paroquiaId} onChange={(e) => updateField("paroquiaId", e.target.value)} className="form-input"><option value="">Selecione...</option>{paroquias.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}</select></div>}
               <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
               <FieldInput label="Responsável" value={form.responsavel} onChange={(v) => updateField("responsavel", v)} />
               <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", v)} />
-              <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
               <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : "Salvar"}</button>
             </div>
           </DialogContent>
@@ -81,4 +81,4 @@ export default function ComunidadesCadastro() {
 }
 
 function InfoRow({ label, value }: { label: string; value?: string }) { if (!value) return null; return <p><span className="text-muted-foreground">{label}:</span> <span className="font-semibold text-foreground">{value}</span></p>; }
-function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) { const ref = useRef<HTMLInputElement>(null); return <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label><input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" /></div>; }
+function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) { const ref = useRef<HTMLInputElement>(null); return <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label><input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" /></div>; }

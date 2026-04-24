@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+﻿import { useState, useRef, useEffect, useCallback } from "react";
 import { ArrowLeft, Play, RotateCcw, Maximize, Minimize, ChevronRight, Timer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -250,7 +250,7 @@ export default function Mimica() {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Categorias</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">Categorias</label>
               <span className="text-[10px] text-muted-foreground font-medium italic">Clique para selecionar · clique em + de uma para combinar</span>
             </div>
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -282,7 +282,7 @@ export default function Mimica() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Tempo por Rodada</label>
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">Tempo por Rodada</label>
             <div className="flex gap-2 overflow-x-auto pb-1">
               {[30, 45, 60, 120, 300].map(t => (
                 <button

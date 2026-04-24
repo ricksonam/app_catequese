@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Users, Plus, X as XIcon, Maximize, Minimize, Shuffle, RefreshCw, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -204,7 +204,7 @@ export default function SorteioGrupos() {
             <div className="float-card p-6 space-y-6 animate-float-up border-t-4 border-t-primary">
               {/* Importar Turma */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">
                   Importar de uma Turma
                 </label>
                 <div className={cn(
@@ -242,7 +242,7 @@ export default function SorteioGrupos() {
 
               {/* Adicionar Manual */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">
                   Adicionar Manualmente
                 </label>
                 <div className="flex gap-2">
@@ -262,7 +262,7 @@ export default function SorteioGrupos() {
               {/* Lista de participantes */}
               {participantes.length > 0 && (
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">
                     {participantes.length} participante(s)
                   </label>
                   <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto p-1">
@@ -282,7 +282,7 @@ export default function SorteioGrupos() {
 
               {/* Configurações do Grupo */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">
                   Pessoas por grupo
                 </label>
                 <div className="flex gap-2 overflow-x-auto pb-1">

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+﻿import { useState, useCallback } from "react";
 import { Church, MapPin, Users, ArrowRight, Sparkles, Mail, FileText, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
@@ -151,7 +151,7 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Tipo *</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Tipo *</label>
             <div className="relative">
               <select
                 value={form.pTipo}
@@ -218,7 +218,7 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Tipo da Comunidade *</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Tipo da Comunidade *</label>
             <div className="relative">
               <select
                 value={form.cTipo}

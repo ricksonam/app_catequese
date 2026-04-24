@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { Camera, Image as ImageIcon, Loader2, X } from "lucide-react";
 import { compressImage } from "@/lib/utils";
 import { uploadFile } from "@/lib/supabaseStore";
@@ -53,7 +53,7 @@ export function ImagePicker({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {label && <label className="text-xs font-semibold text-muted-foreground block">{label}</label>}
+      {label && <label className="text-xs font-semibold text-zinc-900 block">{label}</label>}
       
       <div className="flex flex-col items-center gap-4">
         {currentImageUrl && (

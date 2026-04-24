@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Shuffle, Trash2, Plus, Users, Save, X as XIcon, Maximize, Minimize } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -230,7 +230,7 @@ export default function SorteioNomes() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Importar de uma turma</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1">Importar de uma turma</label>
             <div className="grid grid-cols-2 gap-2">
               {turmas?.map((t) => (
                 <button
@@ -287,7 +287,7 @@ export default function SorteioNomes() {
 
           {nomes.length > 0 && (
             <div className="space-y-1.5">
-              <Label className="text-muted-foreground">{nomes.length} nome(s) na lista</Label>
+              <Label className="text-zinc-900">{nomes.length} nome(s) na lista</Label>
               <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
                 {nomes.map((nome) => (
                   <span key={nome} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-foreground">

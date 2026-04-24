@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { useCatequistas, useCatequistaMutation, useDeleteCatequista, useComunidades } from "@/hooks/useSupabaseData";
 import { type CatequistaCadastro } from "@/lib/store";
 import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar, Clock, ChevronRight, X, User } from "lucide-react";
@@ -177,8 +177,8 @@ export default function CatequistasCadastro() {
             </div>
             <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
             <div className="grid grid-cols-2 gap-2">
-              <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
-              <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label><div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label><div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
             </div>
             <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
             <div className="grid grid-cols-3 gap-2">
@@ -194,7 +194,7 @@ export default function CatequistasCadastro() {
               <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
             </div>
             {comunidades.length > 0 && (
-              <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Comunidade</label>
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Comunidade</label>
                 <select value={form.comunidadeId} onChange={(e) => updateField("comunidadeId", e.target.value)} className="form-input">
                   <option value="">Selecione...</option>{comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                 </select>
@@ -202,12 +202,12 @@ export default function CatequistasCadastro() {
             )}
             <FieldInput label="Formação" value={form.formacao} onChange={(v) => updateField("formacao", v)} placeholder="Ex: Teologia, Pedagogia..." />
             <FieldInput label="Anos de experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
-            <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Status</label>
+            <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Status</label>
               <select value={form.status} onChange={(e) => updateField("status", e.target.value as CatequistaStatus)} className="form-input">
                 <option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="afastado">Afastado</option>
               </select>
             </div>
-            <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+            <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
             
             <div className="flex gap-2 pt-2">
               <button 
@@ -321,7 +321,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div>
-      <label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
       <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" />
     </div>
   );

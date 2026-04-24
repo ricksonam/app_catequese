@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { type Encontro, type RoteiroStep, ORACAO_TIPOS, ROTEIRO_STEPS } from "@/lib/store";
 import { MODELOS_ENCONTROS, type ModeloEncontro } from "@/lib/modelosEncontros";
 import { useTurmas, useEncontros, useCatequistas, useEncontroMutation } from "@/hooks/useSupabaseData";
@@ -125,10 +125,10 @@ export default function EncontroForm() {
         )}
 
         <div className="float-card p-5 space-y-4 animate-float-up" style={{ animationDelay: '60ms' }}>
-          <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Tema *</label><input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" /></div>
-          <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Data *</label><input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" /></div>
-          <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Leitura Bíblica do Tema</label><input type="text" value={leituraBiblica} onChange={(e) => setLeituraBiblica(e.target.value)} placeholder="Ex: Mt 3,13-17" className="form-input" /></div>
-          <div><label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Material de Apoio</label><textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários..." className="form-input min-h-[100px] resize-y" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Tema *</label><input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Data *</label><input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Leitura Bíblica do Tema</label><input type="text" value={leituraBiblica} onChange={(e) => setLeituraBiblica(e.target.value)} placeholder="Ex: Mt 3,13-17" className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Material de Apoio</label><textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários..." className="form-input min-h-[100px] resize-y" /></div>
         </div>
 
         <div className="animate-float-up" style={{ animationDelay: '120ms' }}>
@@ -155,12 +155,12 @@ export default function EncontroForm() {
                         <button onClick={() => moveStep(i, "down")} disabled={i === roteiro.length - 1} className="flex items-center gap-1 text-xs font-semibold text-primary disabled:text-muted-foreground disabled:opacity-40 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"><ArrowDownCircle className="h-3.5 w-3.5" /> Mover abaixo</button>
                       </div>
                       {step.tipo === "oracao_inicial" && (
-                        <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Oração</label><select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">{ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Oração</label><select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">{ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
                       )}
-                      <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[150px] resize-y" /></div>
+                      <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[150px] resize-y" /></div>
                       <div className="grid grid-cols-2 gap-2">
-                        <div><label className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1"><Clock className="h-3 w-3" /> Tempo (min)</label><input type="number" min={0} value={step.tempo || ""} onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)} placeholder="0" className="form-input" /></div>
-                        <div><label className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1"><User className="h-3 w-3" /> Catequista</label>
+                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 flex items-center gap-1"><Clock className="h-3 w-3" /> Tempo (min)</label><input type="number" min={0} value={step.tempo || ""} onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)} placeholder="0" className="form-input" /></div>
+                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 flex items-center gap-1"><User className="h-3 w-3" /> Catequista</label>
                           {catequistas.length > 1 ? (
                             <select value={step.catequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} className="form-input"><option value="">Selecione...</option>{catequistas.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}</select>
                           ) : (
@@ -177,9 +177,9 @@ export default function EncontroForm() {
           </div>
           {showAddStep ? (
             <div className="float-card p-4 mt-2 space-y-3 animate-scale-in">
-              <label className="text-xs font-semibold text-muted-foreground block">Nome do novo tópico</label>
+              <label className="text-xs font-semibold text-zinc-900 block">Nome do novo tópico</label>
               <input type="text" value={newStepLabel} onChange={(e) => setNewStepLabel(e.target.value)} placeholder="Ex: Dinâmica extra..." className="form-input" onKeyDown={(e) => e.key === "Enter" && addStep()} />
-              <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Inserir após</label>
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Inserir após</label>
                 <select value={newStepPosition} onChange={(e) => setNewStepPosition(parseInt(e.target.value))} className="form-input">
                   <option value={-1}>No final da lista</option>
                   {roteiro.map((s, i) => <option key={s.id} value={i}>Após {i + 1}. {s.label}</option>)}

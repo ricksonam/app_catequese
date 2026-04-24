@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { 
   Select, 
   SelectContent, 
@@ -63,7 +63,7 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
 
   return (
     <div className="space-y-1 w-full animate-in fade-in slide-in-from-top-1">
-      {label && <label className="text-xs font-bold text-muted-foreground mb-1.5 block uppercase tracking-wider">{label}</label>}
+      {label && <label className="text-xs font-bold text-zinc-900 mb-1.5 block uppercase tracking-wider">{label}</label>}
       <div className="flex gap-2">
         {/* Day */}
         <div className="flex-1">

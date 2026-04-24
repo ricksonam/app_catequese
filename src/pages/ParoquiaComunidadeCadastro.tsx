@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useParoquiaMutation, useComunidadeMutation, useDeleteParoquia, useDeleteComunidade } from "@/hooks/useSupabaseData";
 import { type Paroquia, type Comunidade } from "@/lib/store";
 import { ArrowLeft, Plus, Church, Trash2, Eye, Users, MapPin, Phone, Mail, FileText, Pencil, ChevronRight } from "lucide-react";
@@ -248,7 +248,7 @@ export default function ParoquiaComunidadeCadastro() {
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Paróquia / Área / Escola</h3>
               </div>
               <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo *</label>
+                <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo *</label>
                 <div className="relative">
                   <select 
                     value={form.pTipo} 
@@ -292,7 +292,7 @@ export default function ParoquiaComunidadeCadastro() {
                   <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Comunidade / Núcleo</h3>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo da Comunidade *</label>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo da Comunidade *</label>
                   <div className="relative">
                     <select 
                       value={form.cTipo} 
@@ -495,7 +495,7 @@ export default function ParoquiaComunidadeCadastro() {
           </DialogHeader>
           <div className="space-y-4 mt-2 pb-2">
             <div>
-              <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Vínculo *</label>
+              <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Vínculo *</label>
               <div className="relative">
                 <select 
                   value={cForm.tipo} 
@@ -558,7 +558,7 @@ function InfoRow({ icon: Icon, label, value }: { icon?: any; label: string; valu
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) { 
   return (
     <div>
-      <label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
       <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" />
     </div>
   ); 
@@ -567,7 +567,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
 function FieldTextArea({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) { 
   return (
     <div>
-      <label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
       <textarea value={value} onChange={(e) => onChange(e.target.value)} className="form-input min-h-[60px] resize-none" />
     </div>
   ); 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +23,7 @@ import { type Catequizando } from "@/lib/store";
 function FieldInput({ label, value, onChange, placeholder, type = "text" }: any) {
   return (
     <div className="space-y-1">
-      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">{label}</label>
+      <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1">{label}</label>
       <input
         type={type}
         value={value || ""}
@@ -254,7 +254,7 @@ export default function PublicInscricao() {
                     onChange={(v: string) => updateField("dataNascimento", v)} 
                   />
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Idade</label>
+                    <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1">Idade</label>
                     <div className="h-10 flex items-center px-4 bg-muted/20 rounded-xl border-2 border-black/5 font-black text-primary text-sm">
                       {calcularIdade(form.dataNascimento) || "—"}
                     </div>
@@ -330,7 +330,7 @@ export default function PublicInscricao() {
             </div>
 
             <div className="pt-2">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1 mb-2">Participa de algum grupo ou pastoral?</label>
+              <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-2">Participa de algum grupo ou pastoral?</label>
               <textarea 
                 value={form.participacaoPastoral} 
                 onChange={(e) => updateField("participacaoPastoral", e.target.value)} 
@@ -373,7 +373,7 @@ export default function PublicInscricao() {
                     <FieldInput label="Telefone de Contato" type="tel" value={resp.telefone} onChange={(v: string) => updateResponsavel(resp.id, "telefone", mascaraTelefone(v))} placeholder="(00) 00000-0000" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1 mb-1">Vínculo</label>
+                    <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Vínculo</label>
                     <Select value={resp.vinculo} onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v)}>
                       <SelectTrigger className="h-10 bg-white border-2 border-black/5 rounded-xl">
                         <SelectValue placeholder="Selecione o vínculo" />
@@ -401,7 +401,7 @@ export default function PublicInscricao() {
             
             <div className="space-y-4">
               <div>
-                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1 mb-1">Necessidade Especial ou Restrição Alimentar?</label>
+                <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Necessidade Especial ou Restrição Alimentar?</label>
                 <Select value={form.necessidadeEspecial} onValueChange={(v) => updateField("necessidadeEspecial", v)}>
                   <SelectTrigger className="h-10 bg-white border-2 border-black/5 rounded-xl">
                     <SelectValue placeholder="Selecione..." />
@@ -420,7 +420,7 @@ export default function PublicInscricao() {
               </div>
 
               <div>
-                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1 mb-2">Observações / Comentários</label>
+                <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-2">Observações / Comentários</label>
                 <textarea 
                   value={form.observacao} 
                   onChange={(e) => updateField("observacao", e.target.value)} 

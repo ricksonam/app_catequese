@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
 import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X } from "lucide-react";
@@ -12,7 +12,7 @@ import { formatarDataVigente } from "@/lib/utils";
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
       <input 
         type={type} 
         value={value} 
@@ -143,18 +143,18 @@ export default function AtividadesList() {
               <DialogHeader><DialogTitle>{editingId ? 'Editar Atividade' : 'Nova Atividade'}</DialogTitle></DialogHeader>
               <div className="space-y-3 mt-2">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Atividade *</label>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Atividade *</label>
                   <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input font-bold text-primary">
                     {ATIVIDADE_TIPOS.map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
                 <FieldInput label="Nome da Atividade *" value={form.nome} onChange={(v) => updateField("nome", v)} />
-                <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Descrição</label><textarea value={form.descricao} onChange={(e) => updateField("descricao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
-                <div><label className="text-xs font-semibold text-muted-foreground mb-2 block">Modalidade</label><div className="flex gap-2">{(['interna','externa'] as const).map(m => <button key={m} type="button" onClick={() => updateField("modalidade",m)} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${form.modalidade===m?'bg-primary text-primary-foreground shadow-md':'bg-muted text-muted-foreground'}`}>{m==='interna'?'🏠 Interna':'🌐 Externa'}</button>)}</div></div>
-                {form.modalidade === 'externa' && <div className="animate-fade-in"><label className="text-xs font-semibold text-muted-foreground mb-1 block">Condução</label><select value={form.conducao} onChange={(e) => updateField("conducao", e.target.value)} className="form-input"><option value="">Selecione...</option>{CONDUCAO_TIPOS.map(c => <option key={c}>{c}</option>)}</select></div>}
+                <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Descrição</label><textarea value={form.descricao} onChange={(e) => updateField("descricao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+                <div><label className="text-xs font-semibold text-zinc-900 mb-2 block">Modalidade</label><div className="flex gap-2">{(['interna','externa'] as const).map(m => <button key={m} type="button" onClick={() => updateField("modalidade",m)} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${form.modalidade===m?'bg-primary text-primary-foreground shadow-md':'bg-muted text-muted-foreground'}`}>{m==='interna'?'🏠 Interna':'🌐 Externa'}</button>)}</div></div>
+                {form.modalidade === 'externa' && <div className="animate-fade-in"><label className="text-xs font-semibold text-zinc-900 mb-1 block">Condução</label><select value={form.conducao} onChange={(e) => updateField("conducao", e.target.value)} className="form-input"><option value="">Selecione...</option>{CONDUCAO_TIPOS.map(c => <option key={c}>{c}</option>)}</select></div>}
                 <div className="grid grid-cols-2 gap-2"><FieldInput label="Data" type="date" value={form.data} onChange={(v) => updateField("data", v)} /><FieldInput label="Horário" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} /></div>
                 <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} />
-                <div><label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+                <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
                 <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Atividade'}</button>
               </div>
             </DialogContent>

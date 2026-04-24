@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+﻿import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation } from "@/hooks/useSupabaseData";
 import { type EncontroStatus, type RegistroOcorrencia, type AvaliacaoEncontro } from "@/lib/store";
 import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight, FileSignature, Check, Pencil } from "lucide-react";
@@ -424,7 +424,7 @@ export default function EncontroDetail() {
           <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
             {/* Opção de Atividades */}
             <div className="space-y-4">
-              <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <label className="text-xs font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse border-2 border-primary/20" />
                 As atividades planejadas foram realizadas?
               </label>
@@ -458,7 +458,7 @@ export default function EncontroDetail() {
               { id: 'conclusao', label: 'Conclusão Geral / Ocorrências', icon: <MessageSquare className="h-5 w-5 text-primary" />, placeholder: "Resumo final do encontro..." }
             ].map(field => (
               <div key={field.id} className="space-y-3 group">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 transition-colors group-focus-within:text-gold-700">
+                <label className="text-xs font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2 transition-colors group-focus-within:text-gold-700">
                   {field.icon}
                   {field.label}
                 </label>

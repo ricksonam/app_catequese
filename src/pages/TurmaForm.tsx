@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
 import { useTurmas, useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
@@ -101,7 +101,7 @@ export default function TurmaForm() {
           
           <div className="float-card p-5 space-y-4 animate-float-up">
             <div className="space-y-2">
-              <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Nome da Turma *</label>
+              <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Nome da Turma *</label>
               <select value={form.nome} onChange={(e) => update("nome", e.target.value)} className="form-input h-12 text-base font-bold">
                 <option value="">Selecione...</option>
                 {NOMES_TURMA.map((n) => <option key={n} value={n}>{n}</option>)}
@@ -110,7 +110,7 @@ export default function TurmaForm() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Ano/Ciclo *</label>
+                <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Ano/Ciclo *</label>
                 <select value={form.ano} onChange={(e) => update("ano", e.target.value)} className="form-input h-11">
                   <option value="1° Ano">1° Ano</option>
                   <option value="2° Ano">2° Ano</option>
@@ -121,7 +121,7 @@ export default function TurmaForm() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Dia do Encontro *</label>
+                <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Dia do Encontro *</label>
                 <select value={form.diaCatequese} onChange={(e) => update("diaCatequese", e.target.value)} className="form-input h-11">
                   <option value="">Selecione...</option>
                   {DIAS_SEMANA.map((d) => <option key={d} value={d}>{d}</option>)}
@@ -131,11 +131,11 @@ export default function TurmaForm() {
 
             <div className="grid grid-cols-2 gap-4 pt-2 border-t border-black/5">
               <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Horário *</label>
+                <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Horário *</label>
                 <input type="time" value={form.horario} onChange={(e) => update("horario", e.target.value)} className="form-input h-11" />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Local *</label>
+                <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Local *</label>
                 <input type="text" value={form.local} onChange={(e) => update("local", e.target.value)} className="form-input h-11" placeholder="Ex: Salão Paroquial" />
               </div>
             </div>
@@ -151,7 +151,7 @@ export default function TurmaForm() {
 
           <div className="float-card p-5 space-y-6 animate-float-up" style={{ animationDelay: '100ms' }}>
             <div className="space-y-2">
-              <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Comunidade *</label>
+              <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Comunidade *</label>
               <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input h-11 border-2 border-blue-100">
                 <option value="">Selecione a comunidade...</option>
                 {comunidades.map((c) => <option key={c.id} value={c.id}>{c.name || c.nome}</option>)}
@@ -160,7 +160,7 @@ export default function TurmaForm() {
 
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <label className="text-xs font-black text-zinc-900 uppercase tracking-widest flex items-center gap-2">
                   Catequistas Responsáveis *
                   <span className={cn(
                     "px-2 py-0.5 rounded-full text-[10px] font-black tracking-normal",
@@ -254,12 +254,12 @@ export default function TurmaForm() {
           <div className="float-card p-5 space-y-6 animate-float-up" style={{ animationDelay: '200ms' }}>
 
             <div className="space-y-3">
-              <label className="text-xs font-black text-muted-foreground uppercase tracking-widest block">Etapa do Tempo da Catequese</label>
+              <label className="text-xs font-black text-zinc-900 uppercase tracking-widest block">Etapa do Tempo da Catequese</label>
               <EtapaMap etapaAtual={form.etapa} onSelect={(id) => update("etapa", id)} />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Observações Adicionais</label>
+              <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Observações Adicionais</label>
               <textarea value={form.outrosDados} onChange={(e) => update("outrosDados", e.target.value)} className="form-input min-h-[100px] resize-none border-2 border-black/5" placeholder="Observações, recomendações..." />
             </div>
           </div>

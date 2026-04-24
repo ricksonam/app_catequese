@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb } from "lucide-react";
+﻿import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { useCatequizandos, useCatequistas, useCalendarioNotas, useCalendarioNotaMutation, useDeleteCalendarioNota, useEncontros, useAtividades, useTurmas } from "@/hooks/useSupabaseData";
@@ -400,7 +400,7 @@ export default function CalendarioLiturgico() {
             {/* Note Area */}
             {isEditingNote ? (
               <div className="space-y-3 animate-fade-in mt-4 border-t border-border/20 pt-4">
-                <label className="text-xs font-bold text-muted-foreground uppercase px-1">Minhas Anotações</label>
+                <label className="text-xs font-bold text-zinc-900 uppercase px-1">Minhas Anotações</label>
                 <textarea
                   value={noteContent}
                   onChange={(e) => setNoteContent(e.target.value)}
@@ -428,7 +428,7 @@ export default function CalendarioLiturgico() {
             ) : (
               <div className="mt-4 pt-4 border-t border-border/20 flex flex-col gap-2">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-bold text-muted-foreground uppercase px-1">Anotações do Dia</label>
+                  <label className="text-xs font-bold text-zinc-900 uppercase px-1">Anotações do Dia</label>
                   {!noteContent && (
                     <button 
                       onClick={() => setIsEditingNote(true)}

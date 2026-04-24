@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -330,7 +330,7 @@ export default function MissoesFamilia() {
             {/* Categoria Selector */}
             {/* Categoria Selector */}
             <div className="flex flex-col items-center">
-               <label className="text-[10px] font-black tracking-widest text-muted-foreground uppercase mb-2">Categoria da Semana</label>
+               <label className="text-[10px] font-black tracking-widest text-zinc-900 uppercase mb-2">Categoria da Semana</label>
                <Select value={selectedCategoria} onValueChange={setSelectedCategoria}>
                  <SelectTrigger className="w-full h-12 rounded-2xl bg-muted/30 border-2 border-border/50 font-bold justify-center text-center focus:ring-rose-500">
                    <SelectValue placeholder="Selecione uma categoria" />
@@ -380,7 +380,7 @@ export default function MissoesFamilia() {
                
                <div className="grid grid-cols-2 gap-3 mt-4">
                  <div>
-                   <label className="text-[10px] font-black text-muted-foreground uppercase opacity-80 mb-2 block text-center">Duração Estimada</label>
+                   <label className="text-[10px] font-black text-zinc-900 uppercase opacity-80 mb-2 block text-center">Duração Estimada</label>
                    <Input 
                      placeholder="Ex: 15 min" 
                      className="bg-white dark:bg-zinc-900 border-2 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm font-bold text-center shadow-sm"
@@ -389,7 +389,7 @@ export default function MissoesFamilia() {
                    />
                  </div>
                  <div>
-                   <label className="text-[10px] font-black text-muted-foreground uppercase opacity-80 mb-2 block text-center">Materiais</label>
+                   <label className="text-[10px] font-black text-zinc-900 uppercase opacity-80 mb-2 block text-center">Materiais</label>
                    <Input 
                      placeholder="Bíblia, lápis..." 
                      className="bg-white dark:bg-zinc-900 border-2 border-border/50 focus-visible:ring-rose-500 rounded-xl text-sm font-bold text-center shadow-sm"

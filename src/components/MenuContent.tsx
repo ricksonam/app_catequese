@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { 
   Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
@@ -539,11 +539,11 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nova Senha</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1">Nova Senha</Label>
                 <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" className="rounded-2xl h-12 border-muted" />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Confirmar Nova Senha</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1">Confirmar Nova Senha</Label>
                 <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="rounded-2xl h-12 border-muted" />
               </div>
               <Button onClick={handleChangePassword} className="w-full h-14 rounded-2xl font-black text-lg bg-primary shadow-xl shadow-primary/20" disabled={savingPassword}>
@@ -657,7 +657,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <>
                    <div className="h-px bg-emerald-500/10 w-full" />
                    <div className="px-1">
-                     <Label className="text-[11px] font-bold text-muted-foreground mb-3 flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de faltas consecutivas</Label>
+                     <Label className="text-[11px] font-bold text-zinc-900 mb-3 flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de faltas consecutivas</Label>
                      <div className="flex items-center justify-between gap-1 mt-2">
                        {[1, 2, 3, 4, 5].map(num => (
                          <button

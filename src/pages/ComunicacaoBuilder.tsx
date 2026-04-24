@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Save, Plus, Trash2, GripVertical, Settings2, HelpCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -159,7 +159,7 @@ export default function ComunicacaoBuilder() {
       <div className="float-card p-6 flex flex-col gap-6 border-t-4 border-purple-500">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 space-y-2">
-            <label className="text-[11px] font-black uppercase text-muted-foreground tracking-widest pl-1">Título do Formulário</label>
+            <label className="text-[11px] font-black uppercase text-zinc-900 tracking-widest pl-1">Título do Formulário</label>
             <input 
               value={titulo} onChange={e => setTitulo(e.target.value)}
               placeholder="Ex: Refletindo sobre a Eucaristia"
@@ -167,7 +167,7 @@ export default function ComunicacaoBuilder() {
             />
           </div>
           <div className="sm:w-1/3 space-y-2">
-            <label className="text-[11px] font-black uppercase text-muted-foreground tracking-widest pl-1">Tipo</label>
+            <label className="text-[11px] font-black uppercase text-zinc-900 tracking-widest pl-1">Tipo</label>
             <select 
               value={tipo} onChange={e => setTipo(e.target.value as ComunicacaoFormType)}
               className="w-full p-2.5 rounded-xl bg-muted/50 border border-black/5 outline-none focus:ring-2 focus:ring-purple-500/20 text-sm font-bold"
@@ -180,7 +180,7 @@ export default function ComunicacaoBuilder() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-[11px] font-black uppercase text-muted-foreground tracking-widest pl-1">Descrição / Introdução (Opcional)</label>
+          <label className="text-[11px] font-black uppercase text-zinc-900 tracking-widest pl-1">Descrição / Introdução (Opcional)</label>
           <textarea 
             value={descricao} onChange={e => setDescricao(e.target.value)}
             placeholder="Escreva uma mensagem de acolhida para as famílias ou catequizandos..."

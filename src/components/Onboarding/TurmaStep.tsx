@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight } from "lucide-react";
 import { useTurmaMutation, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
@@ -142,7 +142,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Dia do Encontro *</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Dia do Encontro *</label>
               <select
                 value={form.diaCatequese}
                 onChange={(e) => update("diaCatequese", e.target.value)}
@@ -156,7 +156,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Horário *</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Horário *</label>
               <input
                 type="time"
                 value={form.horario}
@@ -165,7 +165,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
               />
             </div>
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Local</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Local</label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
                 <input
@@ -209,7 +209,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
           {catequistas.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 flex items-center gap-2">
                   Catequistas
                   <span className={cn(
                     "px-2 py-0.5 rounded-full text-[10px] font-black tracking-normal",
@@ -297,12 +297,12 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-2">Etapa</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-2">Etapa</label>
             <EtapaMap etapaAtual={form.etapa} onSelect={(id) => update("etapa", id)} />
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Observações Adicionais</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Observações Adicionais</label>
             <textarea
               value={form.outrosDados}
               onChange={(e) => update("outrosDados", e.target.value)}

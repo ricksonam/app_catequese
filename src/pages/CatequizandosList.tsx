@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2 } from "lucide-react";
@@ -21,7 +21,7 @@ function InfoRow({ label, value }: { label: string; value?: string }) {
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      <label className="text-xs font-semibold text-muted-foreground mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
       <input 
         type={type} 
         value={value} 
@@ -520,7 +520,7 @@ export default function CatequizandosList() {
                         onChange={(v) => updateField("dataNascimento", v)} 
                       />
                       <div>
-                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                        <label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label>
                         <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
                           {calcularIdade(form.dataNascimento) || "—"}
                         </div>
@@ -577,7 +577,7 @@ export default function CatequizandosList() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
                     <textarea 
                       value={form.participacaoPastoral} 
                       onChange={(e) => setForm(f => ({ ...f, participacaoPastoral: e.target.value }))} 
@@ -620,7 +620,7 @@ export default function CatequizandosList() {
                           <FieldInput label="Telefone Contato" type="tel" value={resp.telefone} onChange={(v) => updateResponsavel(resp.id, "telefone", mascaraTelefone(v), false)} />
                         </div>
                         <div>
-                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Vínculo / Parentesco</label>
+                          <label className="text-xs font-semibold text-zinc-900 mb-1 block">Vínculo / Parentesco</label>
                           <Select 
                             value={resp.vinculo} 
                             onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v, false)}
@@ -650,7 +650,7 @@ export default function CatequizandosList() {
                   <Separator />
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Necessidade Especial</label>
+                      <label className="text-xs font-semibold text-zinc-900 mb-1 block">Necessidade Especial</label>
                       <Select 
                         value={form.necessidadeEspecial} 
                         onValueChange={(v) => updateField("necessidadeEspecial", v)}
@@ -671,7 +671,7 @@ export default function CatequizandosList() {
                       )}
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação Geral</label>
+                      <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação Geral</label>
                       <textarea 
                         value={form.observacao} 
                         onChange={(e) => updateField("observacao", e.target.value)} 
@@ -749,7 +749,7 @@ export default function CatequizandosList() {
                     </div>
 
                     <div className="space-y-2">
-                       <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] block ml-1">Link de Acolhida e Atualização</label>
+                       <label className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.2em] block ml-1">Link de Acolhida e Atualização</label>
                        <button 
                          onClick={handleCopyInscricaoLink}
                          className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/[0.02] transition-all group shadow-md shadow-primary/5 active:scale-[0.98]"
@@ -928,7 +928,7 @@ export default function CatequizandosList() {
                 ) : (
                   <>
                     <div className="flex flex-col gap-2">
-                      <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Selecionar Encontro</label>
+                      <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Selecionar Encontro</label>
                       <Select value={freqEncontroId} onValueChange={setFreqEncontroId}>
                         <SelectTrigger className="w-full h-12 bg-white rounded-xl shadow-sm border-2">
                           <SelectValue placeholder="Selecione..." />
@@ -983,7 +983,7 @@ export default function CatequizandosList() {
                 ) : (
                   <>
                     <div className="flex flex-col gap-2">
-                      <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Filtrar por Mês</label>
+                      <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Filtrar por Mês</label>
                       <Select value={freqMes} onValueChange={setFreqMes}>
                         <SelectTrigger className="w-full h-12 bg-white rounded-xl shadow-sm border-2">
                           <SelectValue placeholder="Selecione..." />
@@ -1406,7 +1406,7 @@ export default function CatequizandosList() {
                         onChange={(v) => setEditForm(f => ({ ...f, dataNascimento: v }))} 
                       />
                       <div>
-                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Idade</label>
+                        <label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label>
                         <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
                           {calcularIdade(editForm.dataNascimento) || "—"}
                         </div>
@@ -1463,7 +1463,7 @@ export default function CatequizandosList() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
                     <textarea 
                       value={editForm.participacaoPastoral} 
                       onChange={(e) => setEditForm(f => ({ ...f, participacaoPastoral: e.target.value }))} 
@@ -1505,7 +1505,7 @@ export default function CatequizandosList() {
                           <FieldInput label="Telefone Contato" type="tel" value={resp.telefone} onChange={(v) => updateResponsavel(resp.id, "telefone", mascaraTelefone(v), true)} />
                         </div>
                         <div>
-                          <label className="text-xs font-semibold text-muted-foreground mb-1 block">Vínculo / Parentesco</label>
+                          <label className="text-xs font-semibold text-zinc-900 mb-1 block">Vínculo / Parentesco</label>
                           <Select 
                             value={resp.vinculo} 
                             onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v, true)}
@@ -1528,7 +1528,7 @@ export default function CatequizandosList() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Necessidade Especial</label>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Necessidade Especial</label>
                     <Select 
                       value={editForm.necessidadeEspecial} 
                       onValueChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))}
@@ -1544,7 +1544,7 @@ export default function CatequizandosList() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Observação Geral</label>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação Geral</label>
                     <textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none border-2 border-black/10" />
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+﻿import { useState, useCallback, useRef } from "react";
 import { UserCheck, User, ArrowRight, Sparkles, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar } from "lucide-react";
 import { useCatequistaMutation, useComunidades } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
@@ -157,7 +157,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Data de Nascimento</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Data de Nascimento</label>
               <input
                 type="date"
                 value={form.dataNascimento}
@@ -166,7 +166,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
               />
             </div>
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Idade</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Idade</label>
               <div className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent flex items-center text-sm font-bold text-muted-foreground">
                 {form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}
               </div>
@@ -237,7 +237,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
 
           {comunidades.length > 0 && (
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Comunidade</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Comunidade</label>
               <select
                 value={form.comunidadeId}
                 onChange={(e) => updateField("comunidadeId", e.target.value)}
@@ -254,7 +254,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
           <div className="grid grid-cols-2 gap-3">
             <FieldInput label="Anos de Experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} placeholder="Ex: 5" />
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Status</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => updateField("status", e.target.value as CatequistaStatus)}
@@ -268,7 +268,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Observação</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Observação</label>
             <textarea
               value={form.observacao}
               onChange={(e) => updateField("observacao", e.target.value)}
