@@ -145,7 +145,11 @@ export default function Dashboard() {
 
       // Se já tem o cadastro final (TURMA), não mostra o onboarding
       if (turmas.length > 0) {
-        setOnboardingStep("none");
+        // Se o usuário acabou de concluir o passo 'turma', NÃO feche automaticamente.
+        // Isso permite que ele veja a tela "Tudo Pronto!" e feche manualmente.
+        if (onboardingStep !== "turma") {
+          setOnboardingStep("none");
+        }
         return;
       }
 
