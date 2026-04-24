@@ -96,7 +96,7 @@ const AppRoutes = () => (
     <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
     <Route path="/missao/:codigo" element={<PublicMissao />} />
     <Route path="/f/:codigo" element={<PublicFormResponder />} />
-    <Route path="/inscrever/:turmaId" element={<PublicInscricao />} />
+    <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
     <Route
       element={
         <ProtectedRoute>

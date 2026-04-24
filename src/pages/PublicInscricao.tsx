@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPublicTurmaById, upsertCatequizando } from "@/lib/supabaseStore";
+import { fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore";
 import { 
   UserPlus, Calendar, Phone, Mail, MapPin, 
   Plus, X, CheckCircle2, AlertCircle, 
@@ -44,16 +44,17 @@ function calcularIdade(dataNascimento: string) {
 }
 
 export default function PublicInscricao() {
-  const { turmaId } = useParams();
+  const { codigo } = useParams();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const { data: turma, isLoading, error } = useQuery({
-    queryKey: ["public_turma", turmaId],
-    queryFn: () => fetchPublicTurmaById(turmaId || ""),
-    enabled: !!turmaId,
+    queryKey: ["public_turma", codigo],
+    queryFn: () => fetchPublicTurmaByCode(codigo || ""),
+    enabled: !!codigo,
   });
+
 
   const [form, setForm] = useState<any>({
     nome: "",
@@ -113,10 +114,11 @@ export default function PublicInscricao() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome || !turmaId) {
+    if (!form.nome || !turma) {
       toast.error("Por favor, preencha o nome completo.");
       return;
     }
+
 
     setIsSubmitting(true);
     try {
@@ -124,9 +126,10 @@ export default function PublicInscricao() {
       const payload: Catequizando = {
         ...form,
         id: crypto.randomUUID(),
-        turmaId: turmaId,
+        turmaId: turma.id,
         responsavel: form.responsaveis[0]?.nome || "", // Campo legado para compatibilidade
       };
+
 
       await upsertCatequizando(payload);
       setIsSuccess(true);

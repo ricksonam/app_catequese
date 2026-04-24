@@ -140,10 +140,12 @@ export default function CatequizandosList() {
   const [showSacramentos, setShowSacramentos] = useState(false);
 
   const handleCopyInscricaoLink = () => {
-    const url = `${window.location.origin}/inscrever/${id}`;
+    const url = `${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`;
     navigator.clipboard.writeText(url);
     toast.success("Link de inscrição do catequizando copiado!");
   };
+
+
 
 
   const [viewItem, setViewItem] = useState<Catequizando | null>(null);
