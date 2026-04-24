@@ -46,7 +46,13 @@ function isAniversarianteMes(dataNascimento: string): boolean {
   if (!dataNascimento) return false;
   const hoje = new Date();
   const nasc = new Date(dataNascimento + (dataNascimento.includes('T') ? '' : 'T12:00:00'));
-  // Verifica se o mês de nascimento é o mesmo que o mês atual
+  return nasc.getMonth() === hoje.getMonth();
+}
+
+function isAniversarianteMesBatismo(dataBatismo?: string): boolean {
+  if (!dataBatismo) return false;
+  const hoje = new Date();
+  const nasc = new Date(dataBatismo + (dataBatismo.includes('T') ? '' : 'T12:00:00'));
   return nasc.getMonth() === hoje.getMonth();
 }
 
@@ -131,12 +137,17 @@ export default function CatequizandosList() {
   const [editForm, setEditForm] = useState<CatequizandoForm>({ ...emptyForm });
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
   const [filterAniversarios, setFilterAniversarios] = useState(false);
+  const [filterBatismos, setFilterBatismos] = useState(false);
   
   // --- Frequência Modal States ---
   const [showFrequencia, setShowFrequencia] = useState(false);
   const [freqTab, setFreqTab] = useState<'encontro' | 'resumo'>('encontro');
   const [freqEncontroId, setFreqEncontroId] = useState<string>('');
   const [freqMes, setFreqMes] = useState<string>('');
+  
+  // --- Celebrações Modal States ---
+  const [showCelebracoes, setShowCelebracoes] = useState(false);
+  const [celebracoesTab, setCelebracoesTab] = useState<'nascimento' | 'batismo'>('nascimento');
   
   const [alertConfig] = useState(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
@@ -351,8 +362,32 @@ export default function CatequizandosList() {
       });
   }, [list]);
 
-  const hasAniversariante = aniversariantesDoMes.length > 0;
-  const filteredList = filterAniversarios ? aniversariantesDoMes : list;
+  const batismosDoMes = useMemo(() => {
+    const hoje = new Date();
+    const diaAtual = hoje.getDate();
+    
+    return list
+      .filter(c => isAniversarianteMesBatismo(c.sacramentos?.batismo?.data))
+      .sort((a, b) => {
+        const diaA = new Date((a.sacramentos?.batismo?.data || "") + 'T12:00:00').getDate();
+        const diaB = new Date((b.sacramentos?.batismo?.data || "") + 'T12:00:00').getDate();
+        
+        const aNoFuturo = diaA >= diaAtual;
+        const bNoFuturo = diaB >= diaAtual;
+        
+        if (aNoFuturo && !bNoFuturo) return -1;
+        if (!aNoFuturo && bNoFuturo) return 1;
+        return diaA - diaB;
+      });
+  }, [list]);
+
+  const hasQualquerCelebracao = aniversariantesDoMes.length > 0 || batismosDoMes.length > 0;
+  
+  const filteredList = useMemo(() => {
+    if (filterAniversarios) return aniversariantesDoMes;
+    if (filterBatismos) return batismosDoMes;
+    return list;
+  }, [filterAniversarios, filterBatismos, aniversariantesDoMes, batismosDoMes, list]);
 
   if (isLoading) {
     return (
@@ -375,18 +410,22 @@ export default function CatequizandosList() {
               <h1 className="text-xl font-bold text-foreground truncate">Catequizandos</h1>
               <p className="text-xs text-muted-foreground truncate">{list.length} cadastrados</p>
             </div>
-            {hasAniversariante && (
-              <button 
-                onClick={() => setFilterAniversarios(!filterAniversarios)}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 shrink-0 transition-all active:scale-95",
-                  filterAniversarios ? "bg-amber-500 border-amber-600 shadow-amber-500/30" : "bg-amber-100 border-amber-400 shadow-amber-400/20"
-                )} 
-                title={filterAniversarios ? "Ver todos" : `${aniversariantesDoMes.length} aniversariante(s) neste mês! Clique para filtrar.`}
-              >
-                <BellRing className={cn("w-4 h-4 animate-[bounce_1s_infinite]", filterAniversarios ? "text-white" : "text-amber-600")} />
-              </button>
-            )}
+            
+            <button 
+              onClick={() => setShowCelebracoes(true)}
+              className={cn(
+                "px-3 py-1.5 rounded-full border flex items-center gap-2 transition-all active:scale-95 shadow-sm",
+                filterAniversarios || filterBatismos 
+                  ? "bg-amber-500 border-amber-600 text-white shadow-amber-500/20" 
+                  : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+              )}
+            >
+              <Cake className={cn("w-3.5 h-3.5", (filterAniversarios || filterBatismos) ? "text-white" : "text-amber-600")} />
+              <span className="text-[10px] font-black uppercase tracking-tight">Aniversariantes</span>
+              {hasQualquerCelebracao && !filterAniversarios && !filterBatismos && (
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+              )}
+            </button>
           </div>
         </div>
         <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
@@ -631,6 +670,11 @@ export default function CatequizandosList() {
                       <Cake className="h-3.5 w-3.5 text-white" />
                     </div>
                   )}
+                  {!isAniversarianteMes(c.dataNascimento) && isAniversarianteMesBatismo(c.sacramentos?.batismo?.data) && (
+                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce z-20">
+                      <Cross className="h-3.5 w-3.5 text-white" />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex-1 min-w-0">
@@ -824,6 +868,150 @@ export default function CatequizandosList() {
           
           <div className="p-4 bg-white border-t border-black/5 shrink-0 flex justify-end">
             <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
+              Fechar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Celebrações */}
+      <Dialog open={showCelebracoes} onOpenChange={setShowCelebracoes}>
+        <DialogContent className="rounded-3xl border-amber-500/20 max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden shadow-2xl flex flex-col bg-background">
+          <div className="bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent p-5 border-b border-amber-500/10 shrink-0">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-600 flex items-center justify-center shadow-inner">
+                  <Cake className="h-6 w-6" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-black text-foreground leading-tight">Painel de Celebrações</DialogTitle>
+                  <p className="text-xs text-muted-foreground font-medium mt-0.5">Aniversários e Datas Especiais</p>
+                </div>
+              </div>
+              
+              <div className="hidden sm:block">
+                {id && (
+                  <ReportModule 
+                    context="catequizandos" 
+                    turmaId={id} 
+                    instantReport="cal_anual" 
+                    initialDocId="anual"
+                    trigger={
+                      <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all text-[10px] font-black uppercase tracking-wider">
+                        <Printer className="h-4 w-4" /> Calendário Anual
+                      </button>
+                    }
+                  />
+                )}
+              </div>
+            </div>
+            
+            {/* Tabs Control */}
+            <div className="flex items-center gap-2 mt-5 bg-black/5 p-1 rounded-xl">
+              <button 
+                onClick={() => setCelebracoesTab('nascimento')}
+                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'nascimento' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+              >
+                Nascimento ({aniversariantesDoMes.length})
+              </button>
+              <button 
+                onClick={() => setCelebracoesTab('batismo')}
+                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'batismo' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+              >
+                Batismo ({batismosDoMes.length})
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-5 bg-black/[0.02]">
+            <div className="space-y-3">
+              {(celebracoesTab === 'nascimento' ? aniversariantesDoMes : batismosDoMes).length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhuma celebração encontrada para este mês.</div>
+              ) : (
+                (celebracoesTab === 'nascimento' ? aniversariantesDoMes : batismosDoMes).map((c) => {
+                  const dataRaw = celebracoesTab === 'nascimento' ? c.dataNascimento : c.sacramentos?.batismo?.data;
+                  const data = new Date(dataRaw + 'T12:00:00');
+                  const hoje = new Date();
+                  const eHoje = data.getDate() === hoje.getDate();
+                  const jaPassou = data.getDate() < hoje.getDate();
+
+                  return (
+                    <div key={c.id} className={cn("flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 shadow-sm", eHoje && "ring-2 ring-amber-500 bg-amber-50/30")}>
+                      <div className="flex items-center gap-3">
+                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                           {c.foto ? <img src={c.foto} className="w-full h-full object-cover" /> : <span className="text-xs font-bold">{c.nome.charAt(0)}</span>}
+                         </div>
+                         <div>
+                            <p className="text-sm font-bold text-foreground truncate max-w-[150px]">{c.nome}</p>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                              {jaPassou ? 'Celebrou dia ' : 'Dia '} {data.getDate()}
+                            </p>
+                         </div>
+                      </div>
+                      
+                      <div className="text-right">
+                        {celebracoesTab === 'nascimento' ? (
+                          <span className="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-1 rounded-lg">
+                            {calcularIdade(c.dataNascimento)}
+                          </span>
+                        ) : (
+                          <div className="flex flex-col items-end">
+                            <span className="text-xs font-black text-blue-600 bg-blue-100 px-2.5 py-1 rounded-lg">
+                               Batismo
+                            </span>
+                            <span className="text-[9px] font-bold text-muted-foreground mt-1 italic">
+                              {data.getFullYear()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+          
+          <div className="p-4 bg-white border-t border-black/5 shrink-0 flex flex-col sm:flex-row gap-3">
+             <div className="flex-1 flex gap-2">
+                <button 
+                  onClick={() => {
+                    if (celebracoesTab === 'nascimento') {
+                      setFilterAniversarios(!filterAniversarios);
+                      setFilterBatismos(false);
+                    } else {
+                      setFilterBatismos(!filterBatismos);
+                      setFilterAniversarios(false);
+                    }
+                    setShowCelebracoes(false);
+                  }}
+                  className={cn("flex-1 action-btn-sm justify-center border-2", 
+                    (celebracoesTab === 'nascimento' && filterAniversarios) || (celebracoesTab === 'batismo' && filterBatismos)
+                    ? "bg-amber-600 text-white border-transparent"
+                    : "bg-white text-amber-600 border-amber-200"
+                  )}
+                >
+                  {((celebracoesTab === 'nascimento' && filterAniversarios) || (celebracoesTab === 'batismo' && filterBatismos)) ? "Limpar Filtro" : "Filtrar na Lista"}
+                </button>
+             </div>
+             
+             <div className="sm:hidden">
+               {id && (
+                  <ReportModule 
+                    context="catequizandos" 
+                    turmaId={id} 
+                    instantReport="cal_anual" 
+                    initialDocId="anual"
+                    trigger={
+                      <button className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-white border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all text-xs font-black uppercase tracking-wider">
+                        <Printer className="h-4 w-4" /> Calendário Anual
+                      </button>
+                    }
+                  />
+                )}
+             </div>
+
+             <button onClick={() => setShowCelebracoes(false)} className="action-btn-sm bg-black/5 text-muted-foreground hover:bg-black/10 border-transparent justify-center">
               Fechar
             </button>
           </div>

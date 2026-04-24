@@ -377,3 +377,67 @@ export const UnifiedPlanSheet = ({ org, turma, items }: any) => (
     </div>
   </div>
 );
+export const AnnualCelebrationsCalendar = ({ org, turma, catequizandos }: any) => {
+  const months = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
+  const grouped = months.map((monthName, monthIndex) => {
+    const events: any[] = [];
+    catequizandos.forEach((c: any) => {
+      if (c.dataNascimento) {
+        const d = new Date(c.dataNascimento + 'T12:00:00');
+        if (d.getMonth() === monthIndex) {
+          events.push({ day: d.getDate(), name: c.nome, type: 'Nascimento' });
+        }
+      }
+      if (c.sacramentos?.batismo?.data) {
+        const d = new Date(c.sacramentos.batismo.data + 'T12:00:00');
+        if (d.getMonth() === monthIndex) {
+          events.push({ day: d.getDate(), name: c.nome, type: 'Batismo' });
+        }
+      }
+    });
+    return { 
+      name: monthName, 
+      events: events.sort((a, b) => a.day - b.day) 
+    };
+  });
+
+  return (
+    <div className="p-8 text-black font-sans print:p-0">
+      <PrintHeader 
+        titulo="Calendário Anual de Celebrações" 
+        subtitulo="Aniversários de Nascimento e Batismo"
+        paroquia={org.paroquia} 
+        comunidade={org.comunidade}
+        turma={turma.nome}
+      />
+      
+      <div className="grid grid-cols-2 gap-x-8 gap-y-10 mt-6">
+        {grouped.map((m) => (
+          <div key={m.name} className="border-t-2 border-black pt-2">
+            <h3 className="text-sm font-black uppercase mb-3 bg-gray-100 px-2 py-0.5 inline-block">{m.name}</h3>
+            {m.events.length === 0 ? (
+              <p className="text-[10px] text-gray-400 italic">Nenhuma celebração</p>
+            ) : (
+              <div className="space-y-1.5">
+                {m.events.map((e, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-[11px] gap-2">
+                    <span className="font-black w-4 text-right">{e.day}</span>
+                    <span className="flex-1 truncate">{e.name}</span>
+                    <span className={cn("text-[8px] font-black uppercase px-1.5 py-0.5 rounded", 
+                      e.type === 'Nascimento' ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
+                      {e.type === 'Nascimento' ? 'Nasc.' : 'Batismo'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
