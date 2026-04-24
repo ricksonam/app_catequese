@@ -592,6 +592,26 @@ export async function fetchAllRespostasCount(formIds: string[]): Promise<number>
   return count || 0;
 }
 
+export async function fetchAllRespostas(formIds: string[]): Promise<ComunicacaoResposta[]> {
+  if (formIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("comunicacao_respostas")
+    .select("*")
+    .in("form_id", formIds)
+    .order("criado_em", { ascending: false });
+    
+  if (error) throw error;
+  return (data || []).map((r: any) => ({
+    id: r.id,
+    form_id: r.form_id,
+    nome_respondente: r.nome_respondente,
+    telefone: r.telefone,
+    respostas: r.respostas,
+    pontuacao: r.pontuacao,
+    criado_em: r.criado_em
+  }));
+}
+
 export async function insertComunicacaoResposta(r: Omit<ComunicacaoResposta, 'id' | 'criado_em'>) {
   const { error } = await supabase.from("comunicacao_respostas").insert({
     form_id: r.form_id,

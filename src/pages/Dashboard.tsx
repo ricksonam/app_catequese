@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostasCount } from "@/hooks/useSupabaseData";
+import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -47,10 +47,42 @@ export default function Dashboard() {
   const { data: globalMissoes = [] } = useMissoesFamilia();
   const { data: comunicacaoForms = [] } = useComunicacaoForms();
   const formIds = useMemo(() => comunicacaoForms.map(f => f.id), [comunicacaoForms]);
-  const { data: respostasCount = 0 } = useAllRespostasCount(formIds);
+  const { data: todasRespostas = [] } = useAllRespostas(formIds);
+  const respostasCount = todasRespostas.length;
 
   const totalMissoesConcluidas = useMemo(() => globalMissoes.reduce((acc, m) => acc + (m.concluidas || 0), 0), [globalMissoes]);
   const totalMensagens = totalMissoesConcluidas + respostasCount;
+
+  const feedMensagens = useMemo(() => {
+    const feed: { id: string; tipo: 'iavalia' | 'missao'; titulo: string; remetente: string; data: Date; rawDate: string; }[] = [];
+    
+    todasRespostas.forEach(r => {
+      const form = comunicacaoForms.find(f => f.id === r.form_id);
+      feed.push({
+        id: `resp_${r.id}`,
+        tipo: 'iavalia',
+        titulo: form?.titulo || 'Questionário',
+        remetente: r.nome_respondente || 'Anônimo',
+        data: new Date(r.criado_em || Date.now()),
+        rawDate: r.criado_em || ''
+      });
+    });
+
+    globalMissoes.forEach(m => {
+      if (m.concluidas > 0) {
+        feed.push({
+          id: `missao_${m.id}`,
+          tipo: 'missao',
+          titulo: m.titulo,
+          remetente: `${m.concluidas} família(s) concluíram`,
+          data: new Date(m.criadoEm || Date.now()),
+          rawDate: m.criadoEm || ''
+        });
+      }
+    });
+
+    return feed.sort((a, b) => b.data.getTime() - a.data.getTime());
+  }, [todasRespostas, comunicacaoForms, globalMissoes]);
 
   const [lastSeenMensagens, setLastSeenMensagens] = useState(() => {
     return parseInt(localStorage.getItem('ivc_last_seen_mensagens') || '0', 10);
@@ -1086,27 +1118,53 @@ export default function Dashboard() {
       </Dialog>
       {/* Dialogo de Mensagens */}
       <Dialog open={messagesModalOpen} onOpenChange={setMessagesModalOpen}>
-        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black tracking-tight text-center text-blue-600">Novas Mensagens!</DialogTitle>
+        <DialogContent className="max-w-md mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl max-h-[85vh] flex flex-col">
+          <DialogHeader className="shrink-0 mb-2">
+            <DialogTitle className="text-2xl font-black tracking-tight text-center text-blue-600">Mensagens Recebidas</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4 text-center">
-            <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
-              <Mail className="h-8 w-8 text-blue-600" />
-            </div>
-            <p className="text-sm font-medium text-muted-foreground leading-relaxed">
-              Você tem novas interações ativas! Isso indica que alguma <strong className="text-foreground">Missão em Família</strong> foi concluída ou há novas respostas nos questionários do <strong className="text-foreground">iAvalia</strong>.
-            </p>
-            <p className="text-xs text-muted-foreground/80 mt-4">
-              Acesse suas turmas e relatórios para ver os detalhes completos.
-            </p>
+          
+          <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2 pb-2">
+            {feedMensagens.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
+                  <Mail className="h-8 w-8 text-blue-600 opacity-50" />
+                </div>
+                <p className="text-sm font-medium text-muted-foreground">Nenhuma mensagem recebida ainda.</p>
+              </div>
+            ) : (
+              feedMensagens.map(msg => (
+                <div key={msg.id} className="bg-white dark:bg-zinc-800/80 rounded-2xl p-4 border border-slate-100 dark:border-slate-800/50 shadow-sm flex items-start gap-3 transition-all hover:border-blue-500/20">
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-[0.5px]", 
+                    msg.tipo === 'iavalia' ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-orange-50 text-orange-600 border-orange-200"
+                  )}>
+                    {msg.tipo === 'iavalia' ? <BookOpen className="h-5 w-5" /> : <Heart className="h-5 w-5" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn("text-[9px] font-black uppercase tracking-wider mb-1", 
+                      msg.tipo === 'iavalia' ? "text-emerald-600" : "text-orange-600"
+                    )}>
+                      {msg.tipo === 'iavalia' ? 'iAvalia - Resposta' : 'Catequese em Família'}
+                    </p>
+                    <h4 className="text-sm font-bold text-foreground truncate">{msg.titulo}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {msg.tipo === 'iavalia' ? (
+                        <>Respondido por: <strong className="text-foreground">{msg.remetente}</strong></>
+                      ) : (
+                        <>{msg.remetente}</>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-          <div className="mt-2">
+
+          <div className="mt-4 shrink-0">
             <Button 
               onClick={() => setMessagesModalOpen(false)}
               className="w-full rounded-2xl h-12 font-bold bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Entendi
+              Fechar
             </Button>
           </div>
         </DialogContent>
