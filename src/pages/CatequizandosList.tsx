@@ -78,6 +78,12 @@ const NECESSIDADES_ESPECIAIS = [
   { id: "outro", label: "Outro", lanyard: "cinza", color: "bg-gray-400", pattern: "⭕" },
 ];
 
+const MESES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+
+
 function LanyardDrawing({ type }: { type: string }) {
   const need = NECESSIDADES_ESPECIAIS.find(n => n.id === type);
   if (!need || !need.lanyard) return null;
@@ -148,6 +154,9 @@ export default function CatequizandosList() {
   // --- Celebrações Modal States ---
   const [showCelebracoes, setShowCelebracoes] = useState(false);
   const [celebracoesTab, setCelebracoesTab] = useState<'nascimento' | 'batismo'>('nascimento');
+  const [periodoCelebracao, setPeriodoCelebracao] = useState<'anual' | 'mensal'>('anual');
+  const [mesCelebracao, setMesCelebracao] = useState<number>(new Date().getMonth());
+
   
   const [alertConfig] = useState(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
@@ -343,51 +352,96 @@ export default function CatequizandosList() {
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-  const aniversariantesDoMes = useMemo(() => {
+  const aniversariantesFiltrados = useMemo(() => {
     const hoje = new Date();
     const diaAtual = hoje.getDate();
+    const mesAtual = hoje.getMonth();
     
     return list
-      .filter(c => isAniversarianteMes(c.dataNascimento))
+      .filter(c => {
+        if (!c.dataNascimento) return false;
+        const nasc = new Date(c.dataNascimento + (c.dataNascimento.includes('T') ? '' : 'T12:00:00'));
+        if (periodoCelebracao === 'anual') return true;
+        return nasc.getMonth() === mesCelebracao;
+      })
       .sort((a, b) => {
-        const diaA = new Date(a.dataNascimento + 'T12:00:00').getDate();
-        const diaB = new Date(b.dataNascimento + 'T12:00:00').getDate();
+        const dateA = new Date(a.dataNascimento + 'T12:00:00');
+        const dateB = new Date(b.dataNascimento + 'T12:00:00');
         
-        const aNoFuturo = diaA >= diaAtual;
-        const bNoFuturo = diaB >= diaAtual;
-        
-        if (aNoFuturo && !bNoFuturo) return -1;
-        if (!aNoFuturo && bNoFuturo) return 1;
-        return diaA - diaB;
+        if (periodoCelebracao === 'mensal') {
+          const diaA = dateA.getDate();
+          const diaB = dateB.getDate();
+          if (mesCelebracao === mesAtual) {
+            const aNoFuturo = diaA >= diaAtual;
+            const bNoFuturo = diaB >= diaAtual;
+            if (aNoFuturo && !bNoFuturo) return -1;
+            if (!aNoFuturo && bNoFuturo) return 1;
+          }
+          return diaA - diaB;
+        } else {
+          const mA = dateA.getMonth();
+          const mB = dateB.getMonth();
+          if (mA !== mB) return mA - mB;
+          return dateA.getDate() - dateB.getDate();
+        }
       });
-  }, [list]);
+  }, [list, periodoCelebracao, mesCelebracao]);
 
-  const batismosDoMes = useMemo(() => {
+  const batismosFiltrados = useMemo(() => {
     const hoje = new Date();
     const diaAtual = hoje.getDate();
+    const mesAtual = hoje.getMonth();
     
     return list
-      .filter(c => isAniversarianteMesBatismo(c.sacramentos?.batismo?.data))
+      .filter(c => {
+        const dataB = c.sacramentos?.batismo?.data || c.dadosPastorais?.sacramentos?.batismo?.data;
+        if (!dataB) return false;
+        const date = new Date(dataB + 'T12:00:00');
+        if (periodoCelebracao === 'anual') return true;
+        return date.getMonth() === mesCelebracao;
+      })
       .sort((a, b) => {
-        const diaA = new Date((a.sacramentos?.batismo?.data || "") + 'T12:00:00').getDate();
-        const diaB = new Date((b.sacramentos?.batismo?.data || "") + 'T12:00:00').getDate();
+        const dataA = a.sacramentos?.batismo?.data || a.dadosPastorais?.sacramentos?.batismo?.data;
+        const dataB = b.sacramentos?.batismo?.data || b.dadosPastorais?.sacramentos?.batismo?.data;
+        const dateA = new Date((dataA || "") + 'T12:00:00');
+        const dateB = new Date((dataB || "") + 'T12:00:00');
         
-        const aNoFuturo = diaA >= diaAtual;
-        const bNoFuturo = diaB >= diaAtual;
-        
-        if (aNoFuturo && !bNoFuturo) return -1;
-        if (!aNoFuturo && bNoFuturo) return 1;
-        return diaA - diaB;
+        if (periodoCelebracao === 'mensal') {
+          const diaA = dateA.getDate();
+          const diaB = dateB.getDate();
+          if (mesCelebracao === mesAtual) {
+            const aNoFuturo = diaA >= diaAtual;
+            const bNoFuturo = diaB >= diaAtual;
+            if (aNoFuturo && !bNoFuturo) return -1;
+            if (!aNoFuturo && bNoFuturo) return 1;
+          }
+          return diaA - diaB;
+        } else {
+          const mA = dateA.getMonth();
+          const mB = dateB.getMonth();
+          if (mA !== mB) return mA - mB;
+          return dateA.getDate() - dateB.getDate();
+        }
       });
+  }, [list, periodoCelebracao, mesCelebracao]);
+
+  const hasQualquerCelebracao = useMemo(() => {
+    const hoje = new Date();
+    return list.some(c => isAniversarianteMes(c.dataNascimento) || isAniversarianteMesBatismo(c.sacramentos?.batismo?.data));
   }, [list]);
 
-  const hasQualquerCelebracao = aniversariantesDoMes.length > 0 || batismosDoMes.length > 0;
   
   const filteredList = useMemo(() => {
-    if (filterAniversarios) return aniversariantesDoMes;
-    if (filterBatismos) return batismosDoMes;
+    if (filterAniversarios) {
+      const hoje = new Date();
+      return list.filter(c => isAniversarianteMes(c.dataNascimento));
+    }
+    if (filterBatismos) {
+      return list.filter(c => isAniversarianteMesBatismo(c.sacramentos?.batismo?.data));
+    }
     return list;
-  }, [filterAniversarios, filterBatismos, aniversariantesDoMes, batismosDoMes, list]);
+  }, [filterAniversarios, filterBatismos, list]);
+
 
   if (isLoading) {
     return (
@@ -878,7 +932,7 @@ export default function CatequizandosList() {
       <Dialog open={showCelebracoes} onOpenChange={setShowCelebracoes}>
         <DialogContent className="rounded-3xl border-amber-500/20 max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden shadow-2xl flex flex-col bg-background">
           <div className="bg-gradient-to-br from-amber-500/10 via-amber-600/5 to-transparent p-5 border-b border-amber-500/10 shrink-0">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-600 flex items-center justify-center shadow-inner">
                   <Cake className="h-6 w-6" />
@@ -888,22 +942,42 @@ export default function CatequizandosList() {
                   <p className="text-xs text-muted-foreground font-medium mt-0.5">Aniversários e Datas Especiais</p>
                 </div>
               </div>
-              
-              <div className="hidden sm:block">
-                {id && (
-                  <ReportModule 
-                    context="catequizandos" 
-                    turmaId={id} 
-                    instantReport="cal_anual" 
-                    initialDocId="anual"
-                    trigger={
-                      <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all text-[10px] font-black uppercase tracking-wider">
-                        <Printer className="h-4 w-4" /> Calendário Anual
-                      </button>
-                    }
-                  />
-                )}
+            </div>
+
+            {/* Period Filter (Anual/Mensal) */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2 bg-black/5 p-1 rounded-xl">
+                <button 
+                  onClick={() => setPeriodoCelebracao('anual')}
+                  className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", periodoCelebracao === 'anual' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                >
+                  Anual
+                </button>
+                <button 
+                  onClick={() => setPeriodoCelebracao('mensal')}
+                  className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", periodoCelebracao === 'mensal' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+                >
+                  Mensal
+                </button>
               </div>
+
+              {periodoCelebracao === 'mensal' && (
+                <div className="animate-in slide-in-from-top-2">
+                  <Select 
+                    value={mesCelebracao.toString()} 
+                    onValueChange={(v) => setMesCelebracao(parseInt(v))}
+                  >
+                    <SelectTrigger className="h-10 bg-white border-amber-200">
+                      <SelectValue placeholder="Selecione o mês" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MESES.map((nome, idx) => (
+                        <SelectItem key={idx} value={idx.toString()}>{nome}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
             
             {/* Tabs Control */}
@@ -912,28 +986,28 @@ export default function CatequizandosList() {
                 onClick={() => setCelebracoesTab('nascimento')}
                 className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'nascimento' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
               >
-                Nascimento ({aniversariantesDoMes.length})
+                Nascimento ({aniversariantesFiltrados.length})
               </button>
               <button 
                 onClick={() => setCelebracoesTab('batismo')}
                 className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", celebracoesTab === 'batismo' ? "bg-white text-amber-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
               >
-                Batismo ({batismosDoMes.length})
+                Batismo ({batismosFiltrados.length})
               </button>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-5 bg-black/[0.02]">
             <div className="space-y-3">
-              {(celebracoesTab === 'nascimento' ? aniversariantesDoMes : batismosDoMes).length === 0 ? (
-                <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhuma celebração encontrada para este mês.</div>
+              {(celebracoesTab === 'nascimento' ? aniversariantesFiltrados : batismosFiltrados).length === 0 ? (
+                <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhuma celebração encontrada para este período.</div>
               ) : (
-                (celebracoesTab === 'nascimento' ? aniversariantesDoMes : batismosDoMes).map((c) => {
-                  const dataRaw = celebracoesTab === 'nascimento' ? c.dataNascimento : c.sacramentos?.batismo?.data;
+                (celebracoesTab === 'nascimento' ? aniversariantesFiltrados : batismosFiltrados).map((c) => {
+                  const dataRaw = celebracoesTab === 'nascimento' ? c.dataNascimento : (c.sacramentos?.batismo?.data || c.dadosPastorais?.sacramentos?.batismo?.data);
                   const data = new Date(dataRaw + 'T12:00:00');
                   const hoje = new Date();
-                  const eHoje = data.getDate() === hoje.getDate();
-                  const jaPassou = data.getDate() < hoje.getDate();
+                  const eHoje = data.getDate() === hoje.getDate() && data.getMonth() === hoje.getMonth();
+                  const jaPassou = data.getMonth() < hoje.getMonth() || (data.getMonth() === hoje.getMonth() && data.getDate() < hoje.getDate());
 
                   return (
                     <div key={c.id} className={cn("flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 shadow-sm", eHoje && "ring-2 ring-amber-500 bg-amber-50/30")}>
@@ -944,7 +1018,11 @@ export default function CatequizandosList() {
                          <div>
                             <p className="text-sm font-bold text-foreground truncate max-w-[150px]">{c.nome}</p>
                             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                              {jaPassou ? 'Celebrou dia ' : 'Dia '} {data.getDate()}
+                              {periodoCelebracao === 'anual' ? (
+                                `${data.getDate()} de ${MESES[data.getMonth()]}`
+                              ) : (
+                                `${jaPassou ? 'Celebrou dia ' : 'Dia '} ${data.getDate()}`
+                              )}
                             </p>
                          </div>
                       </div>
@@ -972,46 +1050,8 @@ export default function CatequizandosList() {
             </div>
           </div>
           
-          <div className="p-4 bg-white border-t border-black/5 shrink-0 flex flex-col sm:flex-row gap-3">
-             <div className="flex-1 flex gap-2">
-                <button 
-                  onClick={() => {
-                    if (celebracoesTab === 'nascimento') {
-                      setFilterAniversarios(!filterAniversarios);
-                      setFilterBatismos(false);
-                    } else {
-                      setFilterBatismos(!filterBatismos);
-                      setFilterAniversarios(false);
-                    }
-                    setShowCelebracoes(false);
-                  }}
-                  className={cn("flex-1 action-btn-sm justify-center border-2", 
-                    (celebracoesTab === 'nascimento' && filterAniversarios) || (celebracoesTab === 'batismo' && filterBatismos)
-                    ? "bg-amber-600 text-white border-transparent"
-                    : "bg-white text-amber-600 border-amber-200"
-                  )}
-                >
-                  {((celebracoesTab === 'nascimento' && filterAniversarios) || (celebracoesTab === 'batismo' && filterBatismos)) ? "Limpar Filtro" : "Filtrar na Lista"}
-                </button>
-             </div>
-             
-             <div className="sm:hidden">
-               {id && (
-                  <ReportModule 
-                    context="catequizandos" 
-                    turmaId={id} 
-                    instantReport="cal_anual" 
-                    initialDocId="anual"
-                    trigger={
-                      <button className="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-xl bg-white border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all text-xs font-black uppercase tracking-wider">
-                        <Printer className="h-4 w-4" /> Calendário Anual
-                      </button>
-                    }
-                  />
-                )}
-             </div>
-
-             <button onClick={() => setShowCelebracoes(false)} className="action-btn-sm bg-black/5 text-muted-foreground hover:bg-black/10 border-transparent justify-center">
+          <div className="p-4 bg-white border-t border-black/5 shrink-0 flex justify-end">
+             <button onClick={() => setShowCelebracoes(false)} className="action-btn-sm bg-black/5 text-muted-foreground hover:bg-black/10 border-transparent justify-center w-full sm:w-auto">
               Fechar
             </button>
           </div>
