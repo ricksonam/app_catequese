@@ -139,7 +139,10 @@ export default function CatequizandosList() {
   const [form, setForm] = useState<CatequizandoForm>({ ...emptyForm });
   const [showSacramentos, setShowSacramentos] = useState(false);
 
+  const [showInscricaoModal, setShowInscricaoModal] = useState(false);
+  
   const handleCopyInscricaoLink = () => {
+
     const url = `${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`;
     navigator.clipboard.writeText(url);
     toast.success("Link de inscrição do catequizando copiado!");
@@ -712,15 +715,81 @@ export default function CatequizandosList() {
               </button>
             </div>
             <button 
-              onClick={handleCopyInscricaoLink}
+              onClick={() => setShowInscricaoModal(true)}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/5 border-2 border-dashed border-primary/20 text-primary hover:bg-primary/10 transition-all group active:scale-95"
             >
-              <Link2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Link de Inscrição</span>
+              <LayoutDashboard className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Inscrição Online</span>
             </button>
 
 
+
           </div>
+
+          {/* Modal Inscrição Online */}
+          <Dialog open={showInscricaoModal} onOpenChange={setShowInscricaoModal}>
+            <DialogContent className="max-w-md w-[95%] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+              <div className="bg-primary p-6 text-white text-center space-y-2">
+                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
+                   <UserPlus className="h-6 w-6" />
+                </div>
+                <DialogTitle className="text-xl font-black uppercase tracking-tight">Inscrição Online</DialogTitle>
+                <p className="text-white/70 text-xs font-bold uppercase tracking-widest">Controle de inscrições recebidas</p>
+              </div>
+
+              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto bg-[#F8F9FE]">
+                <div className="space-y-3">
+                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Link para os Pais</label>
+                   <div className="flex items-center gap-2 p-3 bg-white rounded-2xl border-2 border-black/5 shadow-inner">
+                      <code className="text-[10px] font-mono font-bold text-primary truncate flex-1">
+                        {`${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`}
+                      </code>
+                      <button 
+                        onClick={handleCopyInscricaoLink}
+                        className="p-2 bg-primary text-white rounded-xl hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
+                      >
+                        <Link2 className="w-4 h-4" />
+                      </button>
+                   </div>
+                </div>
+
+                <div className="space-y-4">
+                   <div className="flex items-center justify-between">
+                     <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Inscrições Recentes</h3>
+                     <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full">{list.length}</span>
+                   </div>
+                   
+                   <div className="space-y-2">
+                     {[...list].sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()).map((c) => (
+                       <div key={c.id} className="flex items-center justify-between p-3 bg-white rounded-2xl border-2 border-black/5 group hover:border-primary/20 transition-all">
+                          <div className="flex-1 min-w-0">
+                             <p className="text-xs font-black text-foreground truncate uppercase">{c.nome}</p>
+                             <div className="flex items-center gap-1.5 mt-0.5 text-muted-foreground font-bold">
+                               <CalendarDays className="w-3 h-3" />
+                               <span className="text-[9px] uppercase tracking-tighter">
+                                 {c.criadoEm ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(c.criadoEm)) : 'Data indisponível'}
+                               </span>
+                             </div>
+                          </div>
+                          <div className="w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-200" title="Cadastrado" />
+                       </div>
+                     ))}
+                     {list.length === 0 && (
+                       <div className="text-center py-8 opacity-40">
+                          <UserPlus className="w-8 h-8 mx-auto mb-2" />
+                          <p className="text-[10px] font-black uppercase">Nenhuma inscrição ainda</p>
+                       </div>
+                     )}
+                   </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-white border-t border-black/5 text-center">
+                 <button onClick={() => setShowInscricaoModal(false)} className="text-[10px] font-black uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Painel</button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
 
 
 
@@ -1142,6 +1211,17 @@ export default function CatequizandosList() {
                          <span className="text-xs font-bold text-muted-foreground">Nascimento</span>
                          <span className="text-base font-black text-foreground text-right">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
                       </div>
+                      {viewItem.criadoEm && (
+                        <>
+                          <div className="h-px bg-black/5" />
+                          <div className="flex justify-between items-center">
+                             <span className="text-xs font-bold text-muted-foreground">Registro</span>
+                             <span className="text-[10px] font-black text-foreground text-right uppercase">
+                               {new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(viewItem.criadoEm))}
+                             </span>
+                          </div>
+                        </>
+                      )}
                       <div className="h-px bg-black/5" />
                       <div className="flex justify-between items-center">
                          <span className="text-xs font-bold text-muted-foreground">Telefone</span>

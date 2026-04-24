@@ -53,7 +53,9 @@ export interface Catequizando {
   };
   responsaveis?: ResponsavelInfo[];
   dadosPastorais?: DadosPastoraisInfo;
+  criadoEm?: string;
 }
+
 
 export type EncontroStatus = 'pendente' | 'realizado' | 'transferido' | 'cancelado';
 

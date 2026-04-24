@@ -139,8 +139,10 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
     necessidadeEspecial: c.necessidade_especial,
     observacao: c.observacao, status: c.status, foto: c.foto || undefined,
     sacramentos: c.sacramentos || undefined,
+    criadoEm: c.criado_em,
   }));
 }
+
 
 export async function upsertCatequizando(c: Catequizando) {
   const { error } = await (supabase.from as any)("catequizandos").upsert({
