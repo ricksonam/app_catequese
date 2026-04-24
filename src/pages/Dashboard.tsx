@@ -164,7 +164,7 @@ export default function Dashboard() {
       // Direciona para o passo de cadastro correto baseado nos dados reais (somente se não estiver já no meio de um passo)
       if (onboardingStep === "none") {
         if (paroquias.length === 0 && comunidades.length === 0) {
-          setOnboardingStep("paroquia");
+          setOnboardingStep("intro");
         } else if (catequistas.length === 0) {
           setOnboardingStep("catequista");
         } else if (turmas.length === 0) {
@@ -547,7 +547,7 @@ export default function Dashboard() {
             } else {
               // Direciona para o passo correto
               if (paroquias.length === 0 && comunidades.length === 0) {
-                setOnboardingStep("paroquia");
+                setOnboardingStep("intro");
               } else if (catequistas.length === 0) {
                 setOnboardingStep("catequista");
               } else {
@@ -563,7 +563,10 @@ export default function Dashboard() {
         onCancel={() => signOut()}
       />
 
-
+      <OnboardingIntroStep
+        open={onboardingStep === "intro"}
+        onStart={() => setOnboardingStep("paroquia")}
+      />
 
       <OnboardingWizard 
         currentStep={onboardingStep}

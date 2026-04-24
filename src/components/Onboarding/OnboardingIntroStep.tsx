@@ -68,9 +68,9 @@ export function OnboardingIntroStep({ open, onStart }: OnboardingIntroStepProps)
             </div>
 
             <h2 className="text-2xl font-black text-foreground tracking-tight leading-tight">
-              Antes de começar,
+              Bem-vindo ao <span className="text-primary">iCatequese!</span>
               <br />
-              <span className="text-primary">3 cadastros rápidos</span>
+              <span className="text-lg text-muted-foreground font-medium">Antes de começar, 3 cadastros rápidos</span>
             </h2>
             <p className="text-xs text-muted-foreground leading-relaxed mt-2.5 max-w-xs">
               Para desbloquear todos os recursos do <strong>iCatequese</strong>, precisamos de algumas informações básicas. Leva menos de 3 minutos!
