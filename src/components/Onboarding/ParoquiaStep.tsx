@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import { Church, MapPin, Users, ArrowRight, Sparkles, Mail, FileText } from "lucide-react";
+import { Church, MapPin, Users, ArrowRight, Sparkles, Mail, FileText, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { mascaraTelefone } from "@/lib/utils";
@@ -27,8 +28,8 @@ interface UnifiedFormData {
 }
 
 const emptyForm: UnifiedFormData = {
-  pNome: "", pTipo: "Paróquia", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pObservacao: "",
-  cNome: "", cTipo: "Comunidade", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
+  pNome: "", pTipo: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pObservacao: "",
+  cNome: "", cTipo: "", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
 };
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
@@ -133,20 +134,35 @@ export function ParoquiaStep({ open, onSuccess }: ParoquiaStepProps) {
               <p className="text-[10px] font-black uppercase tracking-widest text-violet-600">Dados da Paróquia / Área / Escola</p>
             </div>
 
-            <FieldInput label="Nome da Paróquia *" value={form.pNome} onChange={(v) => updateField("pNome", v)} placeholder="Ex: Paróquia São José" />
-
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Tipo</label>
-              <select
-                value={form.pTipo}
-                onChange={(e) => updateField("pTipo", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-violet-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
-              >
-                <option>Paróquia</option>
-                <option>Área Missionária</option>
-                <option>Escola</option>
-              </select>
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Tipo *</label>
+              <div className="relative">
+                <select
+                  value={form.pTipo}
+                  onChange={(e) => updateField("pTipo", e.target.value)}
+                  className={cn(
+                    "w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-violet-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none pr-10",
+                    !form.pTipo && "border-amber-500/50"
+                  )}
+                >
+                  <option value="" disabled>Selecione o tipo...</option>
+                  <option>Paróquia</option>
+                  <option>Área Missionária</option>
+                  <option>Região</option>
+                  <option>Escola</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                </div>
+              </div>
             </div>
+
+            <FieldInput 
+              label={form.pTipo ? `Nome da ${form.pTipo} *` : "Nome *"} 
+              value={form.pNome} 
+              onChange={(v) => updateField("pNome", v)} 
+              placeholder={form.pTipo ? `Ex: ${form.pTipo} São José` : "Selecione o tipo primeiro"} 
+            />
 
             <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} placeholder="Rua, número, bairro..." />
 
@@ -178,20 +194,34 @@ export function ParoquiaStep({ open, onSuccess }: ParoquiaStepProps) {
               <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Dados da Comunidade / Núcleo</p>
             </div>
 
-            <FieldInput label="Nome da Comunidade *" value={form.cNome} onChange={(v) => updateField("cNome", v)} placeholder="Ex: Comunidade Nossa Senhora" />
-
             <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Tipo da Comunidade</label>
-              <select
-                value={form.cTipo}
-                onChange={(e) => updateField("cTipo", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-violet-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
-              >
-                <option>Comunidade</option>
-                <option>Núcleo</option>
-                <option>Grupo</option>
-              </select>
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Tipo da Comunidade *</label>
+              <div className="relative">
+                <select
+                  value={form.cTipo}
+                  onChange={(e) => updateField("cTipo", e.target.value)}
+                  className={cn(
+                    "w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-violet-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none pr-10",
+                    !form.cTipo && "border-amber-500/50"
+                  )}
+                >
+                  <option value="" disabled>Selecione o tipo...</option>
+                  <option>Comunidade</option>
+                  <option>Núcleo</option>
+                  <option>Grupo</option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                </div>
+              </div>
             </div>
+
+            <FieldInput 
+              label={form.cTipo ? `Nome da ${form.cTipo} *` : "Nome da Comunidade *"} 
+              value={form.cNome} 
+              onChange={(v) => updateField("cNome", v)} 
+              placeholder={form.cTipo ? `Ex: ${form.cTipo} Nossa Senhora` : "Selecione o tipo primeiro"} 
+            />
 
             <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} placeholder="Endereço da comunidade" />
 

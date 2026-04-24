@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useParoquiaMutation, useComunidadeMutation, useDeleteParoquia, useDeleteComunidade } from "@/hooks/useSupabaseData";
 import { type Paroquia, type Comunidade } from "@/lib/store";
-import { ArrowLeft, Plus, Church, Trash2, Eye, Users, MapPin, Phone, Mail, FileText, Pencil } from "lucide-react";
+import { ArrowLeft, Plus, Church, Trash2, Eye, Users, MapPin, Phone, Mail, FileText, Pencil, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -26,8 +27,8 @@ interface UnifiedFormData {
 }
 
 const emptyForm: UnifiedFormData = {
-  pNome: "", pTipo: "Paróquia", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pObservacao: "",
-  cNome: "", cTipo: "Comunidade", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
+  pNome: "", pTipo: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pObservacao: "",
+  cNome: "", cTipo: "", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
 };
 
 export default function ParoquiaComunidadeCadastro() {
@@ -246,15 +247,34 @@ export default function ParoquiaComunidadeCadastro() {
                 <Church className="h-4 w-4 text-primary" />
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Paróquia / Área / Escola</h3>
               </div>
-              <FieldInput label="Nome da Paróquia *" value={form.pNome} onChange={(v) => updateField("pNome", v)} />
               <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo</label>
-                <select value={form.pTipo} onChange={(e) => updateField("pTipo", e.target.value)} className="form-input">
-                  <option>Paróquia</option>
-                  <option>Área Missionária</option>
-                  <option>Escola</option>
-                </select>
+                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo *</label>
+                <div className="relative">
+                  <select 
+                    value={form.pTipo} 
+                    onChange={(e) => updateField("pTipo", e.target.value)} 
+                    className={cn(
+                      "form-input appearance-none pr-10",
+                      !form.pTipo && "border-amber-500/50 bg-amber-500/5"
+                    )}
+                  >
+                    <option value="" disabled>Selecione o tipo...</option>
+                    <option>Paróquia</option>
+                    <option>Área Missionária</option>
+                    <option>Região</option>
+                    <option>Escola</option>
+                  </select>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                  </div>
+                </div>
               </div>
+              <FieldInput 
+                label={form.pTipo ? `Nome da ${form.pTipo} *` : "Nome *"} 
+                value={form.pNome} 
+                onChange={(v) => updateField("pNome", v)} 
+                placeholder={form.pTipo ? `Digite o nome da ${form.pTipo.toLowerCase()}` : "Selecione o tipo primeiro"}
+              />
               <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} />
               <div className="grid grid-cols-2 gap-2">
                 <FieldInput label="Telefone" type="tel" value={form.pTelefone} onChange={(v) => updateField("pTelefone", mascaraTelefone(v))} />
@@ -271,15 +291,33 @@ export default function ParoquiaComunidadeCadastro() {
                   <Users className="h-4 w-4 text-accent-foreground" />
                   <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Comunidade / Núcleo</h3>
                 </div>
-                <FieldInput label="Nome da Comunidade *" value={form.cNome} onChange={(v) => updateField("cNome", v)} />
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo da Comunidade</label>
-                  <select value={form.cTipo} onChange={(e) => updateField("cTipo", e.target.value)} className="form-input">
-                    <option>Comunidade</option>
-                    <option>Núcleo</option>
-                    <option>Grupo</option>
-                  </select>
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo da Comunidade *</label>
+                  <div className="relative">
+                    <select 
+                      value={form.cTipo} 
+                      onChange={(e) => updateField("cTipo", e.target.value)} 
+                      className={cn(
+                        "form-input appearance-none pr-10",
+                        !form.cTipo && "border-amber-500/50 bg-amber-500/5"
+                      )}
+                    >
+                      <option value="" disabled>Selecione o tipo...</option>
+                      <option>Comunidade</option>
+                      <option>Núcleo</option>
+                      <option>Grupo</option>
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                    </div>
+                  </div>
                 </div>
+                <FieldInput 
+                  label={form.cTipo ? `Nome da ${form.cTipo} *` : "Nome da Comunidade *"} 
+                  value={form.cNome} 
+                  onChange={(v) => updateField("cNome", v)} 
+                  placeholder={form.cTipo ? `Digite o nome da ${form.cTipo.toLowerCase()}` : "Selecione o tipo primeiro"}
+                />
                 <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} />
                 <div className="grid grid-cols-2 gap-2">
                   <FieldInput label="Responsável" value={form.cResponsavel} onChange={(v) => updateField("cResponsavel", v)} />
@@ -456,15 +494,33 @@ export default function ParoquiaComunidadeCadastro() {
             <DialogTitle>{cForm.id ? "Editar Comunidade" : "Nova Comunidade"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2 pb-2">
-            <FieldInput label="Nome da Comunidade *" value={cForm.nome} onChange={(v) => setCForm(p => ({ ...p, nome: v }))} />
             <div>
-              <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Vínculo</label>
-              <select value={cForm.tipo} onChange={(e) => setCForm(p => ({ ...p, tipo: e.target.value }))} className="form-input">
-                <option>Comunidade</option>
-                <option>Núcleo</option>
-                <option>Grupo</option>
-              </select>
+              <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo de Vínculo *</label>
+              <div className="relative">
+                <select 
+                  value={cForm.tipo} 
+                  onChange={(e) => setCForm(p => ({ ...p, tipo: e.target.value }))} 
+                  className={cn(
+                    "form-input appearance-none pr-10",
+                    !cForm.tipo && "border-amber-500/50 bg-amber-500/5"
+                  )}
+                >
+                  <option value="" disabled>Selecione o tipo...</option>
+                  <option>Comunidade</option>
+                  <option>Núcleo</option>
+                  <option>Grupo</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
+                </div>
+              </div>
             </div>
+            <FieldInput 
+              label={cForm.tipo ? `Nome da ${cForm.tipo} *` : "Nome *"} 
+              value={cForm.nome} 
+              onChange={(v) => setCForm(p => ({ ...p, nome: v }))} 
+              placeholder={cForm.tipo ? `Digite o nome da ${cForm.tipo.toLowerCase()}` : "Selecione o tipo primeiro"}
+            />
             <FieldInput label="Endereço" value={cForm.endereco} onChange={(v) => setCForm(p => ({ ...p, endereco: v }))} />
             <FieldInput label="Responsável" value={cForm.responsavel} onChange={(v) => setCForm(p => ({ ...p, responsavel: v }))} />
             <FieldInput label="Telefone" type="tel" value={cForm.telefone} onChange={(v) => setCForm(p => ({ ...p, telefone: mascaraTelefone(v) }))} />
