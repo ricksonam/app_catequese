@@ -293,8 +293,11 @@ export default function CatequizandosList() {
       dadosPastorais: {
         sacramentos: { batismo: form.batismo, eucaristia: form.eucaristia, crisma: form.crisma },
         participacaoPastoral: form.participacaoPastoral
-      } as any
+      } as any,
+      origem: 'manual'
     };
+
+
     try { await mutation.mutateAsync(novo); setForm({ ...emptyForm }); setShowSacramentos(false); setOpen(false); toast.success("Catequizando adicionado!"); }
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
@@ -739,7 +742,13 @@ export default function CatequizandosList() {
 
               <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto bg-[#F8F9FE]">
                 <div className="space-y-3">
-                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Link para os Pais</label>
+                   <div className="p-3.5 bg-primary/5 rounded-2xl border border-primary/10">
+                     <p className="text-[11px] font-bold text-primary leading-relaxed">
+                       Este link permite que os pais realizem a inscrição dos catequizandos diretamente pelo celular. 
+                       Os cadastros feitos pelos pais aparecerão automaticamente nesta lista abaixo.
+                     </p>
+                   </div>
+                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Link para Compartilhar</label>
                    <div className="flex items-center gap-2 p-3 bg-white rounded-2xl border-2 border-black/5 shadow-inner">
                       <code className="text-[10px] font-mono font-bold text-primary truncate flex-1">
                         {`${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`}
@@ -753,14 +762,19 @@ export default function CatequizandosList() {
                    </div>
                 </div>
 
+
                 <div className="space-y-4">
                    <div className="flex items-center justify-between">
-                     <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Inscrições Recentes</h3>
-                     <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full">{list.length}</span>
+                     <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Inscrições Online Recebidas</h3>
+                     <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                       {list.filter(c => c.origem === 'online').length}
+                     </span>
                    </div>
+
                    
                    <div className="space-y-2">
-                     {[...list].sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()).map((c) => (
+                     {[...list].filter(c => c.origem === 'online').sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()).map((c) => (
+
                        <div key={c.id} className="flex items-center justify-between p-3 bg-white rounded-2xl border-2 border-black/5 group hover:border-primary/20 transition-all">
                           <div className="flex-1 min-w-0">
                              <p className="text-xs font-black text-foreground truncate uppercase">{c.nome}</p>
@@ -774,12 +788,13 @@ export default function CatequizandosList() {
                           <div className="w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-200" title="Cadastrado" />
                        </div>
                      ))}
-                     {list.length === 0 && (
+                     {list.filter(c => c.origem === 'online').length === 0 && (
                        <div className="text-center py-8 opacity-40">
                           <UserPlus className="w-8 h-8 mx-auto mb-2" />
-                          <p className="text-[10px] font-black uppercase">Nenhuma inscrição ainda</p>
+                          <p className="text-[10px] font-black uppercase">Nenhuma inscrição online ainda</p>
                        </div>
                      )}
+
                    </div>
                 </div>
               </div>

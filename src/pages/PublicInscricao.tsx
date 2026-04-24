@@ -139,7 +139,9 @@ export default function PublicInscricao() {
         id: existing?.id || crypto.randomUUID(),
         turmaId: turma.id,
         responsavel: form.responsaveis[0]?.nome || "", // Campo legado para compatibilidade
+        origem: 'online',
       };
+
 
       await upsertCatequizando(payload);
 
