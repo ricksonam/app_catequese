@@ -39,7 +39,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
 
   return (
     <Dialog open={currentStep !== "none" || showAbout} onOpenChange={() => {}}>
-      <DialogContent className="max-w-2xl w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl bg-white dark:bg-zinc-950 flex flex-col h-[90vh] sm:h-auto sm:max-h-[85vh]">
+      <DialogContent hideClose className="max-w-2xl w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl bg-white dark:bg-zinc-950 flex flex-col h-[90vh] sm:h-auto sm:max-h-[85vh]">
         
         {/* Top Progress Bar */}
         {!showAbout && (

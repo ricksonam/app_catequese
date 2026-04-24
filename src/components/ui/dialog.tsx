@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { X as XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -44,7 +44,7 @@ const DialogContent = React.forwardRef<
       {children}
       {!hideClose && (
         <DialogPrimitive.Close className="absolute right-4 top-4 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-lg border border-black/5 opacity-80 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95 z-50">
-          <X className="h-4 w-4 text-black" />
+          <XIcon className="h-4 w-4 text-black" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       )}
