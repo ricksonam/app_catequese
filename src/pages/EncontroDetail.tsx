@@ -161,21 +161,21 @@ export default function EncontroDetail() {
 
   return (
     <div className="space-y-4 pb-6">
-      <div className="page-header animate-fade-in items-center py-4 flex-row gap-3">
-        <div className="flex items-center flex-1 min-w-0 gap-3">
-          <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn shrink-0 hover:bg-muted/50"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+      <div className="page-header animate-fade-in items-start py-4 flex-col gap-3">
+        <div className="flex items-start w-full gap-3">
+          <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn shrink-0 hover:bg-muted/50 mt-0.5"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-foreground truncate">{encontro.tema}</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">{turma?.nome}</p>
+            <h1 className="text-xl font-bold text-foreground leading-tight">{encontro.tema}</h1>
+            <p className="text-xs text-muted-foreground mt-1">{turma?.nome}</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-10 h-10 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
-            <Pencil className="h-4.5 w-4.5 text-primary group-hover:rotate-12 transition-transform" />
+        <div className="flex items-center justify-end w-full gap-5 pl-12 pr-2 mt-1">
+          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-11 h-11 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
+            <Pencil className="h-5 w-5 text-primary group-hover:rotate-12 transition-transform" />
           </button>
-          <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-10 h-10 rounded-[14px] bg-destructive/10 border-2 border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-all hover:scale-105 active:scale-95 group">
-            <Trash2 className="h-4.5 w-4.5 text-destructive group-hover:rotate-12 transition-transform" />
+          <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-11 h-11 rounded-[14px] bg-destructive/10 border-2 border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-all hover:scale-105 active:scale-95 group">
+            <Trash2 className="h-5 w-5 text-destructive group-hover:rotate-12 transition-transform" />
           </button>
         </div>
       </div>
