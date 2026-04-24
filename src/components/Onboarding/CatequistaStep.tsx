@@ -106,7 +106,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
   };
 
   const formContent = (
-    <div className={cn("flex flex-col", !embedded && "max-h-[92vh]")}>
+    <div className={cn("flex flex-col", embedded ? "flex-1 min-h-0" : "max-h-[92vh]")}>
       {!embedded && (
         <>
           <div className="h-2 w-full bg-gradient-to-r from-sky-500 via-indigo-400 to-sky-500 shrink-0" />

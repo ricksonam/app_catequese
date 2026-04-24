@@ -100,43 +100,41 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
         )}
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 flex flex-col relative bg-white dark:bg-zinc-950 rounded-b-[32px] overflow-hidden">
           {!showAbout ? (
-            <div className="p-4 sm:p-6">
-              <div className="bg-white dark:bg-zinc-900 rounded-[24px] shadow-sm border border-zinc-200/60 overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+            <>
               {currentStep === "paroquia" && (
-                <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
                   <ParoquiaStep embedded onSuccess={() => onStepChange("catequista")} />
                 </div>
               )}
               {currentStep === "catequista" && (
-                <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                   <div className="p-6">
+                <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
+                   <div className="px-6 pt-6 pb-2 shrink-0 border-b border-black/5 dark:border-white/5">
                      <button 
                        onClick={() => onStepChange("paroquia")}
-                       className="mb-4 flex items-center gap-1 text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
+                       className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
                      >
                        <ArrowLeft className="h-3 w-3" /> Voltar para Paróquia
                      </button>
-                     <CatequistaStep embedded onSuccess={() => onStepChange("turma")} />
                    </div>
+                   <CatequistaStep embedded onSuccess={() => onStepChange("turma")} />
                 </div>
               )}
               {currentStep === "turma" && (
-                <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                   <div className="p-6">
+                <div className="flex-1 flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
+                   <div className="px-6 pt-6 pb-2 shrink-0 border-b border-black/5 dark:border-white/5">
                      <button 
                        onClick={() => onStepChange("catequista")}
-                       className="mb-4 flex items-center gap-1 text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
+                       className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest"
                      >
                        <ArrowLeft className="h-3 w-3" /> Voltar para Catequista
                      </button>
-                     <TurmaStep embedded onSuccess={handleTurmaSuccess} />
                    </div>
+                   <TurmaStep embedded onSuccess={handleTurmaSuccess} />
                 </div>
               )}
-              </div>
-            </div>
+            </>
           ) : (
             /* About iCatequese Screen */
             <div className="p-8 flex flex-col items-center text-center animate-in zoom-in-95 duration-500">

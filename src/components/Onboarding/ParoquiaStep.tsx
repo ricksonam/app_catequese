@@ -115,7 +115,7 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
   };
 
   const formContent = (
-    <div className={cn("flex flex-col", !embedded && "max-h-[92vh]")}>
+    <div className={cn("flex flex-col", embedded ? "flex-1 min-h-0" : "max-h-[92vh]")}>
       {!embedded && (
         <>
           <div className="h-2 w-full bg-gradient-to-r from-violet-600 via-amber-400 to-violet-600 shrink-0" />
