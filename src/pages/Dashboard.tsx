@@ -9,9 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ObjectiveModal } from "@/components/ObjectiveModal";
 import { OnboardingIntroStep } from "@/components/Onboarding/OnboardingIntroStep";
-import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
-import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
-import { TurmaStep } from "@/components/Onboarding/TurmaStep";
+import { OnboardingWizard } from "@/components/Onboarding/OnboardingWizard";
 import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
 import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -564,26 +562,17 @@ export default function Dashboard() {
 
 
 
-      <ParoquiaStep 
-        open={onboardingStep === "paroquia"} 
-        onSuccess={() => setOnboardingStep("catequista")} 
-      />
-
-      <CatequistaStep 
-        open={onboardingStep === "catequista"} 
-        onSuccess={() => setOnboardingStep("turma")} 
-      />
-
-      <TurmaStep 
-        open={onboardingStep === "turma"} 
-        onSuccess={async () => {
+      <OnboardingWizard 
+        currentStep={onboardingStep}
+        onStepChange={setOnboardingStep}
+        onComplete={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
           setOnboardingStep("none");
           // Refetch e seleciona a turma criada
           const result = await tRefetch();
           const novas = result.data || [];
           if (novas.length > 0) setSelectedTurmaId(novas[0].id);
-        }} 
+        }}
       />
 
 
