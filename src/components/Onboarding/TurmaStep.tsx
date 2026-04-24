@@ -114,13 +114,6 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 block mb-1">Nome da Turma *</label>
-          <div className="flex items-center gap-3 border-b pb-3 border-zinc-100">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-sm shadow-sm font-bold text-primary">01</div>
-            <p className="text-sm font-black uppercase tracking-widest text-foreground">Identificação</p>
-          </div>
-
-          <div>
             <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">Nome da Turma *</label>
             <select
               value={form.nome}
