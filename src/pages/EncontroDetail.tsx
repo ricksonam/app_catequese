@@ -11,7 +11,7 @@ import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string; border: string; activeClasses: string; }[] = [
-  { value: "pendente", label: "Pendente", bg: "bg-slate-100", text: "text-slate-700", border: "border-slate-200", activeClasses: "border-slate-500 bg-slate-200 shadow-md ring-2 ring-slate-400/40 ring-offset-2 opacity-100" },
+  { value: "pendente", label: "Pendente", bg: "bg-violet-100", text: "text-violet-700", border: "border-violet-200", activeClasses: "border-violet-500 bg-violet-200 shadow-md ring-2 ring-violet-400/40 ring-offset-2 opacity-100" },
   { value: "realizado", label: "Realizado", bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-200", activeClasses: "border-emerald-500 bg-emerald-200 shadow-md ring-2 ring-emerald-400/40 ring-offset-2 opacity-100" },
   { value: "transferido", label: "Transferido", bg: "bg-orange-100", text: "text-orange-700", border: "border-orange-200", activeClasses: "border-orange-500 bg-orange-200 shadow-md ring-2 ring-orange-400/40 ring-offset-2 opacity-100" },
   { value: "cancelado", label: "Cancelado", bg: "bg-red-100", text: "text-red-700", border: "border-red-200", activeClasses: "border-red-500 bg-red-200 shadow-md ring-2 ring-red-400/40 ring-offset-2 opacity-100" },
@@ -172,7 +172,7 @@ export default function EncontroDetail() {
           <p className="text-[10px] font-bold text-muted-foreground mt-2 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
         </div>
         
-        <div className="flex items-center justify-center w-full gap-5 mt-2">
+        <div className="flex items-center justify-end w-full gap-5 pr-4 mt-2">
           <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20 group">
             <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
           </button>
@@ -182,7 +182,7 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 animate-float-up px-4">
+      <div className="grid grid-cols-3 gap-2 animate-float-up px-4 -mt-2">
         {/* Status */}
         <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 hover:border-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white shadow-sm group ${currentStatus.border}`}>
            <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center ${currentStatus.bg} border ${currentStatus.border} group-hover:shadow-md transition-all`}>
