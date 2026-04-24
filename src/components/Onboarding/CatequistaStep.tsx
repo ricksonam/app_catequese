@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react";
 import { UserCheck, User, ArrowRight, Sparkles, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar } from "lucide-react";
 import { useCatequistaMutation, useComunidades } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
-import { mascaraTelefone } from "@/lib/utils";
+import { mascaraTelefone, cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ImagePicker } from "@/components/ImagePicker";
 
