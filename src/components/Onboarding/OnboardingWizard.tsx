@@ -135,6 +135,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
                    </div>
                 </div>
               )}
+              </div>
             </div>
           ) : (
             /* About iCatequese Screen */
