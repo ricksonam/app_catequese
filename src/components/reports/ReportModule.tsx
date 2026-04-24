@@ -84,14 +84,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   const turma = turmas.find(t => t.id === turmaId);
   const config = MODULE_CONFIG[context];
 
-  useEffect(() => {
-    if (instantReport && initialDocId) {
-      setSelectedReportId(instantReport);
-      setSelectedRecordId(initialDocId);
-      setStep('preview');
-      setIsPreviewOpen(true);
-    }
-  }, [instantReport, initialDocId]);
+
 
   if (!turma) return null;
 
@@ -323,7 +316,19 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogTrigger asChild onClick={() => { setIsModalOpen(true); setStep('list'); }}>
+        <DialogTrigger asChild onClick={(e) => { 
+          if (instantReport && initialDocId) {
+            // Se for um relatório instantâneo, bypassamos a lista e vamos direto para o preview
+            e.preventDefault();
+            setSelectedReportId(instantReport);
+            setSelectedRecordId(initialDocId);
+            setStep('preview');
+            setIsPreviewOpen(true);
+          } else {
+            setIsModalOpen(true); 
+            setStep('list'); 
+          }
+        }}>
           {trigger || (
             <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20">
               <FileText className="h-5 w-5" />
