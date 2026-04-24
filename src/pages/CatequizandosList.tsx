@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing } from "lucide-react";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users } from "lucide-react";
 import { useState, useRef, useCallback, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -132,6 +132,12 @@ export default function CatequizandosList() {
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
   const [filterAniversarios, setFilterAniversarios] = useState(false);
   
+  // --- Frequência Modal States ---
+  const [showFrequencia, setShowFrequencia] = useState(false);
+  const [freqTab, setFreqTab] = useState<'encontro' | 'resumo'>('encontro');
+  const [freqEncontroId, setFreqEncontroId] = useState<string>('');
+  const [freqMes, setFreqMes] = useState<string>('');
+  
   const [alertConfig] = useState(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
     const defaultState = {
@@ -179,6 +185,65 @@ export default function CatequizandosList() {
     });
     return alertas;
   }, [list, pastEncontros, alertConfig.moduloCatequizandos]);
+
+  // --- Lógica de Frequência ---
+  const encontrosRealizados = useMemo(() => 
+    encontros.filter(e => e.status === 'realizado').sort((a,b) => new Date(b.data).getTime() - new Date(a.data).getTime()),
+  [encontros]);
+  
+  const mesesDisponiveis = useMemo(() => {
+    const meses = new Set<string>();
+    encontrosRealizados.forEach(e => {
+      const d = new Date(e.data + 'T12:00:00');
+      const mesAno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      meses.add(mesAno);
+    });
+    return Array.from(meses).sort((a,b) => b.localeCompare(a));
+  }, [encontrosRealizados]);
+
+  useEffect(() => {
+    if (showFrequencia && !freqMes && mesesDisponiveis.length > 0) {
+      setFreqMes(mesesDisponiveis[0]);
+    }
+  }, [showFrequencia, freqMes, mesesDisponiveis]);
+
+  useEffect(() => {
+    if (showFrequencia && !freqEncontroId && encontrosRealizados.length > 0) {
+      setFreqEncontroId(encontrosRealizados[0].id);
+    }
+  }, [showFrequencia, freqEncontroId, encontrosRealizados]);
+
+  const selectedEncontroObj = useMemo(() => encontrosRealizados.find(e => e.id === freqEncontroId), [encontrosRealizados, freqEncontroId]);
+  
+  const resumoMes = useMemo(() => {
+    if (!freqMes) return [];
+    const encontrosNoMes = encontrosRealizados.filter(e => {
+      const d = new Date(e.data + 'T12:00:00');
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === freqMes;
+    });
+    
+    return list.map(c => {
+      let presencas = 0;
+      let justificadas = 0;
+      let faltas = 0;
+      
+      encontrosNoMes.forEach(e => {
+        if (e.presencas?.includes(c.id)) {
+          presencas++;
+        } else if (e.justificativas && e.justificativas[c.id]) {
+          justificadas++;
+        } else {
+          faltas++;
+        }
+      });
+      
+      const total = encontrosNoMes.length;
+      const perc = total > 0 ? Math.round((presencas / total) * 100) : 0;
+      
+      return { catequizando: c, presencas, justificadas, faltas, total, perc };
+    }).sort((a, b) => a.catequizando.nome.localeCompare(b.catequizando.nome));
+  }, [freqMes, encontrosRealizados, list]);
+
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
 
@@ -310,6 +375,7 @@ export default function CatequizandosList() {
           <div className="flex-1 sm:flex-none">
             {id && <ReportModule context="catequizandos" turmaId={id} />}
           </div>
+          <button onClick={() => setShowFrequencia(true)} className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent"><CalendarDays className="h-4 w-4" /> Frequência</button>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[90vh] overflow-y-auto border-border/30 w-full max-w-2xl">
@@ -531,7 +597,7 @@ export default function CatequizandosList() {
                 {emAlerta && (
                   <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse w-full">
                     <BellRing className="w-3 h-3 text-destructive" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Catequizando com mais de {alertConfig.faltas} faltas</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Catequizando com mais de {alertConfig.moduloCatequizandos?.faltas} faltas</span>
                   </div>
                 )}
                 <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 w-full">
@@ -577,6 +643,168 @@ export default function CatequizandosList() {
           );
         })}</div>
       )}
+
+      {/* Modal Frequencia */}
+      <Dialog open={showFrequencia} onOpenChange={setShowFrequencia}>
+        <DialogContent className="rounded-3xl border-indigo-500/20 max-w-3xl w-[95vw] max-h-[90vh] p-0 overflow-hidden shadow-2xl flex flex-col bg-background">
+          <div className="bg-gradient-to-br from-indigo-500/10 via-indigo-600/5 to-transparent p-5 border-b border-indigo-500/10 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-600 flex items-center justify-center shadow-inner">
+                <Users className="h-6 w-6" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-black text-foreground leading-tight">Frequência da Turma</DialogTitle>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">Acompanhamento de participações e faltas</p>
+              </div>
+            </div>
+            
+            {/* Tabs Control */}
+            <div className="flex items-center gap-2 mt-5 bg-black/5 p-1 rounded-xl">
+              <button 
+                onClick={() => setFreqTab('encontro')}
+                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", freqTab === 'encontro' ? "bg-white text-indigo-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+              >
+                Por Encontro
+              </button>
+              <button 
+                onClick={() => setFreqTab('resumo')}
+                className={cn("flex-1 py-2 text-sm font-bold rounded-lg transition-all", freqTab === 'resumo' ? "bg-white text-indigo-600 shadow-sm" : "text-muted-foreground hover:text-foreground")}
+              >
+                Resumo Mensal
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-5 bg-black/[0.02]">
+            {freqTab === 'encontro' ? (
+              <div className="space-y-4">
+                {encontrosRealizados.length === 0 ? (
+                  <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhum encontro realizado encontrado.</div>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Selecionar Encontro</label>
+                      <Select value={freqEncontroId} onValueChange={setFreqEncontroId}>
+                        <SelectTrigger className="w-full h-12 bg-white rounded-xl shadow-sm border-2">
+                          <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {encontrosRealizados.map(e => (
+                            <SelectItem key={e.id} value={e.id}>
+                              {new Date(e.data + 'T12:00:00').toLocaleDateString('pt-BR')} - {e.tema}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="bg-white rounded-2xl border-2 border-black/5 overflow-hidden shadow-sm mt-4">
+                      {list.map((c, i) => {
+                        const isPresent = selectedEncontroObj?.presencas?.includes(c.id);
+                        const justificativa = selectedEncontroObj?.justificativas?.[c.id];
+                        const isFalta = !isPresent && !justificativa;
+                        
+                        return (
+                          <div key={c.id} className={cn("flex items-center justify-between p-3.5", i !== list.length - 1 && "border-b border-black/5")}>
+                            <p className="text-sm font-bold text-foreground truncate mr-4">{c.nome}</p>
+                            <div className="shrink-0 flex items-center justify-end w-28">
+                              {isPresent && (
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                                  <CheckCircle2 className="w-4 h-4" /><span className="text-xs font-black uppercase tracking-wider">Presente</span>
+                                </div>
+                              )}
+                              {justificativa && (
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700" title={justificativa}>
+                                  <FileSignature className="w-4 h-4" /><span className="text-xs font-black uppercase tracking-wider">Justif.</span>
+                                </div>
+                              )}
+                              {isFalta && (
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-700">
+                                  <X className="w-4 h-4" /><span className="text-xs font-black uppercase tracking-wider">Falta</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                 {mesesDisponiveis.length === 0 ? (
+                  <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhum dado de encontro disponível.</div>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-black text-muted-foreground uppercase tracking-widest">Filtrar por Mês</label>
+                      <Select value={freqMes} onValueChange={setFreqMes}>
+                        <SelectTrigger className="w-full h-12 bg-white rounded-xl shadow-sm border-2">
+                          <SelectValue placeholder="Selecione..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mesesDisponiveis.map(m => {
+                            const [year, month] = m.split('-');
+                            const nomeMes = new Date(Number(year), Number(month)-1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                            return (
+                              <SelectItem key={m} value={m} className="capitalize">
+                                {nomeMes}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="bg-white rounded-2xl border-2 border-black/5 overflow-hidden shadow-sm mt-4">
+                      {resumoMes.map((row, i) => (
+                        <div key={row.catequizando.id} className={cn("flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3", i !== resumoMes.length - 1 && "border-b border-black/5")}>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-foreground truncate">{row.catequizando.nome}</p>
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest mt-0.5">
+                              {row.total} encontro{row.total !== 1 ? 's' : ''} no mês
+                            </p>
+                          </div>
+                          
+                          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+                            <div className="flex flex-col items-center justify-center bg-emerald-50 w-12 py-1.5 rounded-lg border border-emerald-100">
+                              <span className="text-xs font-black text-emerald-600">{row.presencas}</span>
+                              <span className="text-[8px] font-bold text-emerald-600/70 uppercase">Pres</span>
+                            </div>
+                            <div className="flex flex-col items-center justify-center bg-red-50 w-12 py-1.5 rounded-lg border border-red-100">
+                              <span className="text-xs font-black text-red-600">{row.faltas}</span>
+                              <span className="text-[8px] font-bold text-red-600/70 uppercase">Falta</span>
+                            </div>
+                            <div className="flex flex-col items-center justify-center bg-amber-50 w-12 py-1.5 rounded-lg border border-amber-100">
+                              <span className="text-xs font-black text-amber-600">{row.justificadas}</span>
+                              <span className="text-[8px] font-bold text-amber-600/70 uppercase">Just</span>
+                            </div>
+                            
+                            <div className="h-8 w-px bg-black/5 mx-1 hidden sm:block" />
+                            
+                            <div className="flex items-center justify-center bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-100 min-w-[70px]">
+                              <span className={cn("text-sm font-black", row.perc < 75 ? "text-red-500" : "text-indigo-600")}>
+                                {row.perc}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <div className="p-4 bg-white border-t border-black/5 shrink-0 flex justify-end">
+            <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
+              Fechar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
         <DialogContent hideClose className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
