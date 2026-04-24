@@ -118,7 +118,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
             <select
               value={form.nome}
               onChange={(e) => update("nome", e.target.value)}
-              className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
+              className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
             >
               <option value="">Selecione...</option>
               {NOMES_TURMA.map(n => <option key={n} value={n}>{n}</option>)}
@@ -131,7 +131,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
               <select
                 value={form.ano}
                 onChange={(e) => update("ano", e.target.value)}
-                className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
+                className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
               >
                 <option value="1° Ano">1° Ano</option>
                 <option value="2° Ano">2° Ano</option>
@@ -161,7 +161,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                 type="time"
                 value={form.horario}
                 onChange={(e) => update("horario", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-emerald-500/50 focus:bg-background transition-all outline-none text-sm font-bold"
+                className="w-full h-11 px-4 rounded-2xl bg-white border-2 border-zinc-200 focus:border-emerald-500/50 focus:bg-white transition-all outline-none text-sm font-bold"
               />
             </div>
             <div>
@@ -198,7 +198,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
               <select
                 value={form.comunidadeId}
                 onChange={(e) => update("comunidadeId", e.target.value)}
-                className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
+                className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md"
               >
                 <option value="">Selecione a comunidade...</option>
                 {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}

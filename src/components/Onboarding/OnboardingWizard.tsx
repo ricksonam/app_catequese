@@ -100,7 +100,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
         )}
 
         {/* Content Area */}
-        <div className="flex-1 flex flex-col relative bg-white dark:bg-zinc-950 rounded-b-[32px] overflow-hidden min-h-0">
+        <div className="flex-1 flex flex-col relative bg-zinc-50 dark:bg-zinc-950 rounded-b-[32px] overflow-hidden min-h-0">
           {!showAbout ? (
             <>
               {currentStep === "paroquia" && (

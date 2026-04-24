@@ -56,7 +56,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
         type={type} 
         value={value} 
         onChange={(e) => onChange(e.target.value)} 
-        className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
+        className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
       />
     </div>
   );
@@ -162,7 +162,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
                 type="date"
                 value={form.dataNascimento}
                 onChange={(e) => updateField("dataNascimento", e.target.value)}
-                className="w-full h-12 px-4 rounded-2xl bg-white border-2 border-zinc-100 focus:border-sky-500 focus:bg-background transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md"
+                className="w-full h-12 px-4 rounded-2xl bg-white border-2 border-zinc-200 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md"
               />
             </div>
             <div>
