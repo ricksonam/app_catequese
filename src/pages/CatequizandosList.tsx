@@ -741,25 +741,34 @@ export default function CatequizandosList() {
               </div>
 
               <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto bg-[#F8F9FE]">
-                <div className="space-y-3">
-                    <div className="p-3.5 bg-primary/5 rounded-2xl border border-primary/10">
-                      <p className="text-[11px] font-bold text-primary leading-relaxed">
-                        Este elo de comunhão permite que as famílias realizem a inscrição ou atualizem os dados dos catequizandos diretamente de seus lares, fortalecendo nossa caminhada de fé. 
-                        As informações preenchidas florescerão automaticamente nesta lista, facilitando o pastoreio de cada pequeno cristão.
+                <div className="space-y-5">
+                    <div className="p-4 bg-amber-50/50 rounded-2xl border-2 border-amber-200/50 shadow-sm">
+                      <p className="text-[11px] font-bold text-amber-900/80 leading-relaxed italic">
+                        "Por este Link de Inscrição as famílias podem realizar a inscrição ou atualização dos dados dos catequizandos e estes dados são cadastrados ou atualizados diretamente na ficha do catequizando de forma automática, mas sempre revise os dados recebidos para uma maior segurança."
                       </p>
                     </div>
-                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block ml-1">Link de Acolhida e Atualização</label>
-                   <div className="flex items-center gap-2 p-3 bg-white rounded-2xl border-2 border-black/5 shadow-inner">
-                      <code className="text-[10px] font-mono font-bold text-primary truncate flex-1">
-                        {`${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`}
-                      </code>
-                      <button 
-                        onClick={handleCopyInscricaoLink}
-                        className="p-2 bg-primary text-white rounded-xl hover:scale-105 active:scale-95 transition-all shadow-md shadow-primary/20"
-                      >
-                        <Link2 className="w-4 h-4" />
-                      </button>
-                   </div>
+
+                    <div className="space-y-2">
+                       <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] block ml-1">Link de Acolhida e Atualização</label>
+                       <button 
+                         onClick={handleCopyInscricaoLink}
+                         className="w-full flex items-center gap-4 p-4 bg-white rounded-2xl border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/[0.02] transition-all group shadow-md shadow-primary/5 active:scale-[0.98]"
+                       >
+                          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                             <Link2 className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0 text-left">
+                             <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Copiar Link agora</p>
+                             <code className="text-[10px] font-mono font-bold text-muted-foreground truncate block">
+                               {`${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`}
+                             </code>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors">
+                             <ArrowRight className="w-4 h-4" />
+                          </div>
+                       </button>
+                       <p className="text-[9px] font-bold text-muted-foreground/60 text-center uppercase tracking-widest mt-2">Clique acima para copiar o link e enviar aos pais</p>
+                    </div>
                 </div>
 
 
