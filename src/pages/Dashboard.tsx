@@ -56,6 +56,7 @@ export default function Dashboard() {
     return parseInt(localStorage.getItem('ivc_last_seen_mensagens') || '0', 10);
   });
   const [showNovaMensagem, setShowNovaMensagem] = useState(false);
+  const [messagesModalOpen, setMessagesModalOpen] = useState(false);
 
   useEffect(() => {
     if (totalMensagens > lastSeenMensagens) {
@@ -70,6 +71,7 @@ export default function Dashboard() {
   const handleMessagesClick = () => {
     setLastSeenMensagens(totalMensagens);
     localStorage.setItem('ivc_last_seen_mensagens', totalMensagens.toString());
+    setMessagesModalOpen(true);
   };
 
   const [alertConfig] = useState(() => {
@@ -1079,6 +1081,33 @@ export default function Dashboard() {
                 </Button>
               </div>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Dialogo de Mensagens */}
+      <Dialog open={messagesModalOpen} onOpenChange={setMessagesModalOpen}>
+        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black tracking-tight text-center text-blue-600">Novas Mensagens!</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4 text-center">
+            <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+              <Mail className="h-8 w-8 text-blue-600" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+              Você tem novas interações ativas! Isso indica que alguma <strong className="text-foreground">Missão em Família</strong> foi concluída ou há novas respostas nos questionários do <strong className="text-foreground">iAvalia</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground/80 mt-4">
+              Acesse suas turmas e relatórios para ver os detalhes completos.
+            </p>
+          </div>
+          <div className="mt-2">
+            <Button 
+              onClick={() => setMessagesModalOpen(false)}
+              className="w-full rounded-2xl h-12 font-bold bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Entendi
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
