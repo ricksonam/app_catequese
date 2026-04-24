@@ -274,4 +274,3 @@ export function CatequistaStep({ open, onSuccess }: CatequistaStepProps) {
     </Dialog>
   );
 }
-}

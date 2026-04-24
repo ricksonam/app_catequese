@@ -316,4 +316,3 @@ export function TurmaStep({ open, onSuccess }: TurmaStepProps) {
     </Dialog>
   );
 }
-}

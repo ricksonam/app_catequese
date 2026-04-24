@@ -262,4 +262,3 @@ export function ParoquiaStep({ open, onSuccess }: ParoquiaStepProps) {
     </Dialog>
   );
 }
-}
