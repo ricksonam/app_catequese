@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users } from "lucide-react";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -677,17 +677,32 @@ export default function CatequizandosList() {
             </DialogContent>
           </Dialog>
           </div>
-          <div className="flex flex-row gap-2 w-full">
-            <button onClick={() => setShowFrequencia(true)} className="action-btn-sm flex-1 justify-center whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white border-transparent shadow-md shadow-amber-500/10 text-[10px] sm:text-xs">
-              <CalendarDays className="h-4 w-4" /> Painel da frequência
-            </button>
-            <button onClick={() => setShowCelebracoes(true)} className="relative action-btn-sm flex-1 justify-center whitespace-nowrap bg-blue-500 hover:bg-blue-600 text-white border-transparent shadow-md shadow-blue-500/10 text-[10px] sm:text-xs">
-              <Cake className="h-4 w-4" /> Painel dos aniversários
-              {hasQualquerCelebracao && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
-              )}
-            </button>
+          <div className="bg-card rounded-2xl border-2 border-black/5 p-4 shadow-sm space-y-3">
+            <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+               <LayoutDashboard className="w-3 h-3 text-primary/50" />
+               Painel
+            </div>
+            <div className="flex flex-row gap-2">
+              <button 
+                onClick={() => setShowFrequencia(true)} 
+                className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3 rounded-xl bg-amber-50 border-2 border-amber-200 text-amber-700 hover:bg-amber-100 transition-all group active:scale-95"
+              >
+                <CalendarDays className="h-5 w-5 group-hover:animate-bounce" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Frequência</span>
+              </button>
+              <button 
+                onClick={() => setShowCelebracoes(true)} 
+                className="relative flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3 rounded-xl bg-blue-50 border-2 border-blue-200 text-blue-700 hover:bg-blue-100 transition-all group active:scale-95"
+              >
+                <Cake className="h-5 w-5 group-hover:animate-bounce" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Aniversários</span>
+                {hasQualquerCelebracao && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
+                )}
+              </button>
+            </div>
           </div>
+
 
         </div>
       </div>
