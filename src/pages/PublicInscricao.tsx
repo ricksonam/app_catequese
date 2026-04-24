@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore";
+import { supabase, fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore";
 import { 
   UserPlus, Calendar, Phone, Mail, MapPin, 
   Plus, X, CheckCircle2, AlertCircle, 
@@ -122,16 +122,25 @@ export default function PublicInscricao() {
 
     setIsSubmitting(true);
     try {
-      // O trigger no banco cuidará de preencher user_id e paroquia_id
+      // Verificar se já existe um catequizando com o mesmo nome e data de nascimento nesta turma
+      // para permitir atualização em vez de criar um duplicado
+      const { data: existing } = await supabase
+        .from("catequizandos")
+        .select("id")
+        .eq("turma_id", turma.id)
+        .ilike("nome", form.nome.trim())
+        .eq("data_nascimento", form.dataNascimento)
+        .maybeSingle();
+
       const payload: Catequizando = {
         ...form,
-        id: crypto.randomUUID(),
+        id: existing?.id || crypto.randomUUID(),
         turmaId: turma.id,
         responsavel: form.responsaveis[0]?.nome || "", // Campo legado para compatibilidade
       };
 
-
       await upsertCatequizando(payload);
+
       setIsSuccess(true);
       toast.success("Inscrição realizada com sucesso!");
       window.scrollTo(0, 0);
