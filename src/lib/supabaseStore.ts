@@ -622,3 +622,18 @@ export async function insertComunicacaoResposta(r: Omit<ComunicacaoResposta, 'id
   });
   if (error) throw error;
 }
+
+export async function fetchPublicTurmaById(id: string) {
+  const { data, error } = await supabase
+    .from("turmas")
+    .select(`
+      *,
+      paroquia:paroquias(nome),
+      comunidade:comunidades(nome)
+    `)
+    .eq("id", id)
+    .maybeSingle();
+    
+  if (error) throw error;
+  return data;
+}

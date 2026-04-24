@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2 } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -138,6 +138,13 @@ export default function CatequizandosList() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CatequizandoForm>({ ...emptyForm });
   const [showSacramentos, setShowSacramentos] = useState(false);
+
+  const handleCopyInscricaoLink = () => {
+    const url = `${window.location.origin}/inscrever/${id}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link de inscrição copiado para a área de transferência!");
+  };
+
   const [viewItem, setViewItem] = useState<Catequizando | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editForm, setEditForm] = useState<CatequizandoForm>({ ...emptyForm });
@@ -701,7 +708,15 @@ export default function CatequizandosList() {
                 )}
               </button>
             </div>
+            <button 
+              onClick={handleCopyInscricaoLink}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/5 border-2 border-dashed border-primary/20 text-primary hover:bg-primary/10 transition-all group active:scale-95"
+            >
+              <Link2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Copiar Link de Inscrição</span>
+            </button>
           </div>
+
 
 
         </div>
@@ -914,7 +929,7 @@ export default function CatequizandosList() {
                             </div>
                             
                             <div className="h-8 w-px bg-black/5 mx-1 hidden sm:block" />
-                            
+
                             <div className="flex items-center justify-center bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-100 min-w-[70px]">
                               <span className={cn("text-sm font-black", row.perc < 75 ? "text-red-500" : "text-indigo-600")}>
                                 {row.perc}%

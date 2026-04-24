@@ -46,6 +46,7 @@ import ComunicacaoHub from "@/pages/ComunicacaoHub";
 import ComunicacaoBuilder from "@/pages/ComunicacaoBuilder";
 import ComunicacaoDetail from "@/pages/ComunicacaoDetail";
 import PublicFormResponder from "@/pages/PublicFormResponder";
+import PublicInscricao from "@/pages/PublicInscricao";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import SplashScreen from "@/components/SplashScreen";
@@ -95,6 +96,7 @@ const AppRoutes = () => (
     <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
     <Route path="/missao/:codigo" element={<PublicMissao />} />
     <Route path="/f/:codigo" element={<PublicFormResponder />} />
+    <Route path="/inscrever/:turmaId" element={<PublicInscricao />} />
     <Route
       element={
         <ProtectedRoute>
