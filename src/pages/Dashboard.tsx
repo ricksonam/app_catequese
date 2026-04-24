@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, MessageCircle } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostasCount } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -556,9 +556,9 @@ export default function Dashboard() {
         {/* Ícone de mensagens */}
         <button 
           onClick={handleMessagesClick}
-          className="relative w-10 h-10 flex items-center justify-center rounded-full bg-muted/30 hover:bg-muted/50 transition-all border border-transparent hover:border-black/5"
+          className="relative w-10 h-10 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 transition-all border border-blue-100 hover:border-blue-200"
         >
-          <MessageCircle className={cn("h-5 w-5 text-foreground", totalMensagens > lastSeenMensagens && "animate-bounce-subtle text-red-500")} />
+          <Mail className={cn("h-5 w-5 text-blue-600", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
           {totalMensagens > lastSeenMensagens && (
             <>
               <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-background animate-pulse" />
