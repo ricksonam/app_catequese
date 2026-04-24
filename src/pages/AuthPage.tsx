@@ -14,7 +14,7 @@ import {
   Mail,
   Share2,
   ArrowLeft,
-  Cross,
+  X,
   ChevronRight,
   Check,
 } from "lucide-react";
