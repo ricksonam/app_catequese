@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase, fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore";
+import { supabase } from "@/integrations/supabase/client";
+import { fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore";
+
 import { 
   UserPlus, Calendar, Phone, Mail, MapPin, 
   Plus, X, CheckCircle2, AlertCircle, 
