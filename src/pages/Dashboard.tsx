@@ -143,11 +143,8 @@ export default function Dashboard() {
         return;
       }
 
-      // 2. Verificar se possui dados mandatórios no banco
-      const hasData = turmas.length > 0 || paroquias.length > 0 || catequistas.length > 0;
-      
-      // Se já tem dados, não mostra o onboarding (resolve o problema de trocar de dispositivo)
-      if (hasData) {
+      // Se já tem o cadastro final (TURMA), não mostra o onboarding
+      if (turmas.length > 0) {
         setOnboardingStep("none");
         return;
       }
