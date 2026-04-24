@@ -142,8 +142,9 @@ export default function CatequizandosList() {
   const handleCopyInscricaoLink = () => {
     const url = `${window.location.origin}/inscrever/${id}`;
     navigator.clipboard.writeText(url);
-    toast.success("Link de inscrição copiado para a área de transferência!");
+    toast.success("Link de inscrição do catequizando copiado!");
   };
+
 
   const [viewItem, setViewItem] = useState<Catequizando | null>(null);
   const [editMode, setEditMode] = useState(false);
@@ -713,8 +714,9 @@ export default function CatequizandosList() {
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/5 border-2 border-dashed border-primary/20 text-primary hover:bg-primary/10 transition-all group active:scale-95"
             >
               <Link2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Copiar Link de Inscrição</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Link de Inscrição do Catequizando</span>
             </button>
+
           </div>
 
 
