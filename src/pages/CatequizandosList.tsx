@@ -677,17 +677,18 @@ export default function CatequizandosList() {
             </DialogContent>
           </Dialog>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full">
-            <button onClick={() => setShowFrequencia(true)} className="action-btn-sm flex-1 justify-center whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-500/10">
+          <div className="flex flex-row gap-2 w-full">
+            <button onClick={() => setShowFrequencia(true)} className="action-btn-sm flex-1 justify-center whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white border-transparent shadow-md shadow-amber-500/10 text-[10px] sm:text-xs">
               <CalendarDays className="h-4 w-4" /> Painel da frequência
             </button>
-            <button onClick={() => setShowCelebracoes(true)} className="relative action-btn-sm flex-1 justify-center whitespace-nowrap bg-amber-500 hover:bg-amber-600 text-white border-transparent shadow-md shadow-amber-500/10">
+            <button onClick={() => setShowCelebracoes(true)} className="relative action-btn-sm flex-1 justify-center whitespace-nowrap bg-blue-500 hover:bg-blue-600 text-white border-transparent shadow-md shadow-blue-500/10 text-[10px] sm:text-xs">
               <Cake className="h-4 w-4" /> Painel dos aniversários
               {hasQualquerCelebracao && (
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
               )}
             </button>
           </div>
+
         </div>
       </div>
 
