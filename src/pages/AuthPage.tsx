@@ -160,7 +160,7 @@ export default function AuthPage() {
       password: signupPassword,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { full_name: signupName },
+        data: { full_name: signupName, terms_accepted: true },
       },
     });
     setLoading(false);

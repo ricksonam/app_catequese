@@ -72,20 +72,21 @@ export function ConsentModal({
         
         {/* Footer */}
         <div className="px-6 pb-6 pt-4 border-t border-black/10 dark:border-white/10 space-y-3">
-          <label className="flex items-center gap-4 cursor-pointer bg-primary/5 p-4 rounded-2xl border-2 border-primary/10 hover:border-primary/30 transition-all">
-            <button
-              type="button"
-              onClick={() => setAgreed((v) => !v)}
+          <div 
+            onClick={() => setAgreed((v) => !v)}
+            className="flex items-center gap-4 cursor-pointer bg-primary/5 p-4 rounded-2xl border-2 border-primary/10 hover:border-primary/30 transition-all select-none"
+          >
+            <div
               className={`w-7 h-7 rounded-lg border-[3px] flex items-center justify-center shrink-0 transition-all ${
                 agreed ? "bg-primary border-primary scale-110 shadow-lg shadow-primary/30" : "border-gray-400 bg-white dark:border-gray-500"
               }`}
             >
               <Check className={`h-5 w-5 text-white transition-opacity ${agreed ? "opacity-100" : "opacity-0"}`} strokeWidth={3} />
-            </button>
+            </div>
             <span className="text-xs text-foreground leading-snug font-bold uppercase tracking-tight">
               Li e concordo com os <strong className="text-primary">Termos</strong> e <strong className="text-primary">Privacidade</strong>.
             </span>
-          </label>
+          </div>
           <Button
             onClick={onAccept}
             disabled={!agreed}
