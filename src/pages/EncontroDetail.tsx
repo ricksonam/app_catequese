@@ -10,11 +10,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string }[] = [
-  { value: "pendente", label: "Pendente", bg: "bg-slate-100/80", text: "text-slate-600" },
-  { value: "realizado", label: "Realizado", bg: "bg-emerald-500/10", text: "text-emerald-700" },
-  { value: "transferido", label: "Transferido", bg: "bg-amber-500/10", text: "text-amber-700" },
-  { value: "cancelado", label: "Cancelado", bg: "bg-destructive/10", text: "text-destructive" },
+const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string; border: string; activeClasses: string; }[] = [
+  { value: "pendente", label: "Pendente", bg: "bg-slate-100", text: "text-slate-700", border: "border-slate-200", activeClasses: "border-slate-500 bg-slate-200 shadow-md ring-2 ring-slate-400/40 ring-offset-2 opacity-100" },
+  { value: "realizado", label: "Realizado", bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-200", activeClasses: "border-emerald-500 bg-emerald-200 shadow-md ring-2 ring-emerald-400/40 ring-offset-2 opacity-100" },
+  { value: "transferido", label: "Transferido", bg: "bg-orange-100", text: "text-orange-700", border: "border-orange-200", activeClasses: "border-orange-500 bg-orange-200 shadow-md ring-2 ring-orange-400/40 ring-offset-2 opacity-100" },
+  { value: "cancelado", label: "Cancelado", bg: "bg-red-100", text: "text-red-700", border: "border-red-200", activeClasses: "border-red-500 bg-red-200 shadow-md ring-2 ring-red-400/40 ring-offset-2 opacity-100" },
 ];
 
 export default function EncontroDetail() {
@@ -161,8 +161,8 @@ export default function EncontroDetail() {
 
   return (
     <div className="space-y-4 pb-6">
-      <div className="page-header animate-fade-in items-start py-4 flex-col gap-3">
-        <div className="flex items-center w-full gap-3">
+      <div className="page-header animate-fade-in items-center py-4 flex-row gap-3">
+        <div className="flex items-center flex-1 min-w-0 gap-3">
           <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="back-btn shrink-0 hover:bg-muted/50"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold text-foreground truncate">{encontro.tema}</h1>
@@ -170,10 +170,9 @@ export default function EncontroDetail() {
           </div>
         </div>
         
-        <div className="flex items-center gap-3 px-12">
-          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="px-4 h-10 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center gap-2 hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-10 h-10 rounded-[14px] bg-primary/10 border-2 border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all hover:scale-105 active:scale-95 group">
             <Pencil className="h-4.5 w-4.5 text-primary group-hover:rotate-12 transition-transform" />
-            <span className="text-xs font-bold text-primary italic">Editar Encontro</span>
           </button>
           <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-10 h-10 rounded-[14px] bg-destructive/10 border-2 border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-all hover:scale-105 active:scale-95 group">
             <Trash2 className="h-4.5 w-4.5 text-destructive group-hover:rotate-12 transition-transform" />
@@ -183,8 +182,8 @@ export default function EncontroDetail() {
 
       <div className="grid grid-cols-3 gap-2 animate-float-up px-4">
         {/* Status */}
-        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 hover:border-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white shadow-sm group`}>
-           <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center ${currentStatus.bg} border border-current/10 group-hover:shadow-md transition-all`}>
+        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 hover:border-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white shadow-sm group ${currentStatus.border}`}>
+           <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center ${currentStatus.bg} border ${currentStatus.border} group-hover:shadow-md transition-all`}>
               {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
               {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
               {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
@@ -495,12 +494,15 @@ export default function EncontroDetail() {
                 disabled={encontro.status === opt.value}
                 className={cn(
                   "relative group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all active:scale-[0.98]",
+                  opt.text,
                   encontro.status === opt.value 
-                    ? "bg-muted/20 border-muted/30 opacity-60 cursor-not-allowed" 
-                    : `${opt.bg} ${opt.text} border-current/20 hover:border-current/40 hover:bg-current/10`
+                    ? opt.activeClasses
+                    : `${opt.bg} ${opt.border} hover:border-current/30 hover:brightness-95 cursor-pointer opacity-80 hover:opacity-100`
                 )}
               >
-                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-2 border-current/20", opt.bg)}>
+                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-2", 
+                   encontro.status === opt.value ? "border-current/40 bg-white/40" : "border-current/10 bg-white/50"
+                )}>
                   {opt.value === 'pendente' && <Clock className="h-5 w-5" />}
                   {opt.value === 'realizado' && <CheckCircle2 className="h-5 w-5" />}
                   {opt.value === 'transferido' && <CalendarDays className="h-5 w-5" />}
@@ -515,6 +517,11 @@ export default function EncontroDetail() {
                 {encontro.status !== opt.value && (
                   <div className="absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <ChevronRight className="h-4 w-4" />
+                  </div>
+                )}
+                {encontro.status === opt.value && (
+                  <div className="absolute right-4">
+                    <CheckCircle2 className="h-5 w-5" />
                   </div>
                 )}
               </button>
