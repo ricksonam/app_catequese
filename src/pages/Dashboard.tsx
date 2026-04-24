@@ -13,6 +13,9 @@ import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
 import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
 import { TurmaStep } from "@/components/Onboarding/TurmaStep";
 import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
+import { ConsentModal } from "@/components/Onboarding/ConsentModal";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MESES_ABREV = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
@@ -39,7 +42,8 @@ export default function Dashboard() {
   const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState<"none" | "presentation" | "intro" | "paroquia" | "catequista" | "turma" | "welcome">("none");
+  const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "intro" | "paroquia" | "catequista" | "turma" | "welcome">("none");
+  const { user, isReady, signOut } = useAuth();
   const [joinCode, setJoinCode] = useState("");
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
   const joinMutation = useJoinTurma();
@@ -130,33 +134,44 @@ export default function Dashboard() {
   const loading = tLoading || eLoading || cLoading || catLoading || aLoading || mLoading;
 
   useEffect(() => {
-    if (!loading && !tError) {
-      const introSeen = localStorage.getItem("ivc_mandatory_intro_seen");
-      const onboardingCompleted = localStorage.getItem("ivc_onboarding_completed");
+    if (!loading && !tError && isReady && user) {
+      // 1. Verificar se aceitou os termos (prioridade máxima)
+      // Usamos tanto metadata quanto localStorage para redundância/velocidade
+      const termsAcceptedMeta = user?.user_metadata?.terms_accepted;
+      const termsAcceptedLocal = localStorage.getItem("ivc_terms_accepted");
       
-      if (onboardingCompleted) {
-        // Onboarding explicitamente concluído — libera o dashboard
-        setOnboardingStep(prev => prev === "none" ? "none" : (prev === "welcome" ? "welcome" : "none"));
+      if (!termsAcceptedMeta && !termsAcceptedLocal) {
+        setOnboardingStep("terms");
         return;
       }
 
-      if (!introSeen) {
-        // Mostra a tela de introdução dos cadastros obrigatórios
-        setOnboardingStep("intro");
-      } else if (turmas.length === 0) {
-        // Direciona para o passo de cadastro correto
-        if (paroquias.length === 0 && comunidades.length === 0) {
-          setOnboardingStep("paroquia");
-        } else if (catequistas.length === 0) {
-          setOnboardingStep("catequista");
-        } else {
-          setOnboardingStep("turma");
-        }
+      // 2. Verificar se possui dados mandatórios no banco
+      const hasData = turmas.length > 0 || paroquias.length > 0 || catequistas.length > 0;
+      
+      // Se já tem dados, não mostra o onboarding (resolve o problema de trocar de dispositivo)
+      if (hasData) {
+        setOnboardingStep("none");
+        return;
       }
-      // Se turmas.length > 0 e !onboardingCompleted → TurmaStep acabou de salvar,
-      // o "welcome" está ativo; não interferir.
+
+      // 3. Se não tem dados, verifica o fluxo de onboarding
+      const onboardingCompleted = localStorage.getItem("ivc_onboarding_completed");
+      
+      if (onboardingCompleted) {
+        setOnboardingStep("none");
+        return;
+      }
+
+      // Direciona para o passo de cadastro correto baseado nos dados reais (sem tela de intro)
+      if (paroquias.length === 0 && comunidades.length === 0) {
+        setOnboardingStep("paroquia");
+      } else if (catequistas.length === 0) {
+        setOnboardingStep("catequista");
+      } else {
+        setOnboardingStep("turma");
+      }
     }
-  }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length]);
+  }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length, user, isReady]);
 
   useEffect(() => {
     if (!loading && turmas.length > 0) {
@@ -513,45 +528,61 @@ export default function Dashboard() {
     <div className="space-y-2.5">
       {/* ONBOARDING FLOW */}
 
-      {/* 0. Intro obrigatória (nova chave, independente do ObjectiveModal) */}
-      <OnboardingIntroStep
-        open={onboardingStep === "intro"}
-        onStart={() => {
-          localStorage.setItem("ivc_mandatory_intro_seen", "true");
-          setOnboardingStep("paroquia");
+      {/* 0. Termos de Uso (Gate Inicial) */}
+      <ConsentModal
+        open={onboardingStep === "terms"}
+        onAccept={async () => {
+          try {
+            // Salva no Supabase para persistir entre dispositivos
+            await supabase.auth.updateUser({
+              data: { terms_accepted: true }
+            });
+            localStorage.setItem("ivc_terms_accepted", "true");
+            
+            // Verifica se deve ir para o onboarding ou direto pro dash
+            const hasData = turmas.length > 0 || paroquias.length > 0 || catequistas.length > 0;
+            if (hasData) {
+              setOnboardingStep("none");
+            } else {
+              // Direciona para o passo correto
+              if (paroquias.length === 0 && comunidades.length === 0) {
+                setOnboardingStep("paroquia");
+              } else if (catequistas.length === 0) {
+                setOnboardingStep("catequista");
+              } else {
+                setOnboardingStep("turma");
+              }
+            }
+          } catch (err) {
+            console.error("Erro ao aceitar termos:", err);
+            localStorage.setItem("ivc_terms_accepted", "true"); // Fallback
+            setOnboardingStep("none");
+          }
         }}
+        onCancel={() => signOut()}
       />
 
-      {/* 1. Paróquia */}
+
+
       <ParoquiaStep 
         open={onboardingStep === "paroquia"} 
         onSuccess={() => setOnboardingStep("catequista")} 
       />
 
-      {/* 2. Catequista */}
       <CatequistaStep 
         open={onboardingStep === "catequista"} 
         onSuccess={() => setOnboardingStep("turma")} 
       />
 
-      {/* 3. Turma */}
       <TurmaStep 
         open={onboardingStep === "turma"} 
-        onSuccess={() => setOnboardingStep("welcome")} 
-      />
-
-      {/* 4. Boas-vindas */}
-      <WelcomeStep 
-        open={onboardingStep === "welcome"} 
-        onFinish={async () => {
+        onSuccess={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
           setOnboardingStep("none");
-          // Força refetch imediato e seleciona a turma criada
+          // Refetch e seleciona a turma criada
           const result = await tRefetch();
           const novas = result.data || [];
-          if (novas.length > 0) {
-            setSelectedTurmaId(novas[0].id);
-          }
+          if (novas.length > 0) setSelectedTurmaId(novas[0].id);
         }} 
       />
 

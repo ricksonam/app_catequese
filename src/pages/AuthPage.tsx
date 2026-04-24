@@ -16,112 +16,16 @@ import {
   ArrowLeft,
   Cross,
   ChevronRight,
-  X,
   Check,
 } from "lucide-react";
+import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 
 /* ─── tipos de view ─── */
 type View = "landing" | "login" | "signup" | "forgot";
 
 const SAVED_EMAIL_KEY = "ivc_saved_email";
 
-/* ──────────────────────────────────────────────
-   CONSENT MODAL
-────────────────────────────────────────────── */
-function ConsentModal({
-  open,
-  onAccept,
-  onCancel,
-}: {
-  open: boolean;
-  onAccept: () => void;
-  onCancel: () => void;
-}) {
-  const [agreed, setAgreed] = useState(false);
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative w-full sm:max-w-sm bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[88vh] overflow-hidden border border-white/20 z-10">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-black/10 dark:border-white/10">
-          <h2 className="text-lg font-black text-foreground">Termos de Uso</h2>
-          <button
-            onClick={onCancel}
-            className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-muted-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        {/* Body scrollável */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4 text-sm text-muted-foreground leading-relaxed">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-primary/20 bg-white shadow-md shrink-0">
-              <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
-            </div>
-            <div>
-              <p className="text-base font-black text-foreground">iCatequese</p>
-              <p className="text-xs text-muted-foreground">Termos e Privacidade</p>
-            </div>
-          </div>
 
-          <p>
-            Bem-vindo ao <strong className="text-foreground">iCatequese</strong>. Ao criar sua conta, você concorda com os termos abaixo:
-          </p>
-
-          <div className="space-y-3">
-            <div className="p-3 rounded-xl bg-primary/5 border border-primary/15">
-              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">📋 Uso dos Dados</p>
-              <p>Seus dados são utilizados exclusivamente para a gestão pastoral da catequese. Não compartilhamos suas informações com terceiros.</p>
-            </div>
-            <div className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/15">
-              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">🔒 Privacidade</p>
-              <p>As informações dos catequizandos são tratadas com total sigilo e respeito, em conformidade com a LGPD (Lei nº 13.709/2018).</p>
-            </div>
-            <div className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15">
-              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">✝️ Finalidade Pastoral</p>
-              <p>O sistema destina-se ao uso pastoral e educativo da catequese. É proibido utilizar os dados para fins comerciais ou não autorizados.</p>
-            </div>
-            <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
-              <p className="font-bold text-foreground text-xs uppercase tracking-wide mb-1">📧 Comunicações</p>
-              <p>Podemos enviar notificações relacionadas ao funcionamento do sistema. Você pode desativar isso nas configurações da conta.</p>
-            </div>
-          </div>
-          <p className="text-xs text-center text-muted-foreground/70 pt-2">
-            Desenvolvido por Rickson Amazonas • Versão 1.0.0
-          </p>
-        </div>
-        {/* Footer */}
-        <div className="px-6 pb-6 pt-4 border-t border-black/10 dark:border-white/10 space-y-3">
-          <label className="flex items-center gap-4 cursor-pointer bg-primary/5 p-4 rounded-xl border border-primary/20 hover:bg-primary/10 transition-colors">
-            <button
-              type="button"
-              onClick={() => setAgreed((v) => !v)}
-              className={`w-7 h-7 rounded-lg border-[3px] flex items-center justify-center shrink-0 transition-all ${
-                agreed ? "bg-primary border-primary scale-110 shadow-lg shadow-primary/30" : "border-gray-400 bg-white dark:border-gray-500"
-              }`}
-            >
-              <Check className={`h-5 w-5 text-white transition-opacity ${agreed ? "opacity-100" : "opacity-0"}`} strokeWidth={3} />
-            </button>
-            <span className="text-sm text-foreground leading-snug font-medium">
-              Li e concordo com os <strong className="text-primary">Termos de Uso</strong> e <strong className="text-primary">Privacidade</strong>.
-            </span>
-          </label>
-          <Button
-            onClick={onAccept}
-            disabled={!agreed}
-            className="w-full rounded-2xl h-12 font-bold text-sm"
-          >
-            Confirmar Cadastro
-          </Button>
-          <button onClick={onCancel} className="w-full text-sm text-muted-foreground py-1">
-            Cancelar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ──────────────────────────────────────────────
    AUTH PAGE PRINCIPAL
@@ -574,6 +478,7 @@ export default function AuthPage() {
           open={showConsentModal}
           onAccept={handleSignupConfirm}
           onCancel={() => setShowConsentModal(false)}
+          isSignup
         />
 
         <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
