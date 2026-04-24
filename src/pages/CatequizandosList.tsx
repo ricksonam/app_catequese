@@ -343,7 +343,25 @@ export default function CatequizandosList() {
     );
   }
 
-  const aniversariantesDoMes = list.filter(c => isAniversarianteMes(c.dataNascimento));
+  const aniversariantesDoMes = useMemo(() => {
+    const hoje = new Date();
+    const diaAtual = hoje.getDate();
+    
+    return list
+      .filter(c => isAniversarianteMes(c.dataNascimento))
+      .sort((a, b) => {
+        const diaA = new Date(a.dataNascimento + 'T12:00:00').getDate();
+        const diaB = new Date(b.dataNascimento + 'T12:00:00').getDate();
+        
+        const aNoFuturo = diaA >= diaAtual;
+        const bNoFuturo = diaB >= diaAtual;
+        
+        if (aNoFuturo && !bNoFuturo) return -1;
+        if (!aNoFuturo && bNoFuturo) return 1;
+        return diaA - diaB;
+      });
+  }, [list]);
+
   const hasAniversariante = aniversariantesDoMes.length > 0;
   const filteredList = filterAniversarios ? aniversariantesDoMes : list;
 
@@ -582,7 +600,7 @@ export default function CatequizandosList() {
             </DialogContent>
           </Dialog>
           </div>
-          <button onClick={() => setShowFrequencia(true)} className="action-btn-sm w-full justify-center whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-500/10"><CalendarDays className="h-4 w-4" /> Frequência</button>
+          <button onClick={() => setShowFrequencia(true)} className="action-btn-sm w-full justify-center whitespace-nowrap bg-indigo-500 hover:bg-indigo-600 text-white border-transparent shadow-md shadow-indigo-500/10"><CalendarDays className="h-4 w-4" /> Painel da frequência</button>
         </div>
       </div>
 
