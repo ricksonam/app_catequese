@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight } from "lucide-react";
 import { useTurmaMutation, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
@@ -90,7 +90,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
   const canSave = form.nome && form.diaCatequese && form.horario;
 
   // Input style reutilizável
-  const inputCls = "w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md";
+  const inputCls = "w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-800 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md";
   const labelCls = "text-[10px] font-bold uppercase tracking-widest text-zinc-900 ml-1 block mb-1.5";
 
   const formContent = (
@@ -119,7 +119,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
       <div className={cn("overflow-y-auto flex-1 px-4 pb-6 space-y-4", embedded ? "pt-2" : "pt-0")}>
 
         {/* ── CARD: Identificação ── */}
-        <div className="bg-white rounded-2xl border-2 border-zinc-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border-2 border-zinc-800 shadow-sm overflow-hidden">
           {/* Header do card */}
           <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100 bg-primary/5">
             <div className="w-7 h-7 rounded-xl bg-primary/10 flex items-center justify-center text-sm">🏛️</div>
@@ -187,7 +187,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                     value={form.local}
                     onChange={(e) => update("local", e.target.value)}
                     placeholder="Salão Paroquial"
-                    className="w-full h-12 pl-9 pr-4 rounded-2xl bg-white border-2 border-zinc-200 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold shadow-sm"
+                    className="w-full h-12 pl-9 pr-4 rounded-2xl bg-white border-2 border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold shadow-sm"
                   />
                 </div>
               </div>
@@ -196,7 +196,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
         </div>
 
         {/* ── CARD: Comunidade e Equipe ── */}
-        <div className="bg-white rounded-2xl border-2 border-zinc-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border-2 border-zinc-800 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100 bg-blue-50">
             <div className="w-7 h-7 rounded-xl bg-blue-100 flex items-center justify-center text-sm">👥</div>
             <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600">Comunidade e Equipe</p>
@@ -236,7 +236,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                       placeholder="Buscar..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 h-8 text-xs bg-zinc-50 border-2 border-zinc-200 focus:bg-white transition-all rounded-xl focus:border-blue-300 outline-none"
+                      className="w-full pl-8 pr-3 py-1.5 h-8 text-xs bg-zinc-50 border-2 border-zinc-800 focus:bg-white transition-all rounded-xl focus:border-blue-300 outline-none"
                     />
                   </div>
                 </div>
@@ -254,11 +254,11 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                           "flex items-center gap-3 p-3 rounded-2xl border-2 transition-all active:scale-[0.98] text-left w-full",
                           isSelected
                             ? `${color.bg} ${color.border} shadow-sm`
-                            : "bg-white border-zinc-200 hover:border-zinc-300 hover:shadow-sm"
+                            : "bg-white border-zinc-800 hover:border-zinc-300 hover:shadow-sm"
                         )}
                       >
                         <div className="relative shrink-0">
-                          <Avatar className={cn("h-10 w-10 border-2 transition-all", isSelected ? `${color.border} ring-2 ${color.ring}` : "border-zinc-200")}>
+                          <Avatar className={cn("h-10 w-10 border-2 transition-all", isSelected ? `${color.border} ring-2 ${color.ring}` : "border-zinc-800")}>
                             <AvatarImage src={cat.foto} alt={cat.nome} />
                             <AvatarFallback className={cn("font-black text-xs text-white", isSelected ? color.avatar : "bg-zinc-200 text-zinc-600")}>
                               {cat.nome.charAt(0).toUpperCase()}
@@ -291,7 +291,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                     );
                   })}
                   {filteredCatequistas.length === 0 && (
-                    <div className="py-6 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-200">
+                    <div className="py-6 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-800">
                       <p className="text-sm font-medium text-muted-foreground italic">Nenhum catequista encontrado</p>
                     </div>
                   )}
@@ -302,7 +302,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
         </div>
 
         {/* ── CARD: Tempo da Catequese ── */}
-        <div className="bg-white rounded-2xl border-2 border-zinc-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border-2 border-zinc-800 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100 bg-orange-50">
             <div className="w-7 h-7 rounded-xl bg-orange-100 flex items-center justify-center text-sm">⏳</div>
             <p className="text-xs font-black uppercase tracking-[0.2em] text-orange-600">Tempo da Catequese</p>
@@ -317,7 +317,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
               <textarea
                 value={form.outrosDados}
                 onChange={(e) => update("outrosDados", e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl bg-white border-2 border-zinc-200 focus:border-orange-400 focus:bg-white transition-all outline-none text-sm font-bold resize-none min-h-[80px] shadow-sm"
+                className="w-full px-4 py-3 rounded-2xl bg-white border-2 border-zinc-800 focus:border-orange-400 focus:bg-white transition-all outline-none text-sm font-bold resize-none min-h-[80px] shadow-sm"
                 placeholder="Observações, recomendações..."
               />
             </div>

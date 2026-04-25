@@ -1,4 +1,4 @@
-import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X as XIcon, Check, Loader2, Send, Users, Sparkles, User, UserCircle, Aperture } from "lucide-react";
+﻿import { ArrowLeft, Image as ImageIcon, Trash2, Camera, Share2, CalendarDays, X as XIcon, Check, Loader2, Send, Users, Sparkles, User, UserCircle, Aperture } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -439,7 +439,7 @@ export default function MuralFotos() {
           <div className="flex-0 pointer-events-auto relative mt-2">
             <button 
               onClick={() => cameraRef.current?.click()}
-              className="w-20 h-20 flex items-center justify-center rounded-full bg-white text-primary border border-zinc-200 shadow-2xl transition-all active:scale-95 group relative"
+              className="w-20 h-20 flex items-center justify-center rounded-full bg-white text-primary border border-zinc-800 shadow-2xl transition-all active:scale-95 group relative"
             >
               <div className="absolute inset-1.5 rounded-full border-[5px] border-primary group-hover:bg-primary group-hover:border-primary/10 transition-all duration-300"></div>
               <Camera className="w-7 h-7 relative z-10 group-hover:text-white transition-colors duration-300" strokeWidth={2.5} />

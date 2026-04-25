@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+﻿import { useMemo, useState, useEffect } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
@@ -820,7 +820,7 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "group relative rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 border-2 border-zinc-200 shadow-md",
+                "group relative rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 border-2 border-zinc-800 shadow-md",
                 "bg-white dark:bg-zinc-900"
               )}
               style={{ animationDelay: `${i * 100}ms` }}
@@ -867,7 +867,7 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
-          <div className="rounded-[32px] overflow-hidden bg-white border-2 border-zinc-200 shadow-md">
+          <div className="rounded-[32px] overflow-hidden bg-white border-2 border-zinc-800 shadow-md">
              <div className="bg-[#FFFFFF] dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
@@ -916,7 +916,7 @@ export default function Dashboard() {
       {/* ── PRÓXIMAS ATIVIDADES ── */}
       {proximasAtividades.length > 0 && (
         <div className="animate-fade-in mt-4 mb-2">
-          <div className="rounded-[32px] overflow-hidden bg-white border-2 border-zinc-200 shadow-md">
+          <div className="rounded-[32px] overflow-hidden bg-white border-2 border-zinc-800 shadow-md">
              <div className="bg-[#FFFFFF] dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 
                 <div className="relative z-10 flex flex-col items-center text-center">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
 import { useTurmas, useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
@@ -109,7 +109,7 @@ export default function TurmaForm() {
       <div className="space-y-5">
 
         {/* ── CARD: IDENTIFICAÇÃO DA TURMA ── */}
-        <div className="bg-white rounded-3xl border-2 border-zinc-200 shadow-sm overflow-hidden animate-float-up">
+        <div className="bg-white rounded-3xl border-2 border-zinc-800 shadow-sm overflow-hidden animate-float-up">
           {/* Header dentro do card */}
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-primary/5 border-b border-zinc-100">
             <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-base">🏛️</div>
@@ -160,7 +160,7 @@ export default function TurmaForm() {
         </div>
 
         {/* ── CARD: COMUNIDADE E EQUIPE ── */}
-        <div className="bg-white rounded-3xl border-2 border-zinc-200 shadow-sm overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
+        <div className="bg-white rounded-3xl border-2 border-zinc-800 shadow-sm overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-blue-50 border-b border-zinc-100">
             <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-base">👥</div>
             <span className="text-sm font-black uppercase tracking-wider text-blue-600">Comunidade e Equipe</span>
@@ -193,7 +193,7 @@ export default function TurmaForm() {
                     placeholder="Buscar..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 h-9 text-xs bg-zinc-50 border-2 border-zinc-200 focus:bg-white focus:border-zinc-300 transition-all rounded-xl outline-none"
+                    className="w-full pl-9 pr-3 py-1.5 h-9 text-xs bg-zinc-50 border-2 border-zinc-800 focus:bg-white focus:border-zinc-300 transition-all rounded-xl outline-none"
                   />
                 </div>
               </div>
@@ -211,13 +211,13 @@ export default function TurmaForm() {
                         "flex items-center gap-4 p-3 rounded-2xl border-2 transition-all active:scale-[0.98] text-left w-full",
                         isSelected
                           ? pal.card + " shadow-sm"
-                          : "bg-white border-zinc-200 hover:border-zinc-300 hover:shadow-sm"
+                          : "bg-white border-zinc-800 hover:border-zinc-300 hover:shadow-sm"
                       )}
                     >
                       <div className="relative shrink-0">
                         <Avatar className={cn(
                           "h-12 w-12 border-2 transition-all",
-                          isSelected ? `ring-2 ${pal.ring}` : "border-zinc-200"
+                          isSelected ? `ring-2 ${pal.ring}` : "border-zinc-800"
                         )}>
                           <AvatarImage src={cat.foto} alt={cat.nome} />
                           <AvatarFallback className={cn(
@@ -252,7 +252,7 @@ export default function TurmaForm() {
                   );
                 })}
                 {filteredCatequistas.length === 0 && (
-                  <div className="py-8 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-200">
+                  <div className="py-8 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-800">
                     <p className="text-sm font-medium text-muted-foreground italic">Nenhum catequista encontrado</p>
                   </div>
                 )}
@@ -262,7 +262,7 @@ export default function TurmaForm() {
         </div>
 
         {/* ── CARD: TEMPO DA CATEQUESE ── */}
-        <div className="bg-white rounded-3xl border-2 border-zinc-200 shadow-sm overflow-hidden animate-float-up" style={{ animationDelay: '200ms' }}>
+        <div className="bg-white rounded-3xl border-2 border-zinc-800 shadow-sm overflow-hidden animate-float-up" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-orange-50 border-b border-zinc-100">
             <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center text-base">⏳</div>
             <span className="text-sm font-black uppercase tracking-wider text-orange-600">Tempo da Catequese</span>
@@ -277,7 +277,7 @@ export default function TurmaForm() {
               <textarea
                 value={form.outrosDados}
                 onChange={(e) => update("outrosDados", e.target.value)}
-                className="form-input min-h-[100px] resize-none border-2 border-zinc-200"
+                className="form-input min-h-[100px] resize-none border-2 border-zinc-800"
                 placeholder="Observações, recomendações..."
               />
             </div>

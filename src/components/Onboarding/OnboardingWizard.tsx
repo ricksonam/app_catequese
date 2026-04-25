@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Church, Users, BookOpen, Check, LogOut, ChevronRight, Sparkles, Heart, Star, Layout, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ParoquiaStep } from "./ParoquiaStep";
@@ -43,7 +43,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
         
         {/* Top Progress Bar */}
         {!showAbout && (
-          <div className="bg-white dark:bg-zinc-900 px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 shrink-0">
+          <div className="bg-white dark:bg-zinc-900 px-6 py-4 border-b border-zinc-800 dark:border-zinc-800 shrink-0">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
