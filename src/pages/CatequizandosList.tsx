@@ -829,7 +829,7 @@ export default function CatequizandosList() {
           return (
             <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className={cn("relative flex flex-col bg-card rounded-2xl border-2 shadow-sm transition-all active:scale-[0.98] overflow-hidden", emAlerta ? "border-destructive group-hover:shadow-md" : "border-black group-hover:shadow-md group-hover:border-primary")}>
+              <div className={cn("relative flex flex-col bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98] overflow-hidden", emAlerta ? "border-destructive group-hover:shadow-md" : "border-black/20 group-hover:shadow-md group-hover:border-primary")}>
                 {emAlerta && (
                   <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse w-full">
                     <BellRing className="w-3 h-3 text-destructive" />
