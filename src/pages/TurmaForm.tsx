@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
 import { useTurmas, useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
@@ -73,7 +73,7 @@ export default function TurmaForm() {
   };
 
   const handleSave = async () => {
-    if (!form.nome || !form.diaCatequese || !form.horario || !form.local || !form.comunidadeId || form.catequistasIds.length === 0) {
+    if (!form.nome || !form.diaCatequese || !form.horario || !form.comunidadeId || form.catequistasIds.length === 0) {
       toast.error("Preencha todos os campos obrigatórios, incluindo comunidade e catequistas"); return;
     }
     const turma: Turma = {
@@ -152,7 +152,7 @@ export default function TurmaForm() {
                 <input type="time" value={form.horario} onChange={(e) => update("horario", e.target.value)} className="form-input h-11" />
               </div>
               <div className="space-y-2">
-                <label className={labelCls}>Local *</label>
+                <label className={labelCls}>Local</label>
                 <input type="text" value={form.local} onChange={(e) => update("local", e.target.value)} className="form-input h-11" placeholder="Ex: Salão Paroquial" />
               </div>
             </div>
