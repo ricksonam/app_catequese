@@ -93,13 +93,13 @@ function LanyardDrawing({ type }: { type: string }) {
       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Cordão de Identificação</p>
       <div className="relative w-full max-w-[200px] h-12 flex items-center justify-center">
         {/* Simulação do Cordão (Strap) */}
-        <div className={`absolute inset-x-0 h-6 rounded-full border-2 border-black/10 ${need.color} shadow-sm overflow-hidden flex items-center justify-around px-2`}>
+        <div className={`absolute inset-x-0 h-6 rounded-full border border-black/10 ${need.color} shadow-sm overflow-hidden flex items-center justify-around px-2`}>
           {[...Array(6)].map((_, i) => (
             <span key={i} className="text-xs filter saturate-150 drop-shadow-sm">{need.pattern}</span>
           ))}
         </div>
         {/* O Crachá (Badge) */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-4 w-10 h-14 bg-white rounded-md border-2 border-black/10 shadow-lg flex flex-col items-center p-1 z-10">
+        <div className="absolute left-1/2 -translate-x-1/2 top-4 w-10 h-14 bg-white rounded-md border border-black/10 shadow-lg flex flex-col items-center p-1 z-10">
           <div className="w-6 h-1 bg-black/10 rounded-full mb-1" />
           <div className="w-full h-8 bg-muted/20 rounded flex items-center justify-center text-lg">{need.pattern}</div>
           <div className="w-full h-1 bg-black/5 rounded-full mt-1.5" />
@@ -655,7 +655,7 @@ export default function CatequizandosList() {
                         value={form.necessidadeEspecial} 
                         onValueChange={(v) => updateField("necessidadeEspecial", v)}
                       >
-                        <SelectTrigger className="h-10 bg-background border-2 border-black/10">
+                        <SelectTrigger className="h-10 bg-background border border-black/10">
                           <SelectValue placeholder="Selecione se houver" />
                         </SelectTrigger>
                         <SelectContent>
@@ -675,7 +675,7 @@ export default function CatequizandosList() {
                       <textarea 
                         value={form.observacao} 
                         onChange={(e) => updateField("observacao", e.target.value)} 
-                        className="form-input min-h-[80px] resize-none border-2 border-black/10" 
+                        className="form-input min-h-[80px] resize-none border border-black/10" 
                         placeholder="Anotações extras sobre o catequizando..." 
                       />
                     </div>
@@ -693,7 +693,7 @@ export default function CatequizandosList() {
             </DialogContent>
           </Dialog>
           </div>
-          <div className="bg-card rounded-2xl border-2 border-black/5 p-4 shadow-sm space-y-3">
+          <div className="bg-card rounded-2xl border border-black/10 p-4 shadow-sm space-y-3">
             <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                <LayoutDashboard className="w-3 h-3 text-primary/50" />
                Painel
@@ -784,7 +784,7 @@ export default function CatequizandosList() {
                    <div className="space-y-2">
                      {[...list].filter(c => c.origem === 'online').sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()).map((c) => (
 
-                       <div key={c.id} className="flex items-center justify-between p-3 bg-white rounded-2xl border-2 border-black/5 group hover:border-primary/20 transition-all">
+                       <div key={c.id} className="flex items-center justify-between p-3 bg-white rounded-2xl border border-black/10 group hover:border-primary/20 transition-all">
                           <div className="flex-1 min-w-0">
                              <p className="text-xs font-black text-foreground truncate uppercase">{c.nome}</p>
                              <div className="flex items-center gap-1.5 mt-0.5 text-muted-foreground font-bold">
@@ -943,7 +943,7 @@ export default function CatequizandosList() {
                       </Select>
                     </div>
 
-                    <div className="bg-white rounded-2xl border-2 border-black/5 overflow-hidden shadow-sm mt-4">
+                    <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm mt-4">
                       {list.map((c, i) => {
                         const isPresent = selectedEncontroObj?.presencas?.includes(c.id);
                         const justificativa = selectedEncontroObj?.justificativas?.[c.id];
@@ -1002,7 +1002,7 @@ export default function CatequizandosList() {
                       </Select>
                     </div>
 
-                    <div className="bg-white rounded-2xl border-2 border-black/5 overflow-hidden shadow-sm mt-4">
+                    <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm mt-4">
                       {resumoMes.map((row, i) => (
                         <div key={row.catequizando.id} className={cn("flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3", i !== resumoMes.length - 1 && "border-b border-black/5")}>
                           <div className="flex-1 min-w-0">
@@ -1226,7 +1226,7 @@ export default function CatequizandosList() {
                 {/* Blocos de Informação em Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Dados Pessoais */}
-                  <div className="bg-white rounded-2xl p-6 border-2 border-black/10 shadow-sm">
+                  <div className="bg-white rounded-2xl p-6 border border-black/10 shadow-sm">
                     <h4 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                        <span className="w-5 h-5 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shadow-sm"><UserPlus className="w-4 h-4" /></span> Dados Pessoais
                     </h4>
@@ -1260,7 +1260,7 @@ export default function CatequizandosList() {
                   </div>
 
                   {/* Endereço */}
-                  <div className="bg-white rounded-2xl p-6 border-2 border-black/10 shadow-sm">
+                  <div className="bg-white rounded-2xl p-6 border border-black/10 shadow-sm">
                     <h4 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                       <span className="w-5 h-5 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shadow-sm">📍</span> Endereço
                     </h4>
@@ -1533,7 +1533,7 @@ export default function CatequizandosList() {
                       value={editForm.necessidadeEspecial} 
                       onValueChange={(v) => setEditForm(f => ({ ...f, necessidadeEspecial: v }))}
                     >
-                      <SelectTrigger className="h-10 bg-background border-2 border-black/10">
+                      <SelectTrigger className="h-10 bg-background border border-black/10">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -1545,7 +1545,7 @@ export default function CatequizandosList() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação Geral</label>
-                    <textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none border-2 border-black/10" />
+                    <textarea value={editForm.observacao} onChange={(e) => setEditForm(f => ({ ...f, observacao: e.target.value }))} className="form-input min-h-[60px] resize-none border border-black/10" />
                   </div>
                 </div>
                 
