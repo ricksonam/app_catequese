@@ -1,4 +1,4 @@
-﻿import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
@@ -1169,7 +1169,7 @@ export default function Dashboard() {
                     <p className={cn("text-[9px] font-black uppercase tracking-wider mb-1", 
                       msg.tipo === 'iavalia' ? "text-emerald-600" : "text-orange-600"
                     )}>
-                      {msg.tipo === 'iavalia' ? 'iAvalia - Resposta' : 'Catequese em Família'}
+                      {msg.tipo === 'iavalia' ? 'Conecta famílias - Resposta' : 'Catequese em Família'}
                     </p>
                     <h4 className="text-sm font-bold text-foreground truncate">{msg.titulo}</h4>
                     <p className="text-xs text-muted-foreground mt-1">

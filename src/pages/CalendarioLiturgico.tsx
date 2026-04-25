@@ -1,4 +1,4 @@
-﻿import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { useCatequizandos, useCatequistas, useCalendarioNotas, useCalendarioNotaMutation, useDeleteCalendarioNota, useEncontros, useAtividades, useTurmas } from "@/hooks/useSupabaseData";
@@ -200,7 +200,7 @@ export default function CalendarioLiturgico() {
               <Church className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Calendário Litúrgico</h1>
+              <h1 className="text-xl font-bold text-foreground">Agenda catequética</h1>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Ano {currentYear}</p>
             </div>
           </div>

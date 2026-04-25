@@ -85,7 +85,7 @@ export default function ComunicacaoHub() {
                     <MessageSquare className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-black text-foreground">iAvalia</h2>
+                    <h2 className="text-lg font-black text-foreground">Conecta famílias</h2>
                     <p className="text-[10px] uppercase tracking-widest text-purple-500 font-bold">Módulo de Avaliação</p>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export default function ComunicacaoHub() {
               </div>
 
               <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-                O <strong className="text-foreground">iAvalia</strong> permite criar{" "}
+                O <strong className="text-foreground">Conecta famílias</strong> permite criar{" "}
                 <strong>pesquisas</strong>, <strong>questionários</strong> e{" "}
                 <strong>avaliações</strong> para enviar às famílias e catequizandos de forma
                 simples e prática.
@@ -152,7 +152,7 @@ export default function ComunicacaoHub() {
         <button
           onClick={() => setShowInfo(true)}
           className="absolute right-0 top-0 w-8 h-8 rounded-full bg-purple-500/15 text-purple-500 flex items-center justify-center hover:bg-purple-500/30 hover:scale-110 transition-all active:scale-95 animate-bounce-subtle shadow-sm border border-purple-500/20"
-          title="Saiba mais sobre o iAvalia"
+          title="Saiba mais sobre o Conecta famílias"
         >
           <Info className="h-4 w-4" />
         </button>
@@ -162,7 +162,7 @@ export default function ComunicacaoHub() {
           <MessageSquare className="h-7 w-7 text-purple-600" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-black tracking-tight text-foreground">iAvalia</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground">Conecta famílias</h1>
           <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground mt-0.5">
             Pesquisas e Questionários
           </p>

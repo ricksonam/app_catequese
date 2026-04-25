@@ -155,6 +155,8 @@ export default function AuthPage() {
   const handleSignupConfirm = async () => {
     setShowConsentModal(false);
     setLoading(true);
+    localStorage.removeItem("ivc_onboarding_completed");
+    localStorage.removeItem("ivc_terms_accepted");
     const { error } = await supabase.auth.signUp({
       email: signupEmail,
       password: signupPassword,

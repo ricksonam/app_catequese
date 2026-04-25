@@ -88,6 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Opcional: Limpar localStorage manualmente se o supabase.auth não o fizer
       localStorage.removeItem("supabase.auth.token");
       localStorage.removeItem("ivc_saved_email");
+      localStorage.removeItem("ivc_onboarding_completed");
+      localStorage.removeItem("ivc_terms_accepted");
     }
   };
 
