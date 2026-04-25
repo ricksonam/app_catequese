@@ -820,20 +820,20 @@ export default function Dashboard() {
               key={`${stat.label}-${i}`} 
               onClick={stat.action} 
               className={cn(
-                "group relative p-[1px] rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 shadow-sm",
-                "bg-slate-300 shadow-black/5"
+                "group relative rounded-[22px] animate-float-up transition-all duration-500 hover:-translate-y-1 active:scale-95 border-2 border-zinc-200 shadow-md",
+                "bg-white dark:bg-zinc-900"
               )}
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <div className="relative h-full bg-[#FFFFFF] dark:bg-zinc-900 rounded-[21px] p-2 overflow-hidden flex flex-col items-center text-center shadow-inner">
+              <div className="relative h-full rounded-[21px] p-2 overflow-hidden flex flex-col items-center text-center">
                 <div className={cn(
-                  "icon-box mx-auto mb-0.5 w-7 h-7 shadow-sm border animate-liturgical-float transition-all duration-500",
+                  "icon-box mx-auto mb-1 w-10 h-10 shadow-md border-2 animate-liturgical-float transition-all duration-500",
                   stat.color,
                   isCatequizandos 
-                    ? "border-amber-200 bg-gradient-to-br from-amber-50 to-white dark:from-amber-900/20 shadow-amber-200/50" 
-                    : "border-blue-200 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 shadow-blue-200/50"
+                    ? "border-amber-200 bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-900/30 shadow-amber-300/40" 
+                    : "border-blue-200 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 shadow-blue-300/40"
                 )}>
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                 </div>
                 
                 <p className="text-lg font-black text-foreground leading-tight tracking-tight">
@@ -867,7 +867,7 @@ export default function Dashboard() {
       {/* ── CARD RESUMO PRÓXIMO ENCONTRO ── */}
       {proximoEncontro && (
         <div className="animate-float-up mt-2" style={{ animationDelay: '200ms' }}>
-          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-xl">
+          <div className="rounded-[32px] overflow-hidden bg-white border-2 border-zinc-200 shadow-md">
              <div className="bg-[#FFFFFF] dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
@@ -916,7 +916,7 @@ export default function Dashboard() {
       {/* ── PRÓXIMAS ATIVIDADES ── */}
       {proximasAtividades.length > 0 && (
         <div className="animate-fade-in mt-4 mb-2">
-          <div className="p-[1px] rounded-[32px] overflow-hidden bg-slate-300 shadow-xl">
+          <div className="rounded-[32px] overflow-hidden bg-white border-2 border-zinc-200 shadow-md">
              <div className="bg-[#FFFFFF] dark:bg-zinc-900 rounded-[31px] p-3 relative overflow-hidden">
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
