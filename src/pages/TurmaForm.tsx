@@ -45,6 +45,7 @@ export default function TurmaForm() {
   });
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isEditing && existingTurma) {
@@ -76,6 +77,8 @@ export default function TurmaForm() {
     if (!form.nome || !form.diaCatequese || !form.horario || !form.comunidadeId || form.catequistasIds.length === 0) {
       toast.error("Preencha todos os campos obrigatórios, incluindo comunidade e catequistas"); return;
     }
+    if (isSaving) return;
+    setIsSaving(true);
     const turma: Turma = {
       id: isEditing ? id! : crypto.randomUUID(),
       ...form,
@@ -87,6 +90,7 @@ export default function TurmaForm() {
       navigate(`/turmas/${turma.id}`);
     } catch (err: any) {
       toast.error("Erro ao salvar: " + err.message);
+      setIsSaving(false);
     }
   };
 
@@ -159,104 +163,36 @@ export default function TurmaForm() {
           </div>
         </div>
 
-        {/* ── CARD: COMUNIDADE E EQUIPE ── */}
+        {/* ── CARD: COMUNIDADE ── */}
         <div className="bg-white rounded-3xl border-2 border-zinc-800 shadow-sm overflow-hidden animate-float-up" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-2.5 px-5 py-3.5 bg-blue-50 border-b border-zinc-100">
-            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-base">👥</div>
-            <span className="text-sm font-black uppercase tracking-wider text-blue-600">Comunidade e Equipe</span>
+            <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-base">⛪</div>
+            <span className="text-sm font-black uppercase tracking-wider text-blue-600">Comunidade</span>
           </div>
           <div className="p-5 space-y-5">
             <div className="space-y-2">
               <label className={labelCls}>Comunidade *</label>
               <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input h-11">
-                <option value="">Selecione a comunidade...</option>
+                <option value="">Selecione...</option>
                 {comunidades.map((c) => <option key={c.id} value={c.id}>{c.name || c.nome}</option>)}
               </select>
             </div>
+          </div>
+        </div>
 
-            <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <label className={cn(labelCls, "flex items-center gap-2")}>
-                  Catequistas Responsáveis *
-                  <span className={cn(
-                    "px-2 py-0.5 rounded-full text-[10px] font-black tracking-normal",
-                    form.catequistasIds.length > 0 ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-zinc-100 text-zinc-500"
-                  )}>
-                    {form.catequistasIds.length} selecionado(s)
-                  </span>
-                </label>
-
-                <div className="relative w-full sm:w-48">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-                  <input
-                    type="text"
-                    placeholder="Buscar..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 h-9 text-xs bg-zinc-50 border-2 border-zinc-800 focus:bg-white focus:border-zinc-300 transition-all rounded-xl outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Lista de catequistas com cores únicas */}
-              <div className="grid grid-cols-1 gap-2 max-h-[280px] overflow-y-auto pr-1">
-                {filteredCatequistas.map((cat, idx) => {
-                  const isSelected = form.catequistasIds.includes(cat.id);
-                  const pal = CAT_PALETTE[idx % CAT_PALETTE.length];
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => toggleCatequista(cat.id)}
-                      className={cn(
-                        "flex items-center gap-4 p-3 rounded-2xl border-2 transition-all active:scale-[0.98] text-left w-full",
-                        isSelected
-                          ? pal.card + " shadow-sm"
-                          : "bg-white border-zinc-800 hover:border-zinc-300 hover:shadow-sm"
-                      )}
-                    >
-                      <div className="relative shrink-0">
-                        <Avatar className={cn(
-                          "h-12 w-12 border-2 transition-all",
-                          isSelected ? `ring-2 ${pal.ring}` : "border-zinc-800"
-                        )}>
-                          <AvatarImage src={cat.foto} alt={cat.nome} />
-                          <AvatarFallback className={cn(
-                            "font-black text-sm text-white",
-                            isSelected ? pal.avatar : "bg-zinc-200 text-zinc-600"
-                          )}>
-                            {cat.nome.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        {isSelected && (
-                          <div className={cn("absolute -bottom-1 -right-1 text-white rounded-full p-1 shadow-lg border-2 border-white animate-in zoom-in-50", pal.avatar)}>
-                            <Check className="h-3 w-3" strokeWidth={4} />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className={cn("text-sm font-bold truncate", isSelected ? pal.text : "text-zinc-900")}>{cat.nome}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{cat.telefone || "Sem telefone"}</p>
-                      </div>
-
-                      <div className={cn(
-                        "w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                        isSelected ? `${pal.check} shadow-sm` : "bg-white border-zinc-300"
-                      )}>
-                        {isSelected
-                          ? <Check className="h-3.5 w-3.5 text-white" strokeWidth={3.5} />
-                          : <ChevronRight className="h-3.5 w-3.5 text-zinc-400" strokeWidth={2.5} />
-                        }
-                      </div>
-                    </button>
-                  );
-                })}
-                {filteredCatequistas.length === 0 && (
-                  <div className="py-8 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-800">
-                    <p className="text-sm font-medium text-muted-foreground italic">Nenhum catequista encontrado</p>
-                  </div>
-                )}
-              </div>
+        {/* ── CARD: CATEQUISTA ── */}
+        <div className="bg-white rounded-3xl border-2 border-zinc-800 shadow-sm overflow-hidden animate-float-up" style={{ animationDelay: '150ms' }}>
+          <div className="flex items-center gap-2.5 px-5 py-3.5 bg-emerald-50 border-b border-zinc-100">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center text-base">👥</div>
+            <span className="text-sm font-black uppercase tracking-wider text-emerald-600">Catequista</span>
+          </div>
+          <div className="p-5 space-y-5">
+            <div className="space-y-2">
+              <label className={labelCls}>Catequista Responsável *</label>
+              <select value={form.catequistasIds[0] || ""} onChange={(e) => update("catequistasIds", e.target.value ? [e.target.value] : [])} className="form-input h-11">
+                <option value="">Selecione...</option>
+                {catequistas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+              </select>
             </div>
           </div>
         </div>

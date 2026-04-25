@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight } from "lucide-react";
 import { useTurmaMutation, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
@@ -45,6 +45,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
   });
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const update = (key: string, value: any) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -60,6 +61,8 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
       toast.error("Preencha os campos obrigatórios da turma");
       return;
     }
+    if (isSaving) return;
+    setIsSaving(true);
     try {
       const id = crypto.randomUUID();
       await mutation.mutateAsync({
@@ -80,6 +83,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
       onSuccess();
     } catch (err: any) {
       toast.error("Erro ao salvar: " + err.message);
+      setIsSaving(false);
     }
   };
 
@@ -87,7 +91,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
     c.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const canSave = form.nome && form.diaCatequese && form.horario;
+  const canSave = form.nome && form.diaCatequese && form.horario && !isSaving;
 
   // Input style reutilizável
   const inputCls = "w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-800 dark:border-zinc-800 focus:border-primary focus:bg-white transition-all outline-none text-sm font-bold appearance-none shadow-sm focus:shadow-md";
@@ -195,16 +199,16 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
           </div>
         </div>
 
-        {/* ── CARD: Comunidade e Equipe ── */}
+        {/* ── CARD: Comunidade ── */}
         <div className="bg-white rounded-2xl border-2 border-zinc-800 shadow-sm overflow-hidden">
           <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100 bg-blue-50">
-            <div className="w-7 h-7 rounded-xl bg-blue-100 flex items-center justify-center text-sm">👥</div>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600">Comunidade e Equipe</p>
+            <div className="w-7 h-7 rounded-xl bg-blue-100 flex items-center justify-center text-sm">⛪</div>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600">Comunidade</p>
           </div>
           <div className="p-4 space-y-4">
             {comunidades.length > 0 && (
               <div>
-                <label className={labelCls}>Comunidade</label>
+                <label className={labelCls}>Comunidade *</label>
                 <select
                   value={form.comunidadeId}
                   onChange={(e) => update("comunidadeId", e.target.value)}
@@ -215,87 +219,27 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
                 </select>
               </div>
             )}
+          </div>
+        </div>
 
+        {/* ── CARD: Catequista ── */}
+        <div className="bg-white rounded-2xl border-2 border-zinc-800 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3 border-b border-zinc-100 bg-emerald-50">
+            <div className="w-7 h-7 rounded-xl bg-emerald-100 flex items-center justify-center text-sm">👥</div>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-600">Catequista</p>
+          </div>
+          <div className="p-4 space-y-4">
             {catequistas.length > 0 && (
-              <div className="space-y-3">
-                {/* Header catequistas */}
-                <div className="flex items-center justify-between">
-                  <label className={cn(labelCls, "flex items-center gap-2 mb-0")}>
-                    Catequistas
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[10px] font-black tracking-normal",
-                      form.catequistasIds.length > 0 ? "bg-emerald-100 text-emerald-700 border border-emerald-200" : "bg-zinc-100 text-zinc-500"
-                    )}>
-                      {form.catequistasIds.length} selecionado(s)
-                    </span>
-                  </label>
-                  <div className="relative w-36">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
-                    <input
-                      type="text"
-                      placeholder="Buscar..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 h-8 text-xs bg-zinc-50 border-2 border-zinc-800 focus:bg-white transition-all rounded-xl focus:border-blue-300 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Lista de catequistas */}
-                <div className="grid grid-cols-1 gap-2 max-h-[220px] overflow-y-auto pr-1">
-                  {filteredCatequistas.map((cat, idx) => {
-                    const isSelected = form.catequistasIds.includes(cat.id);
-                    const color = CAT_COLORS[idx % CAT_COLORS.length];
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => toggleCatequista(cat.id)}
-                        className={cn(
-                          "flex items-center gap-3 p-3 rounded-2xl border-2 transition-all active:scale-[0.98] text-left w-full",
-                          isSelected
-                            ? `${color.bg} ${color.border} shadow-sm`
-                            : "bg-white border-zinc-800 hover:border-zinc-300 hover:shadow-sm"
-                        )}
-                      >
-                        <div className="relative shrink-0">
-                          <Avatar className={cn("h-10 w-10 border-2 transition-all", isSelected ? `${color.border} ring-2 ${color.ring}` : "border-zinc-800")}>
-                            <AvatarImage src={cat.foto} alt={cat.nome} />
-                            <AvatarFallback className={cn("font-black text-xs text-white", isSelected ? color.avatar : "bg-zinc-200 text-zinc-600")}>
-                              {cat.nome.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          {isSelected && (
-                            <div className={cn("absolute -bottom-1 -right-1 text-white rounded-full p-0.5 shadow-lg border-2 border-white animate-in zoom-in-50", color.avatar)}>
-                              <Check className="h-2.5 w-2.5" strokeWidth={4} />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={cn("text-sm font-bold truncate", isSelected ? color.text : "text-zinc-900")}>{cat.nome}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">
-                            {turmas.filter(t => t.catequistasIds?.includes(cat.id)).length > 0
-                              ? `Vinculado a ${turmas.filter(t => t.catequistasIds?.includes(cat.id)).length} turma(s)`
-                              : "Disponível"}
-                          </p>
-                        </div>
-                        <div className={cn(
-                          "w-7 h-7 rounded-full border-[2.5px] flex items-center justify-center transition-all shrink-0",
-                          isSelected ? `${color.check} shadow-sm` : "bg-white border-zinc-300"
-                        )}>
-                          {isSelected
-                            ? <Check className="h-3.5 w-3.5 text-white" strokeWidth={3.5} />
-                            : <ChevronRight className="h-3.5 w-3.5 text-zinc-400" strokeWidth={2.5} />
-                          }
-                        </div>
-                      </button>
-                    );
-                  })}
-                  {filteredCatequistas.length === 0 && (
-                    <div className="py-6 text-center bg-zinc-50 rounded-2xl border-2 border-dashed border-zinc-800">
-                      <p className="text-sm font-medium text-muted-foreground italic">Nenhum catequista encontrado</p>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <label className={labelCls}>Catequista Responsável *</label>
+                <select
+                  value={form.catequistasIds[0] || ""}
+                  onChange={(e) => update("catequistasIds", e.target.value ? [e.target.value] : [])}
+                  className={inputCls}
+                >
+                  <option value="">Selecione...</option>
+                  {catequistas.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                </select>
               </div>
             )}
           </div>
