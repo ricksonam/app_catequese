@@ -179,11 +179,12 @@ export default function AppLayout() {
             
             <div className="grid grid-cols-3 gap-6">
               {[
-                { label: "Nova Turma", path: "/turmas/nova", img: "/mais_0.png" },
+                { label: "Nova Turma", path: "/turmas/nova", img: "/acesso_nova_turma.png" },
+                { label: "Cadastros", path: "/cadastros/paroquia-comunidade", img: "/acesso_cadastros.jpg" },
                 { label: "Encontro", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/encontros/novo` : "/turmas", img: "/mais_1.png" },
                 { label: "Catequizando", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/catequizandos` : "/turmas", img: "/mais_2.png" },
                 { label: "Atividade", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/atividades` : "/turmas", img: "/acesso_atividades.jpg" },
-                { label: "Agenda", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/agenda` : "/turmas", img: "/acesso_agenda.jpg" },
+                { label: "Agenda", path: "/modulos/calendario", img: "/acesso_agenda.jpg" },
                 { label: "Bíblia Online", path: "/modulos/biblia", img: "/acesso_biblia.jpg" },
                 { label: "Jogos", path: "/jogos", img: "/acesso_jogos.jpg" },
                 { label: "Relatórios", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/relatorios` : "/turmas", img: "/acesso_relatorios.jpg" },
@@ -197,10 +198,10 @@ export default function AppLayout() {
                     }
                   }}
                   className="flex flex-col items-center gap-2 group animate-scale-in"
-                  style={{ animationDelay: `${i * 50}ms` }}
+                  style={{ animationDelay: `${i * 30}ms` }}
                 >
                   <div className="w-20 h-20 rounded-[28px] bg-white dark:bg-zinc-900 shadow-sm border border-black/5 dark:border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg group-active:scale-95 group-hover:border-primary/30">
-                    <img src={item.img} alt={item.label} className="w-14 h-14 object-contain animate-bounce-subtle" style={{ animationDelay: `${i * 150}ms` }} />
+                    <img src={item.img} alt={item.label} loading="eager" className="w-14 h-14 object-contain animate-bounce-subtle" style={{ animationDelay: `${i * 100}ms` }} />
                   </div>
                   <span className="text-[10px] font-black text-center text-muted-foreground uppercase tracking-wider leading-tight group-hover:text-primary transition-colors">
                     {item.label}
