@@ -21,6 +21,7 @@ const baseTabs = [
   { path: "/jogos", icon: Dices, label: "Jogos", color: "text-gold" },
   { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-success" },
   { path: "__familia__", icon: Heart, label: "Família", color: "text-rose-500" },
+  { path: "__mais__", icon: Menu, label: "Mais...", color: "text-primary" },
 ];
 
 export default function AppLayout() {
@@ -29,6 +30,7 @@ export default function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showObjective, setShowObjective] = useState(false);
   const [apoieOpen, setApoieOpen] = useState(false);
+  const [maisOpen, setMaisOpen] = useState(false);
   const { data: turmas = [] } = useTurmas();
 
   const currentPath = location.pathname;
@@ -141,16 +143,17 @@ export default function AppLayout() {
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
           <div className="mx-auto w-full sm:max-w-md flex items-center justify-around h-[76px] px-2 rounded-[32px] sm:rounded-full bg-white dark:bg-zinc-900 backdrop-blur-xl border-2 border-purple-300 shadow-2xl shadow-black/20 dark:shadow-none">
             {tabs.map((tab) => {
+              const isMais = tab.path === "__mais__";
               const isActive =
                 tab.path === "/"
                   ? currentPath === "/"
-                  : currentPath.startsWith(tab.path) && tab.path !== "/";
+                  : !isMais && currentPath.startsWith(tab.path) && tab.path !== "/";
               const Icon = tab.icon;
 
               return (
                 <button
                   key={tab.path}
-                  onClick={() => navigate(tab.path)}
+                  onClick={() => isMais ? setMaisOpen(true) : navigate(tab.path)}
                   className={`group relative flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 ${
                     isActive
                       ? `${tab.color} bg-yellow-400/20 dark:bg-yellow-500/20 scale-110 shadow-sm shadow-yellow-400/40`
@@ -167,6 +170,50 @@ export default function AppLayout() {
           </div>
         </nav>
       )}
+
+      {/* Modal Mais / Acesso Rápido */}
+      <Dialog open={maisOpen} onOpenChange={setMaisOpen}>
+        <DialogContent className="max-w-md w-[95vw] p-0 overflow-hidden border-2 border-black/5 dark:border-white/5 rounded-[40px] shadow-2xl bg-zinc-50 dark:bg-zinc-950">
+          <div className="flex flex-col p-8">
+            <h2 className="text-2xl font-black text-center text-foreground mb-8 tracking-tight">Acesso Rápido</h2>
+            
+            <div className="grid grid-cols-3 gap-6">
+              {[
+                { label: "Nova Turma", path: "/turmas/nova", img: "/mais_0.png" },
+                { label: "Encontro", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/encontros/novo` : "/turmas", img: "/mais_1.png" },
+                { label: "Catequizando", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/catequizandos` : "/turmas", img: "/mais_2.png" },
+                { label: "Atividade", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/atividades` : "/turmas", img: "/mais_3.png" },
+                { label: "Chamada", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/encontros` : "/turmas", img: "/mais_0.png" },
+                { label: "Mural", path: "/modulos/mural", img: "/mais_1.png" },
+                { label: "Jogos", path: "/jogos", img: "/mais_2.png" },
+                { label: "Relatórios", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/relatorios` : "/turmas", img: "/mais_3.png" },
+                { label: "PIX Apoie!", type: "apoie", img: "/mais_0.png" },
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setMaisOpen(false);
+                    if (item.type === "apoie") {
+                      setApoieOpen(true);
+                    } else if (item.path) {
+                      navigate(item.path);
+                    }
+                  }}
+                  className="flex flex-col items-center gap-2 group animate-scale-in"
+                  style={{ animationDelay: `${i * 50}ms` }}
+                >
+                  <div className="w-16 h-16 rounded-[22px] bg-white dark:bg-zinc-900 shadow-sm border border-black/5 dark:border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg group-active:scale-95 group-hover:border-primary/30">
+                    <img src={item.img} alt={item.label} className="w-10 h-10 object-contain animate-bounce-subtle" style={{ animationDelay: `${i * 150}ms` }} />
+                  </div>
+                  <span className="text-[10px] font-black text-center text-muted-foreground uppercase tracking-wider leading-tight group-hover:text-primary transition-colors">
+                    {item.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
