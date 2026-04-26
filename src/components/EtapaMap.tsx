@@ -1,5 +1,6 @@
 import { ETAPAS_CATEQUESE } from "@/lib/store";
 import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface EtapaMapProps {
   etapaAtual?: string;
