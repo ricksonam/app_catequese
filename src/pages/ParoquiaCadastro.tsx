@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useParoquias, useParoquiaMutation, useDeleteParoquia } from "@/hooks/useSupabaseData";
 import { type Paroquia } from "@/lib/store";
 import { ArrowLeft, Plus, Church, Trash2, Eye } from "lucide-react";
@@ -77,4 +77,19 @@ export default function ParoquiaCadastro() {
 }
 
 function InfoRow({ label, value }: { label: string; value?: string }) { if (!value) return null; return <p><span className="text-muted-foreground">{label}:</span> <span className="font-semibold text-foreground">{value}</span></p>; }
-function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) { const ref = useRef<HTMLInputElement>(null); return <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label><input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" /></div>; }
+function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) { 
+  const ref = useRef<HTMLInputElement>(null); 
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
+  return (
+    <div>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
+      <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" />
+    </div>
+  ); 
+}

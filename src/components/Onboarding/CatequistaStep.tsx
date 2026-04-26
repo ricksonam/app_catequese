@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { UserCheck, User, ArrowRight, Sparkles, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar } from "lucide-react";
 import { useCatequistaMutation, useComunidades } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
@@ -49,14 +49,22 @@ function calcAge(birth: string): number | null {
 }
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div>
-      <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
       <input 
         type={type} 
         value={value} 
         onChange={(e) => onChange(e.target.value)} 
-        className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-800 dark:border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
+        placeholder={placeholder}
+        className="form-input" 
       />
     </div>
   );
@@ -127,164 +135,56 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
       )}
 
       {/* Scrollable Form */}
-      <div className={cn("overflow-y-auto flex-1 px-8 pb-6 space-y-4", embedded ? "pt-2" : "pt-0")}>
-        {/* Foto */}
-        <div className="flex justify-center py-2">
-          <ImagePicker
-            onImageUpload={(url) => updateField("foto", url)}
-            folder="catequistas"
-            currentImageUrl={form.foto}
-            shape="circle"
+      <div className={cn("overflow-y-auto flex-1 px-8 pb-6 space-y-3 pt-2")}>
+        <div className="flex justify-center mb-2">
+          <ImagePicker 
+            onImageUpload={(url) => updateField("foto", url)} 
+            folder="catequistas" 
+            currentImageUrl={form.foto} 
+            shape="circle" 
             label="Foto de Perfil"
           />
         </div>
-
-        {/* Dados Pessoais */}
-        <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center">
-                <User className="h-4.5 w-4.5 text-sky-600" />
-              </div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-700">Dados Pessoais</p>
-            </div>
-            <div className="h-1.5 w-full bg-sky-600/10 rounded-full overflow-hidden">
-              <div className="h-full w-24 bg-sky-600 rounded-full shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
-            </div>
-          </div>
-
-          <FieldInput label="Nome Completo *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Seu nome completo" />
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Data de Nascimento</label>
-              <input
-                type="date"
-                value={form.dataNascimento}
-                onChange={(e) => updateField("dataNascimento", e.target.value)}
-                className="w-full h-12 px-4 rounded-2xl bg-white border-2 border-zinc-800 focus:border-sky-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Idade</label>
-              <div className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent flex items-center text-sm font-bold text-muted-foreground">
-                {form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}
-              </div>
-            </div>
+        <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
+        <div className="grid grid-cols-2 gap-2">
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label><div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
+        </div>
+        <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
+        <div className="grid grid-cols-3 gap-2">
+          <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
+          <div className="col-span-2">
+            <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
           </div>
         </div>
-
-        {/* Endereço */}
-        <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center">
-                <MapPin className="h-4.5 w-4.5 text-indigo-600" />
-              </div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-700">Endereço</p>
-            </div>
-            <div className="h-1.5 w-full bg-indigo-500/10 rounded-full overflow-hidden">
-              <div className="h-full w-16 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.3)]" />
-            </div>
-          </div>
-
-          <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} placeholder="Rua, Avenida..." />
-
-          <div className="grid grid-cols-3 gap-3">
-            <FieldInput label="Número" value={form.numero} onChange={(v) => updateField("numero", v)} />
-            <div className="col-span-2">
-              <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
-            </div>
-          </div>
-
-          <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} placeholder="Apto, bloco..." />
+        <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
+        <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} />
+        <div className="grid grid-cols-2 gap-2">
+          <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
+          <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
         </div>
-
-        {/* Contato e Profissão */}
-        <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center">
-                <Phone className="h-4.5 w-4.5 text-sky-600" />
-              </div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-700">Contato e Profissão</p>
-            </div>
-            <div className="h-1.5 w-full bg-sky-600/10 rounded-full overflow-hidden">
-              <div className="h-full w-28 bg-sky-600 rounded-full shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
-            </div>
+        {comunidades.length > 0 && (
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Comunidade</label>
+            <select value={form.comunidadeId} onChange={(e) => updateField("comunidadeId", e.target.value)} className="form-input">
+              <option value="">Selecione...</option>{comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+            </select>
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <FieldInput
-              label="Telefone"
-              type="tel"
-              value={form.telefone}
-              onChange={(v) => updateField("telefone", mascaraTelefone(v))}
-              placeholder="(00) 00000-0000"
-            />
-            <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} placeholder="email@exemplo.com" />
-          </div>
-
-          <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} placeholder="Ex: Professor, Médico..." />
+        )}
+        <FieldInput label="Formação" value={form.formacao} onChange={(v) => updateField("formacao", v)} placeholder="Ex: Teologia, Pedagogia..." />
+        <FieldInput label="Anos de experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
+        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Status</label>
+          <select value={form.status} onChange={(e) => updateField("status", e.target.value as CatequistaStatus)} className="form-input">
+            <option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="afastado">Afastado</option>
+          </select>
         </div>
-
-        {/* Formação e Comunidade */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-black/5 pb-2">
-            <BookOpen className="h-4 w-4 text-indigo-500" />
-            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Formação e Comunidade</p>
-          </div>
-
-          {comunidades.length > 0 && (
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Comunidade</label>
-              <select
-                value={form.comunidadeId}
-                onChange={(e) => updateField("comunidadeId", e.target.value)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-sky-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
-              >
-                <option value="">Selecione...</option>
-                {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-              </select>
-            </div>
-          )}
-
-          <FieldInput label="Formação" value={form.formacao} onChange={(v) => updateField("formacao", v)} placeholder="Ex: Teologia, Pedagogia..." />
-
-          <div className="grid grid-cols-2 gap-3">
-            <FieldInput label="Anos de Experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} placeholder="Ex: 5" />
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Status</label>
-              <select
-                value={form.status}
-                onChange={(e) => updateField("status", e.target.value as CatequistaStatus)}
-                className="w-full h-11 px-4 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-sky-500/50 focus:bg-background transition-all outline-none text-sm font-bold appearance-none"
-              >
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-                <option value="afastado">Afastado</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Observação</label>
-            <textarea
-              value={form.observacao}
-              onChange={(e) => updateField("observacao", e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl bg-muted/30 border-2 border-transparent focus:border-sky-500/50 focus:bg-background transition-all outline-none text-sm font-bold resize-none min-h-[60px]"
-              placeholder="Observações sobre o catequista..."
-            />
-          </div>
-        </div>
-
+        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+        
         <button
           onClick={handleSave}
           disabled={mutation.isPending || !form.nome}
-          className="w-full h-14 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-black text-sm shadow-xl shadow-sky-500/25 active:scale-[0.97] transition-all hover:brightness-110 flex items-center justify-center gap-2 disabled:opacity-50 disabled:grayscale"
+          className="w-full action-btn h-14 mt-4"
         >
           {mutation.isPending ? "Salvando..." : "Próximo Passo"}
-          <ArrowRight className="h-4 w-4" />
         </button>
       </div>
     </div>

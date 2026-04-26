@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,9 +21,16 @@ import { type Catequizando } from "@/lib/store";
 
 // --- Helpers ---
 function FieldInput({ label, value, onChange, placeholder, type = "text" }: any) {
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div className="space-y-1">
-      <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1">{label}</label>
+      <label className="text-[10px] font-black text-zinc-900 uppercase tracking-widest block ml-1">{labelWithRedAsterisk}</label>
       <input
         type={type}
         value={value || ""}

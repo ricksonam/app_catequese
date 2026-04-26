@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { type Encontro, type RoteiroStep, ORACAO_TIPOS, ROTEIRO_STEPS } from "@/lib/store";
 import { MODELOS_ENCONTROS, type ModeloEncontro } from "@/lib/modelosEncontros";
 import { useTurmas, useEncontros, useCatequistas, useEncontroMutation } from "@/hooks/useSupabaseData";
@@ -125,8 +125,8 @@ export default function EncontroForm() {
         )}
 
         <div className="float-card p-5 space-y-4 animate-float-up" style={{ animationDelay: '60ms' }}>
-          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Tema *</label><input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" /></div>
-          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Data *</label><input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Tema <span className="text-red-500">*</span></label><input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Data <span className="text-red-500">*</span></label><input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" /></div>
           <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Leitura Bíblica do Tema</label><input type="text" value={leituraBiblica} onChange={(e) => setLeituraBiblica(e.target.value)} placeholder="Ex: Mt 3,13-17" className="form-input" /></div>
           <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Material de Apoio</label><textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários..." className="form-input min-h-[100px] resize-y" /></div>
         </div>

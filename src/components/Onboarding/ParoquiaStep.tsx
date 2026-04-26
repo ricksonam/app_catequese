@@ -1,4 +1,4 @@
-﻿import { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Church, MapPin, Users, ArrowRight, Sparkles, Mail, FileText, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
@@ -34,26 +34,42 @@ const emptyForm: UnifiedFormData = {
 };
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div>
-      <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
       <input 
         type={type} 
         value={value} 
         onChange={(e) => onChange(e.target.value)} 
-        className="w-full h-12 px-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-800 dark:border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold shadow-sm focus:shadow-md" 
+        placeholder={placeholder}
+        className="form-input" 
       />
     </div>
   );
 }
 
 function FieldTextArea({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div>
-      <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400 ml-1 block mb-1.5">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
       <textarea 
         value={value} 
-        className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-zinc-800 dark:border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold resize-none min-h-[80px] shadow-sm focus:shadow-md" 
+        onChange={(e) => onChange(e.target.value)} 
+        className="form-input min-h-[60px] resize-none" 
       />
     </div>
   );
@@ -135,30 +151,22 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
       )}
 
       {/* Scrollable Form */}
-      <div className={cn("overflow-y-auto flex-1 px-6 pb-6 space-y-6", embedded ? "pt-4" : "pt-0")}>
-        {/* Seção Paróquia */}
-        <div className="space-y-4 pt-2">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-violet-100 flex items-center justify-center">
-                <Church className="h-4.5 w-4.5 text-violet-600" />
-              </div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-700">Dados da Paróquia / Sede</p>
-            </div>
-            <div className="h-1.5 w-full bg-violet-600/10 rounded-full overflow-hidden">
-              <div className="h-full w-24 bg-violet-600 rounded-full shadow-[0_0_8px_rgba(139,92,246,0.3)]" />
-            </div>
+      <div className={cn("overflow-y-auto flex-1 px-6 pb-6 space-y-6 pt-4")}>
+        {/* Section 1: Parish */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 pb-1 border-b border-border/50">
+            <Church className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Paróquia / Área / Escola</h3>
           </div>
-
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Tipo *</label>
+            <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo <span className="text-red-500">*</span></label>
             <div className="relative">
-              <select
-                value={form.pTipo}
-                onChange={(e) => updateField("pTipo", e.target.value)}
+              <select 
+                value={form.pTipo} 
+                onChange={(e) => updateField("pTipo", e.target.value)} 
                 className={cn(
-                  "w-full h-12 px-4 rounded-2xl bg-white border-2 border-zinc-800 focus:border-violet-500 focus:bg-white transition-all outline-none text-sm font-bold appearance-none pr-10 shadow-sm focus:shadow-md",
-                  !form.pTipo && "border-amber-500/50"
+                  "form-input appearance-none pr-10",
+                  !form.pTipo && "border-amber-500/50 bg-amber-500/5"
                 )}
               >
                 <option value="" disabled>Selecione o tipo...</option>
@@ -167,65 +175,41 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
                 <option>Região</option>
                 <option>Escola</option>
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
               </div>
             </div>
           </div>
-
           <FieldInput 
             label={form.pTipo ? `Nome da ${form.pTipo} *` : "Nome *"} 
             value={form.pNome} 
             onChange={(v) => updateField("pNome", v)} 
-            placeholder={form.pTipo ? `Ex: ${form.pTipo} São José` : "Selecione o tipo primeiro"} 
+            placeholder={form.pTipo ? `Digite o nome da ${form.pTipo.toLowerCase()}` : "Selecione o tipo primeiro"}
           />
-
-          <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} placeholder="Rua, número, bairro..." />
-
-          <div className="grid grid-cols-2 gap-3">
-            <FieldInput
-              label="Telefone"
-              type="tel"
-              value={form.pTelefone}
-              onChange={(v) => updateField("pTelefone", mascaraTelefone(v))}
-              placeholder="(00) 00000-0000"
-            />
-            <FieldInput
-              label="E-mail"
-              type="email"
-              value={form.pEmail}
-              onChange={(v) => updateField("pEmail", v)}
-              placeholder="email@paroquia.com"
-            />
+          <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} />
+          <div className="grid grid-cols-2 gap-2">
+            <FieldInput label="Telefone" type="tel" value={form.pTelefone} onChange={(v) => updateField("pTelefone", mascaraTelefone(v))} />
+            <FieldInput label="E-mail" type="email" value={form.pEmail} onChange={(v) => updateField("pEmail", v)} />
           </div>
-
-          <FieldInput label="Responsável" value={form.pResponsavel} onChange={(v) => updateField("pResponsavel", v)} placeholder="Nome do pároco ou responsável" />
+          <FieldInput label="Responsável" value={form.pResponsavel} onChange={(v) => updateField("pResponsavel", v)} />
           <FieldTextArea label="Observação" value={form.pObservacao} onChange={(v) => updateField("pObservacao", v)} />
         </div>
 
-        {/* Seção Comunidade */}
-        <div className="space-y-4 pt-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center">
-                <Users className="h-4.5 w-4.5 text-indigo-600" />
-              </div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-indigo-700">Dados da Comunidade / Capela</p>
-            </div>
-            <div className="h-1.5 w-full bg-indigo-500/10 rounded-full overflow-hidden">
-              <div className="h-full w-32 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.3)]" />
-            </div>
+        {/* Section 2: Community */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 pb-1 border-b border-border/50">
+            <Users className="h-4 w-4 text-accent-foreground" />
+            <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Comunidade / Núcleo</h3>
           </div>
-
           <div>
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1 block mb-1">Tipo da Comunidade *</label>
+            <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo da Comunidade <span className="text-red-500">*</span></label>
             <div className="relative">
-              <select
-                value={form.cTipo}
-                onChange={(e) => updateField("cTipo", e.target.value)}
+              <select 
+                value={form.cTipo} 
+                onChange={(e) => updateField("cTipo", e.target.value)} 
                 className={cn(
-                  "w-full h-12 px-4 rounded-2xl bg-white border-2 border-zinc-100 focus:border-violet-500 focus:bg-background transition-all outline-none text-sm font-bold appearance-none pr-10 shadow-sm focus:shadow-md",
-                  !form.cTipo && "border-amber-500/50"
+                  "form-input appearance-none pr-10",
+                  !form.cTipo && "border-amber-500/50 bg-amber-500/5"
                 )}
               >
                 <option value="" disabled>Selecione o tipo...</option>
@@ -233,41 +217,30 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
                 <option>Núcleo</option>
                 <option>Grupo</option>
               </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
               </div>
             </div>
           </div>
-
           <FieldInput 
             label={form.cTipo ? `Nome da ${form.cTipo} *` : "Nome da Comunidade *"} 
             value={form.cNome} 
             onChange={(v) => updateField("cNome", v)} 
-            placeholder={form.cTipo ? `Ex: ${form.cTipo} Nossa Senhora` : "Selecione o tipo primeiro"} 
+            placeholder={form.cTipo ? `Digite o nome da ${form.cTipo.toLowerCase()}` : "Selecione o tipo primeiro"}
           />
-
-          <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} placeholder="Endereço da comunidade" />
-
-          <div className="grid grid-cols-2 gap-3">
+          <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} />
+          <div className="grid grid-cols-2 gap-2">
             <FieldInput label="Responsável" value={form.cResponsavel} onChange={(v) => updateField("cResponsavel", v)} />
-            <FieldInput
-              label="Telefone"
-              type="tel"
-              value={form.cTelefone}
-              onChange={(v) => updateField("cTelefone", mascaraTelefone(v))}
-              placeholder="(00) 00000-0000"
-            />
+            <FieldInput label="Telefone" type="tel" value={form.cTelefone} onChange={(v) => updateField("cTelefone", mascaraTelefone(v))} />
           </div>
-
           <FieldTextArea label="Observação da Comunidade" value={form.cObservacao} onChange={(v) => updateField("cObservacao", v)} />
 
           <button
             onClick={handleSave}
             disabled={pMutation.isPending || cMutation.isPending || !form.pNome || !form.cNome || !form.pTipo || !form.cTipo}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-sm shadow-xl shadow-violet-500/25 active:scale-[0.97] transition-all hover:brightness-110 flex items-center justify-center gap-2 disabled:opacity-50 disabled:grayscale"
+            className="w-full action-btn h-14 mt-4"
           >
             {pMutation.isPending || cMutation.isPending ? "Salvando..." : "Próximo Passo"}
-            <ArrowRight className="h-4 w-4" />
           </button>
         </div>
       </div>

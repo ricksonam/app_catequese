@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Church, Users, BookOpen, Check, LogOut, ChevronRight, Sparkles, Heart, Star, Layout, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ParoquiaStep } from "./ParoquiaStep";
@@ -34,6 +34,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
   };
 
   const handleFinish = () => {
+    setShowAbout(false);
     onComplete();
   };
 

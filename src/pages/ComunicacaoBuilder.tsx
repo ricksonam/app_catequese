@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Save, Plus, Trash2, GripVertical, Settings2, HelpCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -159,7 +159,7 @@ export default function ComunicacaoBuilder() {
       <div className="float-card p-6 flex flex-col gap-6 border-t-4 border-purple-500">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 space-y-2">
-            <label className="text-[11px] font-black uppercase text-zinc-900 tracking-widest pl-1">Título do Formulário</label>
+            <label className="text-[11px] font-black uppercase text-zinc-900 tracking-widest pl-1">Título do Formulário <span className="text-red-500">*</span></label>
             <input 
               value={titulo} onChange={e => setTitulo(e.target.value)}
               placeholder="Ex: Refletindo sobre a Eucaristia"
@@ -255,7 +255,7 @@ export default function ComunicacaoBuilder() {
 
             <div className="flex justify-end items-center gap-4 pt-4 mt-2 border-t border-black/5">
               <label className="flex items-center gap-2 cursor-pointer">
-                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Obrigatória</span>
+                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Obrigatória <span className="text-red-500">*</span></span>
                 <input 
                   type="checkbox" 
                   checked={campo.required} 

@@ -100,6 +100,12 @@ export default function TurmaForm() {
 
   const inputCls = "form-input h-12 text-base font-bold";
   const labelCls = "text-xs font-black text-zinc-900 uppercase tracking-widest";
+  const labelWithRedAsterisk = (label: string) => label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
 
   return (
     <div className="space-y-6 pb-10">
@@ -122,7 +128,7 @@ export default function TurmaForm() {
           {/* Campos */}
           <div className="p-5 space-y-4">
             <div className="space-y-2">
-              <label className={labelCls}>Nome da Turma *</label>
+              <label className={labelCls}>{labelWithRedAsterisk("Nome da Turma *")}</label>
               <select value={form.nome} onChange={(e) => update("nome", e.target.value)} className={inputCls}>
                 <option value="">Selecione...</option>
                 {NOMES_TURMA.map((n) => <option key={n} value={n}>{n}</option>)}
@@ -131,7 +137,7 @@ export default function TurmaForm() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className={labelCls}>Ano/Ciclo *</label>
+                <label className={labelCls}>{labelWithRedAsterisk("Ano/Ciclo *")}</label>
                 <select value={form.ano} onChange={(e) => update("ano", e.target.value)} className="form-input h-11">
                   <option value="1° Ano">1° Ano</option>
                   <option value="2° Ano">2° Ano</option>
@@ -142,7 +148,7 @@ export default function TurmaForm() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className={labelCls}>Dia do Encontro *</label>
+                <label className={labelCls}>{labelWithRedAsterisk("Dia do Encontro *")}</label>
                 <select value={form.diaCatequese} onChange={(e) => update("diaCatequese", e.target.value)} className="form-input h-11">
                   <option value="">Selecione...</option>
                   {DIAS_SEMANA.map((d) => <option key={d} value={d}>{d}</option>)}
@@ -152,7 +158,7 @@ export default function TurmaForm() {
 
             <div className="grid grid-cols-2 gap-4 pt-2 border-t border-black/5">
               <div className="space-y-2">
-                <label className={labelCls}>Horário *</label>
+                <label className={labelCls}>{labelWithRedAsterisk("Horário *")}</label>
                 <input type="time" value={form.horario} onChange={(e) => update("horario", e.target.value)} className="form-input h-11" />
               </div>
               <div className="space-y-2">
@@ -171,7 +177,7 @@ export default function TurmaForm() {
           </div>
           <div className="p-5 space-y-5">
             <div className="space-y-2">
-              <label className={labelCls}>Comunidade *</label>
+              <label className={labelCls}>{labelWithRedAsterisk("Comunidade *")}</label>
               <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input h-11">
                 <option value="">Selecione...</option>
                 {comunidades.map((c) => <option key={c.id} value={c.id}>{c.name || c.nome}</option>)}
@@ -188,7 +194,7 @@ export default function TurmaForm() {
           </div>
           <div className="p-5 space-y-5">
             <div className="space-y-2">
-              <label className={labelCls}>Catequista Responsável *</label>
+              <label className={labelCls}>{labelWithRedAsterisk("Catequista Responsável *")}</label>
               <select value={form.catequistasIds[0] || ""} onChange={(e) => update("catequistasIds", e.target.value ? [e.target.value] : [])} className="form-input h-11">
                 <option value="">Selecione...</option>
                 {catequistas.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}

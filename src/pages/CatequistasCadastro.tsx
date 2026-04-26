@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCatequistas, useCatequistaMutation, useDeleteCatequista, useComunidades } from "@/hooks/useSupabaseData";
 import { type CatequistaCadastro } from "@/lib/store";
 import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar, Clock, ChevronRight, X, User } from "lucide-react";
@@ -319,9 +319,16 @@ function DetailRow({ icon, label, value }: { icon: React.ReactNode; label: strin
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   const ref = useRef<HTMLInputElement>(null);
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div>
-      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
       <input ref={ref} type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="form-input" />
     </div>
   );

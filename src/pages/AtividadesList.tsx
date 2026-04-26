@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
 import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X } from "lucide-react";
@@ -10,9 +10,16 @@ import { formatarDataVigente } from "@/lib/utils";
 
 // --- Helpers ---
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div>
-      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
       <input 
         type={type} 
         value={value} 
@@ -143,7 +150,7 @@ export default function AtividadesList() {
               <DialogHeader><DialogTitle>{editingId ? 'Editar Atividade' : 'Nova Atividade'}</DialogTitle></DialogHeader>
               <div className="space-y-3 mt-2">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Atividade *</label>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Atividade <span className="text-red-500">*</span></label>
                   <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input font-bold text-primary">
                     {ATIVIDADE_TIPOS.map(t => <option key={t}>{t}</option>)}
                   </select>

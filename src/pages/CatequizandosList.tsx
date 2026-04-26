@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2 } from "lucide-react";
@@ -19,9 +19,16 @@ function InfoRow({ label, value }: { label: string; value?: string }) {
 }
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const labelWithRedAsterisk = label.includes("*") ? (
+    <>
+      {label.replace("*", "")}
+      <span className="text-red-500">*</span>
+    </>
+  ) : label;
+
   return (
     <div>
-      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label}</label>
+      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
       <input 
         type={type} 
         value={value} 
