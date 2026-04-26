@@ -8,12 +8,13 @@ interface EtapaMapProps {
 }
 
 export function EtapaMap({ etapaAtual, onSelect, readonly = false }: EtapaMapProps) {
-  const currentIdx = ETAPAS_CATEQUESE.findIndex((e) => e.id === etapaAtual);
+  const currentIdx = etapaAtual ? ETAPAS_CATEQUESE.findIndex((e) => e.id === etapaAtual) : -1;
 
   return (
     <div className="flex items-center gap-1 w-full">
       {ETAPAS_CATEQUESE.map((etapa, i) => {
-        const isCompleted = i < currentIdx;
+        const isSelected = etapa.id === etapaAtual;
+        const isCompleted = currentIdx !== -1 && i < currentIdx;
         const isCurrent = i === currentIdx;
         const isClickable = !readonly && onSelect;
 
@@ -31,25 +32,26 @@ export function EtapaMap({ etapaAtual, onSelect, readonly = false }: EtapaMapPro
                 {i > 0 && (
                   <div
                     className={`flex-1 h-1 rounded-full ${
-                      isCompleted || isCurrent ? "bg-primary" : "bg-border"
+                      (isCompleted || isCurrent) && currentIdx !== -1 ? "bg-primary" : "bg-border"
                     }`}
                   />
                 )}
                 <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 ${
+                  className={cn(
+                    "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 border-2",
                     isCurrent
-                      ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                      ? "bg-primary text-primary-foreground border-primary ring-4 ring-primary/20"
                       : isCompleted
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-white text-zinc-400 border-zinc-800"
+                  )}
                 >
                   {isCompleted ? <Check className="h-3.5 w-3.5" /> : i + 1}
                 </div>
                 {i < ETAPAS_CATEQUESE.length - 1 && (
                   <div
                     className={`flex-1 h-1 rounded-full ${
-                      isCompleted ? "bg-primary" : "bg-border"
+                      isCompleted && currentIdx !== -1 ? "bg-primary" : "bg-border"
                     }`}
                   />
                 )}

@@ -42,14 +42,14 @@ const fillFormFromItem = (item: Atividade): FormData => ({
 const tipoColors: Record<string, string> = {
   'Retiro': 'bg-primary/10 text-primary', 'Celebração': 'bg-liturgical/10 text-liturgical',
   'Encontro de pais': 'bg-accent/15 text-accent-foreground', 'Gincana': 'bg-success/10 text-success',
-  'Passeios': 'bg-gold/15 text-gold', 'Jornada': 'bg-primary/10 text-primary',
+  'Passeios': 'bg-gold/15 text-gold', 'Reunião': 'bg-primary/10 text-primary',
   'Eventos geral': 'bg-muted text-muted-foreground', 'Outros': 'bg-muted text-muted-foreground',
 };
 
 const TIPO_ICONES: Record<string, string> = {
   'Retiro': '🕊️', 'Celebração': '⛪',
   'Encontro de pais': '👨‍👩‍👧‍👦', 'Gincana': '🎯',
-  'Passeios': '🚌', 'Jornada': '✨',
+  'Passeios': '🚌', 'Reunião': '🤝',
   'Eventos geral': '📅', 'Outros': '📌',
 };
 
@@ -156,7 +156,20 @@ export default function AtividadesList() {
                   </select>
                 </div>
                 <FieldInput label="Nome da Atividade *" value={form.nome} onChange={(v) => updateField("nome", v)} />
-                <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Descrição</label><textarea value={form.descricao} onChange={(e) => updateField("descricao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+                <div>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">
+                    {(form.tipo === 'Encontro de pais' || form.tipo === 'Reunião') ? 'Pautas' : 'Descrição'}
+                  </label>
+                  <textarea 
+                    value={form.descricao} 
+                    onChange={(e) => updateField("descricao", e.target.value)} 
+                    placeholder={(form.tipo === 'Encontro de pais' || form.tipo === 'Reunião') ? "Digite as pautas (uma por linha)..." : "Descrição da atividade..."}
+                    className={cn(
+                      "form-input min-h-[120px] resize-none",
+                      (form.tipo === 'Encontro de pais' || form.tipo === 'Reunião') && "bg-[repeating-linear-gradient(white,white_24px,#e5e7eb_24px,#e5e7eb_25px)] leading-[25px] pt-[2px] font-medium text-zinc-700"
+                    )} 
+                  />
+                </div>
                 <div><label className="text-xs font-semibold text-zinc-900 mb-2 block">Modalidade</label><div className="flex gap-2">{(['interna','externa'] as const).map(m => <button key={m} type="button" onClick={() => updateField("modalidade",m)} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${form.modalidade===m?'bg-primary text-primary-foreground shadow-md':'bg-muted text-muted-foreground'}`}>{m==='interna'?'🏠 Interna':'🌐 Externa'}</button>)}</div></div>
                 {form.modalidade === 'externa' && <div className="animate-fade-in"><label className="text-xs font-semibold text-zinc-900 mb-1 block">Condução</label><select value={form.conducao} onChange={(e) => updateField("conducao", e.target.value)} className="form-input"><option value="">Selecione...</option>{CONDUCAO_TIPOS.map(c => <option key={c}>{c}</option>)}</select></div>}
                 <div className="grid grid-cols-2 gap-2"><FieldInput label="Data" type="date" value={form.data} onChange={(v) => updateField("data", v)} /><FieldInput label="Horário" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} /></div>
@@ -176,7 +189,7 @@ export default function AtividadesList() {
           {(() => {
             const TIPO_ICONES: Record<string, string> = {
               'Retiro': '⛺', 'Celebração': '✨', 'Encontro de pais': '👨‍👩‍👧',
-              'Gincana': '🎯', 'Passeios': '🌿', 'Jornada': '🚶', 'Eventos geral': '📅', 'Outros': '📌',
+              'Gincana': '🎯', 'Passeios': '🌿', 'Reunião': '🤝', 'Eventos geral': '📅', 'Outros': '📌',
             };
             const sorted = [...list].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
             const groups: Record<string, typeof sorted> = {};
@@ -342,9 +355,27 @@ export default function AtividadesList() {
                 </div>
 
                 {viewItem.descricao && (
-                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Descrição</h4>
-                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.descricao}</p>
+                  <div className={cn(
+                    "bg-white rounded-2xl p-6 border border-black/5 shadow-sm",
+                    (viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') && "bg-[repeating-linear-gradient(white,white_27px,#e5e7eb_27px,#e5e7eb_28px)] border-zinc-200"
+                  )}>
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">
+                      {(viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') ? 'Pautas' : 'Descrição'}
+                    </h4>
+                    <div className={cn(
+                      "text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap",
+                      (viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') && "space-y-0 leading-[28px] text-zinc-800 font-medium"
+                    )}>
+                      {(viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') 
+                        ? viewItem.descricao.split('\n').filter(line => line.trim()).map((line, idx) => (
+                            <div key={idx} className="flex gap-2">
+                              <span className="text-primary font-bold min-w-[20px]">{idx + 1}.</span>
+                              <span>{line}</span>
+                            </div>
+                          ))
+                        : viewItem.descricao
+                      }
+                    </div>
                   </div>
                 )}
                 

@@ -37,7 +37,7 @@ export default function TurmaForm() {
     diaCatequese: "",
     horario: "",
     local: "",
-    etapa: "pre-catecumenato",
+    etapa: "",
     outrosDados: "",
     comunidadeId: "",
     catequistasIds: [] as string[],
@@ -211,7 +211,7 @@ export default function TurmaForm() {
           </div>
           <div className="p-5 space-y-5">
             <div className="space-y-3">
-              <label className={labelCls}>Etapa do Tempo da Catequese</label>
+              <label className={labelCls}>Selecione o tempo:</label>
               <EtapaMap etapaAtual={form.etapa} onSelect={(etapaId) => update("etapa", etapaId)} />
             </div>
             <div className="space-y-2">

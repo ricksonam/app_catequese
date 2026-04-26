@@ -38,7 +38,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
     diaCatequese: "",
     horario: "",
     local: "",
-    etapa: "pre-catecumenato",
+    etapa: "",
     outrosDados: "",
     comunidadeId: comunidades[0]?.id || "",
     catequistasIds: [] as string[],
@@ -219,7 +219,7 @@ export function TurmaStep({ open, onSuccess, embedded }: TurmaStepProps) {
           </div>
           <div className="p-5 space-y-5">
             <div className="space-y-3">
-              <label className={labelCls}>Etapa do Tempo da Catequese</label>
+              <label className={labelCls}>Selecione o tempo:</label>
               <EtapaMap etapaAtual={form.etapa} onSelect={(id) => update("etapa", id)} />
             </div>
             <div className="space-y-2">

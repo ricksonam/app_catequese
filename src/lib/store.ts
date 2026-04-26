@@ -111,7 +111,7 @@ export interface RegistroOcorrencia {
   temaNome: string;
 }
 
-export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Jornada' | 'Eventos geral' | 'Outros';
+export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Reunião' | 'Eventos geral' | 'Outros';
 export type AtividadeModalidade = 'interna' | 'externa';
 export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ônibus' | 'Trem' | 'Metrô' | 'Avião';
 
@@ -251,7 +251,7 @@ export const ROTEIRO_STEPS: { tipo: RoteiroStepTipo; label: string }[] = [
 ];
 
 export const ATIVIDADE_TIPOS: AtividadeTipo[] = [
-  'Momento Orante', 'Retiro', 'Celebração', 'Encontro de pais', 'Gincana', 'Passeios', 'Jornada', 'Eventos geral', 'Outros',
+  'Momento Orante', 'Retiro', 'Celebração', 'Encontro de pais', 'Gincana', 'Passeios', 'Reunião', 'Eventos geral', 'Outros',
 ];
 
 const TURMAS_KEY = 'ivc_turmas';
