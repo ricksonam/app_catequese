@@ -469,7 +469,7 @@ export default function Dashboard() {
     },
   ];
 
-  if (loading) {
+  if (loading && onboardingStep === "none") {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
