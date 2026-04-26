@@ -6,7 +6,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
-import { formatarDataVigente } from "@/lib/utils";
+import { formatarDataVigente, cn } from "@/lib/utils";
 
 // --- Helpers ---
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
