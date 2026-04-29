@@ -144,7 +144,7 @@ export default function AppLayout() {
       {/* Tab Bar */}
       {!isPresentationMode && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
+          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-blue-50/90 dark:bg-zinc-900 backdrop-blur-xl border border-blue-100/80 dark:border-zinc-800 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
             {tabs.map((tab) => {
               const isMais = tab.path === "__mais__";
               const isTurmas = tab.path === "/turmas";

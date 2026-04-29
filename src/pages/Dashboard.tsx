@@ -830,10 +830,10 @@ export default function Dashboard() {
                 toast.info("Aguarde a aprovação do acesso.");
               }
             }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-md rounded-2xl px-5 py-2.5 flex items-center gap-2.5 hover:bg-slate-50 transition-colors active:scale-95 group"
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-md rounded-2xl px-4 py-2.5 flex items-center gap-2 hover:bg-slate-50 transition-colors active:scale-95 group max-w-[85%]"
           >
-            <img src="/icone_agenda.png" alt="Agenda" className="w-8 h-8 object-contain animate-bounce-subtle group-hover:scale-110 transition-transform" />
-            <h3 className="text-sm font-black uppercase tracking-[0.1em] text-slate-800 whitespace-nowrap mt-0.5">Agenda da Turma</h3>
+            <img src="/icone_agenda.png" alt="Agenda" className="w-7 h-7 object-contain animate-bounce-subtle group-hover:scale-110 transition-transform shrink-0" />
+            <h3 className="text-[13px] font-black uppercase tracking-wide text-slate-800">Agenda da Turma</h3>
           </button>
 
           <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5 pt-8">
