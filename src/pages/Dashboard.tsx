@@ -526,9 +526,9 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="animate-fade-in flex items-start justify-between mb-2 mt-2 px-1">
+      <div className="animate-fade-in flex items-start justify-between mb-1 mt-0 px-1">
         <div>
-          <h1 className="text-base font-black text-foreground uppercase tracking-tight mt-1.5">Olá, Catequista! 
+          <h1 className="text-base font-black text-foreground uppercase tracking-tight mt-1">Olá, Catequista! 
             <span className="inline-block animate-waving-hand ml-2">👋</span>
           </h1>
         </div>
@@ -536,7 +536,7 @@ export default function Dashboard() {
         {/* Ícone de mensagens */}
         <button 
           onClick={handleMessagesClick}
-          className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50/80 hover:bg-blue-100 transition-all border border-blue-100 shadow-sm"
+          className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-blue-50 transition-all shadow-sm border border-black/5"
         >
           <Mail className={cn("h-4 w-4 text-blue-600", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
           {totalMensagens > lastSeenMensagens && (
@@ -553,7 +553,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
-      <div className="relative pt-0 pb-1 mb-0 animate-fade-in overflow-hidden">
+      <div className="relative pt-0 pb-0 mb-0 animate-fade-in overflow-hidden -mt-1">
         {/* Título da Seção */}
         <div className="flex flex-col items-center justify-center mb-1">
           <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600">Próximos Aniversários</h2>
@@ -751,16 +751,16 @@ export default function Dashboard() {
           {/* Linhas de conexão (Árvore) */}
           <div className="relative w-full h-8 flex justify-center z-0">
             {/* Linha vertical central descendo do card da turma */}
-            <div className="absolute top-0 w-[2px] h-1/2 bg-slate-800" />
+            <div className="absolute top-0 w-[2px] h-1/2 bg-blue-600" />
             {/* Linha horizontal dividindo para as duas colunas */}
-            <div className="absolute top-1/2 w-[calc(50%+10px)] h-[2px] bg-slate-800" />
+            <div className="absolute top-1/2 w-[calc(50%-24px)] h-[2px] bg-blue-600" />
             {/* Linhas verticais descendo para os cards */}
-            <div className="absolute top-1/2 left-[calc(25%-5px)] w-[2px] h-1/2 bg-slate-800" />
-            <div className="absolute top-1/2 right-[calc(25%-5px)] w-[2px] h-1/2 bg-slate-800" />
+            <div className="absolute top-1/2 left-[calc(25%+12px)] w-[2px] h-1/2 bg-blue-600" />
+            <div className="absolute top-1/2 right-[calc(25%+12px)] w-[2px] h-1/2 bg-blue-600" />
           </div>
 
           {/* Grid de Módulos — cards flutuantes com degradê */}
-          <div className="grid grid-cols-2 gap-3.5 w-full relative z-10 px-4">
+          <div className="grid grid-cols-2 gap-4 w-full relative z-10 px-8">
             {/* Card Catequizandos */}
             <div className="relative group">
               {/* Sombra degradê flutuante */}
@@ -817,12 +817,12 @@ export default function Dashboard() {
         <div className="animate-float-up relative mt-7 mb-2" style={{ animationDelay: '200ms' }}>
           
           {/* Linha que conecta do módulo esquerdo até a agenda */}
-          <div className="absolute -top-7 left-[calc(25%-5px)] w-[2px] h-[35px] bg-slate-800 z-0" />
+          <div className="absolute -top-7 left-1/2 w-[2px] h-[35px] bg-blue-600 z-0" />
           
           {/* Card Nome da Agenda */}
-          <div className="absolute top-0 left-[calc(25%-5px)] -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5">
-            <CalendarDays className="w-3.5 h-3.5 text-slate-800" strokeWidth={2.5} />
-            <h3 className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-800 whitespace-nowrap">Agenda da Turma</h3>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5">
+            <CalendarDays className="w-4 h-4 text-primary" strokeWidth={2.5} />
+            <h3 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground whitespace-nowrap">Agenda da Turma</h3>
           </div>
 
           <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5 pt-4">
