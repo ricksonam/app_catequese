@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks, Church, Compass } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -836,7 +836,7 @@ export default function Dashboard() {
             <h3 className="text-[13px] font-black uppercase tracking-wide text-slate-800 whitespace-nowrap">Agenda da Turma</h3>
           </button>
 
-          <div className="relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border border-orange-200/50 pt-8">
+          <div className="relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border-2 border-orange-200/60 pt-8">
 
             {/* ── TIMELINE DE EVENTOS ── */}
             <div className="relative pb-4 px-4">
@@ -861,7 +861,7 @@ export default function Dashboard() {
                         className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-primary/30 hover:-translate-y-1 active:scale-95"
                       >
                         <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
-                          <CalendarDays className="h-5 w-5" />
+                          <Church className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">
@@ -903,7 +903,7 @@ export default function Dashboard() {
                         className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-blue-500/30 hover:-translate-y-1 active:scale-95"
                       >
                         <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                          <ListChecks className="h-5 w-5" />
+                          <Compass className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-blue-600 transition-colors">
