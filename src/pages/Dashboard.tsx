@@ -799,40 +799,15 @@ export default function Dashboard() {
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
         <div className="animate-float-up mt-3 mb-2" style={{ animationDelay: '200ms' }}>
-          <div className="relative rounded-3xl overflow-hidden"
-            style={{
-              background: 'linear-gradient(145deg, #ffffff 0%, #f8f6ff 100%)',
-              boxShadow: '0 2px 20px -4px rgba(109,40,217,0.12), 0 0 0 1px rgba(109,40,217,0.08)',
-            }}>
+          <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5">
 
-            {/* ── HEADER LITÚRGICO ── */}
-            <div className="relative px-4 pt-4 pb-3 overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%)' }}>
-              {/* Cruz decorativa watermark */}
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
-                <svg width="44" height="56" viewBox="0 0 44 56" fill="none">
-                  <rect x="17" y="0" width="10" height="56" rx="5" fill="white"/>
-                  <rect x="0" y="18" width="44" height="10" rx="5" fill="white"/>
-                </svg>
+            {/* ── HEADER DA AGENDA ── */}
+            <div className="pt-6 pb-2 flex flex-col items-center justify-center relative z-10">
+              <div className="flex items-center justify-center gap-2 mb-1.5">
+                <CalendarDays className="w-4 h-4 text-primary" strokeWidth={2.5} />
+                <h3 className="text-[12px] font-black uppercase tracking-[0.15em] text-foreground">Agenda da Turma</h3>
               </div>
-              <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-2.5">
-                  {/* Ícone */}
-                  <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center backdrop-blur-sm">
-                    <CalendarDays className="w-4 h-4 text-white" strokeWidth={2.5} />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white leading-none">Agenda</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-violet-200/80 leading-none mt-0.5">da Turma</p>
-                  </div>
-                </div>
-                {/* Linha decorativa dourada */}
-                <div className="flex items-center gap-1.5">
-                  <div className="w-1 h-1 rounded-full bg-amber-300/70" />
-                  <div className="w-6 h-px bg-amber-300/40" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-300/80" />
-                </div>
-              </div>
+              <div className="w-8 h-0.5 bg-primary/20 rounded-full"></div>
             </div>
 
             {/* ── TIMELINE DE EVENTOS ── */}
