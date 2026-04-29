@@ -1,7 +1,7 @@
-import { useTurmas, useEncontros, useCatequizandos, useJoinTurma } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useJoinTurma, useComunidades } from "@/hooks/useSupabaseData";
 import { ETAPAS_CATEQUESE } from "@/lib/store";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Plus, CalendarDays, Users, Link2, X as XIcon, Loader2, Camera } from "lucide-react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, X as XIcon, Loader2, Camera, UsersRound } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
@@ -9,6 +9,7 @@ export default function TurmasList() {
   const { data: turmas = [], isLoading } = useTurmas();
   const { data: encontros = [] } = useEncontros();
   const { data: catequizandos = [] } = useCatequizandos();
+  const { data: comunidades = [] } = useComunidades();
   const navigate = useNavigate();
   const joinMutation = useJoinTurma();
 
@@ -192,34 +193,36 @@ export default function TurmasList() {
             const tEncontros = encontros.filter(e => e.turmaId === mainTurma.id);
             const tCatequizandos = catequizandos.filter(c => c.turmaId === mainTurma.id);
             const etapa = ETAPAS_CATEQUESE.find(e => e.id === mainTurma.etapa);
+            const mainTurmaComunidade = comunidades.find(c => c.id === mainTurma.comunidadeId)?.nome || "Comunidade não informada";
             return (
               <div
                 onClick={() => navigate(`/turmas/${mainTurma.id}`)}
-                className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)] animate-float-up transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group"
+                className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:shadow-[0_24px_60px_rgb(0,0,0,0.15)] animate-float-up transition-all duration-300 hover:-translate-y-2 cursor-pointer group"
               >
                 <div className="absolute inset-[3px] rounded-xl border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay" />
-                <div className="relative flex flex-col p-4 rounded-[14px] bg-card w-full h-full overflow-hidden">
+                <div className="relative flex flex-col p-3 rounded-[14px] bg-card w-full h-full overflow-hidden">
                   <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
-                    <BookOpen className="w-32 h-32 text-primary" />
+                    <UsersRound className="w-32 h-32 text-primary" />
                   </div>
                   {mainTurma.isShared && (
                     <div className="absolute top-3 right-3 z-30 flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">
                       <Link2 className="h-2.5 w-2.5" /> Compartilhada
                     </div>
                   )}
-                  <div className="flex flex-col items-center justify-center mb-5 relative z-30 text-center mt-2">
-                    <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-4 group-hover:scale-110 transition-transform duration-500">
-                      <BookOpen className="h-8 w-8 text-primary" />
+                  <div className="flex flex-col items-center justify-center mb-4 relative z-30 text-center mt-2">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-3 group-hover:scale-110 transition-transform duration-500">
+                      <UsersRound className="h-6 w-6 text-primary animate-bounce-subtle" />
                     </div>
-                    <div className="space-y-1">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary mb-2 shadow-sm border border-primary/10">
+                    <div className="space-y-0.5">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary mb-1.5 shadow-sm border border-primary/10">
                          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                          <span className="text-[9px] font-black uppercase tracking-widest">Turma Principal</span>
                       </div>
-                      <h3 className="text-xl font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
                         {mainTurma.nome} <span className="opacity-40 font-bold ml-1">— {mainTurma.ano}</span>
                       </h3>
-                      <p className="text-sm text-muted-foreground font-medium">{mainTurma.diaCatequese} • {mainTurma.horario} • {mainTurma.local}</p>
+                      <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{mainTurmaComunidade}</p>
+                      <p className="text-xs text-muted-foreground font-medium pt-1">{mainTurma.diaCatequese} • {mainTurma.horario} • {mainTurma.local}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 flex-wrap relative z-30">
@@ -231,7 +234,7 @@ export default function TurmasList() {
                     </div>
                     {etapa && <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 shadow-sm">{etapa.label}</span>}
                   </div>
-                  <div className="mt-5 w-full bg-primary/10 hover:bg-primary/20 text-primary py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-colors flex items-center justify-center z-30 relative shadow-sm border border-primary/10">
+                  <div className="mt-4 w-full bg-primary/10 hover:bg-primary/20 text-primary py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-colors flex items-center justify-center z-30 relative shadow-sm border border-primary/10">
                      Acessar Painel da Turma
                   </div>
                 </div>
@@ -248,26 +251,30 @@ export default function TurmasList() {
                <div className="grid grid-cols-2 gap-3">
                  {secondaryTurmas.map((turma, i) => {
                    const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
+                   const turmaComunidade = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
                    return (
                      <div
                        key={turma.id}
                        onClick={() => handleSelectSecondary(turma.id)}
-                       className="relative p-3 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 active:scale-95 cursor-pointer flex flex-col justify-between animate-fade-in group"
+                       className="relative p-3 rounded-2xl bg-card border border-border/50 shadow-[0_4px_15px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_25px_rgb(0,0,0,0.08)] hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer flex flex-col justify-between animate-fade-in group"
                        style={{ animationDelay: `${i * 50}ms` }}
                      >
                         <div className="absolute top-2 right-2 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform">
-                           <BookOpen className="w-12 h-12" />
+                           <UsersRound className="w-12 h-12" />
                         </div>
-                        <div className="space-y-1 relative z-10">
+                        <div className="space-y-0.5 relative z-10 text-center flex flex-col items-center">
                            <h4 className="text-sm font-black text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                              {turma.nome}
                            </h4>
-                           <p className="text-[10px] text-muted-foreground font-medium truncate">
+                           {turmaComunidade && (
+                             <p className="text-[8px] font-black text-primary/50 uppercase tracking-widest line-clamp-1">{turmaComunidade}</p>
+                           )}
+                           <p className="text-[10px] text-muted-foreground font-medium truncate pt-0.5">
                              {turma.diaCatequese} • {turma.horario}
                            </p>
                         </div>
-                        <div className="mt-4 relative z-10">
-                           <span className="inline-flex items-center justify-center px-2 py-1.5 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase tracking-widest">
+                        <div className="mt-3 relative z-10 flex justify-center">
+                           <span className="inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase tracking-widest">
                              Tornar Principal
                            </span>
                         </div>
