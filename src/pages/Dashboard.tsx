@@ -830,19 +830,24 @@ export default function Dashboard() {
                 toast.info("Aguarde a aprovação do acesso.");
               }
             }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5 hover:bg-blue-50 transition-colors active:scale-95 group"
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-md rounded-2xl px-5 py-2.5 flex items-center gap-2.5 hover:bg-slate-50 transition-colors active:scale-95 group"
           >
-            <CalendarDays className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" strokeWidth={2.5} />
-            <h3 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground whitespace-nowrap">Agenda da Turma</h3>
+            <img src="/icone_agenda.png" alt="Agenda" className="w-8 h-8 object-contain animate-bounce-subtle group-hover:scale-110 transition-transform" />
+            <h3 className="text-sm font-black uppercase tracking-[0.1em] text-slate-800 whitespace-nowrap mt-0.5">Agenda da Turma</h3>
           </button>
 
-          <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5 pt-4">
+          <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5 pt-8">
 
             {/* ── TIMELINE DE EVENTOS ── */}
             <div className="relative pb-4 px-4">
-              {/* Fio vertical */}
-              <div className="absolute left-[36px] top-4 bottom-4 w-[2px]"
-                style={{ background: 'linear-gradient(180deg, #7c3aed33 0%, #7c3aed55 40%, #3b82f633 100%)' }} />
+              {/* Mês no topo da linha */}
+              <div className="absolute left-[36px] top-0 -translate-x-1/2 bg-indigo-50 text-indigo-600 font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full z-10 shadow-sm border border-indigo-100">
+                {MESES_ABREV[hoje.getMonth()]}
+              </div>
+
+              {/* Fio vertical descendo do mês */}
+              <div className="absolute left-[36px] top-5 bottom-4 w-[2px]"
+                style={{ background: 'linear-gradient(180deg, #6366f133 0%, #6366f155 40%, #3b82f633 100%)' }} />
 
               <div className="space-y-4 ml-[16px] pt-4">
                 {/* ── EVENTO: PRÓXIMO ENCONTRO ── */}
