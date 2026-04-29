@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
