@@ -836,7 +836,7 @@ export default function Dashboard() {
             <h3 className="text-[13px] font-black uppercase tracking-wide text-slate-800 whitespace-nowrap">Agenda da Turma</h3>
           </button>
 
-          <div className="relative rounded-3xl overflow-hidden bg-orange-50/50 shadow-sm border border-orange-100/50 pt-8">
+          <div className="relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border border-orange-200/50 pt-8">
 
             {/* ── TIMELINE DE EVENTOS ── */}
             <div className="relative pb-4 px-4">
