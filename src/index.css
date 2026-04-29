@@ -1,0 +1,461 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 225 20% 96%;
+    --foreground: 222 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 30% 10%;
+
+    --primary: 225 70% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 225 20% 93%;
+    --secondary-foreground: 222 30% 10%;
+
+    --muted: 225 15% 94%;
+    --muted-foreground: 225 10% 50%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 30% 10%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 225 15% 90%;
+    --input: 225 15% 90%;
+    --ring: 225 70% 45%;
+
+    --radius: 1rem;
+
+    --liturgical: 270 45% 50%;
+    --liturgical-foreground: 0 0% 100%;
+    --success: 152 60% 42%;
+    --success-foreground: 0 0% 100%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 30 50% 15%;
+    --caution: 25 95% 53%;
+    --caution-foreground: 0 0% 100%;
+    --gold: 38 92% 50%;
+    --gold-foreground: 30 50% 15%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 225 15% 90%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+
+  .dark {
+    --background: 225 25% 6%;
+    --foreground: 210 40% 98%;
+    --card: 225 25% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 225 25% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 220 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 20% 16%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 225 18% 15%;
+    --muted-foreground: 215 20% 60%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 30% 10%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 225 18% 18%;
+    --input: 225 18% 18%;
+    --ring: 220 80% 60%;
+    --sidebar-background: 225 25% 8%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 225 18% 15%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 225 18% 18%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  /* Floating glass card */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-foreground/[0.03] border border-border/40;
+  }
+
+  /* Elevated floating card */
+  .float-card {
+    @apply bg-card rounded-2xl shadow-[0_8px_40px_rgb(0,0,0,0.08)] border-2 border-black/30 dark:border-white/10 transition-all duration-300;
+  }
+  .float-card:hover {
+    @apply shadow-[0_12px_45px_rgb(0,0,0,0.12)] -translate-y-0.5 border-black/50 dark:border-white/30;
+  }
+
+  /* Subtle card - less prominent */
+  .subtle-card {
+    @apply bg-card/60 backdrop-blur-md rounded-2xl border border-border/30;
+  }
+
+  .section-title {
+    @apply text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground px-1 mb-3;
+  }
+
+  /* Page header with back button */
+  .page-header {
+    @apply flex items-center gap-3 mb-6;
+  }
+
+  .back-btn {
+    @apply p-2 rounded-xl bg-card/60 backdrop-blur-md border border-border/30 hover:bg-muted transition-all active:scale-95;
+  }
+
+  /* Action button style */
+  .action-btn {
+    @apply flex items-center justify-center gap-2 bg-primary text-primary-foreground px-5 py-3 rounded-2xl text-sm font-semibold shadow-md shadow-primary/20 active:scale-[0.98] transition-all;
+  }
+
+  /* Small action button */
+  .action-btn-sm {
+    @apply flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-primary/20 active:scale-[0.98] transition-all;
+  }
+
+  /* Pill button for status/filters */
+  .pill-btn {
+    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border border-black/20 dark:border-white/10;
+  }
+  .pill-btn-active {
+    @apply bg-primary text-primary-foreground shadow-sm;
+  }
+  .pill-btn-inactive {
+    @apply bg-muted text-muted-foreground hover:bg-muted/80;
+  }
+
+  /* Input field */
+  .form-input {
+    @apply w-full bg-white rounded-xl px-4 py-3 text-sm text-foreground border-2 border-black/25 focus:ring-2 focus:ring-primary/30 focus:border-primary/50 outline-none transition-all shadow-sm;
+  }
+
+  /* Icon container */
+  .icon-box {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center shrink-0;
+  }
+
+  /* List item */
+  .list-item {
+    @apply flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/30;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply float-card p-10 text-center;
+  }
+
+  /* Stagger animation helper */
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    min-height: auto !important;
+  }
+  #root {
+    /* display: none !important; Disabled so that we can use print:* tailwind classes freely */
+    display: block !important;
+  }
+  .print-wrapper {
+    position: static !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+  @page {
+    margin: 0.5cm;
+    size: A4;
+  }
+}
+
+/* Paper Preview Simulation */
+.preview-overlay {
+  @apply fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center overflow-y-auto pt-4 pb-20 px-4;
+}
+
+.paper-preview {
+  @apply bg-white text-black shadow-2xl rounded-sm w-full max-w-[210mm] min-h-[297mm] mx-auto overflow-visible;
+  transform-origin: top center;
+}
+
+@media (max-width: 640px) {
+  .paper-preview {
+    @apply scale-[0.6] -mb-[40%];
+  }
+}
+
+.preview-actions {
+  @apply sticky top-4 z-[110] flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-xl;
+}
+
+/* Custom Animations */
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes welcome-float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-4px) rotate(-3deg); }
+  75% { transform: translateY(4px) rotate(3deg); }
+}
+
+@keyframes soft-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.02); opacity: 0.9; }
+}
+
+@keyframes card-activate {
+  0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+  60% { transform: scale(1.05) translateY(-5px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-welcome-float {
+  animation: welcome-float 6s ease-in-out infinite;
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 3s ease-in-out infinite;
+}
+
+.animate-card-activate {
+  animation: card-activate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(var(--primary), 0.2); transform: scale(1); }
+  50% { box-shadow: 0 0 20px rgba(var(--primary), 0.4); transform: scale(1.05); }
+}
+
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-effect::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer-slide 2s infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.1); }
+  40% { transform: scale(1); }
+  60% { transform: scale(1.1); }
+}
+
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1) rotate(0); }
+  50% { transform: scale(1.1) rotate(5deg); }
+}
+
+@keyframes bounce-short {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.animate-icon-pulse {
+  animation: icon-pulse 3s ease-in-out infinite;
+}
+
+.animate-bounce-short {
+  animation: bounce-short 1.5s ease-in-out infinite;
+}
+
+@keyframes liturgical-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.05); }
+}
+
+.animate-liturgical-float {
+  animation: liturgical-float 4s ease-in-out infinite;
+}
+
+/* ── PREMIUN LITURGICAL THEMES ── */
+.liturgical-frame {
+  position: relative;
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, #FFD700, #DAA520, #FFD700, #B8860B) border-box;
+  box-shadow: 0 10px 30px -10px rgba(184, 134, 11, 0.3);
+}
+
+.liturgical-rays-bg {
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+}
+
+.birthday-corner-item {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  opacity: 0.6;
+}
+
+@keyframes sacred-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.2; }
+}
+
+.animate-sacred-rays {
+  animation: sacred-pulse 5s ease-in-out infinite;
+}
+
+/* ── PREMIUM SCROLLBAR ── */
+.premium-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.premium-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+}
+.premium-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.35);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.premium-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.55);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ── SCROLLBAR HIDE ── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-shimmer-text {
+  background: linear-gradient(90deg, hsl(var(--primary)), #a855f7, #ec4899, #3b82f6, hsl(var(--primary)));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+
+@keyframes swing {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(15deg); }
+  40% { transform: rotate(-12deg); }
+  60% { transform: rotate(9deg); }
+  80% { transform: rotate(-6deg); }
+}
+
+.animate-swing {
+  transform-origin: top center;
+}
+
+@keyframes wave {
+  0% { transform: rotate(0.0deg); }
+  10% { transform: rotate(14.0deg); }
+  20% { transform: rotate(-8.0deg); }
+  30% { transform: rotate(14.0deg); }
+  40% { transform: rotate(-4.0deg); }
+  50% { transform: rotate(10.0deg); }
+  60% { transform: rotate(0.0deg); }
+  100% { transform: rotate(0.0deg); }
+}
+.animate-waving-hand {
+  animation: wave 2.5s linear infinite;
+  transform-origin: 70% 70%;
+}
+
+/* ── TOAST NOTIFICATIONS POSITIONING ── */
+/* Ensure all toasts stay above the bottom navigation bar on mobile */
+[data-sonner-toaster], 
+[role="region"][aria-label="Notifications"],
+.toaster.group {
+  bottom: 110px !important;
+}
+
+/* Adjust for desktop where the nav bar is not present or centered */
+@media (min-width: 640px) {
+  [data-sonner-toaster], 
+  [role="region"][aria-label="Notifications"],
+  .toaster.group {
+    bottom: 24px !important;
+  }
+}
