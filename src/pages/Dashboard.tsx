@@ -725,14 +725,14 @@ export default function Dashboard() {
         <div className="space-y-0 px-2 -mt-4 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma (Nó central) */}
-          <div className="bg-white border border-black/5 shadow-sm rounded-[24px] p-2.5 flex items-center justify-between w-full z-10 relative">
-            <div className="flex items-center gap-3 overflow-hidden pl-1">
-              <div className="w-10 h-10 rounded-xl bg-blue-50/80 flex items-center justify-center shrink-0 border border-blue-100/50">
-                <Users className="w-5 h-5 text-blue-600" />
+          <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-between w-full z-10 relative">
+            <div className="flex items-center gap-2.5 overflow-hidden pl-0.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-50/80 flex items-center justify-center shrink-0 border border-blue-100/50">
+                <Users className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground leading-none mb-1">Turma Selecionada</p>
-                <h3 className="text-[13px] font-black text-foreground truncate uppercase tracking-tight leading-none">
+                <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground leading-none mb-0.5">Turma Selecionada</p>
+                <h3 className="text-xs font-black text-foreground truncate uppercase tracking-tight leading-none mt-0.5">
                   {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
                 </h3>
               </div>
@@ -740,10 +740,10 @@ export default function Dashboard() {
             {(turmas.length > 1 || selectedTurmaId === "all") && (
               <button 
                 onClick={() => setTurmaPickerOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95 shrink-0"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95 shrink-0 mr-0.5"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Trocar</span>
+                <RefreshCw className="h-3 w-3" />
+                <span className="text-[9px] font-black uppercase tracking-widest">Trocar</span>
               </button>
             )}
           </div>
@@ -814,16 +814,28 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
-        <div className="animate-float-up relative mt-7 mb-2" style={{ animationDelay: '200ms' }}>
+        <div className="animate-float-up relative mt-12 mb-2" style={{ animationDelay: '200ms' }}>
           
-          {/* Linha que conecta do módulo esquerdo até a agenda */}
-          <div className="absolute -top-7 left-1/2 w-[2px] h-[35px] bg-blue-600 z-0" />
+          {/* Linha que conecta do centro até a agenda */}
+          <div className="absolute -top-12 left-1/2 w-[2px] h-[60px] bg-blue-600 z-0" />
           
-          {/* Card Nome da Agenda */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5">
-            <CalendarDays className="w-4 h-4 text-primary" strokeWidth={2.5} />
+          {/* Card Nome da Agenda (Clicável) */}
+          <button 
+            onClick={() => {
+              if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                navigate(`/turmas/${selectedTurmaId}/plano`);
+              } else if (selectedTurmaId === "all") {
+                toast.info("Selecione uma turma para acessar a agenda.");
+                setTurmaPickerOpen(true);
+              } else {
+                toast.info("Aguarde a aprovação do acesso.");
+              }
+            }}
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5 hover:bg-blue-50 transition-colors active:scale-95 group"
+          >
+            <CalendarDays className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" strokeWidth={2.5} />
             <h3 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground whitespace-nowrap">Agenda da Turma</h3>
-          </div>
+          </button>
 
           <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5 pt-4">
 
