@@ -6,6 +6,7 @@ import {
   Image,
   Dices,
   Heart,
+  Book,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,7 +25,7 @@ import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início" },
-  { path: "/jogos", icon: Dices, label: "Jogos" },
+  { path: "/modulos/biblia", icon: Book, label: "Bíblia" },
   { path: "/turmas", icon: BookOpen, label: "Turmas" },
   { path: "/modulos/mural", icon: Image, label: "Mural" },
   { path: "__mais__", icon: Menu, label: "Menu" },
@@ -141,7 +142,7 @@ export default function AppLayout() {
       </main>
 
       {/* Tab Bar */}
-      {!isPresentationMode && currentPath !== "/modulos/mural" && (
+      {!isPresentationMode && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
           <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
             {tabs.map((tab) => {
@@ -180,7 +181,7 @@ export default function AppLayout() {
                   }`}
                 >
                   <Icon className={`h-6 w-6 mb-1 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} strokeWidth={isActive ? 2.5 : 2} />
-                  <span className={`text-[8px] font-black uppercase tracking-[0.05em] text-center transition-all ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+                  <span className={`text-[8px] font-black uppercase tracking-[0.05em] text-center transition-all opacity-100`}>
                     {tab.label}
                   </span>
                   {isActive && (

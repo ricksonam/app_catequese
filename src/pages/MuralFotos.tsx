@@ -444,7 +444,7 @@ export default function MuralFotos() {
 
       {/* FIXED BOTTOM ACTION BAR - FLOATING BUTTONS */}
       {!viewFoto && !pendingFile && !studioPhotos && !viewPerfil && activeTab !== 'perfis' && (
-        <div className="fixed bottom-10 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
+        <div className="fixed bottom-28 left-0 right-0 px-6 z-[90] flex items-center justify-between pointer-events-none pb-safe">
           <div className="flex-1 flex justify-start pointer-events-auto">
             <button 
               onClick={() => fileRef.current?.click()}
