@@ -723,28 +723,45 @@ export default function Dashboard() {
 
       {/* ── MÓDULOS DE ACESSO RÁPIDO (CATEQUIZANDOS E ENCONTROS) ── */}
       {turmas.length > 0 && (
-        <div className="space-y-4 px-1 -mt-4 animate-fade-in">
-          {/* Seletor de Turma Compacto (se houver mais de uma) */}
-          {(turmas.length > 1 || selectedTurmaId === "all") && (
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-2 overflow-hidden">
-                <div className="w-1.5 h-5 bg-blue-600 rounded-full shrink-0" />
-                <h3 className="text-xs font-black text-foreground truncate uppercase tracking-tight">
-                  {selectedTurmaId === "all" ? "Todas as Turmas" : `Turma ${selectedTurma?.nome}`}
+        <div className="space-y-0 px-2 -mt-4 animate-fade-in flex flex-col items-center">
+          
+          {/* Card Turma (Nó central) */}
+          <div className="bg-white border border-black/5 shadow-sm rounded-[24px] p-2.5 flex items-center justify-between w-full z-10 relative">
+            <div className="flex items-center gap-3 overflow-hidden pl-1">
+              <div className="w-10 h-10 rounded-xl bg-blue-50/80 flex items-center justify-center shrink-0 border border-blue-100/50">
+                <Users className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground leading-none mb-1">Turma Selecionada</p>
+                <h3 className="text-[13px] font-black text-foreground truncate uppercase tracking-tight leading-none">
+                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
                 </h3>
               </div>
+            </div>
+            {(turmas.length > 1 || selectedTurmaId === "all") && (
               <button 
                 onClick={() => setTurmaPickerOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95 shrink-0"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 <span className="text-[10px] font-black uppercase tracking-widest">Trocar</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Linhas de conexão (Árvore) */}
+          <div className="relative w-full h-8 flex justify-center z-0">
+            {/* Linha vertical central descendo do card da turma */}
+            <div className="absolute top-0 w-[2px] h-1/2 bg-blue-100" />
+            {/* Linha horizontal dividindo para as duas colunas */}
+            <div className="absolute top-1/2 w-[calc(50%+10px)] h-[2px] bg-blue-100" />
+            {/* Linhas verticais descendo para os cards */}
+            <div className="absolute top-1/2 left-[calc(25%-5px)] w-[2px] h-1/2 bg-blue-100" />
+            <div className="absolute top-1/2 right-[calc(25%-5px)] w-[2px] h-1/2 bg-blue-100" />
+          </div>
 
           {/* Grid de Módulos — cards flutuantes com degradê */}
-          <div className="grid grid-cols-2 gap-3.5 px-6">
+          <div className="grid grid-cols-2 gap-3.5 w-full relative z-10 px-4">
             {/* Card Catequizandos */}
             <div className="relative group">
               {/* Sombra degradê flutuante */}
