@@ -14,7 +14,7 @@ import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ImagePicker } from "@/components/ImagePicker";
-import { mascaraTelefone, cn } from "@/lib/utils";
+import { mascaraTelefone, cn, generateUUID } from "@/lib/utils";
 import { toast } from "sonner";
 import Spinner from "@/components/ui/spinner";
 import { type Catequizando } from "@/lib/store";
@@ -85,7 +85,7 @@ export default function PublicInscricao() {
       eucaristia: { recebido: false, data: "", paroquia: "" },
       crisma: { recebido: false, data: "", paroquia: "" },
     },
-    responsaveis: [{ id: crypto.randomUUID(), nome: "", telefone: "", vinculo: "pais" }],
+    responsaveis: [{ id: generateUUID(), nome: "", telefone: "", vinculo: "pais" }],
   });
 
   const updateField = (field: string, value: any) => setForm((prev: any) => ({ ...prev, [field]: value }));
@@ -110,7 +110,7 @@ export default function PublicInscricao() {
   const addResponsavel = () => {
     setForm((prev: any) => ({
       ...prev,
-      responsaveis: [...prev.responsaveis, { id: crypto.randomUUID(), nome: "", telefone: "", vinculo: "outros" }],
+      responsaveis: [...prev.responsaveis, { id: generateUUID(), nome: "", telefone: "", vinculo: "outros" }],
     }));
   };
 
@@ -143,7 +143,7 @@ export default function PublicInscricao() {
 
       const payload: Catequizando = {
         ...form,
-        id: existing?.id || crypto.randomUUID(),
+        id: existing?.id || generateUUID(),
         turmaId: turma.id,
         responsavel: form.responsaveis[0]?.nome || "", // Campo legado para compatibilidade
         origem: 'online',

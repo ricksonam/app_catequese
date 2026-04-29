@@ -11,6 +11,7 @@ import { mascaraTelefone, cn } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { generateUUID } from "@/lib/utils";
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -124,7 +125,7 @@ const emptyForm: CatequizandoForm = {
   necessidadeEspecial: "nenhuma", observacao: "", foto: "",
   batismo: { recebido: false, paroquia: "", data: "" }, eucaristia: { recebido: false, paroquia: "", data: "" }, crisma: { recebido: false, paroquia: "", data: "" },
   participacaoPastoral: "",
-  responsaveis: [{ id: crypto.randomUUID(), nome: "", telefone: "", vinculo: 'pais' }],
+  responsaveis: [{ id: generateUUID(), nome: "", telefone: "", vinculo: 'pais' }],
 };
 
 const statusConfig: Record<CatequizandoStatus, { label: string; color: string }> = {
@@ -147,12 +148,39 @@ export default function CatequizandosList() {
   const [showSacramentos, setShowSacramentos] = useState(false);
 
   const [showInscricaoModal, setShowInscricaoModal] = useState(false);
-  
-  const handleCopyInscricaoLink = () => {
 
+  const handleCopyInscricaoLink = async () => {
     const url = `${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Link de inscrição do catequizando copiado!");
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Inscrição de Catequizando',
+          text: `Faça a inscrição online para a turma ${turma?.nome || ''}`,
+          url: url
+        });
+        return;
+      } catch (err) {
+        console.log("Compartilhamento cancelado ou falhou", err);
+      }
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        toast.success("Link copiado para a área de transferência!");
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        toast.success("Link copiado para a área de transferência!");
+      }
+    } catch (err) {
+      toast.error("Não foi possível copiar o link.");
+    }
   };
 
 
@@ -290,7 +318,7 @@ export default function CatequizandosList() {
   const handleAdd = async () => {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
     const novo: Catequizando = {
-      id: crypto.randomUUID(), turmaId: id!, nome: form.nome, dataNascimento: form.dataNascimento,
+      id: generateUUID(), turmaId: id!, nome: form.nome, dataNascimento: form.dataNascimento,
       responsavel: form.responsaveis[0]?.nome || "", telefone: form.telefone, email: form.email, 
       endereco: form.endereco, numero: form.numero, bairro: form.bairro, complemento: form.complemento,
       necessidadeEspecial: form.necessidadeEspecial, observacao: form.observacao, status: 'ativo',
@@ -310,7 +338,7 @@ export default function CatequizandosList() {
   };
 
   const addResponsavel = (isEdit: boolean) => {
-    const newItem = { id: crypto.randomUUID(), nome: "", telefone: "", vinculo: 'pais' as const };
+    const newItem = { id: generateUUID(), nome: "", telefone: "", vinculo: 'pais' as const };
     if (isEdit) setEditForm(f => ({ ...f, responsaveis: [...f.responsaveis, newItem] }));
     else setForm(f => ({ ...f, responsaveis: [...f.responsaveis, newItem] }));
   };
@@ -343,7 +371,7 @@ export default function CatequizandosList() {
       eucaristia: (viewItem.dadosPastorais?.sacramentos?.eucaristia || viewItem.sacramentos?.eucaristia || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
       crisma: (viewItem.dadosPastorais?.sacramentos?.crisma || viewItem.sacramentos?.crisma || { recebido: false, paroquia: "", data: "" }) as SacramentoInfo,
       participacaoPastoral: viewItem.dadosPastorais?.participacaoPastoral || "",
-      responsaveis: (viewItem.responsaveis?.length ? viewItem.responsaveis : [{ id: crypto.randomUUID(), nome: viewItem.responsavel || "", telefone: viewItem.telefone || "", vinculo: 'pais' }]) as ResponsavelForm[],
+      responsaveis: (viewItem.responsaveis?.length ? viewItem.responsaveis : [{ id: generateUUID(), nome: viewItem.responsavel || "", telefone: viewItem.telefone || "", vinculo: 'pais' }]) as ResponsavelForm[],
     });
     setEditMode(true);
   };

@@ -73,3 +73,18 @@ export function mascaraTelefone(value: string) {
   value = value.replace(/(\d)(\d{4})$/, "$1-$2");
   return value.substring(0, 15);
 }
+
+/**
+ * Gera um UUID v4 de forma segura. Usa crypto.randomUUID se disponível,
+ * ou fallback matemático para navegadores antigos/contextos não seguros (iOS antigo).
+ */
+export function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
