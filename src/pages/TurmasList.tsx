@@ -16,6 +16,28 @@ export default function TurmasList() {
   const [code, setCode] = useState("");
   const [tab, setTab] = useState<"codigo" | "camera">("codigo");
   const [scanning, setScanning] = useState(false);
+  const [selectedTurmaId, setSelectedTurmaId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (turmas.length > 0 && !selectedTurmaId) {
+      const saved = localStorage.getItem("ivc_selected_turma");
+      if (saved && turmas.some(t => t.id === saved)) {
+        setSelectedTurmaId(saved);
+      } else {
+        setSelectedTurmaId(turmas[0].id);
+        localStorage.setItem("ivc_selected_turma", turmas[0].id);
+      }
+    }
+  }, [turmas, selectedTurmaId]);
+
+  const handleSelectSecondary = (id: string) => {
+    setSelectedTurmaId(id);
+    localStorage.setItem("ivc_selected_turma", id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const mainTurma = turmas.find(t => t.id === selectedTurmaId) || turmas[0];
+  const secondaryTurmas = turmas.filter(t => t.id !== mainTurma?.id);
 
   const html5QrRef = useRef<any>(null);
   const SCANNER_DIV_ID = "qr-scanner-div";
@@ -164,37 +186,40 @@ export default function TurmasList() {
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {turmas.map((turma, i) => {
-            const tEncontros = encontros.filter(e => e.turmaId === turma.id);
-            const tCatequizandos = catequizandos.filter(c => c.turmaId === turma.id);
-            const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
+        <div className="space-y-6">
+          {/* MAIN TURMA CARD */}
+          {mainTurma && (() => {
+            const tEncontros = encontros.filter(e => e.turmaId === mainTurma.id);
+            const tCatequizandos = catequizandos.filter(c => c.turmaId === mainTurma.id);
+            const etapa = ETAPAS_CATEQUESE.find(e => e.id === mainTurma.etapa);
             return (
               <div
-                key={turma.id}
-                onClick={() => navigate(`/turmas/${turma.id}`)}
+                onClick={() => navigate(`/turmas/${mainTurma.id}`)}
                 className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)] animate-float-up transition-all duration-300 hover:-translate-y-1.5 cursor-pointer group"
-                style={{ animationDelay: `${i * 70}ms` }}
               >
                 <div className="absolute inset-[3px] rounded-xl border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay" />
                 <div className="relative flex flex-col p-4 rounded-[14px] bg-card w-full h-full overflow-hidden">
                   <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
                     <BookOpen className="w-32 h-32 text-primary" />
                   </div>
-                  {turma.isShared && (
+                  {mainTurma.isShared && (
                     <div className="absolute top-3 right-3 z-30 flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">
                       <Link2 className="h-2.5 w-2.5" /> Compartilhada
                     </div>
                   )}
-                  <div className="flex flex-col items-center justify-center mb-5 relative z-30 text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-3 group-hover:scale-110 transition-transform duration-500">
-                      <BookOpen className="h-7 w-7 text-primary" />
+                  <div className="flex flex-col items-center justify-center mb-5 relative z-30 text-center mt-2">
+                    <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-4 group-hover:scale-110 transition-transform duration-500">
+                      <BookOpen className="h-8 w-8 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
-                        {turma.nome} <span className="opacity-40 font-bold ml-1">— {turma.ano}</span>
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary mb-2 shadow-sm border border-primary/10">
+                         <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                         <span className="text-[9px] font-black uppercase tracking-widest">Turma Principal</span>
+                      </div>
+                      <h3 className="text-xl font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
+                        {mainTurma.nome} <span className="opacity-40 font-bold ml-1">— {mainTurma.ano}</span>
                       </h3>
-                      <p className="text-xs text-muted-foreground font-medium">{turma.diaCatequese} • {turma.horario} • {turma.local}</p>
+                      <p className="text-sm text-muted-foreground font-medium">{mainTurma.diaCatequese} • {mainTurma.horario} • {mainTurma.local}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 flex-wrap relative z-30">
@@ -206,10 +231,52 @@ export default function TurmasList() {
                     </div>
                     {etapa && <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 shadow-sm">{etapa.label}</span>}
                   </div>
+                  <div className="mt-5 w-full bg-primary/10 hover:bg-primary/20 text-primary py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-colors flex items-center justify-center z-30 relative shadow-sm border border-primary/10">
+                     Acessar Painel da Turma
+                  </div>
                 </div>
               </div>
             );
-          })}
+          })()}
+
+          {/* SECONDARY TURMAS */}
+          {secondaryTurmas.length > 0 && (
+            <div className="space-y-3 pt-4 border-t border-border/50">
+               <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-2">
+                 Outras Turmas
+               </h3>
+               <div className="grid grid-cols-2 gap-3">
+                 {secondaryTurmas.map((turma, i) => {
+                   const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
+                   return (
+                     <div
+                       key={turma.id}
+                       onClick={() => handleSelectSecondary(turma.id)}
+                       className="relative p-3 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 active:scale-95 cursor-pointer flex flex-col justify-between animate-fade-in group"
+                       style={{ animationDelay: `${i * 50}ms` }}
+                     >
+                        <div className="absolute top-2 right-2 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform">
+                           <BookOpen className="w-12 h-12" />
+                        </div>
+                        <div className="space-y-1 relative z-10">
+                           <h4 className="text-sm font-black text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                             {turma.nome}
+                           </h4>
+                           <p className="text-[10px] text-muted-foreground font-medium truncate">
+                             {turma.diaCatequese} • {turma.horario}
+                           </p>
+                        </div>
+                        <div className="mt-4 relative z-10">
+                           <span className="inline-flex items-center justify-center px-2 py-1.5 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase tracking-widest">
+                             Tornar Principal
+                           </span>
+                        </div>
+                     </div>
+                   );
+                 })}
+               </div>
+            </div>
+          )}
         </div>
       )}
 
