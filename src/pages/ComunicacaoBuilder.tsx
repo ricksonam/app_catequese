@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useComunicacaoFormMutation } from "@/hooks/useSupabaseData";
 import { fetchComunicacaoFormById } from "@/lib/supabaseStore";
 import { toast } from "sonner";
+import { generateUUID } from "@/lib/utils";
 import type { ComunicacaoFormType, ComunicacaoFormField } from "@/lib/store";
 
 export default function ComunicacaoBuilder() {
@@ -55,7 +56,7 @@ export default function ComunicacaoBuilder() {
 
   const handleAddCampo = (tipoCampo: ComunicacaoFormField['type']) => {
     const novoCampo: ComunicacaoFormField = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       type: tipoCampo,
       label: "",
       required: false,
@@ -124,7 +125,7 @@ export default function ComunicacaoBuilder() {
     }
 
     try {
-      const finalId = id || crypto.randomUUID();
+      const finalId = id || generateUUID();
       const codigoAcesso = isEditing ? codigoAcessoOriginal : `${tipo.substring(0,3)}${Math.floor(Math.random()*90000)+10000}`.toUpperCase();
       
       await formMutation.mutateAsync({
@@ -200,8 +201,8 @@ export default function ComunicacaoBuilder() {
                 setTipo(newTipo);
                 if (newTipo === 'evento' && campos.length === 0) {
                   setCampos([
-                    { id: crypto.randomUUID(), type: 'text', label: 'Nome Completo', required: true },
-                    { id: crypto.randomUUID(), type: 'text', label: 'Telefone para Contato', required: true }
+                    { id: generateUUID(), type: 'text', label: 'Nome Completo', required: true },
+                    { id: generateUUID(), type: 'text', label: 'Telefone para Contato', required: true }
                   ]);
                 }
               }}

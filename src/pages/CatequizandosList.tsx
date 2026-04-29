@@ -11,7 +11,7 @@ import { mascaraTelefone, cn } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { generateUUID } from "@/lib/utils";
+import { generateUUID, copyToClipboardOrShare } from "@/lib/utils";
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -152,34 +152,17 @@ export default function CatequizandosList() {
   const handleCopyInscricaoLink = async () => {
     const url = `${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Inscrição de Catequizando',
-          text: `Faça a inscrição online para a turma ${turma?.nome || ''}`,
-          url: url
-        });
-        return;
-      } catch (err) {
-        console.log("Compartilhamento cancelado ou falhou", err);
-      }
-    }
+    const success = await copyToClipboardOrShare(url, {
+      title: 'Inscrição de Catequizando',
+      text: `Faça a inscrição online para a turma ${turma?.nome || ''}`
+    });
 
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
-        toast.success("Link copiado para a área de transferência!");
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = url;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        toast.success("Link copiado para a área de transferência!");
-      }
-    } catch (err) {
-      toast.error("Não foi possível copiar o link.");
+    if (success) {
+      // Se não for share nativo que avisa sozinho, o toast de copiado pode ser útil, mas o utilitário
+      // já cuida disso. Como o usuário pode ter apenas copiado, vamos avisar:
+      // Verificação simples se o navigator.share foi usado com sucesso seria não mostrar toast
+      // mas vamos mostrar só para garantir caso ele tenha copiado.
+      toast.success("Link pronto para enviar!");
     }
   };
 

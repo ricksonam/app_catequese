@@ -4,7 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useNavigate } from "react-router-dom";
 import { useComunicacaoForms, useDeleteComunicacaoForm } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
-import { formatarDataVigente } from "@/lib/utils";
+import { formatarDataVigente, copyToClipboardOrShare } from "@/lib/utils";
 import type { ComunicacaoForm } from "@/lib/store";
 
 export default function ComunicacaoHub() {
@@ -38,10 +38,15 @@ export default function ComunicacaoHub() {
     }
   };
 
-  const handleCopyLink = (codigo: string) => {
+  const handleCopyLink = async (codigo: string) => {
     const url = getLinkPublico(codigo);
-    navigator.clipboard.writeText(url);
-    toast.success("Link copiado! Cole no WhatsApp para enviar às famílias.");
+    const success = await copyToClipboardOrShare(url, {
+      title: "Conecta Famílias",
+      text: "Acesse este formulário:"
+    });
+    if (success) {
+      toast.success("Link pronto! Envie às famílias.");
+    }
   };
 
   const getTypeIcon = (tipo: string) => {

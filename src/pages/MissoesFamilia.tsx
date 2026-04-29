@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/spinner";
 import { categoriasMissao, missoesTemplates } from "@/lib/missoesTemplates";
 import { useAuth } from "@/contexts/AuthContext";
+import { copyToClipboardOrShare } from "@/lib/utils";
 
 export default function MissoesFamilia() {
   const { id: turmaId } = useParams();
@@ -145,21 +146,16 @@ export default function MissoesFamilia() {
   const handleShare = async (codigo: string) => {
     const url = `${window.location.origin}/missao/${codigo}`;
     
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Missão em Família - iCatequese",
-          text: "Vocês receberam uma nova Missão da Catequese! Clique para ver:",
-          url: url,
-        });
-        return;
-      } catch (err) {
-        console.log("Error sharing", err);
-      }
+    const success = await copyToClipboardOrShare(url, {
+      title: "Missão em Família - iCatequese",
+      text: "Vocês receberam uma nova Missão da Catequese! Clique para ver:"
+    });
+
+    if (success) {
+      toast({ title: "Link pronto!", description: "O link da missão está pronto para ser enviado." });
+    } else {
+      toast({ title: "Erro ao compartilhar", description: "Não foi possível gerar o link.", variant: "destructive" });
     }
-    
-    await navigator.clipboard.writeText(url);
-    toast({ title: "Link copiado!", description: "O link da missão foi copiado para sua área de transferência." });
   };
 
   const currentCategoryObj = categoriasMissao.find(c => c.id === selectedCategoria);

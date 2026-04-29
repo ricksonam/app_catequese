@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer, PieChart, ChevronDown, ChevronUp } from "lucide-react";
 import { fetchComunicacaoRespostas } from "@/lib/supabaseStore";
 import { toast } from "sonner";
-import { formatarDataVigente, cn } from "@/lib/utils";
+import { formatarDataVigente, cn, copyToClipboardOrShare } from "@/lib/utils";
 import type { ComunicacaoResposta, ComunicacaoForm } from "@/lib/store";
 
 export default function ComunicacaoDetail() {
@@ -85,9 +85,14 @@ export default function ComunicacaoDetail() {
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(getLinkPublico());
-    toast.success("Link copiado para a área de transferência!");
+  const handleCopyLink = async () => {
+    const success = await copyToClipboardOrShare(getLinkPublico(), {
+      title: form?.titulo || 'Pesquisa',
+      text: 'Acesse este formulário:'
+    });
+    if (success) {
+      toast.success("Link pronto!");
+    }
   };
 
   const handlePrint = () => {

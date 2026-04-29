@@ -4,7 +4,7 @@ import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info,
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { formatarDataVigente } from "@/lib/utils";
+import { formatarDataVigente, copyToClipboardOrShare } from "@/lib/utils";
 import { toast } from "sonner";
 import ReportModule from "@/components/reports/ReportModule";
 
@@ -83,17 +83,26 @@ export default function PlanoTurma() {
     setViewItem({ ...viewItem, presencas: updated, itemOriginal: { ...viewItem.itemOriginal, presencas: updated } });
   };
 
-  const shareWithParents = () => {
+  const shareWithParents = async () => {
     if (!turma?.codigoAcesso) {
       toast.error("Turma sem código de acesso.");
       return;
     }
     const url = `${window.location.origin}/plano-da-turma/${turma.codigoAcesso}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Link copiado! Envie para os pais no WhatsApp.", {
-      description: "Eles verão apenas o cronograma, sem acesso a ferramentas.",
-      duration: 5000,
+    
+    const success = await copyToClipboardOrShare(url, {
+      title: 'Plano da Turma',
+      text: 'Confira o cronograma da catequese:'
     });
+
+    if (success) {
+      toast.success("Link pronto para enviar aos pais!", {
+        description: "Eles verão apenas o cronograma, sem acesso a ferramentas.",
+        duration: 5000,
+      });
+    } else {
+      toast.error("Não foi possível gerar o link de compartilhamento.");
+    }
   };
 
   if (tLoading || eLoading || aLoading || cLoading) {

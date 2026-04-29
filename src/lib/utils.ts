@@ -88,3 +88,50 @@ export function generateUUID(): string {
     return v.toString(16);
   });
 }
+
+/**
+ * Utilitário padrão para compartilhar um link usando a Web Share API se disponível,
+ * ou fallback robusto para a área de transferência com feedback.
+ */
+export async function copyToClipboardOrShare(url: string, shareData?: { title: string; text: string; }): Promise<boolean> {
+  // 1. Tentar Web Share API nativa (ótimo para celulares)
+  if (navigator.share && shareData) {
+    try {
+      await navigator.share({
+        title: shareData.title,
+        text: shareData.text,
+        url: url
+      });
+      return true; // Compartilhado com sucesso
+    } catch (err: any) {
+      // Ignorar erro se o usuário apenas fechou a janela de share (AbortError)
+      if (err.name !== 'AbortError') {
+        console.log("Erro no Web Share", err);
+      } else {
+        return false; // Usuário cancelou
+      }
+    }
+  }
+
+  // 2. Fallback para Clipboard API
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(url);
+      return true; // Copiado
+    } else {
+      // 3. Fallback do Fallback para navegadores muito antigos ou sem contexto seguro
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";  // Avoid scrolling to bottom
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+      return successful;
+    }
+  } catch (err) {
+    console.error("Erro ao copiar", err);
+    return false;
+  }
+}
