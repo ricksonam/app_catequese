@@ -814,7 +814,8 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
-        <div className="animate-float-up relative mt-20 mb-2" style={{ animationDelay: '200ms' }}>
+        <div className="pt-12 mb-2">
+          <div className="animate-float-up relative" style={{ animationDelay: '200ms' }}>
 
           
           {/* Card Nome da Agenda (Clicável) */}
@@ -925,6 +926,7 @@ export default function Dashboard() {
             {/* Faixa dourada inferior */}
             <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, transparent, #f59e0b44, #f5d06088, #f59e0b44, transparent)' }} />
           </div>
+        </div>
         </div>
       )}
 
