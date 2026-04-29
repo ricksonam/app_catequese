@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+﻿import { useMemo, useState, useEffect } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
@@ -796,142 +796,102 @@ export default function Dashboard() {
 
 
 
-      {/* ── CARD AGENDA LITÚRGICA: PRÓXIMO ENCONTRO + PRÓXIMA ATIVIDADE ── */}
+      {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
         <div className="animate-float-up mt-3 mb-2" style={{ animationDelay: '200ms' }}>
-          <div className="relative" style={{ filter: 'drop-shadow(0 8px 28px rgba(120,80,20,0.16))' }}>
+          <div className="relative rounded-3xl overflow-hidden"
+            style={{
+              background: 'linear-gradient(145deg, #ffffff 0%, #f8f6ff 100%)',
+              boxShadow: '0 2px 20px -4px rgba(109,40,217,0.12), 0 0 0 1px rgba(109,40,217,0.08)',
+            }}>
 
-            {/* Espirais da agenda — topo */}
-            <div className="absolute -top-2.5 left-0 right-0 flex justify-around px-8 z-20 pointer-events-none">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="flex flex-col items-center">
-                  <div className="w-4 h-4 rounded-full border-[2.5px] border-amber-800/50 bg-gradient-to-b from-amber-100 to-amber-200"
-                    style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12)' }} />
-                  <div className="w-0.5 h-2.5 bg-amber-800/25 rounded-b" />
+            {/* ── HEADER LITÚRGICO ── */}
+            <div className="relative px-4 pt-4 pb-3 overflow-hidden"
+              style={{ background: 'linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%)' }}>
+              {/* Cruz decorativa watermark */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
+                <svg width="44" height="56" viewBox="0 0 44 56" fill="none">
+                  <rect x="17" y="0" width="10" height="56" rx="5" fill="white"/>
+                  <rect x="0" y="18" width="44" height="10" rx="5" fill="white"/>
+                </svg>
+              </div>
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-2.5">
+                  {/* Ícone */}
+                  <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center backdrop-blur-sm">
+                    <CalendarDays className="w-4 h-4 text-white" strokeWidth={2.5} />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white leading-none">Agenda</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-violet-200/80 leading-none mt-0.5">da Turma</p>
+                  </div>
                 </div>
-              ))}
+                {/* Linha decorativa dourada */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-1 h-1 rounded-full bg-amber-300/70" />
+                  <div className="w-6 h-px bg-amber-300/40" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-300/80" />
+                </div>
+              </div>
             </div>
 
-            {/* Corpo da agenda — fundo pergaminho */}
-            <div className="relative rounded-2xl overflow-hidden"
-              style={{
-                background: 'linear-gradient(160deg, #fdf8ed 0%, #fef9f0 55%, #fdf5e0 100%)',
-                border: '1.5px solid rgba(180,130,50,0.28)',
-              }}>
+            {/* ── TIMELINE DE EVENTOS ── */}
+            <div className="px-4 pt-3 pb-4">
 
-              {/* ── SPINE LATERAL (lombada da agenda) ── */}
-              <div className="absolute left-0 top-0 bottom-0 w-8 z-10 flex flex-col items-center justify-between py-5"
-                style={{ background: 'linear-gradient(180deg, #6b3300 0%, #9a5000 45%, #6b3300 100%)' }}>
-                {/* Ornamento topo */}
-                <div className="w-3 h-3 rounded-full border border-amber-300/50 bg-amber-200/20" />
-                {/* Cruz dourada */}
-                <div className="flex-1 flex items-center justify-center my-2">
-                  <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
-                    <rect x="5.5" y="0" width="3" height="20" rx="1.5" fill="#f5d060" opacity="0.95"/>
-                    <rect x="0" y="7" width="14" height="3" rx="1.5" fill="#f5d060" opacity="0.95"/>
-                  </svg>
-                </div>
-                {/* Ornamento baixo */}
-                <div className="w-3 h-3 rounded-full border border-amber-300/50 bg-amber-200/20" />
-              </div>
+              {/* Linha vertical da timeline */}
+              <div className="relative">
+                {/* Fio vertical */}
+                <div className="absolute left-[19px] top-2 bottom-2 w-px"
+                  style={{ background: 'linear-gradient(180deg, #7c3aed33 0%, #7c3aed55 40%, #3b82f633 100%)' }} />
 
-              {/* ── CONTEÚDO PRINCIPAL ── */}
-              <div className="ml-8 pt-6 pb-4 px-3.5">
-
-                {/* Cabeçalho */}
-                <div className="flex items-center justify-between mb-4 pb-3"
-                  style={{ borderBottom: '1.5px solid rgba(160,110,30,0.15)' }}>
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md shrink-0"
-                      style={{ background: 'linear-gradient(135deg, #7c3300, #b45309)' }}>
-                      <CalendarDays className="w-4 h-4 text-amber-100" strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-black uppercase tracking-[0.18em] text-amber-950 leading-none">Agenda</p>
-                      <p className="text-[9px] font-bold uppercase tracking-widest leading-none mt-0.5"
-                        style={{ color: 'rgba(120,80,20,0.55)' }}>da Turma</p>
-                    </div>
-                  </div>
-                  {proximoEncontro && proximasAtividades.length > 0 && (
-                    <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
-                      style={{ color: '#7c3300', background: 'rgba(245,208,96,0.25)', border: '1px solid rgba(180,130,50,0.3)' }}>
-                      {proximasAtividades.length + 1} eventos
-                    </span>
-                  )}
-                </div>
-
-                {/* Linhas de pauta de fundo */}
-                <div className="absolute left-8 right-0 pointer-events-none overflow-hidden" style={{ top: '90px', bottom: '48px' }}>
-                  {[...Array(12)].map((_, i) => (
-                    <div key={i} className="h-px mx-3" style={{ marginBottom: '17px', background: 'rgba(160,110,30,0.07)' }} />
-                  ))}
-                </div>
-
-                {/* ── ENTRADA: PRÓXIMO ENCONTRO ── */}
+                {/* ── EVENTO: PRÓXIMO ENCONTRO ── */}
                 {proximoEncontro && (() => {
                   const dataE = parseDataLocal(proximoEncontro.data);
                   return (
                     <div
                       onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                      className="group relative cursor-pointer flex items-start gap-3 mb-4 active:opacity-70 transition-opacity"
+                      className="group relative flex items-start gap-3 mb-3 cursor-pointer active:opacity-75 transition-all"
                     >
-                      {/* Marcador de cor na margem */}
-                      <div className="absolute -left-3.5 top-1 bottom-1 w-1.5 rounded-full"
-                        style={{ background: 'linear-gradient(180deg, #10b981, #059669)', boxShadow: '0 0 8px rgba(16,185,129,0.5)' }} />
-
-                      {/* Bloco de data estilo agenda */}
-                      <div className="shrink-0 flex flex-col items-center justify-center w-12 h-14 rounded-xl"
-                        style={{
-                          background: 'linear-gradient(160deg, #ecfdf5, #d1fae5)',
-                          border: '1.5px solid rgba(16,185,129,0.3)',
-                          boxShadow: '0 3px 10px rgba(16,185,129,0.18)'
-                        }}>
-                        <span className="text-xl font-black text-emerald-800 leading-none tabular-nums">
-                          {String(dataE.getDate()).padStart(2, '0')}
-                        </span>
-                        <span className="text-[8px] font-black uppercase text-emerald-600 leading-none mt-0.5 tracking-wider">
-                          {MESES_ABREV[dataE.getMonth()]}
-                        </span>
-                        <div className="w-6 h-px bg-emerald-200 my-1" />
-                        <span className="text-[7px] font-black uppercase text-emerald-500 tracking-wide">
-                          {DIAS_SEMANA[dataE.getDay()].slice(0,3)}
-                        </span>
-                      </div>
-
-                      {/* Texto da entrada */}
-                      <div className="flex-1 min-w-0 pt-1">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Próximo Encontro</span>
-                          {diaLabel && (
-                            <span className={cn(
-                              "text-[7px] font-black px-1.5 py-0.5 rounded-full text-white",
-                              isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
-                            )}>{diaLabel}</span>
-                          )}
+                      {/* Nó da timeline */}
+                      <div className="relative shrink-0 z-10">
+                        <div className="w-10 h-10 rounded-2xl flex flex-col items-center justify-center border-2 border-emerald-400 bg-white shadow-sm shadow-emerald-500/20">
+                          <span className="text-[15px] font-black text-emerald-700 leading-none tabular-nums">
+                            {String(dataE.getDate()).padStart(2, '0')}
+                          </span>
+                          <span className="text-[7px] font-black uppercase text-emerald-500 leading-none tracking-wide">
+                            {MESES_ABREV[dataE.getMonth()]}
+                          </span>
                         </div>
-                        <p className="text-[13px] font-black uppercase leading-tight text-amber-950 truncate">
-                          {proximoEncontro.tema}
-                        </p>
                       </div>
 
-                      <ChevronRight className="w-4 h-4 shrink-0 mt-3 text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
+                      {/* Conteúdo */}
+                      <div className="flex-1 min-w-0 rounded-2xl px-3 py-2.5 group-hover:bg-emerald-50/80 transition-colors"
+                        style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.12)' }}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                              <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Encontro</span>
+                              <span className="text-[8px] font-black text-emerald-500/70">·</span>
+                              <span className="text-[8px] font-bold text-emerald-600/70 uppercase">{DIAS_SEMANA[dataE.getDay()]}</span>
+                              {diaLabel && (
+                                <span className={cn(
+                                  "text-[7px] font-black px-1.5 py-0.5 rounded-full text-white leading-none",
+                                  isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
+                                )}>{diaLabel}</span>
+                              )}
+                            </div>
+                            <p className="text-[13px] font-black text-gray-800 truncate uppercase leading-tight">
+                              {proximoEncontro.tema}
+                            </p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </div>
                     </div>
                   );
                 })()}
 
-                {/* Divisor pontilhado litúrgico */}
-                {proximoEncontro && proximasAtividades.length > 0 && (
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex-1 h-px"
-                      style={{ background: 'repeating-linear-gradient(to right, rgba(160,110,30,0.25) 0, rgba(160,110,30,0.25) 4px, transparent 4px, transparent 9px)' }} />
-                    <span className="text-[8px] font-black uppercase tracking-[0.22em]"
-                      style={{ color: 'rgba(160,110,30,0.5)' }}>✦ e também ✦</span>
-                    <div className="flex-1 h-px"
-                      style={{ background: 'repeating-linear-gradient(to right, rgba(160,110,30,0.25) 0, rgba(160,110,30,0.25) 4px, transparent 4px, transparent 9px)' }} />
-                  </div>
-                )}
-
-                {/* ── ENTRADAS: ATIVIDADES ── */}
+                {/* ── EVENTOS: ATIVIDADES ── */}
                 {proximasAtividades.map((item) => {
                   const isMissao = item.itemType === 'missao';
                   const dataObj = parseDataLocal(item.data);
@@ -942,61 +902,52 @@ export default function Dashboard() {
                         if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
                         else navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
                       }}
-                      className="group relative cursor-pointer flex items-start gap-3 mb-3 last:mb-0 active:opacity-70 transition-opacity"
+                      className="group relative flex items-start gap-3 mb-3 last:mb-0 cursor-pointer active:opacity-75 transition-all"
                     >
-                      {/* Marcador de cor na margem */}
-                      <div className="absolute -left-3.5 top-1 bottom-1 w-1.5 rounded-full"
-                        style={{ background: 'linear-gradient(180deg, #3b82f6, #2563eb)', boxShadow: '0 0 8px rgba(59,130,246,0.45)' }} />
-
-                      {/* Bloco de data */}
-                      <div className="shrink-0 flex flex-col items-center justify-center w-12 h-14 rounded-xl"
-                        style={{
-                          background: 'linear-gradient(160deg, #eff6ff, #dbeafe)',
-                          border: '1.5px solid rgba(59,130,246,0.3)',
-                          boxShadow: '0 3px 10px rgba(59,130,246,0.18)'
-                        }}>
-                        <span className="text-xl font-black text-blue-800 leading-none tabular-nums">
-                          {String(dataObj.getDate()).padStart(2, '0')}
-                        </span>
-                        <span className="text-[8px] font-black uppercase text-blue-600 leading-none mt-0.5 tracking-wider">
-                          {MESES_ABREV[dataObj.getMonth()]}
-                        </span>
-                        <div className="w-6 h-px bg-blue-200 my-1" />
-                        <span className="text-[7px] font-black uppercase text-blue-500 tracking-wide">
-                          {DIAS_SEMANA[dataObj.getDay()].slice(0,3)}
-                        </span>
-                      </div>
-
-                      {/* Texto da entrada */}
-                      <div className="flex-1 min-w-0 pt-1">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <span className="text-[8px] font-black uppercase tracking-widest text-blue-600">
-                            {isMissao ? 'Missão em Família' : (item as any).tipo || 'Atividade'}
+                      {/* Nó da timeline */}
+                      <div className="relative shrink-0 z-10">
+                        <div className="w-10 h-10 rounded-2xl flex flex-col items-center justify-center border-2 border-blue-400 bg-white shadow-sm shadow-blue-500/20">
+                          <span className="text-[15px] font-black text-blue-700 leading-none tabular-nums">
+                            {String(dataObj.getDate()).padStart(2, '0')}
+                          </span>
+                          <span className="text-[7px] font-black uppercase text-blue-500 leading-none tracking-wide">
+                            {MESES_ABREV[dataObj.getMonth()]}
                           </span>
                         </div>
-                        <p className="text-[13px] font-black uppercase leading-tight text-amber-950 truncate">
-                          {isMissao ? (item as any).titulo : (item as any).nome}
-                        </p>
                       </div>
 
-                      <ChevronRight className="w-4 h-4 shrink-0 mt-3 text-blue-400 group-hover:translate-x-0.5 transition-transform" />
+                      {/* Conteúdo */}
+                      <div className="flex-1 min-w-0 rounded-2xl px-3 py-2.5 group-hover:bg-blue-50/80 transition-colors"
+                        style={{ background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.12)' }}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                              <span className="text-[8px] font-black uppercase tracking-widest text-blue-600">
+                                {isMissao ? 'Missão em Família' : (item as any).tipo || 'Atividade'}
+                              </span>
+                              <span className="text-[8px] font-black text-blue-500/70">·</span>
+                              <span className="text-[8px] font-bold text-blue-600/70 uppercase">{DIAS_SEMANA[dataObj.getDay()]}</span>
+                            </div>
+                            <p className="text-[13px] font-black text-gray-800 truncate uppercase leading-tight">
+                              {isMissao ? (item as any).titulo : (item as any).nome}
+                            </p>
+                          </div>
+                          <ChevronRight className="w-3.5 h-3.5 text-blue-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
-
-              {/* ── RODAPÉ LITÚRGICO ── */}
-              <div className="ml-8 px-3.5 pb-3 pt-2.5 flex items-center gap-2"
-                style={{ borderTop: '1px solid rgba(160,110,30,0.12)' }}>
-                <div className="flex-1 h-px" style={{ background: 'rgba(160,110,30,0.15)' }} />
-                <span className="text-[8px] font-black uppercase tracking-[0.28em]"
-                  style={{ color: 'rgba(100,60,10,0.38)' }}>✝ iCatequese</span>
-                <div className="flex-1 h-px" style={{ background: 'rgba(160,110,30,0.15)' }} />
-              </div>
             </div>
+
+            {/* Faixa dourada inferior */}
+            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, transparent, #f59e0b44, #f5d06088, #f59e0b44, transparent)' }} />
           </div>
         </div>
       )}
+
+
 
       {/* Turma picker dialog */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
