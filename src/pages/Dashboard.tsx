@@ -526,20 +526,19 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="animate-fade-in flex items-start justify-between mb-0.5">
+      <div className="animate-fade-in flex items-start justify-between mb-2 mt-2 px-1">
         <div>
-          <h1 className="text-xl font-black text-foreground uppercase tracking-tight">Olá, Catequista! 
+          <h1 className="text-base font-black text-foreground uppercase tracking-tight mt-1.5">Olá, Catequista! 
             <span className="inline-block animate-waving-hand ml-2">👋</span>
           </h1>
-          <p className="text-xs font-black uppercase text-muted-foreground/60 tracking-widest mt-1">Bem-vindo ao iCatequese</p>
         </div>
         
         {/* Ícone de mensagens */}
         <button 
           onClick={handleMessagesClick}
-          className="relative w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 transition-all border border-blue-700 shadow-md shadow-blue-500/20"
+          className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50/80 hover:bg-blue-100 transition-all border border-blue-100 shadow-sm"
         >
-          <Mail className={cn("h-5 w-5 text-white", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
+          <Mail className={cn("h-4 w-4 text-blue-600", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
           {totalMensagens > lastSeenMensagens && (
             <>
               <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-background animate-pulse" />
@@ -752,12 +751,12 @@ export default function Dashboard() {
           {/* Linhas de conexão (Árvore) */}
           <div className="relative w-full h-8 flex justify-center z-0">
             {/* Linha vertical central descendo do card da turma */}
-            <div className="absolute top-0 w-[2px] h-1/2 bg-blue-100" />
+            <div className="absolute top-0 w-[2px] h-1/2 bg-slate-800" />
             {/* Linha horizontal dividindo para as duas colunas */}
-            <div className="absolute top-1/2 w-[calc(50%+10px)] h-[2px] bg-blue-100" />
+            <div className="absolute top-1/2 w-[calc(50%+10px)] h-[2px] bg-slate-800" />
             {/* Linhas verticais descendo para os cards */}
-            <div className="absolute top-1/2 left-[calc(25%-5px)] w-[2px] h-1/2 bg-blue-100" />
-            <div className="absolute top-1/2 right-[calc(25%-5px)] w-[2px] h-1/2 bg-blue-100" />
+            <div className="absolute top-1/2 left-[calc(25%-5px)] w-[2px] h-1/2 bg-slate-800" />
+            <div className="absolute top-1/2 right-[calc(25%-5px)] w-[2px] h-1/2 bg-slate-800" />
           </div>
 
           {/* Grid de Módulos — cards flutuantes com degradê */}
@@ -815,17 +814,18 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
-        <div className="animate-float-up mt-3 mb-2" style={{ animationDelay: '200ms' }}>
-          <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5">
+        <div className="animate-float-up relative mt-7 mb-2" style={{ animationDelay: '200ms' }}>
+          
+          {/* Linha que conecta do módulo esquerdo até a agenda */}
+          <div className="absolute -top-7 left-[calc(25%-5px)] w-[2px] h-[35px] bg-slate-800 z-0" />
+          
+          {/* Card Nome da Agenda */}
+          <div className="absolute top-0 left-[calc(25%-5px)] -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-sm rounded-xl px-3 py-1.5 flex items-center gap-1.5">
+            <CalendarDays className="w-3.5 h-3.5 text-slate-800" strokeWidth={2.5} />
+            <h3 className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-800 whitespace-nowrap">Agenda da Turma</h3>
+          </div>
 
-            {/* ── HEADER DA AGENDA ── */}
-            <div className="pt-6 pb-2 flex flex-col items-center justify-center relative z-10">
-              <div className="flex items-center justify-center gap-2 mb-1.5">
-                <CalendarDays className="w-4 h-4 text-primary" strokeWidth={2.5} />
-                <h3 className="text-[12px] font-black uppercase tracking-[0.15em] text-foreground">Agenda da Turma</h3>
-              </div>
-              <div className="w-8 h-0.5 bg-primary/20 rounded-full"></div>
-            </div>
+          <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-black/5 pt-4">
 
             {/* ── TIMELINE DE EVENTOS ── */}
             <div className="relative pb-4 px-4">
