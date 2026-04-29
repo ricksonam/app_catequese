@@ -836,105 +836,84 @@ export default function Dashboard() {
             </div>
 
             {/* ── TIMELINE DE EVENTOS ── */}
-            <div className="px-4 pt-3 pb-4">
+            <div className="relative pb-4 px-4">
+              {/* Fio vertical */}
+              <div className="absolute left-[36px] top-4 bottom-4 w-[2px]"
+                style={{ background: 'linear-gradient(180deg, #7c3aed33 0%, #7c3aed55 40%, #3b82f633 100%)' }} />
 
-              {/* Linha vertical da timeline */}
-              <div className="relative">
-                {/* Fio vertical */}
-                <div className="absolute left-[19px] top-2 bottom-2 w-px"
-                  style={{ background: 'linear-gradient(180deg, #7c3aed33 0%, #7c3aed55 40%, #3b82f633 100%)' }} />
-
+              <div className="space-y-4 ml-[16px] pt-4">
                 {/* ── EVENTO: PRÓXIMO ENCONTRO ── */}
                 {proximoEncontro && (() => {
                   const dataE = parseDataLocal(proximoEncontro.data);
                   return (
-                    <div
-                      onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                      className="group relative flex items-start gap-3 mb-3 cursor-pointer active:opacity-75 transition-all"
-                    >
-                      {/* Nó da timeline */}
-                      <div className="relative shrink-0 z-10">
-                        <div className="w-10 h-10 rounded-2xl flex flex-col items-center justify-center border-2 border-emerald-400 bg-white shadow-sm shadow-emerald-500/20">
-                          <span className="text-[15px] font-black text-emerald-700 leading-none tabular-nums">
-                            {String(dataE.getDate()).padStart(2, '0')}
-                          </span>
-                          <span className="text-[7px] font-black uppercase text-emerald-500 leading-none tracking-wide">
-                            {MESES_ABREV[dataE.getMonth()]}
-                          </span>
+                    <div key={`encontro-${proximoEncontro.id}`} className="relative pl-8 animate-float-up">
+                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background z-10" />
+                      <button 
+                        onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
+                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-primary/30 hover:-translate-y-1 active:scale-95"
+                      >
+                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
+                          <CalendarDays className="h-5 w-5" />
                         </div>
-                      </div>
-
-                      {/* Conteúdo */}
-                      <div className="flex-1 min-w-0 rounded-2xl px-3 py-2.5 group-hover:bg-emerald-50/80 transition-colors"
-                        style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.12)' }}>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                              <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Encontro</span>
-                              <span className="text-[8px] font-black text-emerald-500/70">·</span>
-                              <span className="text-[8px] font-bold text-emerald-600/70 uppercase">{DIAS_SEMANA[dataE.getDay()]}</span>
-                              {diaLabel && (
-                                <span className={cn(
-                                  "text-[7px] font-black px-1.5 py-0.5 rounded-full text-white leading-none",
-                                  isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
-                                )}>{diaLabel}</span>
-                              )}
-                            </div>
-                            <p className="text-[13px] font-black text-gray-800 truncate uppercase leading-tight">
-                              {proximoEncontro.tema}
-                            </p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">
+                            {proximoEncontro.tema}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">Encontro</span>
+                            {diaLabel && (
+                              <span className={cn(
+                                "text-[7px] font-black px-1.5 py-0.5 rounded text-white leading-none uppercase tracking-widest",
+                                isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
+                              )}>{diaLabel}</span>
+                            )}
                           </div>
-                          <ChevronRight className="w-3.5 h-3.5 text-emerald-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                         </div>
-                      </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[10px] font-black text-primary uppercase">Dia</p>
+                          <p className="text-lg font-black text-foreground leading-none">
+                            {String(dataE.getDate()).padStart(2, '0')} <span className="text-[10px] font-bold text-muted-foreground uppercase">{MESES_ABREV[dataE.getMonth()].replace('.', '')}</span>
+                          </p>
+                        </div>
+                      </button>
                     </div>
                   );
                 })()}
 
                 {/* ── EVENTOS: ATIVIDADES ── */}
-                {proximasAtividades.map((item) => {
+                {proximasAtividades.map((item, index) => {
                   const isMissao = item.itemType === 'missao';
                   const dataObj = parseDataLocal(item.data);
                   return (
-                    <div
-                      key={item.id}
-                      onClick={() => {
-                        if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
-                        else navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
-                      }}
-                      className="group relative flex items-start gap-3 mb-3 last:mb-0 cursor-pointer active:opacity-75 transition-all"
-                    >
-                      {/* Nó da timeline */}
-                      <div className="relative shrink-0 z-10">
-                        <div className="w-10 h-10 rounded-2xl flex flex-col items-center justify-center border-2 border-blue-400 bg-white shadow-sm shadow-blue-500/20">
-                          <span className="text-[15px] font-black text-blue-700 leading-none tabular-nums">
-                            {String(dataObj.getDate()).padStart(2, '0')}
-                          </span>
-                          <span className="text-[7px] font-black uppercase text-blue-500 leading-none tracking-wide">
-                            {MESES_ABREV[dataObj.getMonth()]}
-                          </span>
+                    <div key={`atividade-${item.id}`} className="relative pl-8 animate-float-up" style={{ animationDelay: `${(index + 1) * 50}ms` }}>
+                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-background z-10" />
+                      <button 
+                        onClick={() => {
+                          if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
+                          else navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
+                        }}
+                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-blue-500/30 hover:-translate-y-1 active:scale-95"
+                      >
+                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
+                          <ListChecks className="h-5 w-5" />
                         </div>
-                      </div>
-
-                      {/* Conteúdo */}
-                      <div className="flex-1 min-w-0 rounded-2xl px-3 py-2.5 group-hover:bg-blue-50/80 transition-colors"
-                        style={{ background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.12)' }}>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                              <span className="text-[8px] font-black uppercase tracking-widest text-blue-600">
-                                {isMissao ? 'Missão em Família' : (item as any).tipo || 'Atividade'}
-                              </span>
-                              <span className="text-[8px] font-black text-blue-500/70">·</span>
-                              <span className="text-[8px] font-bold text-blue-600/70 uppercase">{DIAS_SEMANA[dataObj.getDay()]}</span>
-                            </div>
-                            <p className="text-[13px] font-black text-gray-800 truncate uppercase leading-tight">
-                              {isMissao ? (item as any).titulo : (item as any).nome}
-                            </p>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-blue-600 transition-colors">
+                            {isMissao ? (item as any).titulo : (item as any).nome}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">
+                              {isMissao ? 'Missão em Família' : (item as any).tipo || 'Atividade'}
+                            </span>
                           </div>
-                          <ChevronRight className="w-3.5 h-3.5 text-blue-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                         </div>
-                      </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[10px] font-black text-blue-600 uppercase">Dia</p>
+                          <p className="text-lg font-black text-foreground leading-none">
+                            {String(dataObj.getDate()).padStart(2, '0')} <span className="text-[10px] font-bold text-muted-foreground uppercase">{MESES_ABREV[dataObj.getMonth()].replace('.', '')}</span>
+                          </p>
+                        </div>
+                      </button>
                     </div>
                   );
                 })}
