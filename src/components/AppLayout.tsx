@@ -176,8 +176,8 @@ export default function AppLayout() {
                   onClick={() => isMais ? setMaisOpen(true) : navigate(tab.path)}
                   className={`group relative flex flex-col items-center justify-end h-full px-3 pb-0.5 transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? "text-zinc-900 dark:text-white"
-                      : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400"
+                      ? "text-primary dark:text-primary-foreground"
+                      : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-400"
                   }`}
                 >
                   <Icon className={`h-6 w-6 mb-1 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} strokeWidth={isActive ? 2.5 : 2} />
@@ -185,7 +185,7 @@ export default function AppLayout() {
                     {tab.label}
                   </span>
                   {isActive && (
-                    <div className="absolute -bottom-2 w-1 h-1 rounded-full bg-zinc-900 dark:bg-white" />
+                    <div className="absolute -bottom-2 w-1 h-1 rounded-full bg-primary" />
                   )}
                 </button>
               );
