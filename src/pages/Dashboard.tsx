@@ -814,10 +814,8 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
-        <div className="animate-float-up relative mt-12 mb-2" style={{ animationDelay: '200ms' }}>
-          
-          {/* Linha que conecta do centro até a agenda */}
-          <div className="absolute -top-12 left-1/2 w-[2px] h-[60px] bg-blue-600 z-0" />
+        <div className="animate-float-up relative mt-20 mb-2" style={{ animationDelay: '200ms' }}>
+
           
           {/* Card Nome da Agenda (Clicável) */}
           <button 
