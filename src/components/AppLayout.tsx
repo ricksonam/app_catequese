@@ -23,12 +23,11 @@ import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 
 const baseTabs = [
-  { path: "/", icon: LayoutDashboard, label: "Início", color: "text-primary" },
-  { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-liturgical" },
-  { path: "/jogos", icon: Dices, label: "Jogos", color: "text-gold" },
-  { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-success" },
-  { path: "__familia__", icon: Heart, label: "Família", color: "text-rose-500" },
-  { path: "__mais__", icon: Menu, label: "Mais...", color: "text-primary" },
+  { path: "/", icon: LayoutDashboard, label: "Início" },
+  { path: "/jogos", icon: Dices, label: "Jogos" },
+  { path: "/turmas", icon: BookOpen, label: "Turmas" },
+  { path: "/modulos/mural", icon: Image, label: "Mural" },
+  { path: "__mais__", icon: Menu, label: "Menu" },
 ];
 
 export default function AppLayout() {
@@ -46,15 +45,7 @@ export default function AppLayout() {
 
   const currentPath = location.pathname;
 
-  // Resolve the família path dynamically based on first turma
-  const familiaPath = useMemo(() => {
-    if (turmas.length > 0) return `/turmas/${turmas[0].id}/familia`;
-    return "/turmas";
-  }, [turmas]);
-
-  const tabs = useMemo(() => baseTabs.map(tab => 
-    tab.path === "__familia__" ? { ...tab, path: familiaPath } : tab
-  ), [familiaPath]);
+  const tabs = baseTabs;
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
@@ -152,29 +143,49 @@ export default function AppLayout() {
       {/* Tab Bar */}
       {!isPresentationMode && currentPath !== "/modulos/mural" && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto w-full sm:max-w-md flex items-center justify-around h-[76px] px-2 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border-2 border-purple-300">
+          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
             {tabs.map((tab) => {
               const isMais = tab.path === "__mais__";
+              const isTurmas = tab.path === "/turmas";
               const isActive =
                 tab.path === "/"
                   ? currentPath === "/"
-                  : !isMais && currentPath.startsWith(tab.path) && tab.path !== "/";
+                  : !isMais && currentPath.startsWith(tab.path);
               const Icon = tab.icon;
+
+              if (isTurmas) {
+                return (
+                  <div key={tab.path} className="relative flex flex-col items-center justify-end h-full px-2">
+                    <button
+                      onClick={() => navigate(tab.path)}
+                      className="absolute -top-6 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 border-4 border-white dark:border-zinc-900 transition-transform active:scale-90 hover:scale-105"
+                    >
+                      <Icon className="w-7 h-7" strokeWidth={2.5} />
+                    </button>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-700 dark:text-purple-400 mt-auto">
+                      Turmas
+                    </span>
+                  </div>
+                );
+              }
 
               return (
                 <button
                   key={tab.path}
                   onClick={() => isMais ? setMaisOpen(true) : navigate(tab.path)}
-                  className={`group relative flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 ${
+                  className={`group relative flex flex-col items-center justify-end h-full px-3 pb-0.5 transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? `${tab.color} bg-yellow-400/20 dark:bg-yellow-500/20 scale-110 shadow-sm shadow-yellow-400/40`
-                      : "text-gray-600 dark:text-gray-400 hover:bg-amber-100/50"
+                      ? "text-zinc-900 dark:text-white"
+                      : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-400"
                   }`}
                 >
-                  <Icon className={`h-6 w-6 mb-0.5 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
-                  <span className={`text-[8px] font-black uppercase tracking-[0.05em] text-center transition-all text-black dark:text-white ${isActive ? "opacity-100" : "opacity-70"}`}>
+                  <Icon className={`h-6 w-6 mb-1 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} strokeWidth={isActive ? 2.5 : 2} />
+                  <span className={`text-[8px] font-black uppercase tracking-[0.05em] text-center transition-all ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                     {tab.label}
                   </span>
+                  {isActive && (
+                    <div className="absolute -bottom-2 w-1 h-1 rounded-full bg-zinc-900 dark:bg-white" />
+                  )}
                 </button>
               );
             })}

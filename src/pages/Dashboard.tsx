@@ -1,4 +1,4 @@
-﻿import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
@@ -763,7 +763,7 @@ export default function Dashboard() {
                 className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300"
                 style={{ boxShadow: '0 12px 30px -6px rgba(99,102,241,0.18), 0 4px 12px -4px rgba(59,130,246,0.12)' }}
               >
-                <img src="/card_catequizandos.png" alt="Catequizandos" className="w-full h-full object-cover transition-all duration-300 group-hover:saturate-100" style={{ filter: 'saturate(0.45) brightness(1.08)' }} />
+                <img src="/card_catequizandos.jpg" alt="Catequizandos" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 group-hover:from-black/5 transition-all duration-300" />
               </button>
             </div>
@@ -786,7 +786,7 @@ export default function Dashboard() {
                 className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300"
                 style={{ boxShadow: '0 12px 30px -6px rgba(244,63,94,0.18), 0 4px 12px -4px rgba(251,113,133,0.12)' }}
               >
-                <img src="/card_encontros.png" alt="Encontros" className="w-full h-full object-cover transition-all duration-300 group-hover:saturate-100" style={{ filter: 'saturate(0.45) brightness(1.08)' }} />
+                <img src="/card_encontros.jpg" alt="Encontros" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 group-hover:from-black/5 transition-all duration-300" />
               </button>
             </div>
