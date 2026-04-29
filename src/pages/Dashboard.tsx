@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, Star, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -796,135 +796,203 @@ export default function Dashboard() {
 
 
 
-      {/* ── CARD INTELIGENTE: PRÓXIMO ENCONTRO + PRÓXIMA ATIVIDADE ── */}
+      {/* ── CARD AGENDA LITÚRGICA: PRÓXIMO ENCONTRO + PRÓXIMA ATIVIDADE ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
         <div className="animate-float-up mt-3 mb-2" style={{ animationDelay: '200ms' }}>
-          {/* Glow de fundo */}
-          <div className="absolute left-1/2 -translate-x-1/2 w-[85%] h-8 blur-2xl rounded-full bg-gradient-to-r from-emerald-400/30 via-blue-400/25 to-violet-400/20 -mt-2 pointer-events-none" />
-          
-          <div
-            className="relative rounded-[28px] overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #f8faff 50%, #f0fdf8 100%)',
-              boxShadow: '0 4px 30px -4px rgba(16,185,129,0.15), 0 2px 10px -2px rgba(59,130,246,0.10), 0 0 0 1px rgba(0,0,0,0.06)'
-            }}
-          >
-            {/* Faixa decorativa topo */}
-            <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-violet-500" />
+          <div className="relative" style={{ filter: 'drop-shadow(0 8px 28px rgba(120,80,20,0.16))' }}>
 
-            <div className="p-4">
-              {/* Header do card */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center shadow-sm">
-                    <Star className="w-3 h-3 text-white" strokeWidth={2.5} />
-                  </div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/50">Agenda da Turma</span>
+            {/* Espirais da agenda — topo */}
+            <div className="absolute -top-2.5 left-0 right-0 flex justify-around px-8 z-20 pointer-events-none">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <div className="w-4 h-4 rounded-full border-[2.5px] border-amber-800/50 bg-gradient-to-b from-amber-100 to-amber-200"
+                    style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12)' }} />
+                  <div className="w-0.5 h-2.5 bg-amber-800/25 rounded-b" />
                 </div>
-                {proximoEncontro && proximasAtividades.length > 0 && (
-                  <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">
-                    {proximasAtividades.length + 1} eventos
-                  </span>
-                )}
+              ))}
+            </div>
+
+            {/* Corpo da agenda — fundo pergaminho */}
+            <div className="relative rounded-2xl overflow-hidden"
+              style={{
+                background: 'linear-gradient(160deg, #fdf8ed 0%, #fef9f0 55%, #fdf5e0 100%)',
+                border: '1.5px solid rgba(180,130,50,0.28)',
+              }}>
+
+              {/* ── SPINE LATERAL (lombada da agenda) ── */}
+              <div className="absolute left-0 top-0 bottom-0 w-8 z-10 flex flex-col items-center justify-between py-5"
+                style={{ background: 'linear-gradient(180deg, #6b3300 0%, #9a5000 45%, #6b3300 100%)' }}>
+                {/* Ornamento topo */}
+                <div className="w-3 h-3 rounded-full border border-amber-300/50 bg-amber-200/20" />
+                {/* Cruz dourada */}
+                <div className="flex-1 flex items-center justify-center my-2">
+                  <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
+                    <rect x="5.5" y="0" width="3" height="20" rx="1.5" fill="#f5d060" opacity="0.95"/>
+                    <rect x="0" y="7" width="14" height="3" rx="1.5" fill="#f5d060" opacity="0.95"/>
+                  </svg>
+                </div>
+                {/* Ornamento baixo */}
+                <div className="w-3 h-3 rounded-full border border-amber-300/50 bg-amber-200/20" />
               </div>
 
-              {/* Seção: Próximo Encontro */}
-              {proximoEncontro && (
-                <div
-                  onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                  className="group cursor-pointer flex items-center gap-3 p-3 rounded-2xl mb-2.5 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
-                  style={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', border: '1px solid rgba(16,185,129,0.2)' }}
-                >
-                  {/* Ícone data */}
-                  <div className="flex flex-col items-center justify-center w-11 h-11 rounded-xl text-white shrink-0 shadow-md"
-                    style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
-                  >
-                    <span className="text-base font-black leading-none">
-                      {String(parseDataLocal(proximoEncontro.data).getDate()).padStart(2, "0")}
-                    </span>
-                    <span className="text-[9px] font-black uppercase leading-none mt-0.5">
-                      {MESES_ABREV[parseDataLocal(proximoEncontro.data).getMonth()]}
-                    </span>
-                  </div>
+              {/* ── CONTEÚDO PRINCIPAL ── */}
+              <div className="ml-8 pt-6 pb-4 px-3.5">
 
-                  {/* Conteúdo */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <CalendarDays className="w-3 h-3 text-emerald-600 shrink-0" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">
-                        Próximo Encontro
-                        {diaLabel && (
-                          <span className={cn(
-                            "ml-1.5 px-1.5 py-0.5 rounded-full text-white text-[8px]",
-                            isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
-                          )}>{diaLabel}</span>
-                        )}
-                      </span>
+                {/* Cabeçalho */}
+                <div className="flex items-center justify-between mb-4 pb-3"
+                  style={{ borderBottom: '1.5px solid rgba(160,110,30,0.15)' }}>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md shrink-0"
+                      style={{ background: 'linear-gradient(135deg, #7c3300, #b45309)' }}>
+                      <CalendarDays className="w-4 h-4 text-amber-100" strokeWidth={2.5} />
                     </div>
-                    <h4 className="text-sm font-black text-emerald-900 truncate uppercase leading-tight">
-                      {proximoEncontro.tema}
-                    </h4>
+                    <div>
+                      <p className="text-[12px] font-black uppercase tracking-[0.18em] text-amber-950 leading-none">Agenda</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest leading-none mt-0.5"
+                        style={{ color: 'rgba(120,80,20,0.55)' }}>da Turma</p>
+                    </div>
                   </div>
-
-                  <ChevronRight className="w-4 h-4 text-emerald-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  {proximoEncontro && proximasAtividades.length > 0 && (
+                    <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
+                      style={{ color: '#7c3300', background: 'rgba(245,208,96,0.25)', border: '1px solid rgba(180,130,50,0.3)' }}>
+                      {proximasAtividades.length + 1} eventos
+                    </span>
+                  )}
                 </div>
-              )}
 
-              {/* Divisor se ambos existem */}
-              {proximoEncontro && proximasAtividades.length > 0 && (
-                <div className="flex items-center gap-2 mb-2.5">
-                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 to-transparent" />
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-300">e também</span>
-                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-zinc-200 to-transparent" />
+                {/* Linhas de pauta de fundo */}
+                <div className="absolute left-8 right-0 pointer-events-none overflow-hidden" style={{ top: '90px', bottom: '48px' }}>
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className="h-px mx-3" style={{ marginBottom: '17px', background: 'rgba(160,110,30,0.07)' }} />
+                  ))}
                 </div>
-              )}
 
-              {/* Seção: Próxima Atividade */}
-              {proximasAtividades.map((item) => {
-                const isMissao = item.itemType === 'missao';
-                const dataObj = parseDataLocal(item.data);
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => {
-                      if (isMissao) {
-                        navigate(`/turmas/${item.turmaId}/familia`);
-                      } else {
-                        navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
-                      }
-                    }}
-                    className="group cursor-pointer flex items-center gap-3 p-3 rounded-2xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
-                    style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '1px solid rgba(59,130,246,0.2)' }}
-                  >
-                    {/* Ícone data */}
-                    <div className="flex flex-col items-center justify-center w-11 h-11 rounded-xl text-white shrink-0 shadow-md"
-                      style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}
+                {/* ── ENTRADA: PRÓXIMO ENCONTRO ── */}
+                {proximoEncontro && (() => {
+                  const dataE = parseDataLocal(proximoEncontro.data);
+                  return (
+                    <div
+                      onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
+                      className="group relative cursor-pointer flex items-start gap-3 mb-4 active:opacity-70 transition-opacity"
                     >
-                      <span className="text-base font-black leading-none">
-                        {String(dataObj.getDate()).padStart(2, "0")}
-                      </span>
-                      <span className="text-[9px] font-black uppercase leading-none mt-0.5">
-                        {MESES_ABREV[dataObj.getMonth()]}
-                      </span>
-                    </div>
+                      {/* Marcador de cor na margem */}
+                      <div className="absolute -left-3.5 top-1 bottom-1 w-1.5 rounded-full"
+                        style={{ background: 'linear-gradient(180deg, #10b981, #059669)', boxShadow: '0 0 8px rgba(16,185,129,0.5)' }} />
 
-                    {/* Ícone de atividade + conteúdo */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <img src="/acesso_atividades.jpg" alt="" className="w-3 h-3 rounded object-cover shrink-0" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-blue-600">
-                          {isMissao ? "Missão em Família" : (item as any).tipo || "Próxima Atividade"}
+                      {/* Bloco de data estilo agenda */}
+                      <div className="shrink-0 flex flex-col items-center justify-center w-12 h-14 rounded-xl"
+                        style={{
+                          background: 'linear-gradient(160deg, #ecfdf5, #d1fae5)',
+                          border: '1.5px solid rgba(16,185,129,0.3)',
+                          boxShadow: '0 3px 10px rgba(16,185,129,0.18)'
+                        }}>
+                        <span className="text-xl font-black text-emerald-800 leading-none tabular-nums">
+                          {String(dataE.getDate()).padStart(2, '0')}
+                        </span>
+                        <span className="text-[8px] font-black uppercase text-emerald-600 leading-none mt-0.5 tracking-wider">
+                          {MESES_ABREV[dataE.getMonth()]}
+                        </span>
+                        <div className="w-6 h-px bg-emerald-200 my-1" />
+                        <span className="text-[7px] font-black uppercase text-emerald-500 tracking-wide">
+                          {DIAS_SEMANA[dataE.getDay()].slice(0,3)}
                         </span>
                       </div>
-                      <h4 className="text-sm font-black text-blue-900 truncate uppercase leading-tight">
-                        {isMissao ? (item as any).titulo : (item as any).nome}
-                      </h4>
-                    </div>
 
-                    <ChevronRight className="w-4 h-4 text-blue-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                      {/* Texto da entrada */}
+                      <div className="flex-1 min-w-0 pt-1">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Próximo Encontro</span>
+                          {diaLabel && (
+                            <span className={cn(
+                              "text-[7px] font-black px-1.5 py-0.5 rounded-full text-white",
+                              isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
+                            )}>{diaLabel}</span>
+                          )}
+                        </div>
+                        <p className="text-[13px] font-black uppercase leading-tight text-amber-950 truncate">
+                          {proximoEncontro.tema}
+                        </p>
+                      </div>
+
+                      <ChevronRight className="w-4 h-4 shrink-0 mt-3 text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  );
+                })()}
+
+                {/* Divisor pontilhado litúrgico */}
+                {proximoEncontro && proximasAtividades.length > 0 && (
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex-1 h-px"
+                      style={{ background: 'repeating-linear-gradient(to right, rgba(160,110,30,0.25) 0, rgba(160,110,30,0.25) 4px, transparent 4px, transparent 9px)' }} />
+                    <span className="text-[8px] font-black uppercase tracking-[0.22em]"
+                      style={{ color: 'rgba(160,110,30,0.5)' }}>✦ e também ✦</span>
+                    <div className="flex-1 h-px"
+                      style={{ background: 'repeating-linear-gradient(to right, rgba(160,110,30,0.25) 0, rgba(160,110,30,0.25) 4px, transparent 4px, transparent 9px)' }} />
                   </div>
-                );
-              })}
+                )}
+
+                {/* ── ENTRADAS: ATIVIDADES ── */}
+                {proximasAtividades.map((item) => {
+                  const isMissao = item.itemType === 'missao';
+                  const dataObj = parseDataLocal(item.data);
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => {
+                        if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
+                        else navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
+                      }}
+                      className="group relative cursor-pointer flex items-start gap-3 mb-3 last:mb-0 active:opacity-70 transition-opacity"
+                    >
+                      {/* Marcador de cor na margem */}
+                      <div className="absolute -left-3.5 top-1 bottom-1 w-1.5 rounded-full"
+                        style={{ background: 'linear-gradient(180deg, #3b82f6, #2563eb)', boxShadow: '0 0 8px rgba(59,130,246,0.45)' }} />
+
+                      {/* Bloco de data */}
+                      <div className="shrink-0 flex flex-col items-center justify-center w-12 h-14 rounded-xl"
+                        style={{
+                          background: 'linear-gradient(160deg, #eff6ff, #dbeafe)',
+                          border: '1.5px solid rgba(59,130,246,0.3)',
+                          boxShadow: '0 3px 10px rgba(59,130,246,0.18)'
+                        }}>
+                        <span className="text-xl font-black text-blue-800 leading-none tabular-nums">
+                          {String(dataObj.getDate()).padStart(2, '0')}
+                        </span>
+                        <span className="text-[8px] font-black uppercase text-blue-600 leading-none mt-0.5 tracking-wider">
+                          {MESES_ABREV[dataObj.getMonth()]}
+                        </span>
+                        <div className="w-6 h-px bg-blue-200 my-1" />
+                        <span className="text-[7px] font-black uppercase text-blue-500 tracking-wide">
+                          {DIAS_SEMANA[dataObj.getDay()].slice(0,3)}
+                        </span>
+                      </div>
+
+                      {/* Texto da entrada */}
+                      <div className="flex-1 min-w-0 pt-1">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-[8px] font-black uppercase tracking-widest text-blue-600">
+                            {isMissao ? 'Missão em Família' : (item as any).tipo || 'Atividade'}
+                          </span>
+                        </div>
+                        <p className="text-[13px] font-black uppercase leading-tight text-amber-950 truncate">
+                          {isMissao ? (item as any).titulo : (item as any).nome}
+                        </p>
+                      </div>
+
+                      <ChevronRight className="w-4 h-4 shrink-0 mt-3 text-blue-400 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ── RODAPÉ LITÚRGICO ── */}
+              <div className="ml-8 px-3.5 pb-3 pt-2.5 flex items-center gap-2"
+                style={{ borderTop: '1px solid rgba(160,110,30,0.12)' }}>
+                <div className="flex-1 h-px" style={{ background: 'rgba(160,110,30,0.15)' }} />
+                <span className="text-[8px] font-black uppercase tracking-[0.28em]"
+                  style={{ color: 'rgba(100,60,10,0.38)' }}>✝ iCatequese</span>
+                <div className="flex-1 h-px" style={{ background: 'rgba(160,110,30,0.15)' }} />
+              </div>
             </div>
           </div>
         </div>
