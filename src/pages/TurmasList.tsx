@@ -200,42 +200,42 @@ export default function TurmasList() {
                 className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:shadow-[0_24px_60px_rgb(0,0,0,0.15)] animate-float-up transition-all duration-300 hover:-translate-y-2 cursor-pointer group"
               >
                 <div className="absolute inset-[3px] rounded-xl border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay" />
-                <div className="relative flex flex-col p-3 rounded-[14px] bg-card w-full h-full overflow-hidden">
+                <div className="relative flex flex-col px-3 py-2.5 rounded-[14px] bg-card w-full h-full overflow-hidden">
                   <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
-                    <UsersRound className="w-32 h-32 text-primary" />
+                    <UsersRound className="w-24 h-24 text-primary" />
                   </div>
                   {mainTurma.isShared && (
-                    <div className="absolute top-3 right-3 z-30 flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">
-                      <Link2 className="h-2.5 w-2.5" /> Compartilhada
+                    <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest">
+                      <Link2 className="h-2 w-2" /> Compartilhada
                     </div>
                   )}
-                  <div className="flex flex-col items-center justify-center mb-4 relative z-30 text-center mt-2">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-3 group-hover:scale-110 transition-transform duration-500">
-                      <UsersRound className="h-6 w-6 text-primary animate-bounce-subtle" />
+                  <div className="flex flex-col items-center justify-center mb-3 relative z-30 text-center mt-1">
+                    <div className="w-10 h-10 rounded-[14px] bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-2.5 group-hover:scale-110 transition-transform duration-500">
+                      <UsersRound className="h-5 w-5 text-primary animate-bounce-subtle" />
                     </div>
                     <div className="space-y-0.5">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary mb-1.5 shadow-sm border border-primary/10">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary mb-1 shadow-sm border border-primary/10">
                          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                         <span className="text-[9px] font-black uppercase tracking-widest">Turma Principal</span>
+                         <span className="text-[8px] font-black uppercase tracking-widest">Turma Principal</span>
                       </div>
-                      <h3 className="text-lg font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
-                        {mainTurma.nome} <span className="opacity-40 font-bold ml-1">— {mainTurma.ano}</span>
+                      <h3 className="text-base font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
+                        {mainTurma.nome} <span className="opacity-40 font-bold ml-0.5">— {mainTurma.ano}</span>
                       </h3>
-                      <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">{mainTurmaComunidade}</p>
-                      <p className="text-xs text-muted-foreground font-medium pt-1">{mainTurma.diaCatequese} • {mainTurma.horario} • {mainTurma.local}</p>
+                      <p className="text-[9px] font-black text-primary/60 uppercase tracking-widest leading-none mt-1">{mainTurmaComunidade}</p>
+                      <p className="text-[11px] text-muted-foreground font-medium pt-1">{mainTurma.diaCatequese} • {mainTurma.horario}</p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center gap-2 flex-wrap relative z-30">
-                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-primary bg-primary/10 px-3 py-1.5 rounded-xl border border-primary/10 shadow-sm">
-                      <CalendarDays className="h-3.5 w-3.5" /><span>{tEncontros.length} encontros</span>
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap relative z-30">
+                    <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-lg border border-primary/10 shadow-sm">
+                      <CalendarDays className="h-3 w-3" /><span>{tEncontros.length} enc.</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/10 shadow-sm">
-                      <Users className="h-3.5 w-3.5" /><span>{tCatequizandos.length} catequizandos</span>
+                    <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/10 shadow-sm">
+                      <Users className="h-3 w-3" /><span>{tCatequizandos.length} cateq.</span>
                     </div>
-                    {etapa && <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 shadow-sm">{etapa.label}</span>}
+                    {etapa && <span className="text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 shadow-sm">{etapa.label}</span>}
                   </div>
-                  <div className="mt-4 w-full bg-primary/10 hover:bg-primary/20 text-primary py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-colors flex items-center justify-center z-30 relative shadow-sm border border-primary/10">
-                     Acessar Painel da Turma
+                  <div className="mt-3 w-full bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors flex items-center justify-center z-30 relative shadow-sm border border-primary/10">
+                     Acessar Painel
                   </div>
                 </div>
               </div>
@@ -262,7 +262,12 @@ export default function TurmasList() {
                         <div className="absolute top-2 right-2 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform">
                            <UsersRound className="w-12 h-12" />
                         </div>
-                        <div className="space-y-0.5 relative z-10 text-center flex flex-col items-center">
+                        {turma.isShared && (
+                          <div className="absolute top-2 left-2 z-30 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest">
+                            <Link2 className="h-2.5 w-2.5" /> Comp.
+                          </div>
+                        )}
+                        <div className="space-y-0.5 relative z-10 text-center flex flex-col items-center mt-3">
                            <h4 className="text-sm font-black text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                              {turma.nome}
                            </h4>

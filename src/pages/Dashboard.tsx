@@ -730,15 +730,15 @@ export default function Dashboard() {
               <div className="flex items-center gap-2 overflow-hidden">
                 <div className="w-1.5 h-5 bg-blue-600 rounded-full shrink-0" />
                 <h3 className="text-xs font-black text-foreground truncate uppercase tracking-tight">
-                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+                  {selectedTurmaId === "all" ? "Todas as Turmas" : `Turma ${selectedTurma?.nome}`}
                 </h3>
               </div>
               <button 
                 onClick={() => setTurmaPickerOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition-all active:scale-95 shadow-sm"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95"
               >
-                <RefreshCw className="h-3 w-3" />
-                <span className="text-[9px] font-black uppercase tracking-widest">Trocar</span>
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Trocar</span>
               </button>
             </div>
           )}
