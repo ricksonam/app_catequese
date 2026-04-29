@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation } from "@/hooks/useSupabaseData";
 import { type EncontroStatus, type RegistroOcorrencia, type AvaliacaoEncontro } from "@/lib/store";
 import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight, FileSignature, Check, Pencil } from "lucide-react";
@@ -182,24 +182,27 @@ export default function EncontroDetail() {
 
   return (
     <div className="space-y-4 pb-6">
-      <div className="page-header animate-fade-in items-center py-4 flex-col gap-3 relative">
-        <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-2 top-5">
-          <ArrowLeft className="h-5 w-5 text-foreground" />
-        </button>
-        
-        <div className="flex flex-col items-center w-full px-14 pt-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 mb-1">Tema</p>
-          <h1 className="text-xl font-black text-foreground leading-tight text-center break-words">{encontro.tema}</h1>
-          <p className="text-[10px] font-bold text-muted-foreground mt-2 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
+      <div className="animate-fade-in flex flex-col pt-4 pb-2 relative">
+        {/* Top actions bar */}
+        <div className="w-full flex items-center justify-between px-4 mb-2">
+          <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20 group shadow-sm">
+              <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+            </button>
+            <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
+              <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+            </button>
+          </div>
         </div>
         
-        <div className="flex items-center justify-end w-full gap-5 pr-4 mt-2">
-          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20 group">
-            <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-          </button>
-          <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group">
-            <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-          </button>
+        <div className="flex flex-col items-center w-full px-6 mb-4">
+          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 mb-1">Tema</p>
+          <h1 className="text-xl font-black text-foreground leading-tight text-center break-words">{encontro.tema}</h1>
+          <p className="text-[10px] font-bold text-muted-foreground mt-1.5 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
         </div>
       </div>
 
