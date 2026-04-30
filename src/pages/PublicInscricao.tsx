@@ -447,9 +447,7 @@ export default function PublicInscricao() {
             {isSubmitting ? (
               <Spinner size="sm" color="white" text="Enviando Inscrição..." />
             ) : (
-              <>
-                Confirmar Caminhada e Enviar <ArrowRight className="w-5 h-5" />
-              </>
+                ENVIAR INSCRIÇÃO <ArrowRight className="w-5 h-5" />
             )}
           </button>
         </form>
