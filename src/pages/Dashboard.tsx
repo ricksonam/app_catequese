@@ -868,7 +868,7 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
-        <div className="pt-20 mb-2">
+        <div className="pt-10 mb-2">
           <div className="animate-float-up relative" style={{ animationDelay: '200ms' }}>
 
           
@@ -893,7 +893,7 @@ export default function Dashboard() {
               </span>
             </div>
             <ChevronDown className={cn(
-              "h-4 w-4 transition-transform duration-300 text-emerald-500",
+              "h-5 w-5 transition-transform duration-300 text-emerald-600",
               isAgendaExpanded ? "rotate-180" : "rotate-0"
             )} />
           </button>
