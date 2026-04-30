@@ -822,11 +822,32 @@ export default function Dashboard() {
           {/* Card Nome da Agenda (Clicável) */}
           <button 
             onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-md rounded-2xl px-4 py-2.5 flex items-center gap-2 hover:bg-slate-50 transition-all active:scale-95 group"
+            className={cn(
+              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg",
+              isAgendaExpanded 
+                ? "bg-white border-slate-200 shadow-slate-200/50" 
+                : "bg-primary border-primary shadow-primary/30 scale-105"
+            )}
           >
-            <img src="/icone_agenda.png" alt="Agenda" className={cn("w-7 h-7 object-contain transition-transform shrink-0", isAgendaExpanded ? "rotate-0" : "animate-bounce-subtle")} />
-            <h3 className="text-[13px] font-black uppercase tracking-wide text-slate-800 whitespace-nowrap">Agenda da Turma</h3>
-            <ChevronRight className={cn("h-4 w-4 text-slate-400 transition-transform duration-300", isAgendaExpanded ? "rotate-90" : "rotate-0")} />
+            <div className={cn(
+              "w-8 h-8 rounded-xl flex items-center justify-center transition-all",
+              isAgendaExpanded ? "bg-slate-50" : "bg-white/20"
+            )}>
+              <img src="/icone_agenda.png" alt="Agenda" className={cn("w-6 h-6 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle")} />
+            </div>
+            <div className="flex flex-col items-start">
+              <h3 className={cn(
+                "text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none",
+                isAgendaExpanded ? "text-slate-800" : "text-white"
+              )}>Agenda da Turma</h3>
+              {!isAgendaExpanded && (
+                <span className="text-[8px] font-bold text-white/70 uppercase tracking-tight mt-1 animate-pulse">Toque para ver encontros</span>
+              )}
+            </div>
+            <ChevronRight className={cn(
+              "h-4 w-4 transition-transform duration-300",
+              isAgendaExpanded ? "rotate-90 text-slate-400" : "rotate-0 text-white/50"
+            )} />
           </button>
 
           <div className={cn(
