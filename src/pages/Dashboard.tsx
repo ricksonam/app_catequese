@@ -776,7 +776,7 @@ export default function Dashboard() {
 
       {/* ── MÓDULOS DE ACESSO RÁPIDO (CATEQUIZANDOS E ENCONTROS) ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-2 -mt-4 animate-fade-in flex flex-col items-center">
+        <div className="space-y-0 px-2 mt-8 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma (Nó central) */}
           <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-between w-full z-10 relative">
@@ -876,7 +876,7 @@ export default function Dashboard() {
           <button 
             onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
             className={cn(
-              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-10 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
+              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-7 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
               !isAgendaExpanded && "scale-105"
             )}
           >
