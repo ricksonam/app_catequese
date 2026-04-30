@@ -24,11 +24,11 @@ import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 
 const baseTabs = [
-  { path: "/", icon: LayoutDashboard, label: "Início" },
-  { path: "/modulos/biblia", icon: Book, label: "Bíblia" },
-  { path: "/turmas", icon: BookOpen, label: "Turmas" },
-  { path: "/modulos/mural", icon: Image, label: "Mural" },
-  { path: "__mais__", icon: Menu, label: "Mais" },
+  { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
+  { path: "/modulos/biblia", icon: Book, label: "Bíblia", color: "text-amber-600", dot: "bg-amber-600" },
+  { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
+  { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-rose-600", dot: "bg-rose-600" },
+  { path: "__mais__", icon: Menu, label: "Mais", color: "text-emerald-600", dot: "bg-emerald-600" },
 ];
 
 export default function AppLayout() {
@@ -144,7 +144,7 @@ export default function AppLayout() {
       {/* Tab Bar */}
       {!isPresentationMode && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-slate-200/60 dark:border-zinc-700 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
+          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-blue-500/30 dark:border-zinc-700 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
             {tabs.map((tab) => {
               const isMais = tab.path === "__mais__";
               const isTurmas = tab.path === "/turmas";
@@ -176,7 +176,7 @@ export default function AppLayout() {
                   onClick={() => isMais ? setMaisOpen(true) : navigate(tab.path)}
                   className={`group relative flex flex-col items-center justify-end h-full px-3 pb-0.5 transition-all duration-300 active:scale-90 ${
                     isActive
-                      ? "text-primary dark:text-primary-foreground"
+                      ? tab.color
                       : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-400"
                   }`}
                 >
@@ -185,7 +185,7 @@ export default function AppLayout() {
                     {tab.label}
                   </span>
                   {isActive && (
-                    <div className="absolute -bottom-2 w-1 h-1 rounded-full bg-primary" />
+                    <div className={`absolute -bottom-2 w-1.5 h-1.5 rounded-full ${tab.dot}`} />
                   )}
                 </button>
               );
