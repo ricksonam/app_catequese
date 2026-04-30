@@ -22,6 +22,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
   const steps = [
     { id: "paroquia", label: "Paróquia", icon: Church },
     { id: "catequista", label: "Catequista", icon: Users },
+    { id: "turma", label: "Turma", icon: BookOpen },
   ];
 
   const activeIndex = steps.findIndex(s => s.id === currentStep);
@@ -118,7 +119,7 @@ export function OnboardingWizard({ currentStep, onComplete, onStepChange }: Onbo
                        <ArrowLeft className="h-3 w-3" /> Voltar para Paróquia
                      </button>
                    </div>
-                   <CatequistaStep embedded onSuccess={handleTurmaSuccess} />
+                    <CatequistaStep embedded onSuccess={() => onStepChange("turma")} />
                 </div>
               )}
               {currentStep === "turma" && (

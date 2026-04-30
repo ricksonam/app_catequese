@@ -1,4 +1,4 @@
-import { Church, UserCheck, Users, ArrowRight, Sparkles, CheckCircle2, Lock } from "lucide-react";
+import { Church, UserCheck, Users, ArrowRight, Sparkles, CheckCircle2, Lock, BookOpen } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface OnboardingIntroStepProps {
@@ -26,6 +26,16 @@ const etapas = [
     bg: "bg-sky-50 dark:bg-sky-900/20",
     border: "border-sky-200 dark:border-sky-800/40",
     iconColor: "text-sky-600",
+  },
+  {
+    step: "03",
+    icon: BookOpen,
+    title: "Sua Primeira Turma",
+    desc: "Crie a base para organizar seus encontros e catequizandos.",
+    color: "from-emerald-600 to-teal-500",
+    bg: "bg-emerald-50 dark:bg-emerald-900/20",
+    border: "border-emerald-200 dark:border-emerald-800/40",
+    iconColor: "text-emerald-600",
   },
 ];
 
@@ -60,10 +70,10 @@ export function OnboardingIntroStep({ open, onStart }: OnboardingIntroStepProps)
             <h2 className="text-xl font-black text-foreground tracking-tight leading-tight">
               Bem-vindo ao <span className="text-primary">iCatequese!</span>
               <br />
-              <span className="text-sm text-muted-foreground font-medium">Antes de começar, 2 cadastros rápidos</span>
+              <span className="text-sm text-muted-foreground font-medium">Antes de começar, 3 cadastros rápidos</span>
             </h2>
             <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 max-w-xs">
-              Para desbloquear os recursos do <strong>iCatequese</strong>, precisamos de algumas informações básicas. Leva menos de 3 minutos!
+              Para desbloquear os recursos do <strong>iCatequese</strong>, precisamos de algumas informações básicas. Leva menos de 5 minutos!
             </p>
           </div>
 

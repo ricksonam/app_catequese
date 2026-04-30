@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, MapPin, UserCheck, CheckCircle2, ChevronRight, Sparkles, PartyPopper } from "lucide-react";
+import { X, MapPin, UserCheck, CheckCircle2, ChevronRight, Sparkles, PartyPopper, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const WELCOME_SEEN_KEY = "ivc_welcome_seen";
@@ -10,14 +10,15 @@ interface WelcomeModalProps {
   onClose: () => void;
   hasParoquia?: boolean;
   hasCatequista?: boolean;
+  hasTurma?: boolean;
 }
 
-export default function WelcomeModal({ open, onClose, hasParoquia = false, hasCatequista = false }: WelcomeModalProps) {
+export default function WelcomeModal({ open, onClose, hasParoquia = false, hasCatequista = false, hasTurma = false }: WelcomeModalProps) {
   const navigate = useNavigate();
   const [doNotShow, setDoNotShow] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const isFinished = hasParoquia && hasCatequista;
+  const isFinished = hasParoquia && hasCatequista && hasTurma;
 
   useEffect(() => {
     if (open) {
@@ -115,8 +116,8 @@ export default function WelcomeModal({ open, onClose, hasParoquia = false, hasCa
               </h1>
             </div>
 
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              Antes de ter o acesso completo, primeiro faça os <strong>cadastros obrigatórios</strong> da paróquia e catequista. Você também pode entrar em uma turma através do compartilhamento inserindo o código ou lendo o QR code da turma, ou compartilhar a sua turma com outros catequistas fornecendo o código da sua turma.
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+              Antes de ter o acesso completo, primeiro faça os <strong>cadastros obrigatórios</strong> da paróquia, catequista e turma. Isso garante que você tenha a melhor experiência possível.
             </p>
 
             {/* Cadastros necessários */}
@@ -177,6 +178,32 @@ export default function WelcomeModal({ open, onClose, hasParoquia = false, hasCa
                     <ChevronRight className="w-4 h-4 text-muted-foreground/30" />
                   )}
                 </button>
+
+                <button
+                  onClick={() => handleGoTo("/turmas/nova")}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border-2 transition-all active:scale-[0.98] group",
+                    hasTurma ? "border-emerald-500/30 bg-emerald-50/10" : "border-slate-100 hover:border-primary/30"
+                  )}
+                >
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform",
+                    hasTurma ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-400"
+                  )}>
+                    <BookOpen className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-sm font-black text-foreground">3. Turmas</p>
+                    <p className={cn("text-[10px] font-bold uppercase", hasTurma ? "text-emerald-500" : "text-muted-foreground")}>
+                      {hasTurma ? "Concluído" : "Suas turmas"}
+                    </p>
+                  </div>
+                  {hasTurma ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-muted-foreground/30" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -190,8 +217,9 @@ export default function WelcomeModal({ open, onClose, hasParoquia = false, hasCa
               </button>
               <button
                 onClick={() => {
-                  if (hasParoquia && !hasCatequista) navigate("/cadastros/catequistas");
-                  else if (!hasParoquia) navigate("/cadastros/paroquia-comunidade");
+                  if (!hasParoquia) navigate("/cadastros/paroquia-comunidade");
+                  else if (!hasCatequista) navigate("/cadastros/catequistas");
+                  else if (!hasTurma) navigate("/turmas/nova");
                   else handleClose(true);
                 }}
                 className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-sm shadow-xl shadow-violet-500/25 active:scale-[0.97] transition-all hover:brightness-110 flex items-center justify-center gap-2"

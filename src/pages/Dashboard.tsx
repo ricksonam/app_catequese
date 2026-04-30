@@ -11,6 +11,7 @@ import { ObjectiveModal } from "@/components/ObjectiveModal";
 import { TurmaChoiceStep } from "@/components/Onboarding/TurmaChoiceStep";
 import { OnboardingIntroStep } from "@/components/Onboarding/OnboardingIntroStep";
 import { OnboardingWizard } from "@/components/Onboarding/OnboardingWizard";
+import WelcomeModal from "@/components/WelcomeModal";
 import { TurmaStep } from "@/components/Onboarding/TurmaStep";
 import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
 import { ConsentModal } from "@/components/Onboarding/ConsentModal";
@@ -540,7 +541,7 @@ export default function Dashboard() {
         onStepChange={setOnboardingStep as any}
         onComplete={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
-          setOnboardingStep("none");
+          setOnboardingStep("welcome");
           // Refetch e seleciona a turma criada
           const result = await tRefetch();
           const novas = result.data || [];
@@ -552,6 +553,14 @@ export default function Dashboard() {
         open={showCreateTurma}
         onSuccess={() => setShowCreateTurma(false)}
         onClose={() => setShowCreateTurma(false)}
+      />
+
+      <WelcomeModal
+        open={onboardingStep === "welcome"}
+        onClose={() => setOnboardingStep("none")}
+        hasParoquia={paroquias.length > 0 || comunidades.length > 0}
+        hasCatequista={catequistas.length > 0}
+        hasTurma={turmas.length > 0}
       />
 
 
