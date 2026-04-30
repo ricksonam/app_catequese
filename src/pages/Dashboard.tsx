@@ -607,7 +607,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
-      <div className="relative pt-0 pb-0 mb-0 animate-fade-in overflow-hidden -mt-1">
+      <div className="relative pt-0 pb-6 mb-0 animate-fade-in -mt-1">
         {/* Título da Seção */}
         <div className="flex flex-col items-center justify-center mb-1">
           <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600">Próximos Aniversários</h2>
@@ -776,7 +776,7 @@ export default function Dashboard() {
 
       {/* ── MÓDULOS DE ACESSO RÁPIDO (CATEQUIZANDOS E ENCONTROS) ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-2 mt-8 animate-fade-in flex flex-col items-center">
+        <div className="space-y-0 px-2 mt-20 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma (Nó central) */}
           <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-between w-full z-10 relative">
