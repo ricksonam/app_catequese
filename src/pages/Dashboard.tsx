@@ -876,7 +876,7 @@ export default function Dashboard() {
           <button 
             onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
             className={cn(
-              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-7 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
+              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-4 py-2.5 flex items-center gap-2.5 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
               !isAgendaExpanded && "scale-105"
             )}
           >
