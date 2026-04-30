@@ -872,33 +872,24 @@ export default function Dashboard() {
           <button 
             onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
             className={cn(
-              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg",
-              isAgendaExpanded 
-                ? "bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10" 
-                : "bg-gradient-to-br from-emerald-400 to-teal-500 border-emerald-300 shadow-emerald-400/20 scale-105"
+              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
+              !isAgendaExpanded && "scale-105"
             )}
           >
-            <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-              isAgendaExpanded ? "bg-emerald-50" : "bg-white shadow-sm"
-            )}>
-              <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle drop-shadow-sm")} />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-emerald-50">
+              <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", !isAgendaExpanded && "animate-bounce-subtle drop-shadow-sm")} />
             </div>
             <div className="flex flex-col items-start">
-              <h3 className={cn(
-                "text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none drop-shadow-sm",
-                isAgendaExpanded ? "text-emerald-700" : "text-white"
-              )}>Agenda da Turma</h3>
-              <span className={cn(
-                "text-[8px] font-bold uppercase tracking-tight mt-1",
-                isAgendaExpanded ? "text-emerald-600/70" : "text-white/90 animate-pulse"
-              )}>
+              <h3 className="text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none text-emerald-700">
+                Agenda - {MESES_ABREV[hoje.getMonth()]}
+              </h3>
+              <span className="text-[8px] font-bold uppercase tracking-tight mt-1 text-emerald-600/70">
                 {isAgendaExpanded ? "Próximos encontros e atividades" : "Toque para ver a agenda"}
               </span>
             </div>
             <ChevronDown className={cn(
-              "h-4 w-4 transition-transform duration-300",
-              isAgendaExpanded ? "rotate-180 text-emerald-500" : "rotate-0 text-white/60"
+              "h-4 w-4 transition-transform duration-300 text-emerald-500",
+              isAgendaExpanded ? "rotate-180" : "rotate-0"
             )} />
           </button>
 
