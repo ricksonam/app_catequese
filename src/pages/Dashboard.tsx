@@ -834,30 +834,31 @@ export default function Dashboard() {
             className={cn(
               "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg",
               isAgendaExpanded 
-                ? "bg-white border-blue-500 ring-2 ring-blue-500/20 shadow-blue-500/10" 
-                : "bg-blue-400 border-blue-300 shadow-blue-400/30 scale-105"
+                ? "bg-white border-amber-500 ring-2 ring-amber-500/20 shadow-amber-500/10" 
+                : "bg-amber-500 border-amber-400 shadow-amber-500/30 scale-105"
             )}
           >
             <div className={cn(
               "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-              isAgendaExpanded ? "bg-blue-50" : "bg-white/20"
+              isAgendaExpanded ? "bg-amber-50" : "bg-white/20"
             )}>
               <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle")} />
             </div>
             <div className="flex flex-col items-start">
               <h3 className={cn(
                 "text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none",
-                isAgendaExpanded ? "text-blue-600" : "text-white"
+                isAgendaExpanded ? "text-amber-700" : "text-white"
+              )}>Agenda da Turma</h3>
+              <span className={cn(
+                "text-[8px] font-bold uppercase tracking-tight mt-1",
+                isAgendaExpanded ? "text-amber-600/70" : "text-white/80 animate-pulse"
               )}>
-                {isAgendaExpanded ? "Próximos Encontros e Atividades" : "Agenda da Turma"}
-              </h3>
-              {!isAgendaExpanded && (
-                <span className="text-[8px] font-bold text-white/80 uppercase tracking-tight mt-1 animate-pulse">Toque para ver a agenda</span>
-              )}
+                {isAgendaExpanded ? "Próximos encontros e atividades" : "Toque para ver a agenda"}
+              </span>
             </div>
             <ChevronDown className={cn(
               "h-4 w-4 transition-transform duration-300",
-              isAgendaExpanded ? "rotate-180 text-blue-500" : "rotate-0 text-white/50"
+              isAgendaExpanded ? "rotate-180 text-amber-500" : "rotate-0 text-white/50"
             )} />
           </button>
 
