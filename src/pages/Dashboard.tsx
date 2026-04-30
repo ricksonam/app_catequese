@@ -25,6 +25,7 @@ export default function Dashboard() {
   const [selectedTurmaId, setSelectedTurmaIdRaw] = useState<string | "all">(
     () => localStorage.getItem("ivc_selected_turma") || "all"
   );
+  const [isAgendaExpanded, setIsAgendaExpanded] = useState(false);
 
   // Persiste a turma selecionada no localStorage
   const setSelectedTurmaId = (id: string | "all") => {
@@ -820,23 +821,18 @@ export default function Dashboard() {
           
           {/* Card Nome da Agenda (Clicável) */}
           <button 
-            onClick={() => {
-              if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                navigate(`/turmas/${selectedTurmaId}/plano`);
-              } else if (selectedTurmaId === "all") {
-                toast.info("Selecione uma turma para acessar a agenda.");
-                setTurmaPickerOpen(true);
-              } else {
-                toast.info("Aguarde a aprovação do acesso.");
-              }
-            }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-md rounded-2xl px-4 py-2.5 flex items-center gap-2 hover:bg-slate-50 transition-colors active:scale-95 group"
+            onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-white border border-slate-200 shadow-md rounded-2xl px-4 py-2.5 flex items-center gap-2 hover:bg-slate-50 transition-all active:scale-95 group"
           >
-            <img src="/icone_agenda.png" alt="Agenda" className="w-7 h-7 object-contain animate-bounce-subtle group-hover:scale-110 transition-transform shrink-0" />
+            <img src="/icone_agenda.png" alt="Agenda" className={cn("w-7 h-7 object-contain transition-transform shrink-0", isAgendaExpanded ? "rotate-0" : "animate-bounce-subtle")} />
             <h3 className="text-[13px] font-black uppercase tracking-wide text-slate-800 whitespace-nowrap">Agenda da Turma</h3>
+            <ChevronRight className={cn("h-4 w-4 text-slate-400 transition-transform duration-300", isAgendaExpanded ? "rotate-90" : "rotate-0")} />
           </button>
 
-          <div className="relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border-2 border-orange-200/60 pt-8">
+          <div className={cn(
+            "relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border-2 border-orange-200/60 transition-all duration-500 ease-in-out",
+            isAgendaExpanded ? "pt-8 pb-2 opacity-100" : "h-0 pt-0 pb-0 opacity-0 border-none"
+          )}>
 
             {/* ── TIMELINE DE EVENTOS ── */}
             <div className="relative pb-4 px-4">
@@ -858,7 +854,7 @@ export default function Dashboard() {
                       <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background z-10" />
                       <button 
                         onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-primary/30 hover:-translate-y-1 active:scale-95"
+                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-blue-50/40 border border-blue-100/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-primary/30 hover:-translate-y-1 active:scale-95"
                       >
                         <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
                           <Church className="h-5 w-5" />
@@ -894,15 +890,15 @@ export default function Dashboard() {
                   const dataObj = parseDataLocal(item.data);
                   return (
                     <div key={`atividade-${item.id}`} className="relative pl-8 animate-float-up" style={{ animationDelay: `${(index + 1) * 50}ms` }}>
-                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-background z-10" />
+                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-background z-10" />
                       <button 
                         onClick={() => {
                           if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
                           else navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
                         }}
-                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-blue-500/30 hover:-translate-y-1 active:scale-95"
+                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-emerald-50/40 border border-emerald-100/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-emerald-500/30 hover:-translate-y-1 active:scale-95"
                       >
-                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
+                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-emerald-50 text-emerald-600 flex items-center justify-center transition-transform group-hover:scale-110">
                           <Sparkles className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
