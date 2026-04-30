@@ -864,7 +864,7 @@ export default function Dashboard() {
                           <Church className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">
+                          <p className="text-sm font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
                             {proximoEncontro.tema}
                           </p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -906,7 +906,7 @@ export default function Dashboard() {
                           <Sparkles className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-blue-600 transition-colors">
+                          <p className="text-sm font-bold text-foreground leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
                             {isMissao ? (item as any).titulo : (item as any).nome}
                           </p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
