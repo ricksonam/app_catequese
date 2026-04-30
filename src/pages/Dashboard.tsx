@@ -841,7 +841,7 @@ export default function Dashboard() {
             {/* ── TIMELINE DE EVENTOS ── */}
             <div className="relative pb-4 px-4">
               {/* Mês no topo da linha */}
-              <div className="absolute left-[36px] top-0 -translate-x-1/2 bg-indigo-50 text-indigo-600 font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full z-10 shadow-sm border border-indigo-100">
+              <div className="absolute left-[36px] top-0 -translate-x-1/2 bg-primary text-white font-black text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl z-10 shadow-lg shadow-primary/20 border border-primary/20">
                 {MESES_ABREV[hoje.getMonth()]}
               </div>
 
@@ -877,10 +877,10 @@ export default function Dashboard() {
                             )}
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-[10px] font-black text-primary uppercase">Dia</p>
-                          <p className="text-lg font-black text-foreground leading-none">
-                            {String(dataE.getDate()).padStart(2, '0')} <span className="text-[10px] font-bold text-muted-foreground uppercase">{MESES_ABREV[dataE.getMonth()].replace('.', '')}</span>
+                        <div className="flex flex-col items-center justify-center min-w-[45px] h-[45px] bg-primary/5 rounded-2xl border border-primary/10 shrink-0">
+                          <p className="text-[9px] font-black text-primary/60 uppercase leading-none mb-0.5">Dia</p>
+                          <p className="text-xl font-black text-primary leading-none">
+                            {String(dataE.getDate()).padStart(2, '0')}
                           </p>
                         </div>
                       </button>
@@ -903,7 +903,7 @@ export default function Dashboard() {
                         className="w-full float-card flex items-center gap-3 p-4 text-left group bg-card border border-border/50 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-blue-500/30 hover:-translate-y-1 active:scale-95"
                       >
                         <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                          <Compass className="h-5 w-5" />
+                          <Sparkles className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold text-foreground leading-tight truncate group-hover:text-blue-600 transition-colors">
@@ -915,10 +915,10 @@ export default function Dashboard() {
                             </span>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-[10px] font-black text-blue-600 uppercase">Dia</p>
-                          <p className="text-lg font-black text-foreground leading-none">
-                            {String(dataObj.getDate()).padStart(2, '0')} <span className="text-[10px] font-bold text-muted-foreground uppercase">{MESES_ABREV[dataObj.getMonth()].replace('.', '')}</span>
+                        <div className="flex flex-col items-center justify-center min-w-[45px] h-[45px] bg-blue-50 rounded-2xl border border-blue-100 shrink-0">
+                          <p className="text-[9px] font-black text-blue-600/60 uppercase leading-none mb-0.5">Dia</p>
+                          <p className="text-xl font-black text-blue-600 leading-none">
+                            {String(dataObj.getDate()).padStart(2, '0')}
                           </p>
                         </div>
                       </button>
