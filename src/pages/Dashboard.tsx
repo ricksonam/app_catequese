@@ -826,14 +826,14 @@ export default function Dashboard() {
               "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg",
               isAgendaExpanded 
                 ? "bg-white border-slate-200 shadow-slate-200/50" 
-                : "bg-primary border-primary shadow-primary/30 scale-105"
+                : "bg-blue-500 border-blue-400 shadow-blue-500/30 scale-105"
             )}
           >
             <div className={cn(
-              "w-8 h-8 rounded-xl flex items-center justify-center transition-all",
+              "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
               isAgendaExpanded ? "bg-slate-50" : "bg-white/20"
             )}>
-              <img src="/icone_agenda.png" alt="Agenda" className={cn("w-6 h-6 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle")} />
+              <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle")} />
             </div>
             <div className="flex flex-col items-start">
               <h3 className={cn(
@@ -841,12 +841,12 @@ export default function Dashboard() {
                 isAgendaExpanded ? "text-slate-800" : "text-white"
               )}>Agenda da Turma</h3>
               {!isAgendaExpanded && (
-                <span className="text-[8px] font-bold text-white/70 uppercase tracking-tight mt-1 animate-pulse">Toque para ver encontros</span>
+                <span className="text-[8px] font-bold text-white/80 uppercase tracking-tight mt-1 animate-pulse">Toque para ver a agenda</span>
               )}
             </div>
             <ChevronRight className={cn(
               "h-4 w-4 transition-transform duration-300",
-              isAgendaExpanded ? "rotate-90 text-slate-400" : "rotate-0 text-white/50"
+              isAgendaExpanded ? "-rotate-90 text-slate-400" : "rotate-90 text-white/50"
             )} />
           </button>
 
