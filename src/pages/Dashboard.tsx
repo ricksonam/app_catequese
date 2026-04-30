@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks, Church, Compass } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks, Church, Compass, ChevronDown } from "lucide-react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
@@ -26,6 +26,15 @@ export default function Dashboard() {
     () => localStorage.getItem("ivc_selected_turma") || "all"
   );
   const [isAgendaExpanded, setIsAgendaExpanded] = useState(false);
+  const agendaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isAgendaExpanded && agendaRef.current) {
+      setTimeout(() => {
+        agendaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [isAgendaExpanded]);
 
   // Persiste a turma selecionada no localStorage
   const setSelectedTurmaId = (id: string | "all") => {
@@ -825,32 +834,34 @@ export default function Dashboard() {
             className={cn(
               "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg",
               isAgendaExpanded 
-                ? "bg-white border-slate-200 shadow-slate-200/50" 
-                : "bg-blue-500 border-blue-400 shadow-blue-500/30 scale-105"
+                ? "bg-white border-blue-500 ring-2 ring-blue-500/20 shadow-blue-500/10" 
+                : "bg-blue-400 border-blue-300 shadow-blue-400/30 scale-105"
             )}
           >
             <div className={cn(
               "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-              isAgendaExpanded ? "bg-slate-50" : "bg-white/20"
+              isAgendaExpanded ? "bg-blue-50" : "bg-white/20"
             )}>
               <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle")} />
             </div>
             <div className="flex flex-col items-start">
               <h3 className={cn(
                 "text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none",
-                isAgendaExpanded ? "text-slate-800" : "text-white"
-              )}>Agenda da Turma</h3>
+                isAgendaExpanded ? "text-blue-600" : "text-white"
+              )}>
+                {isAgendaExpanded ? "Próximos Encontros e Atividades" : "Agenda da Turma"}
+              </h3>
               {!isAgendaExpanded && (
                 <span className="text-[8px] font-bold text-white/80 uppercase tracking-tight mt-1 animate-pulse">Toque para ver a agenda</span>
               )}
             </div>
-            <ChevronRight className={cn(
+            <ChevronDown className={cn(
               "h-4 w-4 transition-transform duration-300",
-              isAgendaExpanded ? "-rotate-90 text-slate-400" : "rotate-90 text-white/50"
+              isAgendaExpanded ? "rotate-180 text-blue-500" : "rotate-0 text-white/50"
             )} />
           </button>
 
-          <div className={cn(
+          <div ref={agendaRef} className={cn(
             "relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border-2 border-orange-200/60 transition-all duration-500 ease-in-out",
             isAgendaExpanded ? "pt-8 pb-2 opacity-100" : "h-0 pt-0 pb-0 opacity-0 border-none"
           )}>
@@ -928,7 +939,7 @@ export default function Dashboard() {
                           </p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">
-                              {isMissao ? 'Missão em Família' : (item as any).tipo || 'Atividade'}
+                              Atividade
                             </span>
                           </div>
                         </div>
