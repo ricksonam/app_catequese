@@ -695,16 +695,7 @@ export async function fetchPublicTurmaById(id: string) {
 }
 
 export async function fetchPublicTurmaByCode(code: string) {
-  const { data, error } = await supabase
-    .from("turmas")
-    .select(`
-      *,
-      paroquia:paroquias(nome),
-      comunidade:comunidades(nome)
-    `)
-    .eq("codigo_acesso", code.trim().toUpperCase())
-    .maybeSingle();
-    
+  const { data, error } = await supabase.rpc('get_public_turma', { p_code: code.trim().toUpperCase() });
   if (error) throw error;
   return data;
 }
