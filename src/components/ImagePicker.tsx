@@ -1,4 +1,4 @@
-﻿import { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { Camera, Image as ImageIcon, Loader2, X } from "lucide-react";
 import { compressImage } from "@/lib/utils";
 import { uploadFile } from "@/lib/supabaseStore";
@@ -12,6 +12,7 @@ interface ImagePickerProps {
   className?: string;
   shape?: "circle" | "square";
   label?: string;
+  hideCamera?: boolean;
 }
 
 export function ImagePicker({ 
@@ -20,7 +21,8 @@ export function ImagePicker({
   currentImageUrl, 
   className,
   shape = "square",
-  label = "Foto"
+  label = "Foto",
+  hideCamera = false
 }: ImagePickerProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,22 +85,27 @@ export function ImagePicker({
           </div>
         )}
 
-        <div className="flex gap-2 w-full max-w-[300px]">
-          <button
-            type="button"
-            disabled={isUploading}
-            onClick={() => cameraInputRef.current?.click()}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors disabled:opacity-50"
-          >
-            <Camera className="h-4 w-4" /> Câmera
-          </button>
+        <div className={cn("flex gap-2 w-full max-w-[300px]", hideCamera && "justify-center")}>
+          {!hideCamera && (
+            <button
+              type="button"
+              disabled={isUploading}
+              onClick={() => cameraInputRef.current?.click()}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors disabled:opacity-50"
+            >
+              <Camera className="h-4 w-4" /> Câmera
+            </button>
+          )}
           <button
             type="button"
             disabled={isUploading}
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gold/15 text-gold text-xs font-bold hover:bg-gold/25 transition-colors disabled:opacity-50"
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gold/15 text-gold text-xs font-bold hover:bg-gold/25 transition-colors disabled:opacity-50",
+              hideCamera && "flex-none px-12 py-3.5 bg-gold text-white hover:bg-gold/90 shadow-xl shadow-gold/20 text-sm rounded-2xl"
+            )}
           >
-            <ImageIcon className="h-4 w-4" /> Galeria
+            <ImageIcon className={cn("h-4 w-4", hideCamera && "h-5 w-5")} /> Galeria
           </button>
         </div>
 

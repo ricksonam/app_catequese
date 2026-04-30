@@ -244,11 +244,12 @@ export default function PublicInscricao() {
             <div className="flex flex-col md:flex-row gap-8 items-start">
               <div className="mx-auto md:mx-0">
                 <ImagePicker 
-                  onImageSelected={(url) => updateField("foto", url)} 
+                  onImageUpload={(url) => updateField("foto", url)} 
                   folder="catequizandos" 
                   currentImageUrl={form.foto} 
                   shape="circle" 
-                  label="Foto do Pequeno Cristão"
+                  label="Foto"
+                  hideCamera={true}
                 />
               </div>
               <div className="flex-1 w-full space-y-4">
