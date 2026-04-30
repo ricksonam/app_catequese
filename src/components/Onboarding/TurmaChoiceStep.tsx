@@ -62,8 +62,8 @@ export function TurmaChoiceStep({ open, onSelectCreate, onSelectJoin, onExit }: 
               <UserPlus className="h-5 w-5 text-primary" />
             </div>
             <div className="flex flex-col items-start text-left">
-              <span>Participar de Turma</span>
-              <span className="text-[9px] font-medium text-primary/70 normal-case tracking-normal">Tenho um código de acesso</span>
+              <span className="text-base">Participar de Turma</span>
+              <span className="text-[11px] font-medium text-primary/70 normal-case tracking-normal">Tenho um código de acesso</span>
             </div>
           </Button>
 
