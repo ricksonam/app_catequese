@@ -66,7 +66,8 @@ export default function Dashboard() {
   const respostasCount = todasRespostas.length;
 
   const totalMissoesConcluidas = useMemo(() => globalMissoes.reduce((acc, m) => acc + (m.concluidas || 0), 0), [globalMissoes]);
-  const totalMensagens = totalMissoesConcluidas + respostasCount;
+  const pendentesInscricao = useMemo(() => catequizandos.filter(c => c.status === 'pending'), [catequizandos]);
+  const totalMensagens = totalMissoesConcluidas + respostasCount + pendentesInscricao.length;
 
   const feedMensagens = useMemo(() => {
     const feed: { id: string; tipo: 'iavalia' | 'missao'; titulo: string; remetente: string; data: Date; rawDate: string; }[] = [];
@@ -94,6 +95,17 @@ export default function Dashboard() {
           rawDate: m.criadoEm || ''
         });
       }
+    });
+
+    pendentesInscricao.forEach(c => {
+      feed.push({
+        id: `inscricao_${c.id}`,
+        tipo: 'inscricao' as any,
+        titulo: 'Nova Inscrição Online',
+        remetente: c.nome,
+        data: new Date(c.criado_em || Date.now()),
+        rawDate: c.criado_em || ''
+      });
     });
 
     return feed.sort((a, b) => b.data.getTime() - a.data.getTime());
@@ -128,7 +140,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!loading && !tError && isReady && user) {
       // 1. Verificar se aceitou os termos (prioridade máxima)
-      // Usamos tanto metadata quanto localStorage para redundância/velocidade
       const termsAcceptedMeta = user?.user_metadata?.terms_accepted;
       const termsAcceptedLocal = localStorage.getItem("ivc_terms_accepted");
       
@@ -137,34 +148,63 @@ export default function Dashboard() {
         return;
       }
 
-      // Se já tem o cadastro final (TURMA), não mostra o onboarding
+      // Se já tem turmas, não mostra onboarding
       if (turmas.length > 0) {
-        // Se o usuário acabou de concluir o passo 'turma', NÃO feche automaticamente.
-        // Isso permite que ele veja a tela "Tudo Pronto!" e feche manualmente.
         if (onboardingStep !== "turma") {
           setOnboardingStep("none");
         }
         return;
       }
 
-      // 3. Se não tem dados, verifica o fluxo de onboarding
-      const onboardingCompleted = localStorage.getItem("ivc_onboarding_completed");
-      
-      if (onboardingCompleted) {
-        setOnboardingStep("none");
-        return;
-      }
-
-      // Direciona para o passo de cadastro correto baseado nos dados reais (somente se não estiver já no meio de um passo)
+      // Direciona para o passo de cadastro correto
       if (onboardingStep === "none") {
         if (paroquias.length === 0 && comunidades.length === 0) {
           setOnboardingStep("turma-choice");
         } else if (catequistas.length === 0) {
           setOnboardingStep("catequista");
+        } else {
+          setOnboardingStep("turma");
         }
       }
     }
-  }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length, user, isReady]);
+  }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length, user, isReady, onboardingStep]);
+
+  // Realtime subscriptions for notifications
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'comunicacao_respostas' },
+        () => {
+          tRefetch();
+          toast.info("Nova resposta do Conecta Família recebida!");
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'catequizandos' },
+        () => {
+          tRefetch();
+          toast.info("Nova inscrição online recebida!");
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'missoes_familia' },
+        () => {
+          tRefetch();
+          toast.info("Uma família concluiu uma missão!");
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, tRefetch]);
 
   useEffect(() => {
     if (!loading) {
@@ -840,7 +880,7 @@ export default function Dashboard() {
           >
             <div className={cn(
               "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-              isAgendaExpanded ? "bg-emerald-50" : "bg-white/10"
+              isAgendaExpanded ? "bg-emerald-50" : "bg-white shadow-sm"
             )}>
               <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", isAgendaExpanded ? "" : "animate-bounce-subtle drop-shadow-sm")} />
             </div>
@@ -1153,22 +1193,32 @@ export default function Dashboard() {
               feedMensagens.map(msg => (
                 <div key={msg.id} className="bg-white dark:bg-zinc-800/80 rounded-2xl p-4 border border-slate-100 dark:border-slate-800/50 shadow-sm flex items-start gap-3 transition-all hover:border-blue-500/20">
                   <div className={cn("w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-[0.5px]", 
-                    msg.tipo === 'iavalia' ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-orange-50 text-orange-600 border-orange-200"
+                    msg.tipo === 'iavalia' ? "bg-emerald-50 text-emerald-600 border-emerald-200" : 
+                    msg.tipo === 'missao' ? "bg-orange-50 text-orange-600 border-orange-200" :
+                    "bg-blue-50 text-blue-600 border-blue-200"
                   )}>
-                    {msg.tipo === 'iavalia' ? <BookOpen className="h-5 w-5" /> : <Heart className="h-5 w-5" />}
+                    {msg.tipo === 'iavalia' ? <BookOpen className="h-5 w-5" /> : 
+                     msg.tipo === 'missao' ? <Heart className="h-5 w-5" /> :
+                     <Users className="h-5 w-5" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={cn("text-[9px] font-black uppercase tracking-wider mb-1", 
-                      msg.tipo === 'iavalia' ? "text-emerald-600" : "text-orange-600"
+                      msg.tipo === 'iavalia' ? "text-emerald-600" : 
+                      msg.tipo === 'missao' ? "text-orange-600" :
+                      "text-blue-600"
                     )}>
-                      {msg.tipo === 'iavalia' ? 'Conecta famílias - Resposta' : 'Catequese em Família'}
+                      {msg.tipo === 'iavalia' ? 'Conecta famílias - Resposta' : 
+                       msg.tipo === 'missao' ? 'Catequese em Família' :
+                       'Nova Inscrição Online'}
                     </p>
                     <h4 className="text-sm font-bold text-foreground truncate">{msg.titulo}</h4>
                     <p className="text-xs text-muted-foreground mt-1">
                       {msg.tipo === 'iavalia' ? (
                         <>Respondido por: <strong className="text-foreground">{msg.remetente}</strong></>
-                      ) : (
+                      ) : msg.tipo === 'missao' ? (
                         <>{msg.remetente}</>
+                      ) : (
+                        <>Inscrito: <strong className="text-foreground">{msg.remetente}</strong></>
                       )}
                     </p>
                   </div>
