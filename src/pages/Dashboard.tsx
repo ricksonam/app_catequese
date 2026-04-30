@@ -277,6 +277,10 @@ export default function Dashboard() {
     return d;
   }, []);
 
+  const nomeMesCompleto = useMemo(() => {
+    return hoje.toLocaleString('pt-BR', { month: 'long' }).toUpperCase();
+  }, [hoje]);
+
   const parseDataLocal = (dataStr: string) => {
     if (!dataStr) return new Date();
     const parts = dataStr.split('T')[0].split('-');
@@ -864,7 +868,7 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {(proximoEncontro || proximasAtividades.length > 0) && (
-        <div className="pt-12 mb-2">
+        <div className="pt-20 mb-2">
           <div className="animate-float-up relative" style={{ animationDelay: '200ms' }}>
 
           
@@ -872,7 +876,7 @@ export default function Dashboard() {
           <button 
             onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
             className={cn(
-              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-6 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
+              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-10 py-3 flex items-center gap-3 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
               !isAgendaExpanded && "scale-105"
             )}
           >
@@ -880,8 +884,9 @@ export default function Dashboard() {
               <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", !isAgendaExpanded && "animate-bounce-subtle drop-shadow-sm")} />
             </div>
             <div className="flex flex-col items-start">
-              <h3 className="text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none text-emerald-700">
-                Agenda - {MESES_ABREV[hoje.getMonth()]}
+              <h3 className="text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none">
+                <span className="text-black">AGENDA DA TURMA</span>
+                <span className="text-emerald-700"> - {nomeMesCompleto}</span>
               </h3>
               <span className="text-[8px] font-bold uppercase tracking-tight mt-1 text-emerald-600/70">
                 {isAgendaExpanded ? "Próximos encontros e atividades" : "Toque para ver a agenda"}
