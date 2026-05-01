@@ -137,23 +137,23 @@ export interface Atividade {
 export interface Paroquia {
   id: string;
   nome: string;
-  tipo: 'Paróquia' | 'Área Pastoral' | 'Escola';
+  tipo?: 'Paróquia' | 'Área Pastoral' | 'Escola';
   endereco: string;
   telefone: string;
   email: string;
   responsavel: string;
-  observacao: string;
+  observacao?: string;
 }
 
 export interface Comunidade {
   id: string;
   nome: string;
-  tipo: 'Comunidade' | 'Núcleo' | 'Grupo';
+  tipo?: 'Comunidade' | 'Núcleo' | 'Grupo';
   paroquiaId: string;
   endereco: string;
   responsavel: string;
   telefone: string;
-  observacao: string;
+  observacao?: string;
 }
 
 export interface CatequistaCadastro {
@@ -164,13 +164,13 @@ export interface CatequistaCadastro {
   numero?: string;
   bairro?: string;
   complemento?: string;
-  profissao: string;
+  profissao?: string;
   telefone: string;
   email: string;
   comunidadeId: string;
-  formacao: string;
+  formacao?: string;
   anosExperiencia: string;
-  observacao: string;
+  observacao?: string;
   foto?: string;
   status?: string;
 }

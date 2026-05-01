@@ -6,8 +6,8 @@ import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-interface FormData { nome: string; tipo: Paroquia['tipo']; endereco: string; telefone: string; email: string; responsavel: string; observacao: string; }
-const emptyForm: FormData = { nome: "", tipo: "Paróquia", endereco: "", telefone: "", email: "", responsavel: "", observacao: "" };
+interface FormData { nome: string; endereco: string; telefone: string; email: string; responsavel: string; }
+const emptyForm: FormData = { nome: "", endereco: "", telefone: "", email: "", responsavel: "" };
 
 export default function ParoquiaCadastro() {
   const navigate = useNavigate();
@@ -43,11 +43,9 @@ export default function ParoquiaCadastro() {
             <DialogHeader><DialogTitle>Novo Cadastro</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
               <FieldInput label="Nome *" value={form.nome} onChange={(v) => updateField("nome", v)} />
-              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo</label><select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input"><option>Paróquia</option><option>Área Pastoral</option><option>Escola</option></select></div>
               <FieldInput label="Endereço" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
               <div className="grid grid-cols-2 gap-2"><FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", v)} /><FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} /></div>
-              <FieldInput label="Responsável" value={form.responsavel} onChange={(v) => updateField("responsavel", v)} />
-              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+              <FieldInput label="Pároco responsável" value={form.responsavel} onChange={(v) => updateField("responsavel", v)} />
               <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : "Salvar"}</button>
             </div>
           </DialogContent>
@@ -70,7 +68,7 @@ export default function ParoquiaCadastro() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">{item.tipo}{item.endereco && ` • ${item.endereco}`}</p>
+              <p className="text-xs text-muted-foreground">{item.endereco}</p>
             </div>
             <button onClick={() => setViewItem(item)} className="back-btn"><Eye className="h-4 w-4 text-muted-foreground" /></button>
           </div>
@@ -86,7 +84,7 @@ export default function ParoquiaCadastro() {
                 <p className="text-xs font-semibold">Registro compartilhado pela turma. Apenas visualização.</p>
               </div>
             )}
-            <InfoRow label="Tipo" value={viewItem.tipo} /><InfoRow label="Endereço" value={viewItem.endereco} /><InfoRow label="Telefone" value={viewItem.telefone} /><InfoRow label="E-mail" value={viewItem.email} /><InfoRow label="Responsável" value={viewItem.responsavel} /><InfoRow label="Observação" value={viewItem.observacao} />
+            <InfoRow label="Endereço" value={viewItem.endereco} /><InfoRow label="Telefone" value={viewItem.telefone} /><InfoRow label="E-mail" value={viewItem.email} /><InfoRow label="Pároco responsável" value={viewItem.responsavel} />
             {!(viewItem as any).isShared && (
               <button onClick={() => handleDelete(viewItem.id)} className="w-full flex items-center justify-center gap-2 text-destructive py-2.5 mt-3 rounded-xl hover:bg-destructive/10 text-sm font-semibold"><Trash2 className="h-4 w-4" /> Excluir</button>
             )}

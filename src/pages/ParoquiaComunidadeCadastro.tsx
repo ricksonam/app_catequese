@@ -11,24 +11,20 @@ import { mascaraTelefone } from "@/lib/utils";
 interface UnifiedFormData {
   // Paroquia
   pNome: string;
-  pTipo: string;
   pEndereco: string;
   pTelefone: string;
   pEmail: string;
   pResponsavel: string;
-  pObservacao: string;
   // Comunidade
   cNome: string;
-  cTipo: string;
   cEndereco: string;
   cResponsavel: string;
   cTelefone: string;
-  cObservacao: string;
 }
 
 const emptyForm: UnifiedFormData = {
-  pNome: "", pTipo: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pObservacao: "",
-  cNome: "", cTipo: "", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
+  pNome: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "",
+  cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "",
 };
 
 export default function ParoquiaComunidadeCadastro() {
@@ -49,7 +45,7 @@ export default function ParoquiaComunidadeCadastro() {
   // States for isolated Community management (Nova comunidade na Paróquia)
   const [cFormOpen, setCFormOpen] = useState(false);
   const [cForm, setCForm] = useState({
-    id: "", paroquiaId: "", nome: "", tipo: "Comunidade", endereco: "", responsavel: "", telefone: "", observacao: ""
+    id: "", paroquiaId: "", nome: "", endereco: "", responsavel: "", telefone: ""
   });
 
   const updateField = useCallback((field: keyof UnifiedFormData, value: string) => {
@@ -83,12 +79,10 @@ export default function ParoquiaComunidadeCadastro() {
       await pMutation.mutateAsync({
         id: pId,
         nome: form.pNome,
-        tipo: form.pTipo as any,
         endereco: form.pEndereco,
         telefone: form.pTelefone,
         email: form.pEmail,
         responsavel: form.pResponsavel,
-        observacao: form.pObservacao,
       });
 
       // 2. Save Comunidade ONLY IF Create mode
@@ -97,12 +91,10 @@ export default function ParoquiaComunidadeCadastro() {
         await cMutation.mutateAsync({
           id: cId,
           nome: form.cNome,
-          tipo: form.cTipo as any,
           paroquiaId: pId,
           endereco: form.cEndereco,
           responsavel: form.cResponsavel,
           telefone: form.cTelefone,
-          observacao: form.cObservacao,
         });
       }
 
@@ -131,8 +123,8 @@ export default function ParoquiaComunidadeCadastro() {
 
   const openEdit = (p: Paroquia) => {
     setForm({
-      pNome: p.nome, pTipo: p.tipo, pEndereco: p.endereco, pTelefone: p.telefone, pEmail: p.email, pResponsavel: p.responsavel, pObservacao: p.observacao,
-      cNome: "", cTipo: "Comunidade", cEndereco: "", cResponsavel: "", cTelefone: "", cObservacao: "",
+      pNome: p.nome, pEndereco: p.endereco, pTelefone: p.telefone, pEmail: p.email, pResponsavel: p.responsavel,
+      cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "",
     });
     setEditingIds({ pId: p.id, cId: "" });
     setViewPId(null);
@@ -146,11 +138,9 @@ export default function ParoquiaComunidadeCadastro() {
         id: cForm.id || crypto.randomUUID(),
         paroquiaId: cForm.paroquiaId,
         nome: cForm.nome,
-        tipo: cForm.tipo as any,
         endereco: cForm.endereco,
         responsavel: cForm.responsavel,
         telefone: cForm.telefone,
-        observacao: cForm.observacao
       });
       setCFormOpen(false);
       toast.success("Comunidade salva!");
@@ -207,7 +197,6 @@ export default function ParoquiaComunidadeCadastro() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">{group.p.nome}</p>
-                    <p className="text-[10px] text-liturgical uppercase font-black tracking-widest">{group.p.tipo}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -247,41 +236,18 @@ export default function ParoquiaComunidadeCadastro() {
                 <Church className="h-4 w-4 text-primary" />
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Paróquia / Área / Escola</h3>
               </div>
-              <div>
-                <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <select 
-                    value={form.pTipo} 
-                    onChange={(e) => updateField("pTipo", e.target.value)} 
-                    className={cn(
-                      "form-input appearance-none pr-10",
-                      !form.pTipo && "border-amber-500/50 bg-amber-500/5"
-                    )}
-                  >
-                    <option value="" disabled>Selecione o tipo...</option>
-                    <option>Paróquia</option>
-                    <option>Área Missionária</option>
-                    <option>Região</option>
-                    <option>Escola</option>
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
-                  </div>
-                </div>
-              </div>
               <FieldInput 
-                label={form.pTipo ? `Nome da ${form.pTipo} *` : "Nome *"} 
+                label="Nome *" 
                 value={form.pNome} 
                 onChange={(v) => updateField("pNome", v)} 
-                placeholder={form.pTipo ? `Digite o nome da ${form.pTipo.toLowerCase()}` : "Selecione o tipo primeiro"}
+                placeholder="Digite o nome da paróquia/área/escola"
               />
               <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} />
               <div className="grid grid-cols-2 gap-2">
                 <FieldInput label="Telefone" type="tel" value={form.pTelefone} onChange={(v) => updateField("pTelefone", mascaraTelefone(v))} />
                 <FieldInput label="E-mail" type="email" value={form.pEmail} onChange={(v) => updateField("pEmail", v)} />
               </div>
-              <FieldInput label="Responsável" value={form.pResponsavel} onChange={(v) => updateField("pResponsavel", v)} />
-              <FieldTextArea label="Observação" value={form.pObservacao} onChange={(v) => updateField("pObservacao", v)} />
+              <FieldInput label="Pároco responsável" value={form.pResponsavel} onChange={(v) => updateField("pResponsavel", v)} />
             </div>
 
             {/* Section 2: Community */}
@@ -291,39 +257,17 @@ export default function ParoquiaComunidadeCadastro() {
                   <Users className="h-4 w-4 text-accent-foreground" />
                   <h3 className="text-sm font-bold text-foreground uppercase tracking-wide">Dados da Comunidade / Núcleo</h3>
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo da Comunidade <span className="text-red-500">*</span></label>
-                  <div className="relative">
-                    <select 
-                      value={form.cTipo} 
-                      onChange={(e) => updateField("cTipo", e.target.value)} 
-                      className={cn(
-                        "form-input appearance-none pr-10",
-                        !form.cTipo && "border-amber-500/50 bg-amber-500/5"
-                      )}
-                    >
-                      <option value="" disabled>Selecione o tipo...</option>
-                      <option>Comunidade</option>
-                      <option>Núcleo</option>
-                      <option>Grupo</option>
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
-                    </div>
-                  </div>
-                </div>
                 <FieldInput 
-                  label={form.cTipo ? `Nome da ${form.cTipo} *` : "Nome da Comunidade *"} 
+                  label="Nome da Comunidade *" 
                   value={form.cNome} 
                   onChange={(v) => updateField("cNome", v)} 
-                  placeholder={form.cTipo ? `Digite o nome da ${form.cTipo.toLowerCase()}` : "Selecione o tipo primeiro"}
+                  placeholder="Digite o nome da comunidade/núcleo"
                 />
                 <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} />
                 <div className="grid grid-cols-2 gap-2">
                   <FieldInput label="Responsável" value={form.cResponsavel} onChange={(v) => updateField("cResponsavel", v)} />
                   <FieldInput label="Telefone" type="tel" value={form.cTelefone} onChange={(v) => updateField("cTelefone", mascaraTelefone(v))} />
                 </div>
-                <FieldTextArea label="Observação da Comunidade" value={form.cObservacao} onChange={(v) => updateField("cObservacao", v)} />
               </div>
             ) : (
               <div className="space-y-3 pt-2">
@@ -351,14 +295,13 @@ export default function ParoquiaComunidadeCadastro() {
                 {editingGroup?.cList.map(c => (
                   <div key={c.id} className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-muted/30">
                     <div className="min-w-0">
-                      <p className="text-xs font-bold truncate text-foreground">{c.nome}</p>
-                      <p className="text-[10px] text-muted-foreground">{c.tipo}</p>
+                    <p className="text-xs font-bold truncate text-foreground">{c.nome}</p>
                     </div>
                     <div className="flex gap-1.5">
                       <button 
                         onClick={(e) => {
                           e.preventDefault();
-                          setCForm({ id: c.id, paroquiaId: c.paroquiaId, nome: c.nome, tipo: c.tipo, endereco: c.endereco || "", responsavel: c.responsavel || "", telefone: c.telefone || "", observacao: c.observacao || "" });
+                          setCForm({ id: c.id, paroquiaId: c.paroquiaId, nome: c.nome, endereco: c.endereco || "", responsavel: c.responsavel || "", telefone: c.telefone || "" });
                           setCFormOpen(true);
                         }}
                         className="text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded-lg transition-colors active:scale-95"
@@ -410,9 +353,6 @@ export default function ParoquiaComunidadeCadastro() {
                 </div>
                 
                 <h2 className="text-2xl font-black text-foreground tracking-tight drop-shadow-sm mb-2">{activeGroup.p.nome}</h2>
-                <div className="px-4 py-1.5 rounded-full bg-[hsl(var(--liturgical))]/10 border border-[hsl(var(--liturgical))]/20 inline-flex items-center justify-center mb-4 backdrop-blur-sm">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[hsl(var(--liturgical))]">{activeGroup.p.tipo}</span>
-                </div>
                 
                 {activeGroup.cList.length > 0 && (
                   <div className="flex items-center justify-center gap-2 text-xs font-bold text-muted-foreground bg-white/60 dark:bg-black/60 px-4 py-2 rounded-2xl border border-border/50 shadow-sm w-full max-w-[280px]">
@@ -434,8 +374,7 @@ export default function ParoquiaComunidadeCadastro() {
                     <InfoRow icon={MapPin} label="Endereço" value={activeGroup.p.endereco} />
                     <InfoRow icon={Phone} label="Telefone" value={activeGroup.p.telefone} />
                     <InfoRow icon={Mail} label="E-mail" value={activeGroup.p.email} />
-                    <InfoRow icon={Users} label="Responsável" value={activeGroup.p.responsavel} />
-                    <InfoRow icon={FileText} label="Observações" value={activeGroup.p.observacao} />
+                    <InfoRow icon={Users} label="Pároco responsável" value={activeGroup.p.responsavel} />
                   </div>
                 </div>
 
@@ -451,14 +390,13 @@ export default function ParoquiaComunidadeCadastro() {
                   <div key={c.id} className="float-card p-5 space-y-4 border-accent/20 bg-white/50 dark:bg-black/20">
                     <div className="flex items-center gap-2.5 border-b border-border/50 pb-3">
                         <Users className="h-4 w-4 text-accent-foreground" />
-                        <h3 className="text-xs font-black text-foreground uppercase tracking-widest">{c.nome} <span className="text-[9px] text-muted-foreground ml-1">({c.tipo})</span></h3>
+                        <h3 className="text-xs font-black text-foreground uppercase tracking-widest">{c.nome}</h3>
                     </div>
                     
                     <div className="space-y-4">
                       <InfoRow icon={MapPin} label="Endereço" value={c.endereco} />
                       <InfoRow icon={Phone} label="Telefone" value={c.telefone} />
                       <InfoRow icon={Users} label="Responsável" value={c.responsavel} />
-                      <InfoRow icon={FileText} label="Observações" value={c.observacao} />
                     </div>
                   </div>
                 ))}
@@ -494,37 +432,15 @@ export default function ParoquiaComunidadeCadastro() {
             <DialogTitle>{cForm.id ? "Editar Comunidade" : "Nova Comunidade"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2 pb-2">
-            <div>
-              <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Vínculo <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <select 
-                  value={cForm.tipo} 
-                  onChange={(e) => setCForm(p => ({ ...p, tipo: e.target.value }))} 
-                  className={cn(
-                    "form-input appearance-none pr-10",
-                    !cForm.tipo && "border-amber-500/50 bg-amber-500/5"
-                  )}
-                >
-                  <option value="" disabled>Selecione o tipo...</option>
-                  <option>Comunidade</option>
-                  <option>Núcleo</option>
-                  <option>Grupo</option>
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <ChevronRight className="h-4 w-4 text-muted-foreground rotate-90" />
-                </div>
-              </div>
-            </div>
             <FieldInput 
-              label={cForm.tipo ? `Nome da ${cForm.tipo} *` : "Nome *"} 
+              label="Nome *" 
               value={cForm.nome} 
               onChange={(v) => setCForm(p => ({ ...p, nome: v }))} 
-              placeholder={cForm.tipo ? `Digite o nome da ${cForm.tipo.toLowerCase()}` : "Selecione o tipo primeiro"}
+              placeholder="Digite o nome da comunidade/núcleo"
             />
             <FieldInput label="Endereço" value={cForm.endereco} onChange={(v) => setCForm(p => ({ ...p, endereco: v }))} />
             <FieldInput label="Responsável" value={cForm.responsavel} onChange={(v) => setCForm(p => ({ ...p, responsavel: v }))} />
             <FieldInput label="Telefone" type="tel" value={cForm.telefone} onChange={(v) => setCForm(p => ({ ...p, telefone: mascaraTelefone(v) }))} />
-            <FieldTextArea label="Observação" value={cForm.observacao} onChange={(v) => setCForm(p => ({ ...p, observacao: v }))} />
             <div className="flex gap-2 pt-4">
               <button onClick={() => setCFormOpen(false)} className="flex-1 py-3 px-4 rounded-xl border border-border text-sm font-semibold hover:bg-muted transition-colors">Cancelar</button>
               <button onClick={handleSaveSingleComunidade} disabled={cMutation.isPending} className="flex-[2] action-btn">

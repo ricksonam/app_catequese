@@ -12,17 +12,17 @@ type CatequistaStatus = "ativo" | "inativo" | "afastado";
 
 interface FormData {
   nome: string; dataNascimento: string; endereco: string; 
-  numero: string; bairro: string; complemento: string;
-  profissao: string; telefone: string;
-  email: string; comunidadeId: string; formacao: string; 
-  anosExperiencia: string; observacao: string; status: CatequistaStatus;
+  numero: string; bairro: string;
+  telefone: string;
+  email: string; comunidadeId: string;
+  anosExperiencia: string;
   foto: string;
 }
 const emptyForm: FormData = {
   nome: "", dataNascimento: "", endereco: "", 
-  numero: "", bairro: "", complemento: "",
-  profissao: "", telefone: "",
-  email: "", comunidadeId: "", formacao: "", anosExperiencia: "", observacao: "", status: "ativo",
+  numero: "", bairro: "",
+  telefone: "",
+  email: "", comunidadeId: "", anosExperiencia: "",
   foto: "",
 };
 
@@ -60,7 +60,17 @@ export default function CatequistasCadastro() {
     if (!form.nome) { toast.error("Nome é obrigatório"); return; }
     try {
       const id = editMode && editingId ? editingId : crypto.randomUUID();
-      await mutation.mutateAsync({ id, ...form });
+      const existingItem = list.find(it => it.id === id);
+      await mutation.mutateAsync({ 
+        id, 
+        ...form, 
+        status: (existingItem as any)?.status || "ativo",
+        // Keep these fields if they exist (for edit mode)
+        profissao: (existingItem as any)?.profissao || "",
+        complemento: (existingItem as any)?.complemento || "",
+        formacao: (existingItem as any)?.formacao || "",
+        observacao: (existingItem as any)?.observacao || "",
+      });
       setForm({ ...emptyForm });
       setOpen(false);
       if (editMode && editingId) {
@@ -80,11 +90,10 @@ export default function CatequistasCadastro() {
   const openEdit = (item: CatequistaCadastro) => {
     setForm({
       nome: item.nome, dataNascimento: item.dataNascimento, 
-      endereco: item.endereco, numero: item.numero || "", bairro: item.bairro || "", complemento: item.complemento || "",
-      profissao: item.profissao, telefone: item.telefone, email: item.email,
-      comunidadeId: item.comunidadeId || "", formacao: item.formacao,
-      anosExperiencia: item.anosExperiencia, observacao: item.observacao,
-      status: (item as any).status || "ativo",
+      endereco: item.endereco, numero: item.numero || "", bairro: item.bairro || "",
+      telefone: item.telefone, email: item.email,
+      comunidadeId: item.comunidadeId || "",
+      anosExperiencia: item.anosExperiencia,
       foto: item.foto || "",
     });
     setEditMode(true);
@@ -194,27 +203,7 @@ export default function CatequistasCadastro() {
                 <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
               </div>
             </div>
-            <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
-            <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} />
-            <div className="grid grid-cols-2 gap-2">
-              <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
-              <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
-            </div>
-            {comunidades.length > 0 && (
-              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Comunidade</label>
-                <select value={form.comunidadeId} onChange={(e) => updateField("comunidadeId", e.target.value)} className="form-input">
-                  <option value="">Selecione...</option>{comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-                </select>
-              </div>
-            )}
-            <FieldInput label="Formação" value={form.formacao} onChange={(v) => updateField("formacao", v)} placeholder="Ex: Teologia, Pedagogia..." />
             <FieldInput label="Anos de experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
-            <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Status</label>
-              <select value={form.status} onChange={(e) => updateField("status", e.target.value as CatequistaStatus)} className="form-input">
-                <option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="afastado">Afastado</option>
-              </select>
-            </div>
-            <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
             
             <div className="flex gap-2 pt-2">
               <button 
@@ -255,7 +244,7 @@ export default function CatequistasCadastro() {
                     </div>
                     <h2 className="text-lg font-bold text-foreground">{viewItem.nome}</h2>
                     <p className="text-xs text-muted-foreground mt-0.5">{viewItem.formacao || "Catequista"}</p>
-                    <span className={`mt-2 text-xs font-bold px-3 py-1 rounded-full ${st.bg} ${st.color}`}>{st.label}</span>
+
                   </div>
                 </div>
 
