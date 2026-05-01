@@ -772,59 +772,7 @@ export default function Dashboard() {
         </div>
       )}
       
-      {/* ── CARD DE BOAS-VINDAS / SEM TURMA ── */}
-      {turmas.length === 0 && !loading && (
-        <div className="mx-4 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="relative overflow-hidden rounded-[40px] bg-white border-2 border-zinc-800 shadow-[8px_8px_0px_0px_rgba(39,39,42,1)] p-8 group">
-            {/* Background Decorative */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[80px] -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-            
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center border-2 border-amber-200 shadow-sm animate-bounce-subtle">
-                  <Sparkles className="h-6 w-6 text-amber-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black text-foreground leading-tight uppercase tracking-tight">Primeiros Passos</h2>
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Quase tudo pronto!</p>
-                </div>
-              </div>
 
-              <div className="space-y-4 mb-8">
-                <p className="text-sm text-zinc-600 font-medium leading-relaxed">
-                  Sua paróquia e perfil foram configurados. Agora, para começar a gerenciar seus catequizandos, você precisa <strong>criar sua turma</strong> ou <strong>entrar em uma existente</strong>.
-                </p>
-                
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-zinc-50 border border-zinc-100">
-                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <BookOpen className="h-4 w-4 text-primary" />
-                  </div>
-                  <p className="text-[10px] text-zinc-500 font-bold leading-tight">
-                    Você pode ser o catequista responsável por uma nova turma ou auxiliar um colega usando o código da turma dele.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Button 
-                  onClick={() => setShowCreateTurma(true)}
-                  className="h-14 rounded-2xl bg-primary text-white font-black uppercase text-[11px] tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                >
-                  <Plus className="h-4 w-4" /> Criar Minha Turma
-                </Button>
-                
-                <Button 
-                  onClick={() => setJoinModalOpen(true)}
-                  variant="outline"
-                  className="h-14 rounded-2xl border-2 border-zinc-800 bg-white hover:bg-zinc-50 text-zinc-900 font-black uppercase text-[11px] tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                >
-                  <Code className="h-4 w-4" /> Entrar com Código
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── MÓDULOS DE ACESSO RÁPIDO (CATEQUIZANDOS E ENCONTROS) ── */}
       {turmas.length > 0 && (
