@@ -15,6 +15,8 @@ import WelcomeModal from "@/components/WelcomeModal";
 import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
 import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
 import { TurmaStep } from "@/components/Onboarding/TurmaStep";
+import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
+import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
