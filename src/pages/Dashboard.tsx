@@ -638,20 +638,23 @@ export default function Dashboard() {
                   </p>
                 </div>
                 
-                <button
-                  onClick={() => setShowCreateTurma(true)}
-                  className="w-full bg-emerald-600 text-white h-14 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-3"
-                >
-                  <Plus className="h-5 w-5" />
-                  Criar Minha Primeira Turma
-                </button>
-                
-                <button
-                  onClick={() => setJoinModalOpen(true)}
-                  className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 hover:opacity-70 transition-opacity"
-                >
-                  Ou entrar com código de outra turma
-                </button>
+                <div className="grid grid-cols-1 gap-3 w-full mt-2">
+                  <button
+                    onClick={() => setShowCreateTurma(true)}
+                    className="w-full bg-emerald-600 text-white h-14 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-3"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Criar Minha Primeira Turma
+                  </button>
+                  
+                  <button
+                    onClick={() => setJoinModalOpen(true)}
+                    className="w-full bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 h-14 rounded-2xl font-black uppercase tracking-widest text-xs border-2 border-emerald-500/20 hover:bg-emerald-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-3"
+                  >
+                    <Link2 className="h-5 w-5" />
+                    Entrar com Código
+                  </button>
+                </div>
               </div>
             </div>
           </div>
