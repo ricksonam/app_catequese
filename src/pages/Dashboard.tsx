@@ -149,17 +149,13 @@ export default function Dashboard() {
         return;
       }
 
-      // Se já tem turmas, não mostra onboarding
-      if (turmas.length > 0) {
-        if (onboardingStep !== "turma") {
-          setOnboardingStep("none");
+      // Se tiver Paróquia e Catequista, permite acesso ao Dashboard mesmo sem Turma
+      if (paroquias.length > 0 && catequistas.length > 0) {
+        if (onboardingStep !== "none" && onboardingStep !== "welcome") {
+           setOnboardingStep("none");
         }
         return;
       }
-
-      // Direciona para o passo de cadastro correto
-      // Se estiver no fluxo de entrar com código, não redireciona
-      if (onboardingStep === "join-code") return;
 
       if (onboardingStep === "none") {
         if (paroquias.length === 0 && comunidades.length === 0) {
@@ -167,7 +163,10 @@ export default function Dashboard() {
         } else if (catequistas.length === 0) {
           setOnboardingStep("catequista");
         } else {
-          setOnboardingStep("turma");
+          // Se chegou aqui, tem paróquia e catequista, então não deveria bloquear.
+          // Mas por segurança, se o fluxo explicitamente pedir "turma", deixamos.
+          // Porém a regra acima já deve ter capturado os casos de dashboard.
+          setOnboardingStep("none");
         }
       }
     }
@@ -617,6 +616,47 @@ export default function Dashboard() {
           )}
         </button>
       </div>
+
+      {/* CARD DE CRIAR TURMA (QUANDO NÃO HÁ TURMAS) */}
+      {turmas.length === 0 && onboardingStep === "none" && (
+        <div className="animate-card-activate mb-4">
+          <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-[1px] shadow-xl shadow-emerald-500/20">
+            <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-[31px] p-6 relative overflow-hidden">
+              <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+                <Users className="w-32 h-32 text-emerald-600" />
+              </div>
+              
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner">
+                  <BookOpen className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                
+                <div className="space-y-1">
+                  <h3 className="text-xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
+                  <p className="text-xs text-muted-foreground max-w-[240px] mx-auto leading-relaxed">
+                    Você já configurou seu perfil e paróquia. Agora, crie sua primeira turma para começar a organizar seus encontros e catequizandos.
+                  </p>
+                </div>
+                
+                <button
+                  onClick={() => setShowCreateTurma(true)}
+                  className="w-full bg-emerald-600 text-white h-14 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-3"
+                >
+                  <Plus className="h-5 w-5" />
+                  Criar Minha Primeira Turma
+                </button>
+                
+                <button
+                  onClick={() => setJoinModalOpen(true)}
+                  className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 hover:opacity-70 transition-opacity"
+                >
+                  Ou entrar com código de outra turma
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
       <div className="relative pt-0 pb-6 mb-0 animate-fade-in -mt-1">

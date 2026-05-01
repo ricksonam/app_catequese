@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Church, MapPin, Users, ArrowRight, Sparkles, Mail, FileText, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
+import { useParoquiaMutation, useComunidadeMutation, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { mascaraTelefone } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -78,8 +78,32 @@ function FieldTextArea({ label, value, onChange }: { label: string; value: strin
 export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
   const pMutation = useParoquiaMutation();
   const cMutation = useComunidadeMutation();
+  const { data: paroquias = [] } = useParoquias();
+  const { data: comunidades = [] } = useComunidades();
 
   const [form, setForm] = useState<UnifiedFormData>({ ...emptyForm });
+
+  useEffect(() => {
+    if (paroquias.length > 0 && !form.pNome) {
+      const p = paroquias[0];
+      const c = comunidades[0];
+      setForm({
+        pNome: p.nome || "",
+        pTipo: p.tipo || "",
+        pEndereco: p.endereco || "",
+        pTelefone: p.telefone || "",
+        pEmail: p.email || "",
+        pResponsavel: p.responsavel || "",
+        pObservacao: p.observacao || "",
+        cNome: c?.nome || "",
+        cTipo: c?.tipo || "",
+        cEndereco: c?.endereco || "",
+        cResponsavel: c?.responsavel || "",
+        cTelefone: c?.telefone || "",
+        cObservacao: c?.observacao || "",
+      });
+    }
+  }, [paroquias, comunidades, form.pNome]);
 
   const updateField = useCallback((field: keyof UnifiedFormData, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -96,8 +120,8 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
     }
 
     try {
-      const pId = crypto.randomUUID();
-      const cId = crypto.randomUUID();
+      const pId = paroquias[0]?.id || crypto.randomUUID();
+      const cId = comunidades[0]?.id || crypto.randomUUID();
 
       await pMutation.mutateAsync({
         id: pId,

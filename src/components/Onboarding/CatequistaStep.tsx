@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { UserCheck, User, ArrowRight, Sparkles, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar } from "lucide-react";
-import { useCatequistaMutation, useComunidades } from "@/hooks/useSupabaseData";
+import { useCatequistaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { mascaraTelefone, cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -73,8 +73,32 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
 export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProps) {
   const mutation = useCatequistaMutation();
   const { data: comunidades = [] } = useComunidades();
+  const { data: catequistas = [] } = useCatequistas();
 
   const [form, setForm] = useState<FormData>({ ...emptyForm });
+
+  useEffect(() => {
+    if (catequistas.length > 0 && !form.nome) {
+      const c = catequistas[0];
+      setForm({
+        nome: c.nome || "",
+        dataNascimento: c.dataNascimento || "",
+        endereco: c.endereco || "",
+        numero: c.numero || "",
+        bairro: c.bairro || "",
+        complemento: c.complemento || "",
+        profissao: c.profissao || "",
+        telefone: c.telefone || "",
+        email: c.email || "",
+        comunidadeId: c.comunidadeId || "",
+        formacao: c.formacao || "",
+        anosExperiencia: c.anosExperiencia || "",
+        observacao: c.observacao || "",
+        status: c.status || "ativo",
+        foto: c.foto || "",
+      });
+    }
+  }, [catequistas, form.nome]);
 
   const updateField = useCallback((field: string, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -86,7 +110,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
       return;
     }
     try {
-      const id = crypto.randomUUID();
+      const id = catequistas[0]?.id || crypto.randomUUID();
       await mutation.mutateAsync({
         id,
         nome: form.nome,
