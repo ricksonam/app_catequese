@@ -203,7 +203,11 @@ export default function CatequistasCadastro() {
                 <FieldInput label="Bairro" value={form.bairro} onChange={(v) => updateField("bairro", v)} />
               </div>
             </div>
-            <FieldInput label="Anos de experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
+            <div className="grid grid-cols-2 gap-2">
+              <FieldInput label="Telefone/WhatsApp" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} placeholder="(00) 00000-0000" />
+              <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
+            </div>
+            <FieldInput label="Profissão" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
             
             <div className="flex gap-2 pt-2">
               <button 

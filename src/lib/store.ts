@@ -1,3 +1,10 @@
+export interface CoordenadorInfo {
+  id: string;
+  nome: string;
+  telefone?: string;
+  email?: string;
+}
+
 export interface Turma {
   id: string;
   nome: string;
@@ -10,6 +17,7 @@ export interface Turma {
   criadoEm: string;
   comunidadeId?: string;
   catequistasIds?: string[];
+  coordenadores?: CoordenadorInfo[];
   codigoAcesso?: string;
   isShared?: boolean; // true if this turma belongs to another catechist
   status?: 'pending' | 'approved';

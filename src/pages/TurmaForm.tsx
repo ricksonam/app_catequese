@@ -3,10 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
 import { useTurmas, useTurmaMutation, useComunidades, useCatequistas } from "@/hooks/useSupabaseData";
 import { EtapaMap } from "@/components/EtapaMap";
-import { ArrowLeft, Check, ChevronRight, Pencil, Search } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, Pencil, Search, Plus, Trash2, Mail, Phone, User, Users } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, mascaraTelefone } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { CoordenadorInfo } from "@/lib/store";
 
 // Paleta de cores únicas por índice — nunca repete as mesmas para todos
 const CAT_PALETTE = [
@@ -41,6 +42,7 @@ export default function TurmaForm() {
     outrosDados: "",
     comunidadeId: "",
     catequistasIds: [] as string[],
+    coordenadores: [] as CoordenadorInfo[],
     codigoAcesso: "",
   });
 
@@ -59,6 +61,7 @@ export default function TurmaForm() {
         outrosDados: existingTurma.outrosDados || "",
         comunidadeId: existingTurma.comunidadeId || "",
         catequistasIds: existingTurma.catequistasIds || [],
+        coordenadores: existingTurma.coordenadores || [],
         codigoAcesso: existingTurma.codigoAcesso || "",
       });
     }
@@ -73,10 +76,30 @@ export default function TurmaForm() {
     update("catequistasIds", ids);
   };
 
+  const addCoordenador = () => {
+    const newCoord: CoordenadorInfo = { id: crypto.randomUUID(), nome: "", telefone: "", email: "" };
+    update("coordenadores", [...form.coordenadores, newCoord]);
+  };
+
+  const removeCoordenador = (id: string) => {
+    update("coordenadores", form.coordenadores.filter(c => c.id !== id));
+  };
+
+  const updateCoordenador = (id: string, field: keyof CoordenadorInfo, value: string) => {
+    update("coordenadores", form.coordenadores.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
   const handleSave = async () => {
     if (!form.nome || !form.diaCatequese || !form.horario || !form.comunidadeId || form.catequistasIds.length === 0) {
       toast.error("Preencha todos os campos obrigatórios, incluindo comunidade e catequistas"); return;
     }
+
+    const invalidCoord = form.coordenadores.find(c => !c.nome.trim());
+    if (invalidCoord) {
+      toast.error("O nome de todos os coordenadores é obrigatório");
+      return;
+    }
+
     if (isSaving) return;
     setIsSaving(true);
     const turma: Turma = {
@@ -182,6 +205,78 @@ export default function TurmaForm() {
                 <option value="">Selecione...</option>
                 {comunidades.map((c) => <option key={c.id} value={c.id}>{c.name || c.nome}</option>)}
               </select>
+            </div>
+
+            <div className="pt-4 border-t border-black/5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-500" />
+                  <span className="text-xs font-black uppercase tracking-wider text-zinc-900">Coordenação da Pastoral</span>
+                </div>
+                <button 
+                  onClick={addCoordenador}
+                  className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+
+              {form.coordenadores.map((coord, idx) => (
+                <div key={coord.id} className="p-4 rounded-2xl bg-zinc-50 border-2 border-zinc-100 space-y-3 relative group animate-in zoom-in-95">
+                  <button 
+                    onClick={() => removeCoordenador(coord.id)}
+                    className="absolute top-2 right-2 p-1 text-zinc-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+                      <User className="h-3 w-3" /> Nome do Coordenador {idx + 1} *
+                    </label>
+                    <input 
+                      type="text" 
+                      value={coord.nome} 
+                      onChange={(e) => updateCoordenador(coord.id, "nome", e.target.value)} 
+                      placeholder="Nome completo"
+                      className="form-input h-9 text-sm"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+                        <Phone className="h-3 w-3" /> Telefone/WhatsApp
+                      </label>
+                      <input 
+                        type="tel" 
+                        value={coord.telefone} 
+                        onChange={(e) => updateCoordenador(coord.id, "telefone", mascaraTelefone(e.target.value))} 
+                        placeholder="(00) 00000-0000"
+                        className="form-input h-9 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+                        <Mail className="h-3 w-3" /> E-mail
+                      </label>
+                      <input 
+                        type="email" 
+                        value={coord.email} 
+                        onChange={(e) => updateCoordenador(coord.id, "email", e.target.value)} 
+                        placeholder="email@exemplo.com"
+                        className="form-input h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {form.coordenadores.length === 0 && (
+                <p className="text-[10px] text-zinc-400 font-medium italic text-center py-2">
+                  Nenhum coordenador adicionado. Clique no "+" para adicionar.
+                </p>
+              )}
             </div>
           </div>
         </div>
