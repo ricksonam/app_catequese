@@ -633,8 +633,8 @@ export default function Dashboard() {
                 
                 <div className="space-y-1">
                   <h3 className="text-xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
-                  <p className="text-xs text-muted-foreground max-w-[240px] mx-auto leading-relaxed">
-                    Você já configurou seu perfil e paróquia. Agora, você pode <strong>criar sua própria turma</strong> ou <strong>participar de uma existente</strong> usando o código enviado pelo seu coordenador.
+                  <p className="text-xs text-muted-foreground max-w-[280px] mx-auto leading-relaxed">
+                    Agora para usar o aplicativo com todas as suas funcionalidades <strong>crie sua turma de catequese</strong> ou você pode <strong>entrar em uma turma de catequese já existente</strong>, é só pedir para o catequista responsável lhe fornecer o código da turma e aguardar que ele autorize a sua entrada.
                   </p>
                 </div>
                 
