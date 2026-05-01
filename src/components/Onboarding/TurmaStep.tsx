@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight } from "lucide-react";
+import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight, Plus, Trash2, Mail, Phone, User } from "lucide-react";
 import { useTurmaMutation, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { NOMES_TURMA, DIAS_SEMANA } from "@/lib/store";
 import { EtapaMap } from "@/components/EtapaMap";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, mascaraTelefone } from "@/lib/utils";
+import type { CoordenadorInfo } from "@/lib/store";
 
 interface TurmaStepProps {
   open?: boolean;
@@ -43,6 +44,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     outrosDados: "",
     comunidadeId: comunidades[0]?.id || "",
     catequistasIds: [] as string[],
+    coordenadores: [] as CoordenadorInfo[],
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,11 +59,31 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     update("catequistasIds", ids);
   };
 
+  const addCoordenador = () => {
+    const newCoord: CoordenadorInfo = { id: crypto.randomUUID(), nome: "", telefone: "", email: "" };
+    update("coordenadores", [...form.coordenadores, newCoord]);
+  };
+
+  const removeCoordenador = (id: string) => {
+    update("coordenadores", form.coordenadores.filter(c => c.id !== id));
+  };
+
+  const updateCoordenador = (id: string, field: keyof CoordenadorInfo, value: string) => {
+    update("coordenadores", form.coordenadores.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
   const handleSave = async () => {
     if (!form.nome || !form.diaCatequese || !form.horario) {
       toast.error("Preencha os campos obrigatórios da turma");
       return;
     }
+    
+    const invalidCoord = form.coordenadores.find(c => !c.nome.trim());
+    if (invalidCoord) {
+      toast.error("O nome de todos os coordenadores é obrigatório");
+      return;
+    }
+
     if (isSaving) return;
     setIsSaving(true);
     try {
@@ -77,6 +99,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
         outrosDados: form.outrosDados,
         comunidadeId: form.comunidadeId || comunidades[0]?.id || "",
         catequistasIds: form.catequistasIds.length > 0 ? form.catequistasIds : [catequistas[0]?.id].filter(Boolean) as string[],
+        coordenadores: form.coordenadores,
         criadoEm: new Date().toISOString(),
         codigoAcesso: Math.random().toString(36).substring(2, 8).toUpperCase(),
       });
@@ -195,6 +218,72 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
                 <option value="">Selecione...</option>
                 {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
               </select>
+            </div>
+
+            <div className="pt-4 border-t border-black/5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-500" />
+                  <span className="text-xs font-black uppercase tracking-wider text-zinc-900">Coordenação da Pastoral</span>
+                </div>
+                <button 
+                  onClick={addCoordenador}
+                  className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+
+              {form.coordenadores.map((coord, idx) => (
+                <div key={coord.id} className="p-4 rounded-2xl bg-zinc-50 border-2 border-zinc-100 space-y-3 relative group animate-in zoom-in-95">
+                  <button 
+                    onClick={() => removeCoordenador(coord.id)}
+                    className="absolute top-2 right-2 p-1 text-zinc-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+                      <User className="h-3 w-3" /> Nome do Coordenador {idx + 1} *
+                    </label>
+                    <input 
+                      type="text" 
+                      value={coord.nome} 
+                      onChange={(e) => updateCoordenador(coord.id, "nome", e.target.value)} 
+                      placeholder="Nome completo"
+                      className="form-input h-9 text-sm"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+                        <Phone className="h-3 w-3" /> Telefone/WhatsApp
+                      </label>
+                      <input 
+                        type="tel" 
+                        value={coord.telefone} 
+                        onChange={(e) => updateCoordenador(coord.id, "telefone", mascaraTelefone(e.target.value))} 
+                        placeholder="(00) 00000-0000"
+                        className="form-input h-9 text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+                        <Mail className="h-3 w-3" /> E-mail
+                      </label>
+                      <input 
+                        type="email" 
+                        value={coord.email} 
+                        onChange={(e) => updateCoordenador(coord.id, "email", e.target.value)} 
+                        placeholder="email@exemplo.com"
+                        className="form-input h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

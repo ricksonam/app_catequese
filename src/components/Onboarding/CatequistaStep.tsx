@@ -118,15 +118,11 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
         endereco: form.endereco,
         numero: form.numero,
         bairro: form.bairro,
-        complemento: form.complemento,
         profissao: form.profissao,
         telefone: form.telefone,
         email: form.email,
         comunidadeId: form.comunidadeId || comunidades[0]?.id || "",
-        formacao: form.formacao,
-        anosExperiencia: form.anosExperiencia,
-        observacao: form.observacao || "Cadastro via Onboarding",
-        status: form.status,
+        anosExperiencia: "", // Deprecated field in favor of profissao
         foto: form.foto,
       });
       toast.success("Perfil de Catequista criado!");
@@ -184,7 +180,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
         <FieldInput label="Complemento" value={form.complemento} onChange={(v) => updateField("complemento", v)} />
         <FieldInput label="Profissão" value={form.profissao} onChange={(v) => updateField("profissao", v)} />
         <div className="grid grid-cols-2 gap-2">
-          <FieldInput label="Telefone" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
+          <FieldInput label="Telefone/WhatsApp *" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} />
           <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
         </div>
         {comunidades.length > 0 && (
@@ -194,14 +190,6 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
             </select>
           </div>
         )}
-        <FieldInput label="Formação" value={form.formacao} onChange={(v) => updateField("formacao", v)} placeholder="Ex: Teologia, Pedagogia..." />
-        <FieldInput label="Anos de experiência" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
-        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Status</label>
-          <select value={form.status} onChange={(e) => updateField("status", e.target.value as CatequistaStatus)} className="form-input">
-            <option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="afastado">Afastado</option>
-          </select>
-        </div>
-        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
         
         <button
           onClick={handleSave}

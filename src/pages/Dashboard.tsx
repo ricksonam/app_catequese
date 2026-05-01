@@ -508,7 +508,7 @@ export default function Dashboard() {
 
       <TurmaChoiceStep
         open={onboardingStep === "turma-choice"}
-        onSelectCreate={() => setOnboardingStep("intro")}
+        onSelectCreate={() => setOnboardingStep("paroquia")}
         onSelectJoin={() => {
           setOnboardingStep("join-code");
         }}
