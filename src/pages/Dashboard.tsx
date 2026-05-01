@@ -53,7 +53,7 @@ export default function Dashboard() {
   const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "turma-choice" | "intro" | "paroquia" | "catequista" | "turma" | "welcome">("none");
+  const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "turma-choice" | "intro" | "paroquia" | "catequista" | "turma" | "welcome" | "join-code">("none");
   const { user, isReady, signOut } = useAuth();
    const [joinCode, setJoinCode] = useState("");
   const [showCreateTurma, setShowCreateTurma] = useState(false);
@@ -158,6 +158,9 @@ export default function Dashboard() {
       }
 
       // Direciona para o passo de cadastro correto
+      // Se estiver no fluxo de entrar com código, não redireciona
+      if (onboardingStep === "join-code") return;
+
       if (onboardingStep === "none") {
         if (paroquias.length === 0 && comunidades.length === 0) {
           setOnboardingStep("turma-choice");
@@ -478,6 +481,7 @@ export default function Dashboard() {
       }
       setJoinModalOpen(false);
       setJoinCode("");
+      if (onboardingStep === "join-code") setOnboardingStep("none");
     } catch (err: any) {
       toast.error(err.message || "Erro ao entrar na turma.");
     }
@@ -525,8 +529,7 @@ export default function Dashboard() {
         open={onboardingStep === "turma-choice"}
         onSelectCreate={() => setOnboardingStep("intro")}
         onSelectJoin={() => {
-          setOnboardingStep("none");
-          setJoinModalOpen(true);
+          setOnboardingStep("join-code");
         }}
         onExit={() => signOut()}
       />
@@ -1069,7 +1072,17 @@ export default function Dashboard() {
       </Dialog>
 
       {/* MODAL ENTRAR COM CÓDIGO */}
-      <Dialog open={joinModalOpen} onOpenChange={setJoinModalOpen}>
+      <Dialog 
+        open={joinModalOpen || onboardingStep === "join-code"} 
+        onOpenChange={(val) => {
+          if (!val) {
+            setJoinModalOpen(false);
+            if (onboardingStep === "join-code") setOnboardingStep("turma-choice");
+          } else {
+            setJoinModalOpen(true);
+          }
+        }}
+      >
         <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black tracking-tight text-center">Entrar com Código</DialogTitle>
