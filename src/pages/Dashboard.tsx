@@ -634,7 +634,7 @@ export default function Dashboard() {
                 <div className="space-y-1">
                   <h3 className="text-xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
                   <p className="text-xs text-muted-foreground max-w-[240px] mx-auto leading-relaxed">
-                    Você já configurou seu perfil e paróquia. Agora, crie sua primeira turma para começar a organizar seus encontros e catequizandos.
+                    Você já configurou seu perfil e paróquia. Agora, você pode <strong>criar sua própria turma</strong> ou <strong>participar de uma existente</strong> usando o código enviado pelo seu coordenador.
                   </p>
                 </div>
                 
