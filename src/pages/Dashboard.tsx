@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks, Church, Compass, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useJoinTurma, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
+import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -12,9 +12,10 @@ import { TurmaChoiceStep } from "@/components/Onboarding/TurmaChoiceStep";
 import { OnboardingIntroStep } from "@/components/Onboarding/OnboardingIntroStep";
 import { OnboardingWizard } from "@/components/Onboarding/OnboardingWizard";
 import WelcomeModal from "@/components/WelcomeModal";
+import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
+import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
 import { TurmaStep } from "@/components/Onboarding/TurmaStep";
-import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
-import { ConsentModal } from "@/components/Onboarding/ConsentModal";
+import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -55,10 +56,8 @@ export default function Dashboard() {
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "turma-choice" | "intro" | "paroquia" | "catequista" | "turma" | "welcome" | "join-code">("none");
   const { user, isReady, signOut } = useAuth();
-   const [joinCode, setJoinCode] = useState("");
   const [showCreateTurma, setShowCreateTurma] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
-  const joinMutation = useJoinTurma();
 
   const { data: globalMissoes = [] } = useMissoesFamilia();
   const { data: comunicacaoForms = [] } = useComunicacaoForms();
@@ -465,26 +464,7 @@ export default function Dashboard() {
     ? (dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()])
     : "";
 
-  const handleJoinByCode = async () => {
-    if (joinCode.trim().length < 8) {
-      toast.error("O código deve ter 8 caracteres.");
-      return;
-    }
-    try {
-      const result = await joinMutation.mutateAsync(joinCode.trim());
-      if (result.status === 'pending') {
-        toast.success(`Solicitação enviada para a turma "${result.nome}"! Aguarde a aprovação do catequista responsável.`);
-      } else {
-        toast.success(`Acesso concedido à turma "${result.nome}"!`);
-        setSelectedTurmaId(result.id);
-      }
-      setJoinModalOpen(false);
-      setJoinCode("");
-      if (onboardingStep === "join-code") setOnboardingStep("none");
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao entrar na turma.");
-    }
-  };
+
 
   return (
     <div className="space-y-2.5">
@@ -1062,48 +1042,17 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* MODAL ENTRAR COM CÓDIGO */}
-      <Dialog 
+      <JoinTurmaModal 
         open={joinModalOpen || onboardingStep === "join-code"} 
-        onOpenChange={(val) => {
-          if (!val) {
-            setJoinModalOpen(false);
-            if (onboardingStep === "join-code") setOnboardingStep("turma-choice");
-          } else {
-            setJoinModalOpen(true);
-          }
+        onClose={() => {
+          setJoinModalOpen(false);
+          if (onboardingStep === "join-code") setOnboardingStep("turma-choice");
         }}
-      >
-        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black tracking-tight text-center">Entrar com Código</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-5 mt-4">
-            <p className="text-xs text-center text-muted-foreground px-4">
-              Peça o código de 8 caracteres ao catequista responsável pela turma.
-            </p>
-            <div className="space-y-2">
-              <input
-                type="text"
-                value={joinCode}
-                onChange={e => setJoinCode(e.target.value.toUpperCase())}
-                placeholder="Ex: TP847293"
-                maxLength={8}
-                autoFocus
-                className="w-full px-4 py-4 rounded-2xl border-2 border-border bg-background text-foreground text-center text-2xl font-black tracking-[0.3em] uppercase focus:outline-none focus:border-primary transition-colors"
-              />
-            </div>
-            <button
-              onClick={handleJoinByCode}
-              disabled={joinMutation.isPending || joinCode.trim().length < 8}
-              className="w-full py-4 rounded-2xl bg-emerald-500 text-white font-black text-sm uppercase tracking-wider hover:bg-emerald-600 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
-            >
-              {joinMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
-              {joinMutation.isPending ? "Verificando..." : "Entrar na Turma"}
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        onSuccess={(result) => {
+          setSelectedTurmaId(result.id);
+          if (onboardingStep === "join-code") setOnboardingStep("none");
+        }}
+      />
       {/* ── MODAL DE ANIVERSÁRIO LITÚRGICO ── */}
       <Dialog open={!!selectedCatequizando} onOpenChange={() => setSelectedCatequizando(null)}>
         <DialogContent className="max-w-[340px] mx-auto rounded-[32px] p-0 border-none shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
