@@ -150,8 +150,8 @@ export default function Dashboard() {
         return;
       }
 
-      // Se tiver Paróquia e Catequista, permite acesso ao Dashboard mesmo sem Turma
-      if (paroquias.length > 0 && catequistas.length > 0) {
+      // Se tiver Paróquia, Catequista e Turma, encerra o onboarding
+      if (paroquias.length > 0 && catequistas.length > 0 && turmas.length > 0) {
         if (onboardingStep !== "none" && onboardingStep !== "welcome") {
            setOnboardingStep("none");
         }
