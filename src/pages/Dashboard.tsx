@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ObjectiveModal } from "@/components/ObjectiveModal";
 import { TurmaChoiceStep } from "@/components/Onboarding/TurmaChoiceStep";
 import { OnboardingIntroStep } from "@/components/Onboarding/OnboardingIntroStep";
-import { OnboardingWizard } from "@/components/Onboarding/OnboardingWizard";
+import { ConversationalOnboarding } from "@/components/Onboarding/ConversationalOnboarding";
 import WelcomeModal from "@/components/WelcomeModal";
 import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
 import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
@@ -520,16 +520,12 @@ export default function Dashboard() {
         onStart={() => setOnboardingStep("paroquia")}
       />
 
-      <OnboardingWizard 
-        currentStep={["paroquia", "catequista", "turma"].includes(onboardingStep) ? (onboardingStep as "paroquia" | "catequista" | "turma") : "none"}
-        onStepChange={setOnboardingStep as any}
+      <ConversationalOnboarding 
+        open={["paroquia", "catequista", "turma"].includes(onboardingStep)}
         onComplete={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
-          setOnboardingStep("welcome");
-          // Refetch e seleciona a turma criada
-          const result = await tRefetch();
-          const novas = result.data || [];
-          if (novas.length > 0) setSelectedTurmaId(novas[0].id);
+          setOnboardingStep("welcome"); // Show welcome modal with progress
+          tRefetch();
         }}
       />
 
