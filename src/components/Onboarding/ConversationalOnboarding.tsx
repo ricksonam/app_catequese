@@ -71,7 +71,7 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
     },
     {
       id: "finish",
-      message: "Maravilha! Já guardei esses dados básicos para você. ✝️\n\nVocê poderá completar o restante dos dados nos **Cadastros Básicos** no menu a qualquer momento.\n\nSeja muito bem-vindo ao iCatequese! Vamos preparar o seu ambiente?",
+      message: "Maravilha! Já guardei esses dados básicos para você. ✝️\n\nVocê poderá completar o restante dos dados nos **Cadastros Básicos** no menu a qualquer momento.\n\nSeja muito bem-vindo ao iCatequese!",
       type: "success"
     }
   ];
@@ -246,7 +246,6 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
             <div className="relative">
               <input
                 type="text"
-                autoFocus
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}

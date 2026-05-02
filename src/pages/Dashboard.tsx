@@ -160,7 +160,7 @@ export default function Dashboard() {
 
       if (onboardingStep === "none") {
         if (paroquias.length === 0 && comunidades.length === 0) {
-          setOnboardingStep("turma-choice");
+          setOnboardingStep("paroquia");
         } else if (catequistas.length === 0) {
           setOnboardingStep("catequista");
         } else {
@@ -599,13 +599,13 @@ export default function Dashboard() {
               </div>
               
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner">
-                  <BookOpen className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+                <div className="w-20 h-20 rounded-3xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner overflow-hidden animate-bounce-subtle">
+                  <img src="/acesso_nova_turma.png" alt="Nova Turma" className="w-16 h-16 object-contain" />
                 </div>
                 
-                <div className="space-y-1">
-                  <h3 className="text-xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
-                  <p className="text-xs text-muted-foreground max-w-[280px] mx-auto leading-relaxed">
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
+                  <p className="text-sm font-bold text-muted-foreground max-w-[320px] mx-auto leading-relaxed">
                     Agora para usar o aplicativo com todas as suas funcionalidades <strong>crie sua turma de catequese</strong> ou você pode <strong>entrar em uma turma de catequese já existente</strong>, é só pedir para o catequista responsável lhe fornecer o código da turma e aguardar que ele autorize a sua entrada.
                   </p>
                 </div>
