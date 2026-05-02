@@ -755,6 +755,9 @@ export default function Dashboard() {
           
           {/* Card Turma (Nó central) */}
           <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-center w-full max-w-[320px] z-10 relative min-h-[54px]">
+            <div className="absolute left-2 w-8 h-8 rounded-lg bg-blue-50/80 flex items-center justify-center shrink-0 border border-blue-100/50">
+              <Users className="w-4 h-4 text-blue-600" />
+            </div>
             <div className="flex flex-col items-center text-center px-10">
               <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground leading-none mb-1">Turma Selecionada</p>
               <h3 className="text-xs font-black text-foreground truncate uppercase tracking-tight leading-none">
