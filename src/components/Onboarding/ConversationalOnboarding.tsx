@@ -45,7 +45,7 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
   const steps = [
     {
       id: "intro",
-      message: "Olá! Sou o seu assistente do iCatequese. 👋 Estou aqui para te ajudar nos primeiros passos!",
+      message: "Seja muito bem-vindo! 👋 Para começar, precisaremos cadastrar alguns dados básicos para preparar o seu ambiente.",
       type: "text"
     },
     {
@@ -57,14 +57,14 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
     },
     {
       id: "comunidade",
-      message: "Ótimo! E qual o nome da sua **comunidade** ou núcleo principal?",
+      message: "Ótimo! E qual o nome da sua **comunidade**?",
       type: "input",
       field: "comunidade",
       placeholder: "Ex: Comunidade Nossa Senhora"
     },
     {
       id: "catequista",
-      message: "Quase lá! Pra gente finalizar, qual o seu **nome completo**?",
+      message: "Quase lá! pra gente finalizar, como catequista qual o seu **nome completo**?",
       type: "input",
       field: "catequista",
       placeholder: "Seu nome aqui"

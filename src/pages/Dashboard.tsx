@@ -489,13 +489,7 @@ export default function Dashboard() {
               setOnboardingStep("none");
             } else {
               // Direciona para o passo correto
-              if (paroquias.length === 0 && comunidades.length === 0) {
-                setOnboardingStep("turma-choice");
-              } else if (catequistas.length === 0) {
-                setOnboardingStep("catequista");
-              } else {
-                setOnboardingStep("turma");
-              }
+              setOnboardingStep("paroquia");
             }
           } catch (err) {
             console.error("Erro ao aceitar termos:", err);
@@ -524,7 +518,7 @@ export default function Dashboard() {
         open={["paroquia", "catequista", "turma"].includes(onboardingStep)}
         onComplete={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
-          setOnboardingStep("welcome"); // Show welcome modal with progress
+          setOnboardingStep("none"); // Skip WelcomeModal, go straight to Dashboard
           tRefetch();
         }}
       />
