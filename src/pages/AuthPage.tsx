@@ -193,22 +193,6 @@ export default function AuthPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        }
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      toast({ title: "Erro ao entrar com Google", description: error.message, variant: "destructive" });
-      setLoading(false);
-    }
-  };
-
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -316,7 +300,7 @@ export default function AuthPage() {
               <ChevronRight className="h-4 w-4 ml-1 opacity-60 group-hover:translate-x-1 transition-transform" />
             </button>
 
-            <div className="pt-2 space-y-3">
+            <div className="pt-2">
               <button
                 id="btn-cadastro"
                 onClick={() => setView("signup")}
@@ -324,14 +308,6 @@ export default function AuthPage() {
               >
                 <UserPlus className="h-4 w-4" />
                 Cadastre-se
-              </button>
-
-              <button
-                onClick={handleGoogleLogin}
-                className="w-full h-12 rounded-2xl bg-white border-2 border-slate-100 text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-slate-50"
-              >
-                <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
-                Entrar com Google
               </button>
             </div>
           </div>
@@ -483,23 +459,6 @@ export default function AuthPage() {
               </button>
             </form>
 
-            {/* Divisor */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
-              <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest"><span className="bg-sky-50 px-3 text-slate-400">Ou continue com</span></div>
-            </div>
-
-            {/* Login Social */}
-            <button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              type="button"
-              className="w-full h-13 py-3 rounded-2xl bg-white border-2 border-slate-100 text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-slate-50 disabled:opacity-60"
-            >
-              <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
-              Entrar com Google
-            </button>
-
             <div className="text-center mt-6">
               <span className="text-slate-400 text-sm font-medium">Não tem conta? </span>
               <button
@@ -630,23 +589,6 @@ export default function AuthPage() {
                 )}
               </button>
             </form>
-
-            {/* Divisor */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
-              <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest"><span className="bg-sky-50 px-3 text-slate-400">Ou cadastre-se com</span></div>
-            </div>
-
-            {/* Signup Social */}
-            <button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              type="button"
-              className="w-full h-13 py-3 rounded-2xl bg-white border-2 border-slate-100 text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-slate-50 disabled:opacity-60"
-            >
-              <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
-              Cadastrar com Google
-            </button>
 
             <div className="text-center mt-6">
               <span className="text-slate-400 text-sm font-medium">Já tem conta? </span>
