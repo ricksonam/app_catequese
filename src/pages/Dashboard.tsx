@@ -754,25 +754,20 @@ export default function Dashboard() {
         <div className="space-y-0 px-6 mt-20 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma (Nó central) */}
-          <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-between w-full max-w-[320px] z-10 relative">
-            <div className="flex items-center gap-2.5 overflow-hidden pl-0.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-50/80 flex items-center justify-center shrink-0 border border-blue-100/50">
-                <Users className="w-4 h-4 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground leading-none mb-0.5">Turma Selecionada</p>
-                <h3 className="text-xs font-black text-foreground truncate uppercase tracking-tight leading-none mt-0.5">
-                  {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
-                </h3>
-              </div>
+          <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-center w-full max-w-[320px] z-10 relative min-h-[54px]">
+            <div className="flex flex-col items-center text-center px-10">
+              <p className="text-[8px] font-bold uppercase tracking-widest text-muted-foreground leading-none mb-1">Turma Selecionada</p>
+              <h3 className="text-xs font-black text-foreground truncate uppercase tracking-tight leading-none">
+                {selectedTurmaId === "all" ? "Todas as Turmas" : selectedTurma?.nome}
+              </h3>
             </div>
             {(turmas.length > 1 || selectedTurmaId === "all") && (
               <button 
                 onClick={() => setTurmaPickerOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95 shrink-0 mr-0.5"
+                className="absolute right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-md shadow-blue-500/25 hover:bg-blue-700 transition-all active:scale-95 shrink-0"
               >
-                <RefreshCw className="h-3 w-3" />
-                <span className="text-[9px] font-black uppercase tracking-widest">Trocar</span>
+                <RefreshCw className="h-2.5 w-2.5" />
+                <span className="text-[8px] font-black uppercase tracking-widest">Trocar</span>
               </button>
             )}
           </div>
