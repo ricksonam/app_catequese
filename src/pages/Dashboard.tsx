@@ -606,7 +606,7 @@ export default function Dashboard() {
                 <div className="space-y-2">
                   <h3 className="text-2xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
                   <p className="text-sm font-bold text-muted-foreground max-w-[320px] mx-auto leading-relaxed">
-                    Agora para usar o aplicativo com todas as suas funcionalidades <strong>crie sua turma de catequese</strong> ou você pode <strong>entrar em uma turma de catequese já existente</strong>, é só pedir para o catequista responsável lhe fornecer o código da turma e aguardar que ele autorize a sua entrada.
+                    Agora para usar o aplicativo com todas as suas funcionalidades <strong className="text-blue-600 dark:text-blue-400">crie sua turma de catequese</strong> ou você pode <strong className="text-blue-600 dark:text-blue-400">entrar em uma turma de catequese já existente</strong>, é só pedir para o catequista responsável lhe fornecer o código da turma e aguardar que ele autorize a sua entrada.
                   </p>
                 </div>
                 
