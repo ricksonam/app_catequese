@@ -316,7 +316,7 @@ export default function AuthPage() {
               <ChevronRight className="h-4 w-4 ml-1 opacity-60 group-hover:translate-x-1 transition-transform" />
             </button>
 
-            <div className="pt-2">
+            <div className="pt-2 space-y-3">
               <button
                 id="btn-cadastro"
                 onClick={() => setView("signup")}
@@ -324,6 +324,14 @@ export default function AuthPage() {
               >
                 <UserPlus className="h-4 w-4" />
                 Cadastre-se
+              </button>
+
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full h-12 rounded-2xl bg-white border-2 border-slate-100 text-slate-700 font-bold text-sm shadow-sm flex items-center justify-center gap-3 active:scale-[0.97] transition-all hover:bg-slate-50"
+              >
+                <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
+                Entrar com Google
               </button>
             </div>
           </div>
