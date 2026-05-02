@@ -751,10 +751,10 @@ export default function Dashboard() {
 
       {/* ── MÓDULOS DE ACESSO RÁPIDO (CATEQUIZANDOS E ENCONTROS) ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-2 mt-20 animate-fade-in flex flex-col items-center">
+        <div className="space-y-0 px-6 mt-20 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma (Nó central) */}
-          <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-between w-full z-10 relative">
+          <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-between w-full max-w-[320px] z-10 relative">
             <div className="flex items-center gap-2.5 overflow-hidden pl-0.5">
               <div className="w-8 h-8 rounded-lg bg-blue-50/80 flex items-center justify-center shrink-0 border border-blue-100/50">
                 <Users className="w-4 h-4 text-blue-600" />
@@ -842,7 +842,7 @@ export default function Dashboard() {
 
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
-      {(proximoEncontro || proximasAtividades.length > 0) && (
+      {turmas.length > 0 && (
         <div className="pt-10 mb-2">
           <div className="animate-float-up relative" style={{ animationDelay: '200ms' }}>
 
@@ -965,6 +965,16 @@ export default function Dashboard() {
                     </div>
                   );
                 })}
+                {/* ── ESTADO VAZIO: NENHUM EVENTO ── */}
+                {!proximoEncontro && proximasAtividades.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center opacity-60">
+                    <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3">
+                      <CalendarDays className="h-6 w-6 text-orange-400" />
+                    </div>
+                    <p className="text-[10px] font-bold text-orange-900/60 uppercase tracking-widest">Nenhum evento agendado</p>
+                    <p className="text-[8px] text-orange-800/50 mt-1 max-w-[150px]">Fique de olho! Seus próximos encontros aparecerão aqui.</p>
+                  </div>
+                )}
               </div>
             </div>
 
