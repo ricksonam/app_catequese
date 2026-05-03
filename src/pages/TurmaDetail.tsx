@@ -461,8 +461,6 @@ export default function TurmaDetail() {
               onClose={() => setAuditOpen(false)}
             />
           )}
-        </div>
-      )}
 
       {!turma.isShared && (
         <div className="pt-10 pb-4 flex justify-center animate-fade-in">
