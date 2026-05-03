@@ -157,7 +157,7 @@ export default function AdminDashboard() {
           <Skeleton className="h-10 w-48 rounded-xl" />
           <Skeleton className="h-10 w-32 rounded-xl" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
         </div>
         <Skeleton className="h-[500px] rounded-3xl" />
@@ -198,13 +198,14 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 animate-in fade-in duration-700">
         
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
             title="Total de Usuários" 
             value={stats.total} 
             icon={Users} 
             color="primary" 
             description="Base total cadastrada"
+            onClick={() => setActiveTab("users")}
           />
           <StatsCard 
             title="Ativos Hoje" 
@@ -212,6 +213,7 @@ export default function AdminDashboard() {
             icon={Activity} 
             color="success" 
             description="Sessões iniciadas hoje"
+            onClick={() => setActiveTab("users")}
           />
           <StatsCard 
             title="Usuários Bloqueados" 
@@ -219,6 +221,7 @@ export default function AdminDashboard() {
             icon={UserX} 
             color="destructive" 
             description="Contas com acesso restrito"
+            onClick={() => setActiveTab("users")}
           />
           <StatsCard 
             title="Taxa de Churn" 
@@ -226,6 +229,7 @@ export default function AdminDashboard() {
             icon={TrendingUp} 
             color="amber" 
             description="Usuários que excluiram conta"
+            onClick={() => setActiveTab("churn")}
           />
         </div>
 
@@ -474,7 +478,14 @@ export default function AdminDashboard() {
   );
 }
 
-function StatsCard({ title, value, icon: Icon, color, description }: { title: string; value: number; icon: any; color: string; description: string }) {
+function StatsCard({ title, value, icon: Icon, color, description, onClick }: { 
+  title: string; 
+  value: number; 
+  icon: any; 
+  color: string; 
+  description: string;
+  onClick?: () => void;
+}) {
   const colorStyles = {
     primary: "bg-primary/10 text-primary border-primary/20",
     success: "bg-emerald-50 text-emerald-600 border-emerald-200",
@@ -483,7 +494,13 @@ function StatsCard({ title, value, icon: Icon, color, description }: { title: st
   };
 
   return (
-    <Card className="rounded-[28px] border-border/50 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+    <Card 
+      onClick={onClick}
+      className={cn(
+        "rounded-[28px] border-border/50 shadow-sm hover:shadow-md transition-all group overflow-hidden",
+        onClick && "cursor-pointer hover:border-primary/30 hover:shadow-primary/5 active:scale-95"
+      )}
+    >
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-transform group-hover:scale-110", colorStyles[color as keyof typeof colorStyles])}>
