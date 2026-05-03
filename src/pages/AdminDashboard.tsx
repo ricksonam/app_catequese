@@ -721,15 +721,22 @@ export default function AdminDashboard() {
                 key={reason}
                 onClick={() => setBlockReason(reason)}
                 className={cn(
-                  "w-full text-left px-5 py-4 rounded-2xl border-2 transition-all font-bold text-sm",
+                  "w-full text-left p-4 rounded-2xl border-2 transition-all font-bold text-sm flex items-center gap-4",
                   blockReason === reason 
-                    ? "border-destructive bg-destructive/5 text-destructive" 
-                    : "border-border/40 hover:border-destructive/30 hover:bg-slate-50"
+                    ? "border-destructive bg-destructive/5 text-destructive shadow-md scale-[1.01]" 
+                    : "border-border/40 hover:border-destructive/30 hover:bg-slate-50 text-muted-foreground"
                 )}
               >
+                <div className={cn(
+                  "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                  blockReason === reason ? "border-destructive bg-destructive" : "border-muted-foreground/30"
+                )}>
+                  {blockReason === reason && <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50" />}
+                </div>
                 {reason}
               </button>
             ))}
+
           </div>
           <DialogFooter className="flex flex-col sm:flex-row gap-3">
             <Button variant="outline" onClick={() => {

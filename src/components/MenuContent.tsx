@@ -767,23 +767,28 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
              <DialogHeader><DialogTitle className="text-xl font-black text-destructive">Tem certeza?</DialogTitle></DialogHeader>
              <p className="text-sm text-muted-foreground leading-relaxed">Sentimos muito que você esteja indo. Por favor, nos conte por que decidiu excluir sua conta para podermos melhorar:</p>
              
-             <div className="w-full grid grid-cols-1 gap-2">
-               {DELETION_REASONS.map((reason) => (
-                 <button
-                   key={reason}
-                   onClick={() => setExitReason(reason)}
-                   className={cn(
-                     "w-full p-3 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between",
-                     exitReason === reason 
-                       ? "bg-destructive/10 border-destructive text-destructive" 
-                       : "bg-muted/20 border-transparent text-muted-foreground hover:bg-muted/40"
-                   )}
-                 >
-                   {reason}
-                   {exitReason === reason && <div className="w-2 h-2 rounded-full bg-destructive animate-in zoom-in-50" />}
-                 </button>
-               ))}
-             </div>
+             <div className="w-full grid grid-cols-1 gap-3">
+                {DELETION_REASONS.map((reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => setExitReason(reason)}
+                    className={cn(
+                      "w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center gap-4 group/reason",
+                      exitReason === reason 
+                        ? "bg-destructive/5 border-destructive text-destructive shadow-md scale-[1.02]" 
+                        : "bg-white dark:bg-zinc-900 border-border/50 text-muted-foreground hover:border-destructive/30 hover:bg-slate-50"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                      exitReason === reason ? "border-destructive bg-destructive" : "border-muted-foreground/30"
+                    )}>
+                      {exitReason === reason && <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50" />}
+                    </div>
+                    <span className="text-sm font-bold flex-1">{reason}</span>
+                  </button>
+                ))}
+              </div>
              
              {exitReason === "Outro" && (
                <Textarea 
