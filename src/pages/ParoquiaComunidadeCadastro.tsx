@@ -15,16 +15,20 @@ interface UnifiedFormData {
   pTelefone: string;
   pEmail: string;
   pResponsavel: string;
+  pCidade: string;
+  pEstado: string;
   // Comunidade
   cNome: string;
   cEndereco: string;
   cResponsavel: string;
   cTelefone: string;
+  cCidade: string;
+  cEstado: string;
 }
 
 const emptyForm: UnifiedFormData = {
-  pNome: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "",
-  cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "",
+  pNome: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pCidade: "", pEstado: "",
+  cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "", cCidade: "", cEstado: "",
 };
 
 export default function ParoquiaComunidadeCadastro() {
@@ -45,7 +49,7 @@ export default function ParoquiaComunidadeCadastro() {
   // States for isolated Community management (Nova comunidade na Paróquia)
   const [cFormOpen, setCFormOpen] = useState(false);
   const [cForm, setCForm] = useState({
-    id: "", paroquiaId: "", nome: "", endereco: "", responsavel: "", telefone: ""
+    id: "", paroquiaId: "", nome: "", endereco: "", responsavel: "", telefone: "", cidade: "", estado: ""
   });
 
   const updateField = useCallback((field: keyof UnifiedFormData, value: string) => {
@@ -62,13 +66,13 @@ export default function ParoquiaComunidadeCadastro() {
 
   const handleSave = async () => {
     if (!form.pNome) {
-      toast.error("Nome da Paróquia é obrigatório");
+      toast.error("O campo Nome da Paróquia é obrigatório");
       return;
     }
     
     // Only require cNome on Create
     if (!editingIds && !form.cNome) {
-      toast.error("Nome da Comunidade Inicial é obrigatório");
+      toast.error("O campo Nome da Comunidade Inicial é obrigatório");
       return;
     }
 
@@ -83,6 +87,8 @@ export default function ParoquiaComunidadeCadastro() {
         telefone: form.pTelefone,
         email: form.pEmail,
         responsavel: form.pResponsavel,
+        cidade: form.pCidade,
+        estado: form.pEstado,
       });
 
       // 2. Save Comunidade ONLY IF Create mode
@@ -95,6 +101,8 @@ export default function ParoquiaComunidadeCadastro() {
           endereco: form.cEndereco,
           responsavel: form.cResponsavel,
           telefone: form.cTelefone,
+          cidade: form.cCidade,
+          estado: form.cEstado,
         });
       }
 
@@ -115,7 +123,7 @@ export default function ParoquiaComunidadeCadastro() {
       }
       await pDelete.mutateAsync(pId);
       setViewPId(null);
-      toast.success("Registros removidos!");
+      toast.success("Paróquia/Comunidade excluída com sucesso!");
     } catch (err: any) {
       toast.error("Erro ao excluir: " + err.message);
     }
@@ -124,7 +132,8 @@ export default function ParoquiaComunidadeCadastro() {
   const openEdit = (p: Paroquia) => {
     setForm({
       pNome: p.nome, pEndereco: p.endereco, pTelefone: p.telefone, pEmail: p.email, pResponsavel: p.responsavel,
-      cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "",
+      pCidade: p.cidade || "", pEstado: p.estado || "",
+      cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "", cCidade: "", cEstado: "",
     });
     setEditingIds({ pId: p.id, cId: "" });
     setViewPId(null);
@@ -132,7 +141,7 @@ export default function ParoquiaComunidadeCadastro() {
   };
 
   const handleSaveSingleComunidade = async () => {
-    if (!cForm.nome) { toast.error("Nome obrigatório"); return; }
+    if (!cForm.nome) { toast.error("O campo Nome da Comunidade é obrigatório"); return; }
     try {
       await cMutation.mutateAsync({
         id: cForm.id || crypto.randomUUID(),
@@ -141,6 +150,8 @@ export default function ParoquiaComunidadeCadastro() {
         endereco: cForm.endereco,
         responsavel: cForm.responsavel,
         telefone: cForm.telefone,
+        cidade: cForm.cidade,
+        estado: cForm.estado,
       });
       setCFormOpen(false);
       toast.success("Comunidade salva!");
@@ -242,6 +253,10 @@ export default function ParoquiaComunidadeCadastro() {
                 onChange={(v) => updateField("pNome", v)} 
                 placeholder="Digite o nome da paróquia/área/escola"
               />
+              <div className="grid grid-cols-2 gap-2">
+                <FieldInput label="Cidade" value={form.pCidade} onChange={(v) => updateField("pCidade", v)} />
+                <FieldInput label="Estado" value={form.pEstado} onChange={(v) => updateField("pEstado", v)} />
+              </div>
               <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} />
               <div className="grid grid-cols-2 gap-2">
                 <FieldInput label="Telefone" type="tel" value={form.pTelefone} onChange={(v) => updateField("pTelefone", mascaraTelefone(v))} />
@@ -263,6 +278,10 @@ export default function ParoquiaComunidadeCadastro() {
                   onChange={(v) => updateField("cNome", v)} 
                   placeholder="Digite o nome da comunidade/núcleo"
                 />
+                <div className="grid grid-cols-2 gap-2">
+                  <FieldInput label="Cidade" value={form.cCidade} onChange={(v) => updateField("cCidade", v)} />
+                  <FieldInput label="Estado" value={form.cEstado} onChange={(v) => updateField("cEstado", v)} />
+                </div>
                 <FieldInput label="Endereço da Comunidade" value={form.cEndereco} onChange={(v) => updateField("cEndereco", v)} />
                 <div className="grid grid-cols-2 gap-2">
                   <FieldInput label="Responsável" value={form.cResponsavel} onChange={(v) => updateField("cResponsavel", v)} />
@@ -279,7 +298,7 @@ export default function ParoquiaComunidadeCadastro() {
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      setCForm({ id: "", paroquiaId: editingIds.pId, nome: "", tipo: "Comunidade", endereco: "", responsavel: "", telefone: "", observacao: "" });
+                      setCForm({ id: "", paroquiaId: editingIds.pId, nome: "", tipo: "Comunidade", endereco: "", responsavel: "", telefone: "", cidade: "", estado: "", observacao: "" });
                       setCFormOpen(true);
                     }}
                     className="text-[10px] font-black text-accent-foreground bg-accent/10 hover:bg-accent/20 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
@@ -301,7 +320,7 @@ export default function ParoquiaComunidadeCadastro() {
                       <button 
                         onClick={(e) => {
                           e.preventDefault();
-                          setCForm({ id: c.id, paroquiaId: c.paroquiaId, nome: c.nome, endereco: c.endereco || "", responsavel: c.responsavel || "", telefone: c.telefone || "" });
+                          setCForm({ id: c.id, paroquiaId: c.paroquiaId, nome: c.nome, endereco: c.endereco || "", responsavel: c.responsavel || "", telefone: c.telefone || "", cidade: c.cidade || "", estado: c.estado || "" });
                           setCFormOpen(true);
                         }}
                         className="text-primary bg-primary/10 hover:bg-primary/20 p-2 rounded-lg transition-colors active:scale-95"
@@ -312,7 +331,7 @@ export default function ParoquiaComunidadeCadastro() {
                         onClick={(e) => {
                           e.preventDefault();
                           if(window.confirm('Excluir esta comunidade/núcleo?')) {
-                            cDelete.mutateAsync(c.id).then(() => toast.success("Comunidade deletada!"));
+                            cDelete.mutateAsync(c.id).then(() => toast.success("Comunidade excluída com sucesso!"));
                           }
                         }}
                         className="text-destructive bg-destructive/10 hover:bg-destructive/20 p-2 rounded-lg transition-colors active:scale-95"
@@ -372,6 +391,10 @@ export default function ParoquiaComunidadeCadastro() {
                   
                   <div className="space-y-4">
                     <InfoRow icon={MapPin} label="Endereço" value={activeGroup.p.endereco} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <InfoRow label="Cidade" value={activeGroup.p.cidade} />
+                      <InfoRow label="Estado" value={activeGroup.p.estado} />
+                    </div>
                     <InfoRow icon={Phone} label="Telefone" value={activeGroup.p.telefone} />
                     <InfoRow icon={Mail} label="E-mail" value={activeGroup.p.email} />
                     <InfoRow icon={Users} label="Pároco responsável" value={activeGroup.p.responsavel} />
@@ -395,6 +418,10 @@ export default function ParoquiaComunidadeCadastro() {
                     
                     <div className="space-y-4">
                       <InfoRow icon={MapPin} label="Endereço" value={c.endereco} />
+                      <div className="grid grid-cols-2 gap-4">
+                        <InfoRow label="Cidade" value={c.cidade} />
+                        <InfoRow label="Estado" value={c.estado} />
+                      </div>
                       <InfoRow icon={Phone} label="Telefone" value={c.telefone} />
                       <InfoRow icon={Users} label="Responsável" value={c.responsavel} />
                     </div>
@@ -439,6 +466,10 @@ export default function ParoquiaComunidadeCadastro() {
               placeholder="Digite o nome da comunidade/núcleo"
             />
             <FieldInput label="Endereço" value={cForm.endereco} onChange={(v) => setCForm(p => ({ ...p, endereco: v }))} />
+            <div className="grid grid-cols-2 gap-2">
+              <FieldInput label="Cidade" value={cForm.cidade} onChange={(v) => setCForm(p => ({ ...p, cidade: v }))} />
+              <FieldInput label="Estado" value={cForm.estado} onChange={(v) => setCForm(p => ({ ...p, estado: v }))} />
+            </div>
             <FieldInput label="Responsável" value={cForm.responsavel} onChange={(v) => setCForm(p => ({ ...p, responsavel: v }))} />
             <FieldInput label="Telefone" type="tel" value={cForm.telefone} onChange={(v) => setCForm(p => ({ ...p, telefone: mascaraTelefone(v) }))} />
             <div className="flex gap-2 pt-4">

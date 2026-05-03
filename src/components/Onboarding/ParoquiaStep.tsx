@@ -18,15 +18,19 @@ interface UnifiedFormData {
   pTelefone: string;
   pEmail: string;
   pResponsavel: string;
+  pCidade: string;
+  pEstado: string;
   cNome: string;
   cEndereco: string;
   cResponsavel: string;
   cTelefone: string;
+  cCidade: string;
+  cEstado: string;
 }
 
 const emptyForm: UnifiedFormData = {
-  pNome: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "",
-  cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "",
+  pNome: "", pEndereco: "", pTelefone: "", pEmail: "", pResponsavel: "", pCidade: "", pEstado: "",
+  cNome: "", cEndereco: "", cResponsavel: "", cTelefone: "", cCidade: "", cEstado: "",
 };
 
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
@@ -89,10 +93,14 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
         pTelefone: p.telefone || "",
         pEmail: p.email || "",
         pResponsavel: p.responsavel || "",
+        pCidade: p.cidade || "",
+        pEstado: p.estado || "",
         cNome: c?.nome || "",
         cEndereco: c?.endereco || "",
         cResponsavel: c?.responsavel || "",
         cTelefone: c?.telefone || "",
+        cCidade: c?.cidade || "",
+        cEstado: c?.estado || "",
       });
     }
   }, [paroquias, comunidades, form.pNome]);
@@ -103,11 +111,11 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
 
   const handleSave = async () => {
     if (!form.pNome) {
-      toast.error("Nome da Paróquia é obrigatório");
+      toast.error("O campo Nome da Paróquia é obrigatório");
       return;
     }
     if (!form.cNome) {
-      toast.error("Nome da Comunidade Inicial é obrigatório");
+      toast.error("O campo Nome da Comunidade Inicial é obrigatório");
       return;
     }
 
@@ -122,6 +130,8 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
         telefone: form.pTelefone,
         email: form.pEmail,
         responsavel: form.pResponsavel,
+        cidade: form.pCidade,
+        estado: form.pEstado,
       });
 
       await cMutation.mutateAsync({
@@ -131,6 +141,8 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
         endereco: form.cEndereco,
         responsavel: form.cResponsavel,
         telefone: form.cTelefone,
+        cidade: form.cCidade,
+        estado: form.cEstado,
       });
 
       toast.success("Paróquia e Comunidade cadastradas!");
@@ -176,6 +188,10 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
             onChange={(v) => updateField("pNome", v)} 
             placeholder="Digite o nome da paróquia/área/escola"
           />
+          <div className="grid grid-cols-2 gap-2">
+            <FieldInput label="Cidade" value={form.pCidade} onChange={(v) => updateField("pCidade", v)} />
+            <FieldInput label="Estado" value={form.pEstado} onChange={(v) => updateField("pEstado", v)} />
+          </div>
           <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} />
           <div className="grid grid-cols-2 gap-2">
             <FieldInput label="Telefone" type="tel" value={form.pTelefone} onChange={(v) => updateField("pTelefone", mascaraTelefone(v))} />
@@ -196,6 +212,10 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
             onChange={(v) => updateField("cNome", v)} 
             placeholder="Digite o nome da comunidade/núcleo"
           />
+          <div className="grid grid-cols-2 gap-2">
+            <FieldInput label="Cidade" value={form.cCidade} onChange={(v) => updateField("cCidade", v)} />
+            <FieldInput label="Estado" value={form.cEstado} onChange={(v) => updateField("cEstado", v)} />
+          </div>
           
           <div className="flex items-center gap-2 py-1">
             <input 

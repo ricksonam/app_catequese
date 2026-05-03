@@ -382,7 +382,7 @@ export default function CatequizandosList() {
   const handleDelete = async () => {
     if (!viewItem) return;
     if (!confirm(`Excluir ${viewItem.nome}?`)) return;
-    try { await deleteMut.mutateAsync(viewItem.id); setViewItem(null); toast.success("ExcluÃ­do!"); }
+    try { await deleteMut.mutateAsync(viewItem.id); setViewItem(null); toast.success("Catequizando excluído com sucesso!"); }
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
 

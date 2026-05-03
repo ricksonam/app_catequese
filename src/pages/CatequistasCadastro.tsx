@@ -57,7 +57,7 @@ export default function CatequistasCadastro() {
   }, []);
 
   const handleSave = async () => {
-    if (!form.nome) { toast.error("Nome é obrigatório"); return; }
+    if (!form.nome) { toast.error("O campo Nome é obrigatório"); return; }
     try {
       const id = editMode && editingId ? editingId : crypto.randomUUID();
       const existingItem = list.find(it => it.id === id);
@@ -83,7 +83,7 @@ export default function CatequistasCadastro() {
   };
 
   const handleDelete = async (cid: string) => {
-    try { await deleteMut.mutateAsync(cid); setViewItem(null); toast.success("Removido!"); }
+    try { await deleteMut.mutateAsync(cid); setViewItem(null); toast.success("Catequista excluído com sucesso!"); }
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
 

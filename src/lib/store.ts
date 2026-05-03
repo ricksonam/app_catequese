@@ -150,6 +150,8 @@ export interface Paroquia {
   telefone: string;
   email: string;
   responsavel: string;
+  cidade?: string;
+  estado?: string;
   observacao?: string;
 }
 
@@ -161,6 +163,8 @@ export interface Comunidade {
   endereco: string;
   responsavel: string;
   telefone: string;
+  cidade?: string;
+  estado?: string;
   observacao?: string;
 }
 

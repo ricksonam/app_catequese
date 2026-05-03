@@ -247,7 +247,8 @@ export async function fetchParoquias(): Promise<(Paroquia & { isShared?: boolean
 
   const own = (ownData || []).map((p: any) => ({
     id: p.id, nome: p.nome, tipo: p.tipo, endereco: p.endereco,
-    telefone: p.telefone, email: p.email, responsavel: p.responsavel, observacao: p.observacao,
+    telefone: p.telefone, email: p.email, responsavel: p.responsavel, 
+    cidade: p.cidade, estado: p.estado, observacao: p.observacao,
     isShared: false,
   }));
 
@@ -258,7 +259,8 @@ export async function fetchParoquias(): Promise<(Paroquia & { isShared?: boolean
     .filter((p: any) => !ownIds.has(p.id))
     .map((p: any) => ({
       id: p.id, nome: p.nome, tipo: p.tipo, endereco: p.endereco,
-      telefone: p.telefone, email: p.email, responsavel: p.responsavel, observacao: p.observacao,
+      telefone: p.telefone, email: p.email, responsavel: p.responsavel, 
+      cidade: p.cidade, estado: p.estado, observacao: p.observacao,
       isShared: true,
     }));
 
@@ -268,7 +270,8 @@ export async function fetchParoquias(): Promise<(Paroquia & { isShared?: boolean
 export async function upsertParoquia(p: Paroquia) {
   const { error } = await (supabase.from as any)("paroquias").upsert({
     id: p.id, nome: p.nome, tipo: p.tipo, endereco: p.endereco,
-    telefone: p.telefone, email: p.email, responsavel: p.responsavel, observacao: p.observacao,
+    telefone: p.telefone, email: p.email, responsavel: p.responsavel, 
+    cidade: p.cidade, estado: p.estado, observacao: p.observacao,
   });
   if (error) throw error;
 }
@@ -284,14 +287,16 @@ export async function fetchComunidades(): Promise<Comunidade[]> {
   if (error) throw error;
   return (data || []).map((c: any) => ({
     id: c.id, nome: c.nome, tipo: c.tipo, paroquiaId: c.paroquia_id || '',
-    endereco: c.endereco, responsavel: c.responsavel, telefone: c.telefone, observacao: c.observacao,
+    endereco: c.endereco, responsavel: c.responsavel, telefone: c.telefone, 
+    cidade: c.cidade, estado: c.estado, observacao: c.observacao,
   }));
 }
 
 export async function upsertComunidade(c: Comunidade) {
   const { error } = await (supabase.from as any)("comunidades").upsert({
     id: c.id, nome: c.nome, tipo: c.tipo, paroquia_id: c.paroquiaId || null,
-    endereco: c.endereco, responsavel: c.responsavel, telefone: c.telefone, observacao: c.observacao,
+    endereco: c.endereco, responsavel: c.responsavel, telefone: c.telefone, 
+    cidade: c.cidade, estado: c.estado, observacao: c.observacao,
   });
   if (error) throw error;
 }

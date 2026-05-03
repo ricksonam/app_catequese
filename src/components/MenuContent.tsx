@@ -124,7 +124,17 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
   // Exclusão
   const [exitReason, setExitReason] = useState("");
+  const [otherReason, setOtherReason] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+
+  const DELETION_REASONS = [
+    "Não usei o app",
+    "Achei muito difícil de usar",
+    "Faltam funcionalidades que eu preciso",
+    "Migrei para outra plataforma",
+    "Não faço mais parte da catequese",
+    "Outro"
+  ];
 
   const go = (path: string) => {
     navigate(path);
@@ -189,7 +199,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         usuario_id: user?.id,
         email_usuario: user?.email,
         texto: "PEDIDO DE EXCLUSÃO",
-        motivo_exclusao: exitReason,
+        motivo_exclusao: exitReason === "Outro" ? otherReason : exitReason,
         tipo: 'exclusao'
       });
       
@@ -715,12 +725,32 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
              <DialogHeader><DialogTitle className="text-xl font-black text-destructive">Tem certeza?</DialogTitle></DialogHeader>
              <p className="text-sm text-muted-foreground leading-relaxed">Sentimos muito que você esteja indo. Por favor, nos conte por que decidiu excluir sua conta para podermos melhorar:</p>
              
-             <Textarea 
-               placeholder="Ex: Não usei o app, achei difícil, etc..." 
-               className="w-full rounded-2xl border-destructive/20 focus:border-destructive"
-               value={exitReason}
-               onChange={(e) => setExitReason(e.target.value)}
-             />
+             <div className="w-full grid grid-cols-1 gap-2">
+               {DELETION_REASONS.map((reason) => (
+                 <button
+                   key={reason}
+                   onClick={() => setExitReason(reason)}
+                   className={cn(
+                     "w-full p-3 rounded-xl border text-xs font-bold transition-all text-left flex items-center justify-between",
+                     exitReason === reason 
+                       ? "bg-destructive/10 border-destructive text-destructive" 
+                       : "bg-muted/20 border-transparent text-muted-foreground hover:bg-muted/40"
+                   )}
+                 >
+                   {reason}
+                   {exitReason === reason && <div className="w-2 h-2 rounded-full bg-destructive animate-in zoom-in-50" />}
+                 </button>
+               ))}
+             </div>
+             
+             {exitReason === "Outro" && (
+               <Textarea 
+                 placeholder="Por favor, conte-nos mais..." 
+                 className="w-full rounded-2xl border-destructive/20 focus:border-destructive animate-in slide-in-from-top-2"
+                 value={otherReason}
+                 onChange={(e) => setOtherReason(e.target.value)}
+               />
+             )}
 
              <div className="w-full grid grid-cols-2 gap-3 pt-4">
                <Button variant="outline" onClick={() => setShowDeleteAccountDialog(false)} className="h-14 rounded-2xl border-2">Voltar</Button>
