@@ -69,6 +69,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
 
   // Lê a turma selecionada do localStorage (sincronizado com o Dashboard)
@@ -126,6 +127,11 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [exitReason, setExitReason] = useState("");
   const [otherReason, setOtherReason] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+
+  // Transferência
+  const [targetEmail, setTargetEmail] = useState("");
+  const [transferReason, setTransferReason] = useState("");
+  const [transferring, setTransferring] = useState(false);
 
   const DELETION_REASONS = [
     "Não usei o app",
@@ -216,6 +222,37 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } finally {
       setDeletingAccount(false);
+    }
+  };
+
+  const handleTransferData = async () => {
+    if (!targetEmail.trim() || !transferReason.trim()) {
+      toast({ title: "Atenção", description: "Preencha o e-mail de destino e o motivo.", variant: "destructive" });
+      return;
+    }
+    
+    setTransferring(true);
+    try {
+      const { error } = await supabase.rpc('transferir_dados_usuario', {
+        target_email: targetEmail.trim(),
+        transfer_reason: transferReason.trim()
+      });
+      
+      if (error) throw error;
+      
+      toast({ 
+        title: "Dados Transferidos!", 
+        description: "A transferência foi concluída. Sua conta agora está vazia." 
+      });
+      
+      setShowTransferDialog(false);
+      setTargetEmail("");
+      setTransferReason("");
+      onClose();
+    } catch (error: any) {
+      toast({ title: "Erro na transferência", description: error.message, variant: "destructive" });
+    } finally {
+      setTransferring(false);
     }
   };
 
@@ -494,6 +531,11 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                 <span className="text-sm font-bold text-foreground/80 text-left">Dar Sugestão</span>
               </button>
 
+              <button onClick={() => setShowTransferDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
+                <span className="text-sm font-bold text-foreground/80 text-left">Transferir Dados</span>
+              </button>
+
               <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
                 <div className="w-9 h-9 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:skew-x-6 transition-transform"><Trash className="h-4 w-4" /></div>
                 <span className="text-sm font-black text-left">Excluir Usuário</span>
@@ -757,6 +799,59 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                <Button onClick={handleDeleteAccount} disabled={deletingAccount} className="h-14 rounded-2xl bg-destructive hover:bg-red-700 font-black text-white">
                  {deletingAccount ? "Excluindo..." : "Excluir"}
                </Button>
+             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 5. Transferir Dados */}
+      <Dialog open={showTransferDialog} onOpenChange={setShowTransferDialog}>
+        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+             <div className="w-16 h-16 rounded-full bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-2">
+               <Sparkles className="w-8 h-8" />
+             </div>
+             <DialogHeader>
+               <DialogTitle className="text-xl font-black text-foreground">Transferir Dados</DialogTitle>
+             </DialogHeader>
+             <p className="text-sm text-muted-foreground leading-relaxed">
+               Transfira todas as suas turmas, paróquias e registros para outro usuário. **Esta ação não pode ser desfeita.**
+             </p>
+             
+             <div className="w-full space-y-4 pt-2 text-left">
+               <div className="space-y-1.5">
+                 <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1">E-mail do Destinatário</Label>
+                 <Input 
+                   type="email" 
+                   value={targetEmail} 
+                   onChange={(e) => setTargetEmail(e.target.value)} 
+                   placeholder="exemplo@email.com" 
+                   className="rounded-2xl h-12 border-muted" 
+                 />
+               </div>
+               
+               <div className="space-y-1.5">
+                 <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1">Motivo da Transferência</Label>
+                 <Textarea 
+                   value={transferReason} 
+                   onChange={(e) => setTransferReason(e.target.value)} 
+                   placeholder="Ex: Saída da paróquia, mudança de coordenação..." 
+                   className="rounded-2xl min-h-[100px] bg-muted/20 border-muted p-4 text-sm font-medium" 
+                 />
+               </div>
+
+               <div className="w-full grid grid-cols-1 gap-3 pt-4">
+                 <Button 
+                   onClick={handleTransferData} 
+                   disabled={transferring} 
+                   className="h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 font-black text-white text-lg shadow-xl shadow-indigo-500/20"
+                 >
+                   {transferring ? "Transferindo..." : "Confirmar Transferência"}
+                 </Button>
+                 <Button variant="ghost" onClick={() => setShowTransferDialog(false)} className="h-10 rounded-xl font-bold text-muted-foreground">
+                   Cancelar
+                 </Button>
+               </div>
              </div>
           </div>
         </DialogContent>
