@@ -210,8 +210,8 @@ export default function AdminDashboard() {
       const { error } = await supabase
         .from("profiles")
         .update({ 
-          is_blocked: !is_blocked,
-          motivo_bloqueio: !is_blocked ? reason : null
+          is_blocked: is_blocked,
+          motivo_bloqueio: is_blocked ? reason : null
         })
         .eq("id", id);
       if (error) throw error;
@@ -746,7 +746,7 @@ export default function AdminDashboard() {
               Cancelar
             </Button>
             <Button 
-              onClick={() => userToBlock && toggleBlockMutation.mutate({ id: userToBlock.id, is_blocked: false, reason: blockReason })} 
+              onClick={() => userToBlock && toggleBlockMutation.mutate({ id: userToBlock.id, is_blocked: true, reason: blockReason })} 
               disabled={!blockReason || toggleBlockMutation.isPending}
               className="flex-1 rounded-xl h-12 font-bold bg-destructive hover:bg-destructive/90"
             >

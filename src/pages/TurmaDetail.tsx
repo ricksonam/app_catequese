@@ -209,6 +209,7 @@ export default function TurmaDetail() {
   const relatorioModulo = { label: "Relatórios", icon: PieChart, path: `/turmas/${id}/relatorios` };
 
   return (
+    <>
     <div className="space-y-6 pb-10">
       {/* Header Compacto Reorganizado */}
       <div className="space-y-1 animate-fade-in flex flex-col -mt-4">
@@ -589,7 +590,7 @@ export default function TurmaDetail() {
         itemName={memberEmailToRemove}
         isLoading={removeMembroMutation.isPending}
       />
-    </div>
+    </>
   );
 }
 
