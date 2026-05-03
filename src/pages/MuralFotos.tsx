@@ -10,6 +10,8 @@ import { type MuralFoto } from "@/lib/store";
 import { compressImage } from "@/lib/utils";
 import { uploadFile } from "@/lib/supabaseStore";
 import { Studio } from "@/components/Studio";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 export default function MuralFotos() {
   const navigate = useNavigate();
@@ -27,7 +29,10 @@ export default function MuralFotos() {
   const [isSharing, setIsSharing] = useState(false);
   const [selectedTurmaId, setSelectedTurmaId] = useState<string>("");
   const [activeTab, setActiveTab] = useState("turma");
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
   const [selectedTurmaPerfilId, setSelectedTurmaPerfilId] = useState<string>("all");
+
   const activeTurmaId = useMemo(() => localStorage.getItem("ivc_selected_turma") || "all", []);
 
   useEffect(() => {
@@ -238,15 +243,19 @@ export default function MuralFotos() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!photoToDelete) return;
     try {
-      await deleteMutation.mutateAsync(id);
+      await deleteMutation.mutateAsync(photoToDelete);
       setViewFoto(null);
+      setDeleteConfirmOpen(false);
+      setPhotoToDelete(null);
       toast.success("Item removido com sucesso!");
     } catch (error: any) {
       toast.error("Erro ao remover: " + error.message);
     }
   };
+
 
   if (isLoading) {
     return (
@@ -591,12 +600,16 @@ export default function MuralFotos() {
                     {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />} Compartilhar
                   </button>
                   <button 
-                    onClick={() => handleDelete(viewFoto.id)} 
+                    onClick={() => {
+                      setPhotoToDelete(viewFoto.id);
+                      setDeleteConfirmOpen(true);
+                    }} 
                     disabled={deleteMutation.isPending}
                     className="flex flex-col items-center justify-center gap-1 text-destructive bg-destructive/10 py-3 rounded-2xl hover:bg-destructive/20 text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
                   >
                     {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />} Excluir
                   </button>
+
                 </div>
               </div>
             </div>
@@ -659,6 +672,14 @@ export default function MuralFotos() {
           )}
         </DialogContent>
       </Dialog>
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={viewFoto?.legenda}
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }
+

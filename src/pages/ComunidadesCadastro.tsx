@@ -5,6 +5,8 @@ import { ArrowLeft, Plus, Users, Trash2, Eye } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 interface FormData { nome: string; paroquiaId: string; endereco: string; responsavel: string; telefone: string; }
 const emptyForm: FormData = { nome: "", paroquiaId: "", endereco: "", responsavel: "", telefone: "" };
@@ -18,6 +20,8 @@ export default function ComunidadesCadastro() {
   const [open, setOpen] = useState(false);
   const [viewItem, setViewItem] = useState<Comunidade | null>(null);
   const [usarEnderecoParoquia, setUsarEnderecoParoquia] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [form, setForm] = useState<FormData>({ ...emptyForm });
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
 
@@ -27,10 +31,17 @@ export default function ComunidadesCadastro() {
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-  const handleDelete = async (id: string) => {
-    try { await deleteMut.mutateAsync(id); setViewItem(null); toast.success("Removido!"); }
+  const confirmDelete = async () => {
+    if (!viewItem) return;
+    try { 
+      await deleteMut.mutateAsync(viewItem.id); 
+      setViewItem(null); 
+      setDeleteConfirmOpen(false);
+      toast.success("Removido!"); 
+    }
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
+
 
   const handleEnderecoParoquia = (checked: boolean) => {
     setUsarEnderecoParoquia(checked);
@@ -92,13 +103,22 @@ export default function ComunidadesCadastro() {
         <DialogContent className="rounded-2xl border-border/30"><DialogHeader><DialogTitle>{viewItem?.nome}</DialogTitle></DialogHeader>
           {viewItem && <div className="space-y-2 text-sm">
             <InfoRow label="Paróquia" value={viewItem.paroquiaId ? getParoquiaNome(viewItem.paroquiaId) : undefined} /><InfoRow label="Endereço" value={viewItem.endereco} /><InfoRow label="Responsável" value={viewItem.responsavel} /><InfoRow label="Telefone" value={viewItem.telefone} />
-            <button onClick={() => handleDelete(viewItem.id)} className="w-full flex items-center justify-center gap-2 text-destructive py-2.5 mt-3 rounded-xl hover:bg-destructive/10 text-sm font-semibold"><Trash2 className="h-4 w-4" /> Excluir</button>
+            <button onClick={() => setDeleteConfirmOpen(true)} className="w-full flex items-center justify-center gap-2 text-destructive py-2.5 mt-3 rounded-xl hover:bg-destructive/10 text-sm font-semibold"><Trash2 className="h-4 w-4" /> Excluir</button>
+
           </div>}
         </DialogContent>
       </Dialog>
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={viewItem?.nome}
+        isLoading={deleteMut.isPending}
+      />
     </div>
   );
 }
+
 
 function InfoRow({ label, value }: { label: string; value?: string }) { if (!value) return null; return <p><span className="text-muted-foreground">{label}:</span> <span className="font-semibold text-foreground">{value}</span></p>; }
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) { 

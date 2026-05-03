@@ -7,6 +7,8 @@ import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { mascaraTelefone } from "@/lib/utils";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 interface UnifiedFormData {
   // Paroquia
@@ -51,6 +53,11 @@ export default function ParoquiaComunidadeCadastro() {
   const [cForm, setCForm] = useState({
     id: "", paroquiaId: "", nome: "", endereco: "", responsavel: "", telefone: "", cidade: "", estado: ""
   });
+  const [deletePConfirmOpen, setDeletePConfirmOpen] = useState(false);
+  const [deleteCConfirmOpen, setDeleteCConfirmOpen] = useState(false);
+  const [pToDelete, setPToDelete] = useState<{id: string, nome: string} | null>(null);
+  const [cToDelete, setCToDelete] = useState<{id: string, nome: string} | null>(null);
+
 
   const updateField = useCallback((field: keyof UnifiedFormData, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -115,19 +122,35 @@ export default function ParoquiaComunidadeCadastro() {
     }
   };
 
-  const handleDelete = async (pId: string) => {
+  const confirmDeleteP = async () => {
+    if (!pToDelete) return;
     try {
-      const comsToDelete = comunidades.filter(c => c.paroquiaId === pId);
+      const comsToDelete = comunidades.filter(c => c.paroquiaId === pToDelete.id);
       for (const c of comsToDelete) {
         await cDelete.mutateAsync(c.id);
       }
-      await pDelete.mutateAsync(pId);
+      await pDelete.mutateAsync(pToDelete.id);
       setViewPId(null);
+      setDeletePConfirmOpen(false);
+      setPToDelete(null);
       toast.success("Paróquia/Comunidade excluída com sucesso!");
     } catch (err: any) {
       toast.error("Erro ao excluir: " + err.message);
     }
   };
+
+  const confirmDeleteC = async () => {
+    if (!cToDelete) return;
+    try {
+      await cDelete.mutateAsync(cToDelete.id);
+      setDeleteCConfirmOpen(false);
+      setCToDelete(null);
+      toast.success("Comunidade excluída com sucesso!");
+    } catch (err: any) {
+      toast.error("Erro ao excluir: " + err.message);
+    }
+  };
+
 
   const openEdit = (p: Paroquia) => {
     setForm({
@@ -330,14 +353,14 @@ export default function ParoquiaComunidadeCadastro() {
                       <button 
                         onClick={(e) => {
                           e.preventDefault();
-                          if(window.confirm('Excluir esta comunidade/núcleo?')) {
-                            cDelete.mutateAsync(c.id).then(() => toast.success("Comunidade excluída com sucesso!"));
-                          }
+                          setCToDelete({ id: c.id, nome: c.nome });
+                          setDeleteCConfirmOpen(true);
                         }}
                         className="text-destructive bg-destructive/10 hover:bg-destructive/20 p-2 rounded-lg transition-colors active:scale-95"
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>
+
                     </div>
                   </div>
                 ))}
@@ -437,14 +460,14 @@ export default function ParoquiaComunidadeCadastro() {
                   </button>
                   <button 
                     onClick={() => {
-                      if(window.confirm('Tem certeza que deseja excluir a Sede e TODAS as comunidades vinculadas a ela?')) {
-                        handleDelete(activeGroup.p.id);
-                      }
+                      setPToDelete({ id: activeGroup.p.id, nome: activeGroup.p.nome });
+                      setDeletePConfirmOpen(true);
                     }} 
                     className="flex-[0.6] flex items-center justify-center gap-2 text-destructive bg-destructive/10 px-6 py-3.5 rounded-2xl hover:bg-destructive/20 text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98]"
                   >
                     <Trash2 className="h-4 w-4" /> Excluir
                   </button>
+
                 </div>
               </div>
             </div>
@@ -481,9 +504,26 @@ export default function ParoquiaComunidadeCadastro() {
           </div>
         </DialogContent>
       </Dialog>
+      <DeleteConfirmationDialog
+        open={deletePConfirmOpen}
+        onOpenChange={setDeletePConfirmOpen}
+        onConfirm={confirmDeleteP}
+        itemName={pToDelete?.nome}
+        description="Esta ação excluirá a Sede e TODAS as comunidades vinculadas a ela permanentemente."
+        isLoading={pDelete.isPending || cDelete.isPending}
+      />
+
+      <DeleteConfirmationDialog
+        open={deleteCConfirmOpen}
+        onOpenChange={setDeleteCConfirmOpen}
+        onConfirm={confirmDeleteC}
+        itemName={cToDelete?.nome}
+        isLoading={cDelete.isPending}
+      />
     </div>
   );
 }
+
 
 function InfoRow({ icon: Icon, label, value }: { icon?: any; label: string; value?: string }) { 
   if (!value) return null; 

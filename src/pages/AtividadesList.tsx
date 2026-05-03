@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
 import { formatarDataVigente, cn } from "@/lib/utils";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 // --- Helpers ---
 function FieldInput({ label, type = "text", value, onChange, placeholder }: { label: string; type?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
@@ -67,6 +69,9 @@ export default function AtividadesList() {
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<Atividade | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
+
 
   // Auto-view item from URL param
   useEffect(() => {
@@ -98,7 +103,17 @@ export default function AtividadesList() {
   };
 
   const handleEdit = (item: Atividade) => { setForm(fillFormFromItem(item)); setEditingId(item.id); setViewItem(null); setOpen(true); };
-  const handleDelete = async (aid: string) => { try { await deleteMut.mutateAsync(aid); setViewItem(null); toast.success("Removida!"); } catch (err: any) { toast.error("Erro: " + err.message); } };
+  const confirmDelete = async () => {
+    if (!itemToDeleteId) return;
+    try { 
+      await deleteMut.mutateAsync(itemToDeleteId); 
+      setViewItem(null); 
+      setDeleteConfirmOpen(false);
+      setItemToDeleteId(null);
+      toast.success("Removida!"); 
+    } catch (err: any) { toast.error("Erro: " + err.message); }
+  };
+
 
   const togglePresenca = (catId: string) => {
     if (!presencaItem) return;
@@ -291,7 +306,8 @@ export default function AtividadesList() {
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Atividade</span>
                 <div className="flex items-center gap-1.5 z-50">
                   <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={() => handleDelete(viewItem.id)} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
+
                   <div className="w-px h-4 bg-black/10 mx-1" />
                   <button onClick={() => setViewItem(null)} className="p-2 rounded-xl bg-muted/80 text-foreground hover:bg-black/10 transition-colors shadow-sm"><X className="h-4 w-4" /></button>
                 </div>
@@ -424,6 +440,14 @@ export default function AtividadesList() {
           )}
         </DialogContent>
       </Dialog>
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={viewItem?.nome}
+        isLoading={deleteMut.isPending}
+      />
     </div>
   );
 }
+

@@ -12,6 +12,8 @@ import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { generateUUID, copyToClipboardOrShare } from "@/lib/utils";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -170,7 +172,9 @@ export default function CatequizandosList() {
 
 
   const [viewItem, setViewItem] = useState<Catequizando | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
+
   const [editForm, setEditForm] = useState<CatequizandoForm>({ ...emptyForm });
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
   const [filterAniversarios, setFilterAniversarios] = useState(false);
@@ -381,10 +385,20 @@ export default function CatequizandosList() {
 
   const handleDelete = async () => {
     if (!viewItem) return;
-    if (!confirm(`Excluir ${viewItem.nome}?`)) return;
-    try { await deleteMut.mutateAsync(viewItem.id); setViewItem(null); toast.success("Catequizando excluído com sucesso!"); }
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!viewItem) return;
+    try { 
+      await deleteMut.mutateAsync(viewItem.id); 
+      setViewItem(null); 
+      setDeleteConfirmOpen(false);
+      toast.success("Catequizando excluído com sucesso!"); 
+    }
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
+
 
   const aniversariantesFiltrados = useMemo(() => {
     const hoje = new Date();
@@ -1579,6 +1593,14 @@ export default function CatequizandosList() {
           )}
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={viewItem?.nome}
+        isLoading={deleteMut.isPending}
+      />
     </div>
   );
 }

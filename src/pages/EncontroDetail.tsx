@@ -9,6 +9,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string; border: string; activeClasses: string; }[] = [
   { value: "pendente", label: "Pendente", bg: "bg-violet-100", text: "text-violet-700", border: "border-violet-200", activeClasses: "border-violet-500 bg-violet-200 shadow-md ring-2 ring-violet-400/40 ring-offset-2 opacity-100" },
@@ -40,6 +42,8 @@ export default function EncontroDetail() {
   const [showConflict, setShowConflict] = useState(false);
   const [conflictEncontro, setConflictEncontro] = useState<any>(null);
   const [selectedTransferDate, setSelectedTransferDate] = useState<Date | undefined>();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
   const [showOcorrencias, setShowOcorrencias] = useState(false);
   const [searchParams] = useSearchParams();
   const [draftAvaliacao, setDraftAvaliacao] = useState<AvaliacaoEncontro | null>(null);
@@ -133,12 +137,14 @@ export default function EncontroDetail() {
     setShowCancelMotivo(false); toast.success("Encontro cancelado");
   };
 
-  const handleDelete = async () => {
+  const confirmDelete = async () => {
     if (!motivoText.trim()) { toast.error("Informe o motivo"); return; }
     ocorrenciaMut.mutate({ id: crypto.randomUUID(), encontroId: encontro.id, turmaId: id!, tipo: 'exclusao', motivo: motivoText, data: new Date().toISOString(), temaNome: encontro.tema });
     await deleteMut.mutateAsync(encontro.id);
+    setDeleteConfirmOpen(false);
     toast.success("Encontro excluído"); navigate(`/turmas/${id}/encontros`);
   };
+
 
   const togglePresenca = (catId: string) => {
     if (!encontro) return;
@@ -193,9 +199,10 @@ export default function EncontroDetail() {
             <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20 group shadow-sm">
               <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
             </button>
-            <button onClick={() => { setMotivoText(""); setShowDeleteMotivo(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
+            <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
               <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
             </button>
+
           </div>
         </div>
         
@@ -597,10 +604,10 @@ export default function EncontroDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* Cancel/Delete Motivo Modal */}
-      <Dialog open={showCancelMotivo || showDeleteMotivo} onOpenChange={(o) => { if(!o){ setShowCancelMotivo(false); setShowDeleteMotivo(false); } }}>
+      {/* Cancel Motivo Modal */}
+      <Dialog open={showCancelMotivo} onOpenChange={setShowCancelMotivo}>
         <DialogContent className="rounded-2xl border-border/30">
-          <DialogTitle>{showCancelMotivo ? 'Motivo do Cancelamento' : 'Motivo da Exclusão'}</DialogTitle>
+          <DialogTitle>Motivo do Cancelamento</DialogTitle>
           <div className="space-y-4 mt-2">
             <p className="text-xs text-muted-foreground">
               Por favor, informe o motivo para registrar na aba de Ocorrências da turma.
@@ -612,7 +619,7 @@ export default function EncontroDetail() {
               onChange={(e) => setMotivoText(e.target.value)}
             />
             <button
-              onClick={showCancelMotivo ? handleCancelConfirm : handleDelete}
+              onClick={handleCancelConfirm}
               className="w-full action-btn bg-destructive hover:bg-destructive/90 text-destructive-foreground border-transparent"
             >
               Confirmar
@@ -620,6 +627,7 @@ export default function EncontroDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
 
       {/* Presence Manager Modal */}
       <Dialog open={showPresenca} onOpenChange={setShowPresenca}>
@@ -746,6 +754,25 @@ export default function EncontroDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={encontro.tema}
+        isLoading={deleteMut.isPending}
+      >
+        <div className="space-y-3">
+          <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Motivo da Exclusão</label>
+          <textarea
+            className="w-full min-h-[100px] rounded-2xl border-2 border-muted/50 bg-background p-4 text-sm resize-none focus:border-destructive/50 outline-none transition-colors"
+            placeholder="Informe o motivo para registro histórico..."
+            value={motivoText}
+            onChange={(e) => setMotivoText(e.target.value)}
+          />
+        </div>
+      </DeleteConfirmationDialog>
     </div>
   );
 }
+

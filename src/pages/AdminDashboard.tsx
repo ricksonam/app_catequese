@@ -22,6 +22,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { AlertTriangle, ShieldAlert as ShieldAlertIcon } from "lucide-react";
+
+// Keywords for safety monitoring
+const SAFETY_KEYWORDS = [
+  "sexual", "nude", "pornografico", "pornografia", "sexo", "novinha", "novinho",
+  "dinheiro", "contribuição", "pix", "transferência", "pagar", "pagamento",
+  "ameaça", "ameaçando", "matar", "violência", "bater", "agredir", "safado", "safada"
+];
+
 
 // Types
 interface Profile {
@@ -51,6 +60,18 @@ interface Sugestao {
   motivo_exclusao: string | null;
   created_at: string;
 }
+
+interface SafetyAlert {
+  id: string;
+  module: "Conecta Família" | "Missões em Família";
+  type: "Formulário" | "Resposta" | "Missão";
+  content: string;
+  flaggedWord: string;
+  author: string;
+  userId?: string;
+  createdAt: string;
+}
+
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -107,6 +128,81 @@ export default function AdminDashboard() {
       return data as Sugestao[];
     }
   });
+  
+  const { data: safetyAlerts = [], isLoading: loadingSafety } = useQuery({
+    queryKey: ["admin_safety_alerts"],
+    queryFn: async () => {
+      const alerts: SafetyAlert[] = [];
+
+      // 1. Check comunicacao_forms
+      const { data: forms } = await supabase
+        .from("comunicacao_forms")
+        .select("*, profiles(email)");
+      
+      forms?.forEach(f => {
+        const textToSearch = `${f.titulo} ${f.descricao} ${JSON.stringify(f.campos)}`.toLowerCase();
+        const foundWord = SAFETY_KEYWORDS.find(word => textToSearch.includes(word));
+        if (foundWord) {
+          alerts.push({
+            id: f.id,
+            module: "Conecta Família",
+            type: "Formulário",
+            content: `${f.titulo}: ${f.descricao}`,
+            flaggedWord: foundWord,
+            author: (f.profiles as any)?.email || "Usuário desconhecido",
+            userId: f.user_id,
+            createdAt: f.criado_em
+          });
+        }
+      });
+
+      // 2. Check comunicacao_respostas
+      const { data: responses } = await supabase
+        .from("comunicacao_respostas")
+        .select("*");
+      
+      responses?.forEach(r => {
+        const textToSearch = `${r.nome_respondente} ${JSON.stringify(r.respostas)}`.toLowerCase();
+        const foundWord = SAFETY_KEYWORDS.find(word => textToSearch.includes(word));
+        if (foundWord) {
+          alerts.push({
+            id: r.id,
+            module: "Conecta Família",
+            type: "Resposta",
+            content: `Resposta de ${r.nome_respondente}: ${JSON.stringify(r.respostas)}`,
+            flaggedWord: foundWord,
+            author: `${r.nome_respondente} (${r.telefone || 'Sem tel'})`,
+            createdAt: r.criado_em
+          });
+        }
+      });
+
+      // 3. Check missoes_familia
+      const { data: missoes } = await supabase
+        .from("missoes_familia")
+        .select("*, profiles:criado_por(email)");
+      
+      missoes?.forEach(m => {
+        const textToSearch = `${m.titulo} ${m.descricao}`.toLowerCase();
+        const foundWord = SAFETY_KEYWORDS.find(word => textToSearch.includes(word));
+        if (foundWord) {
+          alerts.push({
+            id: m.id,
+            module: "Missões em Família",
+            type: "Missão",
+            content: `${m.titulo}: ${m.descricao}`,
+            flaggedWord: foundWord,
+            author: (m.profiles as any)?.email || "Usuário desconhecido",
+            userId: m.criado_por,
+            createdAt: m.criado_em
+          });
+        }
+      });
+
+      return alerts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+  });
+
 
   // Mutations
   const toggleBlockMutation = useMutation({
@@ -160,14 +256,17 @@ export default function AdminDashboard() {
       return date.toDateString() === today.toDateString();
     }).length;
     const deletedReasons = sugestoes.filter(s => s.tipo === 'exclusao').length;
+    const safetyAlertsCount = safetyAlerts.length;
 
-    return { total, blocked, activeToday, deletedReasons };
-  }, [profiles, sugestoes]);
+    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount };
+  }, [profiles, sugestoes, safetyAlerts]);
+
 
   const feedbackList = sugestoes.filter(s => s.tipo !== 'exclusao');
   const churnList = sugestoes.filter(s => s.tipo === 'exclusao');
 
-  if (loadingProfiles || loadingSugestoes) {
+  if (loadingProfiles || loadingSugestoes || loadingSafety) {
+
     return (
       <div className="p-8 space-y-6">
         <div className="flex justify-between items-center">
@@ -248,7 +347,16 @@ export default function AdminDashboard() {
             description="Usuários que excluiram conta"
             onClick={() => setActiveTab("churn")}
           />
+          <StatsCard 
+            title="Alertas de Segurança" 
+            value={stats.safetyAlertsCount} 
+            icon={ShieldAlert} 
+            color="destructive" 
+            description="Conteúdo impróprio detectado"
+            onClick={() => setActiveTab("safety")}
+          />
         </div>
+
 
         {/* Main Content Area */}
         <div className="bg-white rounded-[32px] border border-border/50 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[600px]">
@@ -257,8 +365,10 @@ export default function AdminDashboard() {
           <aside className="w-full md:w-64 border-r border-border/50 bg-slate-50/50 p-6 space-y-2">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
+            <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
             <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={MessageSquare} label="Sugestões" />
+
             <TabButton active={activeTab === "settings"} onClick={() => setActiveTab("settings")} icon={Settings} label="Configurações" />
           </aside>
 
@@ -357,6 +467,95 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
+
+            {activeTab === "safety" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Monitoramento de Segurança</h2>
+                    <p className="text-sm text-muted-foreground">Conteúdo sinalizado por termos impróprios ou suspeitos</p>
+                  </div>
+                  <Badge variant="destructive" className="rounded-full px-4 py-1 font-black text-xs">
+                    {safetyAlerts.length} ALERTAS
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {safetyAlerts.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-white/50 rounded-[32px] border-2 border-dashed border-border/50">
+                      <ShieldCheck className="h-12 w-12 mb-4 text-emerald-500 opacity-50" />
+                      <p className="text-sm font-bold uppercase tracking-widest">Nenhum conteúdo suspeito detectado</p>
+                      <p className="text-xs">O sistema está monitorando em tempo real.</p>
+                    </div>
+                  ) : (
+                    safetyAlerts.map((alert) => (
+                      <Card key={alert.id} className="rounded-2xl border-destructive/20 shadow-sm hover:shadow-md transition-all overflow-hidden bg-white group">
+                        <div className="h-1 w-full bg-destructive/50" />
+                        <CardContent className="p-5 flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center shrink-0 border border-destructive/20">
+                            <AlertTriangle className="h-6 w-6 text-destructive" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-[9px] uppercase font-black tracking-widest border-destructive/30 text-destructive bg-destructive/5">
+                                  {alert.module}
+                                </Badge>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">• {alert.type}</span>
+                              </div>
+                              <span className="text-[10px] font-medium text-muted-foreground">
+                                {new Date(alert.createdAt).toLocaleString("pt-BR")}
+                              </span>
+                            </div>
+                            
+                            <h4 className="text-sm font-bold text-foreground mb-1">Autor: {alert.author}</h4>
+                            
+                            <div className="p-3 rounded-xl bg-slate-50 border border-border/40 text-sm text-foreground mb-3 font-medium leading-relaxed line-clamp-3">
+                              {alert.content}
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-destructive/5 border border-destructive/10">
+                                <span className="text-[9px] font-black text-destructive uppercase tracking-widest">Termo Flagged:</span>
+                                <span className="text-xs font-black text-destructive">{alert.flaggedWord}</span>
+                              </div>
+                              
+                              <div className="flex gap-2">
+                                {alert.userId && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="destructive" 
+                                    onClick={() => {
+                                      const profile = profiles.find(p => p.id === alert.userId);
+                                      if (profile) {
+                                        setUserToBlock(profile);
+                                        setBlockReason(`Conteúdo impróprio detectado: "${alert.flaggedWord}"`);
+                                        setIsBlockDialogOpen(true);
+                                      }
+                                    }}
+                                    className="rounded-lg h-8 text-[10px] font-black uppercase tracking-widest"
+                                  >
+                                    <Lock className="h-3 w-3 mr-1" /> Bloquear Usuário
+                                  </Button>
+                                )}
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="rounded-lg h-8 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-slate-100"
+                                >
+                                  Ignorar Alerta
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
 
             {activeTab === "churn" && (
               <div className="space-y-6">

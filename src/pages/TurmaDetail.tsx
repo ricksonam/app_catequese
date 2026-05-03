@@ -17,6 +17,8 @@ import {
 import { toast } from "sonner";
 import { useState, useMemo } from "react";
 import { AuditLogModal } from "@/components/AuditLogPanel";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 export default function TurmaDetail() {
   const { id } = useParams();
@@ -37,6 +39,10 @@ export default function TurmaDetail() {
   const [shareWarningOpen, setShareWarningOpen] = useState(false);
   const [shareWarningAccepted, setShareWarningAccepted] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
+  const [memberEmailToRemove, setMemberEmailToRemove] = useState<string>("");
+
 
   const alertConfig = useMemo(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
@@ -130,15 +136,17 @@ export default function TurmaDetail() {
     return count;
   }, [encontros, alertConfig.moduloEncontros]);
 
-  const handleDelete = async () => {
+  const confirmDelete = async () => {
     try {
       await deleteMutation.mutateAsync(id!);
+      setDeleteConfirmOpen(false);
       toast.success("Turma excluída com sucesso");
       navigate("/turmas");
     } catch (error: any) {
       toast.error("Erro ao excluir: " + error.message);
     }
   };
+
 
   const handleLeave = async () => {
     try {
@@ -157,14 +165,17 @@ export default function TurmaDetail() {
     }
   };
 
-  const handleRemoveMembro = async (userId: string) => {
+  const confirmRemoveMembro = async () => {
+    if (!memberToRemove) return;
     try {
-      await removeMembroMutation.mutateAsync({ turmaId: id!, userId });
+      await removeMembroMutation.mutateAsync({ turmaId: id!, userId: memberToRemove });
+      setMemberToRemove(null);
       toast.success("Acesso removido com sucesso.");
     } catch (error: any) {
       toast.error("Erro ao remover: " + error.message);
     }
   };
+
 
   const handleApproveMembro = async (userId: string) => {
     try {
@@ -279,27 +290,14 @@ export default function TurmaDetail() {
                   <Pencil className="h-4 w-4" />
                 </button>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button disabled={deleteMutation.isPending} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="rounded-2xl">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Excluir Turma</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Tem certeza que deseja excluir esta turma? Esta ação não pode ser desfeita e removerá todos os dados vinculados.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
-                        Confirmar Exclusão
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <button 
+                  disabled={deleteMutation.isPending} 
+                  onClick={() => setDeleteConfirmOpen(true)}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+
               </>
             )}
           </div>
@@ -544,27 +542,16 @@ export default function TurmaDetail() {
                         </button>
                       )}
 
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <button className="flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20">
-                            <UserMinus className="h-3.5 w-3.5" />
-                          </button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-2xl">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Remover Acesso</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Deseja remover o acesso de <b>{m.email}</b> a esta turma? O usuário não poderá mais acessá-la.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleRemoveMembro(m.user_id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
-                              Confirmar
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      <button 
+                        onClick={() => {
+                          setMemberToRemove(m.user_id);
+                          setMemberEmailToRemove(m.email);
+                        }}
+                        className="flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20"
+                      >
+                        <UserMinus className="h-3.5 w-3.5" />
+                      </button>
+
                     </div>
                   </div>
                 ))}
@@ -584,8 +571,28 @@ export default function TurmaDetail() {
       )}
 
     </div>
+      
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={turma.nome}
+        isLoading={deleteMutation.isPending}
+      />
+
+      <DeleteConfirmationDialog
+        open={!!memberToRemove}
+        onOpenChange={(open) => !open && setMemberToRemove(null)}
+        onConfirm={confirmRemoveMembro}
+        title="Remover Acesso?"
+        description="O usuário não poderá mais acessar esta turma. Você poderá convidá-lo novamente se necessário."
+        itemName={memberEmailToRemove}
+        isLoading={removeMembroMutation.isPending}
+      />
+    </div>
   );
 }
+
 
 function InfoBadge({ label, value, color }: { label: string; value: string; color: string }) {
   return (

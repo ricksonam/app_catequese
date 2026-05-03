@@ -5,7 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useComunicacaoForms, useDeleteComunicacaoForm } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { formatarDataVigente, copyToClipboardOrShare } from "@/lib/utils";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import type { ComunicacaoForm } from "@/lib/store";
+
 
 export default function ComunicacaoHub() {
   const navigate = useNavigate();
@@ -16,6 +18,9 @@ export default function ComunicacaoHub() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showInfo, setShowInfo] = useState(false);
   const [showQrCode, setShowQrCode] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{id: string, title: string} | null>(null);
+
 
   const getLinkPublico = (codigo: string) => `${window.location.origin}/f/${codigo}`;
 
@@ -26,17 +31,24 @@ export default function ComunicacaoHub() {
     return matchesFilter && matchesSearch;
   });
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
+  const handleDelete = (id: string, title: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if(confirm("Tem certeza que deseja excluir? Todas as respostas também serão apagadas.")) {
-      try {
-        await deleteForm.mutateAsync(id);
-        toast.success("Excluído com sucesso!");
-      } catch (err) {
-        toast.error("Erro ao excluir.");
-      }
+    setItemToDelete({ id, title });
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    try {
+      await deleteForm.mutateAsync(itemToDelete.id);
+      setDeleteConfirmOpen(false);
+      setItemToDelete(null);
+      toast.success("Excluído com sucesso!");
+    } catch (err) {
+      toast.error("Erro ao excluir.");
     }
   };
+
 
   const handleCopyLink = async (codigo: string) => {
     const url = getLinkPublico(codigo);
@@ -269,12 +281,13 @@ export default function ComunicacaoHub() {
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button 
-                      onClick={(e) => handleDelete(form.id, e)}
+                      onClick={(e) => handleDelete(form.id, form.titulo, e)}
                       className="p-2 rounded-xl text-destructive hover:bg-destructive/10 transition-all active:scale-95 shadow-sm border border-transparent hover:border-destructive/20"
                       title="Excluir"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
+
                   </div>
                 </div>
                 
@@ -332,9 +345,17 @@ export default function ComunicacaoHub() {
           ))}
         </div>
       )}
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={itemToDelete?.title}
+        isLoading={deleteForm.isPending}
+      />
     </div>
   );
 }
+
 
 // Minimal stub for internal ChevronRight as it wasn't imported from lucide above
 const ChevronRight = ({ className }: { className?: string }) => (

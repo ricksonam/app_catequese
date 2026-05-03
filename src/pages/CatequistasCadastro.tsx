@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
 import { mascaraTelefone } from "@/lib/utils";
+import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 
 type CatequistaStatus = "ativo" | "inativo" | "afastado";
 
@@ -50,7 +52,10 @@ export default function CatequistasCadastro() {
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [viewItem, setViewItem] = useState<CatequistaCadastro | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+
 
   const updateField = useCallback((field: string, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -82,10 +87,18 @@ export default function CatequistasCadastro() {
     } catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-  const handleDelete = async (cid: string) => {
-    try { await deleteMut.mutateAsync(cid); setViewItem(null); toast.success("Catequista excluído com sucesso!"); }
+  const confirmDelete = async () => {
+    if (!itemToDeleteId) return;
+    try { 
+      await deleteMut.mutateAsync(itemToDeleteId); 
+      setViewItem(null); 
+      setDeleteConfirmOpen(false);
+      setItemToDeleteId(null);
+      toast.success("Catequista excluído com sucesso!"); 
+    }
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
+
 
   const openEdit = (item: CatequistaCadastro) => {
     setForm({
@@ -297,11 +310,15 @@ export default function CatequistasCadastro() {
                         <Pencil className="h-4 w-4" /> Editar
                       </button>
                       <button
-                        onClick={() => handleDelete(viewItem.id)}
+                        onClick={() => {
+                          setItemToDeleteId(viewItem.id);
+                          setDeleteConfirmOpen(true);
+                        }}
                         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-destructive text-sm font-semibold hover:bg-destructive/10 transition-colors"
                       >
                         <Trash2 className="h-4 w-4" /> Excluir
                       </button>
+
                     </>
                   )}
                 </div>
@@ -310,9 +327,17 @@ export default function CatequistasCadastro() {
           })()}
         </DialogContent>
       </Dialog>
+      <DeleteConfirmationDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        itemName={viewItem?.nome}
+        isLoading={deleteMut.isPending}
+      />
     </div>
   );
 }
+
 
 function DetailRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
