@@ -1220,7 +1220,7 @@ export default function CatequizandosList() {
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
               {/* Header Bar Clean */}
               <div className="sticky top-0 z-50 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
-                <span className="text-sm font-bold text-foreground truncate pr-4">{viewItem.nome}</span>
+                <div className="flex-1" />
                 <div className="flex items-center gap-4 z-50">
                   <button onClick={handleEdit} className="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all shadow-sm hover:scale-110 active:scale-95"><Pencil className="h-5 w-5" /></button>
                   <button onClick={handleDelete} className="p-2.5 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all shadow-sm hover:scale-110 active:scale-95"><Trash2 className="h-5 w-5" /></button>
@@ -1250,6 +1250,21 @@ export default function CatequizandosList() {
                   </div>
                 </div>
 
+                {/* Alterar Status */}
+                <div className="pt-2 border-b-2 border-black/5 pb-6">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center sm:text-left">Situação do Aluno</p>
+                  <div className="flex justify-center sm:justify-start gap-2 flex-wrap">
+                    {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
+                      const isAtivo = (viewItem.status || 'ativo') === s;
+                      return (
+                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${isAtivo ? 'bg-foreground text-background border-foreground shadow-md scale-105' : 'bg-muted text-muted-foreground hover:bg-black/5 border-black/10'}`}>
+                          {statusConfig[s].label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Identificação Especial (Cordão) */}
                 {viewItem.necessidadeEspecial && viewItem.necessidadeEspecial !== "nenhuma" && (
                    <LanyardDrawing type={viewItem.necessidadeEspecial} />
@@ -1267,17 +1282,7 @@ export default function CatequizandosList() {
                          <span className="text-xs font-bold text-muted-foreground">Nascimento</span>
                          <span className="text-base font-black text-foreground text-right">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
                       </div>
-                      {viewItem.criadoEm && (
-                        <>
-                          <div className="h-px bg-black/5" />
-                          <div className="flex justify-between items-center">
-                             <span className="text-xs font-bold text-muted-foreground">Registro</span>
-                             <span className="text-[10px] font-black text-foreground text-right uppercase">
-                               {new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(viewItem.criadoEm))}
-                             </span>
-                          </div>
-                        </>
-                      )}
+
                       <div className="h-px bg-black/5" />
                       <div className="flex justify-between items-center">
                          <span className="text-xs font-bold text-muted-foreground">Telefone</span>
@@ -1384,20 +1389,15 @@ export default function CatequizandosList() {
                   </div>
                 )}
                 
-                {/* Alterar Status */}
-                <div className="pt-4 border-t-2 border-black/10 pb-2">
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center">Situação do Aluno</p>
-                  <div className="flex justify-center gap-2 flex-wrap">
-                    {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
-                      const isAtivo = (viewItem.status || 'ativo') === s;
-                      return (
-                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${isAtivo ? 'bg-foreground text-background border-foreground shadow-md scale-105' : 'bg-muted text-muted-foreground hover:bg-black/5 border-black/10'}`}>
-                          {statusConfig[s].label}
-                        </button>
-                      );
-                    })}
+                {/* Registro no final */}
+                {viewItem.criadoEm && (
+                  <div className="pt-6 mt-4 border-t border-black/5 text-center">
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">Data de Registro no Sistema</p>
+                    <p className="text-[10px] font-bold text-foreground mt-1">
+                      {new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(viewItem.criadoEm))}
+                    </p>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
