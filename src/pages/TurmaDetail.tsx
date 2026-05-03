@@ -223,7 +223,7 @@ export default function TurmaDetail() {
             <h1 className="text-2xl font-black text-foreground tracking-tight truncate max-w-[200px]">
               {turma.nome}
             </h1>
-            <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-black/10">
+            <span className="shrink-0 text-sm font-black px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 border border-black/10 shadow-sm">
               {turma.ano}
             </span>
           </div>
@@ -234,7 +234,7 @@ export default function TurmaDetail() {
           <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-black/10 shadow-sm" />
           <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-black/10 shadow-sm" />
           <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-black/10 shadow-sm" />
-          <InfoBadge label="Local" value={turma.local} color="bg-white text-foreground border-black/10 shadow-sm" />
+
         </div>
 
         {/* Row 3: Relatórios (Esquerda) + Ações (Direita) */}
@@ -291,13 +291,7 @@ export default function TurmaDetail() {
                   <Pencil className="h-4 w-4" />
                 </button>
 
-                <button 
-                  disabled={deleteMutation.isPending} 
-                  onClick={() => setDeleteConfirmOpen(true)}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+
 
               </>
             )}
@@ -568,6 +562,16 @@ export default function TurmaDetail() {
               onClose={() => setAuditOpen(false)}
             />
           )}
+      {!turma.isShared && (
+        <div className="pt-10 pb-4 animate-float-up" style={{ animationDelay: '600ms' }}>
+          <button 
+            disabled={deleteMutation.isPending} 
+            onClick={() => setDeleteConfirmOpen(true)}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-destructive bg-destructive/5 hover:bg-destructive/10 transition-all active:scale-95 border-2 border-dashed border-destructive/20"
+          >
+            <Trash2 className="h-4 w-4" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Excluir Turma permanentemente</span>
+          </button>
         </div>
       )}
 
