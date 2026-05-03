@@ -562,6 +562,9 @@ export default function TurmaDetail() {
               onClose={() => setAuditOpen(false)}
             />
           )}
+        </div>
+      )}
+
       {!turma.isShared && (
         <div className="pt-10 pb-4 animate-float-up" style={{ animationDelay: '600ms' }}>
           <button 
