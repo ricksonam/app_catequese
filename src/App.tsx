@@ -40,6 +40,7 @@ import MaterialApoio from "@/pages/MaterialApoio";
 import ParoquiaComunidadeCadastro from "@/pages/ParoquiaComunidadeCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
+import AdminDashboard from "@/pages/AdminDashboard";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import PublicPlano from "@/pages/PublicPlano";
 import ComunicacaoHub from "@/pages/ComunicacaoHub";
@@ -88,6 +89,18 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { session, loading, isAdmin } = useAuth();
+  if (loading) return null;
+  if (!session || !isAdmin) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
+const HomeRedirect = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? <Navigate to="/admin" replace /> : <Dashboard />;
+};
+
 const AppRoutes = () => (
   <Routes>
     <Route path="/auth" element={<AuthPage />} />
@@ -104,7 +117,7 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     >
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<HomeRedirect />} />
       <Route path="/turmas" element={<TurmasList />} />
       <Route path="/turmas/nova" element={<TurmaForm />} />
       <Route path="/turmas/:id/editar" element={<TurmaForm />} />
@@ -143,6 +156,7 @@ const AppRoutes = () => (
       <Route path="/comunicacao/:id/editar" element={<ComunicacaoBuilder />} />
       <Route path="/comunicacao/:id" element={<ComunicacaoDetail />} />
     </Route>
+    <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

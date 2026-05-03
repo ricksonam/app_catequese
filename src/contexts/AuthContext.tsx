@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isReady: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   isReady: false,
+  isAdmin: false,
   signOut: async () => {},
 });
 
@@ -93,8 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const isAdmin = session?.user?.email === "icatequese2026@gmail.com";
+
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, isAdmin, signOut }}>
       {children}
     </AuthContext.Provider>
   );
