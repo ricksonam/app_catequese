@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { getAppUrl } from "@/lib/utils";
 
 
 const baseTabs = [
@@ -219,13 +220,13 @@ export default function AppLayout() {
                     const shareData = {
                       title: 'iCatequese',
                       text: 'Conheça o iCatequese, o aplicativo que organiza sua catequese!',
-                      url: window.location.origin
+                      url: getAppUrl()
                     };
                     try {
                       if (navigator.share) {
                         await navigator.share(shareData);
                       } else {
-                        await navigator.clipboard.writeText(window.location.origin);
+                        await navigator.clipboard.writeText(getAppUrl());
                         toast.success("Link copiado!");
                       }
                     } catch (err) {

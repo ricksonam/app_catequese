@@ -18,7 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/spinner";
 import { categoriasMissao, missoesTemplates } from "@/lib/missoesTemplates";
 import { useAuth } from "@/contexts/AuthContext";
-import { copyToClipboardOrShare } from "@/lib/utils";
+import { copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 
 export default function MissoesFamilia() {
   const { id: turmaId } = useParams();
@@ -144,7 +144,7 @@ export default function MissoesFamilia() {
   };
 
   const handleShare = async (codigo: string) => {
-    const url = `${window.location.origin}/missao/${codigo}`;
+    const url = `${getAppUrl()}/missao/${codigo}`;
     
     const success = await copyToClipboardOrShare(url, {
       title: "Missão em Família - iCatequese",

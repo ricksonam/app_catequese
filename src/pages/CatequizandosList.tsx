@@ -11,7 +11,7 @@ import { mascaraTelefone, cn } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { generateUUID, copyToClipboardOrShare } from "@/lib/utils";
+import { generateUUID, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 
 
@@ -152,7 +152,7 @@ export default function CatequizandosList() {
   const [showInscricaoModal, setShowInscricaoModal] = useState(false);
 
   const handleCopyInscricaoLink = async () => {
-    const url = `${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`;
+    const url = `${getAppUrl()}/inscricao-catequizando/${turma?.codigoAcesso}`;
 
     const success = await copyToClipboardOrShare(url, {
       title: 'Inscrição de Catequizando',
@@ -797,7 +797,7 @@ export default function CatequizandosList() {
                           <div className="flex-1 min-w-0 text-left">
                              <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">Copiar Link agora</p>
                              <code className="text-[10px] font-mono font-bold text-muted-foreground truncate block">
-                               {`${window.location.origin}/inscricao-catequizando/${turma?.codigoAcesso}`}
+                               {`${getAppUrl()}/inscricao-catequizando/${turma?.codigoAcesso}`}
                              </code>
                           </div>
                           <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors">

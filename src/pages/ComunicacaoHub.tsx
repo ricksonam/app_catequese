@@ -4,7 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useNavigate } from "react-router-dom";
 import { useComunicacaoForms, useDeleteComunicacaoForm } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
-import { formatarDataVigente, copyToClipboardOrShare } from "@/lib/utils";
+import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import type { ComunicacaoForm } from "@/lib/store";
 
@@ -22,7 +22,7 @@ export default function ComunicacaoHub() {
   const [itemToDelete, setItemToDelete] = useState<{id: string, title: string} | null>(null);
 
 
-  const getLinkPublico = (codigo: string) => `${window.location.origin}/f/${codigo}`;
+  const getLinkPublico = (codigo: string) => `${getAppUrl()}/f/${codigo}`;
 
   const filteredForms = formularios.filter(f => {
     const matchesFilter = filter === 'todos' || f.tipo === filter;
@@ -326,7 +326,7 @@ export default function ComunicacaoHub() {
                   >
                     <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover/link:text-purple-600 transition-colors" />
                     <span className="text-[10px] sm:text-[11px] font-bold text-muted-foreground group-hover/link:text-purple-600 transition-colors truncate max-w-[150px] sm:max-w-[200px]">
-                      {`${window.location.origin}/f/${form.codigo_acesso}`}
+                      {`${getAppUrl()}/f/${form.codigo_acesso}`}
                     </span>
                     <Copy className="h-3 w-3 text-muted-foreground opacity-50 group-hover/link:opacity-100 group-hover/link:text-purple-600 transition-opacity" />
                   </div>

@@ -5,6 +5,22 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Domínio oficial do aplicativo para links de compartilhamento e redirecionamento.
+ */
+export const APP_DOMAIN = "https://www.icatequese.com.br";
+
+/**
+ * Retorna a URL base do aplicativo.
+ * Se estiver em localhost, usa a origin atual, caso contrário usa o domínio oficial.
+ */
+export function getAppUrl() {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return window.location.origin;
+  }
+  return APP_DOMAIN;
+}
+
 export function formatarDataVigente(dataStr: string, options?: Intl.DateTimeFormatOptions) {
   if (!dataStr) return "";
   // Adiciona T12:00:00 para garantir que a data seja interpretada no meio do dia local, 

@@ -19,6 +19,7 @@ import {
   Check,
 } from "lucide-react";
 import { ConsentModal } from "@/components/Onboarding/ConsentModal";
+import { getAppUrl } from "@/lib/utils";
 
 /* ─── tipos de view ─── */
 type View = "landing" | "login" | "signup" | "forgot";
@@ -161,7 +162,7 @@ export default function AuthPage() {
       email: signupEmail,
       password: signupPassword,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: getAppUrl(),
         data: { full_name: signupName, terms_accepted: true },
       },
     });
@@ -182,7 +183,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${getAppUrl()}/reset-password`,
     });
     setLoading(false);
     if (error) {
@@ -199,13 +200,13 @@ export default function AuthPage() {
         await navigator.share({
           title: "iCatequese",
           text: "Conheça o iCatequese – o sistema completo de gestão para a catequese!",
-          url: window.location.origin,
+          url: getAppUrl(),
         });
       } catch {
         // ignored
       }
     } else {
-      navigator.clipboard.writeText(window.location.origin);
+      navigator.clipboard.writeText(getAppUrl());
       toast({ title: "Link copiado!", description: "Compartilhe com seus colegas catequistas." });
     }
   };

@@ -4,7 +4,7 @@ import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info,
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { formatarDataVigente, copyToClipboardOrShare } from "@/lib/utils";
+import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import ReportModule from "@/components/reports/ReportModule";
 
@@ -88,7 +88,7 @@ export default function PlanoTurma() {
       toast.error("Turma sem código de acesso.");
       return;
     }
-    const url = `${window.location.origin}/plano-da-turma/${turma.codigoAcesso}`;
+    const url = `${getAppUrl()}/plano-da-turma/${turma.codigoAcesso}`;
     
     const success = await copyToClipboardOrShare(url, {
       title: 'Plano da Turma',

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Share2, ExternalLink, Download, FileText, CheckCircle2, UserCircle, Printer, PieChart, ChevronDown, ChevronUp } from "lucide-react";
 import { fetchComunicacaoRespostas } from "@/lib/supabaseStore";
 import { toast } from "sonner";
-import { formatarDataVigente, cn, copyToClipboardOrShare } from "@/lib/utils";
+import { formatarDataVigente, cn, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import type { ComunicacaoResposta, ComunicacaoForm } from "@/lib/store";
 
 export default function ComunicacaoDetail() {
@@ -35,7 +35,7 @@ export default function ComunicacaoDetail() {
 
   const getLinkPublico = () => {
     if (!form) return "";
-    return `${window.location.origin}/f/${form.codigo_acesso}`;
+    return `${getAppUrl()}/f/${form.codigo_acesso}`;
   };
 
   const handleShareWhatsApp = () => {
