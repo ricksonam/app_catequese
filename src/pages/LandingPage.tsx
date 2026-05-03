@@ -16,8 +16,10 @@ import {
   Gamepad2, 
   LayoutDashboard, 
   MessageSquare,
+  MessageCircle,
   Sparkles,
-  ArrowDown
+  ArrowDown,
+  Instagram
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
@@ -114,6 +116,8 @@ export default function LandingPage() {
       navigator.clipboard.writeText(url);
       toast.success("Link copiado!");
     }
+  const handleWhatsApp = () => {
+    window.open("https://wa.me/5592993371259?text=Olá! Vim pelo site do iCatequese e gostaria de saber mais.", "_blank");
   };
 
   return (
@@ -215,7 +219,7 @@ export default function LandingPage() {
                 onClick={() => navigate("/auth")}
                 className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-primary text-white font-black text-lg shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:shadow-primary/50 hover:-translate-y-1 transition-all active:scale-95 group"
               >
-                Começar agora
+                Cadastrar agora
                 <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </button>
               
@@ -223,7 +227,7 @@ export default function LandingPage() {
                 onClick={() => navigate("/auth")}
                 className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 font-black text-lg hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95"
               >
-                Já tenho conta
+                Entrar no Sistema
               </button>
             </div>
 
@@ -392,6 +396,22 @@ export default function LandingPage() {
           </div>
 
           <div className="flex flex-col items-center md:items-end gap-2">
+            <div className="flex items-center gap-4 mb-4">
+              <a 
+                href="https://www.instagram.com/icatequese/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all shadow-sm"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+              <button 
+                onClick={handleWhatsApp}
+                className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all shadow-sm"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </button>
+            </div>
             <div className="flex items-center gap-6 mb-2">
               <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">Termos</a>
               <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">Privacidade</a>
@@ -401,6 +421,17 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* ── BOTÃO WHATSAPP FLUTUANTE ── */}
+      <button
+        onClick={handleWhatsApp}
+        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-emerald-500 text-white shadow-2xl shadow-emerald-500/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group"
+      >
+        <MessageCircle className="h-7 w-7 group-hover:animate-pulse" />
+        <span className="absolute right-full mr-4 px-4 py-2 rounded-xl bg-white text-slate-800 text-xs font-black shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-black/5">
+          Fale conosco
+        </span>
+      </button>
 
       <style>{`
         @keyframes shimmer {
