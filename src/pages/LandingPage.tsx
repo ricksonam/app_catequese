@@ -116,6 +116,8 @@ export default function LandingPage() {
       navigator.clipboard.writeText(url);
       toast.success("Link copiado!");
     }
+  };
+
   const handleWhatsApp = () => {
     window.open("https://wa.me/5592993371259?text=Olá! Vim pelo site do iCatequese e gostaria de saber mais.", "_blank");
   };
