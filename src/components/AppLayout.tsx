@@ -32,7 +32,7 @@ const baseTabs = [
   { path: "__mais__", icon: Menu, label: "Mais", color: "text-emerald-600", dot: "bg-emerald-600" },
 ];
 
-export default function AppLayout() {
+export default function AppLayout({ children }: { children?: React.ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -139,7 +139,7 @@ export default function AppLayout() {
 
       {/* Content */}
       <main className={`flex-1 container ${isPresentationMode ? 'p-0 max-w-none' : 'px-4 py-5 pb-24 print:p-0 print:m-0 print:max-w-none'}`}>
-        <Outlet />
+        {children || <Outlet />}
       </main>
 
       {/* Tab Bar */}

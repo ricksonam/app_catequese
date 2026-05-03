@@ -50,6 +50,7 @@ import PublicFormResponder from "@/pages/PublicFormResponder";
 import PublicInscricao from "@/pages/PublicInscricao";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import LandingPage from "@/pages/LandingPage";
 import SplashScreen from "@/components/SplashScreen";
 import { useState, useEffect } from "react";
 
@@ -96,13 +97,23 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-const HomeRedirect = () => {
-  const { isAdmin } = useAuth();
-  return isAdmin ? <Navigate to="/admin" replace /> : <Dashboard />;
+const HomeOrLanding = () => {
+  const { session, loading, isAdmin } = useAuth();
+  if (loading) return null;
+  if (session) {
+    if (isAdmin) return <Navigate to="/admin" replace />;
+    return (
+      <AppLayout>
+        <Dashboard />
+      </AppLayout>
+    );
+  }
+  return <LandingPage />;
 };
 
 const AppRoutes = () => (
   <Routes>
+    <Route path="/" element={<HomeOrLanding />} />
     <Route path="/auth" element={<AuthPage />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
@@ -117,7 +128,6 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     >
-      <Route path="/" element={<HomeRedirect />} />
       <Route path="/turmas" element={<TurmasList />} />
       <Route path="/turmas/nova" element={<TurmaForm />} />
       <Route path="/turmas/:id/editar" element={<TurmaForm />} />
