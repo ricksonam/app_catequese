@@ -38,16 +38,23 @@ export default function RelatoriosTurma() {
   };
 
   return (
-    <div className="space-y-6 print:m-0 print:p-0 print:space-y-0">
-      <div className="flex items-center gap-3 print:hidden">
-        <button onClick={() => navigate(`/turmas/${id}`)} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-xl font-bold">Central de Relatórios</h1>
-          <p className="text-xs text-muted-foreground">{turma.nome} • {turma.etapa}</p>
+    <div className="space-y-6 print:m-0 print:p-0 print:space-y-0 pb-10">
+      <div className="space-y-4 animate-fade-in flex flex-col pt-4 print:hidden">
+        {/* Row 1: Back Button + Título (Centralizado) */}
+        <div className="flex items-center justify-center min-h-[44px] relative">
+          <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+              Relatórios da Turma
+            </h1>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{turma.nome} • {turma.etapa}</p>
+          </div>
         </div>
       </div>
+
 
       <div className="flex gap-2 p-1 bg-muted/30 rounded-2xl print:hidden">
         <button 

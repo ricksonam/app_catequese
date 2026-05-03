@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia, useApproveTurmaMembro } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart, QrCode, Shield, CheckCircle2, BellRing } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart, QrCode, Shield, CheckCircle2, BellRing, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
 import {
@@ -212,30 +212,47 @@ export default function TurmaDetail() {
     <>
     <div className="space-y-6 pb-10">
       {/* Header Compacto Reorganizado */}
-      <div className="space-y-1 animate-fade-in flex flex-col -mt-4">
+      <div className="space-y-4 animate-fade-in flex flex-col pt-4">
         {/* Row 1: Back Button + Nome/Ano (Centralizado) */}
-        <div className="flex items-center justify-center min-h-[32px] relative">
-          <button onClick={() => navigate("/turmas")} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+        <div className="flex items-center justify-center min-h-[44px] relative">
+          <button onClick={() => navigate("/turmas")} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-foreground tracking-tight truncate max-w-[200px]">
+          <div className="flex flex-col items-center gap-1">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
               {turma.nome}
             </h1>
-            <span className="shrink-0 text-sm font-black px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 border border-black/10 shadow-sm">
+            <span className="shrink-0 text-sm font-black px-2.5 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 border border-black/10 shadow-sm">
               {turma.ano}
             </span>
           </div>
         </div>
 
         {/* Row 2: Info Chips (Logo abaixo do nome, centralizado) */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 pb-2">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 pb-1">
           <InfoBadge label="Etapa" value={turma.etapa} color="bg-white text-foreground border-black/10 shadow-sm" />
           <InfoBadge label="Dia" value={turma.diaCatequese} color="bg-white text-foreground border-black/10 shadow-sm" />
           <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-black/10 shadow-sm" />
-
         </div>
+
+        {/* Botão Código de Acesso (Dono) */}
+        {!turma.isShared && turma.codigoAcesso && (
+          <div className="flex justify-center">
+             <button 
+               onClick={() => setShareWarningOpen(true)}
+               className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm"
+             >
+                <Link2 className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Código de Compartilhamento</span>
+                {!codeVisible ? (
+                  <Eye className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100" />
+                ) : (
+                  <span className="ml-1 font-mono font-bold tracking-wider">{turma.codigoAcesso}</span>
+                )}
+             </button>
+          </div>
+        )}
 
         {/* Row 3: Relatórios (Esquerda) + Ações (Direita) */}
         <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
@@ -375,125 +392,7 @@ export default function TurmaDetail() {
       )}
 
       {/* Código de Acesso - apenas para dono */}
-      {!turma.isShared && turma.codigoAcesso && (
-        <div className="animate-float-up space-y-4" style={{ animationDelay: '500ms' }}>
-          {!codeVisible ? (
-            // Chip fechado — clica para revelar
-            <>
-            <button
-              onClick={() => setShareWarningOpen(true)}
-              className="w-full flex items-center justify-between p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-500/25 hover:border-emerald-500/50 hover:bg-emerald-100/50 transition-all active:scale-[0.98] group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                  <Link2 className="h-4 w-4 text-emerald-700" />
-                </div>
-                <div className="text-left">
-                  <p className="text-[11px] font-black uppercase tracking-[0.15em] text-emerald-700">Código de Compartilhamento</p>
-                  <p className="text-[9px] text-muted-foreground mt-0.5">Toque para revelar o código</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black tracking-[0.3em] text-emerald-700/40 select-none">••••••••</span>
-                <Eye className="h-4 w-4 text-emerald-600 group-hover:scale-110 transition-transform" />
-              </div>
-            </button>
 
-            <AlertDialog open={shareWarningOpen} onOpenChange={setShareWarningOpen}>
-              <AlertDialogContent className="rounded-2xl max-w-sm">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-lg font-black tracking-tight text-emerald-700">Aviso de Responsabilidade</AlertDialogTitle>
-                  <AlertDialogDescription className="space-y-4 pt-2">
-                    <p className="text-sm text-foreground/80 leading-relaxed font-medium">
-                      Ao compartilhar o código de acesso, você está concedendo permissão para que outro catequista veja e edite as informações desta turma, incluindo os dados dos catequizandos.
-                    </p>
-                    <label className="flex items-start gap-3 cursor-pointer p-4 bg-muted/50 rounded-xl border border-black/5 hover:bg-muted/70 transition-colors">
-                      <input 
-                        type="checkbox" 
-                        className="mt-0.5 shrink-0 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600 shadow-sm"
-                        checked={shareWarningAccepted}
-                        onChange={(e) => setShareWarningAccepted(e.target.checked)}
-                      />
-                      <span className="text-xs font-semibold text-foreground leading-snug">
-                        Estou ciente e me responsabilizo pelo compartilhamento destas informações com terceiros.
-                      </span>
-                    </label>
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="mt-2">
-                  <AlertDialogCancel onClick={() => { setShareWarningOpen(false); setShareWarningAccepted(false); }} className="rounded-xl font-bold">Cancelar</AlertDialogCancel>
-                  <AlertDialogAction 
-                    disabled={!shareWarningAccepted}
-                    onClick={(e) => {
-                      if (!shareWarningAccepted) {
-                        e.preventDefault();
-                        return;
-                      }
-                      setCodeVisible(true);
-                      setShareWarningOpen(false);
-                      setShareWarningAccepted(false);
-                    }} 
-                    className="bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl font-black tracking-wide disabled:opacity-50 disabled:grayscale transition-all"
-                  >
-                    Revelar Código
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            </>
-          ) : (
-            // Código revelado
-            <div className="float-card p-4 border-2 border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-900/10">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
-                    <Link2 className="h-4 w-4 text-emerald-700" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700">Código de Acesso</p>
-                    <p className="text-[9px] text-muted-foreground">Compartilhe com outro catequista</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={handleCopyCode}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 text-[10px] font-black uppercase tracking-wide border border-emerald-500/20 hover:bg-emerald-500/25 transition-all active:scale-95"
-                  >
-                    <Copy className="h-3 w-3" /> Copiar
-                  </button>
-                  <button
-                    onClick={() => setCodeVisible(false)}
-                    className="w-7 h-7 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-all active:scale-95"
-                  >
-                    <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Código texto */}
-              <div className="py-3 px-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-500/20 text-center mb-4">
-                <span className="text-3xl font-black tracking-[0.5em] text-emerald-700 select-all">{turma.codigoAcesso}</span>
-              </div>
-
-              {/* QR Code */}
-              <div className="flex flex-col items-center gap-2 pt-3 border-t border-emerald-500/15">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <QrCode className="h-3.5 w-3.5 text-emerald-700" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.15em] text-emerald-700">QR Code — Aponte a câmera para escanear</p>
-                </div>
-                <div className="p-3 bg-white rounded-2xl border-2 border-emerald-500/20 shadow-sm">
-                  <QRCodeSVG
-                    value={turma.codigoAcesso}
-                    size={160}
-                    bgColor="#ffffff"
-                    fgColor="#000000"
-                    level="M"
-                    includeMargin={false}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
 
           {membros.length > 0 && (
             <div className="float-card p-4">
@@ -566,13 +465,12 @@ export default function TurmaDetail() {
       )}
 
       {!turma.isShared && (
-        <div className="pt-10 pb-4 animate-float-up" style={{ animationDelay: '600ms' }}>
+        <div className="pt-10 pb-4 flex justify-center animate-fade-in">
           <button 
             disabled={deleteMutation.isPending} 
             onClick={() => setDeleteConfirmOpen(true)}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-destructive bg-destructive/5 hover:bg-destructive/10 transition-all active:scale-95 border-2 border-dashed border-destructive/20"
+            className="px-6 py-2 rounded-full text-destructive bg-destructive/5 hover:bg-destructive/10 transition-all active:scale-95 border border-destructive/20"
           >
-            <Trash2 className="h-4 w-4" />
             <span className="text-[10px] font-black uppercase tracking-widest">Excluir Turma permanentemente</span>
           </button>
         </div>
@@ -597,6 +495,84 @@ export default function TurmaDetail() {
         itemName={memberEmailToRemove}
         isLoading={removeMembroMutation.isPending}
       />
+
+      {/* Modal Aviso de Compartilhamento */}
+      <AlertDialog open={shareWarningOpen} onOpenChange={setShareWarningOpen}>
+        <AlertDialogContent className="rounded-3xl max-w-sm p-0 overflow-hidden border-none shadow-2xl">
+          <div className="bg-emerald-600 p-6 text-white text-center space-y-2">
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
+               <Shield className="h-6 w-6" />
+            </div>
+            <AlertDialogTitle className="text-xl font-black uppercase tracking-tight">Segurança</AlertDialogTitle>
+          </div>
+          <div className="p-6 space-y-6 bg-[#F8F9FE]">
+            <p className="text-sm text-foreground/80 leading-relaxed font-medium text-center">
+              Ao compartilhar o código, outro catequista poderá ver e editar os dados desta turma e de seus catequizandos.
+            </p>
+            <label className="flex items-start gap-3 cursor-pointer p-4 bg-white rounded-2xl border-2 border-emerald-100 hover:border-emerald-200 transition-all shadow-sm">
+              <input 
+                type="checkbox" 
+                className="mt-1 shrink-0 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600 shadow-sm"
+                checked={shareWarningAccepted}
+                onChange={(e) => setShareWarningAccepted(e.target.checked)}
+              />
+              <span className="text-[11px] font-bold text-foreground leading-snug">
+                Estou ciente e me responsabilizo pelo compartilhamento destas informações.
+              </span>
+            </label>
+            
+            <div className="flex flex-col gap-2">
+              <AlertDialogAction 
+                disabled={!shareWarningAccepted}
+                onClick={(e) => {
+                  if (!shareWarningAccepted) { e.preventDefault(); return; }
+                  setCodeVisible(true);
+                  setShareWarningOpen(false);
+                  setShareWarningAccepted(false);
+                }} 
+                className="w-full h-12 rounded-xl font-black tracking-wide disabled:opacity-50 bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                Revelar Código
+              </AlertDialogAction>
+              <AlertDialogCancel onClick={() => { setShareWarningOpen(false); setShareWarningAccepted(false); }} className="w-full h-12 rounded-xl font-bold border-none bg-transparent text-muted-foreground hover:bg-black/5">Cancelar</AlertDialogCancel>
+            </div>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal Código de Acesso Revelado */}
+      <AlertDialog open={codeVisible} onOpenChange={setCodeVisible}>
+        <AlertDialogContent className="rounded-3xl max-w-sm p-0 overflow-hidden border-none shadow-2xl">
+          <div className="bg-emerald-600 p-6 text-white text-center space-y-2 relative">
+             <button onClick={() => setCodeVisible(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg bg-white/20 text-white hover:bg-white/30 transition-colors">
+               <X className="w-4 h-4" />
+             </button>
+             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm">
+               <Link2 className="h-6 w-6" />
+             </div>
+             <AlertDialogTitle className="text-xl font-black uppercase tracking-tight">Código de Acesso</AlertDialogTitle>
+          </div>
+          <div className="p-6 space-y-6 bg-[#F8F9FE]">
+            <div className="py-4 px-4 bg-white rounded-2xl border-2 border-emerald-100 text-center shadow-inner">
+               <span className="text-4xl font-black tracking-[0.4em] text-emerald-700 select-all">{turma?.codigoAcesso}</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-4 bg-white rounded-3xl border-4 border-emerald-50 shadow-xl">
+                <QRCodeSVG value={turma?.codigoAcesso || ""} size={180} />
+              </div>
+              <p className="text-[10px] font-black text-emerald-700/60 uppercase tracking-widest text-center">Aponte a câmera para escanear</p>
+            </div>
+
+            <button
+              onClick={handleCopyCode}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 rounded-xl font-black flex items-center justify-center gap-2"
+            >
+              <Copy className="h-4 w-4" /> Copiar Código
+            </button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

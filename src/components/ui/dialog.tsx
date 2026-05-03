@@ -43,8 +43,8 @@ const DialogContent = React.forwardRef<
     >
       {children}
       {!hideClose && (
-        <DialogPrimitive.Close className="absolute right-4 top-4 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-lg border border-black/5 opacity-80 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95 z-50">
-          <XIcon className="h-4 w-4 text-black" />
+        <DialogPrimitive.Close className="absolute right-4 top-4 w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-md border-2 border-black/5 ring-offset-background transition-all hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95 z-50">
+          <XIcon className="h-5 w-5 text-foreground" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       )}

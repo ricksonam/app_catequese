@@ -96,18 +96,20 @@ export default function EncontrosList() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-10">
       {/* Header Compacto Reorganizado */}
-      <div className="space-y-3 animate-fade-in flex flex-col pt-2">
+      <div className="space-y-4 animate-fade-in flex flex-col pt-4">
         {/* Row 1: Back Button + Título (Centralizado) */}
-        <div className="flex items-center justify-center min-h-[40px] relative">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+        <div className="flex items-center justify-center min-h-[44px] relative">
+          <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           
-          <div className="flex flex-col items-center">
-            <h1 className="text-2xl font-black text-foreground tracking-tight">Encontros</h1>
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{encontros.length} encontros</p>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+              Encontros
+            </h1>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{encontros.length} encontros</p>
           </div>
         </div>
 

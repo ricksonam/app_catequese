@@ -413,9 +413,10 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
               {isGenerating ? "Gerando..." : "Compartilhar"}
             </button>
             <div className="h-6 w-px bg-white/20 mx-2" />
-            <button onClick={resetFlow} className="p-2.5 rounded-xl bg-destructive/20 hover:bg-destructive text-white transition-all">
+            <button onClick={resetFlow} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground active:scale-90 transition-all">
               <X className="h-5 w-5" />
             </button>
+
           </div>
 
           <div className="paper-preview p-0 md:p-12 overflow-visible" ref={previewRef}>

@@ -146,15 +146,22 @@ export default function AtividadesList() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 animate-fade-in">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <div className="min-w-0">
-             <h1 className="text-xl font-bold text-foreground truncate">Atividades e Eventos</h1>
-             <p className="text-xs text-muted-foreground truncate">{list.length} atividades</p>
+    <div className="space-y-5 pb-10">
+      <div className="space-y-4 animate-fade-in flex flex-col pt-4">
+        {/* Row 1: Back Button + Título (Centralizado) */}
+        <div className="flex items-center justify-center min-h-[44px] relative">
+          <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+              Atividades e Eventos
+            </h1>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{list.length} atividades</p>
           </div>
         </div>
+
         <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <div className="flex-1 sm:flex-none">
              {id && <ReportModule context="atividades" turmaId={id} />}
@@ -309,7 +316,7 @@ export default function AtividadesList() {
                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
 
                   <div className="w-px h-4 bg-black/10 mx-1" />
-                  <button onClick={() => setViewItem(null)} className="p-2 rounded-xl bg-muted/80 text-foreground hover:bg-black/10 transition-colors shadow-sm"><X className="h-4 w-4" /></button>
+                  <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
                 </div>
               </div>
 

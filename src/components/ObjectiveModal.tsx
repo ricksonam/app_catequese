@@ -71,7 +71,7 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour, hideClose }: O
         {!hideClose && (
           <button 
             onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md flex items-center justify-center text-foreground hover:bg-black/10 dark:hover:bg-white/20 transition-all active:scale-90"
+            className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-xl bg-white border-2 border-black/5 shadow-md flex items-center justify-center text-foreground hover:bg-zinc-50 transition-all active:scale-90"
           >
             <X className="h-5 w-5" />
           </button>

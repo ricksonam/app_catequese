@@ -163,18 +163,24 @@ export default function MissoesFamilia() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 pb-24">
       {/* Header Premium - Now with Title */}
-      <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-border/50 px-4 py-3 sticky top-0 z-20">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full h-9 w-9 border border-border/50 shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex flex-col min-w-0">
-            <h1 className="text-sm font-black text-foreground truncate uppercase tracking-tight">Catequese em Família</h1>
-            <p className="text-[10px] text-muted-foreground font-medium truncate">Missões e Engajamento</p>
+      <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-border/50 px-4 pt-4 pb-3 sticky top-0 z-20">
+        <div className="max-w-3xl mx-auto flex flex-col space-y-4">
+          {/* Row 1: Back Button + Título (Centralizado) */}
+          <div className="flex items-center justify-center min-h-[44px] relative">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </Button>
+            
+            <div className="flex flex-col items-center gap-1 text-center">
+              <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+                Missões em Família
+              </h1>
+              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">Catequese e Engajamento</p>
+            </div>
           </div>
-          <div className="flex-1" />
         </div>
       </div>
+
 
       {/* Main Content */}
       <div className="max-w-3xl mx-auto p-4 space-y-6">
