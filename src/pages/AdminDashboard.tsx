@@ -32,7 +32,15 @@ interface Profile {
   created_at: string;
   cidade?: string;
   estado?: string;
+  motivo_bloqueio?: string | null;
 }
+
+const BLOCK_REASONS = [
+  "Usuário violou os termos de uso",
+  "Uso do sistema para fins comerciais",
+  "Usuário violou as regras de LGPD",
+  "Usuário não renovou a assinatura"
+];
 
 interface Sugestao {
   id: string;
@@ -53,6 +61,9 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+  const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
+  const [blockReason, setBlockReason] = useState("");
+  const [userToBlock, setUserToBlock] = useState<Profile | null>(null);
 
   // Queries
   const { data: profiles = [], isLoading: loadingProfiles } = useQuery({
@@ -99,16 +110,22 @@ export default function AdminDashboard() {
 
   // Mutations
   const toggleBlockMutation = useMutation({
-    mutationFn: async ({ id, is_blocked }: { id: string; is_blocked: boolean }) => {
+    mutationFn: async ({ id, is_blocked, reason }: { id: string; is_blocked: boolean; reason?: string }) => {
       const { error } = await supabase
         .from("profiles")
-        .update({ is_blocked: !is_blocked })
+        .update({ 
+          is_blocked: !is_blocked,
+          motivo_bloqueio: !is_blocked ? reason : null
+        })
         .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin_profiles"] });
       toast.success("Status do usuário atualizado!");
+      setIsBlockDialogOpen(false);
+      setBlockReason("");
+      setUserToBlock(null);
     }
   });
 
@@ -298,18 +315,32 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={p.is_blocked ? "destructive" : "outline"} className={cn(
-                              "rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-                              !p.is_blocked && "text-emerald-600 border-emerald-200 bg-emerald-50"
-                            )}>
-                              {p.is_blocked ? "Bloqueado" : "Ativo"}
-                            </Badge>
+                            <div className="flex flex-col gap-1">
+                              <Badge variant={p.is_blocked ? "destructive" : "outline"} className={cn(
+                                "rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit",
+                                !p.is_blocked && "text-emerald-600 border-emerald-200 bg-emerald-50"
+                              )}>
+                                {p.is_blocked ? "Bloqueado" : "Ativo"}
+                              </Badge>
+                              {p.is_blocked && p.motivo_bloqueio && (
+                                <span className="text-[9px] text-destructive font-medium max-w-[150px] truncate" title={p.motivo_bloqueio}>
+                                  Razão: {p.motivo_bloqueio}
+                                </span>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right">
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              onClick={() => toggleBlockMutation.mutate(p)}
+                              onClick={() => {
+                                if (p.is_blocked) {
+                                  toggleBlockMutation.mutate({ id: p.id, is_blocked: true });
+                                } else {
+                                  setUserToBlock(p);
+                                  setIsBlockDialogOpen(true);
+                                }
+                              }}
                               className={cn(
                                 "rounded-xl h-9 px-3",
                                 p.is_blocked ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -470,6 +501,50 @@ export default function AdminDashboard() {
               className="flex-1 rounded-xl h-12 font-bold"
             >
               {updateAdminPasswordMutation.isPending ? "Salvando..." : "Atualizar Senha"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block User Dialog */}
+      <Dialog open={isBlockDialogOpen} onOpenChange={setIsBlockDialogOpen}>
+        <DialogContent className="rounded-[32px] border-none shadow-2xl p-8 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-center text-destructive">Bloquear Usuário</DialogTitle>
+            <DialogDescription className="text-center">
+              Selecione o motivo do bloqueio para <strong>{userToBlock?.email}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6 space-y-3">
+            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-2">Motivos predefinidos:</p>
+            {BLOCK_REASONS.map((reason) => (
+              <button
+                key={reason}
+                onClick={() => setBlockReason(reason)}
+                className={cn(
+                  "w-full text-left px-5 py-4 rounded-2xl border-2 transition-all font-bold text-sm",
+                  blockReason === reason 
+                    ? "border-destructive bg-destructive/5 text-destructive" 
+                    : "border-border/40 hover:border-destructive/30 hover:bg-slate-50"
+                )}
+              >
+                {reason}
+              </button>
+            ))}
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" onClick={() => {
+              setIsBlockDialogOpen(false);
+              setBlockReason("");
+            }} className="rounded-xl h-12 border-2 flex-1">
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => userToBlock && toggleBlockMutation.mutate({ id: userToBlock.id, is_blocked: false, reason: blockReason })} 
+              disabled={!blockReason || toggleBlockMutation.isPending}
+              className="flex-1 rounded-xl h-12 font-bold bg-destructive hover:bg-destructive/90"
+            >
+              {toggleBlockMutation.isPending ? "Bloqueando..." : "Confirmar Bloqueio"}
             </Button>
           </DialogFooter>
         </DialogContent>
