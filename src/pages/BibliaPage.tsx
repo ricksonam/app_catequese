@@ -90,16 +90,26 @@ export default function BibliaPage() {
   const resolveReference = (ref: string) => {
     if (!biblia) return null;
     const allBooks = [...biblia.antigoTestamento, ...biblia.novoTestamento];
-    // Formato: Livro Capitulo,Versiculo (ex: Jo 3,16 ou João 3:16)
-    const match = ref.match(/^(.+?)\s+(\d+)(?:[,:]\s*(\d+))?$/);
+    
+    // Limpar prefixos comuns (Evangelho:, Leitura:, etc)
+    const cleanRef = ref
+      .replace(/^(evangelho|leitura|salmo|epístola|atos|profeta|primeira leitura|segunda leitura|1ª leitura|2ª leitura)[:\s-]*/i, '')
+      .trim();
+
+    // Tentar capturar: Nome do Livro + Capítulo + Opcionalmente Versículo
+    // Regex suporta: "Jo 3,16", "João 3:16", "1 Cor 13", "I Cor 13,4-7"
+    const match = cleanRef.match(/^((?:\d\s*|I+\s*)?[a-zA-Záéíóúâêîôûãõç.]+)\s+(\d+)(?:[,:]\s*(\d+))?/i);
     if (!match) return null;
     
     const [, bookName, chapterNum, verseNum] = match;
-    const book = allBooks.find(b => 
-      b.nome.toLowerCase() === bookName.toLowerCase() || 
-      b.nome.toLowerCase().startsWith(bookName.toLowerCase()) ||
-      (bookName.length >= 2 && b.nome.toLowerCase().includes(bookName.toLowerCase()))
-    );
+    const searchBook = bookName.toLowerCase().replace(/\./g, '').trim();
+
+    const book = allBooks.find(b => {
+      const bNome = b.nome.toLowerCase();
+      return bNome === searchBook || 
+             bNome.startsWith(searchBook) || 
+             (searchBook.length >= 3 && bNome.includes(searchBook));
+    });
     
     if (!book) return null;
     const chapter = book.capitulos.find(c => c.capitulo === parseInt(chapterNum));
@@ -117,12 +127,14 @@ export default function BibliaPage() {
         setSelectedChapter(resolved.chapter);
         setTab("livros");
         setSearch("");
-        toast.info(`Abrindo ${ref}...`);
+        toast.success(`Leitura encontrada: ${ref}`);
       } else {
+        toast.warning(`Livro encontrado, mas capítulo não disponível.`);
         setSearch(ref);
         setTab("passagens");
       }
     } else {
+      toast.error(`Não conseguimos localizar "${ref}" automaticamente. Tente buscar pelo texto.`);
       setSearch(ref);
       setTab("passagens");
     }
@@ -327,78 +339,71 @@ export default function BibliaPage() {
         </div>
       </div>
 
-      {/* ── SEÇÃO: LEITURAS DO ENCONTRO ── */}
+      {/* ── SEÇÃO: LEITURAS DO ENCONTRO (CARD SUSPENSO) ── */}
       {encontrosComLeitura.length > 0 && tab === "livros" && !selectedBook && (
-        <div className="space-y-4 animate-float-up" style={{ animationDelay: '20ms' }}>
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-sm font-black uppercase tracking-widest text-primary/80">Leituras dos Encontros</h2>
-            <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-              {encontrosComLeitura.length} leituras
-            </span>
-          </div>
-
-          {/* Card em Destaque: Próximo Encontro */}
-          {proximoEncontro && (
-            <button
-              onClick={() => autoOpenReference(proximoEncontro.leituraBiblica!)}
-              className="w-full float-card p-5 bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700 text-white border-none shadow-xl shadow-blue-600/20 relative overflow-hidden group active:scale-[0.98] transition-all"
-            >
-              {/* Efeito de brilho */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
-              
-              <div className="relative z-10 flex items-start justify-between">
-                <div className="flex-1 text-left">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
-                      <BookIcon className="h-4 w-4 text-white" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100">Próxima Leitura</span>
-                  </div>
-                  <h3 className="text-xl font-black mb-1">{proximoEncontro.leituraBiblica}</h3>
-                  <p className="text-xs text-blue-100 font-medium line-clamp-1 opacity-90">
-                    Encontro: {proximoEncontro.tema}
-                  </p>
-                </div>
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 flex flex-col items-center justify-center min-w-[60px]">
-                  <span className="text-[10px] font-bold uppercase text-blue-100 mb-1">Dia</span>
-                  <span className="text-2xl font-black leading-none">
-                    {new Date(proximoEncontro.data).getDate().toString().padStart(2, '0')}
-                  </span>
-                </div>
+        <div className="animate-float-up" style={{ animationDelay: '20ms' }}>
+          <div className="float-card overflow-hidden border-2 border-primary/20 bg-primary/5">
+            <div className="p-4 bg-primary text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookIcon className="h-5 w-5" />
+                <h2 className="text-sm font-bold uppercase tracking-tight">Leituras dos Encontros</h2>
               </div>
-              
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[9px] font-black uppercase tracking-widest text-blue-100/80">Toque para abrir na Bíblia</span>
-                <ChevronRight className="h-4 w-4 text-white opacity-50 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </button>
-          )}
-
-          {/* Lista de Outras Leituras */}
-          {demaisEncontros.length > 0 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 px-1 snap-x no-scrollbar">
-              {demaisEncontros.map((e) => (
-                <button
-                  key={e.id}
-                  onClick={() => autoOpenReference(e.leituraBiblica!)}
-                  className="snap-start flex-shrink-0 w-48 float-card p-4 bg-white border-2 border-border/50 hover:border-primary/40 transition-all text-left group active:scale-95"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="h-3 w-3 text-primary" />
-                    <span className="text-[9px] font-bold text-muted-foreground uppercase">
-                      {new Date(e.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-                    </span>
-                  </div>
-                  <p className="text-sm font-black text-foreground group-hover:text-primary transition-colors truncate">
-                    {e.leituraBiblica}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground line-clamp-1 mt-1">
-                    {e.tema}
-                  </p>
-                </button>
-              ))}
+              <span className="text-[10px] font-black bg-white/20 px-2 py-0.5 rounded-full">
+                {encontrosComLeitura.length} AGENDA
+              </span>
             </div>
-          )}
+            
+            <div className="p-2 max-h-[220px] overflow-y-auto no-scrollbar space-y-1">
+              {encontrosComLeitura.map((e, idx) => {
+                const isProximo = e.id === proximoEncontro?.id;
+                return (
+                  <button
+                    key={e.id}
+                    onClick={() => autoOpenReference(e.leituraBiblica!)}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group active:scale-[0.98]",
+                      isProximo ? "bg-white shadow-sm border border-primary/20" : "hover:bg-primary/10"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-10 h-10 rounded-lg flex flex-col items-center justify-center shrink-0 border",
+                      isProximo ? "bg-primary text-white border-primary" : "bg-white text-primary border-primary/10"
+                    )}>
+                      <span className="text-[8px] font-black uppercase leading-none mb-0.5">
+                        {new Date(e.data).toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                      </span>
+                      <span className="text-sm font-black leading-none">
+                        {new Date(e.data).getDate()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className={cn("text-xs font-black truncate", isProximo ? "text-primary" : "text-foreground")}>
+                          {e.leituraBiblica}
+                        </p>
+                        {isProximo && (
+                          <span className="text-[7px] font-black uppercase bg-primary/10 text-primary px-1.5 py-0.5 rounded-full border border-primary/20">
+                            Próximo
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground truncate opacity-70">
+                        {e.tema}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-primary opacity-30 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="p-3 bg-white/50 border-t border-primary/10 text-center">
+              <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest flex items-center justify-center gap-1.5">
+                <Search className="h-3 w-3" />
+                Toque em uma leitura para abrir o texto
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
