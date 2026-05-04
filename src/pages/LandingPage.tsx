@@ -67,8 +67,8 @@ export default function LandingPage() {
 
   const steps = [
     {
-      title: "Apresentar o Encontro",
-      description: "Planeje seus encontros com antecedência e registre a presença de todos facilmente.",
+      title: "Módulo Encontro de Catequese",
+      description: "Planeje seus encontro com antecedência, registre presença, avalie o encontro, mude o status, utilize o modo Apresentar o encontro.",
       icon: CalendarDays,
       color: "text-blue-600",
       bgColor: "bg-blue-500/10",
@@ -189,13 +189,31 @@ export default function LandingPage() {
             <div className="w-10 h-10 rounded-xl bg-white shadow-lg shadow-primary/10 border border-black/5 flex items-center justify-center overflow-hidden">
               <img src="/app-logo.png" alt="Logo" className="w-8 h-8 object-contain" />
             </div>
-            <span className="text-xl font-black tracking-tighter text-primary">iCatequese</span>
+            <span className="text-xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-slate-400 to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.open("https://apoia.se/icatequese", "_blank")}
+              className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 active:scale-95 transition-all shadow-md shadow-red-500/30 border border-red-400 overflow-hidden"
+            >
+              <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <Heart className="h-3.5 w-3.5 fill-white text-white animate-heartbeat shrink-0" />
+              <span className="hidden sm:inline text-[11px] font-black tracking-wide relative z-10">Apoie!</span>
+            </button>
           </div>
         </div>
       </nav>
 
       <main className="relative z-10 pt-32 pb-20">
         
+        {/* ── SLOGAN ── */}
+        <div className="container mx-auto px-6 text-center mb-10">
+          <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-500 opacity-60">
+            iCatequese - Gestão inteligente para catequistas
+          </p>
+        </div>
+
         {/* ── HEADER AREA (ESTILO SOBRE) ── */}
         <section className="container mx-auto px-6 flex flex-col items-center text-center mb-16">
           
@@ -232,7 +250,7 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-2">iCatequese</h1>
+            <h1 className="text-5xl md:text-6xl font-black tracking-tighter mb-2 bg-gradient-to-r from-primary via-slate-400 to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</h1>
             <div className="flex items-center justify-center gap-2 mb-10">
               <Sparkles className="h-4 w-4 text-amber-500" />
               <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Gestão Inteligente</p>
@@ -297,15 +315,6 @@ export default function LandingPage() {
         )}
 
 
-        {/* ── FINAL CTA ── */}
-        <section className="container mx-auto px-6 text-center mb-16">
-          <button 
-            onClick={() => navigate("/auth?view=signup")}
-            className="w-full sm:w-auto h-16 px-12 rounded-2xl bg-primary text-white font-black text-lg shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:shadow-primary/50 hover:-translate-y-1 transition-all active:scale-95 group"
-          >
-            Cadastre-se agora <CheckCircle2 className="w-6 h-6" />
-          </button>
-        </section>
 
       </main>
 
