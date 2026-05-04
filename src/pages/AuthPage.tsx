@@ -47,6 +47,7 @@ export default function AuthPage() {
   // Signup state
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
+  const [signupConfirmEmail, setSignupConfirmEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirm, setSignupConfirm] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
@@ -144,6 +145,10 @@ export default function AuthPage() {
 
   const handleSignupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (signupEmail !== signupConfirmEmail) {
+      toast({ title: "Erro", description: "Os e-mails não coincidem", variant: "destructive" });
+      return;
+    }
     if (signupPassword !== signupConfirm) {
       toast({ title: "Erro", description: "As senhas não coincidem", variant: "destructive" });
       return;
@@ -397,6 +402,19 @@ export default function AuthPage() {
                   type="email"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-slate-600 text-sm font-bold ml-1">Confirmar Email</Label>
+                <Input
+                  id="signup-confirm-email"
+                  type="email"
+                  value={signupConfirmEmail}
+                  onChange={(e) => setSignupConfirmEmail(e.target.value)}
                   placeholder="seu@email.com"
                   required
                   className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
