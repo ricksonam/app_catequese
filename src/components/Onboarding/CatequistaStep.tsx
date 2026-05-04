@@ -109,6 +109,10 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
       toast.error("Nome é obrigatório");
       return;
     }
+    if (!form.dataNascimento) {
+      toast.error("Data de nascimento é obrigatória");
+      return;
+    }
     try {
       const id = catequistas[0]?.id || crypto.randomUUID();
       await mutation.mutateAsync({
@@ -167,7 +171,7 @@ export function CatequistaStep({ open, onSuccess, embedded }: CatequistaStepProp
         </div>
         <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
         <div className="grid grid-cols-2 gap-2">
-          <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
+          <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Data de nascimento <span className="text-red-500">*</span></label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
           <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label><div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
         </div>
         <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />

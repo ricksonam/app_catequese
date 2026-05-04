@@ -114,6 +114,10 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
       toast.error("O campo Nome da Paróquia é obrigatório");
       return;
     }
+    if (!form.pCidade) {
+      toast.error("O campo Cidade da Paróquia é obrigatório");
+      return;
+    }
     if (!form.cNome) {
       toast.error("O campo Nome da Comunidade Inicial é obrigatório");
       return;
@@ -189,7 +193,7 @@ export function ParoquiaStep({ open, onSuccess, embedded }: ParoquiaStepProps) {
             placeholder="Digite o nome da paróquia/área/escola"
           />
           <div className="grid grid-cols-2 gap-2">
-            <FieldInput label="Cidade" value={form.pCidade} onChange={(v) => updateField("pCidade", v)} />
+            <FieldInput label="Cidade *" value={form.pCidade} onChange={(v) => updateField("pCidade", v)} />
             <FieldInput label="Estado" value={form.pEstado} onChange={(v) => updateField("pEstado", v)} />
           </div>
           <FieldInput label="Endereço" value={form.pEndereco} onChange={(v) => updateField("pEndereco", v)} />

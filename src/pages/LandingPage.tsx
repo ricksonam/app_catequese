@@ -191,21 +191,6 @@ export default function LandingPage() {
             </div>
             <span className="text-xl font-black tracking-tighter text-primary">iCatequese</span>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => navigate("/auth?view=login")} 
-              className="px-5 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
-            >
-              Entrar
-            </button>
-            <button 
-              onClick={() => navigate("/auth?view=signup")} 
-              className="px-5 py-2 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all active:scale-95"
-            >
-              Cadastre-se
-            </button>
-          </div>
         </div>
       </nav>
 
@@ -213,6 +198,23 @@ export default function LandingPage() {
         
         {/* ── HEADER AREA (ESTILO SOBRE) ── */}
         <section className="container mx-auto px-6 flex flex-col items-center text-center mb-16">
+          
+          {/* ── BOTÕES NO TOPO (CENTRALIZADOS) ── */}
+          <div className="flex justify-center gap-3 mb-10">
+            <button 
+              onClick={() => navigate("/auth?view=login")} 
+              className="px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-md"
+            >
+              Entrar
+            </button>
+            <button 
+              onClick={() => navigate("/auth?view=signup")} 
+              className="px-6 py-2.5 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all active:scale-95"
+            >
+              Cadastre-se
+            </button>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
