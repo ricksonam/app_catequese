@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { CustomDatePicker } from "@/components/CustomDatePicker";
 
 interface Message {
   id: string;
@@ -90,8 +91,7 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
       id: "dataNascimento",
       message: "E para completar seu perfil, qual sua **data de nascimento**?",
       type: "input",
-      field: "dataNascimento",
-      inputType: "date"
+      field: "dataNascimento"
     },
     {
       id: "finish",
@@ -272,27 +272,52 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
         {/* Input Area */}
         <div className="p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800 shrink-0">
           {currentStep > 0 && currentStep < steps.length - 1 ? (
-            <div className="relative">
-              <input
-                type={(steps[currentStep] as any).inputType || "text"}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder={(steps[currentStep] as any).placeholder}
-                className="w-full h-14 pl-5 pr-14 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border-none ring-1 ring-black/5 focus:ring-primary/30 transition-all font-medium text-sm"
-              />
-              <button
-                onClick={handleSend}
-                disabled={!inputValue.trim()}
-                className={cn(
-                  "absolute right-2 top-2 w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                  inputValue.trim() 
-                    ? "bg-primary text-white shadow-lg shadow-primary/20 scale-100" 
-                    : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 scale-95 opacity-50"
-                )}
-              >
-                <Send className="h-4 w-4" />
-              </button>
+            <div className="flex flex-col gap-4">
+              {steps[currentStep].id === "dataNascimento" ? (
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <CustomDatePicker
+                      value={inputValue}
+                      onChange={(v) => setInputValue(v)}
+                    />
+                  </div>
+                  <button
+                    onClick={handleSend}
+                    disabled={!inputValue || inputValue.includes("undefined")}
+                    className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center transition-all mb-0.5",
+                      inputValue && !inputValue.includes("undefined")
+                        ? "bg-primary text-white shadow-lg shadow-primary/20 scale-100" 
+                        : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 scale-95 opacity-50"
+                    )}
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                    placeholder={steps[currentStep].placeholder}
+                    className="w-full h-14 pl-5 pr-14 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border-none ring-1 ring-black/5 focus:ring-primary/30 transition-all font-medium text-sm"
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={!inputValue.trim()}
+                    className={cn(
+                      "absolute right-2 top-2 w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                      inputValue.trim() 
+                        ? "bg-primary text-white shadow-lg shadow-primary/20 scale-100" 
+                        : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 scale-95 opacity-50"
+                    )}
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
           ) : currentStep === steps.length - 1 ? (
             <Button 
