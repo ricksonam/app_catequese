@@ -36,8 +36,11 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
   const [isTyping, setIsTyping] = useState(false);
   const [formData, setFormData] = useState({
     paroquia: "",
+    cidade: "",
+    estado: "",
     comunidade: "",
-    catequista: ""
+    catequista: "",
+    dataNascimento: ""
   });
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -56,18 +59,39 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
       placeholder: "Ex: Paróquia São José"
     },
     {
+      id: "cidade",
+      message: "Entendido! E em qual **cidade** ela fica?",
+      type: "input",
+      field: "cidade",
+      placeholder: "Sua cidade"
+    },
+    {
+      id: "estado",
+      message: "E qual o **estado**? (UF)",
+      type: "input",
+      field: "estado",
+      placeholder: "Ex: AM, SP, RJ..."
+    },
+    {
       id: "comunidade",
-      message: "Ótimo! E qual o nome da sua **comunidade**?",
+      message: "Ótimo! E qual o nome da sua **comunidade** inicial?",
       type: "input",
       field: "comunidade",
       placeholder: "Ex: Comunidade Nossa Senhora"
     },
     {
       id: "catequista",
-      message: "Quase lá! pra gente finalizar, como catequista qual o seu **nome completo**?",
+      message: "Quase lá! Como catequista, qual o seu **nome completo**?",
       type: "input",
       field: "catequista",
       placeholder: "Seu nome aqui"
+    },
+    {
+      id: "dataNascimento",
+      message: "E para completar seu perfil, qual sua **data de nascimento**?",
+      type: "input",
+      field: "dataNascimento",
+      inputType: "date"
     },
     {
       id: "finish",
@@ -126,7 +150,7 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
       addAssistantMessage(steps[nextStep].message);
     }
 
-    if (currentStep === 3) {
+    if (currentStep === 6) {
       // Save data
       handleSave(updatedFormData);
     }
@@ -142,17 +166,22 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
       await pMutation.mutateAsync({
         id: pId,
         nome: data.paroquia,
+        cidade: data.cidade,
+        estado: data.estado,
       });
 
       await cMutation.mutateAsync({
         id: cId,
         nome: data.comunidade,
         paroquiaId: pId,
+        cidade: data.cidade,
+        estado: data.estado,
       });
 
       await catMutation.mutateAsync({
         id: catId,
         nome: data.catequista,
+        dataNascimento: data.dataNascimento,
         comunidadeId: cId,
       });
 
@@ -245,11 +274,11 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
           {currentStep > 0 && currentStep < steps.length - 1 ? (
             <div className="relative">
               <input
-                type="text"
+                type={(steps[currentStep] as any).inputType || "text"}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder={steps[currentStep].placeholder}
+                placeholder={(steps[currentStep] as any).placeholder}
                 className="w-full h-14 pl-5 pr-14 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border-none ring-1 ring-black/5 focus:ring-primary/30 transition-all font-medium text-sm"
               />
               <button
