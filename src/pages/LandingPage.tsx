@@ -194,10 +194,10 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-4">
             <button 
-              onClick={() => navigate("/auth")} 
+              onClick={() => navigate("/auth?view=login")} 
               className="px-6 py-2 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all active:scale-95"
             >
-              Entrar
+              Fazer Login
             </button>
           </div>
         </div>
@@ -241,17 +241,17 @@ export default function LandingPage() {
         {/* ── BOTÕES DE AÇÃO PRINCIPAIS ── */}
         <section className="container mx-auto px-6 flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
           <button 
-            onClick={() => navigate("/auth")}
+            onClick={() => navigate("/auth?view=login")}
             className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-primary text-white font-black text-lg shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:shadow-primary/50 hover:-translate-y-1 transition-all active:scale-95 group"
           >
-            Começar Agora <CheckCircle2 className="w-6 h-6" />
+            Fazer Login <LogIn className="w-6 h-6" />
           </button>
           
           <button 
-            onClick={() => navigate("/auth")}
+            onClick={() => navigate("/auth?view=signup")}
             className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 font-black text-lg hover:border-primary/30 hover:bg-slate-50 transition-all active:scale-95"
           >
-            Fazer Login
+            Cadastre-se
           </button>
         </section>
 
@@ -337,6 +337,16 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
+        </section>
+
+        {/* ── FINAL CTA ── */}
+        <section className="container mx-auto px-6 text-center mb-16">
+          <button 
+            onClick={() => navigate("/auth?view=signup")}
+            className="w-full sm:w-auto h-16 px-12 rounded-2xl bg-primary text-white font-black text-lg shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 hover:shadow-primary/50 hover:-translate-y-1 transition-all active:scale-95 group"
+          >
+            Cadastre-se agora <CheckCircle2 className="w-6 h-6" />
+          </button>
         </section>
 
       </main>
