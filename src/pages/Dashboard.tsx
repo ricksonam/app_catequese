@@ -634,11 +634,14 @@ export default function Dashboard() {
       )}
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
-      <div className="relative pt-0 pb-6 mb-0 animate-fade-in -mt-1">
+      <div className="relative pt-3 pb-6 mb-0 animate-fade-in -mt-1 mx-2 rounded-[40px] bg-gradient-to-br from-blue-50/80 via-white to-blue-50/80 border border-blue-100 shadow-sm overflow-hidden">
+        {/* Detalhes de Decoração do Varal */}
+        <div className="absolute top-8 left-0 right-0 h-[1px] bg-blue-200/50 z-0" />
+        
         {/* Título da Seção */}
-        <div className="flex flex-col items-center justify-center mb-1">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600">Próximos Aniversários</h2>
-          <div className="h-0.5 w-5 bg-blue-600/30 rounded-full"></div>
+        <div className="flex flex-col items-center justify-center mb-4 relative z-10">
+          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600/80">Próximos Aniversários</h2>
+          <div className="h-1 w-6 bg-blue-400/40 rounded-full mt-1"></div>
         </div>
 
         {aniversariantesMes.length > 0 ? (

@@ -468,13 +468,16 @@ export default function BibliaPage() {
 
       {tab === "passagens" && (
         <div className="relative animate-float-up" style={{ animationDelay: '80ms' }}>
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30" />
+          {!search && <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30" />}
           <input 
             type="text" 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
             placeholder="Ex: Lucas 24, 35-48" 
-            className="form-input pl-14 h-14 shadow-md border-2 focus:border-primary/50 transition-all text-lg font-medium" 
+            className={cn(
+              "form-input h-14 shadow-md border-2 focus:border-primary/50 transition-all text-lg font-medium",
+              search ? "pl-5" : "pl-14"
+            )}
           />
           {search && isLoading && (
             <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40 animate-spin" />
