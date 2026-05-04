@@ -123,16 +123,21 @@ export default function BibliaPage() {
 
     // Inteligência: Tentar resolver via mapa de abreviações primeiro
     const resolvedBookName = ABREVIACOES[searchKey] || searchKey;
+    const cleanSearchKey = resolvedBookName.toLowerCase().replace(/^(são|santo)\s+/i, '').trim();
 
     const book = allBooks.find(b => {
-      const bNome = b.nome.toLowerCase();
-      // Prioridade 1: Nome exato resolvido
-      if (bNome === resolvedBookName.toLowerCase()) return true;
-      // Prioridade 2: Começa com a abreviação (específico para nomes longos)
-      if (bNome.startsWith(searchKey) && searchKey.length >= 3) return true;
-      // Casos especiais (Jo -> João, não Josué)
-      if (searchKey === "jo" && bNome === "joão") return true;
-      if (searchKey === "jos" && bNome === "josué") return true;
+      const bNomeRaw = b.nome.toLowerCase();
+      const bNomeClean = bNomeRaw.replace(/^(são|santo)\s+/i, '').trim();
+      
+      // Prioridade 1: Nome exato (limpo)
+      if (bNomeClean === cleanSearchKey) return true;
+      // Prioridade 2: Nome exato (original)
+      if (bNomeRaw === resolvedBookName.toLowerCase()) return true;
+      // Prioridade 3: Começa com a abreviação
+      if (bNomeClean.startsWith(searchKey) && searchKey.length >= 3) return true;
+      // Casos especiais
+      if (searchKey === "jo" && bNomeClean === "joão") return true;
+      if (searchKey === "jos" && bNomeClean === "josué") return true;
       return false;
     });
     
@@ -365,7 +370,7 @@ export default function BibliaPage() {
       </div>
 
       {/* ── SEÇÃO: LEITURAS DO ENCONTRO (LISTA SUSPENSA INTELIGENTE) ── */}
-      {encontrosComLeitura.length > 0 && tab === "livros" && !selectedBook && (
+      {encontrosComLeitura.length > 0 && !selectedBook && (
         <div className="animate-float-up" style={{ animationDelay: '20ms' }}>
           <div className="relative">
             <button
@@ -462,16 +467,16 @@ export default function BibliaPage() {
 
       {tab === "passagens" && (
         <div className="relative animate-float-up" style={{ animationDelay: '80ms' }}>
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40" />
           <input 
             type="text" 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
-            placeholder="Buscar por livro, nome ou passagem..." 
-            className="form-input pl-10 h-12 shadow-sm" 
+            placeholder="Ex: Lucas 24, 35-48" 
+            className="form-input pl-12 h-14 shadow-md border-2 focus:border-primary/50 transition-all text-lg font-medium" 
           />
           {search && isLoading && (
-            <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
+            <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40 animate-spin" />
           )}
         </div>
       )}
