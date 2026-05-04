@@ -22,7 +22,7 @@ import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import { getAppUrl } from "@/lib/utils";
 
 /* ─── tipos de view ─── */
-type View = "landing" | "login" | "signup" | "forgot";
+type View = "login" | "signup" | "forgot";
 
 const SAVED_EMAIL_KEY = "ivc_saved_email";
 
@@ -228,10 +228,10 @@ export default function AuthPage() {
           <div className="w-full max-w-sm">
             {/* Back */}
             <button
-              onClick={() => setView("landing")}
+              onClick={() => navigate("/")}
               className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
             >
-              <ArrowLeft className="h-4 w-4" /> Voltar
+              <ArrowLeft className="h-4 w-4" /> Voltar à Home
             </button>
 
             {/* Header */}
@@ -360,10 +360,10 @@ export default function AuthPage() {
           <div className="w-full max-w-sm">
             {/* Back */}
             <button
-              onClick={() => setView("landing")}
+              onClick={() => navigate("/")}
               className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
             >
-              <ArrowLeft className="h-4 w-4" /> Voltar
+              <ArrowLeft className="h-4 w-4" /> Voltar à Home
             </button>
 
             {/* Header */}
