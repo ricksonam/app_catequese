@@ -109,6 +109,25 @@ export default function BibliaPage() {
     return { book, chapter, verse };
   };
 
+  const autoOpenReference = (ref: string) => {
+    const resolved = resolveReference(ref);
+    if (resolved && resolved.book) {
+      setSelectedBook(resolved.book);
+      if (resolved.chapter) {
+        setSelectedChapter(resolved.chapter);
+        setTab("livros");
+        setSearch("");
+        toast.info(`Abrindo ${ref}...`);
+      } else {
+        setSearch(ref);
+        setTab("passagens");
+      }
+    } else {
+      setSearch(ref);
+      setTab("passagens");
+    }
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(timer);
@@ -321,10 +340,7 @@ export default function BibliaPage() {
           {/* Card em Destaque: Próximo Encontro */}
           {proximoEncontro && (
             <button
-              onClick={() => {
-                setSearch(proximoEncontro.leituraBiblica!);
-                setTab("passagens");
-              }}
+              onClick={() => autoOpenReference(proximoEncontro.leituraBiblica!)}
               className="w-full float-card p-5 bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700 text-white border-none shadow-xl shadow-blue-600/20 relative overflow-hidden group active:scale-[0.98] transition-all"
             >
               {/* Efeito de brilho */}
@@ -364,10 +380,7 @@ export default function BibliaPage() {
               {demaisEncontros.map((e) => (
                 <button
                   key={e.id}
-                  onClick={() => {
-                    setSearch(e.leituraBiblica!);
-                    setTab("passagens");
-                  }}
+                  onClick={() => autoOpenReference(e.leituraBiblica!)}
                   className="snap-start flex-shrink-0 w-48 float-card p-4 bg-white border-2 border-border/50 hover:border-primary/40 transition-all text-left group active:scale-95"
                 >
                   <div className="flex items-center gap-2 mb-2">
