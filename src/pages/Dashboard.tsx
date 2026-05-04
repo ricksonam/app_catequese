@@ -787,7 +787,7 @@ export default function Dashboard() {
           </div>
 
           {/* Grid de Módulos — cards flutuantes com degradê */}
-          <div className="grid grid-cols-3 gap-3 w-full relative z-10 px-4">
+          <div className="grid grid-cols-2 gap-4 w-full relative z-10 px-8">
             {/* Card Catequizandos */}
             <div className="relative group">
               {/* Sombra degradê flutuante */}
@@ -836,12 +836,10 @@ export default function Dashboard() {
 
             {/* Card Biblia Online */}
             <div className="relative group">
-              {/* Sombra degradê flutuante */}
-              <div className="absolute -inset-1 rounded-[40px] bg-gradient-to-br from-amber-200 via-yellow-200 to-orange-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
               <button
                 onClick={() => navigate("/modulos/biblia")}
                 className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl"
-                style={{ boxShadow: '0 12px 30px -6px rgba(245,158,11,0.18), 0 4px 12px -4px rgba(251,191,36,0.12)' }}
+                style={{ boxShadow: '0 12px 30px -6px rgba(0,0,0,0.1), 0 4px 12px -4px rgba(0,0,0,0.08)' }}
               >
                 <img src="/card_biblia.jpg" alt="Bíblia Online" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
