@@ -39,6 +39,25 @@ const PASSAGENS_POPULARES = [
   { ref: "Ef 6,10-11", texto: "Fortalecei-vos no Senhor e na força do seu poder. Revesti-vos da armadura de Deus, para que possais resistir às ciladas do diabo." },
 ];
 
+const ABREVIACOES: Record<string, string> = {
+  "gn": "Gênesis", "ex": "Êxodo", "lv": "Levítico", "nm": "Números", "dt": "Deuteronômio",
+  "jos": "Josué", "jz": "Juízes", "rt": "Rute", "1sm": "I Samuel", "2sm": "II Samuel",
+  "1rs": "I Reis", "2rs": "II Reis", "1cr": "I Crônicas", "2cr": "II Crônicas",
+  "ed": "Esdras", "ne": "Neemias", "tb": "Tobias", "jdt": "Judite", "est": "Ester",
+  "1mc": "I Macabeus", "2mc": "II Macabeus", "jó": "Jó", "sl": "Salmos", "pv": "Provérbios",
+  "ec": "Eclesiastes", "ct": "Cântico dos Cânticos", "sb": "Sabedoria", "eclo": "Eclesiástico",
+  "is": "Isaías", "jr": "Jeremias", "lm": "Lamentações", "br": "Baruc", "ez": "Ezequiel",
+  "dn": "Daniel", "os": "Oseias", "jl": "Joel", "am": "Amós", "abd": "Abdias",
+  "jn": "Jonas", "mq": "Miqueias", "na": "Naum", "hab": "Habacuc", "so": "Sofonias",
+  "ag": "Ageu", "zc": "Zacarias", "ml": "Malaquias",
+  "mt": "Mateus", "mc": "Marcos", "lc": "Lucas", "jo": "João", "at": "Atos dos Apóstolos",
+  "rm": "Romanos", "1cor": "I Coríntios", "2cor": "II Coríntios", "gl": "Gálatas",
+  "ef": "Efésios", "fl": "Filipenses", "cl": "Colossenses", "1ts": "I Tessalonicenses",
+  "2ts": "II Tessalonicenses", "1tim": "I Timóteo", "2tim": "II Timóteo", "tt": "Tito",
+  "flm": "Filemon", "hb": "Hebreus", "tg": "Tiago", "1pe": "I Pedro", "2pe": "II Pedro",
+  "1jo": "I João", "2jo": "II João", "3jo": "III João", "jd": "Judas", "ap": "Apocalipse"
+};
+
 const fetchBiblia = async (): Promise<BibliaData> => {
   const response = await fetch('/biblia_ave_maria.json');
   if (!response.ok) throw new Error("Erro ao carregar a Bíblia");
@@ -57,6 +76,7 @@ export default function BibliaPage() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [readingMenuOpen, setReadingMenuOpen] = useState(false);
 
   // Carregar encontros para mostrar as leituras
   const selectedTurmaId = localStorage.getItem("ivc_selected_turma") || "all";
@@ -91,24 +111,29 @@ export default function BibliaPage() {
     if (!biblia) return null;
     const allBooks = [...biblia.antigoTestamento, ...biblia.novoTestamento];
     
-    // Limpar prefixos comuns (Evangelho:, Leitura:, etc)
     const cleanRef = ref
       .replace(/^(evangelho|leitura|salmo|epístola|atos|profeta|primeira leitura|segunda leitura|1ª leitura|2ª leitura)[:\s-]*/i, '')
       .trim();
 
-    // Tentar capturar: Nome do Livro + Capítulo + Opcionalmente Versículo
-    // Regex suporta: "Jo 3,16", "João 3:16", "1 Cor 13", "I Cor 13,4-7"
     const match = cleanRef.match(/^((?:\d\s*|I+\s*)?[a-zA-Záéíóúâêîôûãõç.]+)\s+(\d+)(?:[,:]\s*(\d+))?/i);
     if (!match) return null;
     
     const [, bookName, chapterNum, verseNum] = match;
-    const searchBook = bookName.toLowerCase().replace(/\./g, '').trim();
+    const searchKey = bookName.toLowerCase().replace(/\./g, '').trim();
+
+    // Inteligência: Tentar resolver via mapa de abreviações primeiro
+    const resolvedBookName = ABREVIACOES[searchKey] || searchKey;
 
     const book = allBooks.find(b => {
       const bNome = b.nome.toLowerCase();
-      return bNome === searchBook || 
-             bNome.startsWith(searchBook) || 
-             (searchBook.length >= 3 && bNome.includes(searchBook));
+      // Prioridade 1: Nome exato resolvido
+      if (bNome === resolvedBookName.toLowerCase()) return true;
+      // Prioridade 2: Começa com a abreviação (específico para nomes longos)
+      if (bNome.startsWith(searchKey) && searchKey.length >= 3) return true;
+      // Casos especiais (Jo -> João, não Josué)
+      if (searchKey === "jo" && bNome === "joão") return true;
+      if (searchKey === "jos" && bNome === "josué") return true;
+      return false;
     });
     
     if (!book) return null;
@@ -339,70 +364,77 @@ export default function BibliaPage() {
         </div>
       </div>
 
-      {/* ── SEÇÃO: LEITURAS DO ENCONTRO (CARD SUSPENSO) ── */}
+      {/* ── SEÇÃO: LEITURAS DO ENCONTRO (LISTA SUSPENSA INTELIGENTE) ── */}
       {encontrosComLeitura.length > 0 && tab === "livros" && !selectedBook && (
         <div className="animate-float-up" style={{ animationDelay: '20ms' }}>
-          <div className="float-card overflow-hidden border-2 border-primary/20 bg-primary/5">
-            <div className="p-4 bg-primary text-white flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BookIcon className="h-5 w-5" />
-                <h2 className="text-sm font-bold uppercase tracking-tight">Leituras dos Encontros</h2>
+          <div className="relative">
+            <button
+              onClick={() => setReadingMenuOpen(!readingMenuOpen)}
+              className="w-full float-card p-4 flex items-center justify-between border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all group active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                  <BookIcon className="h-5 w-5" />
+                </div>
+                <div className="text-left">
+                  <h2 className="text-sm font-black uppercase tracking-tight text-primary">Agenda de Leituras</h2>
+                  <p className="text-[10px] text-muted-foreground font-medium">Toque para escolher o encontro</p>
+                </div>
               </div>
-              <span className="text-[10px] font-black bg-white/20 px-2 py-0.5 rounded-full">
-                {encontrosComLeitura.length} AGENDA
-              </span>
-            </div>
-            
-            <div className="p-2 max-h-[220px] overflow-y-auto no-scrollbar space-y-1">
-              {encontrosComLeitura.map((e, idx) => {
-                const isProximo = e.id === proximoEncontro?.id;
-                return (
-                  <button
-                    key={e.id}
-                    onClick={() => autoOpenReference(e.leituraBiblica!)}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group active:scale-[0.98]",
-                      isProximo ? "bg-white shadow-sm border border-primary/20" : "hover:bg-primary/10"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-10 h-10 rounded-lg flex flex-col items-center justify-center shrink-0 border",
-                      isProximo ? "bg-primary text-white border-primary" : "bg-white text-primary border-primary/10"
-                    )}>
-                      <span className="text-[8px] font-black uppercase leading-none mb-0.5">
-                        {new Date(e.data).toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
-                      </span>
-                      <span className="text-sm font-black leading-none">
-                        {new Date(e.data).getDate()}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <p className={cn("text-xs font-black truncate", isProximo ? "text-primary" : "text-foreground")}>
-                          {e.leituraBiblica}
-                        </p>
-                        {isProximo && (
-                          <span className="text-[7px] font-black uppercase bg-primary/10 text-primary px-1.5 py-0.5 rounded-full border border-primary/20">
-                            Próximo
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-muted-foreground truncate opacity-70">
-                        {e.tema}
-                      </p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-primary opacity-30 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                );
-              })}
-            </div>
-            
-            <div className="p-3 bg-white/50 border-t border-primary/10 text-center">
-              <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest flex items-center justify-center gap-1.5">
-                <Search className="h-3 w-3" />
-                Toque em uma leitura para abrir o texto
-              </p>
-            </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20">
+                  {encontrosComLeitura.length} ENCONTROS
+                </span>
+                <ChevronDown className={cn("h-5 w-5 text-primary transition-transform duration-300", readingMenuOpen ? "rotate-180" : "")} />
+              </div>
+            </button>
+
+            {/* Menu Suspenso */}
+            {readingMenuOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                <div className="float-card border-2 border-primary/10 bg-white shadow-2xl overflow-hidden rounded-[24px]">
+                  <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar space-y-1">
+                    {encontrosComLeitura.map((e) => {
+                      const isProximo = e.id === proximoEncontro?.id;
+                      return (
+                        <button
+                          key={e.id}
+                          onClick={() => {
+                            autoOpenReference(e.leituraBiblica!);
+                            setReadingMenuOpen(false);
+                          }}
+                          className={cn(
+                            "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group active:scale-[0.98]",
+                            isProximo ? "bg-primary/5 border border-primary/10" : "hover:bg-muted/50"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-9 h-9 rounded-lg flex flex-col items-center justify-center shrink-0 border",
+                            isProximo ? "bg-primary text-white border-primary" : "bg-muted text-muted-foreground border-transparent"
+                          )}>
+                            <span className="text-[7px] font-black uppercase leading-none mb-0.5">
+                              {new Date(e.data).toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                            </span>
+                            <span className="text-xs font-black leading-none">
+                              {new Date(e.data).getDate()}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={cn("text-xs font-black truncate", isProximo ? "text-primary" : "text-foreground")}>
+                              {e.leituraBiblica}
+                            </p>
+                            <p className="text-[9px] text-muted-foreground truncate opacity-70">
+                              {e.tema}
+                            </p>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-primary opacity-30 group-hover:opacity-100 transition-opacity" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
