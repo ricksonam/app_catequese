@@ -26,7 +26,7 @@ import { getAppUrl } from "@/lib/utils";
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
-  { path: "/modulos/biblia", icon: Book, label: "Bíblia", color: "text-amber-600", dot: "bg-amber-600" },
+  { path: "/jogos", icon: Dices, label: "Jogos", color: "text-amber-600", dot: "bg-amber-600" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
   { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-rose-600", dot: "bg-rose-600" },
   { path: "__mais__", icon: Menu, label: "Mais", color: "text-emerald-600", dot: "bg-emerald-600" },

@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Users, Plus, X as XIcon, Maximize, Minimize, Shuffle, RefreshCw, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface Participante {
   nome: string;
+  isLider?: boolean;
 }
 
 interface Grupo {
@@ -55,6 +56,9 @@ export default function SorteioGrupos() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [sorteado, setSorteado] = useState(false);
+  const [sortearLider, setSortearLider] = useState(false);
+  const [umPorVez, setUmPorVez] = useState(true);
+  const [currentGroupIdx, setCurrentGroupIdx] = useState(0);
 
   useEffect(() => {
     const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -116,6 +120,13 @@ export default function SorteioGrupos() {
 
     while (i < embaralhados.length) {
       const membros = embaralhados.slice(i, i + tamanhoGrupo);
+      
+      // Sortear líder se solicitado
+      if (sortearLider && membros.length > 0) {
+        const liderIdx = Math.floor(Math.random() * membros.length);
+        membros[liderIdx] = { ...membros[liderIdx], isLider: true };
+      }
+
       gruposGerados.push({
         id: grupoIdx,
         nome: `Grupo ${grupoIdx}`,
@@ -126,6 +137,7 @@ export default function SorteioGrupos() {
     }
 
     setGrupos(gruposGerados);
+    setCurrentGroupIdx(0);
     setSorteado(true);
 
     if (!document.fullscreenElement && window.innerWidth < 1024) {
@@ -281,10 +293,32 @@ export default function SorteioGrupos() {
               <div className="h-px bg-border" />
 
               {/* Configurações do Grupo */}
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 ml-1">
-                  Pessoas por grupo
-                </label>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900">
+                    Pessoas por grupo
+                  </label>
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={() => setSortearLider(!sortearLider)}
+                      className={cn("text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors", sortearLider ? "text-primary" : "text-muted-foreground")}
+                    >
+                      <div className={cn("w-4 h-4 rounded border-2 flex items-center justify-center transition-all", sortearLider ? "bg-primary border-primary text-white" : "border-border")} >
+                        {sortearLider && <Plus className="h-3 w-3 stroke-[4]" />}
+                      </div>
+                      Líder
+                    </button>
+                    <button 
+                      onClick={() => setUmPorVez(!umPorVez)}
+                      className={cn("text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors", umPorVez ? "text-primary" : "text-muted-foreground")}
+                    >
+                      <div className={cn("w-4 h-4 rounded border-2 flex items-center justify-center transition-all", umPorVez ? "bg-primary border-primary text-white" : "border-border")} >
+                        {umPorVez && <Plus className="h-3 w-3 stroke-[4]" />}
+                      </div>
+                      1 por Vez
+                    </button>
+                  </div>
+                </div>
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {tamanhoOpcoes.map(n => (
                     <button
@@ -315,40 +349,84 @@ export default function SorteioGrupos() {
           {sorteado && !isFullscreen && (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-black text-foreground">🎉 {grupos.length} Grupos Formados</h2>
+                <h2 className="text-lg font-black text-foreground">
+                  {umPorVez ? `Revelando: ${currentGroupIdx + 1}/${grupos.length}` : `🎉 ${grupos.length} Grupos Formados`}
+                </h2>
                 <div className="flex gap-2">
-                  <Button onClick={toggleFullscreen} variant="outline" size="sm" className="rounded-xl font-bold gap-2 border-2">
-                    <Maximize className="h-4 w-4" /> Tela Cheia
-                  </Button>
                   <Button onClick={reiniciar} variant="outline" size="sm" className="rounded-xl font-bold gap-2 border-2">
                     <RefreshCw className="h-4 w-4" /> Refazer
                   </Button>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {grupos.map((grupo, i) => (
-                  <div key={grupo.id} className={cn("rounded-3xl border-2 overflow-hidden shadow-sm hover:shadow-md transition-all", CORES_BG[i % CORES_BG.length])}>
-                    <div className={cn("p-3 bg-gradient-to-r text-white font-black text-sm uppercase tracking-wider flex items-center gap-2", CORES_GRUPOS[i % CORES_GRUPOS.length])}>
-                      <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">{grupo.id}</div>
-                      {grupo.nome}
-                      <span className="ml-auto text-[10px] font-bold opacity-80">{grupo.membros.length} membros</span>
-                    </div>
-                    <div className="p-3 space-y-1.5">
-                      {grupo.membros.map((m, j) => (
-                        <div key={j} className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-white border border-current/10 flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm">
-                            {j + 1}
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <User className="h-3 w-3 opacity-40" />
-                            <span className="text-sm font-bold text-foreground">{m.nome}</span>
-                          </div>
+
+              {umPorVez ? (
+                <div className="flex flex-col items-center gap-6 py-4">
+                  <div className="grid grid-cols-1 gap-4 w-full max-w-sm">
+                    {grupos.slice(0, currentGroupIdx + 1).map((grupo, i) => (
+                      <div key={grupo.id} className={cn("rounded-3xl border-2 overflow-hidden shadow-lg animate-in zoom-in-95 duration-500", CORES_BG[i % CORES_BG.length])}>
+                        <div className={cn("p-4 bg-gradient-to-r text-white font-black text-base uppercase tracking-wider flex items-center gap-3", CORES_GRUPOS[i % CORES_GRUPOS.length])}>
+                          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-sm font-black">{grupo.id}</div>
+                          {grupo.nome}
+                          <span className="ml-auto text-[10px] font-bold opacity-80">{grupo.membros.length} membros</span>
                         </div>
-                      ))}
-                    </div>
+                        <div className="p-4 space-y-2.5">
+                          {grupo.membros.map((m, j) => (
+                            <div key={j} className="flex items-center gap-3">
+                              <div className={cn(
+                                "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm border",
+                                m.isLider ? "bg-amber-400 border-amber-600 text-amber-950" : "bg-white border-black/5 text-foreground"
+                              )}>
+                                {m.isLider ? "★" : j + 1}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className={cn("text-sm font-bold", m.isLider ? "text-amber-700" : "text-foreground")}>{m.nome}</span>
+                                {m.isLider && <span className="text-[8px] font-black uppercase text-amber-600 leading-none">Líder do Grupo</span>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+
+                  {currentGroupIdx < grupos.length - 1 && (
+                    <Button 
+                      onClick={() => setCurrentGroupIdx(prev => prev + 1)}
+                      className="h-16 px-10 rounded-2xl font-black text-xl gap-3 shadow-xl shadow-primary/30 animate-bounce-subtle"
+                    >
+                      <Shuffle className="h-6 w-6" /> PRÓXIMO GRUPO ({currentGroupIdx + 2})
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {grupos.map((grupo, i) => (
+                    <div key={grupo.id} className={cn("rounded-3xl border-2 overflow-hidden shadow-sm hover:shadow-md transition-all", CORES_BG[i % CORES_BG.length])}>
+                      <div className={cn("p-3 bg-gradient-to-r text-white font-black text-sm uppercase tracking-wider flex items-center gap-2", CORES_GRUPOS[i % CORES_GRUPOS.length])}>
+                        <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-black">{grupo.id}</div>
+                        {grupo.nome}
+                        <span className="ml-auto text-[10px] font-bold opacity-80">{grupo.membros.length} membros</span>
+                      </div>
+                      <div className="p-3 space-y-1.5">
+                        {grupo.membros.map((m, j) => (
+                          <div key={j} className="flex items-center gap-2">
+                            <div className={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm border",
+                              m.isLider ? "bg-amber-400 border-amber-600 text-amber-950" : "bg-white border-black/5 text-foreground"
+                            )}>
+                              {m.isLider ? "★" : j + 1}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className={cn("text-sm font-bold", m.isLider ? "text-amber-700" : "text-foreground")}>{m.nome}</span>
+                              {m.isLider && <span className="text-[7px] font-black uppercase text-amber-600 leading-none">Líder</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </>

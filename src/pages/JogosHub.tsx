@@ -58,6 +58,13 @@ const jogos = [
     color: "bg-pink-500/10 text-pink-600",
     path: "/jogos/mimica",
   },
+  {
+    label: "Paciência Bíblica",
+    desc: "Organize os itens por categorias",
+    icon: Book,
+    color: "bg-blue-500/10 text-blue-600",
+    path: "/jogos/paciencia",
+  },
 ];
 
 export default function JogosHub() {

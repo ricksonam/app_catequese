@@ -35,6 +35,7 @@ import CitacaoSorteio from "@/pages/CitacaoSorteio";
 import BingoBiblico from "@/pages/BingoBiblico";
 import SorteioGrupos from "@/pages/SorteioGrupos";
 import Mimica from "@/pages/Mimica";
+import PacienciaBiblica from "@/pages/PacienciaBiblica";
 import BibliaPage from "@/pages/BibliaPage";
 import MaterialApoio from "@/pages/MaterialApoio";
 import ParoquiaComunidadeCadastro from "@/pages/ParoquiaComunidadeCadastro";
@@ -159,6 +160,7 @@ const AppRoutes = () => (
       <Route path="/jogos/bingo" element={<BingoBiblico />} />
       <Route path="/jogos/grupos" element={<SorteioGrupos />} />
       <Route path="/jogos/mimica" element={<Mimica />} />
+      <Route path="/jogos/paciencia" element={<PacienciaBiblica />} />
       <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
       <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
       <Route path="/comunicacao" element={<ComunicacaoHub />} />
