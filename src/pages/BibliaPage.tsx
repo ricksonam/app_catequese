@@ -369,9 +369,31 @@ export default function BibliaPage() {
         </div>
       </div>
 
+      {/* ── NAVEGAÇÃO POR TABS ── */}
+      <div className="flex justify-center gap-2 animate-float-up" style={{ animationDelay: '40ms' }}>
+        <button 
+          onClick={() => { setTab("livros"); setSearch(""); }} 
+          className={cn(
+            "px-8 py-2.5 rounded-xl text-sm font-bold transition-all border-2",
+            tab === "livros" ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-white text-muted-foreground border-border/50"
+          )}
+        >
+          Livros
+        </button>
+        <button 
+          onClick={() => setTab("passagens")} 
+          className={cn(
+            "px-8 py-2.5 rounded-xl text-sm font-bold transition-all border-2",
+            tab === "passagens" ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-white text-muted-foreground border-border/50"
+          )}
+        >
+          Passagens
+        </button>
+      </div>
+
       {/* ── SEÇÃO: LEITURAS DO ENCONTRO (LISTA SUSPENSA INTELIGENTE) ── */}
       {encontrosComLeitura.length > 0 && !selectedBook && (
-        <div className="animate-float-up" style={{ animationDelay: '20ms' }}>
+        <div className="animate-float-up relative z-50" style={{ animationDelay: '60ms' }}>
           <div className="relative">
             <button
               onClick={() => setReadingMenuOpen(!readingMenuOpen)}
@@ -396,7 +418,7 @@ export default function BibliaPage() {
 
             {/* Menu Suspenso */}
             {readingMenuOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute top-full left-0 right-0 mt-2 z-[100] animate-in fade-in zoom-in-95 duration-200">
                 <div className="float-card border-2 border-primary/10 bg-white shadow-2xl overflow-hidden rounded-[24px]">
                   <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar space-y-1">
                     {encontrosComLeitura.map((e) => {
@@ -444,36 +466,15 @@ export default function BibliaPage() {
         </div>
       )}
 
-      <div className="flex justify-center gap-2 animate-float-up" style={{ animationDelay: '40ms' }}>
-        <button 
-          onClick={() => { setTab("livros"); setSearch(""); }} 
-          className={cn(
-            "px-8 py-2.5 rounded-xl text-sm font-bold transition-all border-2",
-            tab === "livros" ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-white text-muted-foreground border-border/50"
-          )}
-        >
-          Livros
-        </button>
-        <button 
-          onClick={() => setTab("passagens")} 
-          className={cn(
-            "px-8 py-2.5 rounded-xl text-sm font-bold transition-all border-2",
-            tab === "passagens" ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-white text-muted-foreground border-border/50"
-          )}
-        >
-          Passagens
-        </button>
-      </div>
-
       {tab === "passagens" && (
         <div className="relative animate-float-up" style={{ animationDelay: '80ms' }}>
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30" />
           <input 
             type="text" 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
             placeholder="Ex: Lucas 24, 35-48" 
-            className="form-input pl-12 h-14 shadow-md border-2 focus:border-primary/50 transition-all text-lg font-medium" 
+            className="form-input pl-14 h-14 shadow-md border-2 focus:border-primary/50 transition-all text-lg font-medium" 
           />
           {search && isLoading && (
             <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40 animate-spin" />
