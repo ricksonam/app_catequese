@@ -787,7 +787,7 @@ export default function Dashboard() {
           </div>
 
           {/* Grid de Módulos — cards flutuantes com degradê */}
-          <div className="grid grid-cols-2 gap-4 w-full relative z-10 px-8">
+          <div className="grid grid-cols-3 gap-3 w-full relative z-10 px-4">
             {/* Card Catequizandos */}
             <div className="relative group">
               {/* Sombra degradê flutuante */}
@@ -803,11 +803,11 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300"
+                className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl"
                 style={{ boxShadow: '0 12px 30px -6px rgba(99,102,241,0.18), 0 4px 12px -4px rgba(59,130,246,0.12)' }}
               >
                 <img src="/card_catequizandos.jpg" alt="Catequizandos" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 group-hover:from-black/5 transition-all duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
 
@@ -826,11 +826,25 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300"
+                className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl"
                 style={{ boxShadow: '0 12px 30px -6px rgba(244,63,94,0.18), 0 4px 12px -4px rgba(251,113,133,0.12)' }}
               >
                 <img src="/card_encontros.jpg" alt="Encontros" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-white/5 group-hover:from-black/5 transition-all duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+              </button>
+            </div>
+
+            {/* Card Biblia Online */}
+            <div className="relative group">
+              {/* Sombra degradê flutuante */}
+              <div className="absolute -inset-1 rounded-[40px] bg-gradient-to-br from-amber-200 via-yellow-200 to-orange-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+              <button
+                onClick={() => navigate("/modulos/biblia")}
+                className="relative aspect-square w-full rounded-[36px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl"
+                style={{ boxShadow: '0 12px 30px -6px rgba(245,158,11,0.18), 0 4px 12px -4px rgba(251,191,36,0.12)' }}
+              >
+                <img src="/card_biblia.png" alt="Bíblia Online" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
           </div>

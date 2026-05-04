@@ -1,9 +1,10 @@
-import { ArrowLeft, Search, Copy, ChevronDown, ChevronRight, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Search, Copy, ChevronDown, ChevronRight, Loader2, BookOpen as BookIcon, Calendar } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { useEncontros, useTurmas } from "@/hooks/useSupabaseData";
 
 interface Verse {
   versiculo: number | string;
@@ -46,19 +47,67 @@ const fetchBiblia = async (): Promise<BibliaData> => {
 
 export default function BibliaPage() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [tab, setTab] = useState<"passagens" | "livros">("livros");
+  const [searchParams] = useSearchParams();
+  const initialRef = searchParams.get("ref");
+  
+  const [search, setSearch] = useState(initialRef || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(initialRef || "");
+  const [tab, setTab] = useState<"passagens" | "livros">(initialRef ? "passagens" : "livros");
   
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  // Carregar encontros para mostrar as leituras
+  const selectedTurmaId = localStorage.getItem("ivc_selected_turma") || "all";
+  const { data: encontros } = useEncontros(selectedTurmaId === "all" ? undefined : selectedTurmaId);
+  const { data: turmas } = useTurmas();
+
+  const encontrosComLeitura = useMemo(() => {
+    if (!encontros) return [];
+    return encontros
+      .filter(e => e.leituraBiblica && e.leituraBiblica.trim() !== "")
+      .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
+  }, [encontros]);
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const proximoEncontro = useMemo(() => {
+    return encontrosComLeitura.find(e => new Date(e.data) >= hoje);
+  }, [encontrosComLeitura]);
+
+  const demaisEncontros = useMemo(() => {
+    return encontrosComLeitura.filter(e => e.id !== proximoEncontro?.id);
+  }, [encontrosComLeitura, proximoEncontro]);
 
   const { data: biblia, isLoading } = useQuery({
     queryKey: ["biblia_ave_maria"],
     queryFn: fetchBiblia,
     staleTime: Infinity,
   });
+
+  const resolveReference = (ref: string) => {
+    if (!biblia) return null;
+    const allBooks = [...biblia.antigoTestamento, ...biblia.novoTestamento];
+    // Formato: Livro Capitulo,Versiculo (ex: Jo 3,16 ou João 3:16)
+    const match = ref.match(/^(.+?)\s+(\d+)(?:[,:]\s*(\d+))?$/);
+    if (!match) return null;
+    
+    const [, bookName, chapterNum, verseNum] = match;
+    const book = allBooks.find(b => 
+      b.nome.toLowerCase() === bookName.toLowerCase() || 
+      b.nome.toLowerCase().startsWith(bookName.toLowerCase()) ||
+      (bookName.length >= 2 && b.nome.toLowerCase().includes(bookName.toLowerCase()))
+    );
+    
+    if (!book) return null;
+    const chapter = book.capitulos.find(c => c.capitulo === parseInt(chapterNum));
+    if (!chapter) return { book };
+    
+    const verse = verseNum ? chapter.versiculos.find(v => String(v.versiculo) === verseNum) : null;
+    return { book, chapter, verse };
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -69,7 +118,10 @@ export default function BibliaPage() {
 
   const searchResults = useMemo(() => {
     const term = debouncedSearch.trim().toLowerCase();
-    if (!term) return { passagens: PASSAGENS_POPULARES, full: [], livros: [] };
+    if (!term) return { passagens: PASSAGENS_POPULARES, full: [], livros: [], directMatch: null };
+
+    // Busca por Referência Direta
+    const directMatch = resolveReference(debouncedSearch.trim());
 
     // Busca por Livros
     const libroMatches: Book[] = [];
@@ -109,7 +161,7 @@ export default function BibliaPage() {
       if (count <= 50) searchInTestament(biblia.novoTestamento);
     }
 
-    return { passagens: passagensMatches, full: fullMatches, livros: libroMatches };
+    return { passagens: passagensMatches, full: fullMatches, livros: libroMatches, directMatch };
   }, [debouncedSearch, biblia]);
 
   const renderBreadcrumbs = () => {
@@ -256,6 +308,87 @@ export default function BibliaPage() {
         </div>
       </div>
 
+      {/* ── SEÇÃO: LEITURAS DO ENCONTRO ── */}
+      {encontrosComLeitura.length > 0 && tab === "livros" && !selectedBook && (
+        <div className="space-y-4 animate-float-up" style={{ animationDelay: '20ms' }}>
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-sm font-black uppercase tracking-widest text-primary/80">Leituras dos Encontros</h2>
+            <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+              {encontrosComLeitura.length} leituras
+            </span>
+          </div>
+
+          {/* Card em Destaque: Próximo Encontro */}
+          {proximoEncontro && (
+            <button
+              onClick={() => {
+                setSearch(proximoEncontro.leituraBiblica!);
+                setTab("passagens");
+              }}
+              className="w-full float-card p-5 bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-700 text-white border-none shadow-xl shadow-blue-600/20 relative overflow-hidden group active:scale-[0.98] transition-all"
+            >
+              {/* Efeito de brilho */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-700" />
+              
+              <div className="relative z-10 flex items-start justify-between">
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                      <BookIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100">Próxima Leitura</span>
+                  </div>
+                  <h3 className="text-xl font-black mb-1">{proximoEncontro.leituraBiblica}</h3>
+                  <p className="text-xs text-blue-100 font-medium line-clamp-1 opacity-90">
+                    Encontro: {proximoEncontro.tema}
+                  </p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 flex flex-col items-center justify-center min-w-[60px]">
+                  <span className="text-[10px] font-bold uppercase text-blue-100 mb-1">Dia</span>
+                  <span className="text-2xl font-black leading-none">
+                    {new Date(proximoEncontro.data).getDate().toString().padStart(2, '0')}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-widest text-blue-100/80">Toque para abrir na Bíblia</span>
+                <ChevronRight className="h-4 w-4 text-white opacity-50 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+          )}
+
+          {/* Lista de Outras Leituras */}
+          {demaisEncontros.length > 0 && (
+            <div className="flex gap-3 overflow-x-auto pb-2 px-1 snap-x no-scrollbar">
+              {demaisEncontros.map((e) => (
+                <button
+                  key={e.id}
+                  onClick={() => {
+                    setSearch(e.leituraBiblica!);
+                    setTab("passagens");
+                  }}
+                  className="snap-start flex-shrink-0 w-48 float-card p-4 bg-white border-2 border-border/50 hover:border-primary/40 transition-all text-left group active:scale-95"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Calendar className="h-3 w-3 text-primary" />
+                    <span className="text-[9px] font-bold text-muted-foreground uppercase">
+                      {new Date(e.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className="text-sm font-black text-foreground group-hover:text-primary transition-colors truncate">
+                    {e.leituraBiblica}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground line-clamp-1 mt-1">
+                    {e.tema}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex justify-center gap-2 animate-float-up" style={{ animationDelay: '40ms' }}>
         <button 
           onClick={() => { setTab("livros"); setSearch(""); }} 
@@ -295,6 +428,47 @@ export default function BibliaPage() {
 
       {tab === "passagens" && search ? (
         <div className="space-y-4 animate-fade-in">
+          {searchResults.directMatch && (
+            <div className="animate-float-up">
+              <p className="section-title mb-2 text-primary">Resultado Encontrado</p>
+              <button 
+                onClick={() => {
+                  setSelectedBook(searchResults.directMatch.book);
+                  if (searchResults.directMatch.chapter) {
+                    setSelectedChapter(searchResults.directMatch.chapter);
+                  }
+                  setTab("livros");
+                  setSearch("");
+                }}
+                className="w-full float-card p-4 flex items-center justify-between border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                    <BookIcon className="h-6 w-6" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="text-lg font-black text-foreground">
+                      {searchResults.directMatch.book.nome} {searchResults.directMatch.chapter?.capitulo || ""}
+                    </h4>
+                    <p className="text-xs text-muted-foreground font-medium">Toque para ler o capítulo completo</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
+              </button>
+              
+              {searchResults.directMatch.verse && (
+                <div className="mt-2 float-card p-4 border-l-4 border-l-primary bg-white shadow-sm">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1.5">
+                    Versículo {searchResults.directMatch.verse.versiculo}
+                  </p>
+                  <p className="text-sm text-foreground leading-relaxed italic">
+                    "{searchResults.directMatch.verse.texto}"
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {searchResults.livros.length > 0 && (
             <div>
               <p className="section-title mb-2">Livros Encontrados</p>
