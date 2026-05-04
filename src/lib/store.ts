@@ -392,7 +392,7 @@ export function deleteCatequista(id: string) {
 }
 
 export const NOMES_TURMA = [
-  'Pré-Catequese', 'Eucaristia', 'Pré-Crisma ou Perseverança', 'Crisma', 'Adultos', 'Outros',
+  'Sementinhas', 'Pré-Catequese', 'Eucaristia', 'Pré-Crisma', 'Perseverança', 'Crisma', 'Adultos', 'Outros',
 ];
 
 export const DIAS_SEMANA = [
