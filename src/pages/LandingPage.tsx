@@ -300,44 +300,6 @@ export default function LandingPage() {
           </section>
         )}
 
-        {/* ── CONTACT SECTION ── */}
-        <section className="container mx-auto px-6 max-w-lg mb-10">
-          <div className="bg-white/60 backdrop-blur-sm p-6 rounded-[32px] border border-black/5 shadow-sm">
-            <div className="flex items-center gap-5 mb-6">
-              <Avatar className="h-16 w-16 border-2 border-white shadow-lg shrink-0">
-                <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
-                <AvatarFallback className="bg-primary text-white font-black">RA</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-lg font-black text-slate-900 leading-none mb-1">Rickson Amazonas</p>
-                <p className="text-sm font-bold text-slate-500 mb-2">Idealizador do Projeto</p>
-                <div className="flex items-center gap-2 text-slate-400">
-                  <Mail className="h-4 w-4 text-primary" />
-                  <a href="mailto:ricksonam@hotmail.com" className="text-xs font-bold truncate hover:text-primary transition-colors">ricksonam@hotmail.com</a>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex gap-3">
-              <button 
-                onClick={handleWhatsApp}
-                className="flex-1 h-12 rounded-2xl bg-emerald-50 text-emerald-600 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-100 transition-all active:scale-95 border border-emerald-200/50"
-              >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </button>
-              <a 
-                href="https://www.instagram.com/icatequese/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex-1 h-12 rounded-2xl bg-pink-50 text-pink-600 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-pink-100 transition-all active:scale-95 border border-pink-200/50"
-              >
-                <Instagram className="h-4 w-4" />
-                Instagram
-              </a>
-            </div>
-          </div>
-        </section>
 
         {/* ── FINAL CTA ── */}
         <section className="container mx-auto px-6 text-center mb-16">
@@ -352,31 +314,66 @@ export default function LandingPage() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-white/50 border-t border-black/5 py-12 relative z-10">
-        <div className="container mx-auto px-6 text-center">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-               <img src="/app-logo.png" alt="Logo" className="w-6 h-6 object-contain" />
+      <footer className="bg-white/50 border-t border-black/5 py-12 relative z-10 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-12">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                   <img src="/app-logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+                </div>
+                <span className="text-xl font-black tracking-tighter text-primary">iCatequese</span>
+              </div>
+              <p className="text-sm font-medium text-slate-400 max-w-xs leading-relaxed">
+                Sistema de gestão inteligente para catequistas modernos. Unindo fé e tecnologia.
+              </p>
+              <div className="flex items-center gap-6 mt-2">
+                <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary flex items-center gap-1.5 transition-colors">
+                  <Share2 className="h-3 w-3" /> Compartilhar
+                </button>
+                <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">Termos</a>
+                <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">Privacidade</a>
+              </div>
             </div>
-            <span className="text-lg font-black tracking-tighter text-primary">iCatequese</span>
+
+            {/* Idealizador Card no Footer */}
+            <div className="bg-white/60 backdrop-blur-sm p-6 rounded-[28px] border border-black/5 shadow-sm">
+              <div className="flex items-center gap-4 mb-4">
+                <Avatar className="h-12 w-12 border-2 border-white shadow-md shrink-0">
+                  <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
+                  <AvatarFallback className="bg-primary text-white font-black text-xs">RA</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-black text-slate-900 leading-none mb-1">Rickson Amazonas</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Idealizador do Projeto</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 text-slate-400 flex-1">
+                  <Mail className="h-3.5 w-3.5 text-primary" />
+                  <a href="mailto:ricksonam@hotmail.com" className="text-[10px] font-bold truncate hover:text-primary transition-colors">ricksonam@hotmail.com</a>
+                </div>
+                <button 
+                  onClick={handleWhatsApp}
+                  className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition-all border border-emerald-200/50"
+                >
+                  Suporte
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center justify-center gap-6 mb-4">
-            <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary flex items-center gap-1.5 transition-colors">
-              <Share2 className="h-3 w-3" /> Compartilhar
-            </button>
-            <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">Termos</a>
-            <a href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">Privacidade</a>
+          <div className="pt-8 border-t border-black/5 text-center">
+            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">© 2026 iCatequese · Ad maiorem Dei gloriam</p>
           </div>
-          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">© 2026 iCatequese · Ad maiorem Dei gloriam</p>
         </div>
       </footer>
 
       {/* ── BOTÃO WHATSAPP FLUTUANTE ── */}
       <button
         onClick={handleWhatsApp}
-        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-emerald-500 text-white shadow-2xl shadow-emerald-500/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group"
+        className="fixed bottom-6 right-6 z-[60] w-16 h-16 rounded-full overflow-hidden shadow-2xl shadow-emerald-500/40 hover:scale-110 active:scale-95 transition-all group"
       >
-        <MessageCircle className="h-7 w-7 group-hover:animate-pulse" />
+        <img src="/assets/whatsapp-icon.png" alt="WhatsApp" className="w-full h-full object-contain" />
         <span className="absolute right-full mr-4 px-4 py-2 rounded-xl bg-white text-slate-800 text-xs font-black shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-black/5">
           Fale conosco
         </span>
