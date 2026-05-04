@@ -634,14 +634,14 @@ export default function Dashboard() {
       )}
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
-      <div className="relative pt-3 pb-6 mb-0 animate-fade-in -mt-1 mx-2 rounded-[40px] bg-gradient-to-br from-orange-50/90 via-[#FFF9F2] to-orange-50/90 border border-orange-100 shadow-sm overflow-hidden">
+      <div className="relative pt-3 pb-6 mb-0 animate-fade-in -mt-1 mx-2 rounded-[40px] bg-gradient-to-br from-orange-50/90 via-[#FFF9F2] to-orange-50/90 border border-black shadow-sm overflow-hidden">
         {/* Detalhes de Decoração do Varal */}
         <div className="absolute top-8 left-0 right-0 h-[1px] bg-orange-200/40 z-0" />
         
         {/* Título da Seção */}
         <div className="flex flex-col items-center justify-center mb-4 relative z-10">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-orange-700/70">Próximos Aniversários</h2>
-          <div className="h-1 w-6 bg-orange-400/40 rounded-full mt-1"></div>
+          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600">Próximos Aniversários</h2>
+          <div className="h-1 w-6 bg-blue-400/40 rounded-full mt-1"></div>
         </div>
 
         {aniversariantesMes.length > 0 ? (
@@ -789,8 +789,8 @@ export default function Dashboard() {
             <div className="absolute top-1/2 right-[calc(25%+12px)] w-[2px] h-1/2 bg-blue-600" />
           </div>
 
-          {/* Grid de Módulos — cards flutuantes side-by-side */}
-          <div className="grid grid-cols-3 gap-3 w-full relative z-10 px-4">
+          {/* Grid de Módulos — cards flutuantes side-by-side (MAXIMIZADOS) */}
+          <div className="grid grid-cols-3 gap-2 w-full relative z-10 px-2">
             {/* Card Catequizandos */}
             <div className="relative group">
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-blue-200 via-indigo-200 to-violet-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3s' }} />
@@ -805,7 +805,7 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[28px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
                 style={{ boxShadow: '0 8px 20px -4px rgba(99,102,241,0.15), 0 4px 8px -2px rgba(59,130,246,0.1)' }}
               >
                 <img src="/card_catequizandos.jpg" alt="Catequizandos" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -827,7 +827,7 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[28px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
                 style={{ boxShadow: '0 8px 20px -4px rgba(244,63,94,0.15), 0 4px 8px -2px rgba(251,113,133,0.1)' }}
               >
                 <img src="/card_encontros.jpg" alt="Encontros" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -840,7 +840,7 @@ export default function Dashboard() {
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-slate-200 via-zinc-200 to-slate-200 opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-500" />
               <button
                 onClick={() => navigate("/modulos/biblia")}
-                className="relative aspect-square w-full rounded-[28px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
                 style={{ boxShadow: '0 8px 20px -4px rgba(0,0,0,0.1), 0 4px 8px -2px rgba(0,0,0,0.05)' }}
               >
                 <img src="/card_biblia.jpg" alt="Bíblia Online" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
