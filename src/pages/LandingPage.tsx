@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   LogIn, 
@@ -200,17 +200,21 @@ export default function LandingPage() {
         <section className="container mx-auto px-6 flex flex-col items-center text-center mb-16">
           
           {/* ── BOTÕES NO TOPO (CENTRALIZADOS) ── */}
-          <div className="flex justify-center gap-3 mb-10">
+          <div className="flex flex-wrap justify-center items-center gap-4 mb-12">
             <button 
               onClick={() => navigate("/auth?view=login")} 
-              className="px-6 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95 shadow-md"
+              className="group relative px-8 py-3.5 rounded-2xl bg-white text-slate-700 font-black text-sm uppercase tracking-widest transition-all hover:text-primary active:scale-95 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_30px_-10px_rgba(0,0,0,0.15)] border border-slate-100 flex items-center gap-2 overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              <LogIn className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
               Entrar
             </button>
             <button 
               onClick={() => navigate("/auth?view=signup")} 
-              className="px-6 py-2.5 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all active:scale-95"
+              className="group relative px-8 py-3.5 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest transition-all hover:-translate-y-1 active:scale-95 shadow-[0_15px_30px_-10px_rgba(var(--primary-rgb),0.5)] hover:shadow-[0_25px_40px_-10px_rgba(var(--primary-rgb),0.6)] flex items-center gap-2 overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+              <UserPlus className="h-4 w-4 transition-transform group-hover:scale-110" />
               Cadastre-se
             </button>
           </div>

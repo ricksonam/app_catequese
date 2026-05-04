@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { useNavigate, Navigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ const SAVED_EMAIL_KEY = "ivc_saved_email";
    AUTH PAGE PRINCIPAL
 ────────────────────────────────────────────── */
 export default function AuthPage() {
+  const navigate = useNavigate();
   const { session, isReady } = useAuth();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState<View>((searchParams.get("view") as View) || "login");
