@@ -1,10 +1,11 @@
-import { ArrowLeft, Search, Copy, ChevronDown, ChevronRight, Loader2, BookOpen as BookIcon, Calendar } from "lucide-react";
+import { ArrowLeft, Search, Copy, ChevronDown, ChevronRight, Loader2, BookOpen as BookIcon, Calendar, Info, History } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useEncontros, useTurmas } from "@/hooks/useSupabaseData";
+import { historiaBiblia, getLivroMetadata } from "@/data/bibliaStudyData";
 
 interface Verse {
   versiculo: number | string;
@@ -25,6 +26,13 @@ interface BibliaData {
   antigoTestamento: Book[];
   novoTestamento: Book[];
 }
+
+const TRADUCOES = [
+  { id: "ave_maria", nome: "Ave Maria", file: "/biblia_ave_maria.json" },
+  { id: "cnbb", nome: "CNBB (Nova)", file: "/biblia_cnbb.json" },
+  { id: "jerusalem", nome: "Jerusalém", file: "/biblia_jerusalem.json" },
+  { id: "pastoral", nome: "Ed. Pastoral", file: "/biblia_pastoral.json" },
+];
 
 const PASSAGENS_POPULARES = [
   { ref: "Jo 3,16", texto: "Porque Deus amou tanto o mundo, que entregou o seu Filho único, para que todo aquele que nele crê não morra, mas tenha a vida eterna." },
@@ -58,9 +66,9 @@ const ABREVIACOES: Record<string, string> = {
   "1jo": "I João", "2jo": "II João", "3jo": "III João", "jd": "Judas", "ap": "Apocalipse"
 };
 
-const fetchBiblia = async (): Promise<BibliaData> => {
-  const response = await fetch('/biblia_ave_maria.json');
-  if (!response.ok) throw new Error("Erro ao carregar a Bíblia");
+const fetchBiblia = async (translationFile: string): Promise<BibliaData> => {
+  const response = await fetch(translationFile);
+  if (!response.ok) throw new Error("FILE_NOT_FOUND");
   return response.json();
 };
 
@@ -71,17 +79,19 @@ export default function BibliaPage() {
   
   const [search, setSearch] = useState(initialRef || "");
   const [debouncedSearch, setDebouncedSearch] = useState(initialRef || "");
-  const [tab, setTab] = useState<"passagens" | "livros">(initialRef ? "passagens" : "livros");
+  const [tab, setTab] = useState<"livros" | "passagens" | "estudo">(initialRef ? "passagens" : "livros");
+  const [translationId, setTranslationId] = useState("ave_maria");
   
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [readingMenuOpen, setReadingMenuOpen] = useState(false);
+  const [showMetadataInfo, setShowMetadataInfo] = useState(false);
 
-  // Carregar encontros para mostrar as leituras
+  const selectedTranslation = TRADUCOES.find(t => t.id === translationId) || TRADUCOES[0];
+
   const selectedTurmaId = localStorage.getItem("ivc_selected_turma") || "all";
   const { data: encontros } = useEncontros(selectedTurmaId === "all" ? undefined : selectedTurmaId);
-  const { data: turmas } = useTurmas();
 
   const encontrosComLeitura = useMemo(() => {
     if (!encontros) return [];
@@ -97,14 +107,11 @@ export default function BibliaPage() {
     return encontrosComLeitura.find(e => new Date(e.data) >= hoje);
   }, [encontrosComLeitura]);
 
-  const demaisEncontros = useMemo(() => {
-    return encontrosComLeitura.filter(e => e.id !== proximoEncontro?.id);
-  }, [encontrosComLeitura, proximoEncontro]);
-
-  const { data: biblia, isLoading } = useQuery({
-    queryKey: ["biblia_ave_maria"],
-    queryFn: fetchBiblia,
+  const { data: biblia, isLoading, isError, error } = useQuery({
+    queryKey: ["biblia", translationId],
+    queryFn: () => fetchBiblia(selectedTranslation.file),
     staleTime: Infinity,
+    retry: false,
   });
 
   const resolveReference = (ref: string) => {
@@ -121,7 +128,6 @@ export default function BibliaPage() {
     const [, bookName, chapterNum, verseNum] = match;
     const searchKey = bookName.toLowerCase().replace(/\./g, '').trim();
 
-    // Inteligência: Tentar resolver via mapa de abreviações primeiro
     const resolvedBookName = ABREVIACOES[searchKey] || searchKey;
     const cleanSearchKey = resolvedBookName.toLowerCase().replace(/^(são|santo)\s+/i, '').trim();
 
@@ -129,13 +135,9 @@ export default function BibliaPage() {
       const bNomeRaw = b.nome.toLowerCase();
       const bNomeClean = bNomeRaw.replace(/^(são|santo)\s+/i, '').trim();
       
-      // Prioridade 1: Nome exato (limpo)
       if (bNomeClean === cleanSearchKey) return true;
-      // Prioridade 2: Nome exato (original)
       if (bNomeRaw === resolvedBookName.toLowerCase()) return true;
-      // Prioridade 3: Começa com a abreviação
       if (bNomeClean.startsWith(searchKey) && searchKey.length >= 3) return true;
-      // Casos especiais
       if (searchKey === "jo" && bNomeClean === "joão") return true;
       if (searchKey === "jos" && bNomeClean === "josué") return true;
       return false;
@@ -153,6 +155,7 @@ export default function BibliaPage() {
     const resolved = resolveReference(ref);
     if (resolved && resolved.book) {
       setSelectedBook(resolved.book);
+      setShowMetadataInfo(true);
       if (resolved.chapter) {
         setSelectedChapter(resolved.chapter);
         setTab("livros");
@@ -181,10 +184,8 @@ export default function BibliaPage() {
     const term = debouncedSearch.trim().toLowerCase();
     if (!term) return { passagens: PASSAGENS_POPULARES, full: [], livros: [], directMatch: null };
 
-    // Busca por Referência Direta
     const directMatch = resolveReference(debouncedSearch.trim());
 
-    // Busca por Livros
     const libroMatches: Book[] = [];
     if (biblia) {
       const allBooks = [...biblia.antigoTestamento, ...biblia.novoTestamento];
@@ -212,7 +213,7 @@ export default function BibliaPage() {
                   texto: verse.texto
                 });
                 count++;
-                if (count > 50) return; // Limitar para não travar a tela
+                if (count > 50) return;
               }
             }
           }
@@ -249,37 +250,94 @@ export default function BibliaPage() {
     );
   };
 
+  const renderBookMetadata = () => {
+    if (!selectedBook) return null;
+    const meta = getLivroMetadata(selectedBook.nome);
+    
+    return (
+      <div className="mb-4">
+        <button 
+          onClick={() => setShowMetadataInfo(!showMetadataInfo)}
+          className="w-full flex items-center justify-between p-3 rounded-xl bg-primary/5 border border-primary/20 text-primary hover:bg-primary/10 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            <span className="text-sm font-bold">Introdução ao Livro</span>
+          </div>
+          <ChevronDown className={cn("h-4 w-4 transition-transform", showMetadataInfo ? "rotate-180" : "")} />
+        </button>
+        
+        {showMetadataInfo && (
+          <div className="mt-2 p-4 float-card liturgical-border bg-liturgical-paper animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-liturgical font-bold text-foreground mb-3 border-b pb-2">{selectedBook.nome}</h3>
+            <div className="space-y-3 text-sm">
+              <div>
+                <span className="font-bold text-primary">Autor/Tradição:</span>
+                <p className="text-foreground/80">{meta.autor}</p>
+              </div>
+              <div>
+                <span className="font-bold text-primary">Época:</span>
+                <p className="text-foreground/80">{meta.epoca}</p>
+              </div>
+              <div>
+                <span className="font-bold text-primary">Tema Central:</span>
+                <p className="text-foreground/80">{meta.temaCentral}</p>
+              </div>
+              <div className="mt-4 p-3 bg-white dark:bg-black/20 rounded-lg border border-primary/10">
+                <span className="text-xs font-black uppercase text-primary mb-1 block tracking-wider">💡 Dica para a Catequese</span>
+                <p className="italic text-foreground/90">{meta.dicaCatequese}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderLivros = () => {
     if (isLoading) {
       return (
         <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm font-medium">Carregando Bíblia Sagrada...</p>
+          <p className="text-sm font-medium">Abrindo a Bíblia Sagrada...</p>
         </div>
       );
     }
 
-    if (!biblia) {
+    if (isError) {
       return (
-        <div className="empty-state">
-          <p className="text-sm text-muted-foreground">Não foi possível carregar a Bíblia.</p>
+        <div className="empty-state border-2 border-dashed border-primary/30 bg-primary/5">
+          <BookIcon className="h-10 w-10 text-primary/40 mx-auto mb-3" />
+          <h3 className="text-lg font-bold text-primary mb-2">Tradução Indisponível</h3>
+          <p className="text-sm text-foreground/70 mb-4">
+            O arquivo desta tradução ({selectedTranslation.nome}) não foi encontrado no sistema no momento.
+          </p>
+          <button 
+            onClick={() => setTranslationId("ave_maria")}
+            className="action-btn-sm mx-auto"
+          >
+            Retornar para a Ave Maria
+          </button>
         </div>
       );
     }
+
+    if (!biblia) return null;
 
     if (selectedChapter && selectedBook) {
       return (
         <div className="space-y-4 animate-fade-in">
           {renderBreadcrumbs()}
-          <div className="float-card p-4 space-y-4">
-            <h2 className="text-lg font-bold text-center text-primary border-b border-border pb-3">
+          {renderBookMetadata()}
+          <div className="float-card liturgical-border bg-liturgical-paper p-5 md:p-8 space-y-6 shadow-xl">
+            <h2 className="text-2xl font-liturgical font-bold text-center text-foreground border-b border-border/50 pb-4">
               {selectedBook.nome} {selectedChapter.capitulo}
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4 font-liturgical">
               {selectedChapter.versiculos.map((v) => (
-                <div key={v.versiculo} className="flex gap-3 group relative pl-2 hover:bg-muted/50 rounded-lg p-2 transition-colors">
-                  <span className="text-xs font-bold text-primary/70 shrink-0 mt-0.5 w-5 text-right">{v.versiculo}</span>
-                  <p className="text-sm text-foreground leading-relaxed flex-1">{v.texto}</p>
+                <div key={v.versiculo} className="flex gap-3 group relative pl-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg p-2 transition-colors">
+                  <span className="text-xs font-bold text-liturgical-gold shrink-0 mt-1 w-5 text-right">{v.versiculo}</span>
+                  <p className="text-base text-foreground leading-relaxed flex-1">{v.texto}</p>
                   <button 
                     onClick={() => copyText(`${selectedBook.nome} ${selectedChapter.capitulo}, ${v.versiculo} - ${v.texto}`)} 
                     className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-background rounded-md absolute right-1 top-1 shadow-sm border border-border"
@@ -298,12 +356,13 @@ export default function BibliaPage() {
       return (
         <div className="space-y-4 animate-fade-in">
           {renderBreadcrumbs()}
-          <div className="grid grid-cols-5 sm:grid-cols-6 gap-2">
+          {renderBookMetadata()}
+          <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
             {selectedBook.capitulos.map((c) => (
               <button
                 key={c.capitulo}
                 onClick={() => setSelectedChapter(c)}
-                className="aspect-square flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary hover:text-primary transition-all text-sm font-bold shadow-sm"
+                className="aspect-square flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary hover:bg-primary/5 transition-all text-sm font-bold shadow-sm"
               >
                 {c.capitulo}
               </button>
@@ -323,22 +382,22 @@ export default function BibliaPage() {
         {testamentos.map((t) => {
           const isOpen = expandedSection === t.titulo;
           return (
-            <div key={t.titulo} className="float-card overflow-hidden">
-              <button onClick={() => setExpandedSection(isOpen ? null : t.titulo)} className="w-full flex items-center justify-between px-4 py-4 text-left">
-                <span className="font-bold text-foreground">{t.titulo}</span>
+            <div key={t.titulo} className="float-card overflow-hidden liturgical-border">
+              <button onClick={() => setExpandedSection(isOpen ? null : t.titulo)} className="w-full flex items-center justify-between px-4 py-4 text-left bg-gradient-to-r from-background to-muted/20">
+                <span className="font-liturgical font-bold text-foreground text-lg">{t.titulo}</span>
                 <div className="flex items-center gap-2">
-                  <span className="pill-btn pill-btn-inactive text-[10px]">{t.livros.length} livros</span>
+                  <span className="text-[10px] uppercase font-bold text-primary/70">{t.livros.length} livros</span>
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </div>
               </button>
               {isOpen && (
-                <div className="px-3 pb-3 pt-1 border-t border-border/50 bg-muted/20">
-                  <div className="grid grid-cols-2 gap-1.5 mt-2">
+                <div className="px-3 pb-3 pt-1 border-t border-border/50 bg-liturgical-paper">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                     {t.livros.map((l) => (
                       <button
                         key={l.nome}
-                        onClick={() => setSelectedBook(l)}
-                        className="text-left px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/10 hover:text-primary transition-colors truncate"
+                        onClick={() => { setSelectedBook(l); setShowMetadataInfo(false); }}
+                        className="text-left px-3 py-3 rounded-lg text-sm font-medium bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary/50 hover:shadow-md transition-all truncate"
                       >
                         {l.nome}
                       </button>
@@ -353,6 +412,38 @@ export default function BibliaPage() {
     );
   };
 
+  const renderEstudo = () => (
+    <div className="space-y-6 animate-fade-in pb-10">
+      <div className="float-card liturgical-border bg-liturgical-paper p-6 md:p-8 text-center space-y-3">
+        <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-2 border-2 border-primary/20">
+          <History className="h-8 w-8" />
+        </div>
+        <h2 className="text-2xl font-liturgical font-bold text-foreground">{historiaBiblia.titulo}</h2>
+        <p className="text-sm text-foreground/80 font-liturgical leading-relaxed max-w-2xl mx-auto">
+          {historiaBiblia.introducao}
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {historiaBiblia.topicos.map((topico, i) => (
+          <div key={i} className="float-card p-5 border-l-4 border-l-primary hover:-translate-y-1 transition-transform">
+            <h3 className="text-lg font-bold text-primary mb-2 font-liturgical">{topico.titulo}</h3>
+            <p className="text-sm text-foreground/90 leading-relaxed font-liturgical">
+              {topico.conteudo}
+            </p>
+          </div>
+        ))}
+      </div>
+      
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 text-center">
+        <p className="text-sm italic font-liturgical text-foreground/80">
+          "A ignorância das Escrituras é a ignorância de Cristo." <br />
+          <span className="font-bold text-primary not-italic text-xs mt-1 block">- São Jerônimo</span>
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-5 pb-20">
       <div className="page-header animate-fade-in">
@@ -364,35 +455,64 @@ export default function BibliaPage() {
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-foreground">Bíblia Online</h1>
-          <p className="text-xs text-muted-foreground">Tradução Ave Maria</p>
+          <h1 className="text-xl font-bold text-foreground font-liturgical">Bíblia Online</h1>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold mt-0.5">Estudo e Leitura</p>
         </div>
       </div>
 
       {/* ── NAVEGAÇÃO POR TABS ── */}
-      <div className="flex justify-center gap-2 animate-float-up" style={{ animationDelay: '40ms' }}>
+      <div className="flex gap-1.5 animate-float-up bg-muted/30 p-1.5 rounded-2xl" style={{ animationDelay: '40ms' }}>
         <button 
           onClick={() => { setTab("livros"); setSearch(""); }} 
           className={cn(
-            "px-8 py-2.5 rounded-xl text-sm font-bold transition-all border-2",
-            tab === "livros" ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-white text-muted-foreground border-border/50"
+            "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all",
+            tab === "livros" ? "bg-white dark:bg-zinc-800 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
           )}
         >
-          Livros
+          Leitura
         </button>
         <button 
           onClick={() => setTab("passagens")} 
           className={cn(
-            "px-8 py-2.5 rounded-xl text-sm font-bold transition-all border-2",
-            tab === "passagens" ? "bg-primary text-primary-foreground border-primary shadow-md" : "bg-white text-muted-foreground border-border/50"
+            "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all",
+            tab === "passagens" ? "bg-white dark:bg-zinc-800 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
           )}
         >
-          Passagens
+          Busca
+        </button>
+        <button 
+          onClick={() => setTab("estudo")} 
+          className={cn(
+            "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5",
+            tab === "estudo" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <BookIcon className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">História &</span> Estudo
         </button>
       </div>
 
+      {tab === "estudo" && renderEstudo()}
+
+      {tab === "livros" && !selectedBook && (
+        <div className="animate-float-up flex justify-end" style={{ animationDelay: '50ms' }}>
+          <div className="relative inline-block w-full sm:w-auto">
+            <select
+              value={translationId}
+              onChange={(e) => setTranslationId(e.target.value)}
+              className="w-full sm:w-auto appearance-none bg-white dark:bg-zinc-900 border border-border rounded-xl pl-4 pr-10 py-2.5 text-sm font-semibold text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm transition-all cursor-pointer"
+            >
+              {TRADUCOES.map(t => (
+                <option key={t.id} value={t.id}>{t.nome}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary pointer-events-none" />
+          </div>
+        </div>
+      )}
+
       {/* ── SEÇÃO: LEITURAS DO ENCONTRO (LISTA SUSPENSA INTELIGENTE) ── */}
-      {encontrosComLeitura.length > 0 && !selectedBook && (
+      {tab !== "estudo" && encontrosComLeitura.length > 0 && !selectedBook && (
         <div className="animate-float-up relative z-50" style={{ animationDelay: '60ms' }}>
           <div className="relative">
             <button
@@ -401,7 +521,7 @@ export default function BibliaPage() {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
-                  <BookIcon className="h-5 w-5" />
+                  <Calendar className="h-5 w-5" />
                 </div>
                 <div className="text-left">
                   <h2 className="text-sm font-black uppercase tracking-tight text-primary">Agenda de Leituras</h2>
@@ -410,21 +530,20 @@ export default function BibliaPage() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20">
-                  {encontrosComLeitura.length} ENCONTROS
+                  {encontrosComLeitura.length}
                 </span>
                 <ChevronDown className={cn("h-5 w-5 text-primary transition-transform duration-300", readingMenuOpen ? "rotate-180" : "")} />
               </div>
             </button>
 
-            {/* Menu Suspenso */}
             {readingMenuOpen && (
               <div className="absolute top-full left-0 right-0 mt-2 z-[100] animate-in fade-in zoom-in-95 duration-200">
-                <div className="float-card border-2 border-primary/10 bg-white shadow-2xl overflow-hidden rounded-[24px]">
-                  <div className="p-2 max-h-[300px] overflow-y-auto custom-scrollbar space-y-1">
+                <div className="float-card border-2 border-primary/10 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden rounded-[24px]">
+                  <div className="p-2 max-h-[300px] overflow-y-auto premium-scrollbar space-y-1">
                     {encontrosComLeitura.map((e) => {
                       const isProximo = e.id === proximoEncontro?.id;
                       return (
-                        <button
+                         <button
                           key={e.id}
                           onClick={() => {
                             autoOpenReference(e.leituraBiblica!);
@@ -473,10 +592,10 @@ export default function BibliaPage() {
             type="text" 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
-            placeholder="Ex: Lucas 24, 35-48" 
+            placeholder="Buscar por referência (Ex: Lucas 24, 35) ou texto" 
             className={cn(
-              "form-input h-14 shadow-md border-2 focus:border-primary/50 transition-all text-lg font-medium",
-              search ? "pl-5" : "pl-14"
+              "form-input h-14 shadow-md border-2 focus:border-primary/50 transition-all text-sm sm:text-base font-medium",
+              search ? "pl-5" : "pl-12"
             )}
           />
           {search && isLoading && (
@@ -509,15 +628,15 @@ export default function BibliaPage() {
                     <h4 className="text-lg font-black text-foreground">
                       {searchResults.directMatch.book.nome} {searchResults.directMatch.chapter?.capitulo || ""}
                     </h4>
-                    <p className="text-xs text-muted-foreground font-medium">Toque para ler o capítulo completo</p>
+                    <p className="text-xs text-muted-foreground font-medium">Toque para ler o capítulo</p>
                   </div>
                 </div>
                 <ChevronRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
               </button>
               
               {searchResults.directMatch.verse && (
-                <div className="mt-2 float-card p-4 border-l-4 border-l-primary bg-white shadow-sm">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1.5">
+                <div className="mt-2 float-card p-4 border-l-4 border-l-primary bg-white shadow-sm font-liturgical">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1.5 font-sans">
                     Versículo {searchResults.directMatch.verse.versiculo}
                   </p>
                   <p className="text-sm text-foreground leading-relaxed italic">
@@ -555,7 +674,7 @@ export default function BibliaPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
                         <p className="text-xs font-bold text-primary mb-1.5">{p.ref}</p>
-                        <p className="text-sm text-foreground leading-relaxed">{p.texto}</p>
+                        <p className="text-sm text-foreground leading-relaxed font-liturgical">{p.texto}</p>
                       </div>
                       <button onClick={() => copyText(`${p.ref} - ${p.texto}`)} className="back-btn shrink-0">
                         <Copy className="h-4 w-4 text-muted-foreground" />
@@ -581,7 +700,7 @@ export default function BibliaPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
                         <p className="text-xs font-bold text-primary mb-1.5">{p.ref}</p>
-                        <p className="text-sm text-foreground leading-relaxed">
+                        <p className="text-sm text-foreground leading-relaxed font-liturgical">
                           {p.texto.split(new RegExp(`(${debouncedSearch})`, 'gi')).map((part, index) => 
                             part.toLowerCase() === debouncedSearch.toLowerCase() ? (
                               <span key={index} className="bg-primary/20 font-semibold">{part}</span>
@@ -614,7 +733,7 @@ export default function BibliaPage() {
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <p className="text-xs font-bold text-primary mb-1.5">{p.ref}</p>
-                  <p className="text-sm text-foreground leading-relaxed">{p.texto}</p>
+                  <p className="text-sm text-foreground leading-relaxed font-liturgical">{p.texto}</p>
                 </div>
                 <button onClick={() => copyText(`${p.ref} - ${p.texto}`)} className="back-btn shrink-0">
                   <Copy className="h-4 w-4 text-muted-foreground" />
@@ -623,9 +742,9 @@ export default function BibliaPage() {
             </div>
           ))}
         </div>
-      ) : (
+      ) : tab === "livros" ? (
         renderLivros()
-      )}
+      ) : null}
     </div>
   );
 }
