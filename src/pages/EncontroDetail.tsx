@@ -207,7 +207,7 @@ export default function EncontroDetail() {
         </div>
         
         <div className="flex flex-col items-center w-full px-6 mb-4">
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 mb-1">Tema</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full mb-3 shadow-sm border border-primary/10">Tema do Encontro</p>
           <h1 className="text-xl font-black text-foreground leading-tight text-center break-words">{encontro.tema}</h1>
           <p className="text-[10px] font-bold text-muted-foreground mt-1.5 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
         </div>
@@ -330,12 +330,8 @@ export default function EncontroDetail() {
       {/* Roteiro */}
       <div className="animate-float-up mt-8" style={{ animationDelay: '180ms' }}>
         {/* Cabeçalho da seção */}
-        <div className="flex flex-col items-center mb-6">
+        <div className="flex flex-col items-center mb-3">
           <h2 className="text-lg font-black text-black/80 uppercase tracking-widest text-center">Roteiro do Encontro</h2>
-          <div className="h-0.5 w-10 bg-primary/40 rounded-full mt-2 mb-3" />
-          <span className="text-[10px] font-bold text-muted-foreground bg-muted/30 px-3 py-1 rounded-full uppercase tracking-tighter">
-            {encontro.roteiro.length} tópico{encontro.roteiro.length !== 1 ? 's' : ''} • {tempoTotal}min
-          </span>
         </div>
 
         {/* Linha de tempo do roteiro */}
