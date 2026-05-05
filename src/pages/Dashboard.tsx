@@ -808,7 +808,7 @@ export default function Dashboard() {
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
                 style={{ boxShadow: '0 8px 20px -4px rgba(99,102,241,0.15), 0 4px 8px -2px rgba(59,130,246,0.1)' }}
               >
-                <img src="/card_catequizandos.jpg" alt="Catequizandos" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/card_catequizandos.jpg" alt="Catequizandos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
@@ -830,7 +830,7 @@ export default function Dashboard() {
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
                 style={{ boxShadow: '0 8px 20px -4px rgba(244,63,94,0.15), 0 4px 8px -2px rgba(251,113,133,0.1)' }}
               >
-                <img src="/card_encontros.jpg" alt="Encontros" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/card_encontros.jpg" alt="Encontros" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
@@ -843,7 +843,7 @@ export default function Dashboard() {
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
                 style={{ boxShadow: '0 8px 20px -4px rgba(0,0,0,0.1), 0 4px 8px -2px rgba(0,0,0,0.05)' }}
               >
-                <img src="/card_biblia.jpg" alt="Bíblia Online" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/card_biblia.jpg" alt="Bíblia Online" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
