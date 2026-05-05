@@ -299,34 +299,34 @@ export default function CitacaoSorteio() {
                <Book className="h-5 w-5 text-amber-600" />
                <h3 className="font-black text-amber-950 uppercase tracking-wider text-sm">O que Deseja Sortear?</h3>
              </div>
-             <div className="flex flex-wrap gap-2">
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 w-full">
                <button 
                  onClick={() => setCategoriaSorteio("citacao")} 
-                 className={cn("px-5 py-2.5 rounded-full font-bold text-sm transition-all border-2", categoriaSorteio === "citacao" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
+                 className={cn("w-full px-3 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all border-2 text-center", categoriaSorteio === "citacao" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
                >
                  Citação Bíblica
                </button>
                <button 
                   onClick={() => setCategoriaSorteio("antigo")} 
-                  className={cn("px-5 py-2.5 rounded-full font-bold text-sm transition-all border-2", categoriaSorteio === "antigo" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
+                  className={cn("w-full px-3 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all border-2 text-center", categoriaSorteio === "antigo" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
                 >
                   Antigo Testamento
                 </button>
                 <button 
                   onClick={() => setCategoriaSorteio("novo")} 
-                  className={cn("px-5 py-2.5 rounded-full font-bold text-sm transition-all border-2", categoriaSorteio === "novo" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
+                  className={cn("w-full px-3 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all border-2 text-center", categoriaSorteio === "novo" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
                 >
                   Novo Testamento
                 </button>
                 <button 
                   onClick={() => setCategoriaSorteio("livro")} 
-                  className={cn("px-5 py-2.5 rounded-full font-bold text-sm transition-all border-2", categoriaSorteio === "livro" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
+                  className={cn("w-full px-3 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all border-2 text-center", categoriaSorteio === "livro" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
                 >
                   Todos os Livros
                 </button>
                 <button 
                   onClick={() => setCategoriaSorteio("capitulo")} 
-                  className={cn("px-5 py-2.5 rounded-full font-bold text-sm transition-all border-2", categoriaSorteio === "capitulo" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
+                  className={cn("w-full px-3 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all border-2 text-center", categoriaSorteio === "capitulo" ? "bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/20" : "bg-amber-50 text-amber-900 border-amber-200 hover:border-amber-400")}
                 >
                   Capítulo
                 </button>
