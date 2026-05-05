@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowLeft, RefreshCw, Trophy, BookOpen } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowLeft, RefreshCw, Trophy, BookOpen, Layers, MousePointer2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -8,172 +8,312 @@ import { toast } from "sonner";
 interface Card {
   id: string;
   text: string;
-  category: string;
+  category: string; // 'missa' | 'santos' | 'sacramentos' | 'oracoes'
+  value: number; // 1 to 13
   visible: boolean;
 }
 
 const CATEGORIES = [
-  { id: 'missa', label: 'Missa', color: 'bg-blue-500', icon: '⛪' },
-  { id: 'santos', label: 'Santos', color: 'bg-amber-500', icon: '😇' },
-  { id: 'sacramentos', label: 'Sacramentos', color: 'bg-emerald-500', icon: '💧' },
-  { id: 'oracoes', label: 'Orações', color: 'bg-rose-500', icon: '🙏' },
+  { id: 'missa', label: 'Missa', color: 'bg-blue-500', text: 'text-blue-600', icon: '⛪' },
+  { id: 'santos', label: 'Santos', color: 'bg-amber-500', text: 'text-amber-600', icon: '😇' },
+  { id: 'sacramentos', label: 'Sacramentos', color: 'bg-emerald-500', text: 'text-emerald-600', icon: '💧' },
+  { id: 'oracoes', label: 'Orações', color: 'bg-rose-500', text: 'text-rose-600', icon: '🙏' },
 ];
 
-const CARDS_DATA = [
-  { text: 'Eucaristia', category: 'missa' },
-  { text: 'Ofertório', category: 'missa' },
-  { text: 'Comunhão', category: 'missa' },
-  { text: 'Homilia', category: 'missa' },
-  { text: 'Santo Antônio', category: 'santos' },
-  { text: 'Santa Rita', category: 'santos' },
-  { text: 'São José', category: 'santos' },
-  { text: 'São Paulo', category: 'santos' },
-  { text: 'Batismo', category: 'sacramentos' },
-  { text: 'Crisma', category: 'sacramentos' },
-  { text: 'Confissão', category: 'sacramentos' },
-  { text: 'Matrimônio', category: 'sacramentos' },
-  { text: 'Pai Nosso', category: 'oracoes' },
-  { text: 'Ave Maria', category: 'oracoes' },
-  { text: 'Credo', category: 'oracoes' },
-  { text: 'Salve Rainha', category: 'oracoes' },
-];
+const DATA: Record<string, string[]> = {
+  missa: ['Ritos Iniciais', 'Ato Penitencial', 'Glória', 'Oração Coleta', '1ª Leitura', 'Salmo', 'Evangelho', 'Homilia', 'Credo', 'Ofertório', 'Santo', 'Consagração', 'Comunhão'],
+  santos: ['S. Pedro', 'S. Paulo', 'S. João', 'N. Sra Maria', 'S. José', 'S. Francisco', 'S. Antônio', 'Sta Rita', 'Sta Teresinha', 'S. Bento', 'S. Expedito', 'S. Jorge', 'S. Judas'],
+  sacramentos: ['Batismo', 'Crisma', 'Eucaristia', 'Confissão', 'Unção', 'Ordem', 'Matrimônio', 'Dar de comer', 'Dar de beber', 'Vestir nus', 'Visitar doentes', 'Enterrar mortos', 'Acolher'],
+  oracoes: ['Pai Nosso', 'Ave Maria', 'Glória ao Pai', 'Salve Rainha', 'Creio', 'Santo Anjo', 'Vinde Espírito', 'Terço', 'Via Sacra', 'Angelus', 'Magnificat', 'Te Deum', 'Salmo 23'],
+};
 
 export default function PacienciaBiblica() {
   const navigate = useNavigate();
   const [deck, setDeck] = useState<Card[]>([]);
+  const [waste, setWaste] = useState<Card[]>([]);
   const [foundations, setFoundations] = useState<Record<string, Card[]>>({
     missa: [],
     santos: [],
     sacramentos: [],
     oracoes: [],
   });
-  const [tableau, setTableau] = useState<Card[][]>([[], [], [], [], [], []]);
-  const [selectedCard, setSelectedCard] = useState<{ card: Card, from: { type: 'deck' | 'tableau', index?: number } } | null>(null);
+  const [tableau, setTableau] = useState<Card[][]>([[], [], [], [], [], [], []]);
+  const [selected, setSelected] = useState<{ type: 'waste' | 'tableau', colIdx?: number, cardIdx?: number } | null>(null);
 
   const initGame = () => {
-    const shuffled = [...CARDS_DATA]
-      .sort(() => Math.random() - 0.5)
-      .map((c, i) => ({ ...c, id: `card-${i}`, visible: true }));
-    
-    const newTableau: Card[][] = [[], [], [], [], [], []];
-    let cardIdx = 0;
-    for (let i = 0; i < 6; i++) {
+    const allCards: Card[] = [];
+    CATEGORIES.forEach(cat => {
+      DATA[cat.id].forEach((text, i) => {
+        allCards.push({
+          id: `${cat.id}-${i + 1}`,
+          text,
+          category: cat.id,
+          value: i + 1,
+          visible: false,
+        });
+      });
+    });
+
+    const shuffled = allCards.sort(() => Math.random() - 0.5);
+    const newTableau: Card[][] = [[], [], [], [], [], [], []];
+    let currentIdx = 0;
+
+    for (let i = 0; i < 7; i++) {
       for (let j = 0; j <= i; j++) {
-        if (cardIdx < shuffled.length) {
-          newTableau[i].push({ ...shuffled[cardIdx], visible: j === i });
-          cardIdx++;
-        }
+        const card = shuffled[currentIdx++];
+        newTableau[i].push({ ...card, visible: j === i });
       }
     }
-    
+
     setTableau(newTableau);
-    setDeck(shuffled.slice(cardIdx));
+    setDeck(shuffled.slice(currentIdx));
+    setWaste([]);
     setFoundations({ missa: [], santos: [], sacramentos: [], oracoes: [] });
-    setSelectedCard(null);
+    setSelected(null);
+    toast.success("Jogo iniciado! Nível Difícil.");
   };
 
   useEffect(() => {
     initGame();
   }, []);
 
-  const onCardClick = (card: Card, from: { type: 'deck' | 'tableau', index?: number }) => {
-    if (!card.visible) return;
-    
-    if (selectedCard?.card.id === card.id) {
-      setSelectedCard(null);
+  const drawCard = () => {
+    if (deck.length === 0) {
+      if (waste.length === 0) return;
+      setDeck([...waste].reverse().map(c => ({ ...c, visible: false })));
+      setWaste([]);
       return;
     }
-    
-    setSelectedCard({ card, from });
+    const nextCard = deck[deck.length - 1];
+    setDeck(prev => prev.slice(0, -1));
+    setWaste(prev => [...prev, { ...nextCard, visible: true }]);
+    setSelected(null);
+  };
+
+  const getCardFromSelection = (sel: typeof selected) => {
+    if (!sel) return null;
+    if (sel.type === 'waste') return waste[waste.length - 1];
+    if (sel.type === 'tableau') return tableau[sel.colIdx!][sel.cardIdx!];
+    return null;
+  };
+
+  const onTableauClick = (colIdx: number) => {
+    const col = tableau[colIdx];
+    const topCard = col.length > 0 ? col[col.length - 1] : null;
+
+    // Se já tem algo selecionado, tenta mover para esta coluna
+    if (selected) {
+      const cardToMove = getCardFromSelection(selected);
+      if (!cardToMove) return;
+
+      // Regra de movimento Solitaire:
+      // 1. Reis (valor 13) em colunas vazias
+      // 2. Valor descendente e categorias DIFERENTES (alternância)
+      const canMove = !topCard 
+        ? cardToMove.value === 13 
+        : (cardToMove.value === topCard.value - 1 && cardToMove.category !== topCard.category);
+
+      if (canMove) {
+        moveCards(selected, { type: 'tableau', colIdx });
+      } else {
+        toast.error("Movimento inválido!");
+        setSelected(null);
+      }
+      return;
+    }
+
+    // Se não tem nada selecionado, seleciona a última carta visível ou um conjunto
+    if (topCard && topCard.visible) {
+      setSelected({ type: 'tableau', colIdx, cardIdx: col.length - 1 });
+    }
   };
 
   const onFoundationClick = (catId: string) => {
-    if (!selectedCard) return;
-    
-    if (selectedCard.card.category === catId) {
-      // Move to foundation
-      setFoundations(prev => ({
-        ...prev,
-        [catId]: [...prev[catId], selectedCard.card]
-      }));
-      
-      // Remove from source
-      if (selectedCard.from.type === 'tableau') {
-        setTableau(prev => {
-          const next = [...prev];
-          next[selectedCard.from.index!].pop();
-          if (next[selectedCard.from.index!].length > 0) {
-            next[selectedCard.from.index!][next[selectedCard.from.index!].length - 1].visible = true;
-          }
-          return next;
-        });
-      } else {
-        setDeck(prev => prev.filter(c => c.id !== selectedCard.card.id));
-      }
-      
-      setSelectedCard(null);
-      toast.success("Correto!");
+    if (!selected) return;
+    const cardToMove = getCardFromSelection(selected);
+    if (!cardToMove) return;
+
+    // Apenas a última carta do tableau pode ir para a fundação
+    if (selected.type === 'tableau' && selected.cardIdx !== tableau[selected.colIdx!].length - 1) {
+      toast.error("Apenas a última carta pode ser movida!");
+      setSelected(null);
+      return;
+    }
+
+    const targetFoundation = foundations[catId];
+    const canMove = cardToMove.category === catId && 
+      ((targetFoundation.length === 0 && cardToMove.value === 1) || 
+       (targetFoundation.length > 0 && cardToMove.value === targetFoundation[targetFoundation.length - 1].value + 1));
+
+    if (canMove) {
+      moveCards(selected, { type: 'foundation', catId });
     } else {
-      toast.error("Categoria incorreta!");
-      setSelectedCard(null);
+      toast.error("Ordem incorreta!");
+      setSelected(null);
     }
   };
 
-  const isWin = Object.values(foundations).every(f => f.length === 4);
+  const moveCards = (from: any, to: any) => {
+    let cardsToMove: Card[] = [];
+    
+    // Pegar as cartas
+    if (from.type === 'waste') {
+      cardsToMove = [waste[waste.length - 1]];
+      setWaste(prev => prev.slice(0, -1));
+    } else if (from.type === 'tableau') {
+      const col = [...tableau[from.colIdx]];
+      cardsToMove = col.slice(from.cardIdx);
+      const remaining = col.slice(0, from.cardIdx);
+      
+      // Auto-flip a carta anterior se necessário
+      if (remaining.length > 0 && !remaining[remaining.length - 1].visible) {
+        remaining[remaining.length - 1].visible = true;
+      }
+      
+      setTableau(prev => {
+        const next = [...prev];
+        next[from.colIdx] = remaining;
+        return next;
+      });
+    }
+
+    // Colocar no destino
+    if (to.type === 'tableau') {
+      setTableau(prev => {
+        const next = [...prev];
+        next[to.colIdx] = [...next[to.colIdx], ...cardsToMove];
+        return next;
+      });
+    } else if (to.type === 'foundation') {
+      setFoundations(prev => ({
+        ...prev,
+        [to.catId]: [...prev[to.catId], ...cardsToMove]
+      }));
+    }
+
+    setSelected(null);
+    checkWin();
+  };
+
+  const checkWin = () => {
+    // Se todas as fundações tiverem 13 cartas, venceu
+    // Mas as fundações são atualizadas de forma assíncrona, então checaremos no render ou com useEffect
+  };
+
+  const isWin = Object.values(foundations).every(f => f.length === 13);
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col p-4 space-y-6">
+    <div className="min-h-screen bg-[#1a472a] flex flex-col p-3 space-y-4 overflow-hidden select-none touch-none">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-white border shadow-sm">
-          <ArrowLeft className="h-4 w-4" />
+      <div className="flex items-center gap-3 text-white">
+        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 active:scale-95 transition-all">
+          <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex-1">
-          <h1 className="text-xl font-black text-foreground">Paciência Bíblica</h1>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Ordene por categorias</p>
+          <h1 className="text-lg font-black tracking-tight leading-none">Paciência Bíblica</h1>
+          <p className="text-[9px] text-white/60 uppercase tracking-[0.2em] font-black mt-1">Modo Hard • 52 Cartas</p>
         </div>
-        <Button variant="outline" size="icon" onClick={initGame} className="rounded-xl">
+        <Button variant="ghost" size="icon" onClick={initGame} className="rounded-xl text-white hover:bg-white/10 active:rotate-180 transition-all duration-500">
           <RefreshCw className="h-4 w-4" />
         </Button>
       </div>
 
-      {/* Foundations */}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Top Area (Deck + Foundations) */}
+      <div className="grid grid-cols-7 gap-1.5 h-24">
+        {/* Deck/Stock */}
+        <div className="col-span-1">
+          <button 
+            onClick={drawCard}
+            className={cn(
+              "w-full h-full rounded-lg border-2 flex items-center justify-center transition-all active:scale-95",
+              deck.length > 0 ? "bg-primary border-primary shadow-lg" : "bg-white/5 border-white/20"
+            )}
+          >
+            {deck.length > 0 ? (
+              <Layers className="h-6 w-6 text-white animate-pulse" />
+            ) : (
+              <RefreshCw className="h-5 w-5 text-white/20" />
+            )}
+          </button>
+        </div>
+
+        {/* Waste */}
+        <div className="col-span-1">
+          {waste.length > 0 && (
+            <button 
+              onClick={() => setSelected({ type: 'waste' })}
+              className={cn(
+                "w-full h-full bg-white rounded-lg border-2 shadow-xl flex flex-col items-center justify-center p-1 text-center transition-all active:scale-95 relative",
+                selected?.type === 'waste' ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-zinc-200",
+                CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.text
+              )}
+            >
+              <span className="text-[7px] font-black uppercase mb-0.5 leading-none opacity-60">
+                {CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.label}
+              </span>
+              <span className="text-[10px] font-black leading-tight mb-1">
+                {waste[waste.length - 1].text}
+              </span>
+              <span className="text-xs font-black">{waste[waste.length - 1].value}</span>
+              {selected?.type === 'waste' && <MousePointer2 className="absolute -bottom-2 -right-2 h-4 w-4 text-amber-500 fill-amber-500" />}
+            </button>
+          )}
+        </div>
+
+        {/* Space */}
+        <div className="col-span-1" />
+
+        {/* Foundations */}
         {CATEGORIES.map(cat => (
           <button
             key={cat.id}
             onClick={() => onFoundationClick(cat.id)}
             className={cn(
-              "aspect-[3/4] rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-2 transition-all",
-              foundations[cat.id].length > 0 ? cat.color + " border-transparent text-white" : "border-zinc-200 text-zinc-400"
+              "w-full h-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center p-1 transition-all active:scale-95",
+              foundations[cat.id].length > 0 ? cat.color + " border-transparent text-white shadow-lg" : "border-white/20 text-white/30"
             )}
           >
-            <span className="text-2xl mb-1">{cat.icon}</span>
-            <span className="text-[8px] font-black uppercase tracking-tighter">{cat.label}</span>
-            <span className="text-lg font-black mt-1">{foundations[cat.id].length}/4</span>
+            <span className="text-xl leading-none">{cat.icon}</span>
+            <span className="text-[7px] font-black uppercase mt-1">{cat.label}</span>
+            {foundations[cat.id].length > 0 && (
+              <span className="text-sm font-black mt-0.5">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Tableau */}
-      <div className="flex-1 grid grid-cols-6 gap-1 mt-4">
-        {tableau.map((col, i) => (
-          <div key={i} className="flex flex-col gap-1">
-            {col.map((card, j) => (
+      {/* Tableau Area */}
+      <div className="flex-1 grid grid-cols-7 gap-1.5 overflow-y-auto pb-10 custom-scrollbar">
+        {tableau.map((col, colIdx) => (
+          <div key={colIdx} className="flex flex-col gap-0.5 min-h-[300px]" onClick={() => col.length === 0 && onTableauClick(colIdx)}>
+            {col.map((card, cardIdx) => (
               <button
                 key={card.id}
-                onClick={() => onCardClick(card, { type: 'tableau', index: i })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTableauClick(colIdx);
+                }}
                 className={cn(
-                  "w-full aspect-[2/3] rounded-lg border-2 shadow-sm flex items-center justify-center p-1 text-center transition-all transform",
-                  card.visible ? "bg-white border-zinc-200" : "bg-primary/20 border-primary/30",
-                  selectedCard?.card.id === card.id && "ring-4 ring-primary ring-offset-2 scale-105 z-50",
-                  !card.visible && "cursor-not-allowed"
+                  "w-full aspect-[2/3] rounded-lg border-2 shadow-md flex flex-col items-center justify-center p-1 text-center transition-all relative transform-gpu",
+                  card.visible ? "bg-white" : "bg-primary-foreground/10 backdrop-blur-sm border-white/20",
+                  card.visible ? "translate-y-0" : "-translate-y-2",
+                  selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-transparent",
+                  cardIdx > 0 && "-mt-[80%]", // Overlap effect
+                  CATEGORIES.find(c => c.id === card.category)?.text
                 )}
               >
                 {card.visible ? (
-                  <span className="text-[8px] font-bold leading-tight">{card.text}</span>
+                  <>
+                    <div className="absolute top-1 left-1 opacity-20">
+                      {CATEGORIES.find(c => c.id === card.category)?.icon}
+                    </div>
+                    <span className="text-[6px] font-black uppercase mb-0.5 opacity-50">{CATEGORIES.find(c => c.id === card.category)?.label}</span>
+                    <span className="text-[9px] font-black leading-tight mb-1">{card.text}</span>
+                    <span className="text-xs font-black">{card.value}</span>
+                    {selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx && <MousePointer2 className="absolute -bottom-2 -right-2 h-4 w-4 text-amber-500 fill-amber-500" />}
+                  </>
                 ) : (
-                  <BookOpen className="h-4 w-4 text-primary/40" />
+                  <BookOpen className="h-4 w-4 text-white/20" />
                 )}
               </button>
             ))}
@@ -183,16 +323,16 @@ export default function PacienciaBiblica() {
 
       {/* Win State */}
       {isWin && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500">
-          <div className="bg-white rounded-[40px] p-8 text-center space-y-6 shadow-2xl max-w-xs">
-            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto animate-bounce">
-              <Trophy className="h-10 w-10 text-amber-600" />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500">
+          <div className="bg-white rounded-[40px] p-8 text-center space-y-6 shadow-2xl max-w-sm">
+            <div className="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mx-auto animate-bounce">
+              <Trophy className="h-12 w-12 text-amber-600" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-zinc-900">Parabéns!</h2>
-              <p className="text-zinc-500 font-medium">Você organizou todos os itens bíblicos com sucesso!</p>
+              <h2 className="text-3xl font-black text-zinc-900 leading-tight">Mestre da Paciência Bíblica!</h2>
+              <p className="text-zinc-500 font-medium">Você dominou a arte de organizar a doutrina e a liturgia.</p>
             </div>
-            <Button onClick={initGame} className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-primary/20">
+            <Button onClick={initGame} className="w-full h-16 rounded-2xl font-black text-xl shadow-xl shadow-primary/20 bg-primary">
               JOGAR NOVAMENTE
             </Button>
           </div>
