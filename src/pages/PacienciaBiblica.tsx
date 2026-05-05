@@ -253,9 +253,9 @@ export default function PacienciaBiblica() {
                 CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.text
               )}
             >
-              <div className="w-full flex justify-between items-start opacity-40">
-                 <span className="text-[10px] font-black">{waste[waste.length - 1].value}</span>
-                 <span className="text-[8px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
+              <div className="w-full flex justify-between items-start opacity-90">
+                 <span className="text-[16px] font-black">{waste[waste.length - 1].value}</span>
+                 <span className="text-[12px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
               </div>
               
               <div className="flex-1 flex items-center justify-center px-1">
@@ -264,9 +264,9 @@ export default function PacienciaBiblica() {
                 </span>
               </div>
 
-              <div className="w-full flex justify-between items-end opacity-40 rotate-180">
-                 <span className="text-[10px] font-black">{waste[waste.length - 1].value}</span>
-                 <span className="text-[8px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
+              <div className="w-full flex justify-between items-end opacity-90 rotate-180">
+                 <span className="text-[16px] font-black">{waste[waste.length - 1].value}</span>
+                 <span className="text-[12px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
               </div>
               
               {selected?.type === 'waste' && (
@@ -291,10 +291,10 @@ export default function PacienciaBiblica() {
                 : "border-white/20 text-white/20 bg-black/5"
             )}
           >
-            <span className="text-2xl leading-none drop-shadow-sm">{cat.icon}</span>
-            <span className="text-[8px] font-black uppercase mt-1 tracking-widest">{cat.label}</span>
+            <span className="text-3xl leading-none drop-shadow-sm">{cat.icon}</span>
+            <span className="text-[11px] font-black uppercase mt-0.5 tracking-widest">{cat.label}</span>
             {foundations[cat.id].length > 0 && (
-              <span className="text-sm font-black mt-0.5">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
+              <span className="text-lg font-black mt-0.5">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
             )}
           </button>
         ))}
@@ -326,9 +326,9 @@ export default function PacienciaBiblica() {
               >
                 {card.visible ? (
                   <>
-                    <div className="w-full flex justify-between items-start opacity-40">
-                       <span className="text-[10px] font-black">{card.value}</span>
-                       <span className="text-[8px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
+                    <div className="w-full flex justify-between items-start opacity-90">
+                       <span className="text-[14px] font-black">{card.value}</span>
+                       <span className="text-[10px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
                     </div>
 
                     <div className="flex-1 flex items-center justify-center px-0.5">
@@ -337,9 +337,9 @@ export default function PacienciaBiblica() {
                       </span>
                     </div>
 
-                    <div className="w-full flex justify-between items-end opacity-40 rotate-180">
-                       <span className="text-[10px] font-black">{card.value}</span>
-                       <span className="text-[8px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
+                    <div className="w-full flex justify-between items-end opacity-90 rotate-180">
+                       <span className="text-[14px] font-black">{card.value}</span>
+                       <span className="text-[10px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
                     </div>
                     
                     {selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx && (
