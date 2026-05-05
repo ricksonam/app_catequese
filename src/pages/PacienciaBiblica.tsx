@@ -225,14 +225,19 @@ export default function PacienciaBiblica() {
           <button 
             onClick={drawCard}
             className={cn(
-              "w-full h-full rounded-lg border-2 flex items-center justify-center transition-all active:scale-95",
-              deck.length > 0 ? "bg-primary border-primary shadow-lg" : "bg-white/5 border-white/20"
+              "w-full h-full rounded-xl border-2 flex items-center justify-center transition-all active:scale-95 shadow-lg",
+              deck.length > 0 
+                ? "bg-gradient-to-br from-primary to-primary/80 border-white/20" 
+                : "bg-black/20 border-white/10"
             )}
           >
             {deck.length > 0 ? (
-              <Layers className="h-6 w-6 text-white animate-pulse" />
+              <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-xl">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent animate-pulse" />
+                <BookOpen className="h-8 w-8 text-white drop-shadow-md" />
+              </div>
             ) : (
-              <RefreshCw className="h-5 w-5 text-white/20" />
+              <RefreshCw className="h-6 w-6 text-white/20" />
             )}
           </button>
         </div>
@@ -243,19 +248,30 @@ export default function PacienciaBiblica() {
             <button 
               onClick={() => setSelected({ type: 'waste' })}
               className={cn(
-                "w-full h-full bg-white rounded-lg border-2 shadow-xl flex flex-col items-center justify-center p-1 text-center transition-all active:scale-95 relative",
-                selected?.type === 'waste' ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-zinc-200",
+                "w-full h-full bg-white rounded-xl border-2 shadow-[0_8px_16px_-4px_rgba(0,0,0,0.3)] flex flex-col items-center justify-between p-1.5 text-center transition-all active:scale-95 relative overflow-hidden",
+                selected?.type === 'waste' ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-white",
                 CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.text
               )}
             >
-              <span className="text-[7px] font-black uppercase mb-0.5 leading-none opacity-60">
-                {CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.label}
-              </span>
-              <span className="text-[10px] font-black leading-tight mb-1">
-                {waste[waste.length - 1].text}
-              </span>
-              <span className="text-xs font-black">{waste[waste.length - 1].value}</span>
-              {selected?.type === 'waste' && <MousePointer2 className="absolute -bottom-2 -right-2 h-4 w-4 text-amber-500 fill-amber-500" />}
+              <div className="w-full flex justify-between items-start opacity-40">
+                 <span className="text-[10px] font-black">{waste[waste.length - 1].value}</span>
+                 <span className="text-[8px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
+              </div>
+              
+              <div className="flex-1 flex items-center justify-center px-1">
+                <span className="text-[11px] font-black leading-[1.1] uppercase tracking-tighter">
+                  {waste[waste.length - 1].text}
+                </span>
+              </div>
+
+              <div className="w-full flex justify-between items-end opacity-40 rotate-180">
+                 <span className="text-[10px] font-black">{waste[waste.length - 1].value}</span>
+                 <span className="text-[8px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
+              </div>
+              
+              {selected?.type === 'waste' && (
+                <div className="absolute inset-0 bg-amber-400/10 pointer-events-none" />
+              )}
             </button>
           )}
         </div>
@@ -269,12 +285,14 @@ export default function PacienciaBiblica() {
             key={cat.id}
             onClick={() => onFoundationClick(cat.id)}
             className={cn(
-              "w-full h-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center p-1 transition-all active:scale-95",
-              foundations[cat.id].length > 0 ? cat.color + " border-transparent text-white shadow-lg" : "border-white/20 text-white/30"
+              "w-full h-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center p-1 transition-all active:scale-95 shadow-inner",
+              foundations[cat.id].length > 0 
+                ? cat.color + " border-transparent text-white shadow-[0_4px_12px_rgba(0,0,0,0.2)]" 
+                : "border-white/20 text-white/20 bg-black/5"
             )}
           >
-            <span className="text-xl leading-none">{cat.icon}</span>
-            <span className="text-[7px] font-black uppercase mt-1">{cat.label}</span>
+            <span className="text-2xl leading-none drop-shadow-sm">{cat.icon}</span>
+            <span className="text-[8px] font-black uppercase mt-1 tracking-widest">{cat.label}</span>
             {foundations[cat.id].length > 0 && (
               <span className="text-sm font-black mt-0.5">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
             )}
@@ -283,7 +301,7 @@ export default function PacienciaBiblica() {
       </div>
 
       {/* Tableau Area */}
-      <div className="flex-1 grid grid-cols-7 gap-1.5 overflow-y-auto pb-10 custom-scrollbar">
+      <div className="flex-1 grid grid-cols-7 gap-1.5 overflow-y-auto pb-20 custom-scrollbar">
         {tableau.map((col, colIdx) => (
           <div key={colIdx} className="flex flex-col gap-0.5 min-h-[300px]" onClick={() => col.length === 0 && onTableauClick(colIdx)}>
             {col.map((card, cardIdx) => (
@@ -294,26 +312,45 @@ export default function PacienciaBiblica() {
                   onTableauClick(colIdx);
                 }}
                 className={cn(
-                  "w-full aspect-[2/3] rounded-lg border-2 shadow-md flex flex-col items-center justify-center p-1 text-center transition-all relative transform-gpu",
-                  card.visible ? "bg-white" : "bg-primary-foreground/10 backdrop-blur-sm border-white/20",
+                  "w-full aspect-[2/3] rounded-xl border-2 shadow-lg flex flex-col items-center justify-between p-1.5 text-center transition-all relative transform-gpu overflow-hidden",
+                  card.visible 
+                    ? "bg-white border-white" 
+                    : "bg-gradient-to-br from-primary/90 to-primary border-white/20",
                   card.visible ? "translate-y-0" : "-translate-y-2",
-                  selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-transparent",
-                  cardIdx > 0 && "-mt-[80%]", // Overlap effect
-                  CATEGORIES.find(c => c.id === card.category)?.text
+                  selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx 
+                    ? "ring-4 ring-amber-400 scale-110 z-50 border-amber-400 shadow-2xl" 
+                    : "border-transparent",
+                  cardIdx > 0 && "-mt-[100%]", // Overlap effect
+                  card.visible && CATEGORIES.find(c => c.id === card.category)?.text
                 )}
               >
                 {card.visible ? (
                   <>
-                    <div className="absolute top-1 left-1 opacity-20">
-                      {CATEGORIES.find(c => c.id === card.category)?.icon}
+                    <div className="w-full flex justify-between items-start opacity-40">
+                       <span className="text-[10px] font-black">{card.value}</span>
+                       <span className="text-[8px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
                     </div>
-                    <span className="text-[6px] font-black uppercase mb-0.5 opacity-50">{CATEGORIES.find(c => c.id === card.category)?.label}</span>
-                    <span className="text-[9px] font-black leading-tight mb-1">{card.text}</span>
-                    <span className="text-xs font-black">{card.value}</span>
-                    {selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx && <MousePointer2 className="absolute -bottom-2 -right-2 h-4 w-4 text-amber-500 fill-amber-500" />}
+
+                    <div className="flex-1 flex items-center justify-center px-0.5">
+                      <span className="text-[10px] font-black leading-[1.1] uppercase tracking-tighter break-words">
+                        {card.text}
+                      </span>
+                    </div>
+
+                    <div className="w-full flex justify-between items-end opacity-40 rotate-180">
+                       <span className="text-[10px] font-black">{card.value}</span>
+                       <span className="text-[8px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
+                    </div>
+                    
+                    {selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx && (
+                      <div className="absolute inset-0 bg-amber-400/10 pointer-events-none" />
+                    )}
                   </>
                 ) : (
-                  <BookOpen className="h-4 w-4 text-white/20" />
+                  <div className="w-full h-full flex items-center justify-center relative">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
+                    <BookOpen className="h-6 w-6 text-white/30 drop-shadow-md" />
+                  </div>
                 )}
               </button>
             ))}
