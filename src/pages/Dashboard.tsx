@@ -424,6 +424,24 @@ export default function Dashboard() {
     return Math.round((d.getTime() - hoje.getTime()) / 86400000);
   }
 
+  const liturgicalClasses = useMemo(() => {
+    const month = hoje.getMonth() + 1;
+    const day = hoje.getDate();
+    let theme = "emerald";
+    if ((month === 11 && day >= 27) || (month === 12 && day <= 24)) theme = "purple"; // Advento
+    else if ((month === 12 && day >= 25) || (month === 1 && day <= 10)) theme = "slate"; // Natal
+    else if ((month === 2 && day >= 14) || month === 3 || (month === 4 && day <= 5)) theme = "purple"; // Quaresma
+    else if ((month === 4 && day > 5) || month === 5) theme = "slate"; // Pascal
+    
+    if (theme === "purple") {
+      return { border: "border-purple-400", ring: "ring-purple-400/20", shadow: "shadow-purple-400/10", bgIcon: "bg-purple-50", textMonth: "text-purple-700", textHint: "text-purple-600/70", iconColor: "text-purple-600" };
+    }
+    if (theme === "slate") {
+      return { border: "border-slate-400", ring: "ring-slate-400/20", shadow: "shadow-slate-400/10", bgIcon: "bg-slate-50", textMonth: "text-slate-700", textHint: "text-slate-600/70", iconColor: "text-slate-600" };
+    }
+    return { border: "border-emerald-400", ring: "ring-emerald-400/20", shadow: "shadow-emerald-400/10", bgIcon: "bg-emerald-50", textMonth: "text-emerald-700", textHint: "text-emerald-600/70", iconColor: "text-emerald-600" };
+  }, [hoje]);
+
 
 
   if (loading && onboardingStep === "none") {
@@ -863,24 +881,27 @@ export default function Dashboard() {
           <button 
             onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
             className={cn(
-              "absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-4 py-2.5 flex items-center gap-2.5 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white border-emerald-400 ring-2 ring-emerald-400/20 shadow-emerald-400/10",
+              `absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-4 py-2.5 flex items-center gap-2.5 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white`,
+              liturgicalClasses.border,
+              `ring-2 ${liturgicalClasses.ring}`,
+              liturgicalClasses.shadow,
               !isAgendaExpanded && "scale-105"
             )}
           >
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-emerald-50">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${liturgicalClasses.bgIcon}`}>
               <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", !isAgendaExpanded && "animate-bounce-subtle drop-shadow-sm")} />
             </div>
             <div className="flex flex-col items-start">
               <h3 className="text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none">
                 <span className="text-black">AGENDA DA TURMA</span>
-                <span className="text-emerald-700"> - {nomeMesCompleto}</span>
+                <span className={`ml-1 ${liturgicalClasses.textMonth}`}>- {nomeMesCompleto}</span>
               </h3>
-              <span className="text-[8px] font-bold uppercase tracking-tight mt-1 text-emerald-600/70">
+              <span className={`text-[8px] font-bold uppercase tracking-tight mt-1 ${liturgicalClasses.textHint}`}>
                 {isAgendaExpanded ? "Próximos encontros e atividades" : "Toque para ver a agenda"}
               </span>
             </div>
             <ChevronDown className={cn(
-              "h-5 w-5 transition-transform duration-300 text-emerald-600",
+              `h-5 w-5 transition-transform duration-300 ${liturgicalClasses.iconColor}`,
               isAgendaExpanded ? "rotate-180" : "rotate-0"
             )} />
           </button>
