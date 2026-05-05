@@ -357,14 +357,15 @@ export default function BibliaPage() {
         <div className="space-y-4 animate-fade-in">
           {renderBreadcrumbs()}
           {renderBookMetadata()}
-          <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {selectedBook.capitulos.map((c) => (
               <button
                 key={c.capitulo}
                 onClick={() => setSelectedChapter(c)}
-                className="aspect-square flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary hover:bg-primary/5 transition-all text-sm font-bold shadow-sm"
+                className="aspect-auto px-2 py-3 flex flex-col items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary hover:bg-primary/5 transition-all shadow-sm group"
               >
-                {c.capitulo}
+                <span className="text-[9px] sm:text-[10px] font-normal uppercase opacity-60 mb-0.5 group-hover:text-primary transition-colors">Capítulo</span>
+                <span className="text-lg font-bold group-hover:text-primary transition-colors">{c.capitulo}</span>
               </button>
             ))}
           </div>
@@ -373,38 +374,63 @@ export default function BibliaPage() {
     }
 
     const testamentos = [
-      { titulo: "Antigo Testamento", livros: biblia.antigoTestamento },
-      { titulo: "Novo Testamento", livros: biblia.novoTestamento }
+      { 
+        titulo: "Antigo Testamento", 
+        livros: biblia.antigoTestamento, 
+        gradient: "from-blue-600 to-indigo-600",
+        icon: "📜" 
+      },
+      { 
+        titulo: "Novo Testamento", 
+        livros: biblia.novoTestamento, 
+        gradient: "from-rose-600 to-orange-600",
+        icon: "✝️"
+      }
     ];
 
     return (
       <div className="space-y-4 animate-fade-in">
-        {testamentos.map((t) => {
-          const isOpen = expandedSection === t.titulo;
-          return (
-            <div key={t.titulo} className="float-card overflow-hidden liturgical-border">
-              <button onClick={() => setExpandedSection(isOpen ? null : t.titulo)} className="w-full flex items-center justify-between px-4 py-4 text-left bg-gradient-to-r from-background to-muted/20">
-                <span className="font-liturgical font-bold text-foreground text-lg">{t.titulo}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase font-bold text-primary/70">{t.livros.length} livros</span>
-                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                </div>
+        <div className="grid grid-cols-2 gap-3">
+          {testamentos.map((t) => {
+            const isOpen = expandedSection === t.titulo;
+            return (
+              <button 
+                key={t.titulo}
+                onClick={() => setExpandedSection(isOpen ? null : t.titulo)} 
+                className={cn(
+                  "p-4 rounded-2xl flex flex-col items-center justify-center text-center transition-all border-2",
+                  isOpen ? "border-primary shadow-md scale-[0.98]" : "border-transparent shadow-sm hover:-translate-y-1",
+                  `bg-gradient-to-br ${t.gradient}`
+                )}
+              >
+                <span className="text-2xl mb-1">{t.icon}</span>
+                <span className="font-liturgical font-bold text-white text-sm sm:text-base leading-tight mb-1">{t.titulo}</span>
+                <span className="text-[10px] uppercase font-bold text-white/80 bg-black/20 px-2 py-0.5 rounded-full">{t.livros.length} livros</span>
               </button>
-              {isOpen && (
-                <div className="px-3 pb-3 pt-1 border-t border-border/50 bg-liturgical-paper">
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-                    {t.livros.map((l) => (
-                      <button
-                        key={l.nome}
-                        onClick={() => { setSelectedBook(l); setShowMetadataInfo(false); }}
-                        className="text-left px-3 py-3 rounded-lg text-sm font-medium bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary/50 hover:shadow-md transition-all truncate"
-                      >
-                        {l.nome}
-                      </button>
-                    ))}
-                  </div>
+            )
+          })}
+        </div>
+
+        {testamentos.map((t) => {
+          if (expandedSection !== t.titulo) return null;
+          return (
+            <div key={`${t.titulo}-books`} className="animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="p-4 float-card liturgical-border bg-liturgical-paper">
+                <h3 className="text-lg font-liturgical font-bold text-foreground mb-3 flex items-center gap-2">
+                  <span>{t.icon}</span> {t.titulo}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {t.livros.map((l) => (
+                    <button
+                      key={l.nome}
+                      onClick={() => { setSelectedBook(l); setShowMetadataInfo(false); }}
+                      className="text-left px-3 py-3 rounded-lg text-sm font-medium bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary/50 hover:shadow-md transition-all truncate group"
+                    >
+                      <span className="group-hover:text-primary transition-colors">{l.nome}</span>
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
             </div>
           );
         })}

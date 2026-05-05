@@ -509,67 +509,66 @@ export default function PacienciaBiblica() {
       <div className="flex-1 flex flex-col p-2 sm:p-4 gap-4 sm:gap-6 overflow-hidden relative">
         
         {/* Top Row: Deck, Waste, Foundations */}
-        <div className="flex justify-between h-24 sm:h-32 gap-2">
-          <div className="flex gap-2 w-1/3">
-            {/* Deck */}
-            <div className="flex-1 relative aspect-[2/3] max-w-[80px]">
-              <button 
-                onClick={drawCard}
-                className={cn(
-                  "absolute inset-0 rounded-lg sm:rounded-xl border flex items-center justify-center transition-transform active:scale-95 shadow-md",
-                  deck.length > 0 ? "bg-gradient-to-br from-[#e67e22] to-[#d35400] border-white/20" : "bg-black/20 border-white/10"
-                )}
-              >
-                {deck.length > 0 ? (
-                  <>
-                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
-                    <BookOpen className="h-8 w-8 text-white/50" />
-                  </>
-                ) : (
-                  <RefreshCw className="h-6 w-6 text-white/20" />
-                )}
-              </button>
-            </div>
-
-            {/* Waste */}
-            <div className="flex-1 relative aspect-[2/3] max-w-[80px]">
-              {waste.length > 0 && (
-                <div 
-                  className={cn(
-                    "absolute inset-0 transition-transform",
-                    selected?.type === 'waste' ? 'ring-2 ring-amber-400 scale-105 z-10' : ''
-                  )}
-                  onPointerDown={(e) => handlePointerDown(e, { type: 'waste' }, [waste[waste.length - 1]], (e.target as HTMLElement).offsetWidth)}
-                  onPointerMove={handlePointerMove}
-                  onPointerUp={handlePointerUp}
-                >
-                  {renderCard(waste[waste.length - 1])}
-                </div>
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 w-full">
+          {/* Deck */}
+          <div className="col-span-1 relative aspect-[2/3]">
+            <button 
+              onClick={drawCard}
+              className={cn(
+                "absolute inset-0 rounded-lg sm:rounded-xl border flex items-center justify-center transition-transform active:scale-95 shadow-md",
+                deck.length > 0 ? "bg-gradient-to-br from-[#e67e22] to-[#d35400] border-white/20" : "bg-black/20 border-white/10"
               )}
-            </div>
+            >
+              {deck.length > 0 ? (
+                <>
+                  <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
+                  <BookOpen className="h-4 w-4 sm:h-8 sm:w-8 text-white/50" />
+                </>
+              ) : (
+                <RefreshCw className="h-4 w-4 sm:h-6 sm:w-6 text-white/20" />
+              )}
+            </button>
           </div>
+
+          {/* Waste */}
+          <div className="col-span-1 relative aspect-[2/3]">
+            {waste.length > 0 && (
+              <div 
+                className={cn(
+                  "absolute inset-0 transition-transform",
+                  selected?.type === 'waste' ? 'ring-2 ring-amber-400 scale-105 z-10' : ''
+                )}
+                onPointerDown={(e) => handlePointerDown(e, { type: 'waste' }, [waste[waste.length - 1]], (e.target as HTMLElement).offsetWidth)}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+              >
+                {renderCard(waste[waste.length - 1])}
+              </div>
+            )}
+          </div>
+
+          {/* Spacer */}
+          <div className="col-span-1"></div>
 
           {/* Foundations */}
-          <div className="flex gap-1 sm:gap-2 flex-1 justify-end">
-            {CATEGORIES.map(cat => (
-              <div 
-                key={cat.id} 
-                className="flex-1 relative aspect-[2/3] max-w-[80px]"
-                data-foundation-cat={cat.id}
-                onClick={() => handleFoundationClick(cat.id)}
-              >
-                <div className={cn(
-                  "absolute inset-0 rounded-lg sm:rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all",
-                  foundations[cat.id].length > 0 ? "border-transparent shadow-lg" : "border-white/30 bg-black/10"
-                )}>
-                  {foundations[cat.id].length === 0 && (
-                    <span className="text-2xl opacity-40">{cat.icon}</span>
-                  )}
-                  {foundations[cat.id].length > 0 && renderCard(foundations[cat.id][foundations[cat.id].length - 1])}
-                </div>
+          {CATEGORIES.map(cat => (
+            <div 
+              key={cat.id} 
+              className="col-span-1 relative aspect-[2/3]"
+              data-foundation-cat={cat.id}
+              onClick={() => handleFoundationClick(cat.id)}
+            >
+              <div className={cn(
+                "absolute inset-0 rounded-lg sm:rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all overflow-hidden",
+                foundations[cat.id].length > 0 ? "border-transparent shadow-lg" : "border-white/30 bg-black/10"
+              )}>
+                {foundations[cat.id].length === 0 && (
+                  <span className="text-xl sm:text-2xl opacity-40">{cat.icon}</span>
+                )}
+                {foundations[cat.id].length > 0 && renderCard(foundations[cat.id][foundations[cat.id].length - 1])}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* Tableau */}
