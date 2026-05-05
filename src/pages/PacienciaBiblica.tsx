@@ -1,381 +1,715 @@
-import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, RefreshCw, Trophy, BookOpen, Layers, MousePointer2 } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { ArrowLeft, RefreshCw, Trophy, BookOpen, Undo2, Lightbulb, Settings, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import confetti from 'canvas-confetti';
 
-interface Card {
+// --- Types ---
+type Category = 'missa' | 'santos' | 'sacramentos' | 'oracoes';
+
+interface CardData {
   id: string;
   text: string;
-  category: string; // 'missa' | 'santos' | 'sacramentos' | 'oracoes'
-  value: number; // 1 to 13
+  category: Category;
+  value: number; // 1 (A) to 13 (K)
   visible: boolean;
 }
 
-const CATEGORIES = [
+interface GameState {
+  level: number;
+  deck: CardData[];
+  waste: CardData[];
+  foundations: Record<Category, CardData[]>;
+  tableau: CardData[][];
+  history: any[];
+  timer: number;
+  isPlaying: boolean;
+  score: number;
+}
+
+// --- Constants ---
+const CATEGORIES: { id: Category; label: string; color: string; text: string; icon: string }[] = [
   { id: 'missa', label: 'Missa', color: 'bg-[#2e5cb8]', text: 'text-[#2e5cb8]', icon: '⛪' },
   { id: 'santos', label: 'Santos', color: 'bg-[#b8860b]', text: 'text-[#b8860b]', icon: '😇' },
   { id: 'sacramentos', label: 'Sacramentos e Obras', color: 'bg-[#1b4d3e]', text: 'text-[#1b4d3e]', icon: '💧' },
   { id: 'oracoes', label: 'Orações', color: 'bg-[#9b111e]', text: 'text-[#9b111e]', icon: '🙏' },
 ];
 
-const DATA: Record<string, string[]> = {
+const DATA: Record<Category, string[]> = {
   missa: ['Ritos Iniciais', 'Ato Penitencial', 'Glória', 'Oração Coleta', '1ª Leitura', 'Salmo', 'Evangelho', 'Homilia', 'Credo', 'Ofertório', 'Santo', 'Consagração', 'Comunhão'],
   santos: ['S. Pedro', 'S. Paulo', 'S. João', 'N. Sra Maria', 'S. José', 'S. Francisco', 'S. Antônio', 'Sta Rita', 'Sta Teresinha', 'S. Bento', 'S. Expedito', 'S. Jorge', 'S. Judas'],
   sacramentos: ['Batismo', 'Crisma', 'Eucaristia', 'Confissão', 'Unção', 'Ordem', 'Matrimônio', 'Dar de comer', 'Dar de beber', 'Vestir nus', 'Visitar doentes', 'Enterrar mortos', 'Acolher'],
   oracoes: ['Pai Nosso', 'Ave Maria', 'Glória ao Pai', 'Salve Rainha', 'Creio', 'Santo Anjo', 'Vinde Espírito', 'Terço', 'Via Sacra', 'Angelus', 'Magnificat', 'Te Deum', 'Salmo 23'],
 };
 
+const LEVEL_CONFIGS = [
+  { cols: 4, draw: 1, initialVisible: 'all', desc: "Introdução" },
+  { cols: 5, draw: 1, initialVisible: 'top', desc: "Fácil" },
+  { cols: 6, draw: 1, initialVisible: 'top', desc: "Normal" },
+  { cols: 7, draw: 1, initialVisible: 'top', desc: "Padrão" },
+  { cols: 7, draw: 3, initialVisible: 'top', desc: "Desafio 3" },
+  { cols: 8, draw: 1, initialVisible: 'top', desc: "Avançado" },
+  { cols: 8, draw: 3, initialVisible: 'top', desc: "Mestre" },
+  { cols: 9, draw: 3, initialVisible: 'top', desc: "Épico" },
+  { cols: 10, draw: 3, initialVisible: 'top', desc: "Lendário" },
+  { cols: 11, draw: 3, initialVisible: 'top', desc: "Impossível" },
+];
+
+const LOCAL_STORAGE_KEY = '@PacienciaBiblica:state';
+
+// --- Helper Functions ---
+const createDeck = (): CardData[] => {
+  const deck: CardData[] = [];
+  CATEGORIES.forEach(cat => {
+    DATA[cat.id].forEach((text, i) => {
+      deck.push({ id: `${cat.id}-${i + 1}`, text, category: cat.id, value: i + 1, visible: false });
+    });
+  });
+  return deck.sort(() => Math.random() - 0.5);
+};
+
 export default function PacienciaBiblica() {
   const navigate = useNavigate();
-  const [deck, setDeck] = useState<Card[]>([]);
-  const [waste, setWaste] = useState<Card[]>([]);
-  const [foundations, setFoundations] = useState<Record<string, Card[]>>({
-    missa: [],
-    santos: [],
-    sacramentos: [],
-    oracoes: [],
-  });
-  const [tableau, setTableau] = useState<Card[][]>([[], [], [], [], [], []]);
+  
+  // Game State
+  const [level, setLevel] = useState(1);
+  const [deck, setDeck] = useState<CardData[]>([]);
+  const [waste, setWaste] = useState<CardData[]>([]);
+  const [foundations, setFoundations] = useState<Record<Category, CardData[]>>({ missa: [], santos: [], sacramentos: [], oracoes: [] });
+  const [tableau, setTableau] = useState<CardData[][]>([]);
+  const [history, setHistory] = useState<any[]>([]);
+  
+  // UI State
   const [selected, setSelected] = useState<{ type: 'waste' | 'tableau', colIdx?: number, cardIdx?: number } | null>(null);
+  const [isWin, setIsWin] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showLevelSelect, setShowLevelSelect] = useState(false);
 
-  const initGame = () => {
-    const allCards: Card[] = [];
-    CATEGORIES.forEach(cat => {
-      DATA[cat.id].forEach((text, i) => {
-        allCards.push({
-          id: `${cat.id}-${i + 1}`,
-          text,
-          category: cat.id,
-          value: i + 1,
-          visible: false,
-        });
-      });
+  // Drag State
+  const [dragState, setDragState] = useState<{
+    cards: CardData[];
+    source: { type: 'waste' | 'tableau', colIdx?: number, cardIdx?: number };
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
+    width: number;
+  } | null>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Load from local storage
+  useEffect(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setLevel(parsed.level || 1);
+        setDeck(parsed.deck || []);
+        setWaste(parsed.waste || []);
+        setFoundations(parsed.foundations || { missa: [], santos: [], sacramentos: [], oracoes: [] });
+        setTableau(parsed.tableau || []);
+        setTimer(parsed.timer || 0);
+        setIsPlaying(parsed.isPlaying || false);
+        setHistory(parsed.history || []);
+      } catch (e) {
+        console.error("Failed to load save", e);
+        initLevel(1);
+      }
+    } else {
+      initLevel(1);
+    }
+  }, []);
+
+  // Save to local storage
+  useEffect(() => {
+    if (tableau.length > 0) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+        level, deck, waste, foundations, tableau, timer, isPlaying, history
+      }));
+    }
+  }, [level, deck, waste, foundations, tableau, timer, isPlaying, history]);
+
+  // Timer
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying && !isWin) {
+      interval = setInterval(() => setTimer(t => t + 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, isWin]);
+
+  const saveHistory = () => {
+    setHistory(prev => {
+      const newHistory = [...prev, { deck, waste, foundations, tableau, score: 0 }];
+      if (newHistory.length > 10) newHistory.shift(); // Keep last 10
+      return newHistory;
     });
+  };
 
-    const shuffled = allCards.sort(() => Math.random() - 0.5);
-    const newTableau: Card[][] = [[], [], [], [], [], []];
+  const undo = () => {
+    if (history.length === 0) return;
+    const lastState = history[history.length - 1];
+    setDeck(lastState.deck);
+    setWaste(lastState.waste);
+    setFoundations(lastState.foundations);
+    setTableau(lastState.tableau);
+    setHistory(prev => prev.slice(0, -1));
+    setSelected(null);
+  };
+
+  const initLevel = (newLevel: number) => {
+    const config = LEVEL_CONFIGS[newLevel - 1];
+    const shuffled = createDeck();
+    const newTableau: CardData[][] = Array.from({ length: config.cols }, () => []);
+    
     let currentIdx = 0;
-
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < config.cols; i++) {
       for (let j = 0; j <= i; j++) {
-        const card = shuffled[currentIdx++];
-        newTableau[i].push({ ...card, visible: j === i });
+        if (currentIdx < shuffled.length) {
+          const card = shuffled[currentIdx++];
+          // Initial visibility logic
+          let visible = false;
+          if (config.initialVisible === 'all') visible = true;
+          else if (config.initialVisible === 'top' && j === i) visible = true;
+          newTableau[i].push({ ...card, visible });
+        }
       }
     }
 
+    setLevel(newLevel);
     setTableau(newTableau);
     setDeck(shuffled.slice(currentIdx));
     setWaste([]);
     setFoundations({ missa: [], santos: [], sacramentos: [], oracoes: [] });
     setSelected(null);
-    toast.success("Jogo iniciado! Nível Difícil.");
+    setHistory([]);
+    setTimer(0);
+    setIsPlaying(true);
+    setIsWin(false);
+    setShowLevelSelect(false);
+    toast.success(`Nível ${newLevel} iniciado!`);
   };
 
-  useEffect(() => {
-    initGame();
-  }, []);
-
   const drawCard = () => {
+    saveHistory();
+    const config = LEVEL_CONFIGS[level - 1];
+    const drawCount = config.draw;
+
     if (deck.length === 0) {
       if (waste.length === 0) return;
       setDeck([...waste].reverse().map(c => ({ ...c, visible: false })));
       setWaste([]);
       return;
     }
-    const nextCard = deck[deck.length - 1];
-    setDeck(prev => prev.slice(0, -1));
-    setWaste(prev => [...prev, { ...nextCard, visible: true }]);
+
+    const nextCards = deck.slice(-drawCount).reverse();
+    setDeck(prev => prev.slice(0, -drawCount));
+    setWaste(prev => [...prev, ...nextCards.map(c => ({ ...c, visible: true }))]);
     setSelected(null);
   };
 
-  const getCardFromSelection = (sel: typeof selected) => {
-    if (!sel) return null;
-    if (sel.type === 'waste') return waste[waste.length - 1];
-    if (sel.type === 'tableau') return tableau[sel.colIdx!][sel.cardIdx!];
-    return null;
+  // --- Logic ---
+  const canMoveToTableau = (card: CardData, targetCol: CardData[]) => {
+    if (targetCol.length === 0) return card.value === 13; // King on empty
+    const topCard = targetCol[targetCol.length - 1];
+    // Solitaire rules: alternating colors, descending values
+    const isCardRed = card.category === 'santos' || card.category === 'oracoes';
+    const isTopRed = topCard.category === 'santos' || topCard.category === 'oracoes';
+    return card.value === topCard.value - 1 && isCardRed !== isTopRed;
   };
 
-  const onTableauClick = (colIdx: number) => {
-    const col = tableau[colIdx];
-    const topCard = col.length > 0 ? col[col.length - 1] : null;
-
-    // Se já tem algo selecionado, tenta mover para esta coluna
-    if (selected) {
-      const cardToMove = getCardFromSelection(selected);
-      if (!cardToMove) return;
-
-      // Regra de movimento Solitaire (Ajustada):
-      // 1. Reis (valor 13) em colunas vazias
-      // 2. Valor descendente e MESMA categoria (para organizar e revelar cartas)
-      const canMove = !topCard 
-        ? cardToMove.value === 13 
-        : (cardToMove.value === topCard.value - 1 && cardToMove.category === topCard.category);
-
-      if (canMove) {
-        moveCards(selected, { type: 'tableau', colIdx });
-      } else {
-        toast.error("Movimento inválido!");
-        setSelected(null);
-      }
-      return;
-    }
-
-    // Se não tem nada selecionado, seleciona a última carta visível ou um conjunto
-    if (topCard && topCard.visible) {
-      setSelected({ type: 'tableau', colIdx, cardIdx: col.length - 1 });
-    }
-  };
-
-  const onFoundationClick = (catId: string) => {
-    if (!selected) return;
-    const cardToMove = getCardFromSelection(selected);
-    if (!cardToMove) return;
-
-    // Apenas a última carta do tableau pode ir para a fundação
-    if (selected.type === 'tableau' && selected.cardIdx !== tableau[selected.colIdx!].length - 1) {
-      toast.error("Apenas a última carta pode ser movida!");
-      setSelected(null);
-      return;
-    }
-
+  const canMoveToFoundation = (card: CardData, catId: Category) => {
+    if (card.category !== catId) return false;
     const targetFoundation = foundations[catId];
-    const canMove = cardToMove.category === catId && 
-      ((targetFoundation.length === 0 && cardToMove.value === 1) || 
-       (targetFoundation.length > 0 && cardToMove.value === targetFoundation[targetFoundation.length - 1].value + 1));
-
-    if (canMove) {
-      moveCards(selected, { type: 'foundation', catId });
-    } else {
-      toast.error("Ordem incorreta!");
-      setSelected(null);
-    }
+    if (targetFoundation.length === 0) return card.value === 1; // Ace on empty
+    return card.value === targetFoundation[targetFoundation.length - 1].value + 1;
   };
 
-  const moveCards = (from: any, to: any) => {
-    let cardsToMove: Card[] = [];
-    
-    // Pegar as cartas
-    if (from.type === 'waste') {
-      cardsToMove = [waste[waste.length - 1]];
-      setWaste(prev => prev.slice(0, -1));
-    } else if (from.type === 'tableau') {
-      const col = [...tableau[from.colIdx]];
-      cardsToMove = col.slice(from.cardIdx);
-      const remaining = col.slice(0, from.cardIdx);
+  const executeMove = (source: any, target: any) => {
+    saveHistory();
+    let cardsToMove: CardData[] = [];
+    let newWaste = [...waste];
+    let newTableau = tableau.map(col => [...col]);
+    let newFoundations = { ...foundations };
+
+    // 1. Remove from source
+    if (source.type === 'waste') {
+      cardsToMove = [newWaste.pop()!];
+    } else if (source.type === 'tableau') {
+      const col = newTableau[source.colIdx];
+      cardsToMove = col.slice(source.cardIdx);
+      newTableau[source.colIdx] = col.slice(0, source.cardIdx);
       
-      // Auto-flip a carta anterior se necessário
+      // Auto-flip previous card
+      const remaining = newTableau[source.colIdx];
       if (remaining.length > 0 && !remaining[remaining.length - 1].visible) {
         remaining[remaining.length - 1].visible = true;
       }
-      
-      setTableau(prev => {
-        const next = [...prev];
-        next[from.colIdx] = remaining;
-        return next;
-      });
     }
 
-    // Colocar no destino
-    if (to.type === 'tableau') {
-      setTableau(prev => {
-        const next = [...prev];
-        next[to.colIdx] = [...next[to.colIdx], ...cardsToMove];
-        return next;
-      });
-    } else if (to.type === 'foundation') {
-      setFoundations(prev => ({
-        ...prev,
-        [to.catId]: [...prev[to.catId], ...cardsToMove]
-      }));
+    // 2. Add to target
+    if (target.type === 'tableau') {
+      newTableau[target.colIdx] = [...newTableau[target.colIdx], ...cardsToMove];
+    } else if (target.type === 'foundation') {
+      newFoundations[target.catId as Category] = [...newFoundations[target.catId as Category], ...cardsToMove];
     }
 
+    setWaste(newWaste);
+    setTableau(newTableau);
+    setFoundations(newFoundations);
     setSelected(null);
-    checkWin();
+
+    // Check win
+    if (Object.values(newFoundations).every(f => f.length === 13)) {
+      handleWin();
+    }
   };
 
-  const checkWin = () => {
-    // Se todas as fundações tiverem 13 cartas, venceu
-    // Mas as fundações são atualizadas de forma assíncrona, então checaremos no render ou com useEffect
+  const handleWin = () => {
+    setIsPlaying(false);
+    setIsWin(true);
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    setTimeout(() => {
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+    }, 500);
   };
 
-  const isWin = Object.values(foundations).every(f => f.length === 13);
+  const autoMoveToFoundation = (card: CardData, source: any) => {
+    if (canMoveToFoundation(card, card.category)) {
+      executeMove(source, { type: 'foundation', catId: card.category });
+      return true;
+    }
+    return false;
+  };
+
+  // --- Click Handlers (Fallback for non-drag) ---
+  const handleTableauClick = (colIdx: number, cardIdx: number) => {
+    const col = tableau[colIdx];
+    const card = col[cardIdx];
+    
+    if (!card.visible) return;
+
+    if (selected) {
+      // Try to move selected here
+      const sourceCard = selected.type === 'waste' ? waste[waste.length - 1] : tableau[selected.colIdx!][selected.cardIdx!];
+      if (canMoveToTableau(sourceCard, col)) {
+        executeMove(selected, { type: 'tableau', colIdx });
+        return;
+      }
+      setSelected(null); // Invalid move, deselect
+    } else {
+      // Select or Auto-move
+      if (cardIdx === col.length - 1) { // Only top card can auto-move to foundation
+         if (!autoMoveToFoundation(card, { type: 'tableau', colIdx, cardIdx })) {
+           setSelected({ type: 'tableau', colIdx, cardIdx });
+         }
+      } else {
+        setSelected({ type: 'tableau', colIdx, cardIdx });
+      }
+    }
+  };
+
+  const handleEmptyTableauClick = (colIdx: number) => {
+    if (selected) {
+      const sourceCard = selected.type === 'waste' ? waste[waste.length - 1] : tableau[selected.colIdx!][selected.cardIdx!];
+      if (canMoveToTableau(sourceCard, [])) {
+        executeMove(selected, { type: 'tableau', colIdx });
+      }
+      setSelected(null);
+    }
+  };
+
+  const handleWasteClick = () => {
+    if (waste.length === 0) return;
+    const topWaste = waste[waste.length - 1];
+    
+    if (selected?.type === 'waste') {
+      setSelected(null);
+    } else if (!autoMoveToFoundation(topWaste, { type: 'waste' })) {
+      setSelected({ type: 'waste' });
+    }
+  };
+
+  const handleFoundationClick = (catId: Category) => {
+    if (!selected) return;
+    const sourceCard = selected.type === 'waste' ? waste[waste.length - 1] : tableau[selected.colIdx!][selected.cardIdx!];
+    
+    // Can only move single card to foundation
+    if (selected.type === 'tableau' && selected.cardIdx !== tableau[selected.colIdx!].length - 1) {
+      toast.error("Apenas uma carta pode ir para a base");
+      setSelected(null);
+      return;
+    }
+
+    if (canMoveToFoundation(sourceCard, catId)) {
+      executeMove(selected, { type: 'foundation', catId });
+    } else {
+      setSelected(null);
+    }
+  };
+
+  // --- Drag & Drop Handlers ---
+  const handlePointerDown = (e: React.PointerEvent, source: any, cards: CardData[], width: number) => {
+    if (!cards[0].visible) return;
+    e.preventDefault();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    
+    setDragState({
+      cards,
+      source,
+      startX: e.clientX,
+      startY: e.clientY,
+      currentX: e.clientX,
+      currentY: e.clientY,
+      width
+    });
+    setSelected(null); // Clear click selection when dragging starts
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!dragState) return;
+    setDragState(prev => ({
+      ...prev!,
+      currentX: e.clientX,
+      currentY: e.clientY
+    }));
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!dragState) return;
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+
+    // Simple hit detection (distance from start to distinguish click vs drag)
+    const dist = Math.hypot(dragState.currentX - dragState.startX, dragState.currentY - dragState.startY);
+    if (dist < 10) {
+      // Treat as click
+      if (dragState.source.type === 'waste') handleWasteClick();
+      else if (dragState.source.type === 'tableau') handleTableauClick(dragState.source.colIdx!, dragState.source.cardIdx!);
+      setDragState(null);
+      return;
+    }
+
+    // Hit detection for drop zones
+    const elementsUnderPointer = document.elementsFromPoint(e.clientX, e.clientY);
+    let dropped = false;
+
+    for (const el of elementsUnderPointer) {
+      // Check tableau columns
+      const colIdxStr = el.getAttribute('data-tableau-col');
+      if (colIdxStr !== null) {
+        const colIdx = parseInt(colIdxStr);
+        if (dragState.source.type === 'tableau' && dragState.source.colIdx === colIdx) break; // Same col
+        if (canMoveToTableau(dragState.cards[0], tableau[colIdx])) {
+          executeMove(dragState.source, { type: 'tableau', colIdx });
+          dropped = true;
+        }
+        break;
+      }
+
+      // Check foundations
+      const foundationCat = el.getAttribute('data-foundation-cat');
+      if (foundationCat !== null) {
+        if (dragState.cards.length === 1 && canMoveToFoundation(dragState.cards[0], foundationCat as Category)) {
+          executeMove(dragState.source, { type: 'foundation', catId: foundationCat });
+          dropped = true;
+        }
+        break;
+      }
+    }
+
+    if (!dropped && dist >= 10 && dragState.cards.length === 1) {
+      // Try auto-move to foundation if dragged upwards generically
+      if (dragState.currentY < dragState.startY - 50) {
+         autoMoveToFoundation(dragState.cards[0], dragState.source);
+      }
+    }
+
+    setDragState(null);
+  };
+
+
+  // --- Render Helpers ---
+  const formatTime = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const renderCard = (card: CardData, isTop: boolean = true) => {
+    const cat = CATEGORIES.find(c => c.id === card.category);
+    if (!card.visible) {
+      return (
+        <div className="w-full h-full rounded-lg sm:rounded-xl border border-black/10 shadow-sm flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#e67e22] to-[#d35400] text-white/20">
+            {/* Pattern placeholder */}
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
+            <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 drop-shadow-md opacity-50" />
+            <span className="absolute bottom-1 right-1.5 text-[10px] font-bold opacity-60 font-serif">{card.value}</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className={cn(
+        "w-full h-full rounded-lg sm:rounded-xl border shadow-sm flex flex-col items-center justify-between p-1 sm:p-1.5 text-center bg-white relative overflow-hidden font-serif",
+        cat?.text,
+        "border-zinc-200"
+      )}>
+        <div className="w-full flex justify-between items-start leading-none">
+           <span className="text-xs sm:text-sm font-bold">{card.value === 1 ? 'A' : card.value === 11 ? 'J' : card.value === 12 ? 'Q' : card.value === 13 ? 'K' : card.value}</span>
+           <span className="text-[10px] sm:text-xs">{cat?.icon}</span>
+        </div>
+        
+        {isTop && (
+          <div className="flex-1 flex items-center justify-center w-full px-0.5">
+            <span className="text-[9px] sm:text-[11px] font-bold leading-tight break-words text-center text-zinc-800">
+              {card.text}
+            </span>
+          </div>
+        )}
+        
+        {isTop && (
+          <div className={cn("w-full h-1 mt-auto rounded-full opacity-80", cat?.color)} />
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-[#1a472a] flex flex-col p-3 space-y-4 overflow-hidden select-none touch-none">
-      {/* Header */}
-      <div className="flex items-center gap-3 text-white">
-        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 active:scale-95 transition-all">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-lg font-black tracking-tight leading-none">Paciência Bíblica</h1>
-          <p className="text-[9px] text-white/60 uppercase tracking-[0.2em] font-black mt-1">Modo Hard • 52 Cartas</p>
+    <div className="min-h-screen bg-[#1a472a] flex flex-col overflow-hidden touch-none" ref={containerRef}>
+      
+      {/* Header Bar */}
+      <div className="flex items-center justify-between p-2 sm:p-4 text-white bg-black/20 backdrop-blur-md z-10">
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate("/jogos")} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="text-sm sm:text-base font-bold leading-none">Paciência Bíblica</h1>
+            <p className="text-[10px] sm:text-xs text-white/70">Nível {level} • {formatTime(timer)}</p>
+          </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={initGame} className="rounded-xl text-white hover:bg-white/10 active:rotate-180 transition-all duration-500">
-          <RefreshCw className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Button variant="ghost" size="icon" onClick={undo} disabled={history.length === 0} className="text-white hover:bg-white/10 h-8 w-8 rounded-full disabled:opacity-30">
+            <Undo2 className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => initLevel(level)} className="text-white hover:bg-white/10 h-8 w-8 rounded-full">
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setShowLevelSelect(true)} className="text-white hover:bg-white/10 h-8 w-8 rounded-full bg-white/5">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      {/* Top Area (Deck + Foundations) */}
-      <div className="grid grid-cols-6 gap-2 sm:gap-3 h-24 sm:h-28">
-        {/* Deck/Stock */}
-        <div className="col-span-1">
-          <button 
-            onClick={drawCard}
-            className={cn(
-              "w-full h-full rounded-xl sm:rounded-2xl border-2 flex items-center justify-center transition-all active:scale-95 shadow-lg",
-              deck.length > 0 
-                ? "bg-gradient-to-br from-primary to-primary/80 border-white/20" 
-                : "bg-black/20 border-white/10"
-            )}
-          >
-            {deck.length > 0 ? (
-              <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent animate-pulse" />
-                <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-white drop-shadow-lg" />
-              </div>
-            ) : (
-              <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 text-white/20" />
-            )}
-          </button>
-        </div>
-
-        {/* Waste */}
-        <div className="col-span-1">
-          {waste.length > 0 && (
-            <button 
-              onClick={() => setSelected({ type: 'waste' })}
-              className={cn(
-                "w-full h-full bg-gradient-to-b from-white to-zinc-50 rounded-xl sm:rounded-2xl border-2 shadow-md flex flex-col items-center justify-between p-1.5 sm:p-2 text-center transition-all active:scale-95 relative overflow-hidden",
-                selected?.type === 'waste' ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-zinc-200",
-                CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.text
-              )}
-            >
-              <div className="w-full flex justify-between items-start opacity-95">
-                 <span className="text-[14px] sm:text-[18px] font-black leading-none">{waste[waste.length - 1].value}</span>
-                 <span className="text-[12px] sm:text-[14px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
-              </div>
-              
-              <div className="flex-1 flex items-center justify-center px-0.5">
-                <span className="text-[9px] sm:text-[12px] font-black leading-tight uppercase tracking-tight sm:tracking-tighter break-words">
-                  {waste[waste.length - 1].text}
-                </span>
-              </div>
-
-              {selected?.type === 'waste' && (
-                <div className="absolute inset-0 bg-amber-400/10 pointer-events-none" />
-              )}
-            </button>
-          )}
-        </div>
-
-        {/* Foundations */}
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => onFoundationClick(cat.id)}
-            className={cn(
-              "w-full h-full rounded-xl sm:rounded-2xl border-2 border-dashed flex flex-col items-center justify-between py-1.5 sm:py-2 transition-all active:scale-95 shadow-inner overflow-hidden",
-              foundations[cat.id].length > 0 
-                ? cat.color + " border-transparent text-white shadow-lg" 
-                : "border-white/40 text-white/70 bg-white/10 backdrop-blur-sm"
-            )}
-          >
-            <div className="flex-1 flex items-center justify-center">
-              <span className={cn(
-                "text-2xl sm:text-3xl leading-none drop-shadow-md transition-opacity",
-                foundations[cat.id].length === 0 && "opacity-80"
-              )}>
-                {cat.icon}
-              </span>
-            </div>
-            
-            <div className="w-full px-0.5 mt-auto">
-              <div className="h-[1px] w-full bg-white/20 mb-1" />
-              <span className="text-[6px] sm:text-[9px] font-black uppercase tracking-tighter sm:tracking-widest leading-none text-center block w-full truncate">
-                {cat.label}
-              </span>
-            </div>
-
-            {foundations[cat.id].length > 0 && (
-              <span className="absolute top-1 right-1 text-[10px] sm:text-xs font-black leading-none bg-black/20 px-1.5 py-0.5 rounded-full">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Tableau Area */}
-      <div className="flex-1 grid grid-cols-6 gap-2 sm:gap-3 overflow-y-auto pb-24 custom-scrollbar">
-        {tableau.map((col, colIdx) => (
-          <div key={colIdx} className="flex flex-col gap-0.5 min-h-[300px]" onClick={() => col.length === 0 && onTableauClick(colIdx)}>
-            {col.map((card, cardIdx) => (
-              <button
-                key={card.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onTableauClick(colIdx);
-                }}
+      {/* Main Play Area */}
+      <div className="flex-1 flex flex-col p-2 sm:p-4 gap-4 sm:gap-6 overflow-hidden relative">
+        
+        {/* Top Row: Deck, Waste, Foundations */}
+        <div className="flex justify-between h-24 sm:h-32 gap-2">
+          <div className="flex gap-2 w-1/3">
+            {/* Deck */}
+            <div className="flex-1 relative aspect-[2/3] max-w-[80px]">
+              <button 
+                onClick={drawCard}
                 className={cn(
-                  "w-full aspect-[2/3] rounded-xl sm:rounded-2xl border-2 shadow-lg flex flex-col items-center justify-between p-1.5 sm:p-2 text-center transition-all relative transform-gpu overflow-hidden",
-                  card.visible 
-                    ? "bg-gradient-to-b from-white to-zinc-50 border-zinc-200" 
-                    : "bg-gradient-to-br from-primary/90 to-primary border-white/20",
-                  card.visible ? "translate-y-0" : "-translate-y-2",
-                  selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx 
-                    ? "ring-4 ring-amber-400 scale-110 z-50 border-amber-400 shadow-2xl" 
-                    : "border-transparent",
-                  cardIdx > 0 && "-mt-[105%] sm:-mt-[100%]", // Overlap effect
-                  card.visible && CATEGORIES.find(c => c.id === card.category)?.text
+                  "absolute inset-0 rounded-lg sm:rounded-xl border flex items-center justify-center transition-transform active:scale-95 shadow-md",
+                  deck.length > 0 ? "bg-gradient-to-br from-[#e67e22] to-[#d35400] border-white/20" : "bg-black/20 border-white/10"
                 )}
               >
-                {card.visible ? (
+                {deck.length > 0 ? (
                   <>
-                    <div className="w-full flex justify-between items-start opacity-95">
-                       <span className="text-[13px] sm:text-[16px] font-black leading-none">{card.value}</span>
-                       <span className="text-[10px] sm:text-[12px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
-                    </div>
-
-                    <div className="flex-1 flex items-center justify-center px-0.5">
-                      <span className="text-[8px] sm:text-[11px] font-black leading-tight uppercase tracking-tight sm:tracking-tighter break-words">
-                        {card.text}
-                      </span>
-                    </div>
-
-                    {selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx && (
-                      <div className="absolute inset-0 bg-amber-400/10 pointer-events-none" />
-                    )}
+                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
+                    <BookOpen className="h-8 w-8 text-white/50" />
                   </>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center relative">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
-                    <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-white/30 drop-shadow-md" />
-                  </div>
+                  <RefreshCw className="h-6 w-6 text-white/20" />
                 )}
               </button>
+            </div>
+
+            {/* Waste */}
+            <div className="flex-1 relative aspect-[2/3] max-w-[80px]">
+              {waste.length > 0 && (
+                <div 
+                  className={cn(
+                    "absolute inset-0 transition-transform",
+                    selected?.type === 'waste' ? 'ring-2 ring-amber-400 scale-105 z-10' : ''
+                  )}
+                  onPointerDown={(e) => handlePointerDown(e, { type: 'waste' }, [waste[waste.length - 1]], (e.target as HTMLElement).offsetWidth)}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                >
+                  {renderCard(waste[waste.length - 1])}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Foundations */}
+          <div className="flex gap-1 sm:gap-2 flex-1 justify-end">
+            {CATEGORIES.map(cat => (
+              <div 
+                key={cat.id} 
+                className="flex-1 relative aspect-[2/3] max-w-[80px]"
+                data-foundation-cat={cat.id}
+                onClick={() => handleFoundationClick(cat.id)}
+              >
+                <div className={cn(
+                  "absolute inset-0 rounded-lg sm:rounded-xl border-2 border-dashed flex flex-col items-center justify-center transition-all",
+                  foundations[cat.id].length > 0 ? "border-transparent shadow-lg" : "border-white/30 bg-black/10"
+                )}>
+                  {foundations[cat.id].length === 0 && (
+                    <span className="text-2xl opacity-40">{cat.icon}</span>
+                  )}
+                  {foundations[cat.id].length > 0 && renderCard(foundations[cat.id][foundations[cat.id].length - 1])}
+                </div>
+              </div>
             ))}
           </div>
-        ))}
+        </div>
+
+        {/* Tableau */}
+        <div className="flex-1 flex justify-between gap-1 sm:gap-2 overflow-y-auto pb-8 custom-scrollbar">
+          {tableau.map((col, colIdx) => (
+            <div 
+              key={colIdx} 
+              className="flex-1 relative min-w-[40px] max-w-[80px]"
+              data-tableau-col={colIdx}
+              onClick={() => col.length === 0 && handleEmptyTableauClick(colIdx)}
+            >
+              {col.length === 0 && (
+                 <div className="w-full aspect-[2/3] rounded-lg border-2 border-white/10 border-dashed bg-black/5" />
+              )}
+              {col.map((card, cardIdx) => {
+                const isTop = cardIdx === col.length - 1;
+                const isSelected = selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx;
+                
+                // Hide actual cards if they are part of the drag stack
+                const isBeingDragged = dragState?.source.type === 'tableau' && 
+                                       dragState.source.colIdx === colIdx && 
+                                       cardIdx >= dragState.source.cardIdx!;
+
+                return (
+                  <div
+                    key={card.id}
+                    className={cn(
+                      "absolute w-full aspect-[2/3] transition-all",
+                      isSelected ? 'ring-2 ring-amber-400 z-10' : '',
+                      isBeingDragged ? 'opacity-0' : 'opacity-100'
+                    )}
+                    style={{ top: `${cardIdx * (card.visible ? 25 : 12)}%` }}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      if (card.visible) {
+                         handlePointerDown(e, { type: 'tableau', colIdx, cardIdx }, col.slice(cardIdx), (e.currentTarget as HTMLElement).offsetWidth);
+                      }
+                    }}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                  >
+                    {renderCard(card, isTop || !card.visible)}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
       </div>
 
-      {/* Win State */}
-      {isWin && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500">
-          <div className="bg-white rounded-[40px] p-8 text-center space-y-6 shadow-2xl max-w-sm">
-            <div className="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mx-auto animate-bounce">
-              <Trophy className="h-12 w-12 text-amber-600" />
+      {/* Floating Drag Layer */}
+      {dragState && (
+        <div 
+          className="fixed pointer-events-none z-50 flex flex-col"
+          style={{ 
+            left: dragState.currentX - (dragState.width / 2), 
+            top: dragState.currentY - 20,
+            width: dragState.width
+          }}
+        >
+          {dragState.cards.map((card, i) => (
+            <div 
+              key={card.id} 
+              className={cn("w-full aspect-[2/3] shadow-2xl", i > 0 && "-mt-[75%]")}
+            >
+              {renderCard(card, i === dragState.cards.length - 1)}
             </div>
-            <div>
-              <h2 className="text-3xl font-black text-zinc-900 leading-tight">Mestre da Paciência Bíblica!</h2>
-              <p className="text-zinc-500 font-medium">Você dominou a arte de organizar a doutrina e a liturgia.</p>
+          ))}
+        </div>
+      )}
+
+      {/* Level Select Modal */}
+      {showLevelSelect && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-zinc-900">Selecionar Nível</h2>
+              <Button variant="ghost" onClick={() => setShowLevelSelect(false)}>✕</Button>
             </div>
-            <Button onClick={initGame} className="w-full h-16 rounded-2xl font-black text-xl shadow-xl shadow-primary/20 bg-primary">
-              JOGAR NOVAMENTE
-            </Button>
+            <div className="overflow-y-auto flex-1 pr-2 space-y-2">
+              {LEVEL_CONFIGS.map((config, idx) => {
+                const lvl = idx + 1;
+                return (
+                  <button
+                    key={lvl}
+                    onClick={() => initLevel(lvl)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left",
+                      level === lvl ? "border-primary bg-primary/5" : "border-zinc-200 hover:border-primary/50"
+                    )}
+                  >
+                    <div>
+                      <div className="font-bold text-zinc-900">Nível {lvl}</div>
+                      <div className="text-xs text-zinc-500">{config.desc} • {config.cols} colunas</div>
+                    </div>
+                    {level === lvl && <Play className="h-5 w-5 text-primary fill-primary" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
+
+      {/* Win Modal */}
+      {isWin && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in zoom-in duration-300">
+          <div className="bg-white rounded-[32px] p-8 max-w-sm w-full text-center shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-400/20 to-transparent" />
+            
+            <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/30 text-white animate-bounce">
+              <Trophy className="h-10 w-10" />
+            </div>
+            
+            <h2 className="text-2xl font-black text-zinc-900 mb-2">Vitória Divina!</h2>
+            <p className="text-zinc-600 text-sm mb-6">
+              Você completou o Nível {level} em {formatTime(timer)}!<br/>
+              A organização fortalece o espírito.
+            </p>
+            
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => initLevel(level)} 
+                className="flex-1 rounded-xl font-bold border-2"
+              >
+                Refazer
+              </Button>
+              <Button 
+                onClick={() => initLevel(level < 10 ? level + 1 : 1)} 
+                className="flex-1 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+              >
+                {level < 10 ? "Próximo Nível" : "Início"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
