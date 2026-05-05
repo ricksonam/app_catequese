@@ -119,6 +119,17 @@ export default function EncontroPresentation() {
               <h2 className="text-xl font-bold text-foreground text-center">{step.label}</h2>
               {step.oracaoTipo && <span className="mt-2 inline-block bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full">{step.oracaoTipo}</span>}
             </div>
+
+            {step.tipo === "desenvolvimento" && encontro.leituraBiblica && (
+              <div className="mb-4 bg-primary/5 rounded-2xl p-5 border border-primary/20 text-center shadow-inner">
+                <div className="flex justify-center mb-2">
+                  <BookOpen className="h-5 w-5 text-primary opacity-80" />
+                </div>
+                <span className="text-[10px] font-black uppercase text-primary tracking-widest block mb-1">Leitura Bíblica do Encontro</span>
+                <p className="text-xl font-liturgical font-bold text-foreground">{encontro.leituraBiblica}</p>
+              </div>
+            )}
+
             {step.conteudo ? (
               <div className="bg-card/80 backdrop-blur-xl rounded-2xl p-5 shadow-lg shadow-foreground/[0.04] border border-border/30">
                 <div className="flex items-center gap-2 mb-3"><BookOpen className="h-4 w-4 text-primary" /><span className="text-xs font-semibold text-primary uppercase tracking-wider">Conteúdo</span></div>

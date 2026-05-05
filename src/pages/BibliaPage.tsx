@@ -469,7 +469,18 @@ export default function BibliaPage() {
                     .filter(l => {
                       if (!activeGroup) return true;
                       const groupList = t.titulo === "Antigo Testamento" ? AT_GROUPS[activeGroup] : NT_GROUPS[activeGroup];
-                      return groupList?.includes(l.nome);
+                      if (!groupList) return false;
+                      
+                      const normalizeName = (name: string) => {
+                         return name.toLowerCase()
+                                    .replace(/^(são|santo)\s+/i, '')
+                                    .replace(/^(i|ii|iii)\s+(são|santo)\s+/i, '$1 ')
+                                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                                    .trim();
+                      };
+                      
+                      const normalizedLNome = normalizeName(l.nome);
+                      return groupList.some(gn => normalizeName(gn) === normalizedLNome);
                     })
                     .map((l) => (
                       <button

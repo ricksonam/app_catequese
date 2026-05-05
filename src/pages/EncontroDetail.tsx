@@ -383,6 +383,13 @@ export default function EncontroDetail() {
                     </div>
 
                     {/* Conteúdo/detalhes */}
+                    {step.tipo === "desenvolvimento" && encontro.leituraBiblica && (
+                      <div className="mt-3 mb-2 bg-primary/5 rounded-xl p-3 border border-primary/20 text-center shadow-sm">
+                        <BookOpen className="h-4 w-4 text-primary opacity-80 mx-auto mb-1" />
+                        <span className="text-[9px] font-black uppercase text-primary tracking-widest block mb-0.5">Leitura Bíblica do Encontro</span>
+                        <p className="text-base font-liturgical font-bold text-foreground">{encontro.leituraBiblica}</p>
+                      </div>
+                    )}
                     {step.conteudo && (
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed border-l-2 border-primary/20 pl-2.5 whitespace-pre-wrap">
                         {step.conteudo}

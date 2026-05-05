@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { type Encontro, type RoteiroStep, ORACAO_TIPOS, ROTEIRO_STEPS } from "@/lib/store";
 import { MODELOS_ENCONTROS, type ModeloEncontro } from "@/lib/modelosEncontros";
 import { useTurmas, useEncontros, useCatequistas, useEncontroMutation } from "@/hooks/useSupabaseData";
-import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer, ArrowUpCircle, ArrowDownCircle, BookOpen } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -156,6 +156,13 @@ export default function EncontroForm() {
                       </div>
                       {step.tipo === "oracao_inicial" && (
                         <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Oração</label><select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">{ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+                      )}
+                      {step.tipo === "desenvolvimento" && leituraBiblica && (
+                        <div className="mb-2 bg-primary/5 rounded-xl p-3 border border-primary/20 text-center shadow-sm">
+                           <BookOpen className="h-4 w-4 text-primary opacity-80 mx-auto mb-1" />
+                           <span className="text-[9px] font-black uppercase text-primary tracking-widest block mb-0.5">Leitura Bíblica do Encontro</span>
+                           <p className="text-sm font-bold text-foreground">{leituraBiblica}</p>
+                        </div>
                       )}
                       <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[150px] resize-y" /></div>
                       <div className="grid grid-cols-2 gap-2">
