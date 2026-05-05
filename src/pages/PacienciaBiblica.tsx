@@ -16,7 +16,7 @@ interface Card {
 const CATEGORIES = [
   { id: 'missa', label: 'Missa', color: 'bg-[#2e5cb8]', text: 'text-[#2e5cb8]', icon: '⛪' },
   { id: 'santos', label: 'Santos', color: 'bg-[#b8860b]', text: 'text-[#b8860b]', icon: '😇' },
-  { id: 'sacramentos', label: 'Sacramentos', color: 'bg-[#1b4d3e]', text: 'text-[#1b4d3e]', icon: '💧' },
+  { id: 'sacramentos', label: 'Sacramentos e Obras', color: 'bg-[#1b4d3e]', text: 'text-[#1b4d3e]', icon: '💧' },
   { id: 'oracoes', label: 'Orações', color: 'bg-[#9b111e]', text: 'text-[#9b111e]', icon: '🙏' },
 ];
 
@@ -106,12 +106,12 @@ export default function PacienciaBiblica() {
       const cardToMove = getCardFromSelection(selected);
       if (!cardToMove) return;
 
-      // Regra de movimento Solitaire:
+      // Regra de movimento Solitaire (Ajustada):
       // 1. Reis (valor 13) em colunas vazias
-      // 2. Valor descendente e categorias DIFERENTES (alternância)
+      // 2. Valor descendente e MESMA categoria (para organizar e revelar cartas)
       const canMove = !topCard 
         ? cardToMove.value === 13 
-        : (cardToMove.value === topCard.value - 1 && cardToMove.category !== topCard.category);
+        : (cardToMove.value === topCard.value - 1 && cardToMove.category === topCard.category);
 
       if (canMove) {
         moveCards(selected, { type: 'tableau', colIdx });
@@ -277,23 +277,30 @@ export default function PacienciaBiblica() {
             key={cat.id}
             onClick={() => onFoundationClick(cat.id)}
             className={cn(
-              "w-full h-full rounded-xl sm:rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-1 sm:p-1.5 transition-all active:scale-95 shadow-inner overflow-hidden",
+              "w-full h-full rounded-xl sm:rounded-2xl border-2 border-dashed flex flex-col items-center justify-between py-1.5 sm:py-2 transition-all active:scale-95 shadow-inner overflow-hidden",
               foundations[cat.id].length > 0 
                 ? cat.color + " border-transparent text-white shadow-lg" 
                 : "border-white/40 text-white/70 bg-white/10 backdrop-blur-sm"
             )}
           >
-            <span className={cn(
-              "text-2xl sm:text-3xl leading-none drop-shadow-md transition-opacity",
-              foundations[cat.id].length === 0 && "opacity-80"
-            )}>
-              {cat.icon}
-            </span>
-            <span className="text-[7px] sm:text-[10px] font-black uppercase mt-0.5 sm:mt-1 tracking-tighter sm:tracking-widest leading-none text-center px-0.5 w-full break-words">
-              {cat.label}
-            </span>
+            <div className="flex-1 flex items-center justify-center">
+              <span className={cn(
+                "text-2xl sm:text-3xl leading-none drop-shadow-md transition-opacity",
+                foundations[cat.id].length === 0 && "opacity-80"
+              )}>
+                {cat.icon}
+              </span>
+            </div>
+            
+            <div className="w-full px-0.5 mt-auto">
+              <div className="h-[1px] w-full bg-white/20 mb-1" />
+              <span className="text-[6px] sm:text-[9px] font-black uppercase tracking-tighter sm:tracking-widest leading-none text-center block w-full truncate">
+                {cat.label}
+              </span>
+            </div>
+
             {foundations[cat.id].length > 0 && (
-              <span className="text-sm sm:text-lg font-black mt-0.5 sm:mt-1 leading-none">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
+              <span className="absolute top-1 right-1 text-[10px] sm:text-xs font-black leading-none bg-black/20 px-1.5 py-0.5 rounded-full">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
             )}
           </button>
         ))}
