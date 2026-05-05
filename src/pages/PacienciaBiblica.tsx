@@ -14,10 +14,10 @@ interface Card {
 }
 
 const CATEGORIES = [
-  { id: 'missa', label: 'Missa', color: 'bg-blue-500', text: 'text-blue-600', icon: '⛪' },
-  { id: 'santos', label: 'Santos', color: 'bg-amber-500', text: 'text-amber-600', icon: '😇' },
-  { id: 'sacramentos', label: 'Sacramentos', color: 'bg-emerald-500', text: 'text-emerald-600', icon: '💧' },
-  { id: 'oracoes', label: 'Orações', color: 'bg-rose-500', text: 'text-rose-600', icon: '🙏' },
+  { id: 'missa', label: 'Missa', color: 'bg-[#2e5cb8]', text: 'text-[#2e5cb8]', icon: '⛪' },
+  { id: 'santos', label: 'Santos', color: 'bg-[#b8860b]', text: 'text-[#b8860b]', icon: '😇' },
+  { id: 'sacramentos', label: 'Sacramentos', color: 'bg-[#1b4d3e]', text: 'text-[#1b4d3e]', icon: '💧' },
+  { id: 'oracoes', label: 'Orações', color: 'bg-[#9b111e]', text: 'text-[#9b111e]', icon: '🙏' },
 ];
 
 const DATA: Record<string, string[]> = {
@@ -219,25 +219,25 @@ export default function PacienciaBiblica() {
       </div>
 
       {/* Top Area (Deck + Foundations) */}
-      <div className="grid grid-cols-6 gap-2 h-28">
+      <div className="grid grid-cols-6 gap-2 sm:gap-3 h-24 sm:h-28">
         {/* Deck/Stock */}
         <div className="col-span-1">
           <button 
             onClick={drawCard}
             className={cn(
-              "w-full h-full rounded-2xl border-2 flex items-center justify-center transition-all active:scale-95 shadow-xl",
+              "w-full h-full rounded-xl sm:rounded-2xl border-2 flex items-center justify-center transition-all active:scale-95 shadow-lg",
               deck.length > 0 
-                ? "bg-gradient-to-br from-primary to-primary/80 border-white/30" 
+                ? "bg-gradient-to-br from-primary to-primary/80 border-white/20" 
                 : "bg-black/20 border-white/10"
             )}
           >
             {deck.length > 0 ? (
-              <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl">
+              <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-xl sm:rounded-2xl">
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent animate-pulse" />
-                <BookOpen className="h-10 w-10 text-white drop-shadow-lg" />
+                <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-white drop-shadow-lg" />
               </div>
             ) : (
-              <RefreshCw className="h-8 w-8 text-white/20" />
+              <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 text-white/20" />
             )}
           </button>
         </div>
@@ -248,18 +248,18 @@ export default function PacienciaBiblica() {
             <button 
               onClick={() => setSelected({ type: 'waste' })}
               className={cn(
-                "w-full h-full bg-white rounded-2xl border-2 shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4)] flex flex-col items-center justify-between p-2 text-center transition-all active:scale-95 relative overflow-hidden",
-                selected?.type === 'waste' ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-white",
+                "w-full h-full bg-gradient-to-b from-white to-zinc-50 rounded-xl sm:rounded-2xl border-2 shadow-md flex flex-col items-center justify-between p-1.5 sm:p-2 text-center transition-all active:scale-95 relative overflow-hidden",
+                selected?.type === 'waste' ? "ring-4 ring-amber-400 scale-105 z-50 border-amber-400" : "border-zinc-200",
                 CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.text
               )}
             >
-              <div className="w-full flex justify-between items-start opacity-90">
-                 <span className="text-[18px] font-black leading-none">{waste[waste.length - 1].value}</span>
-                 <span className="text-[14px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
+              <div className="w-full flex justify-between items-start opacity-95">
+                 <span className="text-[14px] sm:text-[18px] font-black leading-none">{waste[waste.length - 1].value}</span>
+                 <span className="text-[12px] sm:text-[14px]">{CATEGORIES.find(c => c.id === waste[waste.length - 1].category)?.icon}</span>
               </div>
               
-              <div className="flex-1 flex items-center justify-center px-1">
-                <span className="text-[12px] font-black leading-tight uppercase tracking-tighter">
+              <div className="flex-1 flex items-center justify-center px-0.5">
+                <span className="text-[9px] sm:text-[12px] font-black leading-tight uppercase tracking-tight sm:tracking-tighter break-words">
                   {waste[waste.length - 1].text}
                 </span>
               </div>
@@ -277,25 +277,25 @@ export default function PacienciaBiblica() {
             key={cat.id}
             onClick={() => onFoundationClick(cat.id)}
             className={cn(
-              "w-full h-full rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-1.5 transition-all active:scale-95 shadow-inner",
+              "w-full h-full rounded-xl sm:rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-1 sm:p-1.5 transition-all active:scale-95 shadow-inner overflow-hidden",
               foundations[cat.id].length > 0 
-                ? cat.color + " border-transparent text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)]" 
+                ? cat.color + " border-transparent text-white shadow-lg" 
                 : "border-white/20 text-white/20 bg-black/5"
             )}
           >
-            <span className="text-3xl leading-none drop-shadow-sm">{cat.icon}</span>
-            <span className="text-[11px] font-black uppercase mt-1 tracking-widest leading-none text-center px-1">
+            <span className="text-2xl sm:text-3xl leading-none drop-shadow-sm">{cat.icon}</span>
+            <span className="text-[7px] sm:text-[10px] font-black uppercase mt-0.5 sm:mt-1 tracking-tighter sm:tracking-widest leading-none text-center px-0.5 w-full break-words">
               {cat.label}
             </span>
             {foundations[cat.id].length > 0 && (
-              <span className="text-lg font-black mt-1 leading-none">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
+              <span className="text-sm sm:text-lg font-black mt-0.5 sm:mt-1 leading-none">{foundations[cat.id][foundations[cat.id].length - 1].value}</span>
             )}
           </button>
         ))}
       </div>
 
       {/* Tableau Area */}
-      <div className="flex-1 grid grid-cols-6 gap-2.5 overflow-y-auto pb-24 custom-scrollbar">
+      <div className="flex-1 grid grid-cols-6 gap-2 sm:gap-3 overflow-y-auto pb-24 custom-scrollbar">
         {tableau.map((col, colIdx) => (
           <div key={colIdx} className="flex flex-col gap-0.5 min-h-[300px]" onClick={() => col.length === 0 && onTableauClick(colIdx)}>
             {col.map((card, cardIdx) => (
@@ -306,27 +306,27 @@ export default function PacienciaBiblica() {
                   onTableauClick(colIdx);
                 }}
                 className={cn(
-                  "w-full aspect-[2/3] rounded-2xl border-2 shadow-xl flex flex-col items-center justify-between p-2 text-center transition-all relative transform-gpu overflow-hidden",
+                  "w-full aspect-[2/3] rounded-xl sm:rounded-2xl border-2 shadow-lg flex flex-col items-center justify-between p-1.5 sm:p-2 text-center transition-all relative transform-gpu overflow-hidden",
                   card.visible 
-                    ? "bg-white border-white" 
+                    ? "bg-gradient-to-b from-white to-zinc-50 border-zinc-200" 
                     : "bg-gradient-to-br from-primary/90 to-primary border-white/20",
                   card.visible ? "translate-y-0" : "-translate-y-2",
                   selected?.type === 'tableau' && selected.colIdx === colIdx && selected.cardIdx === cardIdx 
                     ? "ring-4 ring-amber-400 scale-110 z-50 border-amber-400 shadow-2xl" 
                     : "border-transparent",
-                  cardIdx > 0 && "-mt-[100%]", // Overlap effect
+                  cardIdx > 0 && "-mt-[105%] sm:-mt-[100%]", // Overlap effect
                   card.visible && CATEGORIES.find(c => c.id === card.category)?.text
                 )}
               >
                 {card.visible ? (
                   <>
                     <div className="w-full flex justify-between items-start opacity-95">
-                       <span className="text-[16px] font-black leading-none">{card.value}</span>
-                       <span className="text-[12px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
+                       <span className="text-[13px] sm:text-[16px] font-black leading-none">{card.value}</span>
+                       <span className="text-[10px] sm:text-[12px]">{CATEGORIES.find(c => c.id === card.category)?.icon}</span>
                     </div>
 
                     <div className="flex-1 flex items-center justify-center px-0.5">
-                      <span className="text-[11px] font-black leading-tight uppercase tracking-tighter break-words">
+                      <span className="text-[8px] sm:text-[11px] font-black leading-tight uppercase tracking-tight sm:tracking-tighter break-words">
                         {card.text}
                       </span>
                     </div>
@@ -338,7 +338,7 @@ export default function PacienciaBiblica() {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center relative">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
-                    <BookOpen className="h-8 w-8 text-white/30 drop-shadow-md" />
+                    <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-white/30 drop-shadow-md" />
                   </div>
                 )}
               </button>
