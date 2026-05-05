@@ -219,7 +219,20 @@ export default function PublicInscricao() {
             <h1 className="text-3xl font-black text-foreground tracking-tighter leading-tight uppercase">
               Catequese {turma.nome}
             </h1>
-            <div className="flex items-center justify-center gap-2 mt-2">
+            {(turma.paroquia_nome || turma.paroquia?.nome) && (
+               <div className="text-sm font-bold text-muted-foreground mt-1 uppercase flex flex-col items-center gap-1">
+                 <div className="flex items-center gap-2">
+                   <Church className="w-4 h-4 text-primary/70" /> 
+                   {turma.paroquia_nome || turma.paroquia?.nome}
+                 </div>
+                 {(turma.comunidade_nome || turma.comunidade?.nome) && (
+                   <span className="text-[11px] font-black text-muted-foreground/70">
+                     Comunidade {turma.comunidade_nome || turma.comunidade?.nome}
+                   </span>
+                 )}
+               </div>
+            )}
+            <div className="flex items-center justify-center gap-2 mt-4">
               <span className="px-2.5 py-1 rounded-lg bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground border-2 border-black/5">
                 {turma.ano}
               </span>
@@ -232,6 +245,17 @@ export default function PublicInscricao() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 mt-8">
+        {/* Red Warning for Exclusive Link */}
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6 flex items-start gap-3 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+           <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5 animate-pulse" />
+           <div className="space-y-1">
+              <h4 className="text-sm font-black text-red-800 uppercase tracking-tight">Aviso Importante</h4>
+              <p className="text-[11px] font-bold text-red-700 leading-relaxed uppercase tracking-wider">
+                Este link de inscrição é <span className="font-black underline decoration-red-300">EXCLUSIVO</span> para a turma <span className="font-black text-red-900">{turma.nome}</span>. <br/>Não compartilhe este link sem a autorização prévia do catequista.
+              </p>
+           </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           
           {/* FOTO E DADOS BÁSICOS */}
