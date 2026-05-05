@@ -280,10 +280,15 @@ export default function PacienciaBiblica() {
               "w-full h-full rounded-xl sm:rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-1 sm:p-1.5 transition-all active:scale-95 shadow-inner overflow-hidden",
               foundations[cat.id].length > 0 
                 ? cat.color + " border-transparent text-white shadow-lg" 
-                : "border-white/20 text-white/20 bg-black/5"
+                : "border-white/40 text-white/70 bg-white/10 backdrop-blur-sm"
             )}
           >
-            <span className="text-2xl sm:text-3xl leading-none drop-shadow-sm">{cat.icon}</span>
+            <span className={cn(
+              "text-2xl sm:text-3xl leading-none drop-shadow-md transition-opacity",
+              foundations[cat.id].length === 0 && "opacity-80"
+            )}>
+              {cat.icon}
+            </span>
             <span className="text-[7px] sm:text-[10px] font-black uppercase mt-0.5 sm:mt-1 tracking-tighter sm:tracking-widest leading-none text-center px-0.5 w-full break-words">
               {cat.label}
             </span>
