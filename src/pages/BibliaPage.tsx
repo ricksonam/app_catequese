@@ -66,6 +66,21 @@ const ABREVIACOES: Record<string, string> = {
   "1jo": "I João", "2jo": "II João", "3jo": "III João", "jd": "Judas", "ap": "Apocalipse"
 };
 
+const AT_GROUPS: Record<string, string[]> = {
+  "Pentateuco": ["Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio"],
+  "Históricos": ["Josué", "Juízes", "Rute", "I Samuel", "II Samuel", "I Reis", "II Reis", "I Crônicas", "II Crônicas", "Esdras", "Neemias", "Tobias", "Judite", "Ester", "I Macabeus", "II Macabeus"],
+  "Sapienciais": ["Jó", "Salmos", "Provérbios", "Eclesiastes", "Cântico dos Cânticos", "Sabedoria", "Eclesiástico"],
+  "Profetas": ["Isaías", "Jeremias", "Lamentações", "Baruc", "Ezequiel", "Daniel", "Oseias", "Joel", "Amós", "Abdias", "Jonas", "Miqueias", "Naum", "Habacuc", "Sofonias", "Ageu", "Zacarias", "Malaquias"]
+};
+
+const NT_GROUPS: Record<string, string[]> = {
+  "Evangelhos": ["Mateus", "Marcos", "Lucas", "João"],
+  "Atos": ["Atos dos Apóstolos"],
+  "Cartas Paulinas": ["Romanos", "I Coríntios", "II Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "I Tessalonicenses", "II Tessalonicenses", "I Timóteo", "II Timóteo", "Tito", "Filemon"],
+  "Cartas Católicas": ["Hebreus", "Tiago", "I Pedro", "II Pedro", "I João", "II João", "III João", "Judas"],
+  "Apocalipse": ["Apocalipse"]
+};
+
 const fetchBiblia = async (translationFile: string): Promise<BibliaData> => {
   const response = await fetch(translationFile);
   if (!response.ok) throw new Error("FILE_NOT_FOUND");
@@ -87,6 +102,7 @@ export default function BibliaPage() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [readingMenuOpen, setReadingMenuOpen] = useState(false);
   const [showMetadataInfo, setShowMetadataInfo] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
 
   const selectedTranslation = TRADUCOES.find(t => t.id === translationId) || TRADUCOES[0];
 
@@ -396,7 +412,10 @@ export default function BibliaPage() {
             return (
               <button 
                 key={t.titulo}
-                onClick={() => setExpandedSection(isOpen ? null : t.titulo)} 
+                onClick={() => {
+                  setExpandedSection(isOpen ? null : t.titulo);
+                  setActiveGroup(null);
+                }} 
                 className={cn(
                   "p-4 rounded-2xl flex flex-col items-center justify-center text-center transition-all border-2",
                   isOpen ? "border-primary shadow-md scale-[0.98]" : "border-transparent shadow-sm hover:-translate-y-1",
@@ -419,16 +438,48 @@ export default function BibliaPage() {
                 <h3 className="text-lg font-liturgical font-bold text-foreground mb-3 flex items-center gap-2">
                   <span>{t.icon}</span> {t.titulo}
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {t.livros.map((l) => (
+
+                {/* Filtros de Coleção */}
+                <div className="flex gap-2 overflow-x-auto pb-3 mb-2 premium-scrollbar no-scrollbar">
+                  <button
+                    onClick={() => setActiveGroup(null)}
+                    className={cn(
+                      "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border",
+                      !activeGroup ? "bg-primary text-white border-primary" : "bg-white text-muted-foreground border-border hover:border-primary/30"
+                    )}
+                  >
+                    Todos
+                  </button>
+                  {Object.keys(t.titulo === "Antigo Testamento" ? AT_GROUPS : NT_GROUPS).map((group) => (
                     <button
-                      key={l.nome}
-                      onClick={() => { setSelectedBook(l); setShowMetadataInfo(false); }}
-                      className="text-left px-3 py-3 rounded-lg text-sm font-medium bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary/50 hover:shadow-md transition-all truncate group"
+                      key={group}
+                      onClick={() => setActiveGroup(activeGroup === group ? null : group)}
+                      className={cn(
+                        "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border",
+                        activeGroup === group ? "bg-primary text-white border-primary" : "bg-white text-muted-foreground border-border hover:border-primary/30"
+                      )}
                     >
-                      <span className="group-hover:text-primary transition-colors">{l.nome}</span>
+                      {group}
                     </button>
                   ))}
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {t.livros
+                    .filter(l => {
+                      if (!activeGroup) return true;
+                      const groupList = t.titulo === "Antigo Testamento" ? AT_GROUPS[activeGroup] : NT_GROUPS[activeGroup];
+                      return groupList?.includes(l.nome);
+                    })
+                    .map((l) => (
+                      <button
+                        key={l.nome}
+                        onClick={() => { setSelectedBook(l); setShowMetadataInfo(false); }}
+                        className="text-left px-3 py-3 rounded-lg text-sm font-medium bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary/50 hover:shadow-md transition-all truncate group"
+                      >
+                        <span className="group-hover:text-primary transition-colors">{l.nome}</span>
+                      </button>
+                    ))}
                 </div>
               </div>
             </div>

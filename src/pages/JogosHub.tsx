@@ -31,7 +31,7 @@ const jogos = [
     path: "/jogos/perguntas",
   },
   {
-    label: "Sorteio da Citação",
+    label: "Sorteio Bíblico",
     desc: "Mensagens bíblicas para os catequizandos",
     icon: Book,
     color: "bg-amber-500/10 text-amber-600",
