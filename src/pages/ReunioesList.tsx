@@ -267,9 +267,20 @@ export default function ReunioesList() {
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
-                  <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
+                <div className="space-y-4">
+                  {form.tipo !== 'Reunião de catequistas' && form.tipo !== 'Reunião de pais' && (
+                    <FieldInput 
+                      label={form.tipo === 'Reunião de preparação de sacramento' ? "Sacramento/Rito/Etapa *" : "Nome da Reunião *"} 
+                      value={form.nome} 
+                      onChange={(v) => updateField("nome", v)} 
+                      placeholder={form.tipo === 'Reunião de preparação de sacramento' ? "Ex: Primeira Eucaristia - Rito de Entrega" : "Ex: Planejamento Mensal"} 
+                    />
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
+                    <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
+                  </div>
                 </div>
 
                 {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE ENCONTRO --- */}
@@ -482,57 +493,6 @@ export default function ReunioesList() {
                   </div>
                 )}
 
-                {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE SACRAMENTO / LITURGIA --- */}
-                {form.tipo === 'Reunião de preparação de sacramento' && (
-                  <div className="p-4 rounded-2xl bg-liturgical/5 border border-liturgical/20 space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-lg bg-liturgical/10 text-liturgical flex items-center justify-center">
-                        <Users className="h-4 w-4" />
-                      </div>
-                      <p className="text-[10px] font-black uppercase text-liturgical tracking-widest">Equipe de Liturgia / Trabalho</p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                       <div className="space-y-1">
-                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Celebrante (Presidente)</label>
-                         <input value={form.servicosLiturgia?.celebrante} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, celebrante: e.target.value })} placeholder="Padre ou Diácono..." className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5 focus:ring-liturgical focus:border-liturgical" />
-                       </div>
-                       
-                       <div className="grid grid-cols-2 gap-3">
-                         <div className="space-y-1">
-                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Animador</label>
-                           <input value={form.servicosLiturgia?.animador} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, animador: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
-                         </div>
-                         <div className="space-y-1">
-                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Salmista</label>
-                           <input value={form.servicosLiturgia?.salmista} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, salmista: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
-                         </div>
-                       </div>
-
-                       <div className="grid grid-cols-2 gap-3">
-                         <div className="space-y-1">
-                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">1º Leitor</label>
-                           <input value={form.servicosLiturgia?.['1_leitor']} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, '1_leitor': e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
-                         </div>
-                         <div className="space-y-1">
-                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">2º Leitor</label>
-                           <input value={form.servicosLiturgia?.['2_leitor']} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, '2_leitor': e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
-                         </div>
-                       </div>
-
-                       <div className="space-y-1">
-                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Preces / Outros</label>
-                         <input value={form.servicosLiturgia?.preces} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, preces: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
-                       </div>
-                       
-                       <div className="space-y-1">
-                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Ministério de Canto</label>
-                         <input value={form.servicosLiturgia?.cantores} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, cantores: e.target.value })} placeholder="Grupo ou coral..." className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
-                       </div>
-                    </div>
-                  </div>
-                )}
-
                 {/* --- SEÇÃO UNIFICADA: ROTEIRO (Para TODOS os tipos) --- */}
                 <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
                   {/* Card Único: Roteiro da Reunião */}
@@ -630,12 +590,59 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                {/* --- CAMPOS GERAIS --- */}
-                <div className="space-y-4">
-                  {form.tipo !== 'Reunião de catequistas' && form.tipo !== 'Reunião de pais' && (
-                    <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Ex: Planejamento Mensal" />
-                  )}
+                {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE SACRAMENTO / LITURGIA --- */}
+                {form.tipo === 'Reunião de preparação de sacramento' && (
+                  <div className="p-4 rounded-2xl bg-liturgical/5 border border-liturgical/20 space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-liturgical/10 text-liturgical flex items-center justify-center">
+                        <Users className="h-4 w-4" />
+                      </div>
+                      <p className="text-[10px] font-black uppercase text-liturgical tracking-widest">Equipe de Liturgia / Trabalho</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Celebrante (Presidente)</label>
+                         <input value={form.servicosLiturgia?.celebrante} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, celebrante: e.target.value })} placeholder="Padre ou Diácono..." className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5 focus:ring-liturgical focus:border-liturgical" />
+                       </div>
+                       
+                       <div className="grid grid-cols-2 gap-3">
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Animador</label>
+                           <input value={form.servicosLiturgia?.animador} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, animador: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Salmista</label>
+                           <input value={form.servicosLiturgia?.salmista} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, salmista: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                       </div>
 
+                       <div className="grid grid-cols-2 gap-3">
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">1º Leitor</label>
+                           <input value={form.servicosLiturgia?.['1_leitor']} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, '1_leitor': e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">2º Leitor</label>
+                           <input value={form.servicosLiturgia?.['2_leitor']} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, '2_leitor': e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                       </div>
+
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Preces / Outros</label>
+                         <input value={form.servicosLiturgia?.preces} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, preces: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                       </div>
+                       
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Ministério de Canto</label>
+                         <input value={form.servicosLiturgia?.cantores} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, cantores: e.target.value })} placeholder="Grupo ou coral..." className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* --- CAMPOS GERAIS (RESTANTES) --- */}
+                <div className="space-y-4">
                   <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
                   
                   <div>
