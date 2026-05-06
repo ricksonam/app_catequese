@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeMutation, useEncontroMutation } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeMutation, useEncontroMutation, useReunioes } from "@/hooks/useSupabaseData";
 import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,7 +8,7 @@ import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/ut
 import { toast } from "sonner";
 import ReportModule from "@/components/reports/ReportModule";
 
-type TimelineItem = { id: string; tipo: 'encontro' | 'atividade'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
+type TimelineItem = { id: string; tipo: 'encontro' | 'atividade' | 'reuniao'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
 const statusColors: Record<string, string> = { pendente: 'bg-primary', realizado: 'bg-success', transferido: 'bg-caution', cancelado: 'bg-destructive' };
 
 export default function PlanoTurma() {
@@ -17,10 +17,11 @@ export default function PlanoTurma() {
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros(id);
   const { data: atividades = [], isLoading: aLoading } = useAtividades(id);
+  const { data: reunioes = [], isLoading: rLoading } = useReunioes(id);
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos(id);
   const turma = turmas.find(t => t.id === id);
 
-  const [activeFilter, setActiveFilter] = useState<'all' | 'encontro' | 'atividade'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'encontro' | 'atividade' | 'reuniao'>('all');
   const [viewItem, setViewItem] = useState<TimelineItem | null>(null);
   const [presencaOpen, setPresencaOpen] = useState(false);
   
@@ -39,6 +40,10 @@ export default function PlanoTurma() {
       ...atividades.map((a): TimelineItem => ({ 
         id: a.id, tipo: 'atividade', titulo: a.nome, subtitulo: `${a.tipo}${a.local ? ` • ${a.local}` : ''}`, 
         data: a.data, color: 'bg-primary', presencas: a.presencas || [], itemOriginal: a 
+      })),
+      ...reunioes.map((r): TimelineItem => ({
+        id: r.id, tipo: 'reuniao', titulo: r.nome || r.tipo, subtitulo: r.tipo,
+        data: r.data, color: 'bg-liturgical', presencas: [], itemOriginal: r
       })),
     ]
     .filter(item => activeFilter === 'all' || item.tipo === activeFilter)
@@ -65,7 +70,7 @@ export default function PlanoTurma() {
     });
 
     return Object.entries(groups);
-  }, [encontros, atividades, activeFilter]);
+  }, [encontros, atividades, reunioes, activeFilter]);
 
   function groupKey(k: string) { return k; }
 
@@ -105,7 +110,7 @@ export default function PlanoTurma() {
     }
   };
 
-  if (tLoading || eLoading || aLoading || cLoading) {
+  if (tLoading || eLoading || aLoading || rLoading || cLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
@@ -156,10 +161,11 @@ export default function PlanoTurma() {
       )}
 
       <Tabs defaultValue="all" value={activeFilter} onValueChange={(v) => setActiveFilter(v as any)} className="w-full animate-fade-in">
-        <TabsList className="grid w-full grid-cols-3 mb-8 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50 h-auto">
-          <TabsTrigger value="all" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Tudo</TabsTrigger>
-          <TabsTrigger value="encontro" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Encontros</TabsTrigger>
-          <TabsTrigger value="atividade" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Eventos</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 mb-8 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50 h-auto">
+          <TabsTrigger value="all" className="rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Tudo</TabsTrigger>
+          <TabsTrigger value="encontro" className="rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Encontros</TabsTrigger>
+          <TabsTrigger value="atividade" className="rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Eventos</TabsTrigger>
+          <TabsTrigger value="reuniao" className="rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Reuniões</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -182,7 +188,7 @@ export default function PlanoTurma() {
                 
                 <div className="space-y-5 ml-[20px]">
                   {items.map((item, i) => {
-                    const Icon = item.tipo === 'encontro' ? CalendarDays : ListChecks;
+                    const Icon = item.tipo === 'encontro' ? CalendarDays : item.tipo === 'reuniao' ? Users : ListChecks;
                     const dateStr = item.data ? new Date(item.data + 'T12:00:00').toLocaleDateString("pt-BR", { day: '2-digit', month: 'short' }) : '---';
                     const presPct = Math.round((item.presencas.length / totalAlunos) * 100);
                     
@@ -190,14 +196,14 @@ export default function PlanoTurma() {
                       <div key={`${item.tipo}-${item.id}`} className="relative pl-8 animate-float-up" style={{ animationDelay: `${i * 50}ms` }}>
                         <div className={`absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full ${item.color} ring-4 ring-background z-10`} />
                         <button onClick={() => setViewItem(item)} className="w-full float-card flex items-center gap-3 p-4 text-left group">
-                          <div className={`icon-box w-10 h-10 rounded-xl shrink-0 ${item.tipo === 'encontro' ? 'bg-primary/10 text-primary' : 'bg-accent/15 text-accent-foreground'}`}>
+                          <div className={`icon-box w-10 h-10 rounded-xl shrink-0 ${item.tipo === 'encontro' ? 'bg-primary/10 text-primary' : item.tipo === 'reuniao' ? 'bg-liturgical/10 text-liturgical' : 'bg-accent/15 text-accent-foreground'}`}>
                             <Icon className="h-5 w-5" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-foreground leading-tight truncate group-active:text-primary transition-colors">{item.titulo}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">{item.tipo === 'atividade' ? 'Evento' : item.tipo}</span>
-                              <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {presPct}% {item.tipo === 'encontro' ? 'Alunos' : 'Pais'}</span>
+                              <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">{item.tipo === 'atividade' ? 'Evento' : item.tipo === 'reuniao' ? 'Reunião' : item.tipo}</span>
+                              <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {presPct}% {item.tipo === 'encontro' ? 'Alunos' : item.tipo === 'reuniao' ? 'Pessoas' : 'Pais'}</span>
                             </div>
                           </div>
                           <div className="text-right shrink-0">
