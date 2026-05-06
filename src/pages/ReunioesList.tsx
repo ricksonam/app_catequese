@@ -263,62 +263,106 @@ export default function ReunioesList() {
                 {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE ENCONTRO --- */}
                 {form.tipo === 'Reunião de preparação de encontro' && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                    {/* Lista de Cards de Encontros */}
+                    {/* Lista Suspensa de Encontros */}
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">Selecione o Encontro a Preparar</label>
-                      <div className="flex overflow-x-auto pb-4 gap-3 snap-x scrollbar-hide">
-                        {encontros.map((enc) => {
-                          const isSelected = form.encontrosPreparados?.includes(enc.id);
-                          return (
-                            <button
-                              key={enc.id}
+                      <label className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">Selecione os Encontros a Preparar</label>
+                      
+                      <div className="relative group">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <button 
                               type="button"
-                              onClick={() => {
-                                let next;
-                                if (isSelected) {
-                                  next = form.encontrosPreparados?.filter(id => id !== enc.id);
-                                } else {
-                                  next = [...(form.encontrosPreparados || []), enc.id];
-                                }
-                                updateField('encontrosPreparados', next as any);
-                                if (!isSelected && next?.length === 1 && !form.nome) {
-                                  updateField('nome', `Preparação: ${enc.tema}`);
-                                }
-                              }}
-                              className={cn(
-                                "flex-shrink-0 w-48 p-4 rounded-2xl border-2 transition-all snap-center relative text-left",
-                                isSelected 
-                                  ? "bg-white border-emerald-500 shadow-xl scale-[1.05] z-10" 
-                                  : "bg-zinc-50 border-black/5 opacity-60 hover:opacity-100"
-                              )}
+                              className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border-2 border-emerald-100 hover:border-emerald-300 transition-all shadow-sm group"
                             >
-                              <div className={cn(
-                                "absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                                isSelected ? "bg-emerald-500 border-emerald-500" : "bg-white border-zinc-200"
-                              )}>
-                                {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                                  <ListChecks className="h-5 w-5" />
+                                </div>
+                                <div className="text-left">
+                                  <p className="text-sm font-black text-foreground">
+                                    {form.encontrosPreparados?.length ? `${form.encontrosPreparados.length} selecionado(s)` : "Lista de Encontros"}
+                                  </p>
+                                  <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-widest">Toque para selecionar</p>
+                                </div>
                               </div>
-
-                              <div className={cn(
-                                "w-10 h-10 rounded-xl flex items-center justify-center mb-3",
-                                isSelected ? "bg-emerald-100 text-emerald-600" : "bg-zinc-200/50 text-zinc-400"
-                              )}>
-                                <CalendarDays className="h-5 w-5" />
-                              </div>
-                              
-                              <p className={cn(
-                                "text-xs font-black leading-tight line-clamp-2 mb-1",
-                                isSelected ? "text-foreground" : "text-zinc-500"
-                              )}>
-                                {enc.tema}
-                              </p>
-                              <p className="text-[9px] font-bold uppercase tracking-tighter text-zinc-400">
-                                {enc.data ? formatarDataVigente(enc.data).split(' - ')[0] : 'Data a definir'}
-                              </p>
+                              <ChevronRight className="h-5 w-5 text-emerald-300 group-hover:translate-x-1 transition-transform" />
                             </button>
-                          );
-                        })}
+                          </DialogTrigger>
+                          <DialogContent className="max-w-[90vw] sm:max-w-[400px] rounded-3xl p-6">
+                            <DialogHeader>
+                              <DialogTitle className="text-lg font-black text-emerald-900 uppercase tracking-tight">Lista de Encontros</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-2 mt-4 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
+                              {encontros.map((enc) => {
+                                const isSelected = form.encontrosPreparados?.includes(enc.id);
+                                return (
+                                  <button
+                                    key={enc.id}
+                                    type="button"
+                                    onClick={() => {
+                                      let next;
+                                      if (isSelected) {
+                                        next = form.encontrosPreparados?.filter(id => id !== enc.id);
+                                      } else {
+                                        next = [...(form.encontrosPreparados || []), enc.id];
+                                      }
+                                      updateField('encontrosPreparados', next as any);
+                                      if (!isSelected && next?.length === 1 && !form.nome) {
+                                        updateField('nome', `Preparação: ${enc.tema}`);
+                                      }
+                                    }}
+                                    className={cn(
+                                      "w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left group",
+                                      isSelected 
+                                        ? "bg-emerald-50 border-emerald-500 shadow-md scale-[1.01]" 
+                                        : "bg-white border-black/5 hover:border-emerald-200"
+                                    )}
+                                  >
+                                    <div className={cn(
+                                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                                      isSelected ? "bg-emerald-500 text-white shadow-lg" : "bg-emerald-50 text-emerald-300"
+                                    )}>
+                                      <CalendarDays className="h-5 w-5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className={cn("text-sm font-bold truncate", isSelected ? "text-emerald-900" : "text-foreground")}>
+                                        {enc.tema}
+                                      </p>
+                                      <p className="text-[10px] font-black text-emerald-600/40 uppercase tracking-tighter">
+                                        {enc.data ? formatarDataVigente(enc.data).split(' - ')[0] : 'Data pendente'}
+                                      </p>
+                                    </div>
+                                    <div className={cn(
+                                      "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
+                                      isSelected ? "bg-emerald-500 border-emerald-500" : "bg-white border-emerald-100"
+                                    )}>
+                                      {isSelected && <CheckCircle2 className="h-3 w-3 text-white" />}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </div>
+
+                      {/* Chips dos selecionados visíveis fora da lista */}
+                      {form.encontrosPreparados && form.encontrosPreparados.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3 animate-in fade-in duration-500">
+                          {form.encontrosPreparados.map(eid => {
+                            const enc = encontros.find(e => e.id === eid);
+                            if (!enc) return null;
+                            return (
+                              <div key={eid} className="flex items-center gap-1.5 px-3 py-2 bg-emerald-500 text-white rounded-xl text-[10px] font-black shadow-sm shadow-emerald-500/20 border border-emerald-400">
+                                <span className="truncate max-w-[120px]">{enc.tema}</span>
+                                <button type="button" onClick={() => updateField('encontrosPreparados', form.encontrosPreparados?.filter(id => id !== eid) as any)} className="hover:bg-white/20 p-0.5 rounded-full transition-colors">
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     {/* Card Único: Roteiro do Encontro */}
