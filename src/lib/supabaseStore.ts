@@ -48,7 +48,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     sharedTurmas = (sharedData || []).map((t: any) => ({
       id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
       horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
-      criadoEm: t.criado_em, proposito: t.proposito,
+      criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
       comunidadeId: t.comunidade_id,
       catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
       codigoAcesso: t.codigo_acesso,
@@ -60,7 +60,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
   const ownedTurmas = (ownedData || []).map((t: any) => ({
     id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
     horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
-    criadoEm: t.criado_em, proposito: t.proposito,
+    criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
     comunidadeId: t.comunidade_id,
     catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
     codigoAcesso: t.codigo_acesso,
@@ -81,7 +81,7 @@ export async function upsertTurma(turma: Turma) {
   const { error } = await (supabase.from as any)("turmas").upsert({
     id: turma.id, nome: turma.nome, ano: turma.ano, dia_catequese: turma.diaCatequese,
     horario: turma.horario, local: turma.local, etapa: turma.etapa, outros_dados: turma.outrosDados,
-    criado_em: turma.criadoEm, proposito: turma.proposito || null,
+    criado_em: turma.criadoEm, proposito: turma.proposito || null, objetivo: turma.objetivo || null, metas: turma.metas || null,
     comunidade_id: turma.comunidadeId || null,
     codigo_acesso: codigo,
   });

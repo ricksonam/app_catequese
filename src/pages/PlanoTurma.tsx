@@ -31,20 +31,25 @@ export default function PlanoTurma() {
 
   const [isEditingProposito, setIsEditingProposito] = useState(false);
   const [propositoText, setPropositoText] = useState("");
+  const [objetivoText, setObjetivoText] = useState("");
+  const [metasText, setMetasText] = useState("");
+  const [activePanelTab, setActivePanelTab] = useState<'proposito' | 'objetivo' | 'metas'>('proposito');
 
   const handleEditProposito = () => {
     setPropositoText(turma?.proposito || "");
+    setObjetivoText(turma?.objetivo || "");
+    setMetasText(turma?.metas || "");
     setIsEditingProposito(true);
   };
 
   const handleSaveProposito = async () => {
     if (!turma) return;
     try {
-      await turmaMut.mutateAsync({ ...turma, proposito: propositoText });
+      await turmaMut.mutateAsync({ ...turma, proposito: propositoText, objetivo: objetivoText, metas: metasText });
       setIsEditingProposito(false);
-      toast.success("Propósito e objetivo salvos com sucesso!");
+      toast.success("Painel da turma atualizado com sucesso!");
     } catch (error) {
-      toast.error("Erro ao salvar o propósito.");
+      toast.error("Erro ao salvar o painel.");
     }
   };
 
@@ -180,18 +185,18 @@ export default function PlanoTurma() {
         </div>
       )}
 
-      {/* Propósito e Objetivo Card */}
+      {/* Painel Inteligente da Turma */}
       <div className="bg-white dark:bg-zinc-900 rounded-3xl border-2 border-primary/20 shadow-sm p-5 relative overflow-hidden animate-float-up stagger-2">
         <div className="absolute top-0 right-0 p-4 opacity-10">
           <Target className="w-24 h-24 text-primary" />
         </div>
-        <div className="relative z-10 flex flex-col gap-3">
+        <div className="relative z-10 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-primary">
               <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Target className="h-4 w-4" />
               </div>
-              <h3 className="text-sm font-black uppercase tracking-widest">Propósito da Turma</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest">Painel Estratégico</h3>
             </div>
             {!isEditingProposito && (
               <button onClick={handleEditProposito} className="p-2 rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors">
@@ -201,31 +206,83 @@ export default function PlanoTurma() {
           </div>
           
           {isEditingProposito ? (
-            <div className="space-y-3">
-              <textarea
-                value={propositoText}
-                onChange={(e) => setPropositoText(e.target.value)}
-                placeholder="Qual o propósito e objetivo principal desta turma neste ciclo?"
-                className="w-full form-input min-h-[100px] resize-none text-sm leading-relaxed border-primary/30 focus:border-primary focus:ring-primary/20 bg-background"
-                autoFocus
-              />
-              <div className="flex justify-end gap-2">
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-primary">Propósito da Turma</label>
+                <textarea
+                  value={propositoText}
+                  onChange={(e) => setPropositoText(e.target.value)}
+                  placeholder="Ex: Levar as crianças a um encontro pessoal com Cristo."
+                  className="w-full form-input min-h-[80px] resize-none text-sm leading-relaxed border-primary/30 focus:border-primary focus:ring-primary/20 bg-background"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Objetivos do Ciclo</label>
+                <textarea
+                  value={objetivoText}
+                  onChange={(e) => setObjetivoText(e.target.value)}
+                  placeholder="Ex: Compreender a importância da Eucaristia..."
+                  className="w-full form-input min-h-[80px] resize-none text-sm leading-relaxed border-emerald-500/30 focus:border-emerald-500 focus:ring-emerald-500/20 bg-background"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-orange-600">Metas Práticas</label>
+                <textarea
+                  value={metasText}
+                  onChange={(e) => setMetasText(e.target.value)}
+                  placeholder="Ex: 80% de presença nas missas dominicais..."
+                  className="w-full form-input min-h-[80px] resize-none text-sm leading-relaxed border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20 bg-background"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-black/5">
                 <button onClick={() => setIsEditingProposito(false)} className="px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition-colors">
                   Cancelar
                 </button>
                 <button onClick={handleSaveProposito} disabled={turmaMut.isPending} className="px-4 py-2 text-xs font-black bg-primary text-primary-foreground rounded-xl shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-1">
                   <Check className="h-3 w-3" />
-                  {turmaMut.isPending ? "Salvando..." : "Salvar"}
+                  {turmaMut.isPending ? "Salvando..." : "Salvar Painel"}
                 </button>
               </div>
             </div>
           ) : (
-            <div className="text-sm text-foreground/80 leading-relaxed font-medium">
-              {turma?.proposito ? (
-                <span className="whitespace-pre-wrap">{turma.proposito}</span>
-              ) : (
-                <span className="text-muted-foreground italic">Nenhum propósito definido ainda. Clique no ícone de lápis para adicionar o objetivo desta turma.</span>
-              )}
+            <div className="space-y-4">
+              <Tabs value={activePanelTab} onValueChange={(v) => setActivePanelTab(v as any)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 mb-4 bg-muted/50 p-1.5 rounded-xl">
+                  <TabsTrigger value="proposito" className="rounded-lg text-[10px] font-black uppercase tracking-wider py-2 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">Propósito</TabsTrigger>
+                  <TabsTrigger value="objetivo" className="rounded-lg text-[10px] font-black uppercase tracking-wider py-2 data-[state=active]:bg-white data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm">Objetivos</TabsTrigger>
+                  <TabsTrigger value="metas" className="rounded-lg text-[10px] font-black uppercase tracking-wider py-2 data-[state=active]:bg-white data-[state=active]:text-orange-600 data-[state=active]:shadow-sm">Metas</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="proposito" className="mt-0">
+                  <div className="text-sm text-foreground/80 leading-relaxed font-medium bg-primary/5 p-4 rounded-xl border border-primary/10">
+                    {turma?.proposito ? (
+                      <span className="whitespace-pre-wrap">{turma.proposito}</span>
+                    ) : (
+                      <span className="text-muted-foreground italic">Nenhum propósito definido ainda. Clique no ícone de lápis para adicionar.</span>
+                    )}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="objetivo" className="mt-0">
+                  <div className="text-sm text-foreground/80 leading-relaxed font-medium bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
+                    {turma?.objetivo ? (
+                      <span className="whitespace-pre-wrap">{turma.objetivo}</span>
+                    ) : (
+                      <span className="text-muted-foreground italic">Nenhum objetivo definido ainda. Clique no ícone de lápis para adicionar.</span>
+                    )}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="metas" className="mt-0">
+                  <div className="text-sm text-foreground/80 leading-relaxed font-medium bg-orange-500/5 p-4 rounded-xl border border-orange-500/10">
+                    {turma?.metas ? (
+                      <span className="whitespace-pre-wrap">{turma.metas}</span>
+                    ) : (
+                      <span className="text-muted-foreground italic">Nenhuma meta definida ainda. Clique no ícone de lápis para adicionar.</span>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           )}
         </div>

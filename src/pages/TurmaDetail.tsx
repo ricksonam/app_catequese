@@ -327,7 +327,7 @@ export default function TurmaDetail() {
             <div 
               key={mod.label}
               className={cn(
-                "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[130px]",
+                "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[115px]",
                 `bg-gradient-to-br ${mod.bgGradient}`
               )}
               style={{ animationDelay: `${i * 100}ms` }}
@@ -335,7 +335,7 @@ export default function TurmaDetail() {
             >
               <div className="absolute inset-[3px] rounded-[22px] border-2 border-white/40 z-20 pointer-events-none opacity-60"></div>
               
-              <div className={`relative flex flex-col items-center justify-between p-3 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
+              <div className={`relative flex flex-col items-center justify-between py-2 px-2.5 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
                 
                 <div className="absolute -right-3 -top-3 opacity-[0.05] pointer-events-none group-hover:scale-125 group-hover:rotate-12 transition-transform duration-1000">
                    <Icon className="w-16 h-16" />
