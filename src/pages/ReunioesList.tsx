@@ -35,6 +35,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
 
 interface FormData { 
   nome: string; 
+  descricao: string;
   pautas: { id: string; titulo: string; descricao: string; tempo?: number }[]; 
   oracaoInicial: string;
   oracaoTipo: string;
@@ -47,6 +48,7 @@ interface FormData {
 
 const emptyForm: FormData = { 
   nome: "", 
+  descricao: "",
   pautas: [], 
   oracaoInicial: "",
   oracaoTipo: "Oração Simples",
@@ -59,6 +61,7 @@ const emptyForm: FormData = {
 
 const fillFormFromItem = (item: Reuniao): FormData => ({
   nome: item.nome, 
+  descricao: item.descricao || "",
   pautas: item.pautas || [],
   oracaoInicial: item.oracaoInicial || "",
   oracaoTipo: item.oracaoTipo || "Oração Simples",
@@ -126,6 +129,7 @@ export default function ReunioesList() {
         await mutation.mutateAsync({ 
           ...existing!, 
           nome: form.nome, 
+          descricao: form.descricao,
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
           oracaoTipo: form.oracaoTipo,
@@ -141,6 +145,7 @@ export default function ReunioesList() {
           id: crypto.randomUUID(), 
           turmaId: id!, 
           nome: form.nome, 
+          descricao: form.descricao,
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
           oracaoTipo: form.oracaoTipo,
@@ -234,13 +239,14 @@ export default function ReunioesList() {
                   <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
                 </div>
 
-                <div className="space-y-3">
+                <div className="p-4 rounded-2xl bg-violet-50/50 border border-violet-100 space-y-3">
+                  <p className="text-[10px] font-black uppercase text-violet-400 tracking-widest border-b border-violet-100 pb-1">Momento de Oração</p>
                   <div className="flex flex-col gap-2">
                     <label className="text-xs font-semibold text-zinc-900 block">Tipo de Oração</label>
                     <select 
                       value={form.oracaoTipo} 
                       onChange={(e) => updateField("oracaoTipo", e.target.value)} 
-                      className="form-input"
+                      className="form-input bg-white border-transparent focus:border-violet-200"
                     >
                       {ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
@@ -251,7 +257,7 @@ export default function ReunioesList() {
                       value={form.oracaoInicial} 
                       onChange={(e) => updateField("oracaoInicial", e.target.value)} 
                       placeholder="Oração para início da reunião..." 
-                      className="form-input min-h-[80px] resize-y" 
+                      className="form-input bg-white border-transparent focus:border-violet-200 min-h-[80px] resize-y" 
                     />
                   </div>
                 </div>
@@ -259,72 +265,88 @@ export default function ReunioesList() {
                 <div className="space-y-3">
                   <label className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/10 pb-1 block">Pautas e Tópicos</label>
                   
-                  {/* Lista de Pautas Já Adicionadas */}
-                  {form.pautas.length > 0 && (
-                    <div className="space-y-2 mb-4">
-                      {form.pautas.map((p, idx) => (
-                        <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 border border-black/5 group">
-                          <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0">{idx + 1}</span>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-bold text-foreground truncate">{p.titulo}</p>
-                              {p.tempo > 0 && <span className="text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-md border border-sky-100">{p.tempo}min</span>}
+                  {/* Se for reunião de catequistas ou pais, usa o modelo estruturado */}
+                  {(form.tipo === 'Reunião de catequistas' || form.tipo === 'Reunião de pais') ? (
+                    <>
+                      {/* Lista de Pautas Já Adicionadas */}
+                      {form.pautas.length > 0 && (
+                        <div className="space-y-2 mb-4">
+                          {form.pautas.map((p, idx) => (
+                            <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 border border-black/5 group">
+                              <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0">{idx + 1}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-sm font-bold text-foreground truncate">{p.titulo}</p>
+                                  {p.tempo > 0 && <span className="text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-md border border-sky-100">{p.tempo}min</span>}
+                                </div>
+                                <p className="text-[11px] text-muted-foreground line-clamp-2">{p.descricao}</p>
+                              </div>
+                              <button 
+                                onClick={(e) => { e.preventDefault(); setForm(f => ({ ...f, pautas: f.pautas.filter(item => item.id !== p.id) })); }}
+                                className="p-1.5 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
                             </div>
-                            <p className="text-[11px] text-muted-foreground line-clamp-2">{p.descricao}</p>
-                          </div>
-                          <button 
-                            onClick={() => setForm(f => ({ ...f, pautas: f.pautas.filter(item => item.id !== p.id) }))}
-                            className="p-1.5 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          ))}
                         </div>
-                      ))}
+                      )}
+
+                      {/* Área para Adicionar Nova Pauta */}
+                      <div className="p-4 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 space-y-3">
+                        <p className="text-[10px] font-black uppercase text-primary tracking-widest text-center">Novo Tópico da Pauta</p>
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            value={newPauta.titulo} 
+                            onChange={(e) => setNewPauta(p => ({ ...p, titulo: e.target.value }))}
+                            placeholder="Título do tópico..."
+                            className="form-input bg-white border-transparent focus:border-primary/20 flex-1"
+                          />
+                          <div className="w-20">
+                            <input 
+                              type="number" 
+                              value={newPauta.tempo || ""} 
+                              onChange={(e) => setNewPauta(p => ({ ...p, tempo: parseInt(e.target.value) || 0 }))}
+                              placeholder="Min"
+                              className="form-input bg-white border-transparent focus:border-primary/20"
+                            />
+                          </div>
+                        </div>
+                        <textarea 
+                          value={newPauta.descricao} 
+                          onChange={(e) => setNewPauta(p => ({ ...p, descricao: e.target.value }))}
+                          placeholder="Descrição detalhada..."
+                          className="form-input bg-white min-h-[60px] resize-y border-transparent focus:border-primary/20 text-xs"
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            if (!newPauta.titulo) { toast.error("Digite o título da pauta"); return; }
+                            setForm(f => ({ 
+                              ...f, 
+                              pautas: [...f.pautas, { ...newPauta, id: crypto.randomUUID() }] 
+                            }));
+                            setNewPauta({ titulo: "", descricao: "", tempo: 0 });
+                            toast.success("Pauta adicionada!");
+                          }}
+                          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-[10px] hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
+                        >
+                          <Plus className="h-4 w-4" /> Adicionar à Lista
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    /* Caso contrário, usa o modelo simples de descrição */
+                    <div>
+                      <textarea 
+                        value={form.descricao} 
+                        onChange={(e) => updateField("descricao", e.target.value)} 
+                        placeholder="Descreva os assuntos da reunião..." 
+                        className="form-input min-h-[120px] resize-y" 
+                      />
                     </div>
                   )}
-
-                  {/* Área para Adicionar Nova Pauta */}
-                  <div className="p-4 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 space-y-3">
-                    <p className="text-[10px] font-black uppercase text-primary tracking-widest text-center">Novo Tópico da Pauta</p>
-                    <div className="flex gap-2">
-                      <input 
-                        type="text" 
-                        value={newPauta.titulo} 
-                        onChange={(e) => setNewPauta(p => ({ ...p, titulo: e.target.value }))}
-                        placeholder="Título do tópico..."
-                        className="form-input bg-white border-transparent focus:border-primary/20 flex-1"
-                      />
-                      <div className="w-20">
-                        <input 
-                          type="number" 
-                          value={newPauta.tempo || ""} 
-                          onChange={(e) => setNewPauta(p => ({ ...p, tempo: parseInt(e.target.value) || 0 }))}
-                          placeholder="Min"
-                          className="form-input bg-white border-transparent focus:border-primary/20"
-                        />
-                      </div>
-                    </div>
-                    <textarea 
-                      value={newPauta.descricao} 
-                      onChange={(e) => setNewPauta(p => ({ ...p, descricao: e.target.value }))}
-                      placeholder="Descrição detalhada..."
-                      className="form-input bg-white min-h-[60px] resize-y border-transparent focus:border-primary/20 text-xs"
-                    />
-                    <button 
-                      onClick={() => {
-                        if (!newPauta.titulo) { toast.error("Digite o título da pauta"); return; }
-                        setForm(f => ({ 
-                          ...f, 
-                          pautas: [...f.pautas, { ...newPauta, id: crypto.randomUUID() }] 
-                        }));
-                        setNewPauta({ titulo: "", descricao: "", tempo: 0 });
-                        toast.success("Pauta adicionada!");
-                      }}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-[10px] hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
-                    >
-                      <Plus className="h-4 w-4" /> Adicionar à Lista
-                    </button>
-                  </div>
                 </div>
 
                 <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
