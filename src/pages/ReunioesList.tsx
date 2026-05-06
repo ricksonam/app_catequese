@@ -253,11 +253,23 @@ export default function ReunioesList() {
                   <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião *</label>
                   <select 
                     value={form.tipo} 
-                    onChange={(e) => updateField("tipo", e.target.value as ReuniaoTipo)} 
+                    onChange={(e) => {
+                      const newTipo = e.target.value as ReuniaoTipo;
+                      updateField("tipo", newTipo);
+                      // Auto-populate name for specific types if empty
+                      if (!form.nome || form.nome === "" || REUNIAO_TIPOS.includes(form.nome as any)) {
+                         updateField("nome", newTipo);
+                      }
+                    }} 
                     className="form-input font-bold text-primary"
                   >
                     {REUNIAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
+                  <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
                 </div>
 
                 {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE ENCONTRO --- */}
@@ -537,17 +549,8 @@ export default function ReunioesList() {
 
                     <div className="h-px bg-amber-200/30" />
 
-                    {/* Momento de Oração Unificado */}
+                    {/* Momento de Oração Unificado (Refinado: Tipo primeiro, depois Leitura) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-white/50 border border-amber-200/50">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Título da Oração</label>
-                        <input 
-                          value={form.oracaoInicial} 
-                          onChange={(e) => updateField("oracaoInicial", e.target.value)} 
-                          placeholder="Ex: Vinde Espírito Santo" 
-                          className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500" 
-                        />
-                      </div>
                       <div className="space-y-1">
                         <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Tipo de Oração</label>
                         <select 
@@ -558,6 +561,15 @@ export default function ReunioesList() {
                           <option value="">Selecione...</option>
                           {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Leitura Bíblica</label>
+                        <input 
+                          value={form.oracaoInicial} 
+                          onChange={(e) => updateField("oracaoInicial", e.target.value)} 
+                          placeholder="Ex: Mateus 5, 1-12" 
+                          className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500" 
+                        />
                       </div>
                     </div>
 
@@ -620,23 +632,20 @@ export default function ReunioesList() {
 
                 {/* --- CAMPOS GERAIS --- */}
                 <div className="space-y-4">
-                  <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Ex: Planejamento Mensal" />
+                  {form.tipo !== 'Reunião de catequistas' && form.tipo !== 'Reunião de pais' && (
+                    <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Ex: Planejamento Mensal" />
+                  )}
 
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
-                  <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
-                </div>
+                  <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
+                  
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observações Finais</label>
+                    <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} placeholder="Anotações gerais..." className="form-input min-h-[80px] resize-y" />
+                  </div>
 
-                <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
-                
-                <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observações Finais</label>
-                  <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} placeholder="Anotações gerais..." className="form-input min-h-[80px] resize-y" />
-                </div>
-
-                <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">
-                  {mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}
-                </button>
+                  <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">
+                    {mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}
+                  </button>
                 </div>
               </div>
             </DialogContent>
