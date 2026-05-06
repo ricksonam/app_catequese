@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos } from "@/hooks/useSupabaseData";
+import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X, Play, FileSignature } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
@@ -44,6 +44,9 @@ interface FormData {
   local: string; 
   horario: string; 
   observacao: string; 
+  encontrosPreparados?: string[];
+  eventosPreparados?: string[];
+  servicosLiturgia?: Record<string, string>;
 }
 
 const emptyForm: FormData = { 
@@ -56,7 +59,18 @@ const emptyForm: FormData = {
   data: "", 
   local: "", 
   horario: "", 
-  observacao: "" 
+  observacao: "",
+  encontrosPreparados: [],
+  eventosPreparados: [],
+  servicosLiturgia: {
+    'animador': '',
+    '1_leitor': '',
+    'salmista': '',
+    '2_leitor': '',
+    'preces': '',
+    'cantores': '',
+    'celebrante': ''
+  }
 };
 
 const fillFormFromItem = (item: Reuniao): FormData => ({
@@ -70,6 +84,9 @@ const fillFormFromItem = (item: Reuniao): FormData => ({
   local: item.local || '', 
   horario: item.horario || '', 
   observacao: item.observacao || '',
+  encontrosPreparados: item.encontrosPreparados || [],
+  eventosPreparados: item.eventosPreparados || [],
+  servicosLiturgia: item.servicosLiturgia || emptyForm.servicosLiturgia,
 });
 
 const tipoColors: Record<string, string> = {
@@ -77,6 +94,7 @@ const tipoColors: Record<string, string> = {
   'Reunião de pais': 'bg-accent/15 text-accent-foreground',
   'Reunião de preparação de sacramento': 'bg-liturgical/10 text-liturgical',
   'Reunião de preparação de encontro': 'bg-success/10 text-success',
+  'Reunião de preparação de eventos': 'bg-indigo-100 text-indigo-700',
   'Reunião geral': 'bg-gold/15 text-gold',
 };
 
@@ -85,6 +103,7 @@ const TIPO_ICONES: Record<string, string> = {
   'Reunião de pais': '👨‍👩‍👧‍👦',
   'Reunião de preparação de sacramento': '⛪',
   'Reunião de preparação de encontro': '📝',
+  'Reunião de preparação de eventos': '🎉',
   'Reunião geral': '📅',
 };
 
@@ -94,6 +113,8 @@ export default function ReunioesList() {
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: list = [], isLoading } = useReunioes(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
+  const { data: encontros = [] } = useEncontros(id);
+  const { data: atividades = [] } = useAtividades(id);
   const mutation = useReuniaoMutation();
   const deleteMut = useDeleteReuniao();
   const turma = turmas.find(t => t.id === id);
@@ -133,6 +154,9 @@ export default function ReunioesList() {
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
           oracaoTipo: form.oracaoTipo,
+          encontrosPreparados: form.encontrosPreparados,
+          eventosPreparados: form.eventosPreparados,
+          servicosLiturgia: form.servicosLiturgia,
           tipo: form.tipo, 
           data: form.data, 
           local: form.local, 
@@ -149,6 +173,9 @@ export default function ReunioesList() {
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
           oracaoTipo: form.oracaoTipo,
+          encontrosPreparados: form.encontrosPreparados,
+          eventosPreparados: form.eventosPreparados,
+          servicosLiturgia: form.servicosLiturgia,
           tipo: form.tipo, 
           data: form.data, 
           local: form.local, 
@@ -228,6 +255,64 @@ export default function ReunioesList() {
                     {REUNIAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
+
+                {/* Seletor de Encontros (para Preparação de Encontro) */}
+                {form.tipo === 'Reunião de preparação de encontro' && (
+                  <div className="p-4 rounded-2xl bg-success/5 border border-success/20 space-y-3">
+                    <label className="text-xs font-bold text-success block">Encontros a Preparar</label>
+                    <div className="flex flex-wrap gap-2">
+                      {encontros.map(e => (
+                        <button
+                          key={e.id}
+                          type="button"
+                          onClick={() => {
+                            const current = form.encontrosPreparados || [];
+                            const next = current.includes(e.id) ? current.filter(id => id !== e.id) : [...current, e.id];
+                            updateField('encontrosPreparados', next as any);
+                          }}
+                          className={cn(
+                            "px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border",
+                            form.encontrosPreparados?.includes(e.id) 
+                              ? "bg-success text-white border-success" 
+                              : "bg-white text-success border-success/30 hover:bg-success/5"
+                          )}
+                        >
+                          {e.titulo}
+                        </button>
+                      ))}
+                      {encontros.length === 0 && <p className="text-[10px] text-muted-foreground italic">Nenhum encontro encontrado para esta turma.</p>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seletor de Eventos (para Preparação de Eventos) */}
+                {form.tipo === 'Reunião de preparação de eventos' && (
+                  <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 space-y-3">
+                    <label className="text-xs font-bold text-indigo-700 block">Eventos a Preparar</label>
+                    <div className="flex flex-wrap gap-2">
+                      {atividades.map(a => (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => {
+                            const current = form.eventosPreparados || [];
+                            const next = current.includes(a.id) ? current.filter(id => id !== a.id) : [...current, a.id];
+                            updateField('eventosPreparados', next as any);
+                          }}
+                          className={cn(
+                            "px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border",
+                            form.eventosPreparados?.includes(a.id) 
+                              ? "bg-indigo-600 text-white border-indigo-600" 
+                              : "bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                          )}
+                        >
+                          {a.titulo}
+                        </button>
+                      ))}
+                      {atividades.length === 0 && <p className="text-[10px] text-muted-foreground italic">Nenhuma atividade/evento encontrada.</p>}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="text-xs font-semibold text-zinc-900 mb-1 block">Nome da Reunião *</label>
@@ -336,6 +421,36 @@ export default function ReunioesList() {
                         </button>
                       </div>
                     </>
+                  ) : form.tipo === 'Reunião de preparação de sacramento' ? (
+                    /* Caso de preparação de sacramento - Card de Liturgia */
+                    <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 space-y-4">
+                      <p className="text-[10px] font-black uppercase text-amber-600 tracking-widest border-b border-amber-100 pb-1">Serviços na Liturgia</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {[
+                          { id: 'celebrante', label: 'Celebrante (Presidente)' },
+                          { id: 'animador', label: 'Animador / Comentarista' },
+                          { id: '1_leitor', label: '1º Leitor' },
+                          { id: 'salmista', label: 'Salmista' },
+                          { id: '2_leitor', label: '2º Leitor' },
+                          { id: 'preces', label: 'Preces' },
+                          { id: 'cantores', label: 'Cantores' },
+                        ].map(servico => (
+                          <div key={servico.id}>
+                            <label className="text-[10px] font-bold text-amber-700 mb-1 block">{servico.label}</label>
+                            <input 
+                              type="text" 
+                              value={form.servicosLiturgia?.[servico.id] || ""} 
+                              onChange={(e) => {
+                                const next = { ...form.servicosLiturgia, [servico.id]: e.target.value };
+                                updateField('servicosLiturgia', next as any);
+                              }}
+                              className="form-input bg-white border-transparent focus:border-amber-200 text-xs py-1.5"
+                              placeholder="Nome do responsável..."
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ) : (
                     /* Caso contrário, usa o modelo simples de descrição */
                     <div>

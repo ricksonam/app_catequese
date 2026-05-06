@@ -142,10 +142,10 @@ export interface Atividade {
   criadoEm: string;
 }
 
-export type ReuniaoTipo = 'Reunião de catequistas' | 'Reunião de pais' | 'Reunião de preparação de sacramento' | 'Reunião de preparação de encontro' | 'Reunião geral';
+export type ReuniaoTipo = 'Reunião de catequistas' | 'Reunião de pais' | 'Reunião de preparação de sacramento' | 'Reunião de preparação de encontro' | 'Reunião de preparação de eventos' | 'Reunião geral';
 
 export const REUNIAO_TIPOS: ReuniaoTipo[] = [
-  'Reunião de catequistas', 'Reunião de pais', 'Reunião de preparação de sacramento', 'Reunião de preparação de encontro', 'Reunião geral'
+  'Reunião de catequistas', 'Reunião de pais', 'Reunião de preparação de sacramento', 'Reunião de preparação de encontro', 'Reunião de preparação de eventos', 'Reunião geral'
 ];
 
 export interface PautaItem {
@@ -163,6 +163,9 @@ export interface Reuniao {
   pautas?: PautaItem[];
   oracaoInicial?: string;
   oracaoTipo?: string;
+  encontrosPreparados?: string[];
+  eventosPreparados?: string[];
+  servicosLiturgia?: Record<string, string>;
   tipo: ReuniaoTipo;
   data: string;
   local: string;

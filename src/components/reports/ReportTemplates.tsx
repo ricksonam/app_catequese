@@ -479,6 +479,24 @@ export const ReuniaoFullSheet = ({ doc, org, turma, catequizandos }: any) => (
 
       <div>
         <h3 className="text-xs font-black uppercase border-b-2 border-black pb-1 mb-3">Pautas e Deliberações</h3>
+        {doc.servicosLiturgia && Object.values(doc.servicosLiturgia).some(v => v) && (
+          <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-6 bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+            <p className="col-span-2 text-[10px] font-black uppercase text-amber-700 tracking-widest mb-1">Equipe de Liturgia</p>
+            {[
+              { id: 'celebrante', label: 'Celebrante' },
+              { id: 'animador', label: 'Animador' },
+              { id: '1_leitor', label: '1º Leitor' },
+              { id: 'salmista', label: 'Salmista' },
+              { id: '2_leitor', label: '2º Leitor' },
+              { id: 'preces', label: 'Preces' },
+              { id: 'cantores', label: 'Cantores' },
+            ].map(s => doc.servicosLiturgia[s.id] ? (
+              <div key={s.id} className="text-xs">
+                <span className="font-black text-amber-900">{s.label}:</span> {doc.servicosLiturgia[s.id]}
+              </div>
+            ) : null)}
+          </div>
+        )}
         {doc.pautas && doc.pautas.length > 0 ? (
           <div className="space-y-4">
             {doc.pautas.map((p: any, i: number) => (

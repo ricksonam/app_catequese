@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useReunioes } from "@/hooks/useSupabaseData";
+import { useTurmas, useReunioes, useEncontros, useAtividades } from "@/hooks/useSupabaseData";
 import { X as XIcon, ChevronLeft, ChevronRight, Play, Pause, RotateCcw, BookOpen, Users, Sparkles, MessageSquare } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 
@@ -14,6 +14,8 @@ export default function ReuniaoPresentation() {
   const navigate = useNavigate();
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: reunioes = [], isLoading: rLoading } = useReunioes(id);
+  const { data: encontros = [] } = useEncontros(id);
+  const { data: atividades = [] } = useAtividades(id);
   const turma = turmas.find((t) => t.id === id);
   const reuniao = reunioes.find((r) => r.id === reuniaoId);
   
@@ -43,8 +45,38 @@ export default function ReuniaoPresentation() {
     reuniao.pautas.forEach((p, i) => {
       steps.push({ tipo: "pauta", label: p.titulo || `Pauta ${i+1}`, conteudo: p.descricao, tempo: p.tempo, icone: "📋" });
     });
+  } else if (reuniao?.servicosLiturgia && Object.values(reuniao.servicosLiturgia).some(v => v)) {
+    const labels: Record<string, string> = {
+      'celebrante': 'Celebrante (Presidente)',
+      'animador': 'Animador / Comentarista',
+      '1_leitor': '1º Leitor',
+      'salmista': 'Salmista',
+      '2_leitor': '2º Leitor',
+      'preces': 'Preces',
+      'cantores': 'Cantores'
+    };
+    const content = Object.entries(reuniao.servicosLiturgia)
+      .filter(([_, name]) => name)
+      .map(([key, name]) => `**${labels[key] || key}:** ${name}`)
+      .join('\n\n');
+    steps.push({ tipo: "pauta", label: "Equipe de Liturgia", conteudo: content, icone: "⛪" });
   } else if (reuniao?.descricao) {
     steps.push({ tipo: "pauta", label: "Pautas / Descrição", conteudo: reuniao.descricao, icone: "📋" });
+  }
+
+  // Adicionar detalhes de preparação se houver
+  if (reuniao?.encontrosPreparados && reuniao.encontrosPreparados.length > 0) {
+    const titles = reuniao.encontrosPreparados.map(eid => encontros.find(e => e.id === eid)?.titulo).filter(Boolean);
+    if (titles.length > 0) {
+      steps.push({ tipo: "pauta", label: "Encontros a Preparar", conteudo: titles.join(', '), icone: "📝" });
+    }
+  }
+
+  if (reuniao?.eventosPreparados && reuniao.eventosPreparados.length > 0) {
+    const titles = reuniao.eventosPreparados.map(aid => atividades.find(a => a.id === aid)?.titulo).filter(Boolean);
+    if (titles.length > 0) {
+      steps.push({ tipo: "pauta", label: "Eventos a Preparar", conteudo: titles.join(', '), icone: "🎉" });
+    }
   }
 
   steps.push({ tipo: "final", label: "Encerramento", conteudo: reuniao?.observacao || "Reunião finalizada. Obrigado pela presença!", icone: "✨" });
