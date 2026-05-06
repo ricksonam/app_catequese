@@ -159,7 +159,7 @@ export default function PlanoTurma() {
         <TabsList className="grid w-full grid-cols-3 mb-8 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50 h-auto">
           <TabsTrigger value="all" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Tudo</TabsTrigger>
           <TabsTrigger value="encontro" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Encontros</TabsTrigger>
-          <TabsTrigger value="atividade" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Atividades</TabsTrigger>
+          <TabsTrigger value="atividade" className="rounded-xl text-[11px] font-black uppercase tracking-wider py-2.5 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:border-2 data-[state=active]:border-primary data-[state=active]:shadow-lg border-2 border-transparent transition-all">Eventos</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -256,7 +256,7 @@ export default function PlanoTurma() {
                 )}
 
                 <div className="flex gap-2">
-                  <button onClick={() => { if(viewItem.tipo === 'encontro') navigate(`/turmas/${id}/encontros`); else navigate(`/turmas/${id}/atividades`); }} className="flex-1 py-3 rounded-xl bg-muted text-muted-foreground text-xs font-bold uppercase tracking-wider">Ver no Módulo</button>
+                  <button onClick={() => { if(viewItem.tipo === 'encontro') navigate(`/turmas/${id}/encontros`); else navigate(`/turmas/${id}/eventos`); }} className="flex-1 py-3 rounded-xl bg-muted text-muted-foreground text-xs font-bold uppercase tracking-wider">Ver no Módulo</button>
                 </div>
               </div>
 

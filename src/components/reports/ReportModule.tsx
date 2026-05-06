@@ -46,7 +46,7 @@ const MODULE_CONFIG: any = {
     ]
   },
   atividades: {
-    title: "Relatórios de Atividades",
+    title: "Relatórios de Eventos",
     icon: LayoutGrid,
     color: "from-emerald-500 to-teal-600",
     reports: [

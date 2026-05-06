@@ -905,7 +905,7 @@ export default function Dashboard() {
                 <span className={`ml-1 ${liturgicalClasses.textMonth}`}>- {nomeMesCompleto}</span>
               </h3>
               <span className={`text-[8px] font-bold uppercase tracking-tight mt-1 ${liturgicalClasses.textHint}`}>
-                {isAgendaExpanded ? "Próximos encontros e atividades" : "Toque para ver a agenda"}
+                {isAgendaExpanded ? "Próximos encontros e eventos" : "Toque para ver a agenda"}
               </span>
             </div>
             <ChevronDown className={cn(
@@ -979,7 +979,7 @@ export default function Dashboard() {
                       <button 
                         onClick={() => {
                           if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
-                          else navigate(`/turmas/${item.turmaId}/atividades?view=${item.id}`);
+                          else navigate(`/turmas/${item.turmaId}/eventos?view=${item.id}`);
                         }}
                         className="w-full float-card flex items-center gap-3 p-4 text-left group bg-emerald-50/40 border-2 border-emerald-200/60 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-emerald-500/40 hover:-translate-y-1 active:scale-95"
                       >
@@ -992,7 +992,7 @@ export default function Dashboard() {
                           </p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">
-                              Atividade
+                              Evento
                             </span>
                           </div>
                         </div>
