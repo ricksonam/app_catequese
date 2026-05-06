@@ -245,6 +245,12 @@ export async function fetchReunioes(turmaId?: string): Promise<Reuniao[]> {
     id: r.id, turmaId: r.turma_id, nome: r.nome, descricao: r.descricao,
     tipo: r.tipo, data: r.data, local: r.local, horario: r.horario, observacao: r.observacao,
     presencas: r.presencas || [], criadoEm: r.criado_em,
+    pautas: r.pautas || [],
+    oracaoInicial: r.oracao_inicial || "",
+    oracaoTipo: r.oracao_tipo || "Oração Simples",
+    encontrosPreparados: r.encontros_preparados || [],
+    eventosPreparados: r.eventos_preparados || [],
+    servicosLiturgia: r.servicos_liturgia || {},
   }));
 }
 
@@ -253,6 +259,12 @@ export async function upsertReuniao(r: Reuniao) {
     id: r.id, turma_id: r.turmaId, nome: r.nome, descricao: r.descricao,
     tipo: r.tipo, data: r.data, local: r.local, horario: r.horario, observacao: r.observacao,
     presencas: r.presencas as any, criado_em: r.criadoEm,
+    pautas: r.pautas as any,
+    oracao_inicial: r.oracaoInicial,
+    oracao_tipo: r.oracaoTipo,
+    encontros_preparados: r.encontrosPreparados as any,
+    eventos_preparados: r.eventosPreparados as any,
+    servicos_liturgia: r.servicosLiturgia as any,
   });
   if (error) throw error;
 }
