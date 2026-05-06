@@ -21,6 +21,7 @@ export interface Turma {
   codigoAcesso?: string;
   isShared?: boolean; // true if this turma belongs to another catechist
   status?: 'pending' | 'approved';
+  proposito?: string;
 }
 
 export interface ResponsavelInfo {

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeMutation, useEncontroMutation, useReunioes } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2 } from "lucide-react";
+import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeMutation, useEncontroMutation, useReunioes, useTurmaMutation } from "@/hooks/useSupabaseData";
+import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2, Target, Check } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -27,6 +27,26 @@ export default function PlanoTurma() {
   
   const atividadeMut = useAtividadeMutation();
   const encontroMut = useEncontroMutation();
+  const turmaMut = useTurmaMutation();
+
+  const [isEditingProposito, setIsEditingProposito] = useState(false);
+  const [propositoText, setPropositoText] = useState("");
+
+  const handleEditProposito = () => {
+    setPropositoText(turma?.proposito || "");
+    setIsEditingProposito(true);
+  };
+
+  const handleSaveProposito = async () => {
+    if (!turma) return;
+    try {
+      await turmaMut.mutateAsync({ ...turma, proposito: propositoText });
+      setIsEditingProposito(false);
+      toast.success("Propósito e objetivo salvos com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao salvar o propósito.");
+    }
+  };
 
   const totalAlunos = catequizandos.length || 1;
 
@@ -159,6 +179,57 @@ export default function PlanoTurma() {
           </button>
         </div>
       )}
+
+      {/* Propósito e Objetivo Card */}
+      <div className="bg-white dark:bg-zinc-900 rounded-3xl border-2 border-primary/20 shadow-sm p-5 relative overflow-hidden animate-float-up stagger-2">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <Target className="w-24 h-24 text-primary" />
+        </div>
+        <div className="relative z-10 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-primary">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Target className="h-4 w-4" />
+              </div>
+              <h3 className="text-sm font-black uppercase tracking-widest">Propósito da Turma</h3>
+            </div>
+            {!isEditingProposito && (
+              <button onClick={handleEditProposito} className="p-2 rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors">
+                <Pencil className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          
+          {isEditingProposito ? (
+            <div className="space-y-3">
+              <textarea
+                value={propositoText}
+                onChange={(e) => setPropositoText(e.target.value)}
+                placeholder="Qual o propósito e objetivo principal desta turma neste ciclo?"
+                className="w-full form-input min-h-[100px] resize-none text-sm leading-relaxed border-primary/30 focus:border-primary focus:ring-primary/20 bg-background"
+                autoFocus
+              />
+              <div className="flex justify-end gap-2">
+                <button onClick={() => setIsEditingProposito(false)} className="px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition-colors">
+                  Cancelar
+                </button>
+                <button onClick={handleSaveProposito} disabled={turmaMut.isPending} className="px-4 py-2 text-xs font-black bg-primary text-primary-foreground rounded-xl shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-1">
+                  <Check className="h-3 w-3" />
+                  {turmaMut.isPending ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-foreground/80 leading-relaxed font-medium">
+              {turma?.proposito ? (
+                <span className="whitespace-pre-wrap">{turma.proposito}</span>
+              ) : (
+                <span className="text-muted-foreground italic">Nenhum propósito definido ainda. Clique no ícone de lápis para adicionar o objetivo desta turma.</span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
       <Tabs defaultValue="all" value={activeFilter} onValueChange={(v) => setActiveFilter(v as any)} className="w-full animate-fade-in">
         <TabsList className="grid w-full grid-cols-4 mb-8 mt-4 bg-muted/80 p-2 rounded-2xl shadow-sm border border-border/50 h-auto">
