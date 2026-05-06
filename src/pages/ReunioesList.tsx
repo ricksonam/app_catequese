@@ -637,6 +637,7 @@ export default function ReunioesList() {
                 <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">
                   {mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}
                 </button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
