@@ -368,94 +368,6 @@ export default function ReunioesList() {
                   </div>
                 )}
 
-                {/* --- SEÇÃO COMPARTILHADA: ROTEIRO (Para Encontros e Eventos) --- */}
-                {(form.tipo === 'Reunião de preparação de encontro' || form.tipo === 'Reunião de preparação de eventos') && (
-                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
-                    {/* Card Único: Roteiro do Encontro */}
-                    <div className="p-5 rounded-2xl bg-amber-50/50 border-2 border-amber-200/50 shadow-sm space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
-                          <Book className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-black text-amber-900 uppercase tracking-tight leading-none">Roteiro da Reunião</h3>
-                          <p className="text-[9px] font-bold text-amber-700/50 uppercase tracking-widest mt-1">Oração e Tópicos de Preparação</p>
-                        </div>
-                      </div>
-
-                      <div className="h-px bg-amber-200/30" />
-
-                      <div className="flex flex-col items-center gap-2 max-w-[200px] mx-auto">
-                        <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Tipo de Oração</label>
-                        <select 
-                          value={form.oracaoTipo} 
-                          onChange={(e) => updateField("oracaoTipo", e.target.value)} 
-                          className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500 text-center"
-                        >
-                          <option value="">Selecione...</option>
-                          {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between px-1">
-                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Tópicos da Reunião</label>
-                          <button 
-                            type="button" 
-                            onClick={() => {
-                              const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "" }];
-                              updateField("pautas", next);
-                            }}
-                            className="text-[9px] font-black text-amber-600 bg-amber-100/50 px-2 py-1.5 rounded-lg uppercase flex items-center gap-1 hover:bg-amber-100 transition-colors border border-amber-200/50"
-                          >
-                            <Plus className="h-3 w-3" /> Add Tópico
-                          </button>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          {(form.pautas || []).map((p, idx) => (
-                            <div key={p.id} className="p-3 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-sm group animate-in zoom-in-95 duration-200">
-                              <div className="flex items-center gap-2">
-                                <input 
-                                  placeholder="Título do Tópico..." 
-                                  value={p.titulo} 
-                                  onChange={(e) => {
-                                    const next = [...(form.pautas || [])];
-                                    next[idx] = { ...p, titulo: e.target.value };
-                                    updateField("pautas", next);
-                                  }}
-                                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold p-0 text-amber-900 placeholder:text-amber-900/20"
-                                />
-                                <button 
-                                  type="button"
-                                  onClick={() => {
-                                    const next = (form.pautas || []).filter(x => x.id !== p.id);
-                                    updateField("pautas", next);
-                                  }}
-                                  className="p-1 text-amber-300 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-                              <textarea 
-                                placeholder="Detalhes ou objetivos..." 
-                                value={p.descricao}
-                                onChange={(e) => {
-                                  const next = [...(form.pautas || [])];
-                                  next[idx] = { ...p, descricao: e.target.value };
-                                  updateField("pautas", next);
-                                }}
-                                className="w-full bg-transparent border-none focus:ring-0 text-[11px] text-amber-800/60 p-0 resize-none min-h-[30px] placeholder:text-amber-900/10"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE EVENTOS --- */}
                 {form.tipo === 'Reunião de preparação de eventos' && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                     <div className="space-y-2">
@@ -558,8 +470,95 @@ export default function ReunioesList() {
                   </div>
                 )}
 
+                {/* --- SEÇÃO COMPARTILHADA: ROTEIRO (Para Encontros e Eventos) --- */}
+                {(form.tipo === 'Reunião de preparação de encontro' || form.tipo === 'Reunião de preparação de eventos') && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
+                    {/* Card Único: Roteiro do Encontro */}
+                    <div className="p-5 rounded-2xl bg-amber-50/50 border-2 border-amber-200/50 shadow-sm space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
+                          <Book className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-black text-amber-900 uppercase tracking-tight leading-none">Roteiro da Reunião</h3>
+                          <p className="text-[9px] font-bold text-amber-700/50 uppercase tracking-widest mt-1">Oração e Tópicos de Preparação</p>
+                        </div>
+                      </div>
+
+                      <div className="h-px bg-amber-200/30" />
+
+                      <div className="flex flex-col items-center gap-2 max-w-[200px] mx-auto">
+                        <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Tipo de Oração</label>
+                        <select 
+                          value={form.oracaoTipo} 
+                          onChange={(e) => updateField("oracaoTipo", e.target.value)} 
+                          className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500 text-center"
+                        >
+                          <option value="">Selecione...</option>
+                          {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between px-1">
+                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Tópicos da Reunião</label>
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "" }];
+                              updateField("pautas", next);
+                            }}
+                            className="text-[9px] font-black text-amber-600 bg-amber-100/50 px-2 py-1.5 rounded-lg uppercase flex items-center gap-1 hover:bg-amber-100 transition-colors border border-amber-200/50"
+                          >
+                            <Plus className="h-3 w-3" /> Add Tópico
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          {(form.pautas || []).map((p, idx) => (
+                            <div key={p.id} className="p-3 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-sm group animate-in zoom-in-95 duration-200">
+                              <div className="flex items-center gap-2">
+                                <input 
+                                  placeholder="Título do Tópico..." 
+                                  value={p.titulo} 
+                                  onChange={(e) => {
+                                    const next = [...(form.pautas || [])];
+                                    next[idx] = { ...p, titulo: e.target.value };
+                                    updateField("pautas", next);
+                                  }}
+                                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold p-0 text-amber-900 placeholder:text-amber-900/20"
+                                />
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const next = (form.pautas || []).filter(x => x.id !== p.id);
+                                    updateField("pautas", next);
+                                  }}
+                                  className="p-1 text-amber-300 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                              <textarea 
+                                placeholder="Detalhes ou objetivos..." 
+                                value={p.descricao}
+                                onChange={(e) => {
+                                  const next = [...(form.pautas || [])];
+                                  next[idx] = { ...p, descricao: e.target.value };
+                                  updateField("pautas", next);
+                                }}
+                                className="w-full bg-transparent border-none focus:ring-0 text-[11px] text-amber-800/60 p-0 resize-none min-h-[30px] placeholder:text-amber-900/10"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* --- CAMPOS GERAIS --- */}
-                {form.tipo !== 'Reunião de preparação de encontro' && (
+                {form.tipo !== 'Reunião de preparação de encontro' && form.tipo !== 'Reunião de preparação de eventos' && (
                   <div className="space-y-4">
                     <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Ex: Planejamento Mensal" />
                     
