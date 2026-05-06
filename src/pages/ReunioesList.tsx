@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos } from "@/hooks/useSupabaseData";
-import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, ChevronRight, CheckCircle2, Pencil, X, Users } from "lucide-react";
+import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X, Play, FileSignature } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
@@ -37,6 +37,7 @@ interface FormData {
   nome: string; 
   pautas: { id: string; titulo: string; descricao: string; tempo?: number }[]; 
   oracaoInicial: string;
+  oracaoTipo: string;
   tipo: ReuniaoTipo; 
   data: string; 
   local: string; 
@@ -46,8 +47,9 @@ interface FormData {
 
 const emptyForm: FormData = { 
   nome: "", 
-  pautas: [{ id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }], 
+  pautas: [], 
   oracaoInicial: "",
+  oracaoTipo: "Oração Simples",
   tipo: "Reunião de catequistas", 
   data: "", 
   local: "", 
@@ -57,8 +59,9 @@ const emptyForm: FormData = {
 
 const fillFormFromItem = (item: Reuniao): FormData => ({
   nome: item.nome, 
-  pautas: item.pautas && item.pautas.length > 0 ? item.pautas : [{ id: crypto.randomUUID(), titulo: "", descricao: item.descricao || "", tempo: 0 }],
+  pautas: item.pautas || [],
   oracaoInicial: item.oracaoInicial || "",
+  oracaoTipo: item.oracaoTipo || "Oração Simples",
   tipo: item.tipo,
   data: item.data || '', 
   local: item.local || '', 
@@ -98,6 +101,7 @@ export default function ReunioesList() {
   const [viewItem, setViewItem] = useState<Reuniao | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
+  const [newPauta, setNewPauta] = useState({ titulo: "", descricao: "", tempo: 0 });
 
   // Auto-view item from URL param
   useEffect(() => {
@@ -124,6 +128,7 @@ export default function ReunioesList() {
           nome: form.nome, 
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
+          oracaoTipo: form.oracaoTipo,
           tipo: form.tipo, 
           data: form.data, 
           local: form.local, 
@@ -138,6 +143,7 @@ export default function ReunioesList() {
           nome: form.nome, 
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
+          oracaoTipo: form.oracaoTipo,
           tipo: form.tipo, 
           data: form.data, 
           local: form.local, 
@@ -149,6 +155,7 @@ export default function ReunioesList() {
         toast.success("Reunião criada!");
       }
       setForm({ ...emptyForm }); setOpen(false);
+      setNewPauta({ titulo: "", descricao: "", tempo: 0 });
     } catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
@@ -209,7 +216,14 @@ export default function ReunioesList() {
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
               <DialogHeader><DialogTitle>{editingId ? 'Editar Reunião' : 'Nova Reunião'}</DialogTitle></DialogHeader>
-              <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+               <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <div>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião</label>
+                  <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input">
+                    {REUNIAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+
                 <div>
                   <label className="text-xs font-semibold text-zinc-900 mb-1 block">Nome da Reunião *</label>
                   <input type="text" value={form.nome} onChange={(e) => updateField("nome", e.target.value)} placeholder="Ex: Planejamento Mensal" className="form-input" />
@@ -220,84 +234,96 @@ export default function ReunioesList() {
                   <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião</label>
-                  <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input">
-                    {REUNIAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Oração Inicial</label>
-                  <textarea 
-                    value={form.oracaoInicial} 
-                    onChange={(e) => updateField("oracaoInicial", e.target.value)} 
-                    placeholder="Oração para início da reunião..." 
-                    className="form-input min-h-[80px] resize-y" 
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-primary">Pautas e Tópicos</label>
-                    <button 
-                      onClick={() => setForm(f => ({ ...f, pautas: [...f.pautas, { id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }] }))}
-                      className="flex items-center gap-1 text-[10px] font-black uppercase text-primary bg-primary/10 px-2 py-1 rounded-full hover:bg-primary/20 transition-all"
+                <div className="space-y-3">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-semibold text-zinc-900 block">Tipo de Oração</label>
+                    <select 
+                      value={form.oracaoTipo} 
+                      onChange={(e) => updateField("oracaoTipo", e.target.value)} 
+                      className="form-input"
                     >
-                      <Plus className="h-3 w-3" /> Add Pauta
-                    </button>
+                      {ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
                   </div>
-                  <div className="space-y-3">
-                    {form.pautas.map((pauta, idx) => (
-                      <div key={pauta.id} className="p-3 rounded-2xl bg-zinc-50 border border-black/5 relative group">
-                        <button 
-                          onClick={() => setForm(f => ({ ...f, pautas: f.pautas.filter(p => p.id !== pauta.id) }))}
-                          disabled={form.pautas.length === 1}
-                          className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-destructive text-white items-center justify-center hidden group-hover:flex shadow-md disabled:opacity-0"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                        <div className="space-y-2">
-                          <div className="flex gap-2">
-                            <input 
-                              type="text" 
-                              value={pauta.titulo} 
-                              onChange={(e) => {
-                                const newPautas = [...form.pautas];
-                                newPautas[idx].titulo = e.target.value;
-                                setForm(f => ({ ...f, pautas: newPautas }));
-                              }}
-                              placeholder={`Tópico ${idx + 1}`}
-                              className="form-input bg-white border-transparent focus:border-primary/20 flex-1"
-                            />
-                            <div className="w-24 relative">
-                              <input 
-                                type="number" 
-                                value={pauta.tempo || ""} 
-                                onChange={(e) => {
-                                  const newPautas = [...form.pautas];
-                                  newPautas[idx].tempo = parseInt(e.target.value) || 0;
-                                  setForm(f => ({ ...f, pautas: newPautas }));
-                                }}
-                                placeholder="Min"
-                                className="form-input bg-white border-transparent focus:border-primary/20 pl-7"
-                              />
-                              <Clock className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Oração Inicial</label>
+                    <textarea 
+                      value={form.oracaoInicial} 
+                      onChange={(e) => updateField("oracaoInicial", e.target.value)} 
+                      placeholder="Oração para início da reunião..." 
+                      className="form-input min-h-[80px] resize-y" 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/10 pb-1 block">Pautas e Tópicos</label>
+                  
+                  {/* Lista de Pautas Já Adicionadas */}
+                  {form.pautas.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      {form.pautas.map((p, idx) => (
+                        <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 border border-black/5 group">
+                          <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0">{idx + 1}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-bold text-foreground truncate">{p.titulo}</p>
+                              {p.tempo > 0 && <span className="text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-md border border-sky-100">{p.tempo}min</span>}
                             </div>
+                            <p className="text-[11px] text-muted-foreground line-clamp-2">{p.descricao}</p>
                           </div>
-                          <textarea 
-                            value={pauta.descricao} 
-                            onChange={(e) => {
-                              const newPautas = [...form.pautas];
-                              newPautas[idx].descricao = e.target.value;
-                              setForm(f => ({ ...f, pautas: newPautas }));
-                            }}
-                            placeholder="Detalhes do tópico..."
-                            className="form-input bg-white min-h-[60px] resize-y border-transparent focus:border-primary/20 text-xs"
-                          />
+                          <button 
+                            onClick={() => setForm(f => ({ ...f, pautas: f.pautas.filter(item => item.id !== p.id) }))}
+                            className="p-1.5 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Área para Adicionar Nova Pauta */}
+                  <div className="p-4 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 space-y-3">
+                    <p className="text-[10px] font-black uppercase text-primary tracking-widest text-center">Novo Tópico da Pauta</p>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        value={newPauta.titulo} 
+                        onChange={(e) => setNewPauta(p => ({ ...p, titulo: e.target.value }))}
+                        placeholder="Título do tópico..."
+                        className="form-input bg-white border-transparent focus:border-primary/20 flex-1"
+                      />
+                      <div className="w-20">
+                        <input 
+                          type="number" 
+                          value={newPauta.tempo || ""} 
+                          onChange={(e) => setNewPauta(p => ({ ...p, tempo: parseInt(e.target.value) || 0 }))}
+                          placeholder="Min"
+                          className="form-input bg-white border-transparent focus:border-primary/20"
+                        />
                       </div>
-                    ))}
+                    </div>
+                    <textarea 
+                      value={newPauta.descricao} 
+                      onChange={(e) => setNewPauta(p => ({ ...p, descricao: e.target.value }))}
+                      placeholder="Descrição detalhada..."
+                      className="form-input bg-white min-h-[60px] resize-y border-transparent focus:border-primary/20 text-xs"
+                    />
+                    <button 
+                      onClick={() => {
+                        if (!newPauta.titulo) { toast.error("Digite o título da pauta"); return; }
+                        setForm(f => ({ 
+                          ...f, 
+                          pautas: [...f.pautas, { ...newPauta, id: crypto.randomUUID() }] 
+                        }));
+                        setNewPauta({ titulo: "", descricao: "", tempo: 0 });
+                        toast.success("Pauta adicionada!");
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-[10px] hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
+                    >
+                      <Plus className="h-4 w-4" /> Adicionar à Lista
+                    </button>
                   </div>
                 </div>
 

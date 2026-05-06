@@ -162,6 +162,7 @@ export interface Reuniao {
   descricao?: string;
   pautas?: PautaItem[];
   oracaoInicial?: string;
+  oracaoTipo?: string;
   tipo: ReuniaoTipo;
   data: string;
   local: string;
