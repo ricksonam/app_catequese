@@ -273,7 +273,7 @@ export default function ReunioesList() {
                     >
                       <option value="">+ Adicionar Encontro à Lista...</option>
                       {encontros.filter(e => !form.encontrosPreparados?.includes(e.id)).map(e => (
-                        <option key={e.id} value={e.id}>{e.titulo}</option>
+                        <option key={e.id} value={e.id}>{e.tema}</option>
                       ))}
                     </select>
 
@@ -283,7 +283,7 @@ export default function ReunioesList() {
                         if (!enc) return null;
                         return (
                           <div key={eid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-success text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
-                            <span className="truncate max-w-[150px]">{enc.titulo}</span>
+                            <span className="truncate max-w-[150px]">{enc.tema}</span>
                             <button 
                               type="button"
                               onClick={() => {
@@ -321,7 +321,7 @@ export default function ReunioesList() {
                     >
                       <option value="">+ Adicionar Evento à Lista...</option>
                       {atividades.filter(a => !form.eventosPreparados?.includes(a.id)).map(a => (
-                        <option key={a.id} value={a.id}>{a.titulo}</option>
+                        <option key={a.id} value={a.id}>{a.nome}</option>
                       ))}
                     </select>
 
@@ -331,7 +331,7 @@ export default function ReunioesList() {
                         if (!act) return null;
                         return (
                           <div key={aid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
-                            <span className="truncate max-w-[150px]">{act.titulo}</span>
+                            <span className="truncate max-w-[150px]">{act.nome}</span>
                             <button 
                               type="button"
                               onClick={() => {

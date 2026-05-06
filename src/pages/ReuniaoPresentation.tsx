@@ -71,14 +71,14 @@ export default function ReuniaoPresentation() {
 
   // Adicionar detalhes de preparação se houver
   if (reuniao?.encontrosPreparados && reuniao.encontrosPreparados.length > 0) {
-    const titles = reuniao.encontrosPreparados.map(eid => encontros.find(e => e.id === eid)?.titulo).filter(Boolean);
+    const titles = reuniao.encontrosPreparados.map(eid => encontros.find(e => e.id === eid)?.tema).filter(Boolean);
     if (titles.length > 0) {
       steps.push({ tipo: "pauta", label: "Encontros a Preparar", conteudo: titles.join(', '), icone: "📝" });
     }
   }
 
   if (reuniao?.eventosPreparados && reuniao.eventosPreparados.length > 0) {
-    const titles = reuniao.eventosPreparados.map(aid => atividades.find(a => a.id === aid)?.titulo).filter(Boolean);
+    const titles = reuniao.eventosPreparados.map(aid => atividades.find(a => a.id === aid)?.nome).filter(Boolean);
     if (titles.length > 0) {
       steps.push({ tipo: "pauta", label: "Eventos a Preparar", conteudo: titles.join(', '), icone: "🎉" });
     }
