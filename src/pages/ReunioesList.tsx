@@ -470,8 +470,59 @@ export default function ReunioesList() {
                   </div>
                 )}
 
-                {/* --- SEÇÃO COMPARTILHADA: ROTEIRO (Para Encontros e Eventos) --- */}
-                {(form.tipo === 'Reunião de preparação de encontro' || form.tipo === 'Reunião de preparação de eventos') && (
+                {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE SACRAMENTO / LITURGIA --- */}
+                {form.tipo === 'Reunião de preparação de sacramento' && (
+                  <div className="p-4 rounded-2xl bg-liturgical/5 border border-liturgical/20 space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-liturgical/10 text-liturgical flex items-center justify-center">
+                        <Users className="h-4 w-4" />
+                      </div>
+                      <p className="text-[10px] font-black uppercase text-liturgical tracking-widest">Equipe de Liturgia / Trabalho</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Celebrante (Presidente)</label>
+                         <input value={form.servicosLiturgia?.celebrante} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, celebrante: e.target.value })} placeholder="Padre ou Diácono..." className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5 focus:ring-liturgical focus:border-liturgical" />
+                       </div>
+                       
+                       <div className="grid grid-cols-2 gap-3">
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Animador</label>
+                           <input value={form.servicosLiturgia?.animador} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, animador: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Salmista</label>
+                           <input value={form.servicosLiturgia?.salmista} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, salmista: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                       </div>
+
+                       <div className="grid grid-cols-2 gap-3">
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">1º Leitor</label>
+                           <input value={form.servicosLiturgia?.['1_leitor']} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, '1_leitor': e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                         <div className="space-y-1">
+                           <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">2º Leitor</label>
+                           <input value={form.servicosLiturgia?.['2_leitor']} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, '2_leitor': e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                         </div>
+                       </div>
+
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Preces / Outros</label>
+                         <input value={form.servicosLiturgia?.preces} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, preces: e.target.value })} className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                       </div>
+                       
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-bold text-liturgical/60 ml-1 uppercase">Ministério de Canto</label>
+                         <input value={form.servicosLiturgia?.cantores} onChange={(e) => updateField("servicosLiturgia", { ...form.servicosLiturgia, cantores: e.target.value })} placeholder="Grupo ou coral..." className="w-full bg-white border-liturgical/20 rounded-xl text-xs font-bold p-2.5" />
+                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* --- SEÇÃO COMPARTILHADA: ROTEIRO (Para Encontros, Eventos e Sacramentos) --- */}
+                {(form.tipo === 'Reunião de preparação de encontro' || form.tipo === 'Reunião de preparação de eventos' || form.tipo === 'Reunião de preparação de sacramento') && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
                     {/* Card Único: Roteiro do Encontro */}
                     <div className="p-5 rounded-2xl bg-amber-50/50 border-2 border-amber-200/50 shadow-sm space-y-4">
@@ -795,22 +846,52 @@ export default function ReunioesList() {
                   </div>
                 )}
 
+                {/* Serviços de Liturgia no Detalhe */}
+                {viewItem.servicosLiturgia && Object.values(viewItem.servicosLiturgia).some(v => v) && (
+                  <div className="mt-6 p-5 rounded-[2rem] bg-liturgical/5 border border-liturgical/10 space-y-4">
+                    <p className="text-[10px] font-black uppercase text-liturgical tracking-[0.2em] border-b border-liturgical/10 pb-1.5 flex items-center gap-2">
+                      <Sparkles className="h-3 w-3" /> Equipe de Liturgia / Trabalho
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
+                      {Object.entries({
+                        'Celebrante': viewItem.servicosLiturgia.celebrante,
+                        'Animador': viewItem.servicosLiturgia.animador,
+                        '1º Leitor': viewItem.servicosLiturgia['1_leitor'],
+                        'Salmista': viewItem.servicosLiturgia.salmista,
+                        '2º Leitor': viewItem.servicosLiturgia['2_leitor'],
+                        'Preces': viewItem.servicosLiturgia.preces,
+                        'Cantores': viewItem.servicosLiturgia.cantores,
+                      }).map(([label, value]) => value && (
+                        <div key={label} className="space-y-0.5">
+                          <p className="text-[10px] font-black text-liturgical/50 uppercase tracking-tighter">{label}</p>
+                          <p className="text-sm font-bold text-foreground">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-6 space-y-4">
                   <p className="text-[10px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1">Pautas e Tópicos</p>
                   {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-3">
                       {viewItem.pautas.map((p, i) => (
-                        <div key={p.id} className="relative pl-10">
-                          <span className="absolute left-0 top-0 w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-xs">{i+1}</span>
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-black text-foreground">{p.titulo}</p>
-                            {p.tempo !== undefined && p.tempo > 0 && (
-                              <span className="flex items-center gap-1 text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-md border border-sky-100/50">
-                                <Clock className="h-2.5 w-2.5" /> {p.tempo} min
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{p.descricao}</p>
+                        <div key={p.id} className="relative group">
+                           <div className="absolute -left-2 top-0 bottom-0 w-1 bg-primary/20 rounded-full group-hover:bg-primary transition-colors" />
+                           <div className="bg-card rounded-2xl p-4 border border-black/5 shadow-sm">
+                             <div className="flex items-center justify-between mb-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-[10px] font-black">{i+1}</span>
+                                  <h4 className="text-sm font-black text-foreground uppercase tracking-tight">{p.titulo}</h4>
+                                </div>
+                                {p.tempo !== undefined && p.tempo > 0 && (
+                                  <span className="flex items-center gap-1 text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-2 py-1 rounded-lg border border-sky-100">
+                                    <Clock className="h-3 w-3" /> {p.tempo} min
+                                  </span>
+                                )}
+                             </div>
+                             <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap pl-8">{p.descricao}</p>
+                           </div>
                         </div>
                       ))}
                     </div>
