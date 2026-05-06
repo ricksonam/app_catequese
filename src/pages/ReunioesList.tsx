@@ -314,27 +314,27 @@ export default function ReunioesList() {
                                     className={cn(
                                       "w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left group",
                                       isSelected 
-                                        ? "bg-emerald-50 border-emerald-500 shadow-md scale-[1.01]" 
-                                        : "bg-white border-black/5 hover:border-emerald-200"
+                                        ? "bg-rose-50 border-rose-500 shadow-md scale-[1.01]" 
+                                        : "bg-white border-black/5 hover:border-rose-200"
                                     )}
                                   >
                                     <div className={cn(
                                       "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                                      isSelected ? "bg-emerald-500 text-white shadow-lg" : "bg-emerald-50 text-emerald-300"
+                                      isSelected ? "bg-rose-500 text-white shadow-lg" : "bg-rose-50 text-rose-500"
                                     )}>
                                       <CalendarDays className="h-5 w-5" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className={cn("text-sm font-bold truncate", isSelected ? "text-emerald-900" : "text-foreground")}>
+                                      <p className={cn("text-sm font-bold truncate", isSelected ? "text-rose-900" : "text-foreground")}>
                                         {enc.tema}
                                       </p>
-                                      <p className="text-[10px] font-black text-emerald-600/40 uppercase tracking-tighter">
+                                      <p className="text-[10px] font-black text-rose-600/60 uppercase tracking-tighter">
                                         {enc.data ? formatarDataVigente(enc.data).split(' - ')[0] : 'Data pendente'}
                                       </p>
                                     </div>
                                     <div className={cn(
                                       "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
-                                      isSelected ? "bg-emerald-500 border-emerald-500" : "bg-white border-emerald-100"
+                                      isSelected ? "bg-rose-500 border-rose-500" : "bg-white border-rose-100"
                                     )}>
                                       {isSelected && <CheckCircle2 className="h-3 w-3 text-white" />}
                                     </div>
@@ -379,27 +379,16 @@ export default function ReunioesList() {
 
                       <div className="h-px bg-amber-200/30" />
 
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Oração Inicial</label>
-                          <input 
-                            value={form.oracaoInicial} 
-                            onChange={(e) => updateField("oracaoInicial", e.target.value)} 
-                            placeholder="Título da oração..." 
-                            className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500" 
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Tipo de Oração</label>
-                          <select 
-                            value={form.oracaoTipo} 
-                            onChange={(e) => updateField("oracaoTipo", e.target.value)} 
-                            className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500"
-                          >
-                            <option value="">Selecione...</option>
-                            {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-                          </select>
-                        </div>
+                      <div className="flex flex-col items-center gap-2 max-w-[200px] mx-auto">
+                        <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Tipo de Oração</label>
+                        <select 
+                          value={form.oracaoTipo} 
+                          onChange={(e) => updateField("oracaoTipo", e.target.value)} 
+                          className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500 text-center"
+                        >
+                          <option value="">Selecione...</option>
+                          {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
                       </div>
 
                       <div className="space-y-3">
