@@ -222,12 +222,29 @@ export default function TurmaDetail() {
           </button>
           
           <div className="flex flex-col items-center gap-1">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase text-center leading-tight">
               {turma.nome}
             </h1>
-            <span className="shrink-0 text-sm font-black px-2.5 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 border border-black/10 shadow-sm">
-              {turma.ano}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="shrink-0 text-sm font-black px-2.5 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 border border-black/10 shadow-sm">
+                {turma.ano}
+              </span>
+              
+              {!turma.isShared && turma.codigoAcesso && (
+                <button 
+                  onClick={() => setShareWarningOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm"
+                >
+                  <Link2 className="h-3.5 w-3.5" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Código da Turma</span>
+                  {!codeVisible ? (
+                    <Eye className="h-3 w-3 opacity-50 group-hover:opacity-100" />
+                  ) : (
+                    <span className="ml-1 font-mono font-bold tracking-wider">{turma.codigoAcesso}</span>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -238,23 +255,6 @@ export default function TurmaDetail() {
           <InfoBadge label="Hora" value={turma.horario} color="bg-white text-foreground border-black/10 shadow-sm" />
         </div>
 
-        {/* Botão Código de Acesso (Dono) */}
-        {!turma.isShared && turma.codigoAcesso && (
-          <div className="flex justify-center">
-             <button 
-               onClick={() => setShareWarningOpen(true)}
-               className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm"
-             >
-                <Link2 className="h-4 w-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Código de Compartilhamento</span>
-                {!codeVisible ? (
-                  <Eye className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100" />
-                ) : (
-                  <span className="ml-1 font-mono font-bold tracking-wider">{turma.codigoAcesso}</span>
-                )}
-             </button>
-          </div>
-        )}
 
         {/* Row 3: Relatórios (Esquerda) + Ações (Direita) */}
         <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
