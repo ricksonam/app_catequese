@@ -365,6 +365,12 @@ export default function ReunioesList() {
                       )}
                     </div>
 
+                  </div>
+                )}
+
+                {/* --- SEÇÃO COMPARTILHADA: ROTEIRO (Para Encontros e Eventos) --- */}
+                {(form.tipo === 'Reunião de preparação de encontro' || form.tipo === 'Reunião de preparação de eventos') && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
                     {/* Card Único: Roteiro do Encontro */}
                     <div className="p-5 rounded-2xl bg-amber-50/50 border-2 border-amber-200/50 shadow-sm space-y-4">
                       <div className="flex items-center gap-3">
@@ -372,7 +378,7 @@ export default function ReunioesList() {
                           <Book className="h-5 w-5" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-black text-amber-900 uppercase tracking-tight leading-none">Roteiro do Encontro</h3>
+                          <h3 className="text-sm font-black text-amber-900 uppercase tracking-tight leading-none">Roteiro da Reunião</h3>
                           <p className="text-[9px] font-bold text-amber-700/50 uppercase tracking-widest mt-1">Oração e Tópicos de Preparação</p>
                         </div>
                       </div>
@@ -451,38 +457,103 @@ export default function ReunioesList() {
 
                 {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE EVENTOS --- */}
                 {form.tipo === 'Reunião de preparação de eventos' && (
-                  <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 space-y-3">
-                    <label className="text-xs font-bold text-indigo-700 block">Eventos a Preparar</label>
-                    <select 
-                      className="form-input bg-white text-xs font-bold" 
-                      value=""
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val && !form.eventosPreparados?.includes(val)) {
-                          const next = [...(form.eventosPreparados || []), val];
-                          updateField('eventosPreparados', next as any);
-                        }
-                      }}
-                    >
-                      <option value="">+ Adicionar Evento à Lista...</option>
-                      {atividades.filter(a => !form.eventosPreparados?.includes(a.id)).map(a => (
-                        <option key={a.id} value={a.id}>{a.nome}</option>
-                      ))}
-                    </select>
-
-                    <div className="flex flex-wrap gap-2">
-                      {form.eventosPreparados?.map(aid => {
-                        const act = atividades.find(a => a.id === aid);
-                        if (!act) return null;
-                        return (
-                          <div key={aid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
-                            <span className="truncate max-w-[150px]">{act.nome}</span>
-                            <button type="button" onClick={() => updateField('eventosPreparados', form.eventosPreparados?.filter(id => id !== aid) as any)} className="p-0.5 hover:bg-black/10 rounded-full transition-colors">
-                              <X className="h-3 w-3" />
-                            </button>
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-indigo-600 uppercase tracking-widest ml-1">Selecione os Eventos a Preparar</label>
+                      
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button 
+                            type="button"
+                            className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border-2 border-indigo-100 hover:border-indigo-300 transition-all shadow-sm group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-inner">
+                                <Sparkles className="h-5 w-5" />
+                              </div>
+                              <div className="text-left">
+                                <p className="text-sm font-black text-foreground">
+                                  {form.eventosPreparados?.length ? `${form.eventosPreparados.length} selecionado(s)` : "Lista de Eventos"}
+                                </p>
+                                <p className="text-[10px] font-bold text-indigo-600/60 uppercase tracking-widest">Toque para selecionar</p>
+                              </div>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-indigo-300 group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-[90vw] sm:max-w-[400px] rounded-3xl p-6">
+                          <DialogHeader>
+                            <DialogTitle className="text-lg font-black text-indigo-900 uppercase tracking-tight">Lista de Eventos</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-2 mt-4 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
+                            {atividades.map((act) => {
+                              const isSelected = form.eventosPreparados?.includes(act.id);
+                              return (
+                                <button
+                                  key={act.id}
+                                  type="button"
+                                  onClick={() => {
+                                    let next;
+                                    if (isSelected) {
+                                      next = form.eventosPreparados?.filter(id => id !== act.id);
+                                    } else {
+                                      next = [...(form.eventosPreparados || []), act.id];
+                                    }
+                                    updateField('eventosPreparados', next as any);
+                                    if (!isSelected && next?.length === 1 && !form.nome) {
+                                      updateField('nome', `Preparação: ${act.nome}`);
+                                    }
+                                  }}
+                                  className={cn(
+                                    "w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all text-left group",
+                                    isSelected 
+                                      ? "bg-rose-50 border-rose-500 shadow-md scale-[1.01]" 
+                                      : "bg-white border-black/5 hover:border-indigo-200"
+                                  )}
+                                >
+                                  <div className={cn(
+                                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                                    isSelected ? "bg-rose-500 text-white shadow-lg" : "bg-indigo-50 text-indigo-500"
+                                  )}>
+                                    <Sparkles className="h-5 w-5" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className={cn("text-sm font-bold truncate", isSelected ? "text-rose-900" : "text-foreground")}>
+                                      {act.nome}
+                                    </p>
+                                    <p className="text-[10px] font-black text-rose-600/60 uppercase tracking-tighter">
+                                      {act.data ? formatarDataVigente(act.data).split(' - ')[0] : 'Data pendente'}
+                                    </p>
+                                  </div>
+                                  <div className={cn(
+                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
+                                    isSelected ? "bg-rose-500 border-rose-500" : "bg-white border-indigo-100"
+                                  )}>
+                                    {isSelected && <CheckCircle2 className="h-3 w-3 text-white" />}
+                                  </div>
+                                </button>
+                              );
+                            })}
                           </div>
-                        );
-                      })}
+                        </DialogContent>
+                      </Dialog>
+
+                      {form.eventosPreparados && form.eventosPreparados.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3 animate-in fade-in duration-500">
+                          {form.eventosPreparados.map(aid => {
+                            const act = atividades.find(a => a.id === aid);
+                            if (!act) return null;
+                            return (
+                              <div key={aid} className="flex items-center gap-1.5 px-3 py-2 bg-rose-500 text-white rounded-xl text-[10px] font-black shadow-sm shadow-rose-500/20 border border-rose-400">
+                                <span className="truncate max-w-[120px]">{act.nome}</span>
+                                <button type="button" onClick={() => updateField('eventosPreparados', form.eventosPreparados?.filter(id => id !== aid) as any)} className="hover:bg-white/20 p-0.5 rounded-full transition-colors">
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

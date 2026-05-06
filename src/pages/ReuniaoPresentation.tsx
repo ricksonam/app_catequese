@@ -37,11 +37,12 @@ export default function ReuniaoPresentation() {
 
   // Construir os passos da apresentação
   const steps = [];
-  if (reuniao?.oracaoInicial) {
+  
+  if (reuniao?.oracaoInicial || reuniao?.oracaoTipo) {
     steps.push({ 
       tipo: "oracao", 
       label: reuniao.oracaoTipo ? `Oração: ${reuniao.oracaoTipo}` : "Oração Inicial", 
-      conteudo: reuniao.oracaoInicial, 
+      conteudo: reuniao.oracaoInicial || `Momento de ${reuniao.oracaoTipo || 'Oração'}`, 
       icone: "🙏" 
     });
   }
