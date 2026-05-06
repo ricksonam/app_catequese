@@ -492,7 +492,7 @@ export default function ReunioesList() {
                 {/* --- SEÇÃO UNIFICADA: ROTEIRO (Para TODOS os tipos) --- */}
                 <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
                   {/* Card Único: Roteiro da Reunião */}
-                  <div className="p-5 rounded-2xl bg-blue-50/50 border-2 border-blue-200/50 shadow-sm space-y-4">
+                  <div className="p-5 rounded-2xl bg-white border-2 border-blue-100 shadow-sm space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
                         <Book className="h-5 w-5" />
