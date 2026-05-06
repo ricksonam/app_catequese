@@ -248,68 +248,180 @@ export default function ReunioesList() {
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
               <DialogHeader><DialogTitle>{editingId ? 'Editar Reunião' : 'Nova Reunião'}</DialogTitle></DialogHeader>
-               <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião</label>
-                  <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input">
-                    {REUNIAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião *</label>
+                  <select 
+                    value={form.tipo} 
+                    onChange={(e) => updateField("tipo", e.target.value as ReuniaoTipo)} 
+                    className="form-input font-bold text-primary"
+                  >
+                    {REUNIAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
 
-                {/* Seletor de Encontros (para Preparação de Encontro) */}
+                {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE ENCONTRO --- */}
                 {form.tipo === 'Reunião de preparação de encontro' && (
-                  <div className="p-4 rounded-2xl bg-success/5 border border-success/20 space-y-3">
-                    <label className="text-xs font-bold text-success block">Encontros a Preparar</label>
-                    <select 
-                      className="form-input bg-white text-xs" 
-                      value=""
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val && !form.encontrosPreparados?.includes(val)) {
-                          const next = [...(form.encontrosPreparados || []), val];
-                          updateField('encontrosPreparados', next as any);
-                        }
-                      }}
-                    >
-                      <option value="">+ Adicionar Encontro à Lista...</option>
-                      {encontros.filter(e => !form.encontrosPreparados?.includes(e.id)).map(e => (
-                        <option key={e.id} value={e.id}>{e.tema}</option>
-                      ))}
-                    </select>
-
-                    <div className="flex flex-wrap gap-2">
-                      {form.encontrosPreparados?.map(eid => {
-                        const enc = encontros.find(e => e.id === eid);
-                        if (!enc) return null;
-                        return (
-                          <div key={eid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-success text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
-                            <span className="truncate max-w-[150px]">{enc.tema}</span>
-                            <button 
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    {/* Lista de Cards de Encontros */}
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-emerald-600 uppercase tracking-widest ml-1">Selecione o Encontro a Preparar</label>
+                      <div className="flex overflow-x-auto pb-4 gap-3 snap-x scrollbar-hide">
+                        {encontros.map((enc) => {
+                          const isSelected = form.encontrosPreparados?.includes(enc.id);
+                          return (
+                            <button
+                              key={enc.id}
                               type="button"
                               onClick={() => {
-                                const next = form.encontrosPreparados?.filter(id => id !== eid);
+                                let next;
+                                if (isSelected) {
+                                  next = form.encontrosPreparados?.filter(id => id !== enc.id);
+                                } else {
+                                  next = [...(form.encontrosPreparados || []), enc.id];
+                                }
                                 updateField('encontrosPreparados', next as any);
+                                if (!isSelected && next?.length === 1 && !form.nome) {
+                                  updateField('nome', `Preparação: ${enc.tema}`);
+                                }
                               }}
-                              className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
+                              className={cn(
+                                "flex-shrink-0 w-48 p-4 rounded-2xl border-2 transition-all snap-center relative text-left",
+                                isSelected 
+                                  ? "bg-white border-emerald-500 shadow-xl scale-[1.05] z-10" 
+                                  : "bg-zinc-50 border-black/5 opacity-60 hover:opacity-100"
+                              )}
                             >
-                              <X className="h-3 w-3" />
+                              <div className={cn(
+                                "absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
+                                isSelected ? "bg-emerald-500 border-emerald-500" : "bg-white border-zinc-200"
+                              )}>
+                                {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                              </div>
+
+                              <div className={cn(
+                                "w-10 h-10 rounded-xl flex items-center justify-center mb-3",
+                                isSelected ? "bg-emerald-100 text-emerald-600" : "bg-zinc-200/50 text-zinc-400"
+                              )}>
+                                <CalendarDays className="h-5 w-5" />
+                              </div>
+                              
+                              <p className={cn(
+                                "text-xs font-black leading-tight line-clamp-2 mb-1",
+                                isSelected ? "text-foreground" : "text-zinc-500"
+                              )}>
+                                {enc.tema}
+                              </p>
+                              <p className="text-[9px] font-bold uppercase tracking-tighter text-zinc-400">
+                                {enc.data ? formatarDataVigente(enc.data).split(' - ')[0] : 'Data a definir'}
+                              </p>
                             </button>
-                          </div>
-                        );
-                      })}
-                      {(!form.encontrosPreparados || form.encontrosPreparados.length === 0) && (
-                        <p className="text-[10px] text-muted-foreground italic">Nenhum encontro selecionado.</p>
-                      )}
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Card Único: Roteiro do Encontro */}
+                    <div className="p-5 rounded-2xl bg-amber-50/50 border-2 border-amber-200/50 shadow-sm space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shadow-sm">
+                          <Book className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-black text-amber-900 uppercase tracking-tight leading-none">Roteiro do Encontro</h3>
+                          <p className="text-[9px] font-bold text-amber-700/50 uppercase tracking-widest mt-1">Oração e Tópicos de Preparação</p>
+                        </div>
+                      </div>
+
+                      <div className="h-px bg-amber-200/30" />
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Oração Inicial</label>
+                          <input 
+                            value={form.oracaoInicial} 
+                            onChange={(e) => updateField("oracaoInicial", e.target.value)} 
+                            placeholder="Título da oração..." 
+                            className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500" 
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-1">Tipo de Oração</label>
+                          <select 
+                            value={form.oracaoTipo} 
+                            onChange={(e) => updateField("oracaoTipo", e.target.value)} 
+                            className="w-full bg-white border-amber-200 rounded-xl text-xs font-bold p-2.5 focus:ring-amber-500 focus:border-amber-500"
+                          >
+                            <option value="">Selecione...</option>
+                            {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between px-1">
+                          <label className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Tópicos da Reunião</label>
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "" }];
+                              updateField("pautas", next);
+                            }}
+                            className="text-[9px] font-black text-amber-600 bg-amber-100/50 px-2 py-1.5 rounded-lg uppercase flex items-center gap-1 hover:bg-amber-100 transition-colors border border-amber-200/50"
+                          >
+                            <Plus className="h-3 w-3" /> Add Tópico
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          {(form.pautas || []).map((p, idx) => (
+                            <div key={p.id} className="p-3 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-sm group animate-in zoom-in-95 duration-200">
+                              <div className="flex items-center gap-2">
+                                <input 
+                                  placeholder="Título do Tópico..." 
+                                  value={p.titulo} 
+                                  onChange={(e) => {
+                                    const next = [...(form.pautas || [])];
+                                    next[idx] = { ...p, titulo: e.target.value };
+                                    updateField("pautas", next);
+                                  }}
+                                  className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold p-0 text-amber-900 placeholder:text-amber-900/20"
+                                />
+                                <button 
+                                  type="button"
+                                  onClick={() => {
+                                    const next = (form.pautas || []).filter(x => x.id !== p.id);
+                                    updateField("pautas", next);
+                                  }}
+                                  className="p-1 text-amber-300 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                              <textarea 
+                                placeholder="Detalhes ou objetivos..." 
+                                value={p.descricao}
+                                onChange={(e) => {
+                                  const next = [...(form.pautas || [])];
+                                  next[idx] = { ...p, descricao: e.target.value };
+                                  updateField("pautas", next);
+                                }}
+                                className="w-full bg-transparent border-none focus:ring-0 text-[11px] text-amber-800/60 p-0 resize-none min-h-[30px] placeholder:text-amber-900/10"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {/* Seletor de Eventos (para Preparação de Eventos) */}
+                {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE EVENTOS --- */}
                 {form.tipo === 'Reunião de preparação de eventos' && (
                   <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 space-y-3">
                     <label className="text-xs font-bold text-indigo-700 block">Eventos a Preparar</label>
                     <select 
-                      className="form-input bg-white text-xs" 
+                      className="form-input bg-white text-xs font-bold" 
                       value=""
                       onChange={(e) => {
                         const val = e.target.value;
@@ -332,174 +444,72 @@ export default function ReunioesList() {
                         return (
                           <div key={aid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
                             <span className="truncate max-w-[150px]">{act.nome}</span>
-                            <button 
-                              type="button"
-                              onClick={() => {
-                                const next = form.eventosPreparados?.filter(id => id !== aid);
-                                updateField('eventosPreparados', next as any);
-                              }}
-                              className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
-                            >
+                            <button type="button" onClick={() => updateField('eventosPreparados', form.eventosPreparados?.filter(id => id !== aid) as any)} className="p-0.5 hover:bg-black/10 rounded-full transition-colors">
                               <X className="h-3 w-3" />
                             </button>
                           </div>
                         );
                       })}
-                      {(!form.eventosPreparados || form.eventosPreparados.length === 0) && (
-                        <p className="text-[10px] text-muted-foreground italic">Nenhum evento selecionado.</p>
-                      )}
                     </div>
                   </div>
                 )}
 
-                <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Nome da Reunião *</label>
-                  <input type="text" value={form.nome} onChange={(e) => updateField("nome", e.target.value)} placeholder="Ex: Planejamento Mensal" className="form-input" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
-                  <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
-                </div>
-
-                <div className="p-4 rounded-2xl bg-violet-50/50 border border-violet-100 space-y-3">
-                  <p className="text-[10px] font-black uppercase text-violet-400 tracking-widest border-b border-violet-100 pb-1">Momento de Oração</p>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-zinc-900 block">Tipo de Oração</label>
-                    <select 
-                      value={form.oracaoTipo} 
-                      onChange={(e) => updateField("oracaoTipo", e.target.value)} 
-                      className="form-input bg-white border-transparent focus:border-violet-200"
-                    >
-                      {ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Oração Inicial</label>
-                    <textarea 
-                      value={form.oracaoInicial} 
-                      onChange={(e) => updateField("oracaoInicial", e.target.value)} 
-                      placeholder="Oração para início da reunião..." 
-                      className="form-input bg-white border-transparent focus:border-violet-200 min-h-[80px] resize-y" 
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <label className="text-xs font-black uppercase tracking-widest text-primary border-b border-primary/10 pb-1 block">Pautas e Tópicos</label>
-                  
-                  {/* Se for reunião de catequistas ou pais, usa o modelo estruturado */}
-                  {(form.tipo === 'Reunião de catequistas' || form.tipo === 'Reunião de pais') ? (
-                    <>
-                      {/* Lista de Pautas Já Adicionadas */}
-                      {form.pautas.length > 0 && (
-                        <div className="space-y-2 mb-4">
-                          {form.pautas.map((p, idx) => (
-                            <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 border border-black/5 group">
-                              <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0">{idx + 1}</span>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <p className="text-sm font-bold text-foreground truncate">{p.titulo}</p>
-                                  {p.tempo > 0 && <span className="text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-md border border-sky-100">{p.tempo}min</span>}
-                                </div>
-                                <p className="text-[11px] text-muted-foreground line-clamp-2">{p.descricao}</p>
-                              </div>
-                              <button 
-                                onClick={(e) => { e.preventDefault(); setForm(f => ({ ...f, pautas: f.pautas.filter(item => item.id !== p.id) })); }}
-                                className="p-1.5 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </div>
-                          ))}
+                {/* --- CAMPOS GERAIS --- */}
+                {form.tipo !== 'Reunião de preparação de encontro' && (
+                  <div className="space-y-4">
+                    <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} placeholder="Ex: Planejamento Mensal" />
+                    
+                    <div className="p-4 rounded-2xl bg-violet-50/50 border border-violet-100 space-y-3">
+                      <p className="text-[10px] font-black uppercase text-violet-400 tracking-widest border-b border-violet-100 pb-1">Momento de Oração</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-zinc-500 ml-1">Oração Inicial</label>
+                          <input value={form.oracaoInicial} onChange={(e) => updateField("oracaoInicial", e.target.value)} placeholder="Título..." className="form-input bg-white" />
                         </div>
-                      )}
-
-                      {/* Área para Adicionar Nova Pauta */}
-                      <div className="p-4 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 space-y-3">
-                        <p className="text-[10px] font-black uppercase text-primary tracking-widest text-center">Novo Tópico da Pauta</p>
-                        <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            value={newPauta.titulo} 
-                            onChange={(e) => setNewPauta(p => ({ ...p, titulo: e.target.value }))}
-                            placeholder="Título do tópico..."
-                            className="form-input bg-white border-transparent focus:border-primary/20 flex-1"
-                          />
-                          <div className="w-20">
-                            <input 
-                              type="number" 
-                              value={newPauta.tempo || ""} 
-                              onChange={(e) => setNewPauta(p => ({ ...p, tempo: parseInt(e.target.value) || 0 }))}
-                              placeholder="Min"
-                              className="form-input bg-white border-transparent focus:border-primary/20"
-                            />
-                          </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-zinc-500 ml-1">Tipo</label>
+                          <select value={form.oracaoTipo} onChange={(e) => updateField("oracaoTipo", e.target.value)} className="form-input bg-white">
+                            <option value="">Tipo...</option>
+                            {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
                         </div>
-                        <textarea 
-                          value={newPauta.descricao} 
-                          onChange={(e) => setNewPauta(p => ({ ...p, descricao: e.target.value }))}
-                          placeholder="Descrição detalhada..."
-                          className="form-input bg-white min-h-[60px] resize-y border-transparent focus:border-primary/20 text-xs"
-                        />
-                        <button 
-                          type="button"
-                          onClick={() => {
-                            if (!newPauta.titulo) { toast.error("Digite o título da pauta"); return; }
-                            setForm(f => ({ 
-                              ...f, 
-                              pautas: [...f.pautas, { ...newPauta, id: crypto.randomUUID() }] 
-                            }));
-                            setNewPauta({ titulo: "", descricao: "", tempo: 0 });
-                            toast.success("Pauta adicionada!");
-                          }}
-                          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-[10px] hover:bg-primary/90 transition-all active:scale-95 shadow-md shadow-primary/20"
-                        >
-                          <Plus className="h-4 w-4" /> Adicionar à Lista
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-zinc-900 uppercase tracking-widest">Tópicos da Reunião</label>
+                        <button type="button" onClick={() => updateField("pautas", [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "" }])} className="text-[10px] font-black text-primary uppercase flex items-center gap-1 hover:underline">
+                          <Plus className="h-3 w-3" /> Add Tópico
                         </button>
                       </div>
-                    </>
-                  ) : form.tipo === 'Reunião de preparação de sacramento' ? (
-                    /* Caso de preparação de sacramento - Card de Liturgia */
-                    <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 space-y-4">
-                      <p className="text-[10px] font-black uppercase text-amber-600 tracking-widest border-b border-amber-100 pb-1">Serviços na Liturgia</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {[
-                          { id: 'celebrante', label: 'Celebrante (Presidente)' },
-                          { id: 'animador', label: 'Animador / Comentarista' },
-                          { id: '1_leitor', label: '1º Leitor' },
-                          { id: 'salmista', label: 'Salmista' },
-                          { id: '2_leitor', label: '2º Leitor' },
-                          { id: 'preces', label: 'Preces' },
-                          { id: 'cantores', label: 'Cantores' },
-                        ].map(servico => (
-                          <div key={servico.id}>
-                            <label className="text-[10px] font-bold text-amber-700 mb-1 block">{servico.label}</label>
-                            <input 
-                              type="text" 
-                              value={form.servicosLiturgia?.[servico.id] || ""} 
-                              onChange={(e) => {
-                                const next = { ...form.servicosLiturgia, [servico.id]: e.target.value };
-                                updateField('servicosLiturgia', next as any);
-                              }}
-                              className="form-input bg-white border-transparent focus:border-amber-200 text-xs py-1.5"
-                              placeholder="Nome do responsável..."
-                            />
+                      
+                      <div className="space-y-2">
+                        {(form.pautas || []).map((p, idx) => (
+                          <div key={p.id} className="p-3 rounded-2xl bg-muted/30 border border-black/5 space-y-2 animate-in fade-in slide-in-from-top-2">
+                            <div className="flex items-center gap-2">
+                              <input placeholder="Título do Tópico..." value={p.titulo} onChange={(e) => {
+                                const next = [...(form.pautas || [])];
+                                next[idx] = { ...p, titulo: e.target.value };
+                                updateField("pautas", next);
+                              }} className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-bold p-0" />
+                              <button type="button" onClick={() => updateField("pautas", (form.pautas || []).filter(x => x.id !== p.id))} className="p-1.5 text-muted-foreground hover:text-destructive"><X className="h-4 w-4" /></button>
+                            </div>
+                            <textarea placeholder="Detalhes..." value={p.descricao} onChange={(e) => {
+                              const next = [...(form.pautas || [])];
+                              next[idx] = { ...p, descricao: e.target.value };
+                              updateField("pautas", next);
+                            }} className="w-full bg-transparent border-none focus:ring-0 text-xs text-muted-foreground p-0 resize-none min-h-[40px]" />
                           </div>
                         ))}
                       </div>
                     </div>
-                  ) : (
-                    /* Caso contrário, usa o modelo simples de descrição */
-                    <div>
-                      <textarea 
-                        value={form.descricao} 
-                        onChange={(e) => updateField("descricao", e.target.value)} 
-                        placeholder="Descreva os assuntos da reunião..." 
-                        className="form-input min-h-[120px] resize-y" 
-                      />
-                    </div>
-                  )}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
+                  <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
                 </div>
 
                 <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
@@ -508,7 +518,10 @@ export default function ReunioesList() {
                   <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observações Finais</label>
                   <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} placeholder="Anotações gerais..." className="form-input min-h-[80px] resize-y" />
                 </div>
-                <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}</button>
+
+                <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">
+                  {mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}
+                </button>
               </div>
             </DialogContent>
           </Dialog>
