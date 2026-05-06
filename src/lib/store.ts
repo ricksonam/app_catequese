@@ -148,11 +148,19 @@ export const REUNIAO_TIPOS: ReuniaoTipo[] = [
   'Reunião de catequistas', 'Reunião de pais', 'Reunião de preparação de sacramento', 'Reunião de preparação de encontro', 'Reunião geral'
 ];
 
+export interface PautaItem {
+  id: string;
+  titulo: string;
+  descricao: string;
+}
+
 export interface Reuniao {
   id: string;
   turmaId: string;
   nome: string;
-  descricao: string;
+  descricao?: string;
+  pautas?: PautaItem[];
+  oracaoInicial?: string;
   tipo: ReuniaoTipo;
   data: string;
   local: string;

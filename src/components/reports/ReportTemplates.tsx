@@ -470,9 +470,27 @@ export const ReuniaoFullSheet = ({ doc, org, turma, catequizandos }: any) => (
       <div className="space-y-1"><p className="text-[10px] font-black uppercase text-gray-500">Responsável / Condutor</p><p className="font-bold text-lg">Catequista da Turma</p></div>
     </div>
     <div className="space-y-8">
+      {doc.oracaoInicial && (
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl italic">
+          <p className="text-[10px] font-black uppercase text-gray-500 mb-1 not-italic tracking-widest">Oração Inicial</p>
+          "{doc.oracaoInicial}"
+        </div>
+      )}
+
       <div>
         <h3 className="text-xs font-black uppercase border-b-2 border-black pb-1 mb-3">Pautas e Deliberações</h3>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap min-h-[200px] border p-4 rounded-xl">{doc.descricao}</p>
+        {doc.pautas && doc.pautas.length > 0 ? (
+          <div className="space-y-4">
+            {doc.pautas.map((p: any, i: number) => (
+              <div key={i} className="border-l-4 border-black pl-4 py-1">
+                <p className="text-sm font-black uppercase mb-1">{p.titulo}</p>
+                <p className="text-xs leading-relaxed text-gray-700">{p.descricao}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap min-h-[100px] border p-4 rounded-xl">{doc.descricao}</p>
+        )}
       </div>
 
       <div>

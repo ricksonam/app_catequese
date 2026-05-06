@@ -33,12 +33,37 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
   );
 }
 
-interface FormData { nome: string; descricao: string; tipo: ReuniaoTipo; data: string; local: string; horario: string; observacao: string; }
-const emptyForm: FormData = { nome: "", descricao: "", tipo: "Reunião de catequistas", data: "", local: "", horario: "", observacao: "" };
+interface FormData { 
+  nome: string; 
+  pautas: { id: string; titulo: string; descricao: string }[]; 
+  oracaoInicial: string;
+  tipo: ReuniaoTipo; 
+  data: string; 
+  local: string; 
+  horario: string; 
+  observacao: string; 
+}
+
+const emptyForm: FormData = { 
+  nome: "", 
+  pautas: [{ id: crypto.randomUUID(), titulo: "", descricao: "" }], 
+  oracaoInicial: "",
+  tipo: "Reunião de catequistas", 
+  data: "", 
+  local: "", 
+  horario: "", 
+  observacao: "" 
+};
 
 const fillFormFromItem = (item: Reuniao): FormData => ({
-  nome: item.nome, descricao: item.descricao || '', tipo: item.tipo,
-  data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
+  nome: item.nome, 
+  pautas: item.pautas && item.pautas.length > 0 ? item.pautas : [{ id: crypto.randomUUID(), titulo: "", descricao: item.descricao || "" }],
+  oracaoInicial: item.oracaoInicial || "",
+  tipo: item.tipo,
+  data: item.data || '', 
+  local: item.local || '', 
+  horario: item.horario || '', 
+  observacao: item.observacao || '',
 });
 
 const tipoColors: Record<string, string> = {
@@ -94,10 +119,33 @@ export default function ReunioesList() {
     try {
       if (editingId) {
         const existing = list.find(a => a.id === editingId);
-        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao });
+        await mutation.mutateAsync({ 
+          ...existing!, 
+          nome: form.nome, 
+          pautas: form.pautas,
+          oracaoInicial: form.oracaoInicial,
+          tipo: form.tipo, 
+          data: form.data, 
+          local: form.local, 
+          horario: form.horario, 
+          observacao: form.observacao 
+        });
         setEditingId(null); setViewItem(null); toast.success("Reunião atualizada!");
       } else {
-        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString() });
+        await mutation.mutateAsync({ 
+          id: crypto.randomUUID(), 
+          turmaId: id!, 
+          nome: form.nome, 
+          pautas: form.pautas,
+          oracaoInicial: form.oracaoInicial,
+          tipo: form.tipo, 
+          data: form.data, 
+          local: form.local, 
+          horario: form.horario, 
+          observacao: form.observacao, 
+          presencas: [], 
+          criadoEm: new Date().toISOString() 
+        });
         toast.success("Reunião criada!");
       }
       setForm({ ...emptyForm }); setOpen(false);
@@ -161,26 +209,88 @@ export default function ReunioesList() {
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
               <DialogHeader><DialogTitle>{editingId ? 'Editar Reunião' : 'Nova Reunião'}</DialogTitle></DialogHeader>
-              <div className="space-y-3 mt-2">
+              <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião <span className="text-red-500">*</span></label>
-                  <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input font-bold text-primary">
-                    {REUNIAO_TIPOS.map(t => <option key={t}>{t}</option>)}
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Nome da Reunião *</label>
+                  <input type="text" value={form.nome} onChange={(e) => updateField("nome", e.target.value)} placeholder="Ex: Planejamento Mensal" className="form-input" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
+                  <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião</label>
+                  <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input">
+                    {REUNIAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
-                <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} />
+
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Pautas / Descrição</label>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Oração Inicial</label>
                   <textarea 
-                    value={form.descricao} 
-                    onChange={(e) => updateField("descricao", e.target.value)} 
-                    placeholder="Digite as pautas (uma por linha)..."
-                    className="form-input min-h-[120px] resize-none bg-[repeating-linear-gradient(white,white_24px,#e5e7eb_24px,#e5e7eb_25px)] leading-[25px] pt-[2px] font-medium text-zinc-700"
+                    value={form.oracaoInicial} 
+                    onChange={(e) => updateField("oracaoInicial", e.target.value)} 
+                    placeholder="Oração para início da reunião..." 
+                    className="form-input min-h-[80px] resize-y" 
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2"><FieldInput label="Data" type="date" value={form.data} onChange={(v) => updateField("data", v)} /><FieldInput label="Horário" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} /></div>
-                <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} />
-                <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-primary">Pautas e Tópicos</label>
+                    <button 
+                      onClick={() => setForm(f => ({ ...f, pautas: [...f.pautas, { id: crypto.randomUUID(), titulo: "", descricao: "" }] }))}
+                      className="flex items-center gap-1 text-[10px] font-black uppercase text-primary bg-primary/10 px-2 py-1 rounded-full hover:bg-primary/20 transition-all"
+                    >
+                      <Plus className="h-3 w-3" /> Add Pauta
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {form.pautas.map((pauta, idx) => (
+                      <div key={pauta.id} className="p-3 rounded-2xl bg-zinc-50 border border-black/5 relative group">
+                        <button 
+                          onClick={() => setForm(f => ({ ...f, pautas: f.pautas.filter(p => p.id !== pauta.id) }))}
+                          disabled={form.pautas.length === 1}
+                          className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-destructive text-white items-center justify-center hidden group-hover:flex shadow-md disabled:opacity-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                        <div className="space-y-2">
+                          <input 
+                            type="text" 
+                            value={pauta.titulo} 
+                            onChange={(e) => {
+                              const newPautas = [...form.pautas];
+                              newPautas[idx].titulo = e.target.value;
+                              setForm(f => ({ ...f, pautas: newPautas }));
+                            }}
+                            placeholder={`Tópico ${idx + 1}`}
+                            className="form-input bg-white border-transparent focus:border-primary/20"
+                          />
+                          <textarea 
+                            value={pauta.descricao} 
+                            onChange={(e) => {
+                              const newPautas = [...form.pautas];
+                              newPautas[idx].descricao = e.target.value;
+                              setForm(f => ({ ...f, pautas: newPautas }));
+                            }}
+                            placeholder="Detalhes do tópico..."
+                            className="form-input bg-white min-h-[60px] resize-y border-transparent focus:border-primary/20 text-xs"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
+                
+                <div>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observações Finais</label>
+                  <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} placeholder="Anotações gerais..." className="form-input min-h-[80px] resize-y" />
+                </div>
                 <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}</button>
               </div>
             </DialogContent>
@@ -263,8 +373,15 @@ export default function ReunioesList() {
                             </div>
                           </div>
 
-                          <div className="flex flex-col justify-center px-4 opacity-50 group-hover:opacity-100 transition-opacity pr-5">
-                            <div className="w-8 h-8 rounded-full bg-muted/50 group-hover:bg-primary/10 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
+                          <div className="flex flex-col justify-center px-4 transition-opacity pr-5 gap-2">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/reunioes/${item.id}/apresentacao`); }}
+                              className="w-8 h-8 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center hover:bg-violet-100 transition-colors shadow-sm"
+                              title="Apresentar"
+                            >
+                              <Play className="h-4 w-4" />
+                            </button>
+                            <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground transition-colors">
                               <ChevronRight className="h-4 w-4" />
                             </div>
                           </div>
@@ -287,8 +404,9 @@ export default function ReunioesList() {
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
                 <div className="flex items-center gap-1.5 z-50">
-                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
+                  <button onClick={() => navigate(`/turmas/${id}/reunioes/${viewItem.id}/apresentacao`)} className="p-2 rounded-xl bg-violet-100 text-violet-700 hover:bg-violet-200 transition-colors shadow-sm" title="Apresentar"><Play className="h-4 w-4" /></button>
+                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm" title="Editar"><Pencil className="h-4 w-4" /></button>
+                  <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm" title="Excluir"><Trash2 className="h-4 w-4" /></button>
 
                   <div className="w-px h-4 bg-black/10 mx-1" />
                   <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
@@ -337,19 +455,38 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                {viewItem.descricao && (
-                  <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm bg-[repeating-linear-gradient(white,white_27px,#e5e7eb_27px,#e5e7eb_28px)]">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Pautas</h4>
-                    <div className="text-sm text-zinc-800 font-medium space-y-0 leading-[28px] whitespace-pre-wrap">
-                      {viewItem.descricao.split('\n').filter(line => line.trim()).map((line, idx) => (
-                        <div key={idx} className="flex gap-2">
-                          <span className="text-primary font-bold min-w-[20px]">{idx + 1}.</span>
-                          <span>{line}</span>
+                {viewItem.oracaoInicial && (
+                  <div className="mt-4 p-4 rounded-2xl bg-violet-50 border border-violet-100">
+                    <p className="text-[10px] font-black uppercase text-violet-400 tracking-widest mb-1.5">🙏 Oração Inicial</p>
+                    <p className="text-sm font-medium text-violet-900 leading-relaxed italic">"{viewItem.oracaoInicial}"</p>
+                  </div>
+                )}
+
+                <div className="mt-6 space-y-4">
+                  <p className="text-[10px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1">Pautas e Tópicos</p>
+                  {(viewItem.pautas && viewItem.pautas.length > 0) ? (
+                    <div className="space-y-4">
+                      {viewItem.pautas.map((p, i) => (
+                        <div key={p.id} className="relative pl-10">
+                          <span className="absolute left-0 top-0 w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-xs">{i+1}</span>
+                          <p className="text-sm font-black text-foreground mb-1">{p.titulo}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{p.descricao}</p>
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm bg-[repeating-linear-gradient(white,white_27px,#e5e7eb_27px,#e5e7eb_28px)]">
+                      <div className="text-sm text-zinc-800 font-medium space-y-0 leading-[28px] whitespace-pre-wrap">
+                        {viewItem.descricao?.split('\n').filter(line => line.trim()).map((line, idx) => (
+                          <div key={idx} className="flex gap-2">
+                            <span className="text-primary font-bold min-w-[20px]">{idx + 1}.</span>
+                            <span>{line}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 
                 {viewItem.observacao && (
                   <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
