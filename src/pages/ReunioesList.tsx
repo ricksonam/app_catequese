@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
-import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X } from "lucide-react";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos } from "@/hooks/useSupabaseData";
+import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo } from "@/lib/store";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, ChevronRight, CheckCircle2, Pencil, X, Users } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
@@ -33,45 +33,46 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
   );
 }
 
-interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade; conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string; }
-const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "" };
+interface FormData { nome: string; descricao: string; tipo: ReuniaoTipo; data: string; local: string; horario: string; observacao: string; }
+const emptyForm: FormData = { nome: "", descricao: "", tipo: "Reunião de catequistas", data: "", local: "", horario: "", observacao: "" };
 
-const fillFormFromItem = (item: Atividade): FormData => ({
-  nome: item.nome, descricao: item.descricao || '', tipo: item.tipo, modalidade: item.modalidade || 'interna',
-  conducao: item.conducao || '', data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
+const fillFormFromItem = (item: Reuniao): FormData => ({
+  nome: item.nome, descricao: item.descricao || '', tipo: item.tipo,
+  data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
 });
 
 const tipoColors: Record<string, string> = {
-  'Retiro': 'bg-primary/10 text-primary', 'Celebração': 'bg-liturgical/10 text-liturgical',
-  'Encontro de pais': 'bg-accent/15 text-accent-foreground', 'Gincana': 'bg-success/10 text-success',
-  'Passeios': 'bg-gold/15 text-gold', 'Reunião': 'bg-primary/10 text-primary',
-  'Eventos geral': 'bg-muted text-muted-foreground', 'Outros': 'bg-muted text-muted-foreground',
+  'Reunião de catequistas': 'bg-primary/10 text-primary', 
+  'Reunião de pais': 'bg-accent/15 text-accent-foreground',
+  'Reunião de preparação de sacramento': 'bg-liturgical/10 text-liturgical',
+  'Reunião de preparação de encontro': 'bg-success/10 text-success',
+  'Reunião geral': 'bg-gold/15 text-gold',
 };
 
 const TIPO_ICONES: Record<string, string> = {
-  'Retiro': '🕊️', 'Celebração': '⛪',
-  'Encontro de pais': '👨‍👩‍👧‍👦', 'Gincana': '🎯',
-  'Passeios': '🚌', 'Reunião': '🤝',
-  'Eventos geral': '📅', 'Outros': '📌',
+  'Reunião de catequistas': '🤝', 
+  'Reunião de pais': '👨‍👩‍👧‍👦',
+  'Reunião de preparação de sacramento': '⛪',
+  'Reunião de preparação de encontro': '📝',
+  'Reunião geral': '📅',
 };
 
-export default function AtividadesList() {
+export default function ReunioesList() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
-  const { data: list = [], isLoading } = useAtividades(id);
+  const { data: list = [], isLoading } = useReunioes(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
-  const mutation = useAtividadeMutation();
-  const deleteMut = useDeleteAtividade();
+  const mutation = useReuniaoMutation();
+  const deleteMut = useDeleteReuniao();
   const turma = turmas.find(t => t.id === id);
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [viewItem, setViewItem] = useState<Atividade | null>(null);
+  const [viewItem, setViewItem] = useState<Reuniao | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
-
 
   // Auto-view item from URL param
   useEffect(() => {
@@ -82,8 +83,9 @@ export default function AtividadesList() {
       if (item) setViewItem(item);
     }
   }, [list]);
+
   const [presencaOpen, setPresencaOpen] = useState(false);
-  const [presencaItem, setPresencaItem] = useState<Atividade | null>(null);
+  const [presencaItem, setPresencaItem] = useState<Reuniao | null>(null);
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
 
@@ -92,17 +94,17 @@ export default function AtividadesList() {
     try {
       if (editingId) {
         const existing = list.find(a => a.id === editingId);
-        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao });
-        setEditingId(null); setViewItem(null); toast.success("Atividade atualizada!");
+        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao });
+        setEditingId(null); setViewItem(null); toast.success("Reunião atualizada!");
       } else {
-        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString() });
-        toast.success("Atividade criada!");
+        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString() });
+        toast.success("Reunião criada!");
       }
       setForm({ ...emptyForm }); setOpen(false);
     } catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-  const handleEdit = (item: Atividade) => { setForm(fillFormFromItem(item)); setEditingId(item.id); setViewItem(null); setOpen(true); };
+  const handleEdit = (item: Reuniao) => { setForm(fillFormFromItem(item)); setEditingId(item.id); setViewItem(null); setOpen(true); };
   const confirmDelete = async () => {
     if (!itemToDeleteId) return;
     try { 
@@ -114,7 +116,6 @@ export default function AtividadesList() {
     } catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-
   const togglePresenca = (catId: string) => {
     if (!presencaItem) return;
     const p = presencaItem.presencas || [];
@@ -122,16 +123,6 @@ export default function AtividadesList() {
     const newItem = { ...presencaItem, presencas: updated };
     mutation.mutate(newItem);
     setPresencaItem(newItem);
-  };
-
-  const printAutorizacao = (item: Atividade) => {
-    const w = window.open('', '_blank'); if (!w) return;
-    const dataFormatada = item.data ? formatarDataVigente(item.data) : '___/___/______';
-    w.document.write('<!DOCTYPE html><html><head><title>Autorização</title><style>@page{margin:15mm 20mm}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Georgia,serif;color:#1a1a1a;font-size:13px;line-height:1.6}.page{page-break-after:always;padding:20px 0}.page:last-child{page-break-after:avoid}.header{text-align:center;border-bottom:3px double #8B4513;padding-bottom:15px;margin-bottom:20px}.header .cross{font-size:28px;color:#8B4513;margin-bottom:4px}.header h1{font-size:16px;font-weight:bold;color:#8B4513;letter-spacing:3px;text-transform:uppercase}.title-box{background:linear-gradient(135deg,#f5e6d3,#faf0e6);border:1px solid #d4a574;border-radius:8px;padding:12px;text-align:center;margin-bottom:18px}.title-box h2{font-size:15px;color:#5c3317}.body-text{margin-bottom:16px;text-align:justify}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;background:#faf8f5;border:1px solid #e8ddd0;border-radius:8px;padding:12px;margin:14px 0}.info-item{display:flex;gap:6px;font-size:12px}.info-item .lbl{font-weight:bold;color:#5c3317}.info-item.full{grid-column:1/-1}.sig-area{margin-top:24px}.sig-row{display:flex;justify-content:space-between;gap:30px;margin-bottom:20px}.sig-block{flex:1;text-align:center}.sig-line{border-bottom:1px solid #333;margin-bottom:4px;height:30px}.sig-label{font-size:10px;color:#666}.footer{text-align:center;font-size:9px;color:#aaa;margin-top:16px;border-top:1px dotted #ddd;padding-top:8px}</style></head><body>');
-    catequizandos.forEach(cat => {
-      w.document.write(`<div class="page"><div class="header"><div class="cross">✝ </div><h1>Autorização de Participação</h1></div><div class="title-box"><h2>${item.nome}</h2></div><div class="body-text"><p>Eu, ________________________________, responsável por <strong>${cat.nome}</strong>, <strong>AUTORIZO</strong> sua participação na atividade abaixo.</p></div><div class="info-grid"><div class="info-item full"><span class="lbl">Atividade:</span>${item.nome}</div><div class="info-item"><span class="lbl">Data:</span>${dataFormatada}</div><div class="info-item"><span class="lbl">Horário:</span>${item.horario||'A definir'}</div><div class="info-item full"><span class="lbl">Local:</span>${item.local||'A definir'}</div>${item.conducao?`<div class="info-item full"><span class="lbl">Transporte:</span>${item.conducao}</div>`:''}</div><div class="sig-area"><div class="sig-row"><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Assinatura do Responsável</div></div><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Documento</div></div></div><div class="sig-row"><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Local e Data</div></div><div class="sig-block"><div class="sig-line"></div><div class="sig-label">Telefone</div></div></div></div><div class="footer">Documento gerado em ${new Date().toLocaleDateString('pt-BR')}</div></div>`);
-    });
-    w.document.write('</body></html>'); w.document.close(); setTimeout(() => w.print(), 300);
   };
 
   if (isLoading || tLoading) {
@@ -156,48 +147,41 @@ export default function AtividadesList() {
           
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
-              Atividades e Eventos
+              Reuniões
             </h1>
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{list.length} atividades</p>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{list.length} reuniões</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <div className="flex-1 sm:flex-none">
-             {id && <ReportModule context="atividades" turmaId={id} />}
+             {id && <ReportModule context="reunioes" turmaId={id} />}
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
-              <DialogHeader><DialogTitle>{editingId ? 'Editar Atividade' : 'Nova Atividade'}</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>{editingId ? 'Editar Reunião' : 'Nova Reunião'}</DialogTitle></DialogHeader>
               <div className="space-y-3 mt-2">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Atividade <span className="text-red-500">*</span></label>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião <span className="text-red-500">*</span></label>
                   <select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)} className="form-input font-bold text-primary">
-                    {ATIVIDADE_TIPOS.map(t => <option key={t}>{t}</option>)}
+                    {REUNIAO_TIPOS.map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
-                <FieldInput label="Nome da Atividade *" value={form.nome} onChange={(v) => updateField("nome", v)} />
+                <FieldInput label="Nome da Reunião *" value={form.nome} onChange={(v) => updateField("nome", v)} />
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">
-                    {(form.tipo === 'Encontro de pais' || form.tipo === 'Reunião') ? 'Pautas' : 'Descrição'}
-                  </label>
+                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Pautas / Descrição</label>
                   <textarea 
                     value={form.descricao} 
                     onChange={(e) => updateField("descricao", e.target.value)} 
-                    placeholder={(form.tipo === 'Encontro de pais' || form.tipo === 'Reunião') ? "Digite as pautas (uma por linha)..." : "Descrição da atividade..."}
-                    className={cn(
-                      "form-input min-h-[120px] resize-none",
-                      (form.tipo === 'Encontro de pais' || form.tipo === 'Reunião') && "bg-[repeating-linear-gradient(white,white_24px,#e5e7eb_24px,#e5e7eb_25px)] leading-[25px] pt-[2px] font-medium text-zinc-700"
-                    )} 
+                    placeholder="Digite as pautas (uma por linha)..."
+                    className="form-input min-h-[120px] resize-none bg-[repeating-linear-gradient(white,white_24px,#e5e7eb_24px,#e5e7eb_25px)] leading-[25px] pt-[2px] font-medium text-zinc-700"
                   />
                 </div>
-                <div><label className="text-xs font-semibold text-zinc-900 mb-2 block">Modalidade</label><div className="flex gap-2">{(['interna','externa'] as const).map(m => <button key={m} type="button" onClick={() => updateField("modalidade",m)} className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${form.modalidade===m?'bg-primary text-primary-foreground shadow-md':'bg-muted text-muted-foreground'}`}>{m==='interna'?'🏠 Interna':'🌐 Externa'}</button>)}</div></div>
-                {form.modalidade === 'externa' && <div className="animate-fade-in"><label className="text-xs font-semibold text-zinc-900 mb-1 block">Condução</label><select value={form.conducao} onChange={(e) => updateField("conducao", e.target.value)} className="form-input"><option value="">Selecione...</option>{CONDUCAO_TIPOS.map(c => <option key={c}>{c}</option>)}</select></div>}
                 <div className="grid grid-cols-2 gap-2"><FieldInput label="Data" type="date" value={form.data} onChange={(v) => updateField("data", v)} /><FieldInput label="Horário" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} /></div>
                 <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} />
                 <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
-                <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Atividade'}</button>
+                <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}</button>
               </div>
             </DialogContent>
           </Dialog>
@@ -205,14 +189,10 @@ export default function AtividadesList() {
       </div>
 
       {list.length === 0 ? (
-        <div className="empty-state animate-float-up"><div className="icon-box bg-liturgical/10 text-liturgical mx-auto mb-3"><ListChecks className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhuma atividade cadastrada</p></div>
+        <div className="empty-state animate-float-up"><div className="icon-box bg-liturgical/10 text-liturgical mx-auto mb-3"><ListChecks className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">Nenhuma reunião cadastrada</p></div>
       ) : (
         <div className="space-y-6">
           {(() => {
-            const TIPO_ICONES: Record<string, string> = {
-              'Retiro': '⛺', 'Celebração': '✨', 'Encontro de pais': '👨‍👩‍👧',
-              'Gincana': '🎯', 'Passeios': '🌿', 'Reunião': '🤝', 'Eventos geral': '📅', 'Outros': '📌',
-            };
             const sorted = [...list].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
             const groups: Record<string, typeof sorted> = {};
             const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -242,7 +222,7 @@ export default function AtividadesList() {
                   {items.map((item, i) => {
                     const d = new Date(item.data + 'T12:00:00');
                     const cor = tipoColors[item.tipo] || 'bg-muted text-muted-foreground';
-                    const icone = TIPO_ICONES[item.tipo] || '📌';
+                    const icone = TIPO_ICONES[item.tipo] || '🤝';
                     return (
                       <button
                         key={item.id}
@@ -267,11 +247,6 @@ export default function AtividadesList() {
                               <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-current/10 ${cor}`}>
                                 {item.tipo}
                               </span>
-                              {item.modalidade === 'externa' && (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
-                                  <Car className="h-2.5 w-2.5" /> Externa
-                                </span>
-                              )}
                             </div>
                             <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
                             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
@@ -310,7 +285,7 @@ export default function AtividadesList() {
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
               {/* Header Bar Clean */}
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
-                <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Atividade</span>
+                <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
                 <div className="flex items-center gap-1.5 z-50">
                   <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
@@ -324,10 +299,7 @@ export default function AtividadesList() {
                 <div className="text-center sm:text-left">
                    <div className="flex justify-center sm:justify-start gap-2 mb-3">
                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-current/10 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
-                       <span>{TIPO_ICONES[viewItem.tipo] || '📌'}</span> {viewItem.tipo}
-                     </span>
-                     <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md bg-muted text-muted-foreground">
-                       {viewItem.modalidade === 'externa' ? 'Externa' : 'Interna'}
+                       <span>{TIPO_ICONES[viewItem.tipo] || '🤝'}</span> {viewItem.tipo}
                      </span>
                    </div>
                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
@@ -362,42 +334,19 @@ export default function AtividadesList() {
                             <p className="text-sm font-semibold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
                          </div>
                       </div>
-                      {viewItem.modalidade === 'externa' && viewItem.conducao && (
-                        <>
-                          <div className="h-px bg-black/5" />
-                          <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0 text-amber-600"><Car className="w-4 h-4" /></div>
-                             <div className="flex-1 min-w-0">
-                                <p className="text-[10px] font-bold text-amber-600/70 uppercase tracking-widest leading-none mb-0.5">Condução</p>
-                                <p className="text-sm font-semibold text-foreground truncate">{viewItem.conducao}</p>
-                             </div>
-                          </div>
-                        </>
-                      )}
                   </div>
                 </div>
 
                 {viewItem.descricao && (
-                  <div className={cn(
-                    "bg-white rounded-2xl p-6 border border-black/5 shadow-sm",
-                    (viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') && "bg-[repeating-linear-gradient(white,white_27px,#e5e7eb_27px,#e5e7eb_28px)] border-zinc-200"
-                  )}>
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">
-                      {(viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') ? 'Pautas' : 'Descrição'}
-                    </h4>
-                    <div className={cn(
-                      "text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap",
-                      (viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') && "space-y-0 leading-[28px] text-zinc-800 font-medium"
-                    )}>
-                      {(viewItem.tipo === 'Encontro de pais' || viewItem.tipo === 'Reunião') 
-                        ? viewItem.descricao.split('\n').filter(line => line.trim()).map((line, idx) => (
-                            <div key={idx} className="flex gap-2">
-                              <span className="text-primary font-bold min-w-[20px]">{idx + 1}.</span>
-                              <span>{line}</span>
-                            </div>
-                          ))
-                        : viewItem.descricao
-                      }
+                  <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm bg-[repeating-linear-gradient(white,white_27px,#e5e7eb_27px,#e5e7eb_28px)]">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Pautas</h4>
+                    <div className="text-sm text-zinc-800 font-medium space-y-0 leading-[28px] whitespace-pre-wrap">
+                      {viewItem.descricao.split('\n').filter(line => line.trim()).map((line, idx) => (
+                        <div key={idx} className="flex gap-2">
+                          <span className="text-primary font-bold min-w-[20px]">{idx + 1}.</span>
+                          <span>{line}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -414,11 +363,6 @@ export default function AtividadesList() {
                     <Users className="h-4 w-4" /> 
                     <span>Lista de Presença <span className="bg-success text-white rounded-full px-1.5 py-0.5 ml-1 text-[10px]">{(viewItem.presencas||[]).length}</span></span>
                   </button>
-                  {viewItem.modalidade === 'externa' && (
-                    <button onClick={() => printAutorizacao(viewItem)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all font-bold text-xs ring-1 ring-inset ring-primary/20">
-                      <Printer className="h-4 w-4" /> Baixar Autorização
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
@@ -457,4 +401,3 @@ export default function AtividadesList() {
     </div>
   );
 }
-

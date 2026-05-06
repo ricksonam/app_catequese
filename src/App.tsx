@@ -18,7 +18,8 @@ import EncontroForm from "@/pages/EncontroForm";
 import EncontroDetail from "@/pages/EncontroDetail";
 import EncontroPresentation from "@/pages/EncontroPresentation";
 import CatequizandosList from "@/pages/CatequizandosList";
-import AtividadesList from "@/pages/AtividadesList";
+import EventosList from "@/pages/EventosList";
+import ReunioesList from "@/pages/ReunioesList";
 import PlanoTurma from "@/pages/PlanoTurma";
 import RelatoriosTurma from "@/pages/RelatoriosTurma";
 import MissoesFamilia from "@/pages/MissoesFamilia";
@@ -139,7 +140,8 @@ const AppRoutes = () => (
       <Route path="/turmas/:id/encontros/:encontroId/editar" element={<EncontroForm />} />
       <Route path="/turmas/:id/encontros/:encontroId/apresentacao" element={<EncontroPresentation />} />
       <Route path="/turmas/:id/catequizandos" element={<CatequizandosList />} />
-      <Route path="/turmas/:id/atividades" element={<AtividadesList />} />
+      <Route path="/turmas/:id/eventos" element={<EventosList />} />
+      <Route path="/turmas/:id/reunioes" element={<ReunioesList />} />
       <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
       <Route path="/turmas/:id/familia" element={<MissoesFamilia />} />
       <Route path="/turmas/:id/relatorios" element={<RelatoriosTurma />} />

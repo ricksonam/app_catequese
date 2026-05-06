@@ -5,6 +5,7 @@ import {
   fetchCatequizandos, upsertCatequizando, removeCatequizando,
   fetchEncontros, upsertEncontro, removeEncontro,
   fetchAtividades, upsertAtividade, removeAtividade,
+  fetchReunioes, upsertReuniao, removeReuniao,
   fetchParoquias, upsertParoquia, removeParoquia,
   fetchComunidades, upsertComunidade, removeComunidade,
   fetchCatequistas, upsertCatequista, removeCatequista,
@@ -16,7 +17,7 @@ import {
   fetchComunicacaoForms, fetchPublicComunicacaoForm, upsertComunicacaoForm, removeComunicacaoForm,
   fetchComunicacaoRespostas, insertComunicacaoResposta, fetchAllRespostasCount, fetchAllRespostas
 } from "@/lib/supabaseStore";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "@/lib/store";
+import type { Turma, Catequizando, Encontro, Atividade, Reuniao, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
 
 // ===== TURMAS =====
@@ -114,6 +115,24 @@ export function useAtividadeMutation() {
 export function useDeleteAtividade() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: removeAtividade, onSuccess: () => { qc.invalidateQueries({ queryKey: ["atividades"] }); } });
+}
+
+// ===== REUNIOES =====
+export function useReunioes(turmaId?: string) {
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["reunioes", user?.id, turmaId], 
+    queryFn: () => fetchReunioes(turmaId),
+    enabled: !!user
+  });
+}
+export function useReuniaoMutation() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: upsertReuniao, onSuccess: () => { qc.invalidateQueries({ queryKey: ["reunioes"] }); } });
+}
+export function useDeleteReuniao() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: removeReuniao, onSuccess: () => { qc.invalidateQueries({ queryKey: ["reunioes"] }); } });
 }
 
 // ===== PAROQUIAS =====

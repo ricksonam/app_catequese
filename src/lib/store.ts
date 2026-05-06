@@ -120,7 +120,7 @@ export interface RegistroOcorrencia {
   temaNome: string;
 }
 
-export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Encontro de pais' | 'Gincana' | 'Passeios' | 'Reunião' | 'Eventos geral' | 'Outros';
+export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Gincana' | 'Passeios' | 'Eventos geral' | 'Outros';
 export type AtividadeModalidade = 'interna' | 'externa';
 export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ônibus' | 'Trem' | 'Metrô' | 'Avião';
 
@@ -134,6 +134,26 @@ export interface Atividade {
   tipo: AtividadeTipo;
   modalidade: AtividadeModalidade;
   conducao?: ConducaoTipo;
+  data: string;
+  local: string;
+  horario: string;
+  observacao: string;
+  presencas: string[];
+  criadoEm: string;
+}
+
+export type ReuniaoTipo = 'Reunião de catequistas' | 'Reunião de pais' | 'Reunião de preparação de sacramento' | 'Reunião de preparação de encontro' | 'Reunião geral';
+
+export const REUNIAO_TIPOS: ReuniaoTipo[] = [
+  'Reunião de catequistas', 'Reunião de pais', 'Reunião de preparação de sacramento', 'Reunião de preparação de encontro', 'Reunião geral'
+];
+
+export interface Reuniao {
+  id: string;
+  turmaId: string;
+  nome: string;
+  descricao: string;
+  tipo: ReuniaoTipo;
   data: string;
   local: string;
   horario: string;
@@ -264,7 +284,7 @@ export const ROTEIRO_STEPS: { tipo: RoteiroStepTipo; label: string }[] = [
 ];
 
 export const ATIVIDADE_TIPOS: AtividadeTipo[] = [
-  'Momento Orante', 'Retiro', 'Celebração', 'Encontro de pais', 'Gincana', 'Passeios', 'Reunião', 'Eventos geral', 'Outros',
+  'Momento Orante', 'Retiro', 'Celebração', 'Gincana', 'Passeios', 'Eventos geral', 'Outros',
 ];
 
 const TURMAS_KEY = 'ivc_turmas';
@@ -272,6 +292,7 @@ const OCORRENCIAS_KEY = 'ivc_ocorrencias';
 const CATEQUIZANDOS_KEY = 'ivc_catequizandos';
 const ENCONTROS_KEY = 'ivc_encontros';
 const ATIVIDADES_KEY = 'ivc_atividades';
+const REUNIOES_KEY = 'ivc_reunioes';
 const PAROQUIAS_KEY = 'ivc_paroquias';
 const COMUNIDADES_KEY = 'ivc_comunidades';
 const CATEQUISTAS_KEY = 'ivc_catequistas';
@@ -347,6 +368,20 @@ export function saveAtividade(a: Atividade) {
 }
 export function deleteAtividade(id: string) {
   localStorage.setItem(ATIVIDADES_KEY, JSON.stringify(getAtividades().filter(a => a.id !== id)));
+}
+
+export function getReunioes(turmaId?: string): Reuniao[] {
+  const all: Reuniao[] = JSON.parse(localStorage.getItem(REUNIOES_KEY) || '[]');
+  return turmaId ? all.filter(r => r.turmaId === turmaId) : all;
+}
+export function saveReuniao(r: Reuniao) {
+  const all = getReunioes();
+  const idx = all.findIndex(x => x.id === r.id);
+  if (idx >= 0) all[idx] = r; else all.push(r);
+  localStorage.setItem(REUNIOES_KEY, JSON.stringify(all));
+}
+export function deleteReuniao(id: string) {
+  localStorage.setItem(REUNIOES_KEY, JSON.stringify(getReunioes().filter(r => r.id !== id)));
 }
 
 // Paróquias

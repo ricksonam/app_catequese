@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia, useApproveTurmaMembro } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia, useApproveTurmaMembro } from "@/hooks/useSupabaseData";
 import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart, QrCode, Shield, CheckCircle2, BellRing, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ export default function TurmaDetail() {
   const { data: encontros = [] } = useEncontros(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
+  const { data: reunioes = [] } = useReunioes(id);
   const { data: missoes = [] } = useMissoesFamilia(id);
   const deleteMutation = useDeleteTurma();
   const leaveMutation = useLeaveTurma();
@@ -201,7 +202,8 @@ export default function TurmaDetail() {
   const modulos = [
     { label: "Encontros", desc: "Calendário e freq.", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${id}/encontros`, color: "bg-primary text-white", bgGradient: "from-primary/60 via-primary/30 to-white", gradient: "from-primary/15 to-white", textColor: "text-blue-700", hasAlert: encontrosEmAlerta > 0, alertTitle: `${encontrosEmAlerta} encontro(s) pendente(s) de chamada` },
     { label: "Catequizandos", desc: "Perfis e acompanhamento", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${id}/catequizandos`, color: "bg-emerald-600 text-white", bgGradient: "from-emerald-500/60 via-emerald-500/30 to-white", gradient: "from-emerald-500/15 to-white", textColor: "text-emerald-700", hasAlert: catequizandosEmAlerta > 0, alertTitle: `${catequizandosEmAlerta} catequizando(s) com 3 ou mais faltas seguidas` },
-    { label: "Atividades", desc: "Eventos e projetos", icon: ListChecks, count: atividades.length, unit: "atividade", path: `/turmas/${id}/atividades`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false },
+    { label: "Eventos", desc: "Calendário e freq.", icon: ListChecks, count: atividades.length, unit: "evento", path: `/turmas/${id}/eventos`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false },
+    { label: "Reuniões", desc: "Atas e pautas", icon: Users, count: reunioes.length, unit: "reunião", path: `/turmas/${id}/reunioes`, color: "bg-blue-600 text-white", bgGradient: "from-blue-500/60 via-blue-500/30 to-white", gradient: "from-blue-500/15 to-white", textColor: "text-blue-700", hasAlert: false },
     { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700", hasAlert: false },
     { label: "Catequese em Família", desc: "Missões e integração", icon: Heart, count: missoes.length, unit: "missão", path: `/turmas/${id}/familia`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700", hasAlert: false },
   ];
@@ -326,8 +328,7 @@ export default function TurmaDetail() {
               key={mod.label}
               className={cn(
                 "relative p-[1.5px] rounded-3xl animate-float-up transition-all duration-300 hover:-translate-y-1 active:scale-[0.96] cursor-pointer group shadow-md h-[130px]",
-                `bg-gradient-to-br ${mod.bgGradient}`,
-                i === modulos.length - 1 ? "col-span-2 mx-auto w-[calc(50%-0.375rem)]" : ""
+                `bg-gradient-to-br ${mod.bgGradient}`
               )}
               style={{ animationDelay: `${i * 100}ms` }}
               onClick={() => navigate(mod.path)}

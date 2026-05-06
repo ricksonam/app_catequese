@@ -235,6 +235,33 @@ export async function removeAtividade(id: string) {
   if (error) throw error;
 }
 
+// ========== REUNIOES ==========
+export async function fetchReunioes(turmaId?: string): Promise<Reuniao[]> {
+  let q = supabase.from("reunioes").select("*").order("data");
+  if (turmaId) q = q.eq("turma_id", turmaId);
+  const { data, error } = await q;
+  if (error) throw error;
+  return (data || []).map((r: any) => ({
+    id: r.id, turmaId: r.turma_id, nome: r.nome, descricao: r.descricao,
+    tipo: r.tipo, data: r.data, local: r.local, horario: r.horario, observacao: r.observacao,
+    presencas: r.presencas || [], criadoEm: r.criado_em,
+  }));
+}
+
+export async function upsertReuniao(r: Reuniao) {
+  const { error } = await (supabase.from as any)("reunioes").upsert({
+    id: r.id, turma_id: r.turmaId, nome: r.nome, descricao: r.descricao,
+    tipo: r.tipo, data: r.data, local: r.local, horario: r.horario, observacao: r.observacao,
+    presencas: r.presencas as any, criado_em: r.criadoEm,
+  });
+  if (error) throw error;
+}
+
+export async function removeReuniao(id: string) {
+  const { error } = await (supabase.from as any)("reunioes").delete().eq("id", id);
+  if (error) throw error;
+}
+
 // ========== PAROQUIAS ==========
 export async function fetchParoquias(): Promise<(Paroquia & { isShared?: boolean })[]> {
   const { data: { user } } = await supabase.auth.getUser();
