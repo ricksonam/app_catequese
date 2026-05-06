@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks, Church, Compass, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
+import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useReunioes } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -50,6 +50,7 @@ export default function Dashboard() {
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
+  const { data: reunioes = [] } = useReunioes(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const { data: paroquias = [] } = useParoquias();
   const { data: comunidades = [] } = useComunidades();
   const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
@@ -319,6 +320,13 @@ export default function Dashboard() {
       .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime());
     return pendentes[0] || null;
   }, [filteredEncontros, hoje]);
+
+  const proximaReuniao = useMemo(() => {
+    const pendentes = reunioes
+      .filter((r) => parseDataLocal(r.data) >= hoje)
+      .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime());
+    return pendentes[0] || null;
+  }, [reunioes, hoje]);
 
   const mesAtual = hoje.getMonth();
   const aniversariantesMes = useMemo(() => {
@@ -693,7 +701,7 @@ export default function Dashboard() {
                     {/* Moldura Polaroid */}
                     <div className={cn(
                       "bg-white p-1 pb-1.5 shadow-md border relative overflow-hidden transition-colors",
-                      isHoje ? "border-amber-400 ring-1 ring-amber-400/20" : "border-black/5"
+                      isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-black/5"
                     )}>
                       <div className="w-10 h-10 overflow-hidden bg-muted relative">
                         {c.foto ? (
@@ -721,7 +729,7 @@ export default function Dashboard() {
                             {dateStr}
                           </span>
                           {isHoje ? (
-                            <span className="text-[7px] font-black bg-amber-400 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">
+                            <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">
                               HOJE
                             </span>
                           ) : (
@@ -998,8 +1006,51 @@ export default function Dashboard() {
                     </div>
                   );
                 })}
+
+                {/* ── EVENTO: PRÓXIMA REUNIÃO ── */}
+                {proximaReuniao && (() => {
+                  const dataR = parseDataLocal(proximaReuniao.data);
+                  const diasR = getDiasRestantes(proximaReuniao.data);
+                  const isUrgentR = diasR <= 3;
+                  const diaLabelR = diasR === 0 ? "Hoje!" : diasR === 1 ? "Amanhã" : DIAS_SEMANA[dataR.getDay()];
+                  
+                  return (
+                    <div key={`reuniao-${proximaReuniao.id}`} className="relative pl-8 animate-float-up">
+                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-violet-500 ring-4 ring-background z-10" />
+                      <button 
+                        onClick={() => navigate(`/turmas/${proximaReuniao.turmaId}/reunioes?view=${proximaReuniao.id}`)}
+                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-violet-50/40 border-2 border-violet-200/60 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-violet-400/40 hover:-translate-y-1 active:scale-95"
+                      >
+                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-violet-100 text-violet-600 flex items-center justify-center transition-transform group-hover:scale-110">
+                          <ListChecks className="h-5 w-5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-foreground leading-tight group-hover:text-violet-600 transition-colors line-clamp-2">
+                            {proximaReuniao.nome}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">Reunião</span>
+                            {diaLabelR && (
+                              <span className={cn(
+                                "text-[7px] font-black px-1.5 py-0.5 rounded text-white leading-none uppercase tracking-widest",
+                                isUrgentR ? "bg-red-500 animate-pulse" : "bg-violet-500"
+                              )}>{diaLabelR}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center justify-center min-w-[45px] h-[45px] bg-violet-50 rounded-2xl border border-violet-100 shrink-0">
+                          <p className="text-[9px] font-black text-violet-600/60 uppercase leading-none mb-0.5">Dia</p>
+                          <p className="text-xl font-black text-violet-600 leading-none">
+                            {String(dataR.getDate()).padStart(2, '0')}
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  );
+                })()}
+
                 {/* ── ESTADO VAZIO: NENHUM EVENTO ── */}
-                {!proximoEncontro && proximasAtividades.length === 0 && (
+                {!proximoEncontro && !proximaReuniao && proximasAtividades.length === 0 && (
                   <div className="flex flex-col items-center justify-center py-8 px-4 text-center opacity-60">
                     <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3">
                       <CalendarDays className="h-6 w-6 text-orange-400" />

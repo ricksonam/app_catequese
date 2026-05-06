@@ -24,6 +24,11 @@ export default function ReuniaoPresentation() {
   const [animKey, setAnimKey] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+
+  // Garantir que a apresentação comece no início quando o ID mudar
+  useEffect(() => {
+    setCurrentStep(0);
+  }, [reuniaoId]);
   
   // Timer State
   const [timeLeft, setTimeLeft] = useState(0);
