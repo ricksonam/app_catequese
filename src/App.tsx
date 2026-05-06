@@ -32,7 +32,7 @@ import QuizBiblico from "@/pages/QuizBiblico";
 import QuemSouBiblico from "@/pages/QuemSouBiblico";
 import PerguntasRespostas from "@/pages/PerguntasRespostas";
 import CitacaoSorteio from "@/pages/CitacaoSorteio";
-import BingoBiblico from "@/pages/BingoBiblico";
+
 import SorteioGrupos from "@/pages/SorteioGrupos";
 import Mimica from "@/pages/Mimica";
 import PacienciaBiblica from "@/pages/PacienciaBiblica";
@@ -157,7 +157,7 @@ const AppRoutes = () => (
       <Route path="/jogos/quem-sou" element={<QuemSouBiblico />} />
       <Route path="/jogos/perguntas" element={<PerguntasRespostas />} />
       <Route path="/jogos/citacao" element={<CitacaoSorteio />} />
-      <Route path="/jogos/bingo" element={<BingoBiblico />} />
+
       <Route path="/jogos/grupos" element={<SorteioGrupos />} />
       <Route path="/jogos/mimica" element={<Mimica />} />
       <Route path="/jogos/paciencia" element={<PacienciaBiblica />} />

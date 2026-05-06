@@ -37,13 +37,7 @@ const jogos = [
     color: "bg-amber-500/10 text-amber-600",
     path: "/jogos/citacao",
   },
-  {
-    label: "Bingo Bíblico",
-    desc: "Sorteio de temas bíblicos com cartelas",
-    icon: Hash,
-    color: "bg-indigo-500/10 text-indigo-600",
-    path: "/jogos/bingo",
-  },
+
   {
     label: "Sorteio de Grupos",
     desc: "Divida a turma em grupos de forma aleatória",
