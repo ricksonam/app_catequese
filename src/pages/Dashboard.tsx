@@ -567,7 +567,7 @@ export default function Dashboard() {
                </div>
                <div>
                  <h3 className="text-sm font-black text-foreground leading-tight">Lembretes por Notificação</h3>
-                 <p className="text-[10px] text-muted-foreground mt-0.5">Receba avisos de encontros e aniversários</p>
+                 <p className="text-[10px] text-muted-foreground mt-0.5">Avisos de encontros e aniversários no dia do evento</p>
                </div>
              </div>
              <button
