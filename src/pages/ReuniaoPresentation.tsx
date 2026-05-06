@@ -22,6 +22,11 @@ export default function ReuniaoPresentation() {
   const [animKey, setAnimKey] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  
+  // Timer State
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [initialTime, setInitialTime] = useState(0);
 
   // Construir os passos da apresentação
   const steps = [];
@@ -31,7 +36,7 @@ export default function ReuniaoPresentation() {
   
   if (reuniao?.pautas && reuniao.pautas.length > 0) {
     reuniao.pautas.forEach((p, i) => {
-      steps.push({ tipo: "pauta", label: p.titulo || `Pauta ${i+1}`, conteudo: p.descricao, icone: "📋" });
+      steps.push({ tipo: "pauta", label: p.titulo || `Pauta ${i+1}`, conteudo: p.descricao, tempo: p.tempo, icone: "📋" });
     });
   } else if (reuniao?.descricao) {
     steps.push({ tipo: "pauta", label: "Pautas / Descrição", conteudo: reuniao.descricao, icone: "📋" });
@@ -39,7 +44,41 @@ export default function ReuniaoPresentation() {
 
   steps.push({ tipo: "final", label: "Encerramento", conteudo: reuniao?.observacao || "Reunião finalizada. Obrigado pela presença!", icone: "✨" });
 
-  const step = steps[currentStep];
+  const step = (steps[currentStep] as any);
+
+  // Timer logic
+  useEffect(() => {
+    if (step?.tempo && step.tempo > 0) {
+      const seconds = step.tempo * 60;
+      setTimeLeft(seconds);
+      setInitialTime(seconds);
+      setIsActive(false);
+    } else {
+      setTimeLeft(0);
+      setIsActive(false);
+    }
+  }, [currentStep, steps.length]);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((time) => time - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setIsActive(false);
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const timerProgress = initialTime > 0 ? (timeLeft / initialTime) * 100 : 0;
 
   // Fullscreen API
   useEffect(() => {
@@ -137,6 +176,26 @@ export default function ReuniaoPresentation() {
             {step.conteudo ? (
               <div className="bg-card/80 backdrop-blur-xl rounded-[2rem] p-8 sm:p-10 shadow-2xl border border-border/50 relative overflow-hidden group">
                 <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${gradientClass} opacity-50`} />
+                
+                {step.tempo > 0 && (
+                  <div className="flex flex-col items-center mb-6">
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <svg className="w-full h-full -rotate-90">
+                        <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-muted/10" />
+                        <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-primary transition-all duration-1000" strokeDasharray={364.4} strokeDashoffset={364.4 - (364.4 * timerProgress) / 100} />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-3xl font-black text-foreground">{formatTime(timeLeft)}</span>
+                        <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">restantes</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-4">
+                      <button onClick={() => setIsActive(!isActive)} className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-all active:scale-90 shadow-sm">{isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}</button>
+                      <button onClick={() => { setTimeLeft(initialTime); setIsActive(false); }} className="w-10 h-10 rounded-full bg-muted/60 text-muted-foreground flex items-center justify-center hover:bg-muted transition-all active:scale-90 shadow-sm"><RotateCcw className="h-4 w-4" /></button>
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-lg sm:text-xl text-foreground/90 leading-relaxed font-medium whitespace-pre-wrap text-center">
                   {step.conteudo}
                 </p>

@@ -483,7 +483,10 @@ export const ReuniaoFullSheet = ({ doc, org, turma, catequizandos }: any) => (
           <div className="space-y-4">
             {doc.pautas.map((p: any, i: number) => (
               <div key={i} className="border-l-4 border-black pl-4 py-1">
-                <p className="text-sm font-black uppercase mb-1">{p.titulo}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm font-black uppercase">{p.titulo}</p>
+                  {p.tempo > 0 && <span className="text-[10px] font-bold text-gray-500">({p.tempo} min)</span>}
+                </div>
                 <p className="text-xs leading-relaxed text-gray-700">{p.descricao}</p>
               </div>
             ))}

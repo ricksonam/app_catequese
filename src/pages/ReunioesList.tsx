@@ -35,7 +35,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
 
 interface FormData { 
   nome: string; 
-  pautas: { id: string; titulo: string; descricao: string }[]; 
+  pautas: { id: string; titulo: string; descricao: string; tempo?: number }[]; 
   oracaoInicial: string;
   tipo: ReuniaoTipo; 
   data: string; 
@@ -46,7 +46,7 @@ interface FormData {
 
 const emptyForm: FormData = { 
   nome: "", 
-  pautas: [{ id: crypto.randomUUID(), titulo: "", descricao: "" }], 
+  pautas: [{ id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }], 
   oracaoInicial: "",
   tipo: "Reunião de catequistas", 
   data: "", 
@@ -57,7 +57,7 @@ const emptyForm: FormData = {
 
 const fillFormFromItem = (item: Reuniao): FormData => ({
   nome: item.nome, 
-  pautas: item.pautas && item.pautas.length > 0 ? item.pautas : [{ id: crypto.randomUUID(), titulo: "", descricao: item.descricao || "" }],
+  pautas: item.pautas && item.pautas.length > 0 ? item.pautas : [{ id: crypto.randomUUID(), titulo: "", descricao: item.descricao || "", tempo: 0 }],
   oracaoInicial: item.oracaoInicial || "",
   tipo: item.tipo,
   data: item.data || '', 
@@ -241,7 +241,7 @@ export default function ReunioesList() {
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-black uppercase tracking-widest text-primary">Pautas e Tópicos</label>
                     <button 
-                      onClick={() => setForm(f => ({ ...f, pautas: [...f.pautas, { id: crypto.randomUUID(), titulo: "", descricao: "" }] }))}
+                      onClick={() => setForm(f => ({ ...f, pautas: [...f.pautas, { id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }] }))}
                       className="flex items-center gap-1 text-[10px] font-black uppercase text-primary bg-primary/10 px-2 py-1 rounded-full hover:bg-primary/20 transition-all"
                     >
                       <Plus className="h-3 w-3" /> Add Pauta
@@ -258,17 +258,33 @@ export default function ReunioesList() {
                           <X className="h-3 w-3" />
                         </button>
                         <div className="space-y-2">
-                          <input 
-                            type="text" 
-                            value={pauta.titulo} 
-                            onChange={(e) => {
-                              const newPautas = [...form.pautas];
-                              newPautas[idx].titulo = e.target.value;
-                              setForm(f => ({ ...f, pautas: newPautas }));
-                            }}
-                            placeholder={`Tópico ${idx + 1}`}
-                            className="form-input bg-white border-transparent focus:border-primary/20"
-                          />
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              value={pauta.titulo} 
+                              onChange={(e) => {
+                                const newPautas = [...form.pautas];
+                                newPautas[idx].titulo = e.target.value;
+                                setForm(f => ({ ...f, pautas: newPautas }));
+                              }}
+                              placeholder={`Tópico ${idx + 1}`}
+                              className="form-input bg-white border-transparent focus:border-primary/20 flex-1"
+                            />
+                            <div className="w-24 relative">
+                              <input 
+                                type="number" 
+                                value={pauta.tempo || ""} 
+                                onChange={(e) => {
+                                  const newPautas = [...form.pautas];
+                                  newPautas[idx].tempo = parseInt(e.target.value) || 0;
+                                  setForm(f => ({ ...f, pautas: newPautas }));
+                                }}
+                                placeholder="Min"
+                                className="form-input bg-white border-transparent focus:border-primary/20 pl-7"
+                              />
+                              <Clock className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50" />
+                            </div>
+                          </div>
                           <textarea 
                             value={pauta.descricao} 
                             onChange={(e) => {
@@ -469,7 +485,14 @@ export default function ReunioesList() {
                       {viewItem.pautas.map((p, i) => (
                         <div key={p.id} className="relative pl-10">
                           <span className="absolute left-0 top-0 w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-xs">{i+1}</span>
-                          <p className="text-sm font-black text-foreground mb-1">{p.titulo}</p>
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm font-black text-foreground">{p.titulo}</p>
+                            {p.tempo !== undefined && p.tempo > 0 && (
+                              <span className="flex items-center gap-1 text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded-md border border-sky-100/50">
+                                <Clock className="h-2.5 w-2.5" /> {p.tempo} min
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{p.descricao}</p>
                         </div>
                       ))}
