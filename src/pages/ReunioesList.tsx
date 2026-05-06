@@ -764,10 +764,9 @@ export default function ReunioesList() {
         <DialogContent className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {viewItem && (
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
-              {/* Header Bar Clean */}
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
-                <div className="flex items-center gap-3 z-50 mr-8">
+                <div className="flex items-center gap-3 z-50 mr-12 sm:mr-8">
                   <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm" title="Editar"><Pencil className="h-4 w-4" /></button>
                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm" title="Excluir"><Trash2 className="h-4 w-4" /></button>
                 </div>
@@ -866,26 +865,40 @@ export default function ReunioesList() {
                   </div>
                 )}
 
-                <div className="mt-6 space-y-4">
-                  <p className="text-[10px] font-black uppercase text-primary tracking-widest border-b border-primary/10 pb-1">Pautas e Tópicos</p>
+                <div className="mt-6 space-y-6">
+                  <div className="flex items-center justify-between border-b border-primary/10 pb-1.5">
+                    <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Pautas e Tópicos</p>
+                    {viewItem.pautas && viewItem.pautas.length > 0 && (
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase">{viewItem.pautas.length} tópicos</span>
+                    )}
+                  </div>
+
                   {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 gap-6 relative pl-4">
+                      {/* Timeline Line */}
+                      <div className="absolute left-6 top-2 bottom-6 w-px bg-gradient-to-b from-primary/20 via-primary/5 to-transparent" />
+
                       {viewItem.pautas.map((p, i) => (
-                        <div key={p.id} className="relative group">
-                           <div className="absolute -left-2 top-0 bottom-0 w-1 bg-primary/20 rounded-full group-hover:bg-primary transition-colors" />
-                           <div className="bg-card rounded-2xl p-4 border border-black/5 shadow-sm">
-                             <div className="flex items-center justify-between mb-1.5">
-                                <div className="flex items-center gap-2">
-                                  <span className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-[10px] font-black">{i+1}</span>
-                                  <h4 className="text-sm font-black text-foreground uppercase tracking-tight">{p.titulo}</h4>
-                                </div>
+                        <div key={p.id} className="relative pl-10 group animate-float-up" style={{ animationDelay: `${i * 100}ms` }}>
+                           {/* Number Indicator */}
+                           <div className="absolute left-0 top-0 w-6 h-6 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center text-[10px] font-black text-primary z-10 shadow-sm group-hover:scale-110 transition-transform">
+                             {i+1}
+                           </div>
+
+                           <div className="bg-card rounded-[1.5rem] p-5 border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all relative overflow-hidden">
+                             <div className="flex items-start justify-between gap-4 mb-2">
+                                <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-snug">{p.titulo}</h4>
                                 {p.tempo !== undefined && p.tempo > 0 && (
-                                  <span className="flex items-center gap-1 text-[9px] font-black uppercase text-sky-600 bg-sky-50 px-2 py-1 rounded-lg border border-sky-100">
+                                  <span className="shrink-0 flex items-center gap-1 text-[9px] font-black uppercase text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
                                     <Clock className="h-3 w-3" /> {p.tempo} min
                                   </span>
                                 )}
                              </div>
-                             <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap pl-8">{p.descricao}</p>
+                             {p.descricao && (
+                               <p className="text-[13px] text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                 {p.descricao}
+                               </p>
+                             )}
                            </div>
                         </div>
                       ))}
