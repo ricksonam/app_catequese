@@ -256,10 +256,6 @@ export default function ReunioesList() {
                     onChange={(e) => {
                       const newTipo = e.target.value as ReuniaoTipo;
                       updateField("tipo", newTipo);
-                      // Auto-populate name for specific types if empty
-                      if (!form.nome || form.nome === "" || REUNIAO_TIPOS.includes(form.nome as any)) {
-                         updateField("nome", newTipo);
-                      }
                     }} 
                     className="form-input font-bold text-primary"
                   >
@@ -735,16 +731,19 @@ export default function ReunioesList() {
                             </div>
                           </div>
 
-                          <div className="flex flex-col justify-center px-4 transition-opacity pr-5 gap-2">
+                          <div className="flex flex-col justify-center px-4 pr-5 gap-2 shrink-0">
                             <button 
                               onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/reunioes/${item.id}/apresentacao`); }}
-                              className="w-8 h-8 rounded-full bg-violet-50 text-violet-600 flex items-center justify-center hover:bg-violet-100 transition-colors shadow-sm"
-                              title="Apresentar"
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200 transition-all shadow-sm active:scale-95 group/btn"
                             >
-                              <Play className="h-4 w-4" />
+                              <Play className="h-3 w-3 fill-current" />
+                              <span className="text-[10px] font-black uppercase tracking-widest">Apresentar</span>
                             </button>
-                            <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground transition-colors">
-                              <ChevronRight className="h-4 w-4" />
+                            <div 
+                              className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 text-zinc-600 group-hover:bg-primary/10 group-hover:text-primary transition-all shadow-sm"
+                            >
+                              <span className="text-[10px] font-black uppercase tracking-widest">Abrir</span>
+                              <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                             </div>
                           </div>
                         </div>

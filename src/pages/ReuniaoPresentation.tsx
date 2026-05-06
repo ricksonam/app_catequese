@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useEncontros, useAtividades } from "@/hooks/useSupabaseData";
 import { X as XIcon, ChevronLeft, ChevronRight, Play, Pause, RotateCcw, BookOpen, Users, Sparkles, MessageSquare } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { formatarDataVigente, cn } from "@/lib/utils";
 
 const STEP_COLORS = {
   oracao: "from-purple-600 to-indigo-600",
@@ -37,6 +38,15 @@ export default function ReuniaoPresentation() {
 
   // Construir os passos da apresentação
   const steps = [];
+
+  // Passo 0: Capa / Introdução
+  steps.push({
+    tipo: "oracao", // Reusing oracao color for intro
+    label: "Início da Reunião",
+    conteudo: reuniao?.nome || reuniao?.tipo,
+    subtitulo: reuniao?.data ? formatarDataVigente(reuniao.data) : "",
+    icone: "📅"
+  });
   
   if (reuniao?.oracaoInicial || reuniao?.oracaoTipo) {
     steps.push({ 
@@ -216,6 +226,12 @@ export default function ReuniaoPresentation() {
               <h2 className="text-2xl sm:text-3xl font-black text-foreground text-center tracking-tight uppercase">{step.label}</h2>
             </div>
 
+            {step.subtitulo && (
+              <p className="text-sm font-black text-primary/60 uppercase tracking-[0.2em] mb-4 text-center">
+                {step.subtitulo}
+              </p>
+            )}
+
             {step.conteudo ? (
               <div className="bg-card/80 backdrop-blur-xl rounded-[2rem] p-8 sm:p-10 shadow-2xl border border-border/50 relative overflow-hidden group">
                 <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${gradientClass} opacity-50`} />
@@ -239,7 +255,10 @@ export default function ReuniaoPresentation() {
                   </div>
                 )}
 
-                <p className="text-lg sm:text-xl text-foreground/90 leading-relaxed font-medium whitespace-pre-wrap text-center">
+                <p className={cn(
+                  "text-lg sm:text-xl text-foreground/90 leading-relaxed font-medium whitespace-pre-wrap text-center",
+                  step.tipo === "oracao" && currentStep === 0 && "text-3xl sm:text-4xl font-black tracking-tight"
+                )}>
                   {step.conteudo}
                 </p>
               </div>
