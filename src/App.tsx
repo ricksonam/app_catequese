@@ -179,6 +179,16 @@ const App = () => {
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2200);
     initGlobalErrorCapture(); // Captura global de erros JS
+
+    // Detectar fluxo de recuperação de senha (hash da URL)
+    const hash = window.location.hash;
+    if (hash && hash.includes("type=recovery")) {
+      // Pequeno delay para garantir que o router esteja pronto
+      setTimeout(() => {
+        window.location.href = "/reset-password" + hash;
+      }, 100);
+    }
+
     return () => clearTimeout(timer);
   }, []);
 
