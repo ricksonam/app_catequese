@@ -245,7 +245,7 @@ export default function EventosList() {
                         className="w-full text-left group animate-float-up"
                         style={{ animationDelay: `${i * 55}ms` }}
                       >
-                        <div className="flex items-stretch bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
+                        <div className="flex items-stretch bg-card rounded-2xl border border-black shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
                           <div className={`absolute top-0 bottom-0 left-0 w-1 ${cor.split(' ')[0].replace('bg-','bg-')}`} />
                           
                           {/* Coluna da data */}

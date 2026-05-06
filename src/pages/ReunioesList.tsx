@@ -492,7 +492,7 @@ export default function ReunioesList() {
                 {/* --- SEÇÃO UNIFICADA: ROTEIRO (Para TODOS os tipos) --- */}
                 <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
                   {/* Card Único: Roteiro da Reunião */}
-                  <div className="p-5 rounded-2xl bg-white border-2 border-blue-100 shadow-sm space-y-4">
+                  <div className="p-5 rounded-2xl bg-white border-2 border-blue-300 shadow-sm space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm">
                         <Book className="h-5 w-5" />
@@ -506,7 +506,7 @@ export default function ReunioesList() {
                     <div className="h-px bg-blue-200/30" />
 
                     {/* Momento de Oração Unificado (Refinado: Tipo primeiro, depois Leitura) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-white/50 border border-blue-200/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-white/50 border-2 border-blue-200">
                       <div className="space-y-1">
                         <label className="text-[10px] font-black text-blue-700 uppercase tracking-widest ml-1">Tipo de Oração</label>
                         <select 
@@ -541,7 +541,7 @@ export default function ReunioesList() {
                             const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }];
                             updateField("pautas", next);
                           }}
-                          className="text-[9px] font-black text-blue-600 bg-blue-100/80 px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 hover:bg-blue-100 transition-all border border-blue-200/50 shadow-sm active:scale-95"
+                          className="text-[9px] font-black text-blue-600 bg-blue-100/80 px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 hover:bg-blue-100 transition-all border-2 border-blue-300 shadow-sm active:scale-95"
                         >
                           <Plus className="h-3.5 w-3.5" /> Adicionar Pauta
                         </button>
@@ -557,7 +557,7 @@ export default function ReunioesList() {
                           (form.pautas || []).map((p, idx) => (
                             <div key={p.id} className="relative group animate-in slide-in-from-right-4 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
                               <div className="absolute -left-1 top-0 bottom-0 w-1 bg-blue-400 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                              <div className="bg-white rounded-[1.5rem] p-4 sm:p-5 border border-blue-200 shadow-sm group-hover:shadow-md transition-all space-y-3.5">
+                              <div className="bg-white rounded-[1.5rem] p-4 sm:p-5 border-2 border-blue-300 shadow-sm group-hover:shadow-md transition-all space-y-3.5">
                                 <div className="flex items-start gap-3">
                                   <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center text-[10px] font-black shrink-0 border border-blue-100">
                                     {idx + 1}
@@ -736,7 +736,7 @@ export default function ReunioesList() {
                         className="w-full text-left group animate-float-up"
                         style={{ animationDelay: `${i * 55}ms` }}
                       >
-                        <div className="flex flex-col bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
+                        <div className="flex flex-col bg-card rounded-2xl border border-black shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
                           <div className={`absolute top-0 bottom-0 left-0 w-1 ${cor.split(' ')[0].replace('bg-','bg-')}`} />
                           
                           <div className="flex items-stretch flex-1">
