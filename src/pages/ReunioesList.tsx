@@ -698,40 +698,43 @@ export default function ReunioesList() {
                         className="w-full text-left group animate-float-up"
                         style={{ animationDelay: `${i * 55}ms` }}
                       >
-                        <div className="flex items-stretch bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
+                        <div className="flex flex-col bg-card rounded-2xl border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
                           <div className={`absolute top-0 bottom-0 left-0 w-1 ${cor.split(' ')[0].replace('bg-','bg-')}`} />
                           
-                          {/* Coluna da data */}
-                          <div className="flex flex-col items-center justify-center px-4 py-4 border-r border-black/5 shrink-0 min-w-[75px] bg-muted/30 group-hover:bg-primary/5 transition-colors pl-5">
-                            <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none mb-1">{DIAS[d.getDay()]}</span>
-                            <span className="text-3xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{MESES[d.getMonth()].substring(0,3)}</span>
+                          <div className="flex items-stretch flex-1">
+                            {/* Coluna da data */}
+                            <div className="flex flex-col items-center justify-center px-4 py-4 border-r border-black/5 shrink-0 min-w-[75px] bg-muted/30 group-hover:bg-primary/5 transition-colors pl-5">
+                              <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none mb-1">{DIAS[d.getDay()]}</span>
+                              <span className="text-3xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
+                              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{MESES[d.getMonth()].substring(0,3)}</span>
+                            </div>
+
+                            {/* Conteúdo */}
+                            <div className="flex-1 px-4 sm:px-5 py-3 sm:py-4 min-w-0 flex flex-col justify-center">
+                              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                <span className="text-base leading-none bg-muted/50 p-1 rounded-md">{icone}</span>
+                                <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-current/10 ${cor}`}>
+                                  {item.tipo}
+                                </span>
+                              </div>
+                              <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
+                                {item.horario && (
+                                  <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground">
+                                    <Clock className="h-3.5 w-3.5 text-primary/70" /> {item.horario}
+                                  </p>
+                                )}
+                                {item.local && (
+                                  <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full">
+                                    <MapPin className="h-3.5 w-3.5 text-primary/70 shrink-0" /> <span className="truncate">{item.local}</span>
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
 
-                          {/* Conteúdo */}
-                          <div className="flex-1 px-4 sm:px-5 py-3 sm:py-4 min-w-0 flex flex-col justify-center">
-                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                              <span className="text-base leading-none bg-muted/50 p-1 rounded-md">{icone}</span>
-                              <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-current/10 ${cor}`}>
-                                {item.tipo}
-                              </span>
-                            </div>
-                            <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
-                              {item.horario && (
-                                <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground">
-                                  <Clock className="h-3.5 w-3.5 text-primary/70" /> {item.horario}
-                                </p>
-                              )}
-                              {item.local && (
-                                <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full">
-                                  <MapPin className="h-3.5 w-3.5 text-primary/70 shrink-0" /> <span className="truncate">{item.local}</span>
-                                </p>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col justify-center px-4 pr-5 gap-2 shrink-0">
+                          {/* Chips na parte de baixo */}
+                          <div className="flex items-center gap-2 px-4 pb-3 sm:px-5 sm:pb-4 ml-[75px]">
                             <button 
                               onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/reunioes/${item.id}/apresentacao`); }}
                               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200 transition-all shadow-sm active:scale-95 group/btn"
@@ -764,13 +767,9 @@ export default function ReunioesList() {
               {/* Header Bar Clean */}
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
-                <div className="flex items-center gap-1.5 z-50">
-                  <button onClick={() => navigate(`/turmas/${id}/reunioes/${viewItem.id}/apresentacao`)} className="p-2 rounded-xl bg-violet-100 text-violet-700 hover:bg-violet-200 transition-colors shadow-sm" title="Apresentar"><Play className="h-4 w-4" /></button>
+                <div className="flex items-center gap-3 z-50 mr-8">
                   <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm" title="Editar"><Pencil className="h-4 w-4" /></button>
                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm" title="Excluir"><Trash2 className="h-4 w-4" /></button>
-
-                  <div className="w-px h-4 bg-black/10 mx-1" />
-                  <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
                 </div>
               </div>
 
@@ -816,10 +815,29 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                {viewItem.oracaoInicial && (
-                  <div className="mt-4 p-4 rounded-2xl bg-violet-50 border border-violet-100">
-                    <p className="text-[10px] font-black uppercase text-violet-400 tracking-widest mb-1.5">🙏 Oração Inicial</p>
-                    <p className="text-sm font-medium text-violet-900 leading-relaxed italic">"{viewItem.oracaoInicial}"</p>
+                {(viewItem.oracaoTipo || viewItem.oracaoInicial) && (
+                  <div className="mt-4 p-5 rounded-2xl bg-amber-50 border-2 border-amber-100/50 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+                        <Book className="h-4 w-4" />
+                      </div>
+                      <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Roteiro de Oração</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {viewItem.oracaoTipo && (
+                        <div>
+                          <p className="text-[10px] font-black text-amber-700/50 uppercase tracking-tighter">Tipo de Oração</p>
+                          <p className="text-sm font-bold text-amber-900">{viewItem.oracaoTipo}</p>
+                        </div>
+                      )}
+                      {viewItem.oracaoInicial && (
+                        <div>
+                          <p className="text-[10px] font-black text-amber-700/50 uppercase tracking-tighter">Leitura Bíblica</p>
+                          <p className="text-sm font-bold text-amber-900 italic">"{viewItem.oracaoInicial}"</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
