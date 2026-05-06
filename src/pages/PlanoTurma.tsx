@@ -196,7 +196,7 @@ export default function PlanoTurma() {
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-foreground leading-tight truncate group-active:text-primary transition-colors">{item.titulo}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">{item.tipo}</span>
+                              <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">{item.tipo === 'atividade' ? 'Evento' : item.tipo}</span>
                               <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Users className="h-3 w-3" /> {presPct}% {item.tipo === 'encontro' ? 'Alunos' : 'Pais'}</span>
                             </div>
                           </div>
