@@ -9,13 +9,13 @@ import {
   ArrowLeft, Search, X, ChevronRight, Eye
 } from "lucide-react";
 import { toast } from "sonner";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { cn } from "@/lib/utils";
 import * as Templates from "./ReportTemplates";
 import { Input } from "@/components/ui/input";
 
 interface ReportModuleProps {
-  context: "encontros" | "catequizandos" | "atividades" | "plano";
+  context: "encontros" | "catequizandos" | "atividades" | "plano" | "reunioes";
   turmaId: string;
   trigger?: React.ReactNode;
   initialDocId?: string;
@@ -61,6 +61,15 @@ const MODULE_CONFIG: any = {
     reports: [
       { id: "plano_unificado", label: "Cronograma Geral", icon: Calendar, desc: "Encontros e Atividades por período", needsSelect: false },
     ]
+  },
+  reunioes: {
+    title: "Relatórios de Reuniões",
+    icon: Users,
+    color: "from-blue-500 to-indigo-600",
+    reports: [
+      { id: "reun_complet", label: "Ata Completa da Reunião", icon: FileText, desc: "Pautas, local e presença", needsSelect: true },
+      { id: "pres_reuniao", label: "Lista de Presença", icon: ClipboardList, desc: "Ficha em branco para a reunião", needsSelect: true },
+    ]
   }
 };
 
@@ -78,6 +87,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   const { data: encontros = [] } = useEncontros(turmaId);
   const { data: catequizandos = [] } = useCatequizandos(turmaId);
   const { data: atividades = [] } = useAtividades(turmaId);
+  const { data: reunioes = [] } = useReunioes(turmaId);
   const { data: paroquias = [] } = useParoquias();
   const { data: comunidades = [] } = useComunidades();
 
@@ -227,6 +237,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       items = catequizandos;
     } else if (context === "atividades") {
       items = atividades;
+    } else if (context === "reunioes") {
+      items = reunioes;
     }
 
     const filtered = items.filter(it => 
@@ -294,6 +306,12 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
         return targetAtivs.map(a => <Templates.ActivityFullSheet key={a.id} doc={a} org={org} turma={turma} />);
       case "pres_responsaveis":
         return <Templates.AttendanceBlankSheet org={org} turma={turma} catequizandos={catequizandos} />;
+      case "reun_complet":
+        const targetReuns = selectedRecordId ? reunioes.filter(r => r.id === selectedRecordId) : reunioes;
+        return targetReuns.map(r => <Templates.ReuniaoFullSheet key={r.id} doc={r} org={org} turma={turma} catequizandos={catequizandos} />);
+      case "pres_reuniao":
+        const targetReun = selectedRecordId ? reunioes.find(r => r.id === selectedRecordId) : null;
+        return <Templates.AttendanceBlankSheet doc={targetReun} org={org} turma={turma} catequizandos={catequizandos} />;
       case "plano_unificado":
         const allItems = [
           ...encontros.map(e => ({ ...e, type: 'encontro' })),

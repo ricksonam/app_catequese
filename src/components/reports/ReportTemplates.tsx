@@ -1,5 +1,5 @@
 import { cn, formatarDataVigente } from "@/lib/utils";
-import { Encontro, Catequizando, Atividade, Turma } from "@/lib/store";
+import { Encontro, Catequizando, Atividade, Turma, Reuniao } from "@/lib/store";
 import { BookOpen, Calendar, Clock, Cross, User, Users } from "lucide-react";
 
 interface HeaderProps {
@@ -441,3 +441,84 @@ export const AnnualCelebrationsCalendar = ({ org, turma, catequizandos }: any) =
     </div>
   );
 };
+
+// ==========================================
+// REUNIÃO TEMPLATES
+// ==========================================
+
+export const ReuniaoFullSheet = ({ doc, org, turma, catequizandos }: any) => (
+  <div className="p-8 text-black font-sans print:p-0">
+    <PrintHeader 
+      titulo="Ata de Reunião" 
+      paroquia={org.paroquia} 
+      comunidade={org.comunidade}
+      turma={turma.nome}
+    />
+    <div className="p-6 border-2 border-black rounded-3xl mb-8 bg-gray-50 flex justify-between items-center">
+      <div>
+        <p className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em] mb-1">Tipo de Reunião</p>
+        <h2 className="text-3xl font-black uppercase">{doc.tipo}</h2>
+        <p className="text-sm font-bold uppercase mt-1 text-gray-600">Turma: {turma.nome} • Status: {doc.status}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-2xl font-black">{formatarDataVigente(doc.data)}</p>
+        <p className="text-sm font-bold uppercase">{doc.horario || "--:--"}</p>
+      </div>
+    </div>
+    <div className="grid grid-cols-2 gap-8 mb-8">
+      <div className="space-y-1"><p className="text-[10px] font-black uppercase text-gray-500">Local da Reunião</p><p className="font-bold text-lg">{doc.local || "Sala de Catequese"}</p></div>
+      <div className="space-y-1"><p className="text-[10px] font-black uppercase text-gray-500">Responsável / Condutor</p><p className="font-bold text-lg">Catequista da Turma</p></div>
+    </div>
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-xs font-black uppercase border-b-2 border-black pb-1 mb-3">Pautas e Deliberações</h3>
+        <p className="text-sm leading-relaxed whitespace-pre-wrap min-h-[200px] border p-4 rounded-xl">{doc.descricao}</p>
+      </div>
+
+      <div>
+        <h3 className="text-xs font-black uppercase border-b-2 border-black pb-1 mb-3">Registro de Presença</h3>
+        <table className="w-full border-collapse border border-black">
+          <thead>
+            <tr className="bg-gray-100 text-[10px] font-black uppercase">
+              <th className="border border-black p-1 w-10">#</th>
+              <th className="border border-black p-1 text-left">Participante</th>
+              <th className="border border-black p-1 w-20">Presente</th>
+              <th className="border border-black p-1 w-20">Falta</th>
+              <th className="border border-black p-1 text-left">Assinatura / Rubrica</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(doc.presenca || []).map((p: any, idx: number) => {
+              const cat = catequizandos.find((c: any) => c.id === p.id);
+              return (
+                <tr key={idx} className="text-xs">
+                  <td className="border border-black p-1 text-center font-bold">{idx + 1}</td>
+                  <td className="border border-black p-1 font-bold">{cat?.nome || "Participante"}</td>
+                  <td className="border border-black p-1 text-center font-bold text-lg">{p.presente ? 'X' : ''}</td>
+                  <td className="border border-black p-1 text-center font-bold text-lg">{!p.presente ? 'X' : ''}</td>
+                  <td className="border border-black p-1"></td>
+                </tr>
+              );
+            })}
+            {Array.from({ length: 5 }).map((_, i) => (
+              <tr key={`blank-${i}`} className="h-8">
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {doc.observacao && (
+        <div className="p-4 border border-dashed border-black/30 rounded-xl">
+          <p className="text-[10px] font-black uppercase mb-1">Observações Finais</p>
+          <p className="text-xs italic">{doc.observacao}</p>
+        </div>
+      )}
+    </div>
+  </div>
+);
