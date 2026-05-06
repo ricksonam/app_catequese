@@ -260,27 +260,46 @@ export default function ReunioesList() {
                 {form.tipo === 'Reunião de preparação de encontro' && (
                   <div className="p-4 rounded-2xl bg-success/5 border border-success/20 space-y-3">
                     <label className="text-xs font-bold text-success block">Encontros a Preparar</label>
-                    <div className="flex flex-wrap gap-2">
-                      {encontros.map(e => (
-                        <button
-                          key={e.id}
-                          type="button"
-                          onClick={() => {
-                            const current = form.encontrosPreparados || [];
-                            const next = current.includes(e.id) ? current.filter(id => id !== e.id) : [...current, e.id];
-                            updateField('encontrosPreparados', next as any);
-                          }}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border",
-                            form.encontrosPreparados?.includes(e.id) 
-                              ? "bg-success text-white border-success" 
-                              : "bg-white text-success border-success/30 hover:bg-success/5"
-                          )}
-                        >
-                          {e.titulo}
-                        </button>
+                    <select 
+                      className="form-input bg-white text-xs" 
+                      value=""
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val && !form.encontrosPreparados?.includes(val)) {
+                          const next = [...(form.encontrosPreparados || []), val];
+                          updateField('encontrosPreparados', next as any);
+                        }
+                      }}
+                    >
+                      <option value="">+ Adicionar Encontro à Lista...</option>
+                      {encontros.filter(e => !form.encontrosPreparados?.includes(e.id)).map(e => (
+                        <option key={e.id} value={e.id}>{e.titulo}</option>
                       ))}
-                      {encontros.length === 0 && <p className="text-[10px] text-muted-foreground italic">Nenhum encontro encontrado para esta turma.</p>}
+                    </select>
+
+                    <div className="flex flex-wrap gap-2">
+                      {form.encontrosPreparados?.map(eid => {
+                        const enc = encontros.find(e => e.id === eid);
+                        if (!enc) return null;
+                        return (
+                          <div key={eid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-success text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
+                            <span className="truncate max-w-[150px]">{enc.titulo}</span>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const next = form.encontrosPreparados?.filter(id => id !== eid);
+                                updateField('encontrosPreparados', next as any);
+                              }}
+                              className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {(!form.encontrosPreparados || form.encontrosPreparados.length === 0) && (
+                        <p className="text-[10px] text-muted-foreground italic">Nenhum encontro selecionado.</p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -289,27 +308,46 @@ export default function ReunioesList() {
                 {form.tipo === 'Reunião de preparação de eventos' && (
                   <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-200 space-y-3">
                     <label className="text-xs font-bold text-indigo-700 block">Eventos a Preparar</label>
-                    <div className="flex flex-wrap gap-2">
-                      {atividades.map(a => (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => {
-                            const current = form.eventosPreparados || [];
-                            const next = current.includes(a.id) ? current.filter(id => id !== a.id) : [...current, a.id];
-                            updateField('eventosPreparados', next as any);
-                          }}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border",
-                            form.eventosPreparados?.includes(a.id) 
-                              ? "bg-indigo-600 text-white border-indigo-600" 
-                              : "bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                          )}
-                        >
-                          {a.titulo}
-                        </button>
+                    <select 
+                      className="form-input bg-white text-xs" 
+                      value=""
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val && !form.eventosPreparados?.includes(val)) {
+                          const next = [...(form.eventosPreparados || []), val];
+                          updateField('eventosPreparados', next as any);
+                        }
+                      }}
+                    >
+                      <option value="">+ Adicionar Evento à Lista...</option>
+                      {atividades.filter(a => !form.eventosPreparados?.includes(a.id)).map(a => (
+                        <option key={a.id} value={a.id}>{a.titulo}</option>
                       ))}
-                      {atividades.length === 0 && <p className="text-[10px] text-muted-foreground italic">Nenhuma atividade/evento encontrada.</p>}
+                    </select>
+
+                    <div className="flex flex-wrap gap-2">
+                      {form.eventosPreparados?.map(aid => {
+                        const act = atividades.find(a => a.id === aid);
+                        if (!act) return null;
+                        return (
+                          <div key={aid} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-indigo-600 text-white rounded-lg text-[10px] font-bold animate-in fade-in zoom-in duration-200">
+                            <span className="truncate max-w-[150px]">{act.titulo}</span>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const next = form.eventosPreparados?.filter(id => id !== aid);
+                                updateField('eventosPreparados', next as any);
+                              }}
+                              className="p-0.5 hover:bg-black/10 rounded-full transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {(!form.eventosPreparados || form.eventosPreparados.length === 0) && (
+                        <p className="text-[10px] text-muted-foreground italic">Nenhum evento selecionado.</p>
+                      )}
                     </div>
                   </div>
                 )}
