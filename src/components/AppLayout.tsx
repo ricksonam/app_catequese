@@ -212,7 +212,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                 { label: "Agenda", path: "/modulos/calendario", img: "/acesso_agenda.jpg" },
                 { label: "Bíblia Online", path: "/modulos/biblia", img: "/acesso_biblia.jpg" },
                 { label: "Jogos", path: "/jogos", img: "/acesso_jogos.jpg" },
-                { label: "Relatórios", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/relatorios` : "/turmas", img: "/acesso_relatorios.jpg" },
+                { label: "Relatórios", path: turmas.length > 0 ? `/turmas/${(localStorage.getItem("ivc_selected_turma") && localStorage.getItem("ivc_selected_turma") !== "all") ? localStorage.getItem("ivc_selected_turma") : turmas[0].id}/relatorios` : "/turmas", img: "/acesso_relatorios.jpg" },
                 { label: "Conecta", path: "/comunicacao", img: "/acesso_conecta.jpg" },
                 { label: "Sugestões", onClick: () => setSugestaoOpen(true), img: "/acesso_sugestoes.jpg" },
                 { 

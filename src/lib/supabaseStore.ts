@@ -182,6 +182,22 @@ export async function removeCatequizando(id: string) {
   if (error) throw error;
 }
 
+export async function publicUpsertCatequizando(payload: any) {
+  const { data, error } = await supabase.rpc('public_upsert_catequizando', { p_payload: payload });
+  if (error) throw error;
+  return data;
+}
+
+export async function checkCatequizandoExists(turmaId: string, nome: string, dataNasc: string) {
+  const { data, error } = await supabase.rpc('check_catequizando_exists', {
+    p_turma_id: turmaId,
+    p_nome: nome,
+    p_data_nascimento: dataNasc
+  });
+  if (error) throw error;
+  return data && data.length > 0 ? data[0] : null;
+}
+
 // ========== ENCONTROS ==========
 export async function fetchEncontros(turmaId?: string): Promise<Encontro[]> {
   let q = supabase.from("encontros").select("*").order("data");

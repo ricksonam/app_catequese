@@ -23,12 +23,29 @@ export default function RelatoriosTurma() {
 
   const turma = turmas.find(t => t.id === id);
 
+  // Fallback: se não encontrar a turma, redireciona para a primeira disponível ou lista de turmas
+  if (!loadingT && turmas.length > 0 && !turma) {
+    navigate(`/turmas/${turmas[0].id}/relatorios`, { replace: true });
+    return null;
+  }
+
   if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom) {
     return <div className="flex justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
   if (!turma) {
-    return <div className="text-center py-20">Turma não encontrada.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <XCircle className="w-12 h-12 text-destructive/50" />
+        <div className="text-center">
+          <p className="font-black uppercase tracking-tight">Turma não selecionada</p>
+          <p className="text-xs text-muted-foreground mt-1">Por favor, selecione uma turma para visualizar os relatórios.</p>
+        </div>
+        <button onClick={() => navigate("/turmas")} className="px-6 py-2 bg-primary text-white rounded-xl font-black uppercase text-xs">
+          Ver Turmas
+        </button>
+      </div>
+    );
   }
 
   const comunidade = comunidades.find(c => c.id === turma.comunidadeId);

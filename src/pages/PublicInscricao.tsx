@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchPublicTurmaByCode, upsertCatequizando } from "@/lib/supabaseStore";
+import { fetchPublicTurmaByCode, publicUpsertCatequizando, checkCatequizandoExists } from "@/lib/supabaseStore";
 
 import { 
   UserPlus, Calendar, Phone, Mail, MapPin, 
@@ -131,15 +131,7 @@ export default function PublicInscricao() {
 
     setIsSubmitting(true);
     try {
-      // Verificar se já existe um catequizando com o mesmo nome e data de nascimento nesta turma
-      // para permitir atualização em vez de criar um duplicado
-      const { data: existing } = await supabase
-        .from("catequizandos")
-        .select("id")
-        .eq("turma_id", turma.id)
-        .ilike("nome", form.nome.trim())
-        .eq("data_nascimento", form.dataNascimento)
-        .maybeSingle();
+      const existing = await checkCatequizandoExists(turma.id, form.nome.trim(), form.dataNascimento);
 
       const payload: Catequizando = {
         ...form,
@@ -150,7 +142,7 @@ export default function PublicInscricao() {
       };
 
 
-      await upsertCatequizando(payload);
+      await publicUpsertCatequizando(payload);
 
       setIsSuccess(true);
       toast.success("Inscrição realizada com sucesso!");

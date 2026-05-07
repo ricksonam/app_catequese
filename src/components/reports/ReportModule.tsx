@@ -368,7 +368,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             </button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-w-md rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+        <DialogContent className="max-w-md rounded-3xl p-0 overflow-hidden border-none shadow-2xl print:hidden">
           {/* Header */}
           <div className={cn("p-6 text-white bg-gradient-to-br transition-all duration-500", config.color)}>
             <div className="flex items-center gap-3">
@@ -420,7 +420,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
       {/* Preview Overlay */}
       {isPreviewOpen && (
-        <div className="preview-overlay">
+        <div className="preview-overlay print:hidden">
           <div className="preview-actions">
             <button onClick={resetFlow} className="p-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all">
               <ArrowLeft className="h-5 w-5" />
@@ -451,7 +451,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
           </div>
 
-          <div className="paper-preview p-0 md:p-12 overflow-visible" ref={previewRef}>
+          <div className="paper-preview p-0 md:p-12 overflow-visible print:hidden" ref={previewRef}>
              <div className="bg-white text-black min-h-full">
                {renderPreviewContent()}
              </div>

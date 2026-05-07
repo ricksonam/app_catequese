@@ -93,7 +93,7 @@ export const BoletimTurmaSheet = ({ org, turma, catequizandos, encontros }: any)
 // ==========================================
 
 export const EncontroFullSheet = ({ doc, org, turma }: any) => (
-  <div className="p-5 text-black bg-white font-sans">
+  <div className="p-4 text-black bg-white font-sans max-w-[210mm] mx-auto">
     <PrintHeader 
       titulo="Ficha Técnica de Encontro" 
       paroquia={org.paroquia} 
@@ -102,59 +102,66 @@ export const EncontroFullSheet = ({ doc, org, turma }: any) => (
       etapa={turma.etapa}
     />
     
-    <div className="border border-[#2c1810] p-3 mb-3 bg-white">
-      <p className="text-[9px] font-black uppercase text-gray-500 tracking-[0.2em] mb-1">Tema do Encontro</p>
-      <h2 className="text-base font-black uppercase text-[#2c1810]">{doc.tema}</h2>
+    <div className="border border-[#2c1810] p-2 mb-2 bg-white">
+      <p className="text-[8px] font-black uppercase text-gray-500 tracking-[0.2em] mb-0.5">Tema do Encontro</p>
+      <h2 className="text-sm font-black uppercase text-[#2c1810] leading-tight">{doc.tema}</h2>
       {doc.leituraBiblica && (
-        <p className="mt-1 border-l-2 border-[#2c1810] pl-2 font-serif italic text-xs text-[#2c1810]">Bíblia: {doc.leituraBiblica}</p>
+        <p className="mt-0.5 border-l-2 border-[#2c1810] pl-2 font-serif italic text-[10px] text-[#2c1810]">Bíblia: {doc.leituraBiblica}</p>
       )}
-      <div className="flex gap-8 mt-2 pt-2 border-t border-gray-200 text-[10px] font-bold uppercase text-gray-600">
+      <div className="flex gap-6 mt-1 pt-1 border-t border-gray-100 text-[9px] font-bold uppercase text-gray-600">
         <span>Data: {formatarDataVigente(doc.data)}</span>
         <span>Duração: {doc.roteiro?.reduce((s: number, r: any) => s + (r.tempo || 0), 0) || 0} min</span>
       </div>
     </div>
 
     <div className="mb-2">
-      <h3 className="text-xs font-serif font-black uppercase border-b border-[#2c1810] pb-1 mb-2 tracking-widest text-[#2c1810]">Roteiro e Desenvolvimento</h3>
-      <table className="w-full border-collapse text-xs">
+      <h3 className="text-[10px] font-serif font-black uppercase border-b border-[#2c1810] pb-0.5 mb-1 tracking-widest text-[#2c1810]">Roteiro e Desenvolvimento</h3>
+      <table className="w-full border-collapse text-[10px]">
         <thead>
-          <tr className="border-b border-[#2c1810] bg-gray-50">
-            <th className="text-left p-1 w-6">#</th>
-            <th className="text-left p-1 w-1/4">Etapa</th>
+          <tr className="border-b border-[#2c1810] bg-gray-50/50">
+            <th className="text-left p-1 w-5">#</th>
+            <th className="text-left p-1 w-1/5">Etapa</th>
             <th className="text-left p-1">Conteúdo</th>
-            <th className="text-right p-1 w-12">Tempo</th>
+            <th className="text-right p-1 w-10">Tempo</th>
           </tr>
         </thead>
         <tbody>
           {doc.roteiro?.map((r: any, i: number) => (
-            <tr key={i} className="border-b border-gray-200 align-top">
+            <tr key={i} className="border-b border-gray-100 align-top">
               <td className="p-1 font-black text-[#2c1810]">{i+1}</td>
-              <td className="p-1 font-bold uppercase">{r.label}</td>
-              <td className="p-1 text-gray-800 whitespace-pre-wrap font-serif">{r.conteudo}</td>
-              <td className="p-1 text-right font-bold text-gray-500">{r.tempo}min</td>
+              <td className="p-1 font-bold uppercase text-[9px]">{r.label}</td>
+              <td className="p-1 text-gray-800 whitespace-pre-wrap font-serif leading-tight">{r.conteudo}</td>
+              <td className="p-1 text-right font-bold text-gray-400">{r.tempo}m</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
 
-    {doc.materialApoio && (
-      <div className="p-2 border border-[#2c1810] bg-gray-50 mb-2">
-        <p className="text-[9px] font-black uppercase tracking-widest text-gray-600 mb-1">Material de Apoio</p>
-        <p className="text-xs font-serif">{doc.materialApoio}</p>
-      </div>
-    )}
-
-    {doc.avaliacao && (
-      <div className="p-2 border border-[#2c1810]">
-        <p className="text-[9px] font-black uppercase tracking-widest text-[#2c1810] mb-1">Avaliação Pós-Encontro</p>
-        <div className="grid grid-cols-3 gap-2 text-xs font-serif">
-          <div><p className="font-sans font-bold text-gray-500 uppercase text-[9px] mb-0.5">Pontos Positivos</p><p className="italic">{doc.avaliacao.pontosPositivos || "—"}</p></div>
-          <div><p className="font-sans font-bold text-gray-500 uppercase text-[9px] mb-0.5">A Melhorar</p><p className="italic">{doc.avaliacao.pontosMelhorar || "—"}</p></div>
-          <div><p className="font-sans font-bold text-gray-500 uppercase text-[9px] mb-0.5">Conclusão</p><p className="italic font-bold">{doc.avaliacao.conclusao || "—"}</p></div>
+    <div className="grid grid-cols-2 gap-2 mb-2">
+      {doc.materialApoio && (
+        <div className="p-1.5 border border-[#2c1810] bg-gray-50/50">
+          <p className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-0.5">Material de Apoio</p>
+          <p className="text-[10px] font-serif leading-tight">{doc.materialApoio}</p>
         </div>
-      </div>
-    )}
+      )}
+
+      {doc.avaliacao && (
+        <div className="p-1.5 border border-[#2c1810] bg-white">
+          <p className="text-[7px] font-black uppercase tracking-widest text-[#2c1810] mb-0.5">Avaliação Pós-Encontro</p>
+          <div className="space-y-1 text-[9px] font-serif">
+            <p><span className="font-sans font-bold text-gray-400 uppercase text-[7px]">Sucesso:</span> {doc.avaliacao.atividadesRealizadas === 'sim' ? 'Sim' : 'Parcial'}</p>
+            <p><span className="font-sans font-bold text-gray-400 uppercase text-[7px]">Obs:</span> {doc.avaliacao.pontosPositivos || "—"}</p>
+            <p className="font-bold border-t border-gray-100 pt-0.5">{doc.avaliacao.conclusao || "—"}</p>
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div className="mt-4 pt-4 border-t border-dashed border-gray-300 grid grid-cols-2 gap-8 font-bold text-[8px] uppercase tracking-widest text-center opacity-40">
+      <div>Assinatura Catequista</div>
+      <div>Visto Coordenação</div>
+    </div>
   </div>
 );
 
@@ -257,70 +264,83 @@ export const SemesterAttendanceSheet = ({ org, turma, catequizandos, encontros }
 // ==========================================
 
 export const CatequizandoIndividualSheet = ({ doc, org, turma }: any) => (
-  <div className="p-5 text-black bg-white font-sans">
+  <div className="p-4 text-black bg-white font-sans max-w-[210mm] mx-auto">
     <PrintHeader 
-      titulo="Ficha Cadastral" 
+      titulo="Ficha de Matrícula" 
       paroquia={org.paroquia} 
       comunidade={org.comunidade}
       turma={turma.nome}
     />
     
-    <div className="border border-[#2c1810] p-3 mb-2">
-      <div className="grid grid-cols-3 gap-3 text-xs">
-        <div className="col-span-3">
-          <p className="text-[9px] font-black uppercase text-gray-500 tracking-widest">Nome Completo</p>
-          <p className="text-base font-black uppercase">{doc.nome}</p>
+    <div className="grid grid-cols-4 gap-2 mb-2">
+      <div className="col-span-3 border border-[#2c1810] p-2 bg-white">
+        <p className="text-[7px] font-black uppercase text-gray-500 tracking-widest mb-0.5">Identificação do Catequizando</p>
+        <h2 className="text-sm font-black uppercase text-[#2c1810]">{doc.nome}</h2>
+        <div className="grid grid-cols-2 gap-4 mt-1 text-[9px]">
+           <p><span className="font-bold text-gray-500 uppercase text-[7px]">Nascimento:</span> {doc.dataNascimento ? new Date(doc.dataNascimento + 'T00:00').toLocaleDateString('pt-BR') : '—'}</p>
+           <p><span className="font-bold text-gray-500 uppercase text-[7px]">Status:</span> <span className="font-black uppercase">{doc.status || 'ativo'}</span></p>
         </div>
-        <div>
-          <p className="text-[9px] font-black uppercase text-gray-500">Nascimento</p>
-          <p className="font-bold">{doc.dataNascimento ? new Date(doc.dataNascimento + 'T00:00').toLocaleDateString('pt-BR') : '—'}</p>
-        </div>
-        <div>
-          <p className="text-[9px] font-black uppercase text-gray-500">Status</p>
-          <p className="font-bold uppercase border border-black px-1 inline-block">{doc.status}</p>
+      </div>
+      <div className="col-span-1 border border-[#2c1810] p-1 flex flex-col items-center justify-center bg-gray-50">
+        <p className="text-[6px] font-black uppercase text-gray-400">Espaço p/ Foto</p>
+        <div className="w-10 h-10 border border-gray-200 mt-1 flex items-center justify-center">
+          <Cross className="h-4 w-4 text-gray-100" />
         </div>
       </div>
     </div>
 
-    <div className="border border-[#2c1810] p-3 mb-2">
-      <p className="text-[9px] font-black uppercase text-[#2c1810] tracking-widest mb-2">Contato e Filiação</p>
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="col-span-2">
-          <p className="text-[9px] font-black uppercase text-gray-500">Responsável</p>
-          <p className="font-bold uppercase">{doc.responsavel || '—'}</p>
+    <div className="grid grid-cols-2 gap-2 mb-2">
+      <div className="border border-[#2c1810] p-2">
+        <p className="text-[7px] font-black uppercase text-[#2c1810] tracking-widest mb-1 border-b border-gray-100">Dados da Família</p>
+        <div className="space-y-1 text-[9px]">
+          <p><span className="font-bold text-gray-500 uppercase text-[7px]">Responsável:</span> {doc.responsavel || '—'}</p>
+          <p><span className="font-bold text-gray-500 uppercase text-[7px]">Telefone:</span> {doc.telefone || '—'}</p>
+          <p><span className="font-bold text-gray-500 uppercase text-[7px]">E-mail:</span> {doc.email || '—'}</p>
         </div>
-        <div><p className="text-[9px] font-black uppercase text-gray-500">Telefone</p><p className="font-bold">{doc.telefone || '—'}</p></div>
-        <div><p className="text-[9px] font-black uppercase text-gray-500">E-mail</p><p className="font-bold">{doc.email || '—'}</p></div>
-        <div className="col-span-2 pt-1 border-t border-gray-200">
-          <p className="text-[9px] font-black uppercase text-gray-500">Endereço</p>
-          <p className="uppercase">{doc.endereco}{doc.numero ? `, ${doc.numero}` : ''}{doc.bairro ? ` — ${doc.bairro}` : ''}</p>
-        </div>
+      </div>
+      <div className="border border-[#2c1810] p-2">
+        <p className="text-[7px] font-black uppercase text-[#2c1810] tracking-widest mb-1 border-b border-gray-100">Endereço Residencial</p>
+        <p className="text-[9px] uppercase leading-tight">
+          {doc.endereco}{doc.numero ? `, ${doc.numero}` : ''}<br/>
+          {doc.bairro ? `${doc.bairro}` : ''}{doc.cidade ? ` — ${doc.cidade}` : ''}
+        </p>
       </div>
     </div>
 
-    <div className="border border-[#2c1810] p-3 mb-2">
-      <p className="text-[9px] font-black uppercase text-[#2c1810] tracking-widest mb-2">Situação Sacramental</p>
-      <div className="grid grid-cols-3 gap-2 text-xs text-center">
-        {Object.entries(doc.sacramentos || {}).map(([key, s]: any) => (
-          <div key={key} className={cn("p-2 border", s.recebido ? "border-[#2c1810] bg-gray-50" : "border-gray-200 opacity-60")}>
-            <p className="text-[9px] font-black uppercase tracking-widest text-gray-600">{key}</p>
-            <p className="font-black uppercase text-xs">{s.recebido ? 'Sim' : 'Não'}</p>
-            {s.recebido && <p className="text-[9px] font-bold">{s.data ? new Date(s.data + 'T00:00').toLocaleDateString('pt-BR') : ''}</p>}
-          </div>
-        ))}
+    <div className="border border-[#2c1810] p-2 mb-2">
+      <p className="text-[7px] font-black uppercase text-[#2c1810] tracking-widest mb-1 border-b border-gray-100">Vida Sacramental</p>
+      <div className="grid grid-cols-3 gap-2 text-center">
+        {['batismo', 'eucaristia', 'crisma'].map((key: string) => {
+          const s = doc.sacramentos?.[key] || {};
+          return (
+            <div key={key} className={cn("p-1 border", s.recebido ? "border-[#2c1810] bg-gray-50/50" : "border-gray-100 opacity-40")}>
+              <p className="text-[7px] font-black uppercase tracking-widest text-gray-600">{key}</p>
+              <p className="font-black uppercase text-[10px]">{s.recebido ? 'Sim' : 'Não'}</p>
+              {s.recebido && s.data && <p className="text-[8px]">{new Date(s.data + 'T00:00').toLocaleDateString('pt-BR')}</p>}
+            </div>
+          );
+        })}
       </div>
     </div>
 
-    {(doc.necessidadeEspecial || doc.observacao) && (
-      <div className="border border-[#2c1810] p-3 mb-2 text-xs">
-        {doc.necessidadeEspecial && <p className="font-bold text-red-800 mb-1"><span className="font-black uppercase text-[9px] text-gray-500">Nec. Especiais: </span>{doc.necessidadeEspecial}</p>}
-        {doc.observacao && <p className="font-serif italic"><span className="font-sans font-black uppercase text-[9px] not-italic text-gray-500">Obs.: </span>{doc.observacao}</p>}
+    <div className="border border-[#2c1810] p-2 mb-2 min-h-[60px]">
+      <p className="text-[7px] font-black uppercase text-[#2c1810] tracking-widest mb-1 border-b border-gray-100">Observações de Saúde e Pedagógicas</p>
+      <div className="text-[9px] space-y-1">
+        {doc.necessidadeEspecial && <p className="font-bold text-red-900"><span className="text-[7px] text-gray-400">Nec. Especiais:</span> {doc.necessidadeEspecial}</p>}
+        {doc.medicacao && <p><span className="text-[7px] text-gray-400 uppercase font-bold">Medicação:</span> {doc.medicacao}</p>}
+        {doc.observacao && <p className="font-serif italic leading-tight">{doc.observacao}</p>}
       </div>
-    )}
+    </div>
 
-    <div className="mt-10 grid grid-cols-2 gap-12 font-bold text-[9px] uppercase tracking-widest text-center">
-      <div className="pt-2 border-t border-[#2c1810]">Catequista Responsável</div>
-      <div className="pt-2 border-t border-[#2c1810]">Assinatura do Responsável</div>
+    <div className="mt-8 pt-4 border-t border-[#2c1810] grid grid-cols-2 gap-10 font-bold text-[8px] uppercase tracking-widest text-center">
+      <div className="flex flex-col gap-12">
+        <p>__________________________________________</p>
+        <p>Assinatura do Catequista</p>
+      </div>
+      <div className="flex flex-col gap-12">
+        <p>__________________________________________</p>
+        <p>Assinatura do Responsável</p>
+      </div>
     </div>
   </div>
 );
