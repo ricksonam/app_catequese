@@ -4,6 +4,7 @@ import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, X
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
+import * as Templates from "@/components/reports/ReportTemplates";
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
 const S_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899'];
@@ -300,123 +301,14 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   const PrintArea = () => {
     if (!printTarget) return null;
 
-    if (docTipo === "ficha_cat") {
-      const cat = printTarget;
-      return (
-        <div className="hidden print:block w-full text-black font-sans leading-relaxed">
-          <div className="border-b-4 border-black pb-4 mb-8 text-center space-y-2">
-            <h1 className="text-3xl font-black uppercase">Ficha Cadastral do Catequizando</h1>
-            <p className="text-lg">Paróquia: {org.paroquia} • Comunidade: {org.comunidade}</p>
-            <p className="font-bold">Turma: {turma.nome}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-8 mb-8 border border-neutral-300 p-6 rounded-lg">
-            <div><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Nome Completo</p><p className="text-xl font-bold">{cat.nome}</p></div>
-            <div><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Data de Nascimento</p><p className="text-lg font-bold">{new Date(cat.dataNascimento).toLocaleDateString("pt-BR")}</p></div>
-            <div className="col-span-2"><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Responsável</p><p className="text-lg font-bold">{cat.responsavel}</p><p className="text-sm mt-1">{cat.telefone} • {cat.email}</p></div>
-            <div className="col-span-2"><p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Endereço</p><p className="text-sm">{cat.endereco}, {cat.numero} - {cat.bairro}</p></div>
-          </div>
-          <div className="mb-8">
-            <h3 className="font-black text-lg border-b border-black pb-2 mb-4">Informações Sacramentais</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {[["Batismo", cat.sacramentos?.batismo], ["1ª Eucaristia", cat.sacramentos?.eucaristia], ["Crisma", cat.sacramentos?.crisma]].map(([label, s]: any) => (
-                <div key={label} className={cn("p-4 border rounded", s?.recebido ? "bg-gray-100" : "")}>
-                  <p className="font-bold uppercase text-xs">{label}</p>
-                  <p>{s?.recebido ? "Sim" : "Não"}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mt-20 flex gap-12 font-bold justify-center">
-            <div className="text-center flex-1"><div className="border-t border-black pt-2">Assinatura do Catequista</div></div>
-            <div className="text-center flex-1"><div className="border-t border-black pt-2">Assinatura do Responsável</div></div>
-          </div>
-        </div>
-      );
-    }
-
-    if (docTipo === "ficha_enc") {
-      const enc = printTarget;
-      return (
-        <div className="hidden print:block w-full text-black font-sans leading-relaxed">
-          <div className="border-y-4 border-black py-4 mb-8 text-center bg-gray-100">
-            <h1 className="text-2xl font-black uppercase">Ficha Técnica de Encontro</h1>
-            <p className="text-sm font-bold tracking-widest">{org.comunidade}</p>
-          </div>
-          <div className="p-6 border-2 border-black rounded-lg mb-8">
-            <span className="text-xs font-black uppercase text-gray-500 tracking-widest block mb-2">Tema Principal</span>
-            <h2 className="text-3xl font-black">{enc.tema}</h2>
-            {enc.leituraBiblica && <p className="mt-4 font-serif italic text-lg border-l-4 border-gray-400 pl-4">Bíblia: {enc.leituraBiblica}</p>}
-          </div>
-          <div className="mb-8"><h3 className="font-black text-lg border-b border-black pb-2 mb-4 uppercase">Roteiro Planejado</h3>
-            {enc.roteiro?.map((r: any, i: number) => (
-              <div key={i} className="flex gap-4 border-b pb-2 mb-2">
-                <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shrink-0">{i+1}</span>
-                <div><p className="font-black uppercase text-sm">{r.label} <span className="text-gray-500 text-xs font-normal">({r.tempo} min)</span></p><p className="text-sm mt-1">{r.conteudo}</p></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    if (docTipo === "lista_chamada") {
-      return (
-        <div className="hidden print:block w-full text-black font-sans text-xs">
-          <h1 className="text-2xl font-black uppercase text-center mb-1">Diário de Classe - Frequência</h1>
-          <p className="text-center text-sm font-bold mb-4">Turma: {turma.nome} • Paróquia: {org.paroquia}</p>
-          <table className="w-full border-collapse border border-black mb-8">
-            <thead><tr className="bg-gray-200">
-              <th className="border border-black p-2 w-8">#</th>
-              <th className="border border-black p-2 text-left">NOME DO CATEQUIZANDO</th>
-              {Array.from({length: 15}).map((_, i) => (<th key={i} className="border border-black p-1 w-8 text-[8px]">{`E${i+1}`}</th>))}
-              <th className="border border-black p-2 w-12">%</th>
-            </tr></thead>
-            <tbody>
-              {catequizandos.filter((c: any) => c.status === 'ativo').map((c: any, i: number) => (
-                <tr key={c.id}>
-                  <td className="border border-black p-2 text-center">{i+1}</td>
-                  <td className="border border-black p-2 font-bold">{c.nome}</td>
-                  {Array.from({length: 15}).map((_, j) => (<td key={j} className="border border-black p-1"></td>))}
-                  <td className="border border-black p-2 bg-gray-50"></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="text-xs italic text-gray-600">Legenda: P (Presente) • F (Falta) • J (Falta Justificada)</p>
-        </div>
-      );
-    }
-
-    if (docTipo === "boletim_turma") {
-      const ativos = catequizandos.filter((c: any) => c.status === 'ativo').length;
-      return (
-        <div className="hidden print:block w-full text-black font-sans leading-relaxed">
-          <div className="text-center mb-10 border-b-2 border-black pb-6">
-            <h1 className="text-3xl font-black uppercase">Relatório Resumo da Turma</h1>
-            <p className="text-lg italic mt-2">Paróquia: {org.paroquia} • {formatarDataVigente(new Date().toISOString())}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-8 mb-10">
-            <div className="p-6 border rounded-xl bg-gray-50">
-              <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs mb-2">Dados da Turma</h3>
-              <p className="text-xl font-black mb-1">{turma.nome}</p>
-              <p>Etapa: {turma.etapa} • Ano: {turma.ano}</p>
-            </div>
-            <div className="p-6 border rounded-xl bg-gray-50">
-              <h3 className="font-bold text-gray-500 uppercase tracking-widest text-xs mb-2">Métricas</h3>
-              <p className="font-bold">Total: {catequizandos.length}</p>
-              <p className="font-bold text-green-700">Ativos: {ativos}</p>
-              <p className="font-bold text-red-700">Desistentes: {catequizandos.length - ativos}</p>
-            </div>
-          </div>
-          <h3 className="text-lg font-black uppercase border-b border-black pb-2 mb-4">Progresso de Encontros</h3>
-          <p className="mb-1 font-bold">Planejados: {encontros.length}</p>
-          <p className="mb-1 font-bold text-green-700">Realizados: {encontros.filter((e: any) => e.status === 'realizado').length}</p>
-          <p className="mb-10 font-bold text-yellow-600">Pendentes: {encontros.filter((e: any) => e.status === 'pendente').length}</p>
-        </div>
-      );
-    }
-
-    return null;
+    return (
+      <div className="hidden print:block absolute top-0 left-0 w-full min-h-screen bg-white z-[999999] m-0 p-0">
+        {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
+        {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
+        {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+        {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+      </div>
+    );
   };
 
   return (
