@@ -283,18 +283,26 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
     switch (selectedReportId) {
       case "enc_complet":
-        const targetEncontros = selectedRecordId ? encontros.filter(e => e.id === selectedRecordId) : encontros;
-        return targetEncontros.map(e => <Templates.EncontroFullSheet key={e.id} doc={e} org={org} turma={turma} />);
+        // When a specific record is selected, render only that one
+        if (selectedRecordId) {
+          const enc = encontros.find(e => e.id === selectedRecordId);
+          return enc ? <Templates.EncontroFullSheet doc={enc} org={org} turma={turma} /> : null;
+        }
+        // No record selected: render all
+        return encontros.map(e => <Templates.EncontroFullSheet key={e.id} doc={e} org={org} turma={turma} />);
       case "cham_vaz_enc":
         const targetEnc = selectedRecordId ? encontros.find(e => e.id === selectedRecordId) : null;
         return <Templates.AttendanceBlankSheet doc={targetEnc} org={org} turma={turma} catequizandos={catequizandos} />;
       case "cham_vaz_sem":
         return <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} />;
       case "rel_status":
-        return <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} />; // Placeholder
+        return <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} />;
       case "cat_individual":
-        const targetCats = selectedRecordId ? catequizandos.filter(c => c.id === selectedRecordId) : catequizandos;
-        return targetCats.map(c => <Templates.CatequizandoIndividualSheet key={c.id} doc={c} org={org} turma={turma} />);
+        if (selectedRecordId) {
+          const cat = catequizandos.find(c => c.id === selectedRecordId);
+          return cat ? <Templates.CatequizandoIndividualSheet doc={cat} org={org} turma={turma} /> : null;
+        }
+        return catequizandos.map(c => <Templates.CatequizandoIndividualSheet key={c.id} doc={c} org={org} turma={turma} />);
       case "lista_turma":
         return <Templates.ParentsContactList org={org} turma={turma} catequizandos={catequizandos} />;
       case "lista_resp":
@@ -302,13 +310,19 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       case "cal_anual":
         return <Templates.AnnualCelebrationsCalendar org={org} turma={turma} catequizandos={catequizandos} />;
       case "ativ_complet":
-        const targetAtivs = selectedRecordId ? atividades.filter(a => a.id === selectedRecordId) : atividades;
-        return targetAtivs.map(a => <Templates.ActivityFullSheet key={a.id} doc={a} org={org} turma={turma} />);
+        if (selectedRecordId) {
+          const atv = atividades.find(a => a.id === selectedRecordId);
+          return atv ? <Templates.ActivityFullSheet doc={atv} org={org} turma={turma} /> : null;
+        }
+        return atividades.map(a => <Templates.ActivityFullSheet key={a.id} doc={a} org={org} turma={turma} />);
       case "pres_responsaveis":
         return <Templates.AttendanceBlankSheet org={org} turma={turma} catequizandos={catequizandos} />;
       case "reun_complet":
-        const targetReuns = selectedRecordId ? reunioes.filter(r => r.id === selectedRecordId) : reunioes;
-        return targetReuns.map(r => <Templates.ReuniaoFullSheet key={r.id} doc={r} org={org} turma={turma} catequizandos={catequizandos} />);
+        if (selectedRecordId) {
+          const reun = reunioes.find(r => r.id === selectedRecordId);
+          return reun ? <Templates.ReuniaoFullSheet doc={reun} org={org} turma={turma} catequizandos={catequizandos} /> : null;
+        }
+        return reunioes.map(r => <Templates.ReuniaoFullSheet key={r.id} doc={r} org={org} turma={turma} catequizandos={catequizandos} />);
       case "pres_reuniao":
         const targetReun = selectedRecordId ? reunioes.find(r => r.id === selectedRecordId) : null;
         return <Templates.AttendanceBlankSheet doc={targetReun} org={org} turma={turma} catequizandos={catequizandos} />;
