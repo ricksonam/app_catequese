@@ -423,7 +423,10 @@ export default function BibliaPage() {
                 )}
               >
                 <span className="text-2xl mb-1">{t.icon}</span>
-                <span className="font-liturgical font-bold text-white text-sm sm:text-base leading-tight mb-1">{t.titulo}</span>
+                <span className="font-liturgical font-bold text-white text-sm sm:text-base leading-tight mb-1 flex flex-col items-center">
+                  <span>{t.titulo.split(' ')[0]}</span>
+                  <span>{t.titulo.split(' ')[1]}</span>
+                </span>
                 <span className="text-[10px] uppercase font-bold text-white/80 bg-black/20 px-2 py-0.5 rounded-full">{t.livros.length} livros</span>
               </button>
             )
