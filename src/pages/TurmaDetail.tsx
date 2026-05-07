@@ -18,6 +18,9 @@ import { toast } from "sonner";
 import { useState, useMemo } from "react";
 import { AuditLogModal } from "@/components/AuditLogPanel";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+import { resetTurmaCode } from "@/lib/supabaseStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { RefreshCw } from "lucide-react";
 
 
 export default function TurmaDetail() {
@@ -43,6 +46,9 @@ export default function TurmaDetail() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<string | null>(null);
   const [memberEmailToRemove, setMemberEmailToRemove] = useState<string>("");
+  const [isResettingCode, setIsResettingCode] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const queryClient = useQueryClient();
 
 
   const alertConfig = useMemo(() => {
@@ -163,6 +169,21 @@ export default function TurmaDetail() {
     if (turma?.codigoAcesso) {
       navigator.clipboard.writeText(turma.codigoAcesso);
       toast.success("Código copiado!");
+    }
+  };
+
+  const handleResetCode = async () => {
+    if (!id) return;
+    setIsResettingCode(true);
+    setResetConfirmOpen(false);
+    try {
+      await resetTurmaCode(id);
+      await queryClient.invalidateQueries({ queryKey: ["turmas"] });
+      toast.success("Código da turma redefinido com sucesso! Os catequistas com o código antigo precisarão do novo código para acessar.");
+    } catch (error: any) {
+      toast.error("Erro ao redefinir o código: " + error.message);
+    } finally {
+      setIsResettingCode(false);
     }
   };
 
@@ -569,7 +590,52 @@ export default function TurmaDetail() {
             >
               <Copy className="h-4 w-4" /> Copiar Código
             </button>
+
+            <div className="border-t border-gray-200 pt-4">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 text-center mb-3">Zona de Segurança</p>
+              <button
+                onClick={() => setResetConfirmOpen(true)}
+                disabled={isResettingCode}
+                className="w-full border-2 border-red-200 text-red-600 hover:bg-red-50 h-11 rounded-xl font-black flex items-center justify-center gap-2 text-xs uppercase tracking-wide transition-all disabled:opacity-50"
+              >
+                {isResettingCode ? (
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                {isResettingCode ? "Redefinindo..." : "Redefinir Código"}
+              </button>
+              <p className="text-[9px] text-gray-400 text-center mt-2 leading-relaxed">O código atual será invalidado e um novo será gerado.</p>
+            </div>
           </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Modal Confirmação Reset de Código */}
+      <AlertDialog open={resetConfirmOpen} onOpenChange={setResetConfirmOpen}>
+        <AlertDialogContent className="rounded-3xl max-w-sm border-none shadow-2xl">
+          <AlertDialogHeader>
+            <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <RefreshCw className="h-6 w-6 text-red-600" />
+            </div>
+            <AlertDialogTitle className="text-center text-lg font-black uppercase">Redefinir Código?</AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-sm leading-relaxed">
+              O código atual será <strong>permanentemente invalidado</strong>. Todos os catequistas que usavam o código antigo precisarão do novo para acessar novamente.
+              <br /><br />
+              <span className="font-bold text-foreground">Esta ação não pode ser desfeita.</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+            <AlertDialogAction
+              onClick={handleResetCode}
+              className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black"
+            >
+              Confirmar e Gerar Novo Código
+            </AlertDialogAction>
+            <AlertDialogCancel className="w-full h-11 rounded-xl border-none font-bold text-muted-foreground">
+              Cancelar
+            </AlertDialogCancel>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
