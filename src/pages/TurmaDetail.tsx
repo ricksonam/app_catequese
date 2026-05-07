@@ -221,30 +221,30 @@ export default function TurmaDetail() {
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           
-          <div className="flex flex-col items-center gap-1">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase text-center leading-tight">
-              {turma.nome}
-            </h1>
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-3 mt-1">
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              <h1 className="text-xl font-black text-foreground tracking-tight uppercase text-center leading-tight">
+                {turma.nome}
+              </h1>
               <span className="shrink-0 text-sm font-black px-2.5 py-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 border border-black/10 shadow-sm">
                 {turma.ano}
               </span>
-              
-              {!turma.isShared && turma.codigoAcesso && (
-                <button 
-                  onClick={() => setShareWarningOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm"
-                >
-                  <Link2 className="h-3.5 w-3.5" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Código da Turma</span>
-                  {!codeVisible ? (
-                    <Eye className="h-3 w-3 opacity-50 group-hover:opacity-100" />
-                  ) : (
-                    <span className="ml-1 font-mono font-bold tracking-wider">{turma.codigoAcesso}</span>
-                  )}
-                </button>
-              )}
             </div>
+            
+            {!turma.isShared && turma.codigoAcesso && (
+              <button 
+                onClick={() => setShareWarningOpen(true)}
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm w-auto min-w-[200px]"
+              >
+                <Link2 className="h-4 w-4" />
+                <span className="text-xs font-black uppercase tracking-widest">Código da Turma</span>
+                {!codeVisible ? (
+                  <Eye className="h-4 w-4 opacity-50 group-hover:opacity-100" />
+                ) : (
+                  <span className="ml-1 font-mono font-bold tracking-wider text-sm">{turma.codigoAcesso}</span>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
