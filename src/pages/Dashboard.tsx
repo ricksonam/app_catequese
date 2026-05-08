@@ -863,7 +863,7 @@ export default function Dashboard() {
               <rect x="26" y="4" width="8" height="52" rx="2" />
               <rect x="4" y="20" width="52" height="8" rx="2" />
             </svg>
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] shrink-0" style={{ color: '#B8860B' }}>Módulos</span>
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] shrink-0" style={{ color: '#B8860B' }}>Módulos Rápidos</span>
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
               <rect x="4" y="20" width="52" height="8" rx="2" />
