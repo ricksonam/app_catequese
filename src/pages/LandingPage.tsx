@@ -34,7 +34,7 @@ const FEATURES = [
   { title: "Aniversariantes", desc: "Alertas de nascimento e batismo dos seus catequizandos.", img: "/acesso_agenda.jpg", color: "#ec4899" },
   { title: "Atividades e Eventos", desc: "Cadastre celebrações, retiros e eventos no calendário da turma.", img: "/acesso_atividades.jpg", color: "#d97706" },
   { title: "Módulo de Jogos", desc: "Biblioteca interativa de jogos educativos para a catequese.", img: "/acesso_jogos.jpg", color: "#8b5cf6" },
-  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", img: "/mais_0.png", color: "#10b981" },
+  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", img: "/acesso_compartilhar.jpg", color: "#10b981" },
   { title: "Trabalho em Equipe", desc: "Compartilhe a turma e co-gerencie com outros catequistas.", img: "/acesso_cadastros.jpg", color: "#0ea5e9" },
   { title: "Catequese em Família", desc: "Crie enquetes e missões para manter as famílias engajadas.", img: "/acesso_conecta.jpg", color: "#a855f7" },
 ];
@@ -104,12 +104,21 @@ export default function LandingPage() {
           </div>
           <span className="text-lg font-black tracking-tighter text-white">iCatequese</span>
         </div>
-        <button
-          onClick={() => setApoieOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/90 hover:bg-rose-500 text-white text-[11px] font-black uppercase tracking-wide border border-rose-400/30 transition-all active:scale-95 shadow-sm"
-        >
-          <Heart className="h-3 w-3 fill-white" /> Apoie
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleShare}
+            className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all active:scale-95 shadow-sm"
+            title="Compartilhar"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setApoieOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/90 hover:bg-rose-500 text-white text-[11px] font-black uppercase tracking-wide border border-rose-400/30 transition-all active:scale-95 shadow-sm"
+          >
+            <Heart className="h-3 w-3 fill-white" /> Apoie
+          </button>
+        </div>
       </nav>
 
       {/* ── HERO ── */}
@@ -173,7 +182,7 @@ export default function LandingPage() {
             className="group w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-blue-600/40 text-blue-600 hover:bg-blue-50 hover:border-blue-600 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
           >
             <LogIn className="h-4 w-4 shrink-0" />
-            Entrar no iCatequese
+            Entrar
           </button>
 
           {/* CTA Relocado do final da página — Versão Premium */}
@@ -181,13 +190,13 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-white border-2 border-[#D4AF37]/20 shadow-2xl"
+            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-emerald-50 border-2 border-emerald-400/40 shadow-2xl"
           >
             {/* Efeito Halo Premium */}
-            <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-500/5 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-red-500/5 rounded-full blur-[80px] pointer-events-none" />
             
-            <CrossOrnament className="w-12 h-12 text-[#D4AF37]/30 mx-auto mb-4 relative z-10" />
+            <CrossOrnament className="w-12 h-12 text-red-600/60 mx-auto mb-4 relative z-10" />
             <p className="text-xl font-liturgical font-black text-stone-900 mb-2 relative z-10">Comece agora!</p>
             <p className="text-[11px] text-stone-500 mb-6 relative z-10 font-bold uppercase tracking-[0.2em] leading-relaxed">
               Transforme sua catequese com a melhor plataforma de gestão
@@ -196,8 +205,8 @@ export default function LandingPage() {
               onClick={() => navigate("/auth?view=signup")}
               className="relative z-10 w-full px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 hover:scale-[1.02] shadow-xl"
               style={{
-                background: "linear-gradient(135deg, #D4AF37, #B8860B)",
-                boxShadow: "0 10px 30px rgba(184,134,11,0.3)"
+                background: "linear-gradient(135deg, #10b981, #059669)",
+                boxShadow: "0 10px 30px rgba(16,185,129,0.3)"
               }}
             >
               Criar conta gratuita
@@ -257,23 +266,6 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer className="relative z-10 border-t border-stone-200/80 py-10 px-5 bg-white/40">
         <div className="max-w-lg mx-auto">
-          <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center mb-8">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-stone-900/5 border border-stone-900/10 flex items-center justify-center overflow-hidden">
-                <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain drop-shadow-sm" />
-              </div>
-              <span className="text-base font-black text-[#D4AF37] drop-shadow-sm">iCatequese</span>
-            </div>
-            <div className="flex items-center gap-4 ml-auto">
-              <button 
-                onClick={handleShare} 
-                className="px-4 py-2 rounded-full bg-stone-900/5 border border-stone-900/10 text-[10px] font-black uppercase tracking-widest text-stone-600 hover:bg-stone-900 hover:text-white transition-all flex items-center gap-2 active:scale-95 shadow-sm"
-              >
-                <Share2 className="h-3.5 w-3.5" /> Compartilhar
-              </button>
-            </div>
-          </div>
-
           {/* Card idealizador Premium */}
           <div className="p-6 rounded-[32px] bg-white border border-stone-200/60 shadow-xl flex flex-col sm:flex-row items-center gap-5 mb-8 relative overflow-hidden group hover:border-[#D4AF37]/30 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#D4AF37]/10 transition-colors" />
