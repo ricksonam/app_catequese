@@ -593,7 +593,7 @@ export default function Dashboard() {
       <div className="animate-fade-in relative mb-3 mx-1">
         {/* Faixa de fundo com gradiente litúrgico */}
         <div className="relative rounded-3xl overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #3b1f6e 0%, #4a2580 50%, #3b1f6e 100%)' }}>
+          style={{ background: 'linear-gradient(135deg, #6b46c1 0%, #8b5cf6 50%, #6b46c1 100%)' }}>
           {/* Raios de luz centrais */}
           <div className="absolute inset-0 pointer-events-none"
             style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 0%, rgba(212,175,55,0.12), transparent)' }} />
@@ -620,7 +620,7 @@ export default function Dashboard() {
               <Mail className={cn("h-4 w-4 text-white/80", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
               {totalMensagens > lastSeenMensagens && (
                 <>
-                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#4a2580] animate-pulse" />
+                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#8b5cf6] animate-pulse" />
                   {showNovaMensagem && (
                     <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
                       Nova Mensagem
@@ -737,7 +737,7 @@ export default function Dashboard() {
                             <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">HOJE</span>
                           ) : (
                             <p className={cn("text-[7px] font-black uppercase tracking-tighter mt-0.5", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
-                              {c.hasBoth ? "🎉 Duplo!" : (c.tipo === 'nascimento' ? "Parabéns" : "Batismo")}
+                              {c.hasBoth ? "🎉 Nasc. & Batismo" : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo")}
                             </p>
                           )}
                         </div>
@@ -780,11 +780,78 @@ export default function Dashboard() {
       
 
 
-      {/* ── MÓDULOS DE ACESSO RÁPIDO ── */}
+      {/* ── TURMA E MÓDULOS DE ACESSO RÁPIDO ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-4 mt-16 animate-fade-in flex flex-col items-center">
+        <div className="space-y-0 px-4 mt-8 animate-fade-in flex flex-col items-center">
+          
+          {/* Card Turma Selecionada — Azul Suave Centralizado */}
+          {(() => {
+            const colors = { from: '#3b82f6', to: '#60a5fa', accent: '#eff6ff', text: '#ffffff' };
+            const catCount = filteredCatequizandos.length;
+            const encCount = filteredEncontros.length;
+
+            return (
+              <div className="w-full max-w-[340px] relative mb-4" style={{ zIndex: 10 }}>
+                {/* Halo de brilho */}
+                <div className="absolute -inset-2 rounded-[28px] blur-xl opacity-30 pointer-events-none"
+                  style={{ background: `radial-gradient(ellipse at 50% 50%, ${colors.from}, transparent 70%)` }} />
+
+                <div className="relative rounded-[22px] overflow-hidden shadow-xl border border-white/20"
+                  style={{ background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)` }}>
+
+                  {/* Raios de luz de fundo */}
+                  <div className="absolute inset-0 pointer-events-none"
+                    style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${colors.accent}40, transparent 60%)` }} />
+
+                  {/* Conteúdo */}
+                  <div className="relative z-10 px-4 py-5 flex flex-col items-center text-center">
+                    
+                    {/* Botão Trocar */}
+                    {(turmas.length > 1 || selectedTurmaId === 'all') && (
+                      <div className="absolute top-3 right-3">
+                        <button
+                          onClick={() => setTurmaPickerOpen(true)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-[8px] font-black uppercase tracking-wider transition-all active:scale-95 hover:opacity-90 bg-white/20 text-white border border-white/30"
+                        >
+                          <RefreshCw className="h-2.5 w-2.5" />
+                          Trocar
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Nome da turma */}
+                    <div className="mb-4 mt-1">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-1 text-blue-100">
+                        Turma Selecionada
+                      </p>
+                      <h3 className="text-xl font-black tracking-tight leading-tight text-white">
+                        {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
+                      </h3>
+                    </div>
+
+                    {/* Stats dinâmicos */}
+                    <div className="flex items-center justify-center gap-3 w-full">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 shadow-sm">
+                        <Users className="h-3.5 w-3.5 text-blue-100" />
+                        <span className="text-[11px] font-black text-white">
+                          {catCount} <span className="opacity-80 font-bold">alunos</span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 shadow-sm">
+                        <BookOpen className="h-3.5 w-3.5 text-blue-100" />
+                        <span className="text-[11px] font-black text-white">
+                          {encCount} <span className="opacity-80 font-bold">encontros</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mb-3 -mt-10">
+          <div className="flex items-center gap-2 w-full justify-center mb-1 relative z-10">
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
@@ -797,97 +864,6 @@ export default function Dashboard() {
             </svg>
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
           </div>
-          
-          {/* Card Turma Selecionada — Premium Dinâmico */}
-          {(() => {
-            const etapaColors: Record<string, { from: string; to: string; accent: string; text: string }> = {
-              eucaristia: { from: '#78350f', to: '#b45309', accent: '#F59E0B', text: '#FEF3C7' },
-              crisma:     { from: '#7c0d1e', to: '#be123c', accent: '#F43F5E', text: '#FFE4E6' },
-              pre:        { from: '#1e3a5f', to: '#1d4ed8', accent: '#60A5FA', text: '#DBEAFE' },
-              adulto:     { from: '#064e3b', to: '#047857', accent: '#34D399', text: '#D1FAE5' },
-            };
-            const etapa = selectedTurma?.etapa?.toLowerCase() || '';
-            const colorKey = Object.keys(etapaColors).find(k => etapa.includes(k)) || '';
-            const colors = etapaColors[colorKey] || { from: '#1e1b4b', to: '#312e81', accent: '#818CF8', text: '#E0E7FF' };
-            const catCount = filteredCatequizandos.length;
-            const encCount = filteredEncontros.length;
-
-            return (
-              <div className="w-full max-w-[340px] relative" style={{ zIndex: 10 }}>
-                {/* Halo de brilho */}
-                <div className="absolute -inset-2 rounded-[28px] blur-xl opacity-30 pointer-events-none"
-                  style={{ background: `radial-gradient(ellipse at 50% 50%, ${colors.accent}, transparent 70%)` }} />
-
-                <div className="relative rounded-[22px] overflow-hidden shadow-2xl border border-white/10"
-                  style={{ background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)` }}>
-
-                  {/* Raios de luz de fundo */}
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: `radial-gradient(ellipse 80% 60% at 20% 0%, ${colors.accent}22, transparent 60%)` }} />
-
-                  {/* Cruz ornamental */}
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-8 pointer-events-none">
-                    <svg viewBox="0 0 60 60" className="w-20 h-20" fill="currentColor" style={{ color: colors.accent, opacity: 0.1 }}>
-                      <rect x="26" y="4" width="8" height="52" rx="2" />
-                      <rect x="4" y="20" width="52" height="8" rx="2" />
-                    </svg>
-                  </div>
-
-                  {/* Conteúdo */}
-                  <div className="relative z-10 px-4 py-3">
-                    {/* Badge etapa */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[8px] font-black uppercase tracking-[0.3em] px-2 py-1 rounded-full"
-                        style={{ backgroundColor: `${colors.accent}25`, color: colors.accent, border: `1px solid ${colors.accent}40` }}>
-                        {selectedTurma?.etapa || 'Catequese'}
-                      </span>
-                      {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                        <button
-                          onClick={() => setTurmaPickerOpen(true)}
-                          className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-[8px] font-black uppercase tracking-wider transition-all active:scale-95 hover:opacity-90"
-                          style={{ backgroundColor: `${colors.accent}20`, color: colors.accent, border: `1px solid ${colors.accent}30` }}
-                        >
-                          <RefreshCw className="h-2.5 w-2.5" />
-                          Trocar
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Nome da turma */}
-                    <div className="mb-3">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-0.5" style={{ color: `${colors.accent}90` }}>
-                        Turma Selecionada
-                      </p>
-                      <h3 className="text-lg font-black tracking-tight leading-tight" style={{ color: colors.text }}>
-                        {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
-                      </h3>
-                    </div>
-
-                    {/* Stats dinâmicos */}
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl"
-                        style={{ backgroundColor: `${colors.accent}15`, border: `1px solid ${colors.accent}25` }}>
-                        <Users className="h-3 w-3" style={{ color: colors.accent }} />
-                        <span className="text-[10px] font-black" style={{ color: colors.text }}>
-                          {catCount} <span className="opacity-60 font-bold">alunos</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl"
-                        style={{ backgroundColor: `${colors.accent}15`, border: `1px solid ${colors.accent}25` }}>
-                        <BookOpen className="h-3 w-3" style={{ color: colors.accent }} />
-                        <span className="text-[10px] font-black" style={{ color: colors.text }}>
-                          {encCount} <span className="opacity-60 font-bold">encontros</span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Faixa inferior ornamental */}
-                  <div className="h-px w-full" style={{ background: `linear-gradient(90deg, transparent, ${colors.accent}60, transparent)` }} />
-                </div>
-              </div>
-            );
-          })()}
 
           {/* Linhas de conexão (Árvore) */}
           <div className="relative w-full h-8 flex justify-center z-0">
