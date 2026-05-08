@@ -181,33 +181,87 @@ export default function SorteioGrupos() {
 
       {/* RESULTADO FULLSCREEN */}
       {sorteado && isFullscreen ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-8">
+        <div className="flex-1 flex flex-col items-center justify-center gap-8 py-8">
           <div className="text-center mb-4">
             <p className="text-white/50 uppercase tracking-[0.3em] text-xs font-black mb-2">Grupos Formados</p>
-            <h2 className="text-4xl font-black text-white drop-shadow-lg">🎉 Sorteio Concluído!</h2>
+            <h2 className="text-4xl font-black text-white drop-shadow-lg">
+              {umPorVez ? `Revelando: ${currentGroupIdx + 1}/${grupos.length}` : "🎉 Sorteio Concluído!"}
+            </h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-5xl">
-            {grupos.map((grupo, i) => (
-              <div key={grupo.id} className="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <div className={cn("p-3 bg-gradient-to-br text-white text-center font-black text-sm uppercase tracking-wider", CORES_GRUPOS[i % CORES_GRUPOS.length])}>
-                  {grupo.nome}
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm p-3 space-y-1.5">
-                  {grupo.membros.map((m, j) => (
-                    <div key={j} className="flex items-center gap-2 text-white/90">
-                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-black shrink-0">
-                        {j + 1}
-                      </div>
-                      <span className="text-sm font-bold truncate">{m.nome}</span>
+
+          {umPorVez ? (
+            <div className="flex flex-col items-center gap-6 w-full max-w-md">
+              <div className="grid grid-cols-1 gap-4 w-full">
+                {grupos.slice(0, currentGroupIdx + 1).map((grupo, i) => (
+                  <div key={grupo.id} className="rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-white/5 backdrop-blur-sm animate-in zoom-in-95 duration-500">
+                    <div className={cn("p-4 bg-gradient-to-r text-white text-center font-black text-lg uppercase tracking-wider flex items-center justify-center gap-3", CORES_GRUPOS[i % CORES_GRUPOS.length])}>
+                      {grupo.nome}
+                      <span className="text-[10px] font-bold opacity-80 bg-black/20 px-2 py-0.5 rounded-full">{grupo.membros.length}</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="p-4 space-y-2">
+                      {grupo.membros.map((m, j) => (
+                        <div key={j} className="flex items-center gap-3 text-white/90">
+                          <div className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-black shrink-0 shadow-sm border",
+                            m.isLider ? "bg-amber-400 border-amber-500 text-amber-950" : "bg-white/20 border-white/10 text-white"
+                          )}>
+                            {m.isLider ? "★" : j + 1}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className={cn("text-base font-bold truncate", m.isLider ? "text-amber-400" : "text-white")}>{m.nome}</span>
+                            {m.isLider && <span className="text-[10px] font-black uppercase text-amber-500 leading-none">Líder</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <Button onClick={reiniciar} variant="outline" className="h-12 px-8 rounded-full text-white border-white/30 bg-white/10 hover:bg-white/20 font-black gap-2 mt-4">
-            <RefreshCw className="h-4 w-4" /> Novo Sorteio
-          </Button>
+              {currentGroupIdx < grupos.length - 1 ? (
+                <Button 
+                  onClick={() => setCurrentGroupIdx(prev => prev + 1)}
+                  className="h-16 px-10 rounded-2xl font-black text-xl gap-3 shadow-xl bg-white text-slate-900 hover:bg-white/90 animate-bounce-subtle mt-4"
+                >
+                  <Shuffle className="h-6 w-6" /> PRÓXIMO GRUPO
+                </Button>
+              ) : (
+                <Button onClick={reiniciar} variant="outline" className="h-12 px-8 rounded-full text-white border-white/30 bg-white/10 hover:bg-white/20 font-black gap-2 mt-4">
+                  <RefreshCw className="h-4 w-4" /> Novo Sorteio
+                </Button>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-5xl">
+                {grupos.map((grupo, i) => (
+                  <div key={grupo.id} className="rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                    <div className={cn("p-3 bg-gradient-to-br text-white text-center font-black text-sm uppercase tracking-wider", CORES_GRUPOS[i % CORES_GRUPOS.length])}>
+                      {grupo.nome}
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm p-3 space-y-1.5">
+                      {grupo.membros.map((m, j) => (
+                        <div key={j} className="flex items-center gap-2 text-white/90">
+                          <div className={cn(
+                            "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0",
+                            m.isLider ? "bg-amber-400 text-amber-950" : "bg-white/20 text-white"
+                          )}>
+                            {m.isLider ? "★" : j + 1}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className={cn("text-sm font-bold truncate", m.isLider ? "text-amber-400" : "text-white")}>{m.nome}</span>
+                            {m.isLider && <span className="text-[7px] font-black uppercase text-amber-400 leading-none">Líder</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Button onClick={reiniciar} variant="outline" className="h-12 px-8 rounded-full text-white border-white/30 bg-white/10 hover:bg-white/20 font-black gap-2 mt-4">
+                <RefreshCw className="h-4 w-4" /> Novo Sorteio
+              </Button>
+            </>
+          )}
         </div>
       ) : (
         <>
