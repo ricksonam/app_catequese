@@ -124,7 +124,9 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   };
 
   const handlePrint = () => {
-    window.print();
+    // Damos um pequeno delay para garantir que o portal de impressão
+    // já está montado no DOM antes de chamar window.print()
+    setTimeout(() => window.print(), 50);
   };
 
   const handleShare = async () => {
@@ -459,10 +461,12 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
         </div>
       )}
 
-      {/* Hidden Portal for System Print */}
+      {/* Hidden Portal for System Print — renderizado no body, fora do overlay */}
       {isPreviewOpen && createPortal(
-        <div className="hidden print:block absolute top-0 left-0 w-full min-h-screen bg-white z-[999999] print-wrapper">
-          {renderPreviewContent()}
+        <div className="print-wrapper" style={{ display: 'none', position: 'fixed', top: 0, left: 0, width: '100%', backgroundColor: 'white', zIndex: 999999 }}>
+          <div className="bg-white text-black">
+            {renderPreviewContent()}
+          </div>
         </div>,
         document.body
       )}

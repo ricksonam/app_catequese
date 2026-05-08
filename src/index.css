@@ -182,20 +182,47 @@
 }
 
 @media print {
+  /* Esconde todo o conteúdo do root durante a impressão */
   body {
     background: white !important;
     color: black !important;
     min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
+
+  /* Esconde o root inteiro — o print-wrapper é renderizado no body via portal */
   #root {
-    /* display: none !important; Disabled so that we can use print:* tailwind classes freely */
-    display: block !important;
+    display: none !important;
   }
+
+  /* O wrapper de impressão (portal no body) deve ser visível e ocupar tudo */
   .print-wrapper {
-    position: static !important;
     display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    background: white !important;
+    z-index: 999999 !important;
     overflow: visible !important;
+    transform: none !important;
   }
+
+  /* Esconde explicitamente o overlay de preview e elementos de UI */
+  .preview-overlay,
+  .preview-actions {
+    display: none !important;
+  }
+
+  /* Remove transforms mobile do paper-preview */
+  .paper-preview {
+    transform: none !important;
+    scale: 1 !important;
+  }
+
   @page {
     margin: 0.5cm;
     size: A4;

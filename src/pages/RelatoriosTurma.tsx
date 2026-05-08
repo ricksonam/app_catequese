@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
@@ -314,17 +315,26 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
     setTimeout(() => window.print(), 100);
   };
 
-  // ---- Renderiza área de impressão ----
-  const PrintArea = () => {
+  // ---- Renderiza área de impressão via portal no body ----
+  const PrintPortal = () => {
     if (!printTarget) return null;
 
-    return (
-      <div className="hidden print:block absolute top-0 left-0 w-full min-h-screen bg-white z-[999999] m-0 p-0">
+    const content = (
+      <>
         {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
         {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
-      </div>
+      </>
+    );
+
+    return createPortal(
+      <div className="print-wrapper" style={{ display: 'none', position: 'fixed', top: 0, left: 0, width: '100%', backgroundColor: 'white', zIndex: 999999 }}>
+        <div className="bg-white text-black">
+          {content}
+        </div>
+      </div>,
+      document.body
     );
   };
 
@@ -486,8 +496,8 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
         </div>
       </div>
 
-      {/* Área de impressão (invisível na tela, visível só no print) */}
-      <PrintArea />
+      {/* Área de impressão (portal no body, invisível na tela, visível só no print) */}
+      <PrintPortal />
     </div>
   );
 }
