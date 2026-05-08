@@ -262,7 +262,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
       await signOut();
     } finally {
       onClose();
-      navigate("/auth", { replace: true });
+      navigate("/", { replace: true });
     }
   };
 

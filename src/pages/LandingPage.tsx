@@ -71,14 +71,14 @@ export default function LandingPage() {
     window.open("https://wa.me/5592993371259?text=Olá! Vim pelo site do iCatequese.", "_blank");
 
   return (
-    <div className="min-h-screen bg-[#0d0a14] text-white overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
+    <div className="min-h-screen bg-[#1F1538] text-white overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
 
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Gradiente radial central */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(42,20,80,0.9),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(75,45,130,0.85),transparent)]" />
         {/* Luz central dourada suave */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#D4AF37]/5 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#D4AF37]/10 rounded-full blur-[120px]" />
         {/* Padrão de cruzes decorativas */}
         {[
           { top: "8%", left: "6%", s: 0.7, o: 0.08 },
