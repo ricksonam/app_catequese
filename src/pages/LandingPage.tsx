@@ -30,13 +30,13 @@ const OrnamentalDivider = () => (
 );
 
 const FEATURES = [
-  { title: "Encontros de Catequese", desc: "Planeje, registre presença, avalie e apresente seus encontros.", icon: CalendarDays, color: "#60a5fa" },
-  { title: "Aniversariantes", desc: "Alertas de nascimento e batismo dos seus catequizandos.", icon: Gift, color: "#f472b6" },
-  { title: "Atividades e Eventos", desc: "Cadastre celebrações, retiros e eventos no calendário da turma.", icon: ListChecks, color: "#fbbf24" },
-  { title: "Módulo de Jogos", desc: "Biblioteca interativa de jogos educativos para a catequese.", icon: Dices, color: "#a78bfa" },
-  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", icon: ImageIcon, color: "#34d399" },
-  { title: "Trabalho em Equipe", desc: "Compartilhe a turma e co-gerencie com outros catequistas.", icon: Users, color: "#38bdf8" },
-  { title: "Catequese em Família", desc: "Crie enquetes e missões para manter as famílias engajadas.", icon: MessageSquare, color: "#c084fc" },
+  { title: "Encontros de Catequese", desc: "Planeje, registre presença, avalie e apresente seus encontros.", icon: CalendarDays, color: "#3b82f6" },
+  { title: "Aniversariantes", desc: "Alertas de nascimento e batismo dos seus catequizandos.", icon: Gift, color: "#ec4899" },
+  { title: "Atividades e Eventos", desc: "Cadastre celebrações, retiros e eventos no calendário da turma.", icon: ListChecks, color: "#d97706" },
+  { title: "Módulo de Jogos", desc: "Biblioteca interativa de jogos educativos para a catequese.", icon: Dices, color: "#8b5cf6" },
+  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", icon: ImageIcon, color: "#10b981" },
+  { title: "Trabalho em Equipe", desc: "Compartilhe a turma e co-gerencie com outros catequistas.", icon: Users, color: "#0ea5e9" },
+  { title: "Catequese em Família", desc: "Crie enquetes e missões para manter as famílias engajadas.", icon: MessageSquare, color: "#a855f7" },
 ];
 
 export default function LandingPage() {
@@ -71,22 +71,22 @@ export default function LandingPage() {
     window.open("https://wa.me/5592993371259?text=Olá! Vim pelo site do iCatequese.", "_blank");
 
   return (
-    <div className="min-h-screen bg-[#1F1538] text-white overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
+    <div className="min-h-screen bg-[#FDF8F5] text-stone-900 overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
 
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Gradiente radial central */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(75,45,130,0.85),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(212,175,55,0.1),transparent)]" />
         {/* Luz central dourada suave */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#D4AF37]/10 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#D4AF37]/5 rounded-full blur-[120px]" />
         {/* Padrão de cruzes decorativas */}
         {[
-          { top: "8%", left: "6%", s: 0.7, o: 0.08 },
-          { top: "12%", right: "8%", s: 0.5, o: 0.06 },
-          { top: "55%", left: "3%", s: 0.6, o: 0.07 },
-          { top: "60%", right: "5%", s: 0.8, o: 0.07 },
-          { top: "85%", left: "12%", s: 0.4, o: 0.05 },
-          { top: "80%", right: "10%", s: 0.5, o: 0.06 },
+          { top: "8%", left: "6%", s: 0.7, o: 0.15 },
+          { top: "12%", right: "8%", s: 0.5, o: 0.1 },
+          { top: "55%", left: "3%", s: 0.6, o: 0.12 },
+          { top: "60%", right: "5%", s: 0.8, o: 0.12 },
+          { top: "85%", left: "12%", s: 0.4, o: 0.1 },
+          { top: "80%", right: "10%", s: 0.5, o: 0.1 },
         ].map((p, i) => (
           <CrossOrnament
             key={i}
@@ -97,16 +97,16 @@ export default function LandingPage() {
       </div>
 
       {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-white/90 to-transparent backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/10 flex items-center justify-center overflow-hidden">
-            <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain" />
+          <div className="w-8 h-8 rounded-lg bg-stone-900/5 border border-stone-900/10 flex items-center justify-center overflow-hidden">
+            <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain drop-shadow-sm" />
           </div>
-          <span className="text-base font-black tracking-tight text-white">iCatequese</span>
+          <span className="text-base font-black tracking-tight text-stone-900">iCatequese</span>
         </div>
         <button
           onClick={() => setApoieOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/80 hover:bg-rose-500 text-white text-[11px] font-black uppercase tracking-wide border border-rose-400/30 transition-all active:scale-95"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/90 hover:bg-rose-500 text-white text-[11px] font-black uppercase tracking-wide border border-rose-400/30 transition-all active:scale-95 shadow-sm"
         >
           <Heart className="h-3 w-3 fill-white" /> Apoie
         </button>
@@ -119,7 +119,7 @@ export default function LandingPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="flex items-center gap-3 mb-6">
           <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#D4AF37]/60" />
-          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[#D4AF37]/80">Gestão para Catequistas</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[#D4AF37]/90">Gestão para Catequistas</span>
           <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#D4AF37]/60" />
         </motion.div>
 
@@ -131,10 +131,10 @@ export default function LandingPage() {
           className="relative mb-6"
         >
           {/* Halo dourado */}
-          <div className="absolute inset-0 rounded-full bg-[#D4AF37]/20 blur-2xl scale-150" />
-          <div className="relative w-28 h-28 rounded-[32px] bg-gradient-to-br from-white/10 to-white/5 border border-[#D4AF37]/30 shadow-2xl flex items-center justify-center p-3 backdrop-blur-sm"
+          <div className="absolute inset-0 rounded-full bg-[#D4AF37]/15 blur-2xl scale-150" />
+          <div className="relative w-28 h-28 rounded-[32px] bg-white border border-[#D4AF37]/30 shadow-xl flex items-center justify-center p-3"
             style={{ animation: "liturgicalFloat 5s ease-in-out infinite" }}>
-            <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain drop-shadow-xl" />
+            <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain drop-shadow-md" />
           </div>
         </motion.div>
 
@@ -144,7 +144,7 @@ export default function LandingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="text-5xl sm:text-6xl font-black tracking-tighter mb-1"
-          style={{ background: "linear-gradient(135deg, #ffffff 30%, #D4AF37 60%, #ffffff 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+          style={{ background: "linear-gradient(135deg, #1A0F00 30%, #D4AF37 60%, #1A0F00 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
         >
           iCatequese
         </motion.h1>
@@ -156,7 +156,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-sm text-white/60 font-medium max-w-xs leading-relaxed mt-2 mb-8 italic"
+          className="text-sm text-stone-600 font-medium max-w-xs leading-relaxed mt-2 mb-8 italic"
         >
           "Semear a Palavra, cultivar o Reino. Uma plataforma para catequistas organizarem a fé."
         </motion.p>
@@ -175,19 +175,18 @@ export default function LandingPage() {
             style={{
               background: "linear-gradient(135deg, #D4AF37, #B8860B, #D4AF37)",
               backgroundSize: "200% 100%",
-              boxShadow: "0 8px 32px rgba(212,175,55,0.45), 0 2px 8px rgba(0,0,0,0.3)",
+              boxShadow: "0 8px 32px rgba(212,175,55,0.3), 0 2px 8px rgba(0,0,0,0.1)",
             }}
           >
-            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
-            <UserPlus className="h-4 w-4 text-[#1a0f00] shrink-0 relative z-10" />
-            <span className="text-[#1a0f00] relative z-10">Cadastrar</span>
+            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 transition-colors" />
+            <UserPlus className="h-4 w-4 text-white shrink-0 relative z-10" />
+            <span className="text-white relative z-10">Cadastrar</span>
           </button>
 
           {/* Entrar — bordado */}
           <button
             onClick={() => navigate("/auth?view=login")}
-            className="group flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white/8 border-2 border-[#D4AF37]/50 text-white hover:bg-[#D4AF37]/10 hover:border-[#D4AF37]/80 transition-all active:scale-95 hover:scale-[1.03] backdrop-blur-sm"
-            style={{ boxShadow: "0 4px 20px rgba(212,175,55,0.1)" }}
+            className="group flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-[#D4AF37]/40 text-stone-900 hover:bg-[#D4AF37]/5 hover:border-[#D4AF37]/80 transition-all active:scale-95 hover:scale-[1.03] shadow-sm"
           >
             <LogIn className="h-4 w-4 shrink-0" />
             Entrar
@@ -199,9 +198,9 @@ export default function LandingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
-          className="flex items-center gap-1.5 text-[10px] text-white/30 font-bold uppercase tracking-widest mt-4"
+          className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500 font-bold uppercase tracking-widest mt-6"
         >
-          <CheckCircle2 className="h-3 w-3 text-[#D4AF37]/50" />
+          <CheckCircle2 className="h-3 w-3 text-[#D4AF37]/80" />
           Gratuito · Seguro · Litúrgico
         </motion.p>
 
@@ -212,8 +211,8 @@ export default function LandingPage() {
           transition={{ delay: 1, duration: 2, repeat: Infinity }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
         >
-          <div className="w-6 h-10 rounded-full border-2 border-[#D4AF37]/30 flex items-start justify-center pt-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/60" style={{ animation: "scrollDot 2s ease-in-out infinite" }} />
+          <div className="w-6 h-10 rounded-full border-2 border-[#D4AF37]/40 flex items-start justify-center pt-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/80" style={{ animation: "scrollDot 2s ease-in-out infinite" }} />
           </div>
         </motion.div>
       </section>
@@ -223,7 +222,7 @@ export default function LandingPage() {
         {/* Título seção */}
         <div className="text-center mb-8">
           <OrnamentalDivider />
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4AF37]/70 mt-3">Tudo em um só lugar</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4AF37]/90 mt-3">Tudo em um só lugar</p>
         </div>
 
         <div className="space-y-3">
@@ -234,17 +233,17 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-white/6 bg-white/4 backdrop-blur-sm hover:bg-white/8 hover:border-[#D4AF37]/20 transition-all group"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 bg-white/80 backdrop-blur-sm hover:bg-white hover:border-[#D4AF37]/40 hover:shadow-md transition-all group"
             >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform"
-                style={{ backgroundColor: `${f.color}15`, border: `1px solid ${f.color}30` }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm bg-white"
+                style={{ border: `1px solid ${f.color}40` }}
               >
                 <f.icon className="h-5 w-5" style={{ color: f.color }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-white/90 leading-snug">{f.title}</p>
-                <p className="text-xs text-white/40 leading-relaxed mt-0.5">{f.desc}</p>
+                <p className="text-sm font-black text-stone-800 leading-snug">{f.title}</p>
+                <p className="text-xs text-stone-500 leading-relaxed mt-0.5">{f.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -256,7 +255,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={handleInstall}
-            className="w-full mt-6 flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-black text-xs uppercase tracking-widest hover:bg-emerald-500/25 transition-all active:scale-95"
+            className="w-full mt-6 flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 font-black text-xs uppercase tracking-widest hover:bg-emerald-100 transition-all active:scale-95 shadow-sm"
           >
             <Smartphone className="h-4 w-4" /> Instalar App no Celular
           </motion.button>
@@ -267,20 +266,15 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-10 p-6 rounded-3xl text-center relative overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, rgba(42,20,80,0.8), rgba(26,10,50,0.9))",
-            border: "1px solid rgba(212,175,55,0.25)",
-            boxShadow: "0 0 40px rgba(212,175,55,0.08) inset"
-          }}
+          className="mt-10 p-6 rounded-3xl text-center relative overflow-hidden bg-white border border-[#D4AF37]/30 shadow-xl"
         >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-[#D4AF37]/5 rounded-full blur-2xl" />
-          <CrossOrnament className="w-10 h-10 text-[#D4AF37]/30 mx-auto mb-3 relative z-10" />
-          <p className="text-base font-black text-white mb-1 relative z-10">Comece agora, gratuitamente</p>
-          <p className="text-xs text-white/40 mb-5 relative z-10">Junte-se a catequistas de todo o Brasil</p>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-2xl pointer-events-none" />
+          <CrossOrnament className="w-10 h-10 text-[#D4AF37]/40 mx-auto mb-3 relative z-10" />
+          <p className="text-base font-black text-stone-900 mb-1 relative z-10">Comece agora, gratuitamente</p>
+          <p className="text-xs text-stone-500 mb-5 relative z-10">Junte-se a catequistas de todo o Brasil</p>
           <button
             onClick={() => navigate("/auth?view=signup")}
-            className="relative z-10 px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-[#1a0f00] transition-all active:scale-95 hover:scale-105"
+            className="relative z-10 px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-white transition-all active:scale-95 hover:scale-105"
             style={{
               background: "linear-gradient(135deg, #D4AF37, #B8860B)",
               boxShadow: "0 8px 24px rgba(212,175,55,0.4)"
@@ -292,43 +286,43 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="relative z-10 border-t border-white/6 py-10 px-5">
+      <footer className="relative z-10 border-t border-stone-200/80 py-10 px-5 bg-white/40">
         <div className="max-w-lg mx-auto">
           <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center mb-8">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center overflow-hidden">
-                <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain" />
+              <div className="w-8 h-8 rounded-lg bg-stone-900/5 border border-stone-900/10 flex items-center justify-center overflow-hidden">
+                <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain drop-shadow-sm" />
               </div>
-              <span className="text-base font-black text-[#D4AF37]">iCatequese</span>
+              <span className="text-base font-black text-[#D4AF37] drop-shadow-sm">iCatequese</span>
             </div>
             <div className="flex items-center gap-4 ml-auto">
-              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-[#D4AF37] flex items-center gap-1 transition-colors">
+              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-stone-500 hover:text-[#D4AF37] flex items-center gap-1 transition-colors">
                 <Share2 className="h-3 w-3" /> Compartilhar
               </button>
             </div>
           </div>
 
           {/* Card idealizador */}
-          <div className="p-5 rounded-2xl bg-white/4 border border-white/8 flex items-center gap-4 mb-8">
+          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm flex items-center gap-4 mb-8">
             <Avatar className="h-11 w-11 border-2 border-[#D4AF37]/30 shrink-0">
               <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
               <AvatarFallback className="bg-[#D4AF37]/20 text-[#D4AF37] font-black text-xs">RA</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-black text-white">Rickson Amazonas</p>
-              <p className="text-[10px] text-white/40 font-bold uppercase tracking-wide">Catequista · Idealizador do iCatequese</p>
-              <a href="mailto:ricksonam@hotmail.com" className="text-[10px] text-[#D4AF37]/70 hover:text-[#D4AF37] transition-colors flex items-center gap-1 mt-0.5">
+              <p className="text-sm font-black text-stone-900">Rickson Amazonas</p>
+              <p className="text-[10px] text-stone-500 font-bold uppercase tracking-wide">Catequista · Idealizador do iCatequese</p>
+              <a href="mailto:ricksonam@hotmail.com" className="text-[10px] text-[#D4AF37]/90 hover:text-[#D4AF37] transition-colors flex items-center gap-1 mt-0.5">
                 <Mail className="h-3 w-3" /> ricksonam@hotmail.com
               </a>
             </div>
-            <button onClick={handleWhatsApp} className="px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 font-black text-[9px] uppercase tracking-wide hover:bg-emerald-500/25 transition-all shrink-0">
+            <button onClick={handleWhatsApp} className="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 font-black text-[9px] uppercase tracking-wide hover:bg-emerald-100 transition-all shrink-0">
               Suporte
             </button>
           </div>
 
           <div className="text-center">
             <OrnamentalDivider />
-            <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-3">
+            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-3">
               © 2026 iCatequese · Ad maiorem Dei gloriam
             </p>
           </div>
@@ -337,25 +331,25 @@ export default function LandingPage() {
 
       {/* ── DIALOG APOIE ── */}
       <Dialog open={apoieOpen} onOpenChange={setApoieOpen}>
-        <DialogContent className="sm:max-w-md bg-[#0d0a14] border border-[#D4AF37]/20 p-0 overflow-hidden rounded-[32px]">
+        <DialogContent className="sm:max-w-md bg-white border border-stone-200 p-0 overflow-hidden rounded-[32px] shadow-2xl">
           <div className="p-8 text-center relative overflow-hidden"
             style={{ background: "linear-gradient(135deg, #7c2d12, #9f1239)" }}>
             <div className="absolute inset-0 opacity-10">
               <CrossOrnament className="absolute top-2 right-2 w-24 h-24 text-white" />
             </div>
-            <Heart className="w-14 h-14 fill-white text-white mx-auto mb-3 animate-heartbeat relative z-10" />
-            <h2 className="text-xl font-black relative z-10">Apoie o iCatequese!</h2>
+            <Heart className="w-14 h-14 fill-white text-white mx-auto mb-3 animate-heartbeat relative z-10 drop-shadow-md" />
+            <h2 className="text-xl font-black relative z-10 text-white drop-shadow-md">Apoie o iCatequese!</h2>
           </div>
           <div className="p-6 text-center space-y-4">
-            <p className="text-sm text-white/60 leading-relaxed">
-              Projeto independente mantido com recursos próprios. Sua doação ajuda a manter tudo <strong className="text-white">gratuito para todos</strong>.
+            <p className="text-sm text-stone-600 leading-relaxed font-medium">
+              Projeto independente mantido com recursos próprios. Sua doação ajuda a manter tudo <strong className="text-stone-900 font-black">gratuito para todos</strong>.
             </p>
-            <div className="p-4 rounded-2xl bg-white/5 border border-[#D4AF37]/20">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]/70 mb-2">Chave PIX</p>
-              <p className="font-bold text-base text-white">ricksonam@hotmail.com</p>
+            <div className="p-4 rounded-2xl bg-stone-50 border border-[#D4AF37]/30 shadow-inner">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]/90 mb-2">Chave PIX</p>
+              <p className="font-black text-lg text-stone-900">ricksonam@hotmail.com</p>
               <button
                 onClick={() => { navigator.clipboard.writeText("ricksonam@hotmail.com"); toast.success("Chave PIX copiada!"); }}
-                className="mt-3 px-5 py-2 rounded-xl font-black text-xs uppercase tracking-widest text-[#1a0f00] transition-all active:scale-95"
+                className="mt-4 px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-white transition-all active:scale-95 shadow-md hover:shadow-lg"
                 style={{ background: "linear-gradient(135deg, #D4AF37, #B8860B)" }}
               >
                 Copiar Chave
@@ -368,7 +362,7 @@ export default function LandingPage() {
       {/* ── WHATSAPP FLUTUANTE ── */}
       <button
         onClick={handleWhatsApp}
-        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full overflow-hidden shadow-2xl shadow-emerald-500/40 hover:scale-110 active:scale-95 transition-all"
+        className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full overflow-hidden shadow-2xl shadow-emerald-500/30 hover:scale-110 active:scale-95 transition-all"
       >
         <img src="/assets/whatsapp-icon.png" alt="WhatsApp" className="w-full h-full object-contain" />
       </button>
