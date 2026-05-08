@@ -30,13 +30,13 @@ const OrnamentalDivider = () => (
 );
 
 const FEATURES = [
-  { title: "Encontros de Catequese", desc: "Planeje, registre presença, avalie e apresente seus encontros.", icon: CalendarDays, color: "#3b82f6" },
-  { title: "Aniversariantes", desc: "Alertas de nascimento e batismo dos seus catequizandos.", icon: Gift, color: "#ec4899" },
-  { title: "Atividades e Eventos", desc: "Cadastre celebrações, retiros e eventos no calendário da turma.", icon: ListChecks, color: "#d97706" },
-  { title: "Módulo de Jogos", desc: "Biblioteca interativa de jogos educativos para a catequese.", icon: Dices, color: "#8b5cf6" },
-  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", icon: ImageIcon, color: "#10b981" },
-  { title: "Trabalho em Equipe", desc: "Compartilhe a turma e co-gerencie com outros catequistas.", icon: Users, color: "#0ea5e9" },
-  { title: "Catequese em Família", desc: "Crie enquetes e missões para manter as famílias engajadas.", icon: MessageSquare, color: "#a855f7" },
+  { title: "Encontros de Catequese", desc: "Planeje, registre presença, avalie e apresente seus encontros.", img: "/card_encontros.jpg", color: "#3b82f6" },
+  { title: "Aniversariantes", desc: "Alertas de nascimento e batismo dos seus catequizandos.", img: "/acesso_agenda.jpg", color: "#ec4899" },
+  { title: "Atividades e Eventos", desc: "Cadastre celebrações, retiros e eventos no calendário da turma.", img: "/acesso_atividades.jpg", color: "#d97706" },
+  { title: "Módulo de Jogos", desc: "Biblioteca interativa de jogos educativos para a catequese.", img: "/acesso_jogos.jpg", color: "#8b5cf6" },
+  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", img: "/mais_0.png", color: "#10b981" },
+  { title: "Trabalho em Equipe", desc: "Compartilhe a turma e co-gerencie com outros catequistas.", img: "/acesso_cadastros.jpg", color: "#0ea5e9" },
+  { title: "Catequese em Família", desc: "Crie enquetes e missões para manter as famílias engajadas.", img: "/acesso_conecta.jpg", color: "#a855f7" },
 ];
 
 export default function LandingPage() {
@@ -176,26 +176,31 @@ export default function LandingPage() {
             Entrar no iCatequese
           </button>
 
-          {/* CTA Relocado do final da página */}
+          {/* CTA Relocado do final da página — Versão Premium */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="w-full p-6 rounded-3xl text-center relative overflow-hidden bg-white border border-blue-500/30 shadow-xl"
+            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-white border-2 border-[#D4AF37]/20 shadow-2xl"
           >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
-            <CrossOrnament className="w-10 h-10 text-blue-500/20 mx-auto mb-3 relative z-10" />
-            <p className="text-base font-black text-stone-900 mb-1 relative z-10">Comece agora!</p>
-            <p className="text-[10px] text-stone-500 mb-5 relative z-10 font-bold uppercase tracking-widest">Junte-se a milhares de catequistas</p>
+            {/* Efeito Halo Premium */}
+            <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#D4AF37]/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-500/5 rounded-full blur-[80px] pointer-events-none" />
+            
+            <CrossOrnament className="w-12 h-12 text-[#D4AF37]/30 mx-auto mb-4 relative z-10" />
+            <p className="text-xl font-liturgical font-black text-stone-900 mb-2 relative z-10">Comece agora!</p>
+            <p className="text-[11px] text-stone-500 mb-6 relative z-10 font-bold uppercase tracking-[0.2em] leading-relaxed">
+              Transforme sua catequese com a melhor plataforma de gestão
+            </p>
             <button
               onClick={() => navigate("/auth?view=signup")}
-              className="relative z-10 w-full px-6 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-white transition-all active:scale-95 hover:scale-105"
+              className="relative z-10 w-full px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 hover:scale-[1.02] shadow-xl"
               style={{
-                background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                boxShadow: "0 8px 24px rgba(37,99,235,0.3)"
+                background: "linear-gradient(135deg, #D4AF37, #B8860B)",
+                boxShadow: "0 10px 30px rgba(184,134,11,0.3)"
               }}
             >
-              Criar conta grátis
+              Criar conta gratuita
             </button>
           </motion.div>
         </motion.div>
@@ -204,11 +209,13 @@ export default function LandingPage() {
       </section>
 
       {/* ── SEÇÃO DE FUNCIONALIDADES ── */}
-      <section className="relative z-10 px-5 pb-20 pt-4 max-w-lg mx-auto">
+      <section className="relative z-10 px-5 pb-20 pt-8 max-w-lg mx-auto">
         {/* Título seção */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-8">
           <OrnamentalDivider />
-          <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#D4AF37] mt-1 drop-shadow-sm">Tudo em um só lugar</p>
+          <p className="text-[12px] font-black uppercase tracking-[0.35em] mt-2 bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#B8860B] bg-clip-text text-transparent drop-shadow-sm">
+            Tudo em um só lugar
+          </p>
         </div>
 
         <div className="space-y-3">
@@ -219,16 +226,13 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-blue-500/20 bg-white hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
+              className="flex items-center gap-4 p-4 rounded-[28px] border border-blue-500/10 bg-white hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group"
             >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm bg-white"
-                style={{ border: `1px solid ${f.color}40` }}
-              >
-                <f.icon className="h-5 w-5" style={{ color: f.color }} />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md overflow-hidden bg-zinc-100 border border-black/5">
+                <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-stone-800 leading-snug">{f.title}</p>
+                <p className="text-base font-liturgical font-black text-stone-900 leading-snug group-hover:text-blue-600 transition-colors">{f.title}</p>
                 <p className="text-xs text-stone-500 leading-relaxed mt-0.5">{f.desc}</p>
               </div>
             </motion.div>
@@ -261,27 +265,37 @@ export default function LandingPage() {
               <span className="text-base font-black text-[#D4AF37] drop-shadow-sm">iCatequese</span>
             </div>
             <div className="flex items-center gap-4 ml-auto">
-              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-stone-500 hover:text-[#D4AF37] flex items-center gap-1 transition-colors">
-                <Share2 className="h-3 w-3" /> Compartilhar
+              <button 
+                onClick={handleShare} 
+                className="px-4 py-2 rounded-full bg-stone-900/5 border border-stone-900/10 text-[10px] font-black uppercase tracking-widest text-stone-600 hover:bg-stone-900 hover:text-white transition-all flex items-center gap-2 active:scale-95 shadow-sm"
+              >
+                <Share2 className="h-3.5 w-3.5" /> Compartilhar
               </button>
             </div>
           </div>
 
-          {/* Card idealizador */}
-          <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm flex items-center gap-4 mb-8">
-            <Avatar className="h-11 w-11 border-2 border-[#D4AF37]/30 shrink-0">
+          {/* Card idealizador Premium */}
+          <div className="p-6 rounded-[32px] bg-white border border-stone-200/60 shadow-xl flex flex-col sm:flex-row items-center gap-5 mb-8 relative overflow-hidden group hover:border-[#D4AF37]/30 transition-all">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#D4AF37]/10 transition-colors" />
+            
+            <Avatar className="h-16 w-16 border-2 border-[#D4AF37]/30 shrink-0 shadow-md">
               <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
-              <AvatarFallback className="bg-[#D4AF37]/20 text-[#D4AF37] font-black text-xs">RA</AvatarFallback>
+              <AvatarFallback className="bg-[#D4AF37]/20 text-[#D4AF37] font-black text-sm">RA</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-black text-stone-900">Rickson Amazonas</p>
-              <p className="text-[10px] text-stone-500 font-bold uppercase tracking-wide">Catequista · Idealizador do iCatequese</p>
-              <a href="mailto:ricksonam@hotmail.com" className="text-[10px] text-[#D4AF37]/90 hover:text-[#D4AF37] transition-colors flex items-center gap-1 mt-0.5">
-                <Mail className="h-3 w-3" /> ricksonam@hotmail.com
-              </a>
+            <div className="flex-1 text-center sm:text-left relative z-10">
+              <p className="text-lg font-liturgical font-black text-stone-900 leading-none">Rickson Amazonas</p>
+              <p className="text-[11px] text-stone-500 font-bold uppercase tracking-widest mt-1.5">Catequista · Idealizador do iCatequese</p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 mt-3">
+                <a href="mailto:ricksonam@hotmail.com" className="text-[11px] text-[#D4AF37] font-bold hover:underline flex items-center gap-1.5 transition-colors">
+                  <Mail className="h-3 w-3" /> ricksonam@hotmail.com
+                </a>
+              </div>
             </div>
-            <button onClick={handleWhatsApp} className="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 font-black text-[9px] uppercase tracking-wide hover:bg-emerald-100 transition-all shrink-0">
-              Suporte
+            <button 
+              onClick={handleWhatsApp} 
+              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-500 text-white font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-95 relative z-10"
+            >
+              Suporte Técnico
             </button>
           </div>
 
