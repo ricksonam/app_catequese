@@ -157,7 +157,7 @@ export default function LandingPage() {
           transition={{ delay: 0.4 }}
           className="text-sm text-stone-600 font-medium max-w-xs leading-relaxed mt-2 mb-8 italic"
         >
-          "Semear a Palavra, cultivar o Reino. Uma plataforma para catequistas organizarem a fé."
+          "Gestão inteligente para a catequese, fortalecendo a fé e organizando a missão"
         </motion.p>
 
         {/* ── BOTÕES PRINCIPAIS ── */}
@@ -165,31 +165,39 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="flex flex-col sm:flex-row gap-3 w-full max-w-xs"
+          className="flex flex-col items-center gap-6 w-full max-w-xs"
         >
-          {/* Cadastrar — destaque dourado */}
-          <button
-            onClick={() => navigate("/auth?view=signup")}
-            className="group relative flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider overflow-hidden transition-all active:scale-95 hover:scale-[1.03]"
-            style={{
-              background: "linear-gradient(135deg, #D4AF37, #B8860B, #D4AF37)",
-              backgroundSize: "200% 100%",
-              boxShadow: "0 8px 32px rgba(212,175,55,0.3), 0 2px 8px rgba(0,0,0,0.1)",
-            }}
-          >
-            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 transition-colors" />
-            <UserPlus className="h-4 w-4 text-white shrink-0 relative z-10" />
-            <span className="text-white relative z-10">Cadastrar</span>
-          </button>
-
           {/* Entrar — bordado */}
           <button
             onClick={() => navigate("/auth?view=login")}
-            className="group flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-[#D4AF37]/40 text-stone-900 hover:bg-[#D4AF37]/5 hover:border-[#D4AF37]/80 transition-all active:scale-95 hover:scale-[1.03] shadow-sm"
+            className="group w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-blue-600/40 text-blue-600 hover:bg-blue-50 hover:border-blue-600 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
           >
             <LogIn className="h-4 w-4 shrink-0" />
-            Entrar
+            Entrar no iCatequese
           </button>
+
+          {/* CTA Relocado do final da página */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7 }}
+            className="w-full p-6 rounded-3xl text-center relative overflow-hidden bg-white border border-blue-500/30 shadow-xl"
+          >
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+            <CrossOrnament className="w-10 h-10 text-blue-500/20 mx-auto mb-3 relative z-10" />
+            <p className="text-base font-black text-stone-900 mb-1 relative z-10">Comece agora!</p>
+            <p className="text-[10px] text-stone-500 mb-5 relative z-10 font-bold uppercase tracking-widest">Junte-se a milhares de catequistas</p>
+            <button
+              onClick={() => navigate("/auth?view=signup")}
+              className="relative z-10 w-full px-6 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-white transition-all active:scale-95 hover:scale-105"
+              style={{
+                background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                boxShadow: "0 8px 24px rgba(37,99,235,0.3)"
+              }}
+            >
+              Criar conta grátis
+            </button>
+          </motion.div>
         </motion.div>
 
 
@@ -211,7 +219,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-[#D4AF37]/30 bg-white hover:border-[#D4AF37] hover:shadow-lg hover:shadow-[#D4AF37]/10 transition-all group"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-blue-500/20 bg-white hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/5 transition-all group"
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm bg-white"
@@ -239,28 +247,7 @@ export default function LandingPage() {
           </motion.button>
         )}
 
-        {/* CTA final */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-10 p-6 rounded-3xl text-center relative overflow-hidden bg-white border border-[#D4AF37]/30 shadow-xl"
-        >
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-2xl pointer-events-none" />
-          <CrossOrnament className="w-10 h-10 text-[#D4AF37]/40 mx-auto mb-3 relative z-10" />
-          <p className="text-base font-black text-stone-900 mb-1 relative z-10">Comece agora!</p>
-          <p className="text-xs text-stone-500 mb-5 relative z-10">Junte-se a catequistas de todo o Brasil</p>
-          <button
-            onClick={() => navigate("/auth?view=signup")}
-            className="relative z-10 px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-white transition-all active:scale-95 hover:scale-105"
-            style={{
-              background: "linear-gradient(135deg, #D4AF37, #B8860B)",
-              boxShadow: "0 8px 24px rgba(212,175,55,0.4)"
-            }}
-          >
-            Criar conta grátis
-          </button>
-        </motion.div>
+
       </section>
 
       {/* ── FOOTER ── */}
