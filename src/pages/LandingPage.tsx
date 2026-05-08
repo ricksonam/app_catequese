@@ -97,12 +97,12 @@ export default function LandingPage() {
       </div>
 
       {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4 bg-gradient-to-b from-white/90 to-transparent backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4 bg-blue-600/80 backdrop-blur-md border-b border-white/10 shadow-lg">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-stone-900/5 border border-stone-900/10 flex items-center justify-center overflow-hidden">
-            <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain drop-shadow-sm" />
+          <div className="w-8 h-8 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center overflow-hidden">
+            <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain brightness-0 invert" />
           </div>
-          <span className="text-base font-black tracking-tight text-stone-900">iCatequese</span>
+          <span className="text-base font-black tracking-tight text-white">iCatequese</span>
         </div>
         <button
           onClick={() => setApoieOpen(true)}
@@ -113,14 +113,14 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 pt-20 pb-10 text-center">
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 pt-12 pb-10 text-center">
 
         {/* Linha ornamental topo */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="flex items-center gap-3 mb-6">
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#D4AF37]/60" />
-          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-[#D4AF37]/90">Gestão para Catequistas</span>
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#D4AF37]/60" />
+          <div className="h-px w-10 bg-gradient-to-r from-transparent to-stone-900/20" />
+          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-stone-900">Gestão para Catequistas</span>
+          <div className="h-px w-10 bg-gradient-to-l from-transparent to-stone-900/20" />
         </motion.div>
 
         {/* Logo flutuante */}
@@ -143,8 +143,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-5xl sm:text-6xl font-black tracking-tighter mb-1"
-          style={{ background: "linear-gradient(135deg, #1A0F00 30%, #D4AF37 60%, #1A0F00 90%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+          className="text-5xl sm:text-6xl font-black tracking-tighter mb-1 bg-gradient-to-r from-primary via-blue-400 to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm"
         >
           iCatequese
         </motion.h1>
@@ -193,28 +192,7 @@ export default function LandingPage() {
           </button>
         </motion.div>
 
-        {/* Badge de segurança */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="flex items-center justify-center gap-1.5 text-[10px] text-stone-500 font-bold uppercase tracking-widest mt-6"
-        >
-          <CheckCircle2 className="h-3 w-3 text-[#D4AF37]/80" />
-          Gratuito · Seguro · Litúrgico
-        </motion.p>
 
-        {/* Seta para baixo */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, y: [0, 8, 0] }}
-          transition={{ delay: 1, duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <div className="w-6 h-10 rounded-full border-2 border-[#D4AF37]/40 flex items-start justify-center pt-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]/80" style={{ animation: "scrollDot 2s ease-in-out infinite" }} />
-          </div>
-        </motion.div>
       </section>
 
       {/* ── SEÇÃO DE FUNCIONALIDADES ── */}
@@ -231,9 +209,9 @@ export default function LandingPage() {
               key={i}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 bg-white/80 backdrop-blur-sm hover:bg-white hover:border-[#D4AF37]/40 hover:shadow-md transition-all group"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 bg-white hover:border-blue-500/40 hover:shadow-md transition-all group"
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm bg-white"
@@ -270,7 +248,7 @@ export default function LandingPage() {
         >
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-2xl pointer-events-none" />
           <CrossOrnament className="w-10 h-10 text-[#D4AF37]/40 mx-auto mb-3 relative z-10" />
-          <p className="text-base font-black text-stone-900 mb-1 relative z-10">Comece agora, gratuitamente</p>
+          <p className="text-base font-black text-stone-900 mb-1 relative z-10">Comece agora!</p>
           <p className="text-xs text-stone-500 mb-5 relative z-10">Junte-se a catequistas de todo o Brasil</p>
           <button
             onClick={() => navigate("/auth?view=signup")}
