@@ -75,18 +75,24 @@ export default function RelatoriosTurma() {
       </div>
 
 
-      <div className="flex gap-2 p-1 bg-muted/30 rounded-2xl print:hidden">
+      <div className="grid grid-cols-2 gap-3 print:hidden">
         <button 
           onClick={() => setTab("inteligente")}
-          className={cn("flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all", tab === "inteligente" ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:bg-white/50")}
+          className={cn("flex flex-col items-center justify-center gap-3 p-4 rounded-[24px] transition-all border-2", tab === "inteligente" ? "bg-primary/10 border-primary text-primary shadow-md scale-[1.02]" : "bg-white border-black/5 text-muted-foreground hover:bg-muted/50 hover:scale-[1.02]")}
         >
-          <PieChartIcon className="h-4 w-4" /> Visão Inteligente
+          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", tab === "inteligente" ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/10 text-primary")}>
+            <PieChartIcon className="h-6 w-6" />
+          </div>
+          <span className="text-[11px] font-black uppercase tracking-widest text-center leading-tight">Visão<br/>Inteligente</span>
         </button>
         <button 
           onClick={() => setTab("documentos")}
-          className={cn("flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all", tab === "documentos" ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:bg-white/50")}
+          className={cn("flex flex-col items-center justify-center gap-3 p-4 rounded-[24px] transition-all border-2", tab === "documentos" ? "bg-primary/10 border-primary text-primary shadow-md scale-[1.02]" : "bg-white border-black/5 text-muted-foreground hover:bg-muted/50 hover:scale-[1.02]")}
         >
-          <FileText className="h-4 w-4" /> Documentos e Fichas
+          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", tab === "documentos" ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/10 text-primary")}>
+            <FileText className="h-6 w-6" />
+          </div>
+          <span className="text-[11px] font-black uppercase tracking-widest text-center leading-tight">Documentos<br/>e Fichas</span>
         </button>
       </div>
 

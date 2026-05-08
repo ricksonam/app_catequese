@@ -840,7 +840,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 shadow-sm">
                         <Users className="h-3.5 w-3.5 text-blue-100" />
                         <span className="text-[11px] font-black text-white">
-                          {catCount} <span className="opacity-80 font-bold">alunos</span>
+                          {catCount} <span className="opacity-80 font-bold">catequizandos</span>
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 shadow-sm">
@@ -1182,7 +1182,7 @@ export default function Dashboard() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{t.etapa} • {count} alunos</p>
+                    <p className="text-xs text-muted-foreground">{t.etapa} • {count} catequizandos</p>
                     {t.status === 'pending' && (
                       <p className="text-[7px] text-amber-600 font-bold mt-0.5 animate-pulse">Aguardando autorização do catequista...</p>
                     )}

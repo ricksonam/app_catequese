@@ -214,28 +214,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                 { label: "Jogos", path: "/jogos", img: "/acesso_jogos.jpg" },
                 { label: "Relatórios", path: turmas.length > 0 ? `/turmas/${(localStorage.getItem("ivc_selected_turma") && localStorage.getItem("ivc_selected_turma") !== "all") ? localStorage.getItem("ivc_selected_turma") : turmas[0].id}/relatorios` : "/turmas", img: "/acesso_relatorios.jpg" },
                 { label: "Conecta", path: "/comunicacao", img: "/acesso_conecta.jpg" },
-                { label: "Sugestões", onClick: () => setSugestaoOpen(true), img: "/acesso_sugestoes.jpg" },
-                { 
-                  label: "Compartilhe", 
-                  onClick: async () => {
-                    const shareData = {
-                      title: 'iCatequese',
-                      text: 'Conheça o iCatequese, o aplicativo que organiza sua catequese!',
-                      url: getAppUrl()
-                    };
-                    try {
-                      if (navigator.share) {
-                        await navigator.share(shareData);
-                      } else {
-                        await navigator.clipboard.writeText(getAppUrl());
-                        toast.success("Link copiado!");
-                      }
-                    } catch (err) {
-                      // Usuário cancelou ou falhou
-                    }
-                  }, 
-                  img: "/acesso_compartilhar.jpg" 
-                },
+                { label: "Sugestões", onClick: () => setSugestaoOpen(true), img: "/acesso_sugestoes.jpg" }
               ].map((item, i) => (
                 <button
                   key={i}
