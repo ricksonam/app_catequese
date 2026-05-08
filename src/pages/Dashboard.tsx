@@ -606,8 +606,8 @@ export default function Dashboard() {
           </div>
           <div className="relative z-10 flex items-center justify-between px-4 py-3.5">
             <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#D4AF37]/70 mb-0.5">Bem-vindo de volta</p>
-              <h1 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5">
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#FDE047] mb-0.5 drop-shadow-sm">Bem-vindo de volta</p>
+              <h1 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5 drop-shadow-md">
                 Olá, Catequista!
                 <span className="inline-block animate-waving-hand text-sm">👋</span>
               </h1>
@@ -615,9 +615,9 @@ export default function Dashboard() {
             {/* Ícone de mensagens */}
             <button
               onClick={handleMessagesClick}
-              className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all border border-white/15 shadow-inner"
+              className="relative w-11 h-11 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm"
             >
-              <Mail className={cn("h-4 w-4 text-white/80", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
+              <Mail className={cn("h-5 w-5 text-white shadow-sm", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
               {totalMensagens > lastSeenMensagens && (
                 <>
                   <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#8b5cf6] animate-pulse" />
@@ -796,37 +796,43 @@ export default function Dashboard() {
                 <div className="absolute -inset-2 rounded-[28px] blur-xl opacity-30 pointer-events-none"
                   style={{ background: `radial-gradient(ellipse at 50% 50%, ${colors.from}, transparent 70%)` }} />
 
-                <div className="relative rounded-[22px] overflow-hidden shadow-xl border border-white/20"
-                  style={{ background: `linear-gradient(135deg, ${colors.from} 0%, ${colors.to} 100%)` }}>
+                <button
+                  onClick={() => setTurmaPickerOpen(true)}
+                  className="w-full text-left relative rounded-[22px] overflow-hidden shadow-xl border border-white/20 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                  style={{ background: `linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%)` }}>
 
                   {/* Raios de luz de fundo */}
                   <div className="absolute inset-0 pointer-events-none"
                     style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${colors.accent}40, transparent 60%)` }} />
 
                   {/* Conteúdo */}
-                  <div className="relative z-10 px-4 py-5 flex flex-col items-center text-center">
+                  <div className="relative z-10 px-4 py-3.5 flex flex-col items-center text-center">
                     
-                    {/* Botão Trocar */}
+                    {/* Botão Trocar (Visual) */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                      <div className="absolute top-3 right-3">
-                        <button
-                          onClick={() => setTurmaPickerOpen(true)}
-                          className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-[8px] font-black uppercase tracking-wider transition-all active:scale-95 hover:opacity-90 bg-white/20 text-white border border-white/30"
-                        >
-                          <RefreshCw className="h-2.5 w-2.5" />
+                      <div className="absolute top-2.5 right-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[7px] font-black uppercase tracking-widest bg-white/10 text-white border border-white/20">
+                          <RefreshCw className="h-2 w-2" />
                           Trocar
-                        </button>
+                        </div>
                       </div>
                     )}
 
                     {/* Nome da turma */}
-                    <div className="mb-4 mt-1">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-1 text-blue-100">
+                    <div className="mb-2.5 mt-0.5">
+                      <p className="text-[8px] font-bold uppercase tracking-[0.25em] mb-0.5 text-blue-100">
                         Turma Selecionada
                       </p>
-                      <h3 className="text-xl font-black tracking-tight leading-tight text-white">
-                        {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
-                      </h3>
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                        <h3 className="text-xl font-black tracking-tight leading-tight text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
+                          {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
+                        </h3>
+                        {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
+                          <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/30 backdrop-blur-sm drop-shadow-sm">
+                            {selectedTurma.ano || selectedTurma.etapa}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Stats dinâmicos */}
@@ -845,7 +851,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </button>
               </div>
             );
           })()}
