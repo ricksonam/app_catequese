@@ -590,7 +590,7 @@ export default function Dashboard() {
       )}
 
       {/* ── HEADER LITÚRGICO ── */}
-      <div className="animate-fade-in relative mb-3 mx-1">
+      <div className="animate-fade-in relative mb-1 mx-1">
         {/* Faixa de fundo com gradiente litúrgico */}
         <div className="relative rounded-3xl overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #6b46c1 0%, #8b5cf6 50%, #6b46c1 100%)' }}>
@@ -604,7 +604,7 @@ export default function Dashboard() {
               <rect x="4" y="20" width="52" height="8" rx="2" />
             </svg>
           </div>
-          <div className="relative z-10 flex items-center justify-between px-4 py-3.5">
+          <div className="relative z-10 flex items-center justify-between px-4 py-2">
             <div>
               <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#FDE047] mb-0.5 drop-shadow-sm">Bem-vindo de volta</p>
               <h1 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5 drop-shadow-md">
@@ -615,9 +615,9 @@ export default function Dashboard() {
             {/* Ícone de mensagens */}
             <button
               onClick={handleMessagesClick}
-              className="relative w-11 h-11 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm"
+              className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm"
             >
-              <Mail className={cn("h-5 w-5 text-white shadow-sm", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
+              <Mail className={cn("h-4 w-4 text-white shadow-sm", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
               {totalMensagens > lastSeenMensagens && (
                 <>
                   <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#8b5cf6] animate-pulse" />
