@@ -97,12 +97,12 @@ export default function LandingPage() {
       </div>
 
       {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4 bg-blue-600/80 backdrop-blur-md border-b border-white/10 shadow-lg">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4 bg-blue-600/90 backdrop-blur-md border-b border-white/10 shadow-lg">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center overflow-hidden">
-            <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain brightness-0 invert" />
+          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center overflow-hidden shadow-sm">
+            <img src="/app-logo.png" alt="Logo" className="w-7 h-7 object-contain" />
           </div>
-          <span className="text-base font-black tracking-tight text-white">iCatequese</span>
+          <span className="text-lg font-black tracking-tighter text-white">iCatequese</span>
         </div>
         <button
           onClick={() => setApoieOpen(true)}
@@ -113,14 +113,14 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 pt-12 pb-10 text-center">
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 pt-8 pb-10 text-center">
 
         {/* Linha ornamental topo */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="flex items-center gap-3 mb-6">
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-stone-900/20" />
-          <span className="text-[10px] font-black uppercase tracking-[0.35em] text-stone-900">Gestão para Catequistas</span>
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-stone-900/20" />
+          className="flex items-center gap-3 mb-4">
+          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#D4AF37]/60" />
+          <span className="text-xs font-black uppercase tracking-[0.25em] text-stone-900 drop-shadow-sm">Gestão para Catequistas</span>
+          <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#D4AF37]/60" />
         </motion.div>
 
         {/* Logo flutuante */}
@@ -131,10 +131,10 @@ export default function LandingPage() {
           className="relative mb-6"
         >
           {/* Halo dourado */}
-          <div className="absolute inset-0 rounded-full bg-[#D4AF37]/15 blur-2xl scale-150" />
-          <div className="relative w-28 h-28 rounded-[32px] bg-white border border-[#D4AF37]/30 shadow-xl flex items-center justify-center p-3"
+          <div className="absolute inset-0 rounded-full bg-[#D4AF37]/20 blur-3xl scale-150 animate-pulse" />
+          <div className="relative w-32 h-32 rounded-full bg-white shadow-[0_0_50px_rgba(212,175,55,0.4)] flex items-center justify-center p-4"
             style={{ animation: "liturgicalFloat 5s ease-in-out infinite" }}>
-            <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain drop-shadow-md" />
+            <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain" />
           </div>
         </motion.div>
 
@@ -196,11 +196,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── SEÇÃO DE FUNCIONALIDADES ── */}
-      <section className="relative z-10 px-5 pb-20 max-w-lg mx-auto">
+      <section className="relative z-10 px-5 pb-20 pt-4 max-w-lg mx-auto">
         {/* Título seção */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <OrnamentalDivider />
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4AF37]/90 mt-3">Tudo em um só lugar</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.3em] text-[#D4AF37] mt-1 drop-shadow-sm">Tudo em um só lugar</p>
         </div>
 
         <div className="space-y-3">
@@ -211,7 +211,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 p-4 rounded-2xl border border-stone-200/60 bg-white hover:border-blue-500/40 hover:shadow-md transition-all group"
+              className="flex items-center gap-4 p-4 rounded-2xl border border-[#D4AF37]/30 bg-white hover:border-[#D4AF37] hover:shadow-lg hover:shadow-[#D4AF37]/10 transition-all group"
             >
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm bg-white"
