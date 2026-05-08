@@ -589,30 +589,50 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="animate-fade-in flex items-start justify-between mb-1 mt-0 px-1">
-        <div>
-          <h1 className="text-base font-black text-foreground uppercase tracking-tight mt-1">Olá, Catequista! 
-            <span className="inline-block animate-waving-hand ml-2">👋</span>
-          </h1>
-        </div>
-        
-        {/* Ícone de mensagens */}
-        <button 
-          onClick={handleMessagesClick}
-          className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-blue-50 transition-all shadow-sm border border-black/5"
-        >
-          <Mail className={cn("h-4 w-4 text-blue-600", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
-          {totalMensagens > lastSeenMensagens && (
-            <>
-              <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-background animate-pulse" />
-              {showNovaMensagem && (
-                <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
-                  Nova Mensagem
-                </div>
+      {/* ── HEADER LITÚRGICO ── */}
+      <div className="animate-fade-in relative mb-3 mx-1">
+        {/* Faixa de fundo com gradiente litúrgico */}
+        <div className="relative rounded-3xl overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #1a0533 0%, #2d1057 50%, #1a0533 100%)' }}>
+          {/* Raios de luz centrais */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 0%, rgba(212,175,55,0.12), transparent)' }} />
+          {/* Cruz ornamental decorativa */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-5 pointer-events-none">
+            <svg viewBox="0 0 60 60" className="w-24 h-24 text-[#D4AF37]" fill="currentColor">
+              <rect x="26" y="4" width="8" height="52" rx="2" />
+              <rect x="4" y="20" width="52" height="8" rx="2" />
+            </svg>
+          </div>
+          <div className="relative z-10 flex items-center justify-between px-4 py-3.5">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#D4AF37]/70 mb-0.5">Bem-vindo de volta</p>
+              <h1 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5">
+                Olá, Catequista!
+                <span className="inline-block animate-waving-hand text-sm">👋</span>
+              </h1>
+            </div>
+            {/* Ícone de mensagens */}
+            <button
+              onClick={handleMessagesClick}
+              className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-all border border-white/15 shadow-inner"
+            >
+              <Mail className={cn("h-4 w-4 text-white/80", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
+              {totalMensagens > lastSeenMensagens && (
+                <>
+                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#2d1057] animate-pulse" />
+                  {showNovaMensagem && (
+                    <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
+                      Nova Mensagem
+                    </div>
+                  )}
+                </>
               )}
-            </>
-          )}
-        </button>
+            </button>
+          </div>
+          {/* Linha dourada inferior ornamental */}
+          <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
+        </div>
       </div>
 
       {/* CARD DE CRIAR TURMA (QUANDO NÃO HÁ TURMAS) */}
@@ -660,48 +680,38 @@ export default function Dashboard() {
       )}
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
-      <div className="relative pt-3 pb-6 mb-0 animate-fade-in -mt-1 mx-2 rounded-[40px] bg-gradient-to-br from-orange-50/90 via-[#FFF9F2] to-orange-50/90 border border-black shadow-sm overflow-hidden">
-        {/* Detalhes de Decoração do Varal */}
-        <div className="absolute top-8 left-0 right-0 h-[1px] bg-orange-200/40 z-0" />
-        
-        {/* Título da Seção */}
-        <div className="flex flex-col items-center justify-center mb-4 relative z-10">
-          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600">Próximos Aniversários</h2>
-          <div className="h-1 w-6 bg-blue-400/40 rounded-full mt-1"></div>
+      <div className="relative pt-2 pb-5 mb-0 animate-fade-in">
+        {/* Título da Seção — estilo litúrgico */}
+        <div className="flex items-center gap-2 justify-center mb-3">
+          <div className="h-px flex-1 max-w-[40px]" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5))' }} />
+          <h2 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: '#B8860B' }}>Próximos Aniversários</h2>
+          <div className="h-px flex-1 max-w-[40px]" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))' }} />
         </div>
 
         {aniversariantesMes.length > 0 ? (
-          /* Container dos Cards */
           <div className={cn(
-            "flex gap-2 relative z-10 px-1 min-h-[90px]",
+            "flex gap-2 px-1 min-h-[90px]",
             aniversariantesMes.length === 1 ? "justify-center" : "justify-center sm:gap-4"
           )}>
             {aniversariantesMes.map((c, i) => {
               const rotations = ['-2deg', '2deg', '-1deg', '3deg'];
               const isHoje = c.day === hoje.getDate();
               const dateStr = `${String(c.day).padStart(2, '0')}/${String(c.month + 1).padStart(2, '0')}`;
-
               return (
-                <div 
+                <div
                   key={`${c.id}-${i}`}
                   className="flex justify-center"
-                  style={{ 
-                    animation: `welcome-float 4s ease-in-out infinite`,
-                    animationDelay: `${i * 0.2}s`
-                  }}
+                  style={{ animation: `welcome-float 4s ease-in-out infinite`, animationDelay: `${i * 0.2}s` }}
                 >
                   <button
                     onClick={() => setSelectedCatequizando(c)}
                     className="relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95"
                     style={{ transform: `rotate(${rotations[i % 4]})` }}
                   >
-                    {/* Pregador */}
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-5 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
-
-                    {/* Moldura Polaroid */}
                     <div className={cn(
                       "bg-white p-1 pb-1.5 shadow-md border relative overflow-hidden transition-colors",
-                      isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-black/5"
+                      isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-black/10"
                     )}>
                       <div className="w-10 h-10 overflow-hidden bg-muted relative">
                         {c.foto ? (
@@ -717,26 +727,16 @@ export default function Dashboard() {
                           </div>
                         )}
                       </div>
-
-                      {/* Info do Aniversariante */}
                       <div className="mt-1.5 text-center px-0.5">
                         <p className="text-[10px] font-black text-black leading-tight uppercase tracking-tighter truncate w-full px-1">
                           {c.nome.split(' ')[0]}
                         </p>
-                        
                         <div className="flex flex-col items-center mt-1">
-                          <span className="text-[13px] font-black text-foreground/90 tabular-nums leading-none">
-                            {dateStr}
-                          </span>
+                          <span className="text-[13px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
                           {isHoje ? (
-                            <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">
-                              HOJE
-                            </span>
+                            <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">HOJE</span>
                           ) : (
-                            <p className={cn(
-                              "text-[7px] font-black uppercase tracking-tighter mt-0.5",
-                              c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600"
-                            )}>
+                            <p className={cn("text-[7px] font-black uppercase tracking-tighter mt-0.5", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
                               {c.hasBoth ? "🎉 Duplo!" : (c.tipo === 'nascimento' ? "Parabéns" : "Batismo")}
                             </p>
                           )}
@@ -749,7 +749,6 @@ export default function Dashboard() {
             })}
           </div>
         ) : (
-          /* Estado vazio — sem pessoas cadastradas */
           <div className="flex flex-col items-center justify-center py-3 px-4 min-h-[80px]">
             <div className="flex items-center gap-2 text-muted-foreground/40">
               <Cake className="w-5 h-5" />
@@ -778,9 +777,23 @@ export default function Dashboard() {
       
 
 
-      {/* ── MÓDULOS DE ACESSO RÁPIDO (CATEQUIZANDOS E ENCONTROS) ── */}
+      {/* ── MÓDULOS DE ACESSO RÁPIDO ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-6 mt-20 animate-fade-in flex flex-col items-center">
+        <div className="space-y-0 px-4 mt-16 animate-fade-in flex flex-col items-center">
+          {/* Separador ornamental litúrgico */}
+          <div className="flex items-center gap-2 w-full justify-center mb-3 -mt-10">
+            <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
+            <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
+              <rect x="26" y="4" width="8" height="52" rx="2" />
+              <rect x="4" y="20" width="52" height="8" rx="2" />
+            </svg>
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] shrink-0" style={{ color: '#B8860B' }}>Módulos</span>
+            <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
+              <rect x="26" y="4" width="8" height="52" rx="2" />
+              <rect x="4" y="20" width="52" height="8" rx="2" />
+            </svg>
+            <div className="h-px flex-1" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
+          </div>
           
           {/* Card Turma (Nó central) */}
           <div className="bg-white border border-black/5 shadow-sm rounded-2xl p-2 flex items-center justify-center w-full max-w-[320px] z-10 relative min-h-[54px]">
