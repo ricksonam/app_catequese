@@ -782,7 +782,7 @@ export default function Dashboard() {
 
       {/* ── TURMA E MÓDULOS DE ACESSO RÁPIDO ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-4 mt-8 animate-fade-in flex flex-col items-center">
+        <div className="space-y-0 px-4 mt-2 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma Selecionada — Azul Suave Centralizado */}
           {(() => {
@@ -857,7 +857,7 @@ export default function Dashboard() {
           })()}
 
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mb-1 relative z-10">
+          <div className="flex items-center gap-2 w-full justify-center mb-0 relative z-10 -mt-1">
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
@@ -872,7 +872,7 @@ export default function Dashboard() {
           </div>
 
           {/* Linhas de conexão (Árvore) */}
-          <div className="relative w-full h-8 flex justify-center z-0">
+          <div className="relative w-full h-5 flex justify-center z-0">
             {/* Linha vertical central descendo do card da turma */}
             <div className="absolute top-0 w-[2px] h-1/2 bg-blue-600" />
             {/* Linha horizontal dividindo para as duas colunas */}
@@ -948,7 +948,7 @@ export default function Dashboard() {
 
       {/* ── CARD AGENDA LITÚRGICA ── */}
       {turmas.length > 0 && (
-        <div className="pt-10 mb-2">
+        <div className="pt-6 mt-4 mb-2">
           <div className="animate-float-up relative" style={{ animationDelay: '200ms' }}>
 
           
