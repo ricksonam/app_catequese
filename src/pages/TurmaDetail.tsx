@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia, useApproveTurmaMembro } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia, useApproveTurmaMembro, useComunidades } from "@/hooks/useSupabaseData";
 import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart, QrCode, Shield, CheckCircle2, BellRing, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
@@ -20,8 +20,8 @@ import { AuditLogModal } from "@/components/AuditLogPanel";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { resetTurmaCode } from "@/lib/supabaseStore";
 import { useQueryClient } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
-
+import { RefreshCw, ChevronDown } from "lucide-react";
+import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 
 export default function TurmaDetail() {
   const { id } = useParams();
@@ -32,6 +32,7 @@ export default function TurmaDetail() {
   const { data: atividades = [] } = useAtividades(id);
   const { data: reunioes = [] } = useReunioes(id);
   const { data: missoes = [] } = useMissoesFamilia(id);
+  const { data: comunidades = [] } = useComunidades();
   const deleteMutation = useDeleteTurma();
   const leaveMutation = useLeaveTurma();
   const removeMembroMutation = useRemoveTurmaMembro();
@@ -39,6 +40,7 @@ export default function TurmaDetail() {
   const { data: membros = [] } = useTurmaMembros(id!);
 
   const turma = turmas.find((t) => t.id === id);
+  const allOtherTurmas = turmas.filter(t => t.id !== id);
   const [codeVisible, setCodeVisible] = useState(false);
   const [shareWarningOpen, setShareWarningOpen] = useState(false);
   const [shareWarningAccepted, setShareWarningAccepted] = useState(false);
@@ -48,6 +50,8 @@ export default function TurmaDetail() {
   const [memberEmailToRemove, setMemberEmailToRemove] = useState<string>("");
   const [isResettingCode, setIsResettingCode] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
 
@@ -337,6 +341,92 @@ export default function TurmaDetail() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Turma Switcher Panel - Collapsible */}
+      <div className="animate-fade-in">
+        <button
+          onClick={() => setSwitcherOpen(!switcherOpen)}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white border border-black/5 shadow-sm active:scale-[0.98] transition-all"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-liturgical-green" />
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Turma Ativa</span>
+            <span className="text-sm font-black text-foreground truncate max-w-[160px]">{turma.nome}</span>
+          </div>
+          <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${switcherOpen ? 'rotate-180' : ''}`} />
+        </button>
+
+        {switcherOpen && (
+          <div className="mt-3 space-y-4 animate-fade-in">
+            {/* Active Turma Info Card */}
+            <div className="relative overflow-hidden rounded-2xl bg-liturgical-paper border border-liturgical-green/15 p-5 shadow-sm">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-liturgical-green/[0.04]" />
+              <div className="relative z-10 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-2 h-2 rounded-full bg-liturgical-green animate-pulse" />
+                      <span className="text-[9px] font-black text-liturgical-green uppercase tracking-widest">Em Foco</span>
+                    </div>
+                    <h3 className="text-lg font-black text-foreground font-liturgical leading-tight">{turma.nome}</h3>
+                    {(() => {
+                      const com = comunidades.find(c => c.id === turma.comunidadeId);
+                      return com ? <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{com.nome}</p> : null;
+                    })()}
+                  </div>
+                  <span className="text-xs font-black text-muted-foreground/50 bg-black/5 px-2 py-1 rounded-lg">{turma.ano}</span>
+                </div>
+                <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-bold">
+                  <span>{turma.diaCatequese} • {turma.horario}</span>
+                  {turma.etapa && <span className="text-liturgical-green/70">{turma.etapa}</span>}
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-black/5">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-black/5 shadow-sm">
+                    <Users className="h-3 w-3 text-liturgical-green" />
+                    <span className="text-[10px] font-black text-foreground">{catequizandos.length}</span>
+                    <span className="text-[9px] text-muted-foreground">alunos</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-black/5 shadow-sm">
+                    <CalendarDays className="h-3 w-3 text-liturgical-green" />
+                    <span className="text-[10px] font-black text-foreground">{encontros.length}</span>
+                    <span className="text-[9px] text-muted-foreground">encontros</span>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(`/turmas/nova`); }}
+                    className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-xl bg-liturgical-green text-white text-[9px] font-black uppercase tracking-widest shadow-sm active:scale-95 transition-all"
+                  >
+                    + Nova
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Other Turmas Horizontal Scroll */}
+            <div>
+              <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2 px-1">Trocar Turma</p>
+              <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+                {allOtherTurmas.map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => { navigate(`/turmas/${t.id}`); setSwitcherOpen(false); }}
+                    className="shrink-0 flex flex-col items-start px-4 py-3 rounded-2xl bg-white border border-black/5 shadow-sm hover:border-liturgical-green/30 hover:shadow-md active:scale-95 transition-all text-left min-w-[120px]"
+                  >
+                    <span className="text-[11px] font-black text-foreground leading-tight line-clamp-1">{t.nome}</span>
+                    <span className="text-[9px] text-muted-foreground mt-0.5">{t.diaCatequese} • {t.ano}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={() => { setJoinModalOpen(true); setSwitcherOpen(false); }}
+                  className="shrink-0 flex flex-col items-center justify-center px-4 py-3 rounded-2xl bg-liturgical-paper border-2 border-dashed border-liturgical-green/30 hover:border-liturgical-green/60 active:scale-95 transition-all gap-1 min-w-[80px]"
+                >
+                  <Link2 className="h-4 w-4 text-liturgical-green/60" />
+                  <span className="text-[9px] font-black text-liturgical-green/60 uppercase tracking-wider whitespace-nowrap">+ Código</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Grade 2x2 de Módulos */}
@@ -638,6 +728,7 @@ export default function TurmaDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <JoinTurmaModal open={joinModalOpen} onClose={() => setJoinModalOpen(false)} />
     </>
   );
 }
