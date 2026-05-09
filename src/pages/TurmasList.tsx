@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useComunidades, useAtividades, useReunioes, useMissoesFamilia } from "@/hooks/useSupabaseData";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { cn } from "@/lib/utils";
-import { BookOpen, Plus, CalendarDays, Users, Link2, UsersRound, Settings, ListChecks, GitBranch, Heart, PieChart, BellRing, Eye, EyeOff, Copy } from "lucide-react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, Settings, ListChecks, GitBranch, Heart, PieChart, BellRing, Eye, Copy, Shield, X } from "lucide-react";
 import { toast } from "sonner";
+import { QRCodeSVG } from "qrcode.react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function TurmasList() {
   const navigate = useNavigate();
@@ -12,6 +14,8 @@ export default function TurmasList() {
   const { data: comunidades = [] } = useComunidades();
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | null>(null);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [shareWarningOpen, setShareWarningOpen] = useState(false);
+  const [shareWarningAccepted, setShareWarningAccepted] = useState(false);
   const [codeVisible, setCodeVisible] = useState(false);
 
   useEffect(() => {
@@ -23,10 +27,10 @@ export default function TurmasList() {
     }
   }, [turmas, selectedTurmaId]);
 
-  // Reset code visibility when switching turma
   const handleSelect = (id: string) => {
     setSelectedTurmaId(id);
     setCodeVisible(false);
+    setShareWarningAccepted(false);
     localStorage.setItem("ivc_selected_turma", id);
   };
 
@@ -59,12 +63,12 @@ export default function TurmasList() {
   }, [encontros, catequizandos]);
 
   const modulos = selectedTurma ? [
-    { label: "Encontros", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${selectedTurma.id}/encontros`, color: "bg-primary text-white", bgGradient: "from-primary/60 via-primary/30 to-white", gradient: "from-primary/15 to-white", textColor: "text-blue-700", hasAlert: encontrosEmAlerta > 0, alertTitle: `${encontrosEmAlerta} pendente(s)` },
-    { label: "Catequizandos", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${selectedTurma.id}/catequizandos`, color: "bg-emerald-600 text-white", bgGradient: "from-emerald-500/60 via-emerald-500/30 to-white", gradient: "from-emerald-500/15 to-white", textColor: "text-emerald-700", hasAlert: catequizandosEmAlerta > 0, alertTitle: `${catequizandosEmAlerta} com faltas` },
-    { label: "Eventos", icon: ListChecks, count: atividades.length, unit: "evento", path: `/turmas/${selectedTurma.id}/eventos`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false, alertTitle: '' },
-    { label: "Reuniões", icon: Users, count: reunioes.length, unit: "reunião", path: `/turmas/${selectedTurma.id}/reunioes`, color: "bg-blue-600 text-white", bgGradient: "from-blue-500/60 via-blue-500/30 to-white", gradient: "from-blue-500/15 to-white", textColor: "text-blue-700", hasAlert: false, alertTitle: '' },
-    { label: "Plano da turma", icon: GitBranch, count: null, unit: "", path: `/turmas/${selectedTurma.id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700", hasAlert: false, alertTitle: '' },
-    { label: "Catequese em Família", icon: Heart, count: missoes.length, unit: "missão", path: `/turmas/${selectedTurma.id}/familia`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700", hasAlert: false, alertTitle: '' },
+    { label: "Encontros", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${selectedTurma.id}/encontros`, color: "bg-primary text-white", bgGradient: "from-primary/60 via-primary/30 to-white", gradient: "from-primary/15 to-white", textColor: "text-blue-700", hasAlert: encontrosEmAlerta > 0 },
+    { label: "Catequizandos", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${selectedTurma.id}/catequizandos`, color: "bg-emerald-600 text-white", bgGradient: "from-emerald-500/60 via-emerald-500/30 to-white", gradient: "from-emerald-500/15 to-white", textColor: "text-emerald-700", hasAlert: catequizandosEmAlerta > 0 },
+    { label: "Eventos", icon: ListChecks, count: atividades.length, unit: "evento", path: `/turmas/${selectedTurma.id}/eventos`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false },
+    { label: "Reuniões", icon: Users, count: reunioes.length, unit: "reunião", path: `/turmas/${selectedTurma.id}/reunioes`, color: "bg-blue-600 text-white", bgGradient: "from-blue-500/60 via-blue-500/30 to-white", gradient: "from-blue-500/15 to-white", textColor: "text-blue-700", hasAlert: false },
+    { label: "Plano da turma", icon: GitBranch, count: null, unit: "", path: `/turmas/${selectedTurma.id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700", hasAlert: false },
+    { label: "Catequese em Família", icon: Heart, count: missoes.length, unit: "missão", path: `/turmas/${selectedTurma.id}/familia`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700", hasAlert: false },
   ] : [];
 
   if (isLoading) return (
@@ -102,93 +106,65 @@ export default function TurmasList() {
         </div>
       ) : selectedTurma && (
         <>
-          {/* ── MAIN TURMA CARD ── */}
-          <div className="relative overflow-hidden rounded-[2rem] bg-liturgical-paper border border-liturgical-green/20 shadow-lg animate-fade-in">
-            {/* Subtle rays background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-liturgical-green/[0.04] via-transparent to-transparent" />
-            <div className="absolute -right-6 -top-6 w-32 h-32 text-liturgical-green/[0.04] pointer-events-none">
-              <UsersRound className="w-full h-full" />
-            </div>
+          {/* ── SMART PANEL CARD ── */}
+          <div className="relative overflow-hidden rounded-[2rem] shadow-xl animate-fade-in" style={{ background: 'linear-gradient(135deg, #1B4D2E 0%, #2D5A27 50%, #3A7A32 100%)' }}>
+            {/* Subtle texture overlay */}
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.3) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 50%)' }} />
 
             <div className="relative z-10 p-6">
-              {/* Top row: name + actions */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-2 h-2 rounded-full bg-liturgical-green animate-pulse shrink-0" />
-                    <span className="text-[9px] font-black text-liturgical-green uppercase tracking-[0.25em]">Turma Principal</span>
-                    {selectedTurma.isShared && (
-                      <span className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Partilhada</span>
-                    )}
-                  </div>
-                  <h2 className="text-2xl font-black text-foreground font-liturgical leading-tight">{selectedTurma.nome}</h2>
-                  {(() => {
-                    const com = comunidades.find(c => c.id === selectedTurma.comunidadeId);
-                    return com ? <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{com.nome}</p> : null;
-                  })()}
+              {/* Top: label + gear */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-white/60 animate-pulse" />
+                  <span className="text-[9px] font-black text-white/60 uppercase tracking-[0.3em]">Turma Principal</span>
+                  {selectedTurma.isShared && (
+                    <span className="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70 border border-white/20">Partilhada</span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 shrink-0 ml-3">
-                  <span className="text-xs font-black text-muted-foreground/40 bg-black/5 px-2 py-1 rounded-lg">{selectedTurma.ano}</span>
-                  <button onClick={() => navigate(`/turmas/${selectedTurma.id}`)} className="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-black/5 shadow-sm text-muted-foreground hover:text-liturgical-green transition-colors active:scale-90">
-                    <Settings className="h-4 w-4" />
-                  </button>
-                </div>
+                <button
+                  onClick={() => navigate(`/turmas/${selectedTurma.id}`)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 text-white/80 hover:bg-white/20 active:scale-90 transition-all text-[9px] font-black uppercase tracking-widest"
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                  Abrir Turma
+                </button>
               </div>
 
-              {/* Info row */}
-              <div className="flex items-center gap-2 flex-wrap text-[10px] text-muted-foreground font-bold mb-5">
-                <span className="flex items-center gap-1">
-                  <CalendarDays className="h-3 w-3 text-liturgical-green/50" />
+              {/* Turma Name */}
+              <div className="mb-4">
+                <h2 className="text-3xl font-black text-white font-liturgical leading-tight tracking-tight">{selectedTurma.nome}</h2>
+                {(() => {
+                  const com = comunidades.find(c => c.id === selectedTurma.comunidadeId);
+                  return com ? <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.25em] mt-1">{com.nome}</p> : null;
+                })()}
+              </div>
+
+              {/* Info chips */}
+              <div className="flex items-center gap-2 flex-wrap mb-5">
+                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-white/80 text-[10px] font-bold">
+                  <CalendarDays className="h-3 w-3" />
                   {selectedTurma.diaCatequese} • {selectedTurma.horario}
                 </span>
                 {selectedTurma.etapa && (
-                  <>
-                    <span className="w-1 h-1 rounded-full bg-liturgical-green/20" />
-                    <span className="text-liturgical-green/60 font-black">{selectedTurma.etapa}</span>
-                  </>
+                  <span className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest">
+                    {selectedTurma.etapa}
+                  </span>
                 )}
+                <span className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-white/60 text-[10px] font-bold">
+                  {selectedTurma.ano}
+                </span>
               </div>
 
-              {/* Stats + Code row */}
-              <div className="flex items-center gap-2 pt-4 border-t border-liturgical-green/8">
-                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-black/5 shadow-sm">
-                  <UsersRound className="h-3.5 w-3.5 text-liturgical-green" />
-                  <span className="text-sm font-black text-foreground">{catequizandos.length}</span>
-                  <span className="text-[9px] text-muted-foreground font-bold">catequizandos</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-black/5 shadow-sm">
-                  <CalendarDays className="h-3.5 w-3.5 text-liturgical-green" />
-                  <span className="text-sm font-black text-foreground">{encontros.length}</span>
-                  <span className="text-[9px] text-muted-foreground font-bold">encontros</span>
-                </div>
-
-                {/* Code chip */}
-                {!selectedTurma.isShared && selectedTurma.codigoAcesso && (
-                  <button
-                    onClick={() => {
-                      if (codeVisible) {
-                        navigator.clipboard.writeText(selectedTurma.codigoAcesso!);
-                        toast.success("Código copiado!");
-                      } else {
-                        setCodeVisible(true);
-                      }
-                    }}
-                    className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-liturgical-green/10 border border-liturgical-green/20 text-liturgical-green hover:bg-liturgical-green hover:text-white transition-all active:scale-95 shadow-sm"
-                  >
-                    {codeVisible ? (
-                      <>
-                        <Copy className="h-3.5 w-3.5 shrink-0" />
-                        <span className="font-mono font-black text-xs tracking-widest">{selectedTurma.codigoAcesso}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Eye className="h-3.5 w-3.5" />
-                        <span className="text-[10px] font-black uppercase tracking-wider">Código</span>
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+              {/* Code button */}
+              {!selectedTurma.isShared && selectedTurma.codigoAcesso && (
+                <button
+                  onClick={() => setShareWarningOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 active:scale-[0.98] transition-all"
+                >
+                  <Eye className="h-4 w-4 text-white/70" />
+                  <span className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em]">Código de Acesso da Turma</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -198,36 +174,25 @@ export default function TurmasList() {
               {otherTurmas.map((t, i) => {
                 const tCom = comunidades.find(c => c.id === t.comunidadeId)?.nome;
                 return (
-                  <div
-                    key={t.id}
-                    onClick={() => handleSelect(t.id)}
-                    className="shrink-0 relative overflow-hidden flex flex-col justify-between p-4 rounded-[1.5rem] bg-liturgical-paper border border-liturgical-green/15 shadow-sm hover:shadow-md hover:border-liturgical-green/30 active:scale-[0.97] cursor-pointer transition-all min-w-[160px] max-w-[200px] group"
-                    style={{ animationDelay: `${i * 80}ms` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-liturgical-green/[0.04] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div key={t.id} onClick={() => handleSelect(t.id)} className="shrink-0 relative overflow-hidden flex flex-col justify-between p-4 rounded-[1.5rem] bg-liturgical-paper border border-liturgical-green/15 shadow-sm hover:shadow-md hover:border-liturgical-green/30 active:scale-[0.97] cursor-pointer transition-all min-w-[160px] max-w-[200px] group" style={{ animationDelay: `${i * 80}ms` }}>
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-liturgical-green/[0.05] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative z-10">
                       <div className="flex items-center gap-1.5 mb-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-liturgical-green/40" />
-                        <span className="text-[8px] font-black text-liturgical-green/60 uppercase tracking-widest truncate">{t.isShared ? 'Partilhada' : 'Turma'}</span>
+                        <span className="text-[8px] font-black text-liturgical-green/60 uppercase tracking-widest">{t.isShared ? 'Partilhada' : 'Turma'}</span>
                       </div>
                       <h4 className="text-sm font-black text-foreground font-liturgical line-clamp-2 leading-tight group-hover:text-liturgical-green transition-colors">{t.nome}</h4>
                       {tCom && <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider mt-1 line-clamp-1">{tCom}</p>}
                     </div>
                     <div className="relative z-10 flex items-center justify-between mt-3 pt-2.5 border-t border-liturgical-green/8">
                       <span className="text-[9px] text-muted-foreground font-bold">{t.diaCatequese} • {t.ano}</span>
-                      <div className="w-6 h-6 rounded-full bg-white border border-liturgical-green/15 flex items-center justify-center text-liturgical-green/40 group-hover:text-liturgical-green group-hover:border-liturgical-green/40 transition-all">
-                        <Plus className="h-3.5 w-3.5 rotate-45" />
-                      </div>
+                      <Plus className="h-3.5 w-3.5 rotate-45 text-liturgical-green/30 group-hover:text-liturgical-green transition-colors" />
                     </div>
                   </div>
                 );
               })}
-
-              {/* Join with Code Card */}
-              <div
-                onClick={() => setJoinModalOpen(true)}
-                className="shrink-0 flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white border-2 border-dashed border-liturgical-green/25 hover:border-liturgical-green/50 hover:bg-liturgical-paper active:scale-[0.97] cursor-pointer transition-all gap-2 min-w-[140px] group"
-              >
+              {/* Join Card */}
+              <div onClick={() => setJoinModalOpen(true)} className="shrink-0 flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white border-2 border-dashed border-liturgical-green/25 hover:border-liturgical-green/50 hover:bg-liturgical-paper active:scale-[0.97] cursor-pointer transition-all gap-2 min-w-[140px] group">
                 <div className="w-10 h-10 rounded-2xl bg-liturgical-paper border border-liturgical-green/20 flex items-center justify-center text-liturgical-green group-hover:bg-liturgical-green group-hover:text-white transition-all duration-300">
                   <Link2 className="h-5 w-5" />
                 </div>
@@ -249,11 +214,9 @@ export default function TurmasList() {
                   <div className="absolute inset-[3px] rounded-[22px] border-2 border-white/40 z-20 pointer-events-none opacity-60" />
                   <div className={`relative flex flex-col items-center justify-between py-2 px-2.5 rounded-[22px] bg-white h-full bg-gradient-to-b ${mod.gradient} overflow-hidden text-center`}>
                     <div className="absolute -right-3 -top-3 opacity-[0.05] pointer-events-none group-hover:scale-125 group-hover:rotate-12 transition-transform duration-1000"><Icon className="w-16 h-16" /></div>
-                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 transition-transform group-hover:scale-110 duration-500", mod.color)}>
-                      <Icon className="h-4.5 w-4.5" />
-                    </div>
+                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg relative z-30 border-2 border-white/50 transition-transform group-hover:scale-110 duration-500", mod.color)}><Icon className="h-4.5 w-4.5" /></div>
                     {mod.hasAlert && (
-                      <div className="absolute top-2 right-2 flex flex-col items-center animate-pulse z-40" title={mod.alertTitle}>
+                      <div className="absolute top-2 right-2 flex flex-col items-center animate-pulse z-40">
                         <div className="w-5 h-5 bg-destructive border-[1.5px] border-white rounded-full flex items-center justify-center shadow-sm"><BellRing className="h-2.5 w-2.5 text-white animate-wiggle" /></div>
                         <span className="text-[6px] font-black uppercase text-destructive mt-[1px] tracking-tighter">Alerta!</span>
                       </div>
@@ -280,6 +243,54 @@ export default function TurmasList() {
           </button>
         </>
       )}
+
+      {/* ── CODE SECURITY WARNING ── */}
+      <AlertDialog open={shareWarningOpen} onOpenChange={setShareWarningOpen}>
+        <AlertDialogContent className="rounded-3xl max-w-sm p-0 overflow-hidden border-none shadow-2xl">
+          <div className="p-6 text-white text-center space-y-2" style={{ background: 'linear-gradient(135deg, #1B4D2E, #2D5A27)' }}>
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm"><Shield className="h-6 w-6" /></div>
+            <AlertDialogTitle className="text-xl font-black uppercase tracking-tight">Segurança</AlertDialogTitle>
+          </div>
+          <div className="p-6 space-y-6 bg-[#F8F9FE]">
+            <p className="text-sm text-foreground/80 leading-relaxed font-medium text-center">Ao compartilhar o código, outro catequista poderá ver e editar os dados desta turma e de seus catequizandos.</p>
+            <label className="flex items-start gap-3 cursor-pointer p-4 bg-white rounded-2xl border-2 border-liturgical-green/10 hover:border-liturgical-green/20 transition-all shadow-sm">
+              <input type="checkbox" className="mt-1 shrink-0 h-5 w-5 rounded border-gray-300 text-liturgical-green focus:ring-liturgical-green shadow-sm" checked={shareWarningAccepted} onChange={e => setShareWarningAccepted(e.target.checked)} />
+              <span className="text-[11px] font-bold text-foreground leading-snug">Estou ciente e me responsabilizo pelo compartilhamento destas informações.</span>
+            </label>
+            <div className="flex flex-col gap-2">
+              <AlertDialogAction disabled={!shareWarningAccepted} onClick={e => { if (!shareWarningAccepted) { e.preventDefault(); return; } setCodeVisible(true); setShareWarningOpen(false); setShareWarningAccepted(false); }} className="w-full h-12 rounded-xl font-black tracking-wide disabled:opacity-50" style={{ background: '#2D5A27' }}>
+                Revelar Código
+              </AlertDialogAction>
+              <AlertDialogCancel onClick={() => { setShareWarningOpen(false); setShareWarningAccepted(false); }} className="w-full h-12 rounded-xl font-bold border-none bg-transparent text-muted-foreground hover:bg-black/5">Cancelar</AlertDialogCancel>
+            </div>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── CODE REVEAL MODAL ── */}
+      <AlertDialog open={codeVisible} onOpenChange={setCodeVisible}>
+        <AlertDialogContent className="rounded-3xl max-w-sm p-0 overflow-hidden border-none shadow-2xl">
+          <div className="p-6 text-white text-center space-y-2 relative" style={{ background: 'linear-gradient(135deg, #1B4D2E, #2D5A27)' }}>
+            <button onClick={() => setCodeVisible(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg bg-white/20 text-white hover:bg-white/30 transition-colors"><X className="w-4 h-4" /></button>
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm"><Link2 className="h-6 w-6" /></div>
+            <AlertDialogTitle className="text-xl font-black uppercase tracking-tight">Código de Acesso</AlertDialogTitle>
+          </div>
+          <div className="p-6 space-y-6 bg-[#F8F9FE]">
+            <div className="py-4 px-4 bg-white rounded-2xl border-2 border-liturgical-green/10 text-center shadow-inner">
+              <span className="text-4xl font-black tracking-[0.4em]" style={{ color: '#2D5A27' }}>{selectedTurma?.codigoAcesso}</span>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-4 bg-white rounded-3xl border-4 border-liturgical-green/5 shadow-xl">
+                <QRCodeSVG value={selectedTurma?.codigoAcesso || ""} size={180} />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-center" style={{ color: '#2D5A27', opacity: 0.6 }}>Aponte a câmera para escanear</p>
+            </div>
+            <button onClick={() => { if (selectedTurma?.codigoAcesso) { navigator.clipboard.writeText(selectedTurma.codigoAcesso); toast.success("Código copiado!"); } }} className="w-full h-12 rounded-xl font-black flex items-center justify-center gap-2 text-white" style={{ background: '#2D5A27' }}>
+              <Copy className="h-4 w-4" /> Copiar Código
+            </button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <JoinTurmaModal open={joinModalOpen} onClose={() => setJoinModalOpen(false)} />
     </div>
