@@ -47,59 +47,59 @@ export default function TurmasList() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header - Premium iOS Style */}
-      <div className="flex flex-col gap-6 animate-fade-in">
-        <div className="flex items-center justify-between">
+    <div className="space-y-10">
+      {/* Header - Liturgical Style */}
+      <div className="flex flex-col gap-6 animate-fade-in text-center md:text-left">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black text-foreground tracking-tight">Turmas</h1>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Gerenciamento Geral</p>
+            <h1 className="text-4xl font-black text-foreground tracking-tight font-liturgical">Turmas</h1>
+            <div className="flex items-center justify-center md:justify-start gap-2">
+               <div className="h-[1px] w-8 bg-liturgical-gold/40" />
+               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">Comunidade de Fé</p>
+               <div className="h-[1px] w-8 bg-liturgical-gold/40" />
+            </div>
           </div>
           <button 
             onClick={() => navigate("/turmas/nova")} 
-            className="w-12 h-12 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center active:scale-90 transition-all group"
+            className="flex items-center gap-2 px-6 py-3 rounded-full bg-liturgical-gold text-white shadow-lg shadow-gold/20 active:scale-95 transition-all group font-bold text-sm"
           >
-            <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+            <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
+            Nova Turma
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center md:justify-start gap-3">
           <button
             onClick={() => setJoinModalOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-card border border-border/60 text-muted-foreground hover:bg-muted/50 transition-all active:scale-95 shadow-sm"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-liturgical-paper border liturgical-border text-liturgical-gold/80 hover:bg-white transition-all active:scale-95 shadow-sm"
           >
-            <Link2 className="h-4 w-4" /> Entrar com Código
+            <Link2 className="h-4 w-4" /> Ingressar com Código
           </button>
         </div>
       </div>
 
       {turmas.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-float-up">
-          <div className="w-20 h-20 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-inner">
-            <BookOpen className="h-10 w-10" />
+        <div className="flex flex-col items-center justify-center py-20 px-6 text-center animate-liturgical-float bg-liturgical-paper rounded-[3rem] border liturgical-border">
+          <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center text-liturgical-gold mb-6 shadow-xl border liturgical-border">
+            <BookOpen className="h-10 w-10 animate-sacred-rays" />
           </div>
-          <h3 className="text-xl font-black text-foreground mb-2">Nenhuma turma encontrada</h3>
-          <p className="text-sm text-muted-foreground max-w-[280px] leading-relaxed mb-8">
-            Você ainda não faz parte de nenhuma turma. Comece criando uma nova ou entrando com um código.
+          <h3 className="text-2xl font-black text-foreground mb-3 font-liturgical">Semeie a Palavra</h3>
+          <p className="text-sm text-muted-foreground max-w-[320px] leading-relaxed mb-10 italic">
+            "Ide por todo o mundo e pregai o Evangelho a toda criatura." <br/>
+            <span className="text-[10px] uppercase font-bold not-italic tracking-wider mt-2 block">— Marcos 16:15</span>
           </p>
-          <div className="flex flex-col w-full gap-3">
+          <div className="flex flex-col sm:flex-row w-full gap-4 max-w-md">
             <button
               onClick={() => navigate("/turmas/nova")}
-              className="w-full py-4 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
+              className="flex-1 py-4 rounded-full bg-liturgical-gold text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-gold/20 active:scale-95 transition-all"
             >
-              Criar Nova Turma
-            </button>
-            <button
-              onClick={() => setJoinModalOpen(true)}
-              className="w-full py-4 rounded-2xl bg-card border border-border/60 text-muted-foreground font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
-            >
-              Entrar com Código
+              Criar Primeira Turma
             </button>
           </div>
         </div>
       ) : (
-        <div className="space-y-8 pb-10">
-          {/* MAIN TURMA CARD - HERO STYLE */}
+        <div className="space-y-10 pb-16">
+          {/* MAIN TURMA CARD - SACRED HERO STYLE */}
           {mainTurma && (() => {
             const tEncontros = encontros.filter(e => e.turmaId === mainTurma.id);
             const tCatequizandos = catequizandos.filter(c => c.turmaId === mainTurma.id);
@@ -109,70 +109,87 @@ export default function TurmasList() {
             return (
               <div
                 onClick={() => navigate(`/turmas/${mainTurma.id}`)}
-                className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary via-primary/95 to-liturgical/90 shadow-[0_20px_50px_rgba(var(--primary),0.25)] animate-card-activate cursor-pointer group"
+                className="liturgical-frame overflow-hidden rounded-[2.5rem] cursor-pointer group animate-card-activate"
               >
-                {/* Visual Decorative Elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/10 rounded-full blur-3xl -ml-10 -mb-10 animate-sacred-rays" />
+                {/* Liturgical Rays Background */}
+                <div className="absolute inset-0 liturgical-rays-bg animate-sacred-rays opacity-50" />
                 
                 {/* Content Container */}
-                <div className="relative z-10 p-6 md:p-8 flex flex-col min-h-[220px]">
+                <div className="relative z-10 bg-liturgical-paper/40 backdrop-blur-[2px] p-8 md:p-10 flex flex-col min-h-[260px]">
+                  {/* Decorative Corners */}
+                  <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-liturgical-gold/30 rounded-tl-2xl" />
+                  <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-liturgical-gold/30 rounded-tr-2xl" />
+                  
                   {/* Top Badge Row */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20">
-                      <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                      <span className="text-[10px] font-black text-white uppercase tracking-widest">Turma Ativa</span>
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border liturgical-border shadow-sm">
+                      <div className="w-2 h-2 rounded-full bg-liturgical-gold animate-pulse" />
+                      <span className="text-[10px] font-black text-liturgical-gold uppercase tracking-widest">Turma Principal</span>
                     </div>
                     {mainTurma.isShared && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/20">
-                        <Link2 className="h-3 w-3 text-emerald-100" />
-                        <span className="text-[10px] font-black text-emerald-100 uppercase tracking-widest">Compartilhada</span>
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                        <Link2 className="h-3 w-3 text-emerald-700" />
+                        <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Partilhada</span>
                       </div>
                     )}
                   </div>
 
                   {/* Title Area */}
-                  <div className="mb-8">
-                    <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-2 group-hover:scale-[1.02] transition-transform duration-500 origin-left">
+                  <div className="mb-10 text-center">
+                    <h2 className="text-4xl font-black text-foreground tracking-tight leading-none mb-3 font-liturgical group-hover:scale-[1.03] transition-transform duration-700">
                       {mainTurma.nome}
-                      <span className="ml-2 text-white/50 text-xl font-bold">{mainTurma.ano}</span>
                     </h2>
-                    <div className="flex items-center gap-2 text-white/70">
-                      <p className="text-xs font-bold uppercase tracking-wider">{mainTurmaComunidade}</p>
-                      <span className="w-1 h-1 rounded-full bg-white/30" />
-                      <p className="text-xs font-medium">{mainTurma.diaCatequese} às {mainTurma.horario}</p>
+                    <div className="flex flex-col items-center gap-2">
+                       <p className="text-xs font-black text-liturgical-gold uppercase tracking-[0.25em]">{mainTurmaComunidade}</p>
+                       <div className="flex items-center gap-3 text-muted-foreground/80 mt-1">
+                          <span className="text-[11px] font-bold uppercase tracking-widest">{mainTurma.ano}</span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-liturgical-gold/30" />
+                          <span className="text-xs font-medium italic">{mainTurma.diaCatequese} às {mainTurma.horario}</span>
+                       </div>
                     </div>
                   </div>
 
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-auto">
-                    <div className="flex flex-col gap-1 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 group-hover:bg-white/15 transition-colors">
-                      <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">Encontros</span>
-                      <div className="flex items-center gap-2">
-                        <CalendarDays className="h-4 w-4 text-white/80" />
-                        <span className="text-lg font-black text-white">{tEncontros.length}</span>
+                  {/* Stats Row */}
+                  <div className="flex items-center justify-center gap-8 md:gap-12 mt-auto">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-md border liturgical-border flex items-center justify-center text-liturgical-gold group-hover:scale-110 transition-all">
+                        <CalendarDays className="h-5 w-5" />
+                      </div>
+                      <div className="text-center">
+                        <span className="block text-lg font-black text-foreground leading-none">{tEncontros.length}</span>
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Encontros</span>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-1 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 group-hover:bg-white/15 transition-colors">
-                      <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">Catequizandos</span>
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-white/80" />
-                        <span className="text-lg font-black text-white">{tCatequizandos.length}</span>
+                    
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="w-10 h-10 rounded-full bg-white shadow-md border liturgical-border flex items-center justify-center text-liturgical-gold group-hover:scale-110 transition-all">
+                        <Users className="h-5 w-5" />
+                      </div>
+                      <div className="text-center">
+                        <span className="block text-lg font-black text-foreground leading-none">{tCatequizandos.length}</span>
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Alunos</span>
                       </div>
                     </div>
+
                     {etapa && (
-                      <div className="col-span-2 flex flex-col gap-1 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 group-hover:bg-white/15 transition-colors">
-                        <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">Etapa Atual</span>
-                        <span className="text-sm font-black text-white line-clamp-1">{etapa.label}</span>
+                      <div className="hidden sm:flex flex-col items-center gap-1.5">
+                        <div className="w-10 h-10 rounded-full bg-white shadow-md border liturgical-border flex items-center justify-center text-liturgical-gold group-hover:scale-110 transition-all">
+                          <BookOpen className="h-5 w-5" />
+                        </div>
+                        <div className="text-center">
+                          <span className="block text-sm font-black text-foreground leading-none line-clamp-1">{etapa.label.split(' ')[0]}</span>
+                          <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Etapa</span>
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Bottom Action Bar */}
-                <div className="relative z-10 bg-white/10 backdrop-blur-xl border-t border-white/10 px-6 py-4 flex items-center justify-between group-hover:bg-white/20 transition-all">
-                  <span className="text-xs font-black text-white uppercase tracking-widest">Acessar Painel Completo</span>
-                  <div className="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <div className="relative z-10 bg-white/60 backdrop-blur-md border-t liturgical-border px-8 py-5 flex items-center justify-between group-hover:bg-white/90 transition-all">
+                  <span className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">Entrar no Painel de Catequese</span>
+                  <div className="flex items-center gap-2 text-liturgical-gold">
+                    <span className="text-xs font-black uppercase tracking-widest">Acessar</span>
                     <Plus className="h-5 w-5 rotate-45" />
                   </div>
                 </div>
@@ -180,19 +197,20 @@ export default function TurmasList() {
             );
           })()}
 
-          {/* SECONDARY TURMAS - IOS PLATTER STYLE */}
+          {/* SECONDARY TURMAS - SACRED PLATTER STYLE */}
           {secondaryTurmas.length > 0 && (
-            <div className="space-y-4 pt-6">
-              <div className="flex items-center justify-between px-2">
-                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">
-                  Outras Turmas
-                </h3>
-                <span className="px-2 py-0.5 rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
-                  {secondaryTurmas.length} {secondaryTurmas.length === 1 ? 'turma' : 'turmas'}
+            <div className="space-y-6 pt-6">
+              <div className="flex items-center justify-between px-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-[1px] w-6 bg-liturgical-gold/30" />
+                  <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.25em]">Outros Rebanhos</h3>
+                </div>
+                <span className="px-3 py-1 rounded-full bg-liturgical-paper border liturgical-border text-[10px] font-bold text-liturgical-gold/70">
+                  {secondaryTurmas.length}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {secondaryTurmas.map((turma, i) => {
                   const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
                   const turmaComunidade = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
@@ -201,42 +219,45 @@ export default function TurmasList() {
                     <div
                       key={turma.id}
                       onClick={() => handleSelectSecondary(turma.id)}
-                      className="group relative flex flex-col p-5 rounded-[2rem] bg-card border border-border/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer animate-fade-in"
-                      style={{ animationDelay: `${i * 100}ms` }}
+                      className="group relative flex flex-col p-6 rounded-[2rem] bg-liturgical-paper border liturgical-border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 cursor-pointer animate-liturgical-float"
+                      style={{ animationDelay: `${i * 150}ms` }}
                     >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-500">
-                          <UsersRound className="h-6 w-6 text-primary/70" />
+                      {/* Inner border decoration */}
+                      <div className="absolute inset-2 border border-liturgical-gold/5 rounded-[1.6rem] pointer-events-none" />
+                      
+                      <div className="flex items-start justify-between mb-5 relative z-10">
+                        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border liturgical-border flex items-center justify-center group-hover:scale-110 transition-all duration-700">
+                          <UsersRound className="h-6 w-6 text-liturgical-gold/80" />
                         </div>
                         {turma.isShared && (
-                          <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/10">
+                          <div className="p-1.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm">
                             <Link2 className="h-3.5 w-3.5" />
                           </div>
                         )}
                       </div>
 
-                      <div className="space-y-1">
-                        <h4 className="text-lg font-black text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                      <div className="space-y-1 relative z-10">
+                        <h4 className="text-xl font-black text-foreground font-liturgical group-hover:text-liturgical-gold transition-colors line-clamp-1">
                           {turma.nome}
                         </h4>
                         {turmaComunidade && (
-                          <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest line-clamp-1">
+                          <p className="text-[9px] font-black text-liturgical-gold/60 uppercase tracking-[0.2em] line-clamp-1">
                             {turmaComunidade}
                           </p>
                         )}
-                        <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
-                          <CalendarDays className="h-3.5 w-3.5" />
+                        <div className="flex items-center gap-2 pt-2 text-[11px] text-muted-foreground italic font-medium">
+                          <CalendarDays className="h-3.5 w-3.5 text-liturgical-gold/40" />
                           <span>{turma.diaCatequese} • {turma.horario}</span>
                         </div>
                       </div>
 
-                      <div className="mt-5 flex items-center justify-between pt-4 border-t border-border/50">
+                      <div className="mt-6 flex items-center justify-between pt-4 border-t border-liturgical-gold/10 relative z-10">
                         {etapa ? (
                           <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                             {etapa.label.split(' ')[0]}
                           </span>
                         ) : <div />}
-                        <button className="text-[10px] font-black text-primary uppercase tracking-widest px-3 py-1.5 rounded-full bg-primary/5 hover:bg-primary/10 transition-colors">
+                        <button className="text-[10px] font-black text-liturgical-gold uppercase tracking-widest px-4 py-2 rounded-full bg-white border liturgical-border hover:bg-liturgical-gold hover:text-white transition-all shadow-sm">
                           Selecionar
                         </button>
                       </div>

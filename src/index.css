@@ -378,6 +378,14 @@
   animation: liturgical-float 4s ease-in-out infinite;
 }
 
+.bg-liturgical-gold {
+  background-color: #D4AF37;
+}
+
+.border-liturgical-gold {
+  border-color: #D4AF37;
+}
+
 /* ── PREMIUN LITURGICAL THEMES ── */
 .liturgical-frame {
   position: relative;
