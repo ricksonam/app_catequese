@@ -138,6 +138,16 @@ export default {
         "shimmer": {
           "to": { backgroundPosition: "200% center" },
         },
+        "card-float": {
+          "0%, 100%": { transform: "translateY(0px)", boxShadow: "0 8px 30px rgba(0,0,0,0.15)" },
+          "50%": { transform: "translateY(-8px)", boxShadow: "0 20px 40px rgba(0,0,0,0.22)" },
+        },
+        "card-select": {
+          "0%": { transform: "scale(1)" },
+          "30%": { transform: "scale(0.94)" },
+          "60%": { transform: "scale(1.04)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -153,6 +163,8 @@ export default {
         "bounce-horizontal": "bounce-horizontal 1.5s ease-in-out infinite",
         "pulse-subtle": "pulse-subtle 3s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "card-float": "card-float 3.5s ease-in-out infinite",
+        "card-select": "card-select 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
       },
     },
   },
