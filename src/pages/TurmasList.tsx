@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useComunidades, useAtividades, useReunioes, useMissoesFamilia } from "@/hooks/useSupabaseData";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { cn } from "@/lib/utils";
-import { BookOpen, Plus, CalendarDays, Users, Link2, UsersRound, Settings, ListChecks, GitBranch, Heart, PieChart, BellRing } from "lucide-react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, UsersRound, Settings, ListChecks, GitBranch, Heart, PieChart, BellRing, Eye, EyeOff, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 export default function TurmasList() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function TurmasList() {
   const { data: comunidades = [] } = useComunidades();
   const [selectedTurmaId, setSelectedTurmaId] = useState<string | null>(null);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [codeVisible, setCodeVisible] = useState(false);
 
   useEffect(() => {
     if (turmas.length > 0 && !selectedTurmaId) {
@@ -20,6 +22,13 @@ export default function TurmasList() {
       localStorage.setItem("ivc_selected_turma", id);
     }
   }, [turmas, selectedTurmaId]);
+
+  // Reset code visibility when switching turma
+  const handleSelect = (id: string) => {
+    setSelectedTurmaId(id);
+    setCodeVisible(false);
+    localStorage.setItem("ivc_selected_turma", id);
+  };
 
   const selectedTurma = turmas.find(t => t.id === selectedTurmaId) || turmas[0];
   const otherTurmas = turmas.filter(t => t.id !== selectedTurma?.id);
@@ -49,11 +58,6 @@ export default function TurmasList() {
     return catequizandos.filter(c => !past.some(e => e.presencas.includes(c.id) || (e.justificativas && e.justificativas[c.id]))).length;
   }, [encontros, catequizandos]);
 
-  const handleSelect = (id: string) => {
-    setSelectedTurmaId(id);
-    localStorage.setItem("ivc_selected_turma", id);
-  };
-
   const modulos = selectedTurma ? [
     { label: "Encontros", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${selectedTurma.id}/encontros`, color: "bg-primary text-white", bgGradient: "from-primary/60 via-primary/30 to-white", gradient: "from-primary/15 to-white", textColor: "text-blue-700", hasAlert: encontrosEmAlerta > 0, alertTitle: `${encontrosEmAlerta} pendente(s)` },
     { label: "Catequizandos", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${selectedTurma.id}/catequizandos`, color: "bg-emerald-600 text-white", bgGradient: "from-emerald-500/60 via-emerald-500/30 to-white", gradient: "from-emerald-500/15 to-white", textColor: "text-emerald-700", hasAlert: catequizandosEmAlerta > 0, alertTitle: `${catequizandosEmAlerta} com faltas` },
@@ -77,14 +81,9 @@ export default function TurmasList() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in">
         <h1 className="text-2xl font-black text-foreground tracking-tight">Catequese</h1>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setJoinModalOpen(true)} className="w-9 h-9 flex items-center justify-center rounded-xl border border-black/5 bg-white shadow-sm text-liturgical-green active:scale-95 transition-all">
-            <Link2 className="h-4 w-4" />
-          </button>
-          <button onClick={() => navigate("/turmas/nova")} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-liturgical-green text-white shadow-md active:scale-95 transition-all font-bold text-xs uppercase tracking-widest">
-            <Plus className="h-3.5 w-3.5" /> Nova
-          </button>
-        </div>
+        <button onClick={() => navigate("/turmas/nova")} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-liturgical-green text-white shadow-md active:scale-95 transition-all font-bold text-xs uppercase tracking-widest">
+          <Plus className="h-3.5 w-3.5" /> Nova Turma
+        </button>
       </div>
 
       {turmas.length === 0 ? (
@@ -103,62 +102,144 @@ export default function TurmasList() {
         </div>
       ) : selectedTurma && (
         <>
-          {/* Active Turma Card */}
-          <div className="relative overflow-hidden rounded-3xl bg-liturgical-paper border border-liturgical-green/15 shadow-md animate-fade-in">
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-liturgical-green/[0.05]" />
-            <div className="relative z-10 p-5">
-              <div className="flex items-start justify-between mb-3">
+          {/* ── MAIN TURMA CARD ── */}
+          <div className="relative overflow-hidden rounded-[2rem] bg-liturgical-paper border border-liturgical-green/20 shadow-lg animate-fade-in">
+            {/* Subtle rays background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-liturgical-green/[0.04] via-transparent to-transparent" />
+            <div className="absolute -right-6 -top-6 w-32 h-32 text-liturgical-green/[0.04] pointer-events-none">
+              <UsersRound className="w-full h-full" />
+            </div>
+
+            <div className="relative z-10 p-6">
+              {/* Top row: name + actions */}
+              <div className="flex items-start justify-between mb-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-2 h-2 rounded-full bg-liturgical-green animate-pulse" />
-                    <span className="text-[9px] font-black text-liturgical-green uppercase tracking-widest">Turma Ativa</span>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-2 h-2 rounded-full bg-liturgical-green animate-pulse shrink-0" />
+                    <span className="text-[9px] font-black text-liturgical-green uppercase tracking-[0.25em]">Turma Principal</span>
+                    {selectedTurma.isShared && (
+                      <span className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">Partilhada</span>
+                    )}
                   </div>
-                  <h2 className="text-xl font-black text-foreground font-liturgical leading-tight truncate">{selectedTurma.nome}</h2>
-                  {(() => { const com = comunidades.find(c => c.id === selectedTurma.comunidadeId); return com ? <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{com.nome}</p> : null; })()}
+                  <h2 className="text-2xl font-black text-foreground font-liturgical leading-tight">{selectedTurma.nome}</h2>
+                  {(() => {
+                    const com = comunidades.find(c => c.id === selectedTurma.comunidadeId);
+                    return com ? <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{com.nome}</p> : null;
+                  })()}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
-                  <span className="text-xs font-black text-muted-foreground/50 bg-black/5 px-2 py-1 rounded-lg">{selectedTurma.ano}</span>
+                  <span className="text-xs font-black text-muted-foreground/40 bg-black/5 px-2 py-1 rounded-lg">{selectedTurma.ano}</span>
                   <button onClick={() => navigate(`/turmas/${selectedTurma.id}`)} className="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-black/5 shadow-sm text-muted-foreground hover:text-liturgical-green transition-colors active:scale-90">
                     <Settings className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-bold mb-4">
-                <span>{selectedTurma.diaCatequese} • {selectedTurma.horario}</span>
-                {selectedTurma.etapa && <span className="text-liturgical-green/70">{selectedTurma.etapa}</span>}
+
+              {/* Info row */}
+              <div className="flex items-center gap-2 flex-wrap text-[10px] text-muted-foreground font-bold mb-5">
+                <span className="flex items-center gap-1">
+                  <CalendarDays className="h-3 w-3 text-liturgical-green/50" />
+                  {selectedTurma.diaCatequese} • {selectedTurma.horario}
+                </span>
+                {selectedTurma.etapa && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-liturgical-green/20" />
+                    <span className="text-liturgical-green/60 font-black">{selectedTurma.etapa}</span>
+                  </>
+                )}
               </div>
-              <div className="flex items-center gap-2 pt-3 border-t border-black/5">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-black/5 shadow-sm">
-                  <UsersRound className="h-3 w-3 text-liturgical-green" />
-                  <span className="text-[10px] font-black text-foreground">{catequizandos.length}</span>
-                  <span className="text-[9px] text-muted-foreground">alunos</span>
+
+              {/* Stats + Code row */}
+              <div className="flex items-center gap-2 pt-4 border-t border-liturgical-green/8">
+                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-black/5 shadow-sm">
+                  <UsersRound className="h-3.5 w-3.5 text-liturgical-green" />
+                  <span className="text-sm font-black text-foreground">{catequizandos.length}</span>
+                  <span className="text-[9px] text-muted-foreground font-bold">catequizandos</span>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-black/5 shadow-sm">
-                  <CalendarDays className="h-3 w-3 text-liturgical-green" />
-                  <span className="text-[10px] font-black text-foreground">{encontros.length}</span>
-                  <span className="text-[9px] text-muted-foreground">encontros</span>
+                <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-black/5 shadow-sm">
+                  <CalendarDays className="h-3.5 w-3.5 text-liturgical-green" />
+                  <span className="text-sm font-black text-foreground">{encontros.length}</span>
+                  <span className="text-[9px] text-muted-foreground font-bold">encontros</span>
                 </div>
+
+                {/* Code chip */}
+                {!selectedTurma.isShared && selectedTurma.codigoAcesso && (
+                  <button
+                    onClick={() => {
+                      if (codeVisible) {
+                        navigator.clipboard.writeText(selectedTurma.codigoAcesso!);
+                        toast.success("Código copiado!");
+                      } else {
+                        setCodeVisible(true);
+                      }
+                    }}
+                    className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-liturgical-green/10 border border-liturgical-green/20 text-liturgical-green hover:bg-liturgical-green hover:text-white transition-all active:scale-95 shadow-sm"
+                  >
+                    {codeVisible ? (
+                      <>
+                        <Copy className="h-3.5 w-3.5 shrink-0" />
+                        <span className="font-mono font-black text-xs tracking-widest">{selectedTurma.codigoAcesso}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="h-3.5 w-3.5" />
+                        <span className="text-[10px] font-black uppercase tracking-wider">Código</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Other Turmas Horizontal Scroll */}
-          {otherTurmas.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-1 animate-fade-in" style={{ scrollbarWidth: 'none' }}>
-              {otherTurmas.map(t => (
-                <button key={t.id} onClick={() => handleSelect(t.id)} className="shrink-0 flex flex-col items-start px-4 py-3 rounded-2xl bg-white border border-black/5 shadow-sm hover:border-liturgical-green/30 active:scale-95 transition-all text-left min-w-[130px]">
-                  <span className="text-[11px] font-black text-foreground leading-tight line-clamp-1">{t.nome}</span>
-                  <span className="text-[9px] text-muted-foreground mt-0.5">{t.diaCatequese} • {t.ano}</span>
-                </button>
-              ))}
-              <button onClick={() => setJoinModalOpen(true)} className="shrink-0 flex flex-col items-center justify-center px-4 py-3 rounded-2xl bg-liturgical-paper border-2 border-dashed border-liturgical-green/30 hover:border-liturgical-green/60 active:scale-95 transition-all gap-1 min-w-[80px]">
-                <Link2 className="h-4 w-4 text-liturgical-green/60" />
-                <span className="text-[9px] font-black text-liturgical-green/60 uppercase tracking-wider whitespace-nowrap">+ Código</span>
-              </button>
+          {/* ── SECONDARY TURMAS + JOIN CARD ── */}
+          {(otherTurmas.length > 0) && (
+            <div className="flex gap-3 overflow-x-auto pb-1 animate-fade-in" style={{ scrollbarWidth: 'none' }}>
+              {otherTurmas.map((t, i) => {
+                const tCom = comunidades.find(c => c.id === t.comunidadeId)?.nome;
+                return (
+                  <div
+                    key={t.id}
+                    onClick={() => handleSelect(t.id)}
+                    className="shrink-0 relative overflow-hidden flex flex-col justify-between p-4 rounded-[1.5rem] bg-liturgical-paper border border-liturgical-green/15 shadow-sm hover:shadow-md hover:border-liturgical-green/30 active:scale-[0.97] cursor-pointer transition-all min-w-[160px] max-w-[200px] group"
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-liturgical-green/[0.04] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-liturgical-green/40" />
+                        <span className="text-[8px] font-black text-liturgical-green/60 uppercase tracking-widest truncate">{t.isShared ? 'Partilhada' : 'Turma'}</span>
+                      </div>
+                      <h4 className="text-sm font-black text-foreground font-liturgical line-clamp-2 leading-tight group-hover:text-liturgical-green transition-colors">{t.nome}</h4>
+                      {tCom && <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider mt-1 line-clamp-1">{tCom}</p>}
+                    </div>
+                    <div className="relative z-10 flex items-center justify-between mt-3 pt-2.5 border-t border-liturgical-green/8">
+                      <span className="text-[9px] text-muted-foreground font-bold">{t.diaCatequese} • {t.ano}</span>
+                      <div className="w-6 h-6 rounded-full bg-white border border-liturgical-green/15 flex items-center justify-center text-liturgical-green/40 group-hover:text-liturgical-green group-hover:border-liturgical-green/40 transition-all">
+                        <Plus className="h-3.5 w-3.5 rotate-45" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Join with Code Card */}
+              <div
+                onClick={() => setJoinModalOpen(true)}
+                className="shrink-0 flex flex-col items-center justify-center p-4 rounded-[1.5rem] bg-white border-2 border-dashed border-liturgical-green/25 hover:border-liturgical-green/50 hover:bg-liturgical-paper active:scale-[0.97] cursor-pointer transition-all gap-2 min-w-[140px] group"
+              >
+                <div className="w-10 h-10 rounded-2xl bg-liturgical-paper border border-liturgical-green/20 flex items-center justify-center text-liturgical-green group-hover:bg-liturgical-green group-hover:text-white transition-all duration-300">
+                  <Link2 className="h-5 w-5" />
+                </div>
+                <div className="text-center">
+                  <p className="text-[11px] font-black text-foreground font-liturgical leading-tight">Entrar na Turma</p>
+                  <p className="text-[8px] font-bold text-liturgical-green/60 uppercase tracking-wider mt-0.5">com código</p>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Modules Grid */}
+          {/* ── MODULES GRID ── */}
           <div className="grid grid-cols-2 gap-3">
             {modulos.map((mod, i) => {
               const Icon = mod.icon;
@@ -178,12 +259,10 @@ export default function TurmasList() {
                       </div>
                     )}
                     <div className="relative z-30 flex-1 flex flex-col items-center justify-center w-full min-h-0">
-                      <div className="flex flex-col items-center justify-center mb-0.5">
-                        <h3 className="text-[12px] font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
-                        {isPlan && <p className="text-[7px] text-muted-foreground leading-tight mt-0.5 px-1 font-medium line-clamp-1">Conteúdos e etapas</p>}
-                      </div>
+                      <h3 className="text-[12px] font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors mb-0.5">{mod.label}</h3>
+                      {isPlan && <p className="text-[7px] text-muted-foreground leading-tight px-1 font-medium line-clamp-1">Conteúdos e etapas</p>}
                       {(mod.count !== null || isPlan) && (
-                        <div className={cn("mt-1 flex flex-col items-center justify-center min-w-[65px] transition-colors mx-auto", mod.textColor)}>
+                        <div className={cn("mt-1 flex flex-col items-center justify-center min-w-[65px]", mod.textColor)}>
                           <span className={cn("font-black leading-none", isPlan ? "text-[9px]" : "text-base")}>{isPlan ? (selectedTurma.etapa || "N/A") : mod.count}</span>
                           <span className="text-[7px] font-black uppercase tracking-wider mt-0.5 opacity-80">{isPlan ? "Etapa Atual" : (mod.count !== 1 ? `${mod.unit}s` : mod.unit)}</span>
                         </div>
