@@ -47,136 +47,203 @@ export default function TurmasList() {
   }
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="flex flex-col items-center gap-3 animate-fade-in">
-        <h1 className="text-xl font-bold text-foreground">Turmas</h1>
-        <div className="flex items-center justify-between w-full">
+    <div className="space-y-8">
+      {/* Header - Premium iOS Style */}
+      <div className="flex flex-col gap-6 animate-fade-in">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-black text-foreground tracking-tight">Turmas</h1>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Gerenciamento Geral</p>
+          </div>
+          <button 
+            onClick={() => navigate("/turmas/nova")} 
+            className="w-12 h-12 rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center active:scale-90 transition-all group"
+          >
+            <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setJoinModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all active:scale-95"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-card border border-border/60 text-muted-foreground hover:bg-muted/50 transition-all active:scale-95 shadow-sm"
           >
-            <Link2 className="h-3.5 w-3.5" /> Entrar com Código
-          </button>
-          <button onClick={() => navigate("/turmas/nova")} className="action-btn-sm">
-            <Plus className="h-4 w-4" /> Nova
+            <Link2 className="h-4 w-4" /> Entrar com Código
           </button>
         </div>
       </div>
 
       {turmas.length === 0 ? (
-        <div className="empty-state animate-float-up">
-          <div className="icon-box bg-primary/10 text-primary mx-auto mb-3"><BookOpen className="h-6 w-6" /></div>
-          <h3 className="font-bold text-foreground mb-1">Nenhuma turma cadastrada</h3>
-          <p className="text-sm text-muted-foreground mb-4">Crie sua primeira turma ou entre com um código compartilhado.</p>
-          <button
-            onClick={() => setJoinModalOpen(true)}
-            className="flex items-center gap-2 mx-auto px-4 py-2 rounded-xl text-sm font-black bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 hover:bg-emerald-500/25 transition-all active:scale-95"
-          >
-            <Link2 className="h-4 w-4" /> Entrar com Código
-          </button>
+        <div className="flex flex-col items-center justify-center py-16 px-6 text-center animate-float-up">
+          <div className="w-20 h-20 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-inner">
+            <BookOpen className="h-10 w-10" />
+          </div>
+          <h3 className="text-xl font-black text-foreground mb-2">Nenhuma turma encontrada</h3>
+          <p className="text-sm text-muted-foreground max-w-[280px] leading-relaxed mb-8">
+            Você ainda não faz parte de nenhuma turma. Comece criando uma nova ou entrando com um código.
+          </p>
+          <div className="flex flex-col w-full gap-3">
+            <button
+              onClick={() => navigate("/turmas/nova")}
+              className="w-full py-4 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
+            >
+              Criar Nova Turma
+            </button>
+            <button
+              onClick={() => setJoinModalOpen(true)}
+              className="w-full py-4 rounded-2xl bg-card border border-border/60 text-muted-foreground font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
+            >
+              Entrar com Código
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="space-y-6">
-          {/* MAIN TURMA CARD */}
+        <div className="space-y-8 pb-10">
+          {/* MAIN TURMA CARD - HERO STYLE */}
           {mainTurma && (() => {
             const tEncontros = encontros.filter(e => e.turmaId === mainTurma.id);
             const tCatequizandos = catequizandos.filter(c => c.turmaId === mainTurma.id);
             const etapa = ETAPAS_CATEQUESE.find(e => e.id === mainTurma.etapa);
             const mainTurmaComunidade = comunidades.find(c => c.id === mainTurma.comunidadeId)?.nome || "Comunidade não informada";
+            
             return (
               <div
                 onClick={() => navigate(`/turmas/${mainTurma.id}`)}
-                className="relative p-[2px] rounded-2xl bg-gradient-to-br from-[hsl(var(--gold))]/60 via-[hsl(var(--liturgical))]/40 to-primary/40 shadow-[0_12px_40px_rgb(0,0,0,0.08)] hover:shadow-[0_24px_60px_rgb(0,0,0,0.15)] animate-float-up transition-all duration-300 hover:-translate-y-2 cursor-pointer group"
+                className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary via-primary/95 to-liturgical/90 shadow-[0_20px_50px_rgba(var(--primary),0.25)] animate-card-activate cursor-pointer group"
               >
-                <div className="absolute inset-[3px] rounded-xl border border-white/50 dark:border-white/10 z-20 pointer-events-none opacity-60 mix-blend-overlay" />
-                <div className="relative flex flex-col px-3 py-2.5 rounded-[14px] bg-card w-full h-full overflow-hidden">
-                  <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
-                    <UsersRound className="w-24 h-24 text-primary" />
-                  </div>
-                  {mainTurma.isShared && (
-                    <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest">
-                      <Link2 className="h-2 w-2" /> Compartilhada
+                {/* Visual Decorative Elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gold/10 rounded-full blur-3xl -ml-10 -mb-10 animate-sacred-rays" />
+                
+                {/* Content Container */}
+                <div className="relative z-10 p-6 md:p-8 flex flex-col min-h-[220px]">
+                  {/* Top Badge Row */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/20">
+                      <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest">Turma Ativa</span>
                     </div>
-                  )}
-                  <div className="flex flex-col items-center justify-center mb-3 relative z-30 text-center mt-1">
-                    <div className="w-10 h-10 rounded-[14px] bg-gradient-to-tr from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shrink-0 shadow-md mb-2.5 group-hover:scale-110 transition-transform duration-500">
-                      <UsersRound className="h-5 w-5 text-primary animate-bounce-subtle" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary mb-1 shadow-sm border border-primary/10">
-                         <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                         <span className="text-[8px] font-black uppercase tracking-widest">Turma Principal</span>
+                    {mainTurma.isShared && (
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/20">
+                        <Link2 className="h-3 w-3 text-emerald-100" />
+                        <span className="text-[10px] font-black text-emerald-100 uppercase tracking-widest">Compartilhada</span>
                       </div>
-                      <h3 className="text-base font-black text-foreground tracking-tight group-hover:text-primary transition-colors">
-                        {mainTurma.nome} <span className="opacity-40 font-bold ml-0.5">— {mainTurma.ano}</span>
-                      </h3>
-                      <p className="text-[9px] font-black text-primary/60 uppercase tracking-widest leading-none mt-1">{mainTurmaComunidade}</p>
-                      <p className="text-[11px] text-muted-foreground font-medium pt-1">{mainTurma.diaCatequese} • {mainTurma.horario}</p>
+                    )}
+                  </div>
+
+                  {/* Title Area */}
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-2 group-hover:scale-[1.02] transition-transform duration-500 origin-left">
+                      {mainTurma.nome}
+                      <span className="ml-2 text-white/50 text-xl font-bold">{mainTurma.ano}</span>
+                    </h2>
+                    <div className="flex items-center gap-2 text-white/70">
+                      <p className="text-xs font-bold uppercase tracking-wider">{mainTurmaComunidade}</p>
+                      <span className="w-1 h-1 rounded-full bg-white/30" />
+                      <p className="text-xs font-medium">{mainTurma.diaCatequese} às {mainTurma.horario}</p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center gap-1.5 flex-wrap relative z-30">
-                    <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-lg border border-primary/10 shadow-sm">
-                      <CalendarDays className="h-3 w-3" /><span>{tEncontros.length} enc.</span>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-auto">
+                    <div className="flex flex-col gap-1 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 group-hover:bg-white/15 transition-colors">
+                      <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">Encontros</span>
+                      <div className="flex items-center gap-2">
+                        <CalendarDays className="h-4 w-4 text-white/80" />
+                        <span className="text-lg font-black text-white">{tEncontros.length}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/10 shadow-sm">
-                      <Users className="h-3 w-3" /><span>{tCatequizandos.length} cateq.</span>
+                    <div className="flex flex-col gap-1 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 group-hover:bg-white/15 transition-colors">
+                      <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">Catequizandos</span>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-white/80" />
+                        <span className="text-lg font-black text-white">{tCatequizandos.length}</span>
+                      </div>
                     </div>
-                    {etapa && <span className="text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 shadow-sm">{etapa.label}</span>}
+                    {etapa && (
+                      <div className="col-span-2 flex flex-col gap-1 p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 group-hover:bg-white/15 transition-colors">
+                        <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">Etapa Atual</span>
+                        <span className="text-sm font-black text-white line-clamp-1">{etapa.label}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-3 w-full bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors flex items-center justify-center z-30 relative shadow-sm border border-primary/10">
-                     Acessar Painel
+                </div>
+
+                {/* Bottom Action Bar */}
+                <div className="relative z-10 bg-white/10 backdrop-blur-xl border-t border-white/10 px-6 py-4 flex items-center justify-between group-hover:bg-white/20 transition-all">
+                  <span className="text-xs font-black text-white uppercase tracking-widest">Acessar Painel Completo</span>
+                  <div className="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Plus className="h-5 w-5 rotate-45" />
                   </div>
                 </div>
               </div>
             );
           })()}
 
-          {/* SECONDARY TURMAS */}
+          {/* SECONDARY TURMAS - IOS PLATTER STYLE */}
           {secondaryTurmas.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-border/50">
-               <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest pl-2">
-                 Outras Turmas
-               </h3>
-               <div className="grid grid-cols-2 gap-3">
-                 {secondaryTurmas.map((turma, i) => {
-                   const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
-                   const turmaComunidade = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
-                   return (
-                     <div
-                       key={turma.id}
-                       onClick={() => handleSelectSecondary(turma.id)}
-                       className="relative p-3 rounded-2xl bg-card border border-border/50 shadow-[0_4px_15px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_25px_rgb(0,0,0,0.08)] hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 active:scale-95 cursor-pointer flex flex-col justify-between animate-fade-in group"
-                       style={{ animationDelay: `${i * 50}ms` }}
-                     >
-                        <div className="absolute top-2 right-2 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform">
-                           <UsersRound className="w-12 h-12" />
+            <div className="space-y-4 pt-6">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest">
+                  Outras Turmas
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
+                  {secondaryTurmas.length} {secondaryTurmas.length === 1 ? 'turma' : 'turmas'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {secondaryTurmas.map((turma, i) => {
+                  const etapa = ETAPAS_CATEQUESE.find(e => e.id === turma.etapa);
+                  const turmaComunidade = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
+                  
+                  return (
+                    <div
+                      key={turma.id}
+                      onClick={() => handleSelectSecondary(turma.id)}
+                      className="group relative flex flex-col p-5 rounded-[2rem] bg-card border border-border/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer animate-fade-in"
+                      style={{ animationDelay: `${i * 100}ms` }}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-500">
+                          <UsersRound className="h-6 w-6 text-primary/70" />
                         </div>
                         {turma.isShared && (
-                          <div className="absolute top-2 left-2 z-30 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest">
-                            <Link2 className="h-2.5 w-2.5" /> Comp.
+                          <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/10">
+                            <Link2 className="h-3.5 w-3.5" />
                           </div>
                         )}
-                        <div className="space-y-0.5 relative z-10 text-center flex flex-col items-center mt-3">
-                           <h4 className="text-sm font-black text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                             {turma.nome}
-                           </h4>
-                           {turmaComunidade && (
-                             <p className="text-[8px] font-black text-primary/50 uppercase tracking-widest line-clamp-1">{turmaComunidade}</p>
-                           )}
-                           <p className="text-[10px] text-muted-foreground font-medium truncate pt-0.5">
-                             {turma.diaCatequese} • {turma.horario}
-                           </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <h4 className="text-lg font-black text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          {turma.nome}
+                        </h4>
+                        {turmaComunidade && (
+                          <p className="text-[10px] font-bold text-primary/60 uppercase tracking-widest line-clamp-1">
+                            {turmaComunidade}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
+                          <CalendarDays className="h-3.5 w-3.5" />
+                          <span>{turma.diaCatequese} • {turma.horario}</span>
                         </div>
-                        <div className="mt-3 relative z-10 flex justify-center">
-                           <span className="inline-flex items-center justify-center px-2.5 py-1.5 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase tracking-widest">
-                             Tornar Principal
-                           </span>
-                        </div>
-                     </div>
-                   );
-                 })}
-               </div>
+                      </div>
+
+                      <div className="mt-5 flex items-center justify-between pt-4 border-t border-border/50">
+                        {etapa ? (
+                          <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                            {etapa.label.split(' ')[0]}
+                          </span>
+                        ) : <div />}
+                        <button className="text-[10px] font-black text-primary uppercase tracking-widest px-3 py-1.5 rounded-full bg-primary/5 hover:bg-primary/10 transition-colors">
+                          Selecionar
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
