@@ -195,21 +195,26 @@ export default function EncontroDetail() {
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           
-          <div className="flex items-center gap-2">
-            <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20 group shadow-sm">
-              <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-            </button>
-            <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
-              <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-            </button>
+          {/* Edit/Delete icons removed from here */}
 
-          </div>
         </div>
         
         <div className="flex flex-col items-center w-full px-6 mb-4">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full mb-3 shadow-sm border border-primary/10">Tema do Encontro</p>
           <h1 className="text-xl font-black text-foreground leading-tight text-center break-words">{encontro.tema}</h1>
           <p className="text-[10px] font-bold text-muted-foreground mt-1.5 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
+        </div>
+
+        {/* Edit/Delete Buttons positioned above grid */}
+        <div className="flex items-center justify-center gap-3 mb-4 animate-float-up" style={{ animationDelay: '50ms' }}>
+          <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group">
+            <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
+          </button>
+          <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="flex items-center gap-2 px-4 py-2 rounded-xl text-destructive bg-white hover:bg-destructive/5 transition-all active:scale-95 border-2 border-destructive/20 shadow-sm group">
+            <Trash2 className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Excluir</span>
+          </button>
         </div>
       </div>
 
@@ -230,11 +235,11 @@ export default function EncontroDetail() {
         </button>
         
         {/* Presença */}
-        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-emerald-600/20 bg-emerald-500/10 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-orange-600/30 bg-orange-500/15 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
            <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
-             <Users className="h-4 w-4 text-emerald-600" />
+             <Users className="h-4 w-4 text-orange-700" />
            </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Presença</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-orange-800">Presença</span>
         </button>
 
         {/* Avaliar */}

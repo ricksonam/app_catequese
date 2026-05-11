@@ -97,9 +97,7 @@ export default function EncontrosList() {
 
   return (
     <div className="space-y-5 pb-10">
-      {/* Header Compacto Reorganizado */}
       <div className="space-y-4 animate-fade-in flex flex-col pt-4">
-        {/* Row 1: Back Button + Título (Centralizado) */}
         <div className="flex items-center justify-center min-h-[44px] relative">
           <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
             <ArrowLeft className="h-5 w-5 text-foreground" />
@@ -113,7 +111,6 @@ export default function EncontrosList() {
           </div>
         </div>
 
-        {/* Row 2: Relatórios (Esquerda) + Novo (Direita) */}
         <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
           {id && (
             <ReportModule 
@@ -137,10 +134,8 @@ export default function EncontrosList() {
         </div>
       </div>
 
-      {/* Busca e Filtros */}
       {encontros.length > 0 && (
         <div className="space-y-3 animate-float-up" style={{ animationDelay: "80ms" }}>
-          {/* Campo de busca */}
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -157,10 +152,9 @@ export default function EncontrosList() {
             )}
           </div>
 
-          {/* Filtro de Meses */}
           {availableMonths.length > 0 && (
             <div className="flex items-center">
-              <div className="relative inline-flex items-center bg-card border border-black/15 hover:border-black/30 rounded-full transition-all shadow-sm">
+              <div className="relative inline-flex items-center bg-white border border-slate-200 rounded-full transition-all shadow-sm">
                 <span className="pl-4 pr-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground pointer-events-none">Filtro:</span>
                 <select
                   value={filterMonth}
@@ -179,7 +173,6 @@ export default function EncontrosList() {
             </div>
           )}
 
-          {/* Resumo dos resultados */}
           {(search || filterMonth !== "todos") && (
             <p className="text-[11px] text-muted-foreground px-1">
               {filtered.length === 0 ? "Nenhum encontro encontrado" : `${filtered.length} encontro${filtered.length !== 1 ? "s" : ""} encontrado${filtered.length !== 1 ? "s" : ""}`}
@@ -188,7 +181,6 @@ export default function EncontrosList() {
         </div>
       )}
 
-      {/* Lista vazia */}
       {encontros.length === 0 ? (
         <div className="empty-state animate-float-up" style={{ animationDelay: "100ms" }}>
           <div className="icon-box bg-primary/10 text-primary mx-auto mb-3"><CalendarDays className="h-6 w-6" /></div>
@@ -207,18 +199,16 @@ export default function EncontrosList() {
         <div className="space-y-8">
           {groups.map(([monthKey, { monthLabel, items }], gi) => (
             <div key={monthKey} className="space-y-3">
-              {/* Separador de mês estilo litúrgico */}
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-200 to-slate-300" />
-                <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-sm">
-                  <Feather className="w-3 h-3 text-primary/70" />
-                  <h3 className="text-xs font-extrabold text-slate-600 dark:text-slate-300 uppercase tracking-[0.18em]">{monthLabel}</h3>
-                  <span className="text-[10px] font-bold text-slate-400 ml-1">({items.length})</span>
+                <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white dark:bg-zinc-800 border-2 border-slate-300 dark:border-zinc-600 shadow-md">
+                  <Feather className="w-3 h-3 text-primary" />
+                  <h3 className="text-xs font-black text-slate-800 dark:text-slate-100 uppercase tracking-[0.18em]">{monthLabel}</h3>
+                  <span className="text-[10px] font-black text-primary ml-1">({items.length})</span>
                 </div>
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent via-slate-200 to-slate-300" />
               </div>
 
-              {/* Cards Litúrgicos */}
               <div className="space-y-4">
                 {items.map((enc, i) => {
                   const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
@@ -262,7 +252,6 @@ export default function EncontrosList() {
                         )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
-                      {/* Moldura litúrgica interna */}
                       <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
 
                       <div className="relative rounded-[14px] bg-card overflow-hidden">
@@ -286,16 +275,13 @@ export default function EncontrosList() {
                             </div>
                           )}
                           <div className="flex items-stretch bg-white">
-                            {/* Coluna da data */}
                             <div className="flex flex-col items-center justify-center px-4 py-5 border-r-2 border-black/10 shrink-0 min-w-[70px]">
                               <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
                               <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
                               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
                             </div>
 
-                            {/* Conteúdo principal */}
                             <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
-                              {/* Status badge */}
                               <div className="flex justify-center items-center gap-2 mb-2">
                                 <span className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-widest ${status.text}`}>
                                   <span className={`w-1.5 h-1.5 rounded-full inline-block ${status.dot}`} />
@@ -328,18 +314,18 @@ export default function EncontrosList() {
                             </div>
                           </div>
 
-                          <div className="px-3 pb-3 mt-1">
-                            <div className="flex items-center justify-center gap-3 -ml-[70px]">
+                          <div className="px-4 pb-4 mt-2">
+                            <div className="flex items-center justify-end gap-3">
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                                  className="w-[110px] py-2.5 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
+                                  className="w-[100px] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
                                 >
                                   <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
                                 </button>
 
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                                  className="w-[110px] py-2.5 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-600 text-white hover:bg-violet-700 border border-violet-700 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
+                                  className="w-[110px] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-600 text-white hover:bg-violet-700 border border-violet-700 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
                                 >
                                   <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
                                 </button>
