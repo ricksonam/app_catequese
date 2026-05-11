@@ -59,10 +59,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#FDF8F5] text-stone-900 overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
-      <div className="pt-20">
-        <PWAInstallBanner />
-      </div>
-
+      <PWAInstallBanner />
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Gradiente radial central */}
@@ -131,7 +128,7 @@ export default function LandingPage() {
         >
           {/* Halo dourado */}
           <div className="absolute inset-0 rounded-full bg-[#D4AF37]/20 blur-3xl scale-150 animate-pulse" />
-          <div className="relative w-32 h-32 rounded-full bg-white shadow-[0_0_50px_rgba(212,175,55,0.4)] flex items-center justify-center p-4"
+          <div className="relative w-16 h-16 rounded-full bg-white shadow-[0_0_20px_rgba(212,175,55,0.15)] flex items-center justify-center p-2"
             style={{ animation: "liturgicalFloat 5s ease-in-out infinite" }}>
             <img src="/app-logo.png" alt="iCatequese" className="w-full h-full object-contain" />
           </div>
@@ -142,7 +139,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-5xl sm:text-6xl font-black tracking-tighter mb-1 bg-gradient-to-r from-primary via-blue-400 to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm"
+          className="text-2xl sm:text-3xl font-black tracking-tighter mb-1 bg-gradient-to-r from-primary via-blue-400 to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-sm"
         >
           iCatequese
         </motion.h1>
@@ -180,25 +177,24 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-emerald-50 border-2 border-emerald-400/40 shadow-2xl"
+            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-white border border-stone-200/60 shadow-[0_20px_50px_rgba(0,0,0,0.08)] group hover:border-[#D4AF37]/30 transition-all"
           >
-            {/* Efeito Halo Premium */}
-            <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-red-500/5 rounded-full blur-[80px] pointer-events-none" />
+            {/* Efeitos de Fundo Premium */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#D4AF37]/5 rounded-full -ml-20 -mb-20 blur-3xl pointer-events-none" />
             
-            <CrossOrnament className="w-12 h-12 text-red-600/60 mx-auto mb-4 relative z-10" />
             <p className="text-xl font-liturgical font-black text-stone-900 mb-2 relative z-10">Comece agora!</p>
-            <p className="text-[11px] text-stone-500 mb-6 relative z-10 font-bold uppercase tracking-[0.2em] leading-relaxed">
-              Transforme sua catequese com a melhor plataforma de gestão
+            <p className="text-[12px] text-stone-600 mb-6 relative z-10 font-bold leading-relaxed max-w-[240px] mx-auto">
+              Organize sua Catequese com a plataforma completa <span className="text-primary">iCatequese</span>.
             </p>
             <button
               onClick={() => navigate("/auth?view=signup")}
-              className="relative z-10 w-full px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 hover:scale-[1.02] shadow-xl"
+              className="relative z-10 w-full px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest text-white transition-all active:scale-95 hover:scale-[1.02] shadow-xl overflow-hidden group-hover:shadow-primary/20"
               style={{
-                background: "linear-gradient(135deg, #10b981, #059669)",
-                boxShadow: "0 10px 30px rgba(16,185,129,0.3)"
+                background: "linear-gradient(135deg, #3b82f6, #2563eb)",
               }}
             >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
               Criar conta gratuita
             </button>
           </motion.div>

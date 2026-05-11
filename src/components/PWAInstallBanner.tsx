@@ -41,8 +41,8 @@ export default function PWAInstallBanner() {
     setIsIOS(iosDevice);
 
     if (iosDevice) {
-      // No iOS, mostrar instruções manuais após 2s
-      const timer = setTimeout(() => setShowBanner(true), 2000);
+      // No iOS, mostrar instruções manuais quase imediatamente
+      const timer = setTimeout(() => setShowBanner(true), 500);
       return () => clearTimeout(timer);
     }
 
@@ -50,8 +50,8 @@ export default function PWAInstallBanner() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Mostrar banner após 2s para não ser intrusivo
-      setTimeout(() => setShowBanner(true), 2000);
+      // Mostrar banner rapidamente
+      setShowBanner(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -92,8 +92,8 @@ export default function PWAInstallBanner() {
   if (!showBanner || isInstalled) return null;
 
   return (
-    <div className="w-full flex justify-center mb-3 px-2 animate-in slide-in-from-top-4 fade-in duration-500">
-      <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/10 rounded-[24px] px-3 py-2 flex items-center gap-3 w-full max-w-sm">
+    <div className="w-full flex justify-center sticky top-[76px] z-[70] mb-3 px-2 animate-in slide-in-from-top-4 fade-in duration-500 pointer-events-none">
+      <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/10 rounded-[24px] px-3 py-2 flex items-center gap-3 w-full max-w-sm pointer-events-auto">
         <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
           <Smartphone className="w-4 h-4 text-primary animate-pulse" />
         </div>
