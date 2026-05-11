@@ -59,12 +59,12 @@ export default function TurmasList() {
   return (
     <div className="space-y-6 pb-16">
       {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
+      <div className="flex flex-col items-center justify-center gap-4 animate-fade-in text-center">
         <h1 className="text-3xl font-black text-foreground tracking-tight font-liturgical">Turmas</h1>
         <button
           onClick={() => navigate("/turmas/nova")}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-white shadow-lg active:scale-95 transition-all font-bold text-xs uppercase tracking-widest hover:brightness-110"
-          style={{ background: "linear-gradient(135deg, #0B8A7C, #0E9B8A)" }}
+          className="flex items-center gap-2 px-6 py-2.5 rounded-2xl text-white shadow-lg active:scale-95 transition-all font-bold text-xs uppercase tracking-widest hover:brightness-110"
+          style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
         >
           <Plus className="h-4 w-4" /> Nova Turma
         </button>
@@ -74,7 +74,7 @@ export default function TurmasList() {
       <div
         onClick={() => setJoinModalOpen(true)}
         className="group relative overflow-hidden flex items-center gap-4 p-5 rounded-[1.75rem] cursor-pointer active:scale-[0.98] transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float"
-        style={{ background: "linear-gradient(135deg, #0EA5E9 0%, #2563EB 50%, #4F46E5 100%)", animationDelay: "0ms" }}
+        style={{ background: "linear-gradient(135deg, #FFAB91 0%, #FF8A65 100%)", animationDelay: "0ms" }}
       >
         {/* Glow blobs */}
         <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/20 blur-2xl pointer-events-none group-hover:bg-white/30 transition-colors duration-500" />
@@ -184,13 +184,8 @@ export default function TurmasList() {
 
                   {/* Badges Stack - Top Right */}
                   <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
-                    {isFirst && (
-                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
-                        <Star className="h-2 w-2" /> Principal
-                      </span>
-                    )}
                     {turma.id === selectedTurmaId && (
-                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-500 text-white shadow-sm border border-blue-400/20">
+                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
                         <Sparkles className="h-2 w-2" /> Selecionada
                       </span>
                     )}
