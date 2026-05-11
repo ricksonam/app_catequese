@@ -74,15 +74,15 @@ export default function TurmasList() {
       <div
         onClick={() => setJoinModalOpen(true)}
         className="group relative overflow-hidden flex items-center gap-4 p-5 rounded-[1.75rem] cursor-pointer active:scale-[0.98] transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float"
-        style={{ background: "linear-gradient(135deg, #FFAB91 0%, #FF8A65 100%)", animationDelay: "0ms" }}
+        style={{ background: "linear-gradient(135deg, #FDA4AF 0%, #F43F5E 100%)", animationDelay: "0ms" }}
       >
         {/* Glow blobs */}
         <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/20 blur-2xl pointer-events-none group-hover:bg-white/30 transition-colors duration-500" />
         <div className="absolute -bottom-4 left-8 w-24 h-24 rounded-full bg-white/10 blur-xl pointer-events-none group-hover:bg-white/20 transition-colors duration-500" />
 
         {/* Animated icon */}
-        <div className="relative w-14 h-14 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-white shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-          <Link2 className="h-7 w-7" />
+        <div className="relative w-14 h-14 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-rose-100 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+          <Link2 className="h-7 w-7 animate-pulse" />
           <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-300 flex items-center justify-center shadow-glow">
             <Sparkles className="h-2.5 w-2.5 text-yellow-800 animate-pulse" />
           </div>
