@@ -153,18 +153,8 @@ export default function TurmasList() {
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap pr-16">
                       <h3 className={`text-lg font-black ${palette.text} truncate font-liturgical leading-tight`}>{turma.nome}</h3>
-                      {isFirst && (
-                        <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
-                          <Star className="h-2.5 w-2.5" /> Turma Principal
-                        </span>
-                      )}
-                      {turma.id === selectedTurmaId && (
-                        <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500 text-white shadow-sm border border-blue-400/20">
-                          <Sparkles className="h-2.5 w-2.5" /> Selecionada
-                        </span>
-                      )}
                       {turma.isShared && (
                         <span className={`shrink-0 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${palette.badge}`}>Partilhada</span>
                       )}
@@ -192,14 +182,26 @@ export default function TurmasList() {
                     )}
                   </div>
 
-                  {/* Year + Arrow */}
-                  <div className="flex flex-col items-end gap-3 shrink-0">
-                    <span className={`text-xs font-black ${palette.badge} px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm`}>{turma.ano}</span>
+                  {/* Badges Stack - Top Right */}
+                  <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
+                    {isFirst && (
+                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
+                        <Star className="h-2 w-2" /> Principal
+                      </span>
+                    )}
+                    {turma.id === selectedTurmaId && (
+                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-500 text-white shadow-sm border border-blue-400/20">
+                        <Sparkles className="h-2 w-2" /> Selecionada
+                      </span>
+                    )}
+                    <span className={`text-[10px] font-black ${palette.badge} px-2 py-0.5 rounded-md shadow-sm backdrop-blur-sm`}>{turma.ano}</span>
+                    
+                    {/* Arrow at the bottom-right of this flex stack or separate */}
                     <div className={cn(
-                      "w-8 h-8 rounded-full bg-black/5 flex items-center justify-center border border-black/5 transition-all duration-300",
+                      "w-7 h-7 rounded-full bg-black/5 flex items-center justify-center border border-black/5 transition-all duration-300 mt-2",
                       "group-hover:bg-black/10 group-hover:translate-x-1"
                     )}>
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </div>
                   </div>
                 </div>
