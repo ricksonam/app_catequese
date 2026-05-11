@@ -31,6 +31,7 @@ export default function TurmasList() {
   const { data: comunidades = [] } = useComunidades();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [clickingId, setClickingId] = useState<string | null>(null);
+  const selectedTurmaId = localStorage.getItem("ivc_selected_turma");
 
   // Sort by criadoEm ascending (first created = first shown)
   const turmas = [...turmasRaw].sort((a, b) => {
@@ -157,6 +158,11 @@ export default function TurmasList() {
                       {isFirst && (
                         <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
                           <Star className="h-2.5 w-2.5" /> Turma Principal
+                        </span>
+                      )}
+                      {turma.id === selectedTurmaId && (
+                        <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500 text-white shadow-sm border border-blue-400/20">
+                          <Sparkles className="h-2.5 w-2.5" /> Selecionada
                         </span>
                       )}
                       {turma.isShared && (
