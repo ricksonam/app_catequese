@@ -11,6 +11,7 @@ import { getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import PWAInstallBanner from "@/components/PWAInstallBanner";
 
 /* ─── Ornamento SVG de cruz ─── */
 const CrossOrnament = ({ className = "" }: { className?: string }) => (
@@ -41,21 +42,7 @@ const FEATURES = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [apoieOpen, setApoieOpen] = useState(false);
-
-  useEffect(() => {
-    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
-
-  const handleInstall = async () => {
-    if (!installPrompt) return;
-    installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === "accepted") setInstallPrompt(null);
-  };
 
   const handleShare = async () => {
     const url = getAppUrl();
@@ -72,6 +59,9 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#FDF8F5] text-stone-900 overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
+      <div className="pt-20">
+        <PWAInstallBanner />
+      </div>
 
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -248,17 +238,7 @@ export default function LandingPage() {
           ))}
         </div>
 
-        {/* Instalar PWA */}
-        {installPrompt && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            onClick={handleInstall}
-            className="w-full mt-6 flex items-center justify-center gap-2 py-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 font-black text-xs uppercase tracking-widest hover:bg-emerald-100 transition-all active:scale-95 shadow-sm"
-          >
-            <Smartphone className="h-4 w-4" /> Instalar App no Celular
-          </motion.button>
-        )}
+
 
 
       </section>
