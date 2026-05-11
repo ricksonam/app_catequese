@@ -57,7 +57,7 @@ const LEVEL_CONFIGS = [
   { cols: 11, draw: 3, initialVisible: 'top', desc: "Impossível" },
 ];
 
-const LOCAL_STORAGE_KEY = '@PacienciaBiblica:state';
+const LOCAL_STORAGE_KEY = '@CartasDaFe:state';
 
 // --- Helper Functions ---
 const createDeck = (): CardData[] => {
@@ -443,36 +443,37 @@ export default function PacienciaBiblica() {
     const cat = CATEGORIES.find(c => c.id === card.category);
     if (!card.visible) {
       return (
-        <div className="w-full h-full rounded-lg sm:rounded-xl border border-black/10 shadow-sm flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#e67e22] to-[#d35400] text-white/20">
+        <div className="w-full h-full rounded-md border-[3px] border-white shadow-md flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#8b0000] to-[#5c0000] text-white/20">
             {/* Pattern placeholder */}
             <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
-            <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 drop-shadow-md opacity-50" />
-            <span className="absolute bottom-1 right-1.5 text-[10px] font-bold opacity-60 font-serif">{card.value}</span>
+            <div className="border border-white/30 absolute inset-1.5 rounded-sm" />
+            <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 drop-shadow-md opacity-60 z-10" />
+            <span className="absolute bottom-1 right-1.5 text-[10px] font-bold opacity-60 font-serif z-10">{card.value}</span>
         </div>
       );
     }
 
     return (
       <div className={cn(
-        "w-full h-full rounded-lg sm:rounded-xl border shadow-sm flex flex-col items-center justify-between p-1 sm:p-1.5 text-center bg-white relative overflow-hidden font-serif",
-        cat?.text,
-        "border-zinc-200"
+        "w-full h-full rounded-md shadow-md flex flex-col items-center justify-between p-1 sm:p-1.5 text-center bg-[#fdfbf7] relative overflow-hidden font-serif border-[3px] border-white ring-1 ring-black/10",
+        cat?.text
       )}>
-        <div className="w-full flex justify-between items-start leading-none">
+        <div className="absolute inset-1 border border-amber-900/10 rounded-sm pointer-events-none" />
+        <div className="w-full flex justify-between items-start leading-none z-10">
            <span className="text-xs sm:text-sm font-bold">{card.value === 1 ? 'A' : card.value === 11 ? 'J' : card.value === 12 ? 'Q' : card.value === 13 ? 'K' : card.value}</span>
            <span className="text-[10px] sm:text-xs">{cat?.icon}</span>
         </div>
         
         {isTop && (
-          <div className="flex-1 flex items-center justify-center w-full px-0.5">
-            <span className="text-[9px] sm:text-[11px] font-bold leading-tight break-words text-center text-zinc-800">
+          <div className="flex-1 flex items-center justify-center w-full px-0.5 z-10">
+            <span className="text-[9px] sm:text-[11px] font-bold leading-tight break-words text-center text-zinc-800 drop-shadow-sm">
               {card.text}
             </span>
           </div>
         )}
         
         {isTop && (
-          <div className={cn("w-full h-1 mt-auto rounded-full opacity-80", cat?.color)} />
+          <div className={cn("w-full h-1 mt-auto rounded-full opacity-80 z-10", cat?.color)} />
         )}
       </div>
     );
@@ -488,7 +489,7 @@ export default function PacienciaBiblica() {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-sm sm:text-base font-bold leading-none">Paciência Bíblica</h1>
+            <h1 className="text-sm sm:text-base font-bold leading-none">Cartas da Fé</h1>
             <p className="text-[10px] sm:text-xs text-white/70">Nível {level} • {formatTime(timer)}</p>
           </div>
         </div>
@@ -572,11 +573,11 @@ export default function PacienciaBiblica() {
         </div>
 
         {/* Tableau */}
-        <div className="flex-1 flex justify-between gap-1 sm:gap-2 overflow-y-auto pb-8 custom-scrollbar">
+        <div className="flex-1 flex justify-start sm:justify-center gap-2 overflow-x-auto overflow-y-auto pb-8 custom-scrollbar px-1">
           {tableau.map((col, colIdx) => (
             <div 
               key={colIdx} 
-              className="flex-1 relative min-w-[40px] max-w-[80px]"
+              className="flex-1 relative min-w-[55px] sm:min-w-[70px] max-w-[100px] flex-shrink-0"
               data-tableau-col={colIdx}
               onClick={() => col.length === 0 && handleEmptyTableauClick(colIdx)}
             >

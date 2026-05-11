@@ -53,8 +53,8 @@ const jogos = [
     path: "/jogos/mimica",
   },
   {
-    label: "Paciência Bíblica",
-    desc: "Organize os itens por categorias",
+    label: "Cartas da Fé",
+    desc: "Organize as cartas sagradas",
     icon: Book,
     color: "bg-blue-500/10 text-blue-600",
     path: "/jogos/paciencia",
