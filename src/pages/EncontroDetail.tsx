@@ -190,7 +190,7 @@ export default function EncontroDetail() {
     <div className="space-y-4 pb-6">
       <div className="animate-fade-in flex flex-col pt-4 pb-2 relative">
         {/* Top actions bar */}
-        <div className="w-full flex items-center justify-between px-4 mb-2">
+        <div className="w-full flex items-center justify-between px-4 mb-1">
           <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
@@ -199,8 +199,8 @@ export default function EncontroDetail() {
 
         </div>
         
-        <div className="flex flex-col items-center w-full px-6 mb-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full mb-3 shadow-sm border border-primary/10">Tema do Encontro</p>
+        <div className="flex flex-col items-center w-full px-6 mb-2">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full mb-2 shadow-sm border border-primary/10">Tema do Encontro</p>
           <h1 className="text-xl font-black text-foreground leading-tight text-center break-words">{encontro.tema}</h1>
           <p className="text-[10px] font-bold text-muted-foreground mt-1.5 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
         </div>
