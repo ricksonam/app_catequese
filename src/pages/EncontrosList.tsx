@@ -327,32 +327,18 @@ export default function EncontrosList() {
                             </div>
                           </div>
 
-                          {/* Chips Ações Separadas na Base do Card */}
                           <div className="px-3 pb-3">
                             <div className="flex flex-wrap items-center justify-center gap-2">
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/encontros/${enc.id}?eval=true`); }}
-                                  className={cn(
-                                    "flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md",
-                                    isAvaliado 
-                                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200" 
-                                      : "bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200"
-                                  )}
-                                >
-                                  <FileText className="h-3.5 w-3.5 mb-px" />
-                                  {isAvaliado ? 'Avaliado' : 'Avaliar'}
-                                </button>
-
-                                <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-400 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="flex-1 min-w-[45%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-400 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
                                 >
                                   <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
                                 </button>
 
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                                  className="flex-1 min-w-[30%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-100 text-violet-700 hover:bg-violet-200 border border-violet-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="flex-1 min-w-[45%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-100 text-violet-700 hover:bg-violet-200 border border-violet-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
                                 >
                                   <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
                                 </button>

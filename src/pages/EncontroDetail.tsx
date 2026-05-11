@@ -213,7 +213,7 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 animate-float-up px-4 -mt-2">
+      <div className="grid grid-cols-2 gap-2 animate-float-up px-4 -mt-2">
         {/* Status */}
         <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 hover:border-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white shadow-sm group ${currentStatus.border}`}>
            <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center ${currentStatus.bg} border ${currentStatus.border} group-hover:shadow-md transition-all`}>
@@ -222,7 +222,7 @@ export default function EncontroDetail() {
               {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
               {currentStatus.value === 'cancelado' && <AlertCircle className={`h-4 w-4 ${currentStatus.text}`} />}
            </div>
-           <span className={`text-[9px] font-black uppercase tracking-widest ${currentStatus.text}`}>{currentStatus.label} ▾</span>
+           <span className={`text-[9px] font-black uppercase tracking-widest ${currentStatus.text}`}>Status: {currentStatus.label} ▾</span>
         </button>
         
         {/* Presença */}
@@ -231,6 +231,14 @@ export default function EncontroDetail() {
              <Users className="h-4 w-4 text-emerald-600" />
            </div>
            <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Presença</span>
+        </button>
+
+        {/* Avaliar */}
+        <button onClick={() => setShowOcorrencias(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 bg-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-9 h-9 flex items-center justify-center bg-blue-500/10 rounded-[12px] mb-1.5 border border-blue-500/20 group-hover:shadow-md transition-all">
+             <FileText className="h-4 w-4 text-blue-600" />
+           </div>
+           <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Avaliar</span>
         </button>
 
         {/* Apresentar */}
