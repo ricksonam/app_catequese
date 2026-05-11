@@ -7,13 +7,19 @@ import { cn } from "@/lib/utils";
 
 // Palette: more vibrant gradients for each turma
 const CARD_PALETTES = [
-  { bg: "from-emerald-100 to-emerald-200", accent: "bg-emerald-300", text: "text-emerald-950", sub: "text-emerald-800/80", border: "border-emerald-300", badge: "bg-emerald-300 text-emerald-950", icon: "text-emerald-700" },
-  { bg: "from-blue-100 to-blue-200", accent: "bg-blue-300", text: "text-blue-950", sub: "text-blue-800/80", border: "border-blue-300", badge: "bg-blue-300 text-blue-950", icon: "text-blue-700" },
-  { bg: "from-purple-100 to-purple-200", accent: "bg-purple-300", text: "text-purple-950", sub: "text-purple-800/80", border: "border-purple-300", badge: "bg-purple-300 text-purple-950", icon: "text-purple-700" },
-  { bg: "from-rose-100 to-rose-200", accent: "bg-rose-300", text: "text-rose-950", sub: "text-rose-800/80", border: "border-rose-300", badge: "bg-rose-300 text-rose-950", icon: "text-rose-700" },
-  { bg: "from-sky-100 to-sky-200", accent: "bg-sky-300", text: "text-sky-950", sub: "text-sky-800/80", border: "border-sky-300", badge: "bg-sky-300 text-sky-950", icon: "text-sky-700" },
-  { bg: "from-amber-100 to-amber-200", accent: "bg-amber-300", text: "text-amber-950", sub: "text-amber-800/80", border: "border-amber-300", badge: "bg-amber-300 text-amber-950", icon: "text-amber-700" },
+  { bg: "from-emerald-100 to-emerald-200", accent: "bg-emerald-300", text: "text-emerald-950", sub: "text-emerald-800/80", border: "border-emerald-300", borderMain: "border-emerald-400", badge: "bg-emerald-300 text-emerald-950", icon: "text-emerald-700" },
+  { bg: "from-blue-100 to-blue-200", accent: "bg-blue-300", text: "text-blue-950", sub: "text-blue-800/80", border: "border-blue-300", borderMain: "border-blue-400", badge: "bg-blue-300 text-blue-950", icon: "text-blue-700" },
+  { bg: "from-purple-100 to-purple-200", accent: "bg-purple-300", text: "text-purple-950", sub: "text-purple-800/80", border: "border-purple-300", borderMain: "border-purple-400", badge: "bg-purple-300 text-purple-950", icon: "text-purple-700" },
+  { bg: "from-rose-100 to-rose-200", accent: "bg-rose-300", text: "text-rose-950", sub: "text-rose-800/80", border: "border-rose-300", borderMain: "border-rose-400", badge: "bg-rose-300 text-rose-950", icon: "text-rose-700" },
+  { bg: "from-sky-100 to-sky-200", accent: "bg-sky-300", text: "text-sky-950", sub: "text-sky-800/80", border: "border-sky-300", borderMain: "border-sky-400", badge: "bg-sky-300 text-sky-950", icon: "text-sky-700" },
+  { bg: "from-amber-100 to-amber-200", accent: "bg-amber-300", text: "text-amber-950", sub: "text-amber-800/80", border: "border-amber-300", borderMain: "border-amber-400", badge: "bg-amber-300 text-amber-950", icon: "text-amber-700" },
 ];
+
+// ... (skipping formatDate)
+
+// Inside TurmasList.tsx return:
+// (Wait, I need to match the actual code lines)
+
 
 function formatDate(dateStr?: string) {
   if (!dateStr) return null;
@@ -137,8 +143,9 @@ export default function TurmasList() {
                 key={turma.id}
                 onClick={() => handleTurmaClick(turma.id)}
                 className={cn(
-                  "group relative overflow-hidden rounded-[2rem] p-[1.5px] cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-95 animate-fade-in animate-card-float",
+                  "group relative overflow-hidden rounded-[2rem] p-0.5 cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-95 animate-fade-in animate-card-float border-2",
                   isClicking ? "scale-95 opacity-80" : "scale-100",
+                  palette.borderMain,
                   `bg-gradient-to-br ${palette.bg}`
                 )}
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}

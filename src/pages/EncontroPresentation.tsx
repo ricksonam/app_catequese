@@ -78,7 +78,9 @@ export default function EncontroPresentation() {
               <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-foreground text-center flex-1 px-2 leading-tight">{encontro.tema}</h1>
-            <button onClick={() => navigate(-1)} className="w-8 h-8 rounded-full bg-muted/60 hover:bg-muted flex items-center justify-center transition-all active:scale-90 shrink-0"><XIcon className="h-4 w-4 text-muted-foreground" /></button>
+            <button onClick={() => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all shrink-0">
+              <XIcon className="h-5 w-5 text-foreground" />
+            </button>
           </div>
           {step.catequista && <div className="flex items-center justify-center gap-1.5 mb-2"><Users className="h-3 w-3 text-muted-foreground" /><span className="text-xs text-muted-foreground font-medium">{step.catequista}</span></div>}
           <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden"><div className={`h-full bg-gradient-to-r ${gradientClass} rounded-full transition-all duration-700 ease-out`} style={{ width: `${progress}%` }} /></div>
