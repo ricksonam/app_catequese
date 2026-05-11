@@ -213,10 +213,14 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 animate-float-up px-4 -mt-2">
+      <div className={cn(
+        "grid grid-cols-2 gap-2 animate-float-up px-4 -mt-2 rounded-[2rem] p-2 border-2",
+        currentStatus.border,
+        "bg-white shadow-lg mx-4"
+      )}>
         {/* Status */}
-        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 hover:border-black/10 transition-all hover:scale-[1.02] active:scale-[0.98] bg-white shadow-sm group ${currentStatus.border}`}>
-           <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center ${currentStatus.bg} border ${currentStatus.border} group-hover:shadow-md transition-all`}>
+        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] ${currentStatus.bg} border-current/20 shadow-sm group`}>
+           <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center bg-white/40 border border-white/40 group-hover:shadow-md transition-all`}>
               {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
               {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
               {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
@@ -226,27 +230,27 @@ export default function EncontroDetail() {
         </button>
         
         {/* Presença */}
-        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 bg-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
-           <div className="w-9 h-9 flex items-center justify-center bg-emerald-500/10 rounded-[12px] mb-1.5 border border-emerald-500/20 group-hover:shadow-md transition-all">
+        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-emerald-600/20 bg-emerald-500/10 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
              <Users className="h-4 w-4 text-emerald-600" />
            </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Presença</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Presença</span>
         </button>
 
         {/* Avaliar */}
-        <button onClick={() => setShowOcorrencias(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 bg-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
-           <div className="w-9 h-9 flex items-center justify-center bg-blue-500/10 rounded-[12px] mb-1.5 border border-blue-500/20 group-hover:shadow-md transition-all">
+        <button onClick={() => setShowOcorrencias(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-blue-600/20 bg-blue-500/10 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
              <FileText className="h-4 w-4 text-blue-600" />
            </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Avaliar</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-blue-700">Avaliar</span>
         </button>
 
         {/* Apresentar */}
-        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black/5 bg-white shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
-           <div className="w-9 h-9 flex items-center justify-center bg-liturgical/10 rounded-[12px] mb-1.5 border border-liturgical/20 group-hover:shadow-md transition-all">
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-liturgical/20 bg-liturgical/10 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+           <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
              <Play className="h-4 w-4 text-liturgical" />
            </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-foreground">Apresentar</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-liturgical">Apresentar</span>
         </button>
       </div>
 

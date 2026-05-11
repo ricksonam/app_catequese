@@ -6,11 +6,11 @@ import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import ReportModule from "@/components/reports/ReportModule";
 
-const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string }> = {
-  pendente:    { label: "Pendente",    bg: "bg-slate-100/80",      text: "text-slate-600",          dot: "bg-slate-400",         gradient: "from-slate-200/50 to-slate-100/50" },
-  realizado:   { label: "Realizado",   bg: "bg-emerald-500/15",   text: "text-emerald-700",       dot: "bg-emerald-500",      gradient: "from-emerald-500/20 to-teal-500/10" },
-  transferido: { label: "Transferido", bg: "bg-amber-500/15",     text: "text-amber-700",         dot: "bg-amber-500",        gradient: "from-amber-500/20 to-orange-500/10" },
-  cancelado:   { label: "Cancelado",   bg: "bg-destructive/15",   text: "text-destructive",       dot: "bg-destructive",      gradient: "from-destructive/20 to-red-500/10"  },
+const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string; border: string }> = {
+  pendente:    { label: "Pendente",    bg: "bg-slate-100/80",      text: "text-slate-600",          dot: "bg-slate-400",         gradient: "from-slate-200/50 to-slate-100/50", border: "border-slate-300" },
+  realizado:   { label: "Realizado",   bg: "bg-emerald-500/15",   text: "text-emerald-700",       dot: "bg-emerald-500",      gradient: "from-emerald-500/20 to-teal-500/10", border: "border-emerald-500/40" },
+  transferido: { label: "Transferido", bg: "bg-amber-500/15",     text: "text-amber-700",         dot: "bg-amber-500",        gradient: "from-amber-500/20 to-orange-500/10", border: "border-amber-500/40" },
+  cancelado:   { label: "Cancelado",   bg: "bg-destructive/15",   text: "text-destructive",       dot: "bg-destructive",      gradient: "from-destructive/20 to-red-500/10",  border: "border-destructive/40"  },
 };
 
 const DIAS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
@@ -253,12 +253,13 @@ export default function EncontrosList() {
                   }
 
                   return (
-                    <div
-                      key={enc.id}
-                      className={cn(
-                        "relative p-[2px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.08)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.12)]",
-                        "bg-black/10 shadow-black/5"
-                      )}
+                      <div
+                        key={enc.id}
+                        className={cn(
+                          "relative p-[1px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.08)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.12)] border-2",
+                          status.border,
+                          "bg-card"
+                        )}
                       style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
                     >
                       {/* Moldura litúrgica interna */}
@@ -327,18 +328,18 @@ export default function EncontrosList() {
                             </div>
                           </div>
 
-                          <div className="px-3 pb-3">
-                            <div className="flex flex-wrap items-center justify-center gap-2">
+                          <div className="px-3 pb-3 mt-1">
+                            <div className="flex items-center justify-center gap-3 -ml-[70px]">
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                                  className="flex-1 min-w-[45%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-400 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="w-[110px] py-2.5 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
                                 >
                                   <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
                                 </button>
 
                                 <button
                                   onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                                  className="flex-1 min-w-[45%] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-100 text-violet-700 hover:bg-violet-200 border border-violet-200 transition-all shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] hover:shadow-md flex items-center justify-center gap-1.5"
+                                  className="w-[110px] py-2.5 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-600 text-white hover:bg-violet-700 border border-violet-700 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
                                 >
                                   <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
                                 </button>
