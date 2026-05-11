@@ -188,14 +188,16 @@ export default function EncontroDetail() {
 
   return (
     <div className="space-y-4 pb-6">
-      <div className="animate-fade-in flex flex-col pt-4 pb-2 relative">
+      <div className="animate-fade-in flex flex-col pt-1 pb-1 relative">
         {/* Top actions bar */}
         <div className="w-full flex items-center justify-between px-4 mb-1">
           <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           
-          {/* Edit/Delete icons removed from here */}
+          <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
+            <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+          </button>
 
         </div>
         
@@ -205,26 +207,18 @@ export default function EncontroDetail() {
           <p className="text-[10px] font-bold text-muted-foreground mt-1.5 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
         </div>
 
-        {/* Edit/Delete Buttons positioned above grid */}
-        <div className="flex items-center justify-center gap-3 mb-4 animate-float-up" style={{ animationDelay: '50ms' }}>
+        {/* Edit Button positioned above grid */}
+        <div className="flex items-center justify-center gap-3 mb-2 animate-float-up" style={{ animationDelay: '50ms' }}>
           <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group">
             <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
             <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
           </button>
-          <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="flex items-center gap-2 px-4 py-2 rounded-xl text-destructive bg-white hover:bg-destructive/5 transition-all active:scale-95 border-2 border-destructive/20 shadow-sm group">
-            <Trash2 className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Excluir</span>
-          </button>
         </div>
       </div>
 
-      <div className={cn(
-        "grid grid-cols-2 gap-2 animate-float-up px-4 -mt-2 rounded-[2rem] p-2 border-2",
-        currentStatus.border,
-        "bg-white shadow-lg mx-4"
-      )}>
+      <div className="grid grid-cols-2 gap-3 animate-float-up px-4 -mt-2">
         {/* Status */}
-        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border transition-all hover:scale-[1.02] active:scale-[0.98] ${currentStatus.bg} border-current/20 shadow-sm group`}>
+        <button onClick={() => setShowStatus(true)} className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black transition-all hover:scale-[1.05] active:scale-[0.95] ${currentStatus.bg} shadow-[0_8px_30px_rgb(0,0,0,0.12)] group`}>
            <div className={`w-9 h-9 rounded-[12px] mb-1.5 flex items-center justify-center bg-white/40 border border-white/40 group-hover:shadow-md transition-all`}>
               {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
               {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
@@ -235,7 +229,7 @@ export default function EncontroDetail() {
         </button>
         
         {/* Presença */}
-        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-orange-600/30 bg-orange-500/15 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+        <button onClick={() => setShowPresenca(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black bg-orange-500/15 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-[1.05] active:scale-[0.95] transition-all group">
            <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
              <Users className="h-4 w-4 text-orange-700" />
            </div>
@@ -243,7 +237,7 @@ export default function EncontroDetail() {
         </button>
 
         {/* Avaliar */}
-        <button onClick={() => setShowOcorrencias(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-blue-600/20 bg-blue-500/10 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+        <button onClick={() => setShowOcorrencias(true)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black bg-blue-500/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-[1.05] active:scale-[0.95] transition-all group">
            <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
              <FileText className="h-4 w-4 text-blue-600" />
            </div>
@@ -251,7 +245,7 @@ export default function EncontroDetail() {
         </button>
 
         {/* Apresentar */}
-        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border border-liturgical/20 bg-liturgical/10 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all group">
+        <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} className="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border-2 border-black bg-liturgical/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-[1.05] active:scale-[0.95] transition-all group">
            <div className="w-9 h-9 flex items-center justify-center bg-white/40 rounded-[12px] mb-1.5 border border-white/40 group-hover:shadow-md transition-all">
              <Play className="h-4 w-4 text-liturgical" />
            </div>
