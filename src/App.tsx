@@ -55,6 +55,7 @@ import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import LandingPage from "@/pages/LandingPage";
 import SplashScreen from "@/components/SplashScreen";
+import PWAInstallBanner from "@/components/PWAInstallBanner";
 import { useState, useEffect } from "react";
 
 // QueryClient com configuração de resiliência
@@ -209,6 +210,7 @@ const App = () => {
               <AppRoutes />
             </AuthProvider>
           </BrowserRouter>
+          <PWAInstallBanner />
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>

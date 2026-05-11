@@ -51,7 +51,7 @@ export default function ParoquiaComunidadeCadastro() {
   // States for isolated Community management (Nova comunidade na Paróquia)
   const [cFormOpen, setCFormOpen] = useState(false);
   const [cForm, setCForm] = useState({
-    id: "", paroquiaId: "", nome: "", endereco: "", responsavel: "", telefone: "", cidade: "", estado: ""
+    id: "", paroquiaId: "", nome: "", tipo: "Comunidade", endereco: "", responsavel: "", telefone: "", cidade: "", estado: "", observacao: ""
   });
   const [deletePConfirmOpen, setDeletePConfirmOpen] = useState(false);
   const [deleteCConfirmOpen, setDeleteCConfirmOpen] = useState(false);
