@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Smartphone, Download } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -57,6 +59,14 @@ export default function PWAInstallBanner() {
   }, []);
 
   const handleInstall = async () => {
+    if (isIOS) {
+      toast.info("Para instalar no iPhone/iPad:", {
+        description: "Toque no botão Compartilhar do Safari (quadrado com seta para cima) e selecione 'Adicionar à Tela de Início'.",
+        duration: 10000,
+      });
+      return;
+    }
+
     if (!deferredPrompt) return;
     setInstalling(true);
     try {
@@ -82,128 +92,41 @@ export default function PWAInstallBanner() {
   if (!showBanner || isInstalled) return null;
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-[9999] px-4 pb-4 animate-in slide-in-from-bottom-4 duration-500"
-      role="banner"
-      aria-label="Instalar aplicativo iCatequese"
-    >
-      <div
-        className="max-w-md mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/10"
-        style={{
-          background: "linear-gradient(135deg, #1a2d8c 0%, #2a4bd1 50%, #3b5cf6 100%)",
-        }}
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between p-5 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-lg border-2 border-white/20 flex-shrink-0">
-              <img
-                src="/icon-192.png"
-                alt="iCatequese"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.2em]">
-                Instalar Aplicativo
-              </p>
-              <h3 className="text-lg font-black text-white leading-tight">
-                iCatequese
-              </h3>
-              <p className="text-[11px] text-blue-200 font-medium">
-                Gestão de catequese na palma da mão
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={handleDismiss}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all flex-shrink-0 mt-1"
-            aria-label="Fechar"
-          >
-            <X className="w-4 h-4 text-white" />
-          </button>
+    <div className="w-full flex justify-center mb-3 px-2 animate-in slide-in-from-top-4 fade-in duration-500">
+      <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/10 rounded-[24px] px-3 py-2 flex items-center gap-3 w-full max-w-sm">
+        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+          <Smartphone className="w-4 h-4 text-primary animate-pulse" />
         </div>
-
-        {/* Benefícios */}
-        <div className="px-5 py-2">
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { icon: "⚡", label: "Acesso rápido" },
-              { icon: "📴", label: "Funciona offline" },
-              { icon: "🔔", label: "Notificações" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="bg-white/10 rounded-2xl px-2 py-2.5 text-center"
-              >
-                <div className="text-lg mb-1">{item.icon}</div>
-                <p className="text-[9px] font-black text-white/80 uppercase tracking-wide">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
+        
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-black uppercase tracking-[0.1em] text-foreground truncate">
+            App iCatequese
+          </p>
+          <p className="text-[9px] text-muted-foreground leading-tight truncate">
+            Instale para acesso rápido
+          </p>
         </div>
-
-        {/* Ação */}
-        <div className="p-5 pt-3">
-          {isIOS ? (
-            // Instruções para iOS
-            <div className="bg-white/10 rounded-2xl p-4 space-y-2">
-              <p className="text-[11px] font-black text-white uppercase tracking-wide flex items-center gap-2">
-                <Smartphone className="w-4 h-4" />
-                Como instalar no iPhone/iPad:
-              </p>
-              <ol className="space-y-1.5">
-                {[
-                  'Toque no botão "Compartilhar" (⬆️) no Safari',
-                  'Role para baixo e toque em "Adicionar à Tela de Início"',
-                  'Toque em "Adicionar" para confirmar',
-                ].map((step, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-white/20 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">
-                      {i + 1}
-                    </span>
-                    <p className="text-[11px] text-white/80 font-medium">{step}</p>
-                  </li>
-                ))}
-              </ol>
-              <button
-                onClick={handleDismiss}
-                className="w-full mt-2 py-3 rounded-2xl bg-white/20 hover:bg-white/30 text-white text-xs font-black uppercase tracking-widest transition-all"
-              >
-                Entendido, obrigado!
-              </button>
-            </div>
+        
+        <button
+          onClick={handleInstall}
+          disabled={installing}
+          className="bg-primary text-white rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest shadow-md shadow-primary/20 hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
+        >
+          {installing ? (
+            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
-            // Botão de instalação para Android/Chrome
-            <div className="flex gap-3">
-              <button
-                onClick={handleDismiss}
-                className="flex-1 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-black uppercase tracking-widest transition-all"
-              >
-                Agora não
-              </button>
-              <button
-                onClick={handleInstall}
-                disabled={installing}
-                className="flex-[2] py-3.5 rounded-2xl bg-white text-primary text-xs font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2 disabled:opacity-70"
-              >
-                {installing ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                    Instalando...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    Instalar Grátis
-                  </>
-                )}
-              </button>
-            </div>
+            <Download className="w-3 h-3" />
           )}
-        </div>
+          {isIOS ? "Como Instalar" : "Instalar"}
+        </button>
+        
+        <button
+          onClick={handleDismiss}
+          className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center shrink-0 transition-colors"
+          aria-label="Fechar"
+        >
+          <X className="w-3 h-3 text-muted-foreground" />
+        </button>
       </div>
     </div>
   );

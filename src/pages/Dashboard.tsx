@@ -20,6 +20,7 @@ import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import PWAInstallBanner from "@/components/PWAInstallBanner";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MESES_ABREV = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
@@ -496,6 +497,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-2.5">
+      <PWAInstallBanner />
       {/* ONBOARDING FLOW */}
 
       {/* 0. Termos de Uso (Gate Inicial) */}
