@@ -5,14 +5,14 @@ import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Palette: vivid gradients for each turma
+// Palette: softer gradients for each turma
 const CARD_PALETTES = [
-  { bg: "from-[#10B981] to-[#047857]", accent: "bg-white/20", text: "text-white", sub: "text-white/80", border: "border-white/20", badge: "bg-white/25 text-white" }, // Vivid Emerald/Green
-  { bg: "from-[#3B82F6] to-[#1D4ED8]", accent: "bg-white/20", text: "text-white", sub: "text-white/80", border: "border-white/20", badge: "bg-white/25 text-white" }, // Vivid Blue
-  { bg: "from-[#8B5CF6] to-[#6D28D9]", accent: "bg-white/20", text: "text-white", sub: "text-white/80", border: "border-white/20", badge: "bg-white/25 text-white" }, // Vivid Purple
-  { bg: "from-[#F43F5E] to-[#BE123C]", accent: "bg-white/20", text: "text-white", sub: "text-white/80", border: "border-white/20", badge: "bg-white/25 text-white" }, // Vivid Rose/Red
-  { bg: "from-[#0EA5E9] to-[#0369A1]", accent: "bg-white/20", text: "text-white", sub: "text-white/80", border: "border-white/20", badge: "bg-white/25 text-white" }, // Vivid Sky Blue
-  { bg: "from-[#F59E0B] to-[#B45309]", accent: "bg-white/20", text: "text-white", sub: "text-white/80", border: "border-white/20", badge: "bg-white/25 text-white" }, // Vivid Amber/Gold
+  { bg: "from-emerald-50 to-emerald-100", accent: "bg-emerald-200", text: "text-emerald-900", sub: "text-emerald-700/80", border: "border-emerald-200", badge: "bg-emerald-200 text-emerald-900", icon: "text-emerald-600" },
+  { bg: "from-blue-50 to-blue-100", accent: "bg-blue-200", text: "text-blue-900", sub: "text-blue-700/80", border: "border-blue-200", badge: "bg-blue-200 text-blue-900", icon: "text-blue-600" },
+  { bg: "from-purple-50 to-purple-100", accent: "bg-purple-200", text: "text-purple-900", sub: "text-purple-700/80", border: "border-purple-200", badge: "bg-purple-200 text-purple-900", icon: "text-purple-600" },
+  { bg: "from-rose-50 to-rose-100", accent: "bg-rose-200", text: "text-rose-900", sub: "text-rose-700/80", border: "border-rose-200", badge: "bg-rose-200 text-rose-900", icon: "text-rose-600" },
+  { bg: "from-sky-50 to-sky-100", accent: "bg-sky-200", text: "text-sky-900", sub: "text-sky-700/80", border: "border-sky-200", badge: "bg-sky-200 text-sky-900", icon: "text-sky-600" },
+  { bg: "from-amber-50 to-amber-100", accent: "bg-amber-200", text: "text-amber-900", sub: "text-amber-700/80", border: "border-amber-200", badge: "bg-amber-200 text-amber-900", icon: "text-amber-600" },
 ];
 
 function formatDate(dateStr?: string) {
@@ -143,7 +143,7 @@ export default function TurmasList() {
                 <div className="relative z-10 flex items-center gap-4 p-5">
                   {/* Animated Icon */}
                   <div className={cn(
-                    `w-14 h-14 rounded-2xl ${palette.accent} border ${palette.border} flex items-center justify-center text-white shadow-lg shrink-0 transition-all duration-500`,
+                    `w-14 h-14 rounded-2xl ${palette.accent} border ${palette.border} flex items-center justify-center ${palette.icon} shadow-sm shrink-0 transition-all duration-500`,
                     "group-hover:scale-110 group-hover:-rotate-6",
                     isClicking && "scale-90 rotate-12"
                   )}>
@@ -155,8 +155,8 @@ export default function TurmasList() {
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className={`text-lg font-black ${palette.text} truncate font-liturgical leading-tight`}>{turma.nome}</h3>
                       {isFirst && (
-                        <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-sm">
-                          <Star className="h-2.5 w-2.5" /> Primeira
+                        <span className="shrink-0 flex items-center gap-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
+                          <Star className="h-2.5 w-2.5" /> Turma Principal
                         </span>
                       )}
                       {turma.isShared && (
@@ -190,10 +190,10 @@ export default function TurmasList() {
                   <div className="flex flex-col items-end gap-3 shrink-0">
                     <span className={`text-xs font-black ${palette.badge} px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm`}>{turma.ano}</span>
                     <div className={cn(
-                      "w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20 transition-all duration-300",
-                      "group-hover:bg-white/20 group-hover:translate-x-1"
+                      "w-8 h-8 rounded-full bg-black/5 flex items-center justify-center border border-black/5 transition-all duration-300",
+                      "group-hover:bg-black/10 group-hover:translate-x-1"
                     )}>
-                      <ArrowRight className="h-4 w-4 text-white" />
+                      <ArrowRight className="h-4 w-4" />
                     </div>
                   </div>
                 </div>

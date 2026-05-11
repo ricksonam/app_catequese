@@ -697,7 +697,7 @@ export default function Dashboard() {
           )}>
             {aniversariantesMes.map((c, i) => {
               const rotations = ['-2deg', '2deg', '-1deg', '3deg'];
-              const isHoje = c.day === hoje.getDate();
+              const isHoje = c.day === hoje.getDate() && c.month === hoje.getMonth();
               const dateStr = `${String(c.day).padStart(2, '0')}/${String(c.month + 1).padStart(2, '0')}`;
               return (
                 <div
