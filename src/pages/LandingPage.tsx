@@ -35,7 +35,7 @@ const FEATURES = [
   { title: "Aniversariantes", desc: "Alertas de nascimento e batismo dos seus catequizandos.", img: "/acesso_agenda.jpg", color: "#ec4899" },
   { title: "Atividades e Eventos", desc: "Cadastre celebrações, retiros e eventos no calendário da turma.", img: "/acesso_atividades.jpg", color: "#d97706" },
   { title: "Módulo de Jogos", desc: "Biblioteca interativa de jogos educativos para a catequese.", img: "/acesso_jogos.jpg", color: "#8b5cf6" },
-  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", img: "/acesso_compartilhar.jpg", color: "#10b981" },
+  { title: "Mural de Fotos", desc: "Eternize as memórias da turma com um mural de lembranças.", img: "/acesso_mural.png", color: "#10b981" },
   { title: "Trabalho em Equipe", desc: "Compartilhe a turma e co-gerencie com outros catequistas.", img: "/acesso_cadastros.jpg", color: "#0ea5e9" },
   { title: "Catequese em Família", desc: "Crie enquetes e missões para manter as famílias engajadas.", img: "/acesso_conecta.jpg", color: "#a855f7" },
 ];
@@ -109,7 +109,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-5 pt-8 pb-10 text-center">
+      <section className="relative z-10 flex flex-col items-center justify-center px-5 pt-28 pb-10 text-center">
 
         {/* Linha ornamental topo */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -204,7 +204,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── SEÇÃO DE FUNCIONALIDADES ── */}
-      <section className="relative z-10 px-5 pb-20 pt-8 max-w-lg mx-auto">
+      <section className="relative z-10 px-5 pb-20 pt-2 max-w-lg mx-auto -mt-4">
         {/* Título seção */}
         <div className="text-center mb-8">
           <OrnamentalDivider />

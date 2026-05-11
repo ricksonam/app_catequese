@@ -92,38 +92,27 @@ export default function PWAInstallBanner() {
   if (!showBanner || isInstalled) return null;
 
   return (
-    <div className="w-full flex justify-center sticky top-[76px] z-[70] mb-3 px-2 animate-in slide-in-from-top-4 fade-in duration-500 pointer-events-none">
-      <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/10 rounded-[24px] px-3 py-2 flex items-center gap-3 w-full max-w-sm pointer-events-auto">
-        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-          <Smartphone className="w-4 h-4 text-primary animate-pulse" />
+    <div className="fixed top-[82px] right-4 z-[70] animate-in slide-in-from-right-4 fade-in duration-500 pointer-events-none">
+      <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-primary/20 shadow-lg shadow-primary/10 rounded-2xl px-3 py-2 flex items-center gap-2 max-w-[200px] pointer-events-auto overflow-hidden">
+        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+          <Smartphone className="w-3.5 h-3.5 text-primary animate-pulse" />
         </div>
         
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-[0.1em] text-foreground truncate">
-            App iCatequese
+          <p className="text-[9px] font-black uppercase tracking-[0.05em] text-foreground truncate">
+            Instalar App
           </p>
-          <p className="text-[9px] text-muted-foreground leading-tight truncate">
-            Instale para acesso rápido
-          </p>
+          <button 
+            onClick={handleInstall}
+            disabled={installing}
+            className="text-[8px] font-bold text-primary hover:underline transition-all uppercase tracking-wider text-left block truncate"
+          >
+            {installing ? "Instalando..." : "Baixar agora"}
+          </button>
         </div>
-        
-        <button
-          onClick={handleInstall}
-          disabled={installing}
-          className="bg-primary text-white rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest shadow-md shadow-primary/20 hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
-        >
-          {installing ? (
-            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          ) : (
-            <Download className="w-3 h-3" />
-          )}
-          {isIOS ? "Como Instalar" : "Instalar"}
-        </button>
-        
-        <button
+
+        <button 
           onClick={handleDismiss}
-          className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center shrink-0 transition-colors"
-          aria-label="Fechar"
         >
           <X className="w-3 h-3 text-muted-foreground" />
         </button>

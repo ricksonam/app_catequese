@@ -32,7 +32,7 @@ export default function SplashScreen() {
         </div>
         <div className="flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10 backdrop-blur-md">
            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-           <p className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Preparando encontro...</p>
+           <p className="text-[10px] font-black text-primary uppercase tracking-[0.25em]">Gestão pastoral inteligente</p>
         </div>
       </div>
 
