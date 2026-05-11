@@ -259,7 +259,7 @@ export default function TurmaDetail() {
             {!turma.isShared && turma.codigoAcesso && (
               <button 
                 onClick={() => setShareWarningOpen(true)}
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 border-2 border-emerald-500/20 text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm w-auto min-w-[200px]"
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 border-2 border-black text-emerald-700 hover:bg-emerald-100/50 transition-all active:scale-95 group shadow-sm w-auto min-w-[200px]"
               >
                 <Link2 className="h-4 w-4" />
                 <span className="text-xs font-black uppercase tracking-widest">Código da Turma</span>
