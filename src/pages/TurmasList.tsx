@@ -129,7 +129,7 @@ export default function TurmasList() {
                 key={turma.id}
                 onClick={() => handleTurmaClick(turma.id)}
                 className={cn(
-                  "group relative overflow-hidden rounded-[1.75rem] cursor-pointer transition-all shadow-lg hover:shadow-2xl animate-fade-in animate-card-float",
+                  "group relative overflow-hidden rounded-[1.75rem] cursor-pointer transition-all shadow-lg hover:shadow-2xl border-2 border-white/80 animate-fade-in animate-card-float",
                   isClicking && "animate-card-select shadow-none"
                 )}
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
@@ -138,7 +138,7 @@ export default function TurmasList() {
                 <div className={`absolute inset-0 bg-gradient-to-br ${palette.bg} transition-transform duration-700 group-hover:scale-105`} />
                 {/* Subtle light blobs */}
                 <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/20 blur-3xl pointer-events-none group-hover:bg-white/30 transition-colors duration-500" />
-                <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-black/20 blur-2xl pointer-events-none group-hover:bg-black/10 transition-colors duration-500" />
+
 
                 <div className="relative z-10 flex items-center gap-4 p-5">
                   {/* Animated Icon */}

@@ -812,7 +812,13 @@ export default function Dashboard() {
                     
                     {/* Botão Trocar (Visual) */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                      <div className="absolute top-2.5 right-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2.5 right-3 flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                        {selectedTurmaId !== 'all' && turmas[0]?.id === selectedTurmaId && (
+                          <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg text-[7px] font-black uppercase tracking-widest bg-yellow-400 text-yellow-950 border border-yellow-500/20 shadow-sm">
+                            <Star className="h-2 w-2" />
+                            Principal
+                          </div>
+                        )}
                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[7px] font-black uppercase tracking-widest bg-white/10 text-white border border-white/20">
                           <RefreshCw className="h-2 w-2" />
                           Trocar
