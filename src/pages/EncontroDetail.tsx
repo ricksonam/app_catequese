@@ -253,99 +253,73 @@ export default function EncontroDetail() {
         </button>
       </div>
 
-      {/* Card Premium de Detalhes e Apoio */}
-      <div className="float-card overflow-hidden animate-float-up" style={{ animationDelay: '60ms' }}>
-        {/* Header do Card */}
-        <div className="px-5 py-3.5 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-black/5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <p className="text-[11px] font-black text-primary uppercase tracking-[0.15em]">Detalhes & Apoio</p>
+      {/* Card de Informações Simplificado */}
+      <div className="float-card overflow-hidden animate-float-up px-5 py-4 space-y-4" style={{ animationDelay: '60ms' }}>
+        {/* Linha Principal: Data e Status Rápido */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <CalendarDays className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-foreground capitalize leading-tight">
+                {formatarDataVigente(encontro.data, { weekday: 'long', day: '2-digit', month: 'long' })}
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-muted/40 px-2 py-0.5 rounded-md">
+                  {tempoTotal} min
+                </span>
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">
+                  {encontro.presencas.length}/{catequizandos.length} presentes
+                </span>
+              </div>
+            </div>
           </div>
-          <CalendarDays className="h-4 w-4 text-primary/40" />
+          <Sparkles className="h-4 w-4 text-primary/30" />
         </div>
 
-        <div className="divide-y divide-black/5">
-          {/* Grid de Informações Rápidas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-black/5">
-            {/* Data */}
-            <div className="flex items-center px-5 py-4 gap-3">
-              <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center shrink-0">
-                <CalendarDays className="h-5 w-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Data do Encontro</p>
-                <p className="text-[13px] font-bold text-foreground capitalize truncate">
-                  {formatarDataVigente(encontro.data, { weekday: 'long', day: '2-digit', month: 'long' })}
+        {/* Informações de Transferência ou Cancelamento */}
+        {(encontro.dataTransferida || encontro.motivoCancelamento) && (
+          <div className="space-y-2 pt-1">
+            {encontro.dataTransferida && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-xl border border-amber-100">
+                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <p className="text-[11px] font-bold text-amber-700">
+                  Transferido para {formatarDataVigente(encontro.dataTransferida, { day: '2-digit', month: 'long' })}
                 </p>
               </div>
-            </div>
-
-            {/* Participação e Tempo */}
-            <div className="flex items-center px-5 py-4 gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/8 flex items-center justify-center shrink-0">
-                <Users className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Participação & Tempo</p>
-                <p className="text-[13px] font-bold text-foreground">
-                  {encontro.presencas.length}/{catequizandos.length} presentes • {tempoTotal} min
+            )}
+            {encontro.motivoCancelamento && (
+              <div className="flex items-start gap-2 px-3 py-2 bg-red-50 rounded-xl border border-red-100">
+                <AlertCircle className="h-3.5 w-3.5 text-red-500 mt-0.5 shrink-0" />
+                <p className="text-[11px] font-bold text-red-700 leading-tight">
+                  Cancelado: {encontro.motivoCancelamento}
                 </p>
               </div>
-            </div>
+            )}
           </div>
+        )}
 
-          {/* Seção de Transferência (se houver) */}
-          {encontro.dataTransferida && (
-            <div className="flex items-center px-5 py-3 gap-3 bg-amber-500/5 border-l-4 border-amber-500">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
-                <CalendarDays className="h-4 w-4 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-[9px] font-black text-amber-600/70 uppercase tracking-widest leading-none">Transferido para</p>
-                <p className="text-sm font-bold text-amber-700 capitalize">
-                  {formatarDataVigente(encontro.dataTransferida, { weekday: 'long', day: '2-digit', month: 'long' })}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Leitura Bíblica */}
+        {/* Leitura e Material - Seção Compacta */}
+        <div className="space-y-3 pt-3 border-t border-black/5">
           {encontro.leituraBiblica && (
-            <div className="flex items-center px-5 py-4 gap-3 bg-liturgical/5">
-              <div className="w-9 h-9 rounded-xl bg-liturgical/10 flex items-center justify-center shrink-0">
-                <BookOpen className="h-5 w-5 text-liturgical" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-black text-liturgical/70 uppercase tracking-widest">Palavra de Deus</p>
-                <p className="text-sm font-black text-foreground font-liturgical italic">"{encontro.leituraBiblica}"</p>
-              </div>
+            <div className="flex items-start gap-3">
+              <BookOpen className="h-4 w-4 text-liturgical/60 mt-0.5 shrink-0" />
+              <p className="text-[13px] font-medium text-foreground/90 leading-snug">
+                <span className="text-[10px] font-black uppercase text-liturgical tracking-[0.1em] mr-2">Palavra:</span>
+                {encontro.leituraBiblica}
+              </p>
             </div>
           )}
 
-          {/* Material de Apoio Section */}
           {encontro.materialApoio && (
-            <div className="p-5 bg-blue-50/40">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <FileText className="h-4 w-4 text-blue-600" />
-                </div>
-                <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Material de Apoio</p>
-              </div>
-              <div className="text-[13px] text-foreground/80 whitespace-pre-wrap leading-relaxed p-4 rounded-2xl bg-white border border-blue-100 shadow-sm font-medium italic">
-                {encontro.materialApoio}
-              </div>
-            </div>
-          )}
-          
-          {/* Motivo do Cancelamento */}
-          {encontro.motivoCancelamento && (
-            <div className="flex items-center px-5 py-4 gap-3 bg-red-50 border-l-4 border-red-500">
-              <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-                <AlertCircle className="h-5 w-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-red-600 uppercase tracking-widest leading-none mb-1">Motivo do Cancelamento</p>
-                <p className="text-sm font-semibold text-red-700 leading-tight">{encontro.motivoCancelamento}</p>
+            <div className="flex items-start gap-3">
+              <FileText className="h-4 w-4 text-blue-500/60 mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-[0.1em] block mb-1">Material de Apoio:</span>
+                <p className="text-[13px] text-muted-foreground leading-relaxed italic">
+                  {encontro.materialApoio}
+                </p>
               </div>
             </div>
           )}
