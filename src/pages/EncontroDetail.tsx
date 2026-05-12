@@ -196,7 +196,7 @@ export default function EncontroDetail() {
           </button>
         </div>
         
-        <div className="flex flex-col items-center w-full px-6 mb-2">
+        <div className="flex flex-col items-center w-full px-6 mb-2 -mt-3">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full mb-2 shadow-sm border border-primary/10">Tema do Encontro</p>
           <h1 className="text-xl font-black text-foreground leading-tight text-center break-words">{encontro.tema}</h1>
           <p className="text-[10px] font-bold text-muted-foreground mt-1.5 bg-muted/40 px-3 py-1 rounded-full">{turma?.nome}</p>
