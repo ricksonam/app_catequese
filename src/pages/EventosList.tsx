@@ -300,7 +300,7 @@ export default function EventosList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
+        <DialogContent hideClose className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {viewItem && (
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
               {/* Header Bar Clean */}
