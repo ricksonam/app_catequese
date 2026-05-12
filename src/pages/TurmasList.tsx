@@ -108,11 +108,11 @@ export default function TurmasList() {
         {/* Nova Turma Button */}
         <button
           onClick={() => navigate("/turmas/nova")}
-          className="flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-[1.5rem] text-white shadow-xl active:scale-95 transition-all font-bold text-[9px] uppercase tracking-wider hover:brightness-110 border-2 border-blue-400/30 shrink-0"
+          className="flex flex-col items-center justify-center gap-0 px-4 py-2 rounded-[1.5rem] text-white shadow-xl active:scale-95 transition-all font-bold text-[11px] uppercase tracking-wider hover:brightness-110 border-2 border-blue-400/30 shrink-0"
           style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
         >
-          <Plus className="h-5 w-5" />
-          <span className="whitespace-nowrap">Nova Turma</span>
+          <Plus className="h-8 w-8" />
+          <span className="whitespace-nowrap -mt-1">Nova Turma</span>
         </button>
       </div>
 
