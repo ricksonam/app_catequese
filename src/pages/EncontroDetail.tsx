@@ -216,56 +216,61 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 px-4 -mt-2">
-        {/* Status */}
+      <div className="flex flex-col items-center gap-3 px-4 -mt-3">
+        {/* Status Chip */}
         <button 
           onClick={() => setShowStatus(true)} 
           className={cn(
-            "flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 group",
+            "flex items-center gap-2 px-5 py-1.5 rounded-full border-2 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 group",
             currentStatus.bg, currentStatus.border
           )}
         >
-           <div className="w-9 h-9 rounded-xl mb-1.5 flex items-center justify-center bg-white/50 border border-white/50 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm animate-pulse">
-              {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
-              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
-              {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
-              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-4 w-4 ${currentStatus.text}`} />}
+           <div className="animate-pulse flex items-center justify-center">
+              {currentStatus.value === 'pendente' && <Clock className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
+              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
+              {currentStatus.value === 'transferido' && <CalendarDays className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
+              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
            </div>
-           <span className={`text-[9px] font-black uppercase tracking-widest ${currentStatus.text}`}>Status: {currentStatus.label}</span>
-        </button>
-        
-        {/* Presença */}
-        <button 
-          onClick={() => setShowPresenca(true)} 
-          className="flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
-        >
-           <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 shadow-sm animate-pulse">
-             <Users className="h-4 w-4 text-orange-600" />
-           </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-orange-700">Presença</span>
+           <span className={`text-[10px] font-black uppercase tracking-widest ${currentStatus.text}`}>
+             {currentStatus.label} ▾
+           </span>
         </button>
 
-        {/* Avaliar */}
-        <button 
-          onClick={() => setShowOcorrencias(true)} 
-          className="flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
-        >
-           <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm animate-pulse">
-             <FileText className="h-4 w-4 text-blue-600" />
-           </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-blue-700">Avaliar</span>
-        </button>
+        {/* Row of Actions */}
+        <div className="grid grid-cols-3 gap-2 w-full">
+          {/* Presença */}
+          <button 
+            onClick={() => setShowPresenca(true)} 
+            className="flex flex-col items-center justify-center py-3 px-1 rounded-2xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+          >
+             <div className="w-8 h-8 flex items-center justify-center bg-white/50 rounded-xl mb-1 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
+               <Users className="h-4 w-4 text-orange-600" />
+             </div>
+             <span className="text-[8px] font-black uppercase tracking-wider text-orange-700">Presença</span>
+          </button>
 
-        {/* Apresentar */}
-        <button 
-          onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} 
-          className="flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 border-liturgical/20 bg-gradient-to-br from-liturgical/5 to-liturgical/10 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
-        >
-           <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 shadow-sm animate-pulse">
-             <Play className="h-4 w-4 text-liturgical" />
-           </div>
-           <span className="text-[9px] font-black uppercase tracking-widest text-liturgical">Apresentar</span>
-        </button>
+          {/* Avaliar */}
+          <button 
+            onClick={() => setShowOcorrencias(true)} 
+            className="flex flex-col items-center justify-center py-3 px-1 rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+          >
+             <div className="w-8 h-8 flex items-center justify-center bg-white/50 rounded-xl mb-1 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
+               <FileText className="h-4 w-4 text-blue-600" />
+             </div>
+             <span className="text-[8px] font-black uppercase tracking-wider text-blue-700">Avaliar</span>
+          </button>
+
+          {/* Apresentar */}
+          <button 
+            onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} 
+            className="flex flex-col items-center justify-center py-3 px-1 rounded-2xl border-2 border-liturgical/20 bg-gradient-to-br from-liturgical/5 to-liturgical/10 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+          >
+             <div className="w-8 h-8 flex items-center justify-center bg-white/50 rounded-xl mb-1 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
+               <Play className="h-4 w-4 text-liturgical" />
+             </div>
+             <span className="text-[8px] font-black uppercase tracking-wider text-liturgical">Apresentar</span>
+          </button>
+        </div>
       </div>
 
       {/* Card de Informações Simplificado */}
