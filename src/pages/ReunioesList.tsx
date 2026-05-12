@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades } from "@/hooks/useSupabaseData";
+import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X, Play, FileSignature, CalendarDays, Book, Sparkles } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
@@ -47,6 +47,8 @@ interface FormData {
   encontrosPreparados?: string[];
   eventosPreparados?: string[];
   servicosLiturgia?: Record<string, string>;
+  ataDecisoes?: string;
+  outrosParticipantes?: string[];
 }
 
 const emptyForm: FormData = { 
@@ -70,7 +72,9 @@ const emptyForm: FormData = {
     'preces': '',
     'cantores': '',
     'celebrante': ''
-  }
+  },
+  ataDecisoes: "",
+  outrosParticipantes: []
 };
 
 const fillFormFromItem = (item: Reuniao): FormData => ({
@@ -87,6 +91,8 @@ const fillFormFromItem = (item: Reuniao): FormData => ({
   encontrosPreparados: item.encontrosPreparados || [],
   eventosPreparados: item.eventosPreparados || [],
   servicosLiturgia: item.servicosLiturgia || emptyForm.servicosLiturgia,
+  ataDecisoes: item.ataDecisoes || "",
+  outrosParticipantes: item.outrosParticipantes || [],
 });
 
 const tipoColors: Record<string, string> = {
@@ -113,6 +119,7 @@ export default function ReunioesList() {
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: list = [], isLoading } = useReunioes(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
+  const { data: catequistas = [] } = useCatequistas();
   const { data: encontros = [] } = useEncontros(id);
   const { data: atividades = [] } = useAtividades(id);
   const mutation = useReuniaoMutation();
@@ -161,7 +168,9 @@ export default function ReunioesList() {
           data: form.data, 
           local: form.local, 
           horario: form.horario, 
-          observacao: form.observacao 
+          observacao: form.observacao,
+          ataDecisoes: form.ataDecisoes,
+          outrosParticipantes: form.outrosParticipantes
         });
         setEditingId(null); setViewItem(null); toast.success("Reunião atualizada!");
       } else {
@@ -181,6 +190,8 @@ export default function ReunioesList() {
           local: form.local, 
           horario: form.horario, 
           observacao: form.observacao, 
+          ataDecisoes: form.ataDecisoes,
+          outrosParticipantes: form.outrosParticipantes,
           presencas: [], 
           criadoEm: new Date().toISOString() 
         });
@@ -680,6 +691,16 @@ export default function ReunioesList() {
 
                 {/* --- CAMPOS GERAIS (RESTANTES) --- */}
                 <div className="space-y-4">
+                  <div>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Decisões da Reunião / Pós Registro</label>
+                    <textarea 
+                      value={form.ataDecisoes} 
+                      onChange={(e) => updateField("ataDecisoes", e.target.value)} 
+                      placeholder="Registre aqui o que foi decidido, conclusões das pautas, etc..." 
+                      className="form-input min-h-[120px] resize-y border-2 border-zinc-900 focus:ring-zinc-900" 
+                    />
+                  </div>
+
                   <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
                   
                   <div>
@@ -823,6 +844,24 @@ export default function ReunioesList() {
                    </div>
                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
                 </div>
+
+                {viewItem.ataDecisoes && (
+                  <div className="bg-zinc-900 text-white rounded-3xl p-6 shadow-xl space-y-4 border-2 border-zinc-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
+                        <FileSignature className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Decisões & Registro</h4>
+                        <p className="text-sm font-bold">O que foi definido</p>
+                      </div>
+                    </div>
+                    <div className="h-px bg-white/10" />
+                    <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium opacity-90">
+                      {viewItem.ataDecisoes}
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Tempo */}
@@ -969,7 +1008,10 @@ export default function ReunioesList() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-success/10 text-success hover:bg-success/20 transition-all font-bold text-xs ring-1 ring-inset ring-success/20">
                     <Users className="h-4 w-4" /> 
-                    <span>Lista de Presença <span className="bg-success text-white rounded-full px-1.5 py-0.5 ml-1 text-[10px]">{(viewItem.presencas||[]).length}</span></span>
+                    <span>Lista de Presença <span className="bg-success text-white rounded-full px-1.5 py-0.5 ml-1 text-[10px]">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span></span>
+                  </button>
+                  <button onClick={() => { navigate(`/turmas/${id}/reunioes/${viewItem.id}/apresentacao`); }} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-100 text-violet-700 hover:bg-violet-200 transition-all font-bold text-xs ring-1 ring-inset ring-violet-200">
+                    <Play className="h-4 w-4 fill-current" /> <span>Apresentar</span>
                   </button>
                 </div>
               </div>
@@ -979,24 +1021,98 @@ export default function ReunioesList() {
       </Dialog>
 
       <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
-        <DialogContent className="rounded-2xl border-border/30 max-w-sm">
-          <DialogHeader><DialogTitle className="px-2">Presença - {presencaItem?.nome}</DialogTitle></DialogHeader>
-          {catequizandos.length === 0 ? <p className="text-sm text-muted-foreground text-center py-4">Nenhum catequizando matriculado</p> : (
-            <div className="space-y-1 mt-2 max-h-[50vh] overflow-y-auto px-1">
-              {catequizandos.map(c => {
-                const present = (presencaItem?.presencas || []).includes(c.id);
-                return (
-                  <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors border ${present ? 'bg-success/10 border-success/20' : 'bg-muted/30 border-transparent hover:bg-muted/50'}`}>
-                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${present ? 'bg-success border-success' : 'border-black/10'}`}>{present && <CheckCircle2 className="h-3 w-3 text-white" />}</div>
-                    <div className="flex-1 text-left min-w-0">
-                      <span className={`font-bold block truncate leading-tight ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.nome}</span>
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-tight truncate block mt-0.5">Resp: {c.responsavel || 'Não informado'}</span>
-                    </div>
-                  </button>
-                );
-              })}
+        <DialogContent className="rounded-3xl border-border/30 max-w-sm p-0 overflow-hidden">
+          <div className="p-6 bg-zinc-900 text-white">
+            <DialogHeader><DialogTitle className="text-white">Presença na Reunião</DialogTitle></DialogHeader>
+            <p className="text-[10px] font-black uppercase opacity-60 mt-1">Catequistas e Participantes</p>
+          </div>
+          
+          <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            {/* Lista de Catequistas */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Catequistas</label>
+              {catequistas.length === 0 ? <p className="text-xs text-muted-foreground text-center py-2">Nenhum catequista encontrado</p> : (
+                <div className="space-y-1">
+                  {catequistas.map(c => {
+                    const present = (presencaItem?.presencas || []).includes(c.id);
+                    return (
+                      <button key={c.id} onClick={() => togglePresenca(c.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors border ${present ? 'bg-success/10 border-success/20' : 'bg-muted/30 border-transparent hover:bg-muted/50'}`}>
+                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${present ? 'bg-success border-success' : 'border-black/10'}`}>{present && <CheckCircle2 className="h-3 w-3 text-white" />}</div>
+                        <div className="flex-1 text-left min-w-0">
+                          <span className={`font-bold block truncate leading-tight ${present ? 'text-foreground' : 'text-muted-foreground'}`}>{c.nome}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="h-px bg-zinc-100" />
+
+            {/* Outros Participantes */}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Outros Participantes</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  id="add-other-name"
+                  placeholder="Nome do participante..." 
+                  className="flex-1 text-xs p-2.5 rounded-xl border border-zinc-200 focus:ring-zinc-900" 
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.currentTarget;
+                      const name = input.value.trim();
+                      if (name && presencaItem) {
+                        const next = [...(presencaItem.outrosParticipantes || []), name];
+                        const newItem = { ...presencaItem, outrosParticipantes: next };
+                        mutation.mutate(newItem);
+                        setPresencaItem(newItem);
+                        input.value = "";
+                      }
+                    }
+                  }}
+                />
+                <button 
+                  onClick={() => {
+                    const input = document.getElementById('add-other-name') as HTMLInputElement;
+                    const name = input.value.trim();
+                    if (name && presencaItem) {
+                      const next = [...(presencaItem.outrosParticipantes || []), name];
+                      const newItem = { ...presencaItem, outrosParticipantes: next };
+                      mutation.mutate(newItem);
+                      setPresencaItem(newItem);
+                      input.value = "";
+                    }
+                  }}
+                  className="w-10 h-10 bg-zinc-900 text-white rounded-xl flex items-center justify-center shadow-sm active:scale-95 transition-all"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+
+              {presencaItem?.outrosParticipantes && presencaItem.outrosParticipantes.length > 0 && (
+                <div className="space-y-1 mt-2">
+                  {presencaItem.outrosParticipantes.map((name, i) => (
+                    <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 border border-zinc-100">
+                      <span className="text-xs font-bold text-zinc-700">{name}</span>
+                      <button 
+                        onClick={() => {
+                          const next = presencaItem.outrosParticipantes?.filter((_, idx) => idx !== i);
+                          const newItem = { ...presencaItem, outrosParticipantes: next };
+                          mutation.mutate(newItem);
+                          setPresencaItem(newItem);
+                        }}
+                        className="p-1 text-zinc-300 hover:text-red-500 transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
       <DeleteConfirmationDialog

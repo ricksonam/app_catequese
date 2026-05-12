@@ -175,6 +175,8 @@ export interface Reuniao {
   horario: string;
   observacao: string;
   presencas: string[];
+  outrosParticipantes?: string[];
+  ataDecisoes?: string;
   criadoEm: string;
 }
 
