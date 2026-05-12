@@ -1244,7 +1244,7 @@ export default function CatequizandosList() {
                          </div>
                       </div>
                    </div>
-                   <div className="flex-1 text-center sm:text-left pt-2 relative">
+                   <div className="flex-1 text-center sm:text-left pt-12 sm:pt-2 relative">
                        <div className="absolute top-0 right-0 flex gap-2">
                           <button onClick={handleEdit} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95">
                              <Pencil className="h-4 w-4" />
