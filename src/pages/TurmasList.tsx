@@ -79,7 +79,7 @@ export default function TurmasList() {
       {/* Join with Code Card — Premium */}
       <div
         onClick={() => setJoinModalOpen(true)}
-        className="group relative overflow-hidden flex items-center gap-4 p-5 rounded-[2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-slate-900 to-slate-800"
+        className="group relative overflow-hidden flex items-center gap-4 p-5 rounded-[2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-zinc-600 to-zinc-700"
         style={{ animationDelay: "0ms" }}
       >
         {/* Glow blobs */}
@@ -94,13 +94,13 @@ export default function TurmasList() {
           </div>
         </div>
 
-        <div className="relative z-10 flex-1">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
           <p 
             className="text-xl sm:text-2xl font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
           >
             Entrar em uma Turma
           </p>
-          <p className="text-[10px] sm:text-[11px] font-bold text-slate-300 uppercase tracking-[0.2em] mt-1.5 drop-shadow-sm">
+          <p className="text-[10px] sm:text-[11px] font-bold text-zinc-200 uppercase tracking-[0.2em] mt-1.5 drop-shadow-sm">
             Com código de acesso
           </p>
         </div>
