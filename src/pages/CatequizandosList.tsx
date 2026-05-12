@@ -1395,35 +1395,6 @@ export default function CatequizandosList() {
             </div>
           )}
 
-                   {viewItem.dadosPastorais?.participacaoPastoral && (
-                     <div className="p-4 bg-orange-50/50 border border-orange-100 rounded-2xl">
-                        <span className="text-[9px] font-black text-orange-400 uppercase tracking-[0.2em] block mb-2">Engajamento Comunitário</span>
-                        <p className="text-sm font-bold text-zinc-900 italic leading-relaxed">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
-                     </div>
-                   )}
-                </div>
-
-                {/* Observações Premium */}
-                {viewItem.observacao && (
-                  <div className="bg-zinc-900 rounded-3xl p-6 text-white shadow-xl">
-                    <div className="flex items-center gap-2 mb-4">
-                       <MessageSquare className="w-4 h-4 text-primary" />
-                       <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Memorial / Observações</h4>
-                    </div>
-                    <p className="text-sm font-medium leading-relaxed text-zinc-300 whitespace-pre-wrap italic">"{viewItem.observacao}"</p>
-                  </div>
-                )}
-
-                {/* Footer */}
-                <div className="pt-8 text-center space-y-1">
-                   <p className="text-[8px] font-black text-zinc-400 uppercase tracking-[0.3em]">Registro de Acolhida</p>
-                   <p className="text-[10px] font-bold text-zinc-500">
-                      {viewItem.criadoEm ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(viewItem.criadoEm)) : '—'}
-                   </p>
-                </div>
-              </div>
-            </div>
-          )}
           {viewItem && editMode && (
             <div className="p-5 sm:p-6 bg-background rounded-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
