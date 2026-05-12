@@ -12,6 +12,7 @@ import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { generateUUID, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 
 
@@ -130,20 +131,32 @@ const emptyForm: CatequizandoForm = {
   responsaveis: [{ id: generateUUID(), nome: "", telefone: "", vinculo: 'pais' }],
 };
 
-const statusConfig: Record<CatequizandoStatus, { label: string; color: string; activeClasses: string }> = {
+const statusConfig: Record<CatequizandoStatus, { label: string; color: string; bg: string; text: string; border: string; icon: any; activeClasses: string }> = {
   ativo: { 
     label: "Ativo", 
-    color: "bg-emerald-500 text-white", 
+    color: "bg-emerald-500 text-white",
+    bg: "bg-emerald-50",
+    text: "text-emerald-600",
+    border: "border-emerald-200",
+    icon: CheckCircle2,
     activeClasses: "bg-emerald-600 text-white border-emerald-700 shadow-emerald-200" 
   },
   desistente: { 
     label: "Desistente", 
-    color: "bg-orange-500 text-white", 
+    color: "bg-orange-500 text-white",
+    bg: "bg-orange-50",
+    text: "text-orange-600",
+    border: "border-orange-200",
+    icon: X,
     activeClasses: "bg-orange-600 text-white border-orange-700 shadow-orange-200" 
   },
   afastado: { 
     label: "Afastado", 
-    color: "bg-red-500 text-white", 
+    color: "bg-red-500 text-white",
+    bg: "bg-red-50",
+    text: "text-red-600",
+    border: "border-red-200",
+    icon: AlertCircle,
     activeClasses: "bg-red-600 text-white border-red-700 shadow-red-200" 
   },
 };
@@ -1244,15 +1257,7 @@ export default function CatequizandosList() {
                          </div>
                       </div>
                    </div>
-                   <div className="flex-1 text-center pt-12 sm:pt-2 relative">
-                       <div className="absolute top-0 right-0 flex gap-2">
-                          <button onClick={handleEdit} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95">
-                             <Pencil className="h-4 w-4" />
-                          </button>
-                          <button onClick={handleDelete} className="w-8 h-8 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive border border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95">
-                             <Trash2 className="h-4 w-4" />
-                          </button>
-                       </div>
+                   <div className="flex-1 text-center pt-2 relative">
                       <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
                       <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
                          <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs bg-white border-2 border-zinc-100 px-3 py-1.5 rounded-full shadow-sm">
@@ -1268,28 +1273,63 @@ export default function CatequizandosList() {
                    </div>
                 </div>
 
-                {/* Status Quick Switch */}
-                <div className="bg-white rounded-3xl p-4 border-2 border-zinc-100 shadow-xl">
-                   <h3 className="text-sm font-black text-black uppercase tracking-widest mb-3 text-center">Alterar Situação</h3>
-                   <div className="grid grid-cols-3 gap-2">
-                      {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
-                        const isAtivo = (viewItem.status || 'ativo') === s;
-                        const config = statusConfig[s];
-                        return (
-                          <button 
-                            key={s} 
-                            onClick={() => handleStatusChange(viewItem, s)} 
-                            className={cn(
-                              "py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 active:scale-95",
-                              isAtivo 
-                                ? config.activeClasses
-                                : "bg-zinc-50 text-zinc-400 border-zinc-100 hover:border-zinc-200"
-                            )}
-                          >
-                             {config.label}
-                          </button>
-                        );
-                      })}
+                {/* Actions Row */}
+                <div className="flex flex-wrap items-center justify-center gap-4 py-2 border-y border-zinc-100 bg-white/50 backdrop-blur-sm -mx-6 px-6">
+                   {/* Status Chip Dropdown */}
+                   <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                         <button 
+                           className={cn(
+                             "flex items-center gap-2.5 px-4 py-2 rounded-full border-2 transition-all active:scale-95 group shadow-sm",
+                             statusConfig[viewItem.status || 'ativo'].bg,
+                             statusConfig[viewItem.status || 'ativo'].border
+                           )}
+                         >
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/80 shadow-sm">
+                               {(() => {
+                                  const Icon = statusConfig[viewItem.status || 'ativo'].icon;
+                                  return <Icon className={cn("h-3.5 w-3.5", statusConfig[viewItem.status || 'ativo'].text)} />;
+                               })()}
+                            </div>
+                            <div className="flex flex-col items-start leading-tight">
+                               <span className="text-[7px] font-black uppercase tracking-widest opacity-50">Status</span>
+                               <span className={cn("text-[10px] font-black uppercase tracking-widest", statusConfig[viewItem.status || 'ativo'].text)}>
+                                  {statusConfig[viewItem.status || 'ativo'].label}
+                               </span>
+                            </div>
+                            <ChevronDown className="h-3 w-3 opacity-40 group-hover:translate-y-0.5 transition-transform" />
+                         </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="center" className="rounded-2xl p-2 border-2 border-zinc-100 shadow-xl min-w-[160px] z-[100]">
+                         {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
+                            const config = statusConfig[s];
+                            const Icon = config.icon;
+                            return (
+                               <DropdownMenuItem 
+                                 key={s} 
+                                 onClick={() => handleStatusChange(viewItem, s)}
+                                 className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-zinc-50 focus:bg-zinc-50 transition-colors"
+                               >
+                                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", config.bg)}>
+                                     <Icon className={cn("w-4 h-4", config.text)} />
+                                  </div>
+                                  <span className="text-xs font-black uppercase tracking-widest text-zinc-600">{config.label}</span>
+                               </DropdownMenuItem>
+                            );
+                         })}
+                      </DropdownMenuContent>
+                   </DropdownMenu>
+
+                   <div className="h-8 w-px bg-zinc-100 mx-1" />
+
+                   {/* Edit & Delete */}
+                   <div className="flex items-center gap-3">
+                      <button onClick={handleEdit} className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group">
+                         <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                      </button>
+                      <button onClick={handleDelete} className="w-10 h-10 flex items-center justify-center rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group">
+                         <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                      </button>
                    </div>
                 </div>
 
