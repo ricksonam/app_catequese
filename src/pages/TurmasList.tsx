@@ -73,24 +73,21 @@ export default function TurmasList() {
         {/* Join with Code Card — Premium & Compact */}
         <div
           onClick={() => setJoinModalOpen(true)}
-          className="flex-1 group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.5rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-zinc-600 to-zinc-700"
+          className="flex-1 group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.5rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float border-2 border-yellow-400/40 bg-gradient-to-br from-zinc-700 to-zinc-800"
           style={{ animationDelay: "0ms" }}
         >
           {/* Glow blobs */}
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none group-hover:bg-[#D4AF37]/20 transition-colors duration-700 -mr-10 -mt-10" />
+          <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-yellow-400/20 blur-3xl pointer-events-none group-hover:bg-yellow-400/30 transition-colors duration-700 -mr-10 -mt-10" />
           <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
 
           {/* Animated icon */}
-          <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] border border-white/20 flex items-center justify-center text-slate-900 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
-            <Link2 className="h-5 w-5" />
-            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-              <Sparkles className="h-2 w-2 text-[#B8860B] animate-pulse" />
-            </div>
+          <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 border border-white/30 flex items-center justify-center text-slate-900 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
+            <Link2 className="h-5 w-5 animate-pulse" />
           </div>
 
           <div className="relative z-10 flex-1 flex flex-col items-start justify-center">
             <p 
-              className="text-sm sm:text-base font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
+              className="text-sm sm:text-base font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-yellow-400 transition-colors"
             >
               Entrar em uma Turma
             </p>
@@ -99,8 +96,8 @@ export default function TurmasList() {
             </p>
           </div>
           
-          {/* More visible arrow - hidden on very small screens if needed, but let's keep it */}
-          <div className="hidden sm:flex w-7 h-7 rounded-full bg-white/10 items-center justify-center border border-white/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] group-hover:text-slate-900 transition-all duration-300 shadow-inner">
+          {/* More visible arrow */}
+          <div className="hidden sm:flex w-7 h-7 rounded-full bg-white/10 items-center justify-center border border-white/20 group-hover:bg-yellow-400 group-hover:border-yellow-400 group-hover:text-slate-900 transition-all duration-300 shadow-inner">
             <ArrowRight className="h-3 w-3 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
           </div>
         </div>
@@ -120,10 +117,7 @@ export default function TurmasList() {
 
           {/* Icon Container with animation */}
           <div className="relative z-10 w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 group-hover:bg-white/20 transition-all duration-500">
-            <Plus className="h-7 w-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
-            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-              <Sparkles className="h-2.5 w-2.5 text-blue-600 animate-pulse" />
-            </div>
+            <Plus className="h-7 w-7 text-white animate-pulse drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
           </div>
           
           <span className="relative z-10 whitespace-nowrap mt-2 drop-shadow-md group-hover:text-blue-100 transition-colors">
