@@ -469,7 +469,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-bold text-foreground">Grade de Frequência — {turma.nome}</p>
-                      <p className="text-[11px] text-muted-foreground">{catequizandos.filter((c: any) => c.status === 'ativo').length} alunos ativos • 15 colunas</p>
+                      <p className="text-[11px] text-muted-foreground">{catequizandos.filter((c: any) => c.status === 'ativo').length} catequizandos ativos • 15 colunas</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors shrink-0">

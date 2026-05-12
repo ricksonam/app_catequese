@@ -660,7 +660,7 @@ export default function EncontroDetail() {
         <DialogContent className="rounded-2xl border-border/30 max-h-[85vh] flex flex-col">
           <div className="shrink-0 mb-4">
             <DialogTitle>Chamada do Encontro</DialogTitle>
-            <p className="text-xs text-muted-foreground mt-1">{localPresencas.length} de {catequizandos.length} alunos presentes</p>
+            <p className="text-xs text-muted-foreground mt-1">{localPresencas.length} de {catequizandos.length} catequizandos presentes</p>
           </div>
           <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
             {catequizandos.map(cat => {
