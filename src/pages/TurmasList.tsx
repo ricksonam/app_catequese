@@ -69,11 +69,11 @@ export default function TurmasList() {
         <h1 className="text-3xl font-black text-foreground tracking-tight font-liturgical">Turmas</h1>
       </div>
 
-      <div className="flex flex-col items-end gap-5">
+      <div className="flex flex-row items-stretch gap-3">
         {/* Join with Code Card — Premium & Compact */}
         <div
           onClick={() => setJoinModalOpen(true)}
-          className="w-full group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.5rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-zinc-600 to-zinc-700"
+          className="flex-1 group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.5rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-zinc-600 to-zinc-700"
           style={{ animationDelay: "0ms" }}
         >
           {/* Glow blobs */}
@@ -88,30 +88,31 @@ export default function TurmasList() {
             </div>
           </div>
 
-          <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
+          <div className="relative z-10 flex-1 flex flex-col items-start justify-center">
             <p 
-              className="text-lg sm:text-xl font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
+              className="text-sm sm:text-base font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
             >
               Entrar em uma Turma
             </p>
-            <p className="text-[9px] sm:text-[10px] font-bold text-zinc-200 uppercase tracking-[0.2em] mt-1 drop-shadow-sm">
-              Com código de acesso
+            <p className="text-[8px] font-bold text-zinc-200 uppercase tracking-[0.1em] mt-0.5 drop-shadow-sm">
+              Com código
             </p>
           </div>
           
-          {/* More visible arrow */}
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] group-hover:text-slate-900 transition-all duration-300 shadow-inner">
-            <ArrowRight className="h-4 w-4 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+          {/* More visible arrow - hidden on very small screens if needed, but let's keep it */}
+          <div className="hidden sm:flex w-7 h-7 rounded-full bg-white/10 items-center justify-center border border-white/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] group-hover:text-slate-900 transition-all duration-300 shadow-inner">
+            <ArrowRight className="h-3 w-3 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
           </div>
         </div>
 
         {/* Nova Turma Button */}
         <button
           onClick={() => navigate("/turmas/nova")}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-2xl text-white shadow-lg active:scale-95 transition-all font-bold text-xs uppercase tracking-widest hover:brightness-110"
+          className="flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-[1.5rem] text-white shadow-xl active:scale-95 transition-all font-bold text-[9px] uppercase tracking-wider hover:brightness-110 border-2 border-blue-400/30 shrink-0"
           style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
         >
-          <Plus className="h-4 w-4" /> Nova Turma
+          <Plus className="h-5 w-5" />
+          <span className="whitespace-nowrap">Nova Turma</span>
         </button>
       </div>
 
