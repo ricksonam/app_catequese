@@ -4,8 +4,6 @@ import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2 } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import ReportModule from "@/components/reports/ReportModule";
-import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
 import { mascaraTelefone, cn } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
@@ -547,7 +545,6 @@ export default function CatequizandosList() {
         <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
           <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
             <div className="flex-1 sm:flex-none">
-              {id && <ReportModule context="catequizandos" turmaId={id} />}
             </div>
             <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>

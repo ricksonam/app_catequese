@@ -4,7 +4,6 @@ import { type EncontroStatus } from "@/lib/store";
 import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X as XIcon, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle, Feather } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
-import ReportModule from "@/components/reports/ReportModule";
 
 const STATUS_CONFIG: Record<EncontroStatus, { label: string; bg: string; text: string; dot: string; gradient: string; border: string }> = {
   pendente:    { label: "Pendente",    bg: "bg-slate-100/80",      text: "text-slate-600",          dot: "bg-slate-400",         gradient: "from-slate-200/50 to-slate-100/50", border: "border-slate-300" },
@@ -110,20 +109,7 @@ export default function EncontrosList() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{encontros.length} encontros</p>
           </div>
         </div>
-
         <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
-          {id && (
-            <ReportModule 
-              context="encontros" 
-              turmaId={id} 
-              trigger={
-                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 shadow-sm hover:shadow-md active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest">
-                  <FileText className="h-3.5 w-3.5" />
-                  Relatórios
-                </button>
-              }
-            />
-          )}
 
           <button 
             onClick={() => navigate(`/turmas/${id}/encontros/novo`)} 

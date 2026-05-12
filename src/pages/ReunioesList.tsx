@@ -1,10 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X, Play, FileSignature, CalendarDays, Book, Sparkles } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import ReportModule from "@/components/reports/ReportModule";
 import { toast } from "sonner";
 import { formatarDataVigente, cn } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
@@ -251,7 +250,6 @@ export default function ReunioesList() {
 
         <div className="flex items-center gap-2 self-start sm:self-auto w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <div className="flex-1 sm:flex-none">
-             {id && <ReportModule context="reunioes" turmaId={id} />}
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditingId(null); setForm({ ...emptyForm }); } }}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Nova</button></DialogTrigger>
@@ -825,7 +823,6 @@ export default function ReunioesList() {
                 {/* Barra de Ações Superior */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
-                    <ReportModule context="reunioes" turmaId={id!} initialDocId={viewItem.id} instantReport="reun_complet" />
                   </div>
                   <div className="flex items-center gap-2">
                     <button 

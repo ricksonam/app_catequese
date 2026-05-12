@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
-import ReportModule from "@/components/reports/ReportModule";
 
 type TimelineItem = { id: string; tipo: 'encontro' | 'atividade' | 'reuniao'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
 const statusColors: Record<string, string> = { pendente: 'bg-primary', realizado: 'bg-success', transferido: 'bg-caution', cancelado: 'bg-destructive' };
