@@ -221,19 +221,23 @@ export default function EncontroDetail() {
         <button 
           onClick={() => setShowStatus(true)} 
           className={cn(
-            "flex items-center gap-2 px-5 py-1.5 rounded-full border-2 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 group",
+            "flex items-center gap-3 px-5 py-2 rounded-full border-2 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 group",
             currentStatus.bg, currentStatus.border
           )}
         >
-           <div className="animate-pulse flex items-center justify-center">
-              {currentStatus.value === 'pendente' && <Clock className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
-              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
-              {currentStatus.value === 'transferido' && <CalendarDays className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
-              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-3.5 w-3.5 ${currentStatus.text}`} />}
+           <div className="animate-pulse flex items-center justify-center w-8 h-8 rounded-full bg-white/50 border border-white/20">
+              {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-4 w-4 ${currentStatus.text}`} />}
            </div>
-           <span className={`text-[10px] font-black uppercase tracking-widest ${currentStatus.text}`}>
-             {currentStatus.label} ▾
-           </span>
+           <div className="flex flex-col items-start leading-none">
+             <span className="text-[7px] font-black uppercase tracking-[0.2em] opacity-50 mb-0.5">Status</span>
+             <span className={`text-[10px] font-black uppercase tracking-widest ${currentStatus.text}`}>
+               {currentStatus.label}
+             </span>
+           </div>
+           <ChevronDown className={cn("h-4 w-4 ml-1 opacity-40 transition-transform group-hover:translate-y-0.5", currentStatus.text)} />
         </button>
 
         {/* Row of Actions */}
@@ -390,7 +394,7 @@ export default function EncontroDetail() {
                         </span>
                       )}
                       {step.catequista && (
-                        <span className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground bg-muted/40 px-2 py-0.5 rounded-lg border border-black/8">
+                        <span className="flex items-center gap-1 text-[11px] font-bold text-orange-600 bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">
                           <User className="h-3 w-3 shrink-0" />
                           <span className="truncate max-w-[150px]">{step.catequista}</span>
                         </span>
