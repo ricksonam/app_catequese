@@ -76,36 +76,38 @@ export default function TurmasList() {
         </button>
       </div>
 
-      {/* Join with Code Card — smaller & floating */}
+      {/* Join with Code Card — Premium */}
       <div
         onClick={() => setJoinModalOpen(true)}
-        className="group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.25rem] cursor-pointer active:scale-[0.98] transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1.5 animate-fade-in animate-card-float border-b-4 border-rose-700/30"
-        style={{ background: "linear-gradient(135deg, #FDA4AF 0%, #F43F5E 100%)", animationDelay: "0ms" }}
+        className="group relative overflow-hidden flex items-center gap-4 p-5 rounded-[2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-slate-900 to-slate-800"
+        style={{ animationDelay: "0ms" }}
       >
         {/* Glow blobs */}
-        <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/20 blur-2xl pointer-events-none group-hover:bg-white/30 transition-colors duration-500" />
+        <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none group-hover:bg-[#D4AF37]/20 transition-colors duration-700 -mr-10 -mt-10" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
 
-        {/* Animated icon with blue background */}
-        <div className="relative w-11 h-11 rounded-xl bg-blue-600/90 border border-white/30 flex items-center justify-center text-white shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-          <Link2 className="h-5 w-5 animate-pulse" />
-          <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-yellow-300 flex items-center justify-center shadow-glow">
-            <Sparkles className="h-2 w-2 text-yellow-800 animate-pulse" />
+        {/* Animated icon */}
+        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] border border-white/20 flex items-center justify-center text-slate-900 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
+          <Link2 className="h-6 w-6" />
+          <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+            <Sparkles className="h-3 w-3 text-[#B8860B] animate-pulse" />
           </div>
         </div>
 
         <div className="relative z-10 flex-1">
           <p 
-            className="text-sm font-black text-white font-liturgical leading-tight"
-            style={{ textShadow: "1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000" }}
+            className="text-xl sm:text-2xl font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
           >
             Entrar em uma Turma
           </p>
-          <p className="text-[9px] font-bold text-white/90 uppercase tracking-[0.15em] mt-0.5">Com código de acesso</p>
+          <p className="text-[10px] sm:text-[11px] font-bold text-slate-300 uppercase tracking-[0.2em] mt-1.5 drop-shadow-sm">
+            Com código de acesso
+          </p>
         </div>
         
         {/* More visible arrow */}
-        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-all">
-          <ArrowRight className="h-4 w-4 text-white group-hover:translate-x-1 transition-all" />
+        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] group-hover:text-slate-900 transition-all duration-300 shadow-inner">
+          <ArrowRight className="h-5 w-5 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
         </div>
       </div>
 
