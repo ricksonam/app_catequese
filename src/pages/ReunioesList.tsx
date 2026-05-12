@@ -855,14 +855,14 @@ export default function ReunioesList() {
                 </div>
 
                 {/* --- PAINEL PREMIUM: REGISTRO DE DECISÕES --- */}
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-2xl space-y-6 border-2 border-white/10 animate-in fade-in zoom-in duration-500">
+                <div className="bg-gradient-to-br from-sky-400 to-blue-600 text-white rounded-3xl p-6 shadow-xl space-y-6 border border-white/20 animate-in fade-in zoom-in duration-500">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center border border-white/10">
                         <FileSignature className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-0.5">Gestão da Reunião</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80 mb-0.5">Gestão da Reunião</h4>
                         <p className="text-sm font-black uppercase tracking-tight">Registro de Decisões</p>
                       </div>
                     </div>
@@ -878,7 +878,7 @@ export default function ReunioesList() {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-1">O que foi decidido?</label>
+                    <label className="text-[10px] font-black text-white/80 uppercase tracking-widest ml-1">O que foi decidido?</label>
                     <textarea 
                       defaultValue={viewItem.ataDecisoes || ""}
                       onBlur={(e) => {
@@ -888,41 +888,36 @@ export default function ReunioesList() {
                         }
                       }}
                       placeholder="Descreva aqui os acordos, decisões e próximos passos da reunião..."
-                      className="w-full min-h-[160px] bg-white border-2 border-white/20 rounded-2xl p-4 text-sm font-bold leading-relaxed text-zinc-900 placeholder:text-zinc-300 transition-all shadow-inner focus:ring-4 focus:ring-white/10 focus:outline-none"
+                      className="w-full min-h-[160px] bg-white border border-white/20 rounded-2xl p-4 text-sm font-bold leading-relaxed text-zinc-900 placeholder:text-zinc-300 transition-all shadow-inner focus:ring-4 focus:ring-white/10 focus:outline-none"
                     />
-                    <p className="text-[9px] text-white/50 font-bold italic text-right">* As alterações são salvas automaticamente ao clicar fora da caixa.</p>
+                    <p className="text-[9px] text-white/60 font-bold italic text-right">* As alterações são salvas automaticamente ao clicar fora da caixa.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Tempo */}
-                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm space-y-3.5">
-                      <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary"><Calendar className="w-4 h-4" /></div>
-                         <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-0.5">Data</p>
-                            <p className="text-sm font-semibold text-foreground">{viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'}</p>
-                         </div>
-                      </div>
-                      <div className="h-px bg-black/5" />
-                      <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary"><Clock className="w-4 h-4" /></div>
-                         <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-0.5">Horário</p>
-                            <p className="text-sm font-semibold text-foreground">{viewItem.horario || 'A definir'}</p>
-                         </div>
-                      </div>
+                {/* --- CARD UNIFICADO: DATA, HORÁRIO E LOCAL --- */}
+                <div className="bg-zinc-50 rounded-3xl p-6 border border-zinc-200/50 shadow-sm flex flex-col sm:flex-row gap-6 sm:items-center">
+                  <div className="flex-1 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+                      <CalendarDays className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Quando</p>
+                      <p className="text-sm font-bold text-foreground truncate">
+                        {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} • {viewItem.horario || 'A definir'}
+                      </p>
+                    </div>
                   </div>
-
-                  {/* Espaço */}
-                  <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm space-y-3.5">
-                      <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-600"><MapPin className="w-4 h-4" /></div>
-                         <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest leading-none mb-0.5">Local</p>
-                            <p className="text-sm font-semibold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
-                         </div>
-                      </div>
+                  
+                  <div className="hidden sm:block w-px h-10 bg-zinc-200" />
+                  
+                  <div className="flex-1 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-600">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest leading-none mb-1">Onde</p>
+                      <p className="text-sm font-bold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
+                    </div>
                   </div>
                 </div>
 
