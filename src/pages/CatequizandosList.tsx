@@ -1245,7 +1245,7 @@ export default function CatequizandosList() {
                       </div>
                    </div>
                    <div className="flex-1 text-center sm:text-left pt-2 relative">
-                       <div className="flex justify-center sm:absolute sm:top-0 sm:right-0 gap-2 mb-3 sm:mb-0">
+                       <div className="absolute top-0 right-0 flex gap-2">
                           <button onClick={handleEdit} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95">
                              <Pencil className="h-4 w-4" />
                           </button>
@@ -1253,7 +1253,7 @@ export default function CatequizandosList() {
                              <Trash2 className="h-4 w-4" />
                           </button>
                        </div>
-                      <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight uppercase pr-0 sm:pr-20" title={viewItem.nome}>{viewItem.nome}</h2>
+                      <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 leading-tight uppercase pr-16 sm:pr-20" title={viewItem.nome}>{viewItem.nome}</h2>
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
                          <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs bg-white border-2 border-zinc-100 px-3 py-1.5 rounded-full shadow-sm">
                             <Users className="w-3.5 h-3.5" />
