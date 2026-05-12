@@ -1222,187 +1222,203 @@ export default function CatequizandosList() {
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
         <DialogContent hideClose className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
-            <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
-              {/* Header Bar Clean */}
-              <div className="sticky top-0 z-50 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
-                <div className="flex-1" />
-                <div className="flex items-center gap-4 z-50">
-                  <button onClick={handleEdit} className="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all shadow-sm hover:scale-110 active:scale-95"><Pencil className="h-5 w-5" /></button>
-                  <button onClick={handleDelete} className="p-2.5 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all shadow-sm hover:scale-110 active:scale-95"><Trash2 className="h-5 w-5" /></button>
-                  <div className="w-px h-6 bg-black/10 mx-1" />
-                  <button onClick={() => { setViewItem(null); setEditMode(false); }} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
+            <div className="flex flex-col h-full bg-[#F8F9FE] rounded-3xl overflow-hidden relative">
+              {/* Header Imersivo Premium */}
+              <div className="relative h-48 shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-primary/60" />
+                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+                
+                {/* Botões de Ação Flutuantes */}
+                <div className="absolute top-4 right-4 flex items-center gap-2 z-50">
+                   <button onClick={handleEdit} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30 transition-all active:scale-95 shadow-lg"><Pencil className="h-4 w-4" /></button>
+                   <button onClick={handleDelete} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30 transition-all active:scale-95 shadow-lg"><Trash2 className="h-4 w-4" /></button>
+                   <button onClick={() => { setViewItem(null); setEditMode(false); }} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white text-primary border border-white/30 hover:bg-zinc-50 transition-all active:scale-90 shadow-lg"><X className="h-5 w-5" /></button>
+                </div>
+
+                {/* Perfil Foto */}
+                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 sm:left-8 sm:translate-x-0">
+                   <div className="relative">
+                      <div className="w-32 h-32 rounded-3xl bg-white p-1.5 shadow-2xl shadow-primary/20 ring-4 ring-white/50">
+                        <div className="w-full h-full rounded-2xl bg-muted overflow-hidden">
+                           {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-4xl font-black text-primary/40">{viewItem.nome.charAt(0).toUpperCase()}</div>}
+                        </div>
+                      </div>
+                      <div className={`absolute -bottom-2 -right-2 px-3 py-1 rounded-full border-2 border-white shadow-lg text-[10px] font-black uppercase tracking-widest text-white ${statusConfig[viewItem.status || 'ativo'].color.replace('bg-', 'bg-').replace('text-', 'bg-')}`}>
+                        {statusConfig[viewItem.status || 'ativo'].label}
+                      </div>
+                   </div>
                 </div>
               </div>
 
-              <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
-                {/* Perfil Minimalista */}
-                <div className="flex flex-col sm:flex-row items-center gap-5 pb-2">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden shrink-0 border border-black/5">
-                    {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-3xl font-bold text-accent-foreground">{viewItem.nome.charAt(0).toUpperCase()}</span>}
-                  </div>
-                  <div className="flex-1 text-center sm:text-left min-w-0">
-                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
-                    <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                      <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${statusConfig[viewItem.status || 'ativo'].color}`}>
-                        {statusConfig[viewItem.status || 'ativo'].label}
-                      </span>
+              <div className="pt-16 pb-8 px-5 sm:px-8 space-y-8 overflow-y-auto">
+                {/* Nome e Título */}
+                <div className="text-center sm:text-left space-y-1">
+                   <h2 className="text-3xl font-black text-zinc-900 tracking-tight leading-none uppercase">{viewItem.nome}</h2>
+                   <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground font-bold text-xs uppercase tracking-widest">
+                      <Users className="w-3.5 h-3.5" />
+                      {turma?.nome}
                       {viewItem.dataNascimento && (
-                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-muted text-muted-foreground">
-                          {calcularIdade(viewItem.dataNascimento)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Alterar Status */}
-                <div className="pt-2 border-b-2 border-black/5 pb-6">
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 text-center sm:text-left">Situação do Aluno</p>
-                  <div className="flex justify-center sm:justify-start gap-2 flex-wrap">
-                    {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
-                      const isAtivo = (viewItem.status || 'ativo') === s;
-                      return (
-                        <button key={s} onClick={() => handleStatusChange(viewItem, s)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${isAtivo ? 'bg-foreground text-background border-foreground shadow-md scale-105' : 'bg-muted text-muted-foreground hover:bg-black/5 border-black/10'}`}>
-                          {statusConfig[s].label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Identificação Especial (Cordão) */}
-                {viewItem.necessidadeEspecial && viewItem.necessidadeEspecial !== "nenhuma" && (
-                   <LanyardDrawing type={viewItem.necessidadeEspecial} />
-                )}
-
-                {/* Blocos de Informação em Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Dados Pessoais */}
-                  <div className="bg-white rounded-2xl p-6 border border-black/10 shadow-sm">
-                    <h4 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                       <span className="w-5 h-5 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shadow-sm"><UserPlus className="w-4 h-4" /></span> Dados Pessoais
-                    </h4>
-                    <div className="space-y-3.5">
-                      <div className="flex justify-between items-center">
-                         <span className="text-xs font-bold text-muted-foreground">Nascimento</span>
-                         <span className="text-base font-black text-foreground text-right">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T00:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
-                      </div>
-
-                      <div className="h-px bg-black/5" />
-                      <div className="flex justify-between items-center">
-                         <span className="text-xs font-bold text-muted-foreground">Telefone</span>
-                         <span className="text-base font-black text-foreground text-right">{viewItem.telefone || "—"}</span>
-                      </div>
-                      <div className="h-px bg-black/5" />
-                      <div className="flex justify-between items-center">
-                         <span className="text-xs font-bold text-muted-foreground">E-mail</span>
-                         <span className="text-base font-black text-foreground text-right truncate max-w-[150px]">{viewItem.email || "—"}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Endereço */}
-                  <div className="bg-white rounded-2xl p-6 border border-black/10 shadow-sm">
-                    <h4 className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shadow-sm">📍</span> Endereço
-                    </h4>
-                    <p className="text-base font-black text-foreground leading-snug">
-                      {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
                         <>
-                          {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}
-                          <span className="block text-muted-foreground font-bold text-xs mt-1">
-                            {viewItem.bairro ? `Bairro: ${viewItem.bairro} ` : ""}
-                            {viewItem.complemento ? `(${viewItem.complemento})` : ""}
-                          </span>
+                          <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+                          <span>{calcularIdade(viewItem.dataNascimento)}</span>
                         </>
-                      ) : <span className="text-muted-foreground italic text-sm">Nenhum cadastrado</span>}
-                    </p>
-                  </div>
+                      )}
+                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 border-2 border-blue-100 shadow-sm">
-                  <h4 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center text-blue-500 shadow-sm">👥</span> Responsáveis
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {viewItem.responsaveis?.length ? (
-                      viewItem.responsaveis.map(resp => (
-                        <div key={resp.id} className="p-3 bg-white border border-blue-100 rounded-xl">
-                          <p className="text-sm font-bold text-foreground truncate">{resp.nome}</p>
-                          <div className="flex items-center justify-between mt-1">
-                            <span className="text-[10px] font-bold text-blue-500 uppercase">{resp.vinculo}</span>
-                            <span className="text-[11px] font-medium text-muted-foreground">{resp.telefone}</span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="col-span-2 p-3 bg-white border border-blue-100 rounded-xl">
-                        <p className="text-sm font-bold text-foreground">{viewItem.responsavel || "Não informado"}</p>
-                        <p className="text-[11px] text-muted-foreground">{viewItem.telefone}</p>
+                {/* Status Switcher (Premium) */}
+                <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-sm">
+                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 text-center sm:text-left">Situação do Catequizando</p>
+                   <div className="grid grid-cols-3 gap-2">
+                     {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
+                       const isAtivo = (viewItem.status || 'ativo') === s;
+                       const config = statusConfig[s];
+                       return (
+                         <button 
+                           key={s} 
+                           onClick={() => handleStatusChange(viewItem, s)} 
+                           className={cn(
+                             "py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 flex flex-col items-center gap-1.5 shadow-sm active:scale-95",
+                             isAtivo 
+                               ? "bg-zinc-900 text-white border-zinc-900 shadow-lg scale-[1.02]" 
+                               : "bg-zinc-50 text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:border-zinc-200"
+                           )}
+                         >
+                            <div className={cn("w-2 h-2 rounded-full", isAtivo ? "bg-primary animate-pulse" : "bg-zinc-300")} />
+                            {config.label}
+                         </button>
+                       );
+                     })}
+                   </div>
+                </div>
+
+                {/* Grid de Informações */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                   {/* Dados Pessoais Card */}
+                   <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-sm space-y-5">
+                      <div className="flex items-center justify-between">
+                         <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Dados de Contato</h4>
+                         <div className="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><UserPlus className="w-4 h-4" /></div>
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* DADOS PASTORAIS E SACRAMENTOS */}
-                <div className="bg-white rounded-2xl p-6 border-2 border-orange-100 shadow-sm">
-                  <h4 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-orange-100 flex items-center justify-center text-orange-500 shadow-sm">✝️</span> Dados Pastorais
-                  </h4>
-                  
-                  {viewItem.dadosPastorais?.participacaoPastoral && (
-                    <div className="mb-4 p-4 bg-white border-2 border-orange-100 rounded-2xl">
-                      <p className="text-[10px] font-black text-orange-400 uppercase tracking-wider mb-1">Participação em Pastorais/Grupos</p>
-                      <p className="text-base font-black">{viewItem.dadosPastorais.participacaoPastoral}</p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
-                      const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
-                      const isOk = s?.recebido;
-                      return (
-                        <div key={sac} className="flex-1 flex flex-col items-start p-4 bg-white border-2 border-orange-100 rounded-2xl">
-                          <div className="flex items-center gap-2 mb-2 w-full">
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isOk ? 'bg-success text-white' : 'bg-muted-foreground/30 text-white'}`}>
-                              <span className="text-[12px] font-black">{isOk ? '✓' : ''}</span>
-                            </div>
-                            <span className={`text-sm font-black capitalize ${isOk ? 'text-foreground' : 'text-muted-foreground'}`}>{sac}</span>
-                          </div>
-                          {isOk ? (
-                            <div className="text-xs font-bold text-muted-foreground w-full">
-                              {s.paroquia && <p className="truncate"><span className="opacity-70 font-black">Local:</span> {s.paroquia}</p>}
-                              {s.data && <p><span className="opacity-70 font-black">Data:</span> {new Date(s.data + 'T00:00').toLocaleDateString("pt-BR")}</p>}
-                              {!s.paroquia && !s.data && <p className="italic">Sem detalhes</p>}
-                            </div>
-                          ) : (
-                            <p className="text-xs font-bold text-muted-foreground/50 italic">Pendente</p>
-                          )}
+                      <div className="space-y-4">
+                        <div className="flex flex-col">
+                           <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Nascimento</span>
+                           <span className="text-sm font-bold text-zinc-900">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T12:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="flex flex-col">
+                           <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Telefone Celular</span>
+                           <span className="text-sm font-bold text-zinc-900">{viewItem.telefone || "Não cadastrado"}</span>
+                        </div>
+                        <div className="flex flex-col">
+                           <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">E-mail</span>
+                           <span className="text-sm font-bold text-zinc-900 truncate">{viewItem.email || "Não cadastrado"}</span>
+                        </div>
+                      </div>
+                   </div>
+
+                   {/* Endereço Card */}
+                   <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-sm space-y-5">
+                      <div className="flex items-center justify-between">
+                         <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Localização</h4>
+                         <div className="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center text-primary">📍</div>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Residência</span>
+                        {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
+                          <div className="space-y-1">
+                             <p className="text-sm font-bold text-zinc-900 leading-snug">{viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}</p>
+                             <p className="text-xs font-bold text-primary">{viewItem.bairro}{viewItem.complemento ? ` (${viewItem.complemento})` : ""}</p>
+                          </div>
+                        ) : <p className="text-sm font-bold text-zinc-300 italic">Endereço não informado</p>}
+                      </div>
+                   </div>
                 </div>
 
-                {/* Observações */}
+                {/* Responsaveis Premium */}
+                <div className="bg-white rounded-3xl p-6 border-2 border-blue-100 shadow-sm">
+                   <div className="flex items-center justify-between mb-6">
+                      <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Família / Responsáveis</h4>
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500"><Users className="w-4 h-4" /></div>
+                   </div>
+                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {viewItem.responsaveis?.length ? (
+                        viewItem.responsaveis.map(resp => (
+                          <div key={resp.id} className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl flex items-center gap-3">
+                             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm border border-blue-100 font-black text-xs">{resp.vinculo.charAt(0).toUpperCase()}</div>
+                             <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-zinc-900 truncate uppercase">{resp.nome}</p>
+                                <div className="flex items-center justify-between mt-0.5">
+                                   <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{resp.vinculo}</span>
+                                   <span className="text-[10px] font-bold text-zinc-500">{resp.telefone}</span>
+                                </div>
+                             </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="col-span-2 p-4 bg-blue-50/30 border border-blue-100 rounded-2xl flex items-center gap-3">
+                           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm border border-blue-100 font-black text-xs">R</div>
+                           <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-zinc-900 truncate uppercase">{viewItem.responsavel || "Não informado"}</p>
+                              <span className="text-[10px] font-bold text-zinc-500">{viewItem.telefone}</span>
+                           </div>
+                        </div>
+                      )}
+                   </div>
+                </div>
+
+                {/* Dados Pastorais Premium */}
+                <div className="bg-white rounded-3xl p-6 border-2 border-orange-100 shadow-sm space-y-6">
+                   <div className="flex items-center justify-between">
+                      <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Caminhada Litúrgica</h4>
+                      <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">✝️</div>
+                   </div>
+
+                   {/* Sacramentos */}
+                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
+                        const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
+                        const isOk = s?.recebido;
+                        return (
+                          <div key={sac} className={cn("relative p-4 rounded-3xl border-2 transition-all overflow-hidden", isOk ? "bg-success/5 border-success/20" : "bg-zinc-50 border-zinc-100 opacity-60")}>
+                             <div className="flex flex-col items-center gap-2 text-center relative z-10">
+                                <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-1", isOk ? "bg-success text-white shadow-lg shadow-success/20" : "bg-zinc-200 text-zinc-400")}>
+                                   {isOk ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                                </div>
+                                <span className={cn("text-[10px] font-black uppercase tracking-widest", isOk ? "text-success" : "text-zinc-500")}>{sac}</span>
+                                {isOk && s.data && <span className="text-[9px] font-bold text-success/60">{new Date(s.data + 'T12:00').toLocaleDateString("pt-BR")}</span>}
+                             </div>
+                             {isOk && <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-success/10 rounded-full blur-xl" />}
+                          </div>
+                        );
+                      })}
+                   </div>
+
+                   {viewItem.dadosPastorais?.participacaoPastoral && (
+                     <div className="p-4 bg-orange-50/50 border border-orange-100 rounded-2xl">
+                        <span className="text-[9px] font-black text-orange-400 uppercase tracking-[0.2em] block mb-2">Engajamento Comunitário</span>
+                        <p className="text-sm font-bold text-zinc-900 italic leading-relaxed">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
+                     </div>
+                   )}
+                </div>
+
+                {/* Observações Premium */}
                 {viewItem.observacao && (
-                  <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
-                    <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2 flex items-center gap-2">
-                       <span className="w-4 h-4 rounded bg-accent/10 flex items-center justify-center text-accent">📝</span> Anotações
-                    </h4>
-                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
+                  <div className="bg-zinc-900 rounded-3xl p-6 text-white shadow-xl">
+                    <div className="flex items-center gap-2 mb-4">
+                       <MessageSquare className="w-4 h-4 text-primary" />
+                       <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Memorial / Observações</h4>
+                    </div>
+                    <p className="text-sm font-medium leading-relaxed text-zinc-300 whitespace-pre-wrap italic">"{viewItem.observacao}"</p>
                   </div>
                 )}
-                
-                {/* Registro no final */}
-                {viewItem.criadoEm && (
-                  <div className="pt-6 mt-4 border-t border-black/5 text-center">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em]">Data de Registro no Sistema</p>
-                    <p className="text-[10px] font-bold text-foreground mt-1">
-                      {new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(viewItem.criadoEm))}
-                    </p>
-                  </div>
-                )}
+
+                {/* Footer */}
+                <div className="pt-8 text-center space-y-1">
+                   <p className="text-[8px] font-black text-zinc-400 uppercase tracking-[0.3em]">Registro de Acolhida</p>
+                   <p className="text-[10px] font-bold text-zinc-500">
+                      {viewItem.criadoEm ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(viewItem.criadoEm)) : '—'}
+                   </p>
+                </div>
               </div>
             </div>
           )}
