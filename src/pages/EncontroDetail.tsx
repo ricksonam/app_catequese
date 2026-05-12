@@ -216,59 +216,55 @@ export default function EncontroDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 px-4 -mt-2">
+      <div className="grid grid-cols-2 gap-3 px-4 -mt-2">
         {/* Status */}
         <button 
           onClick={() => setShowStatus(true)} 
           className={cn(
-            "flex flex-col items-center justify-center py-5 px-1 rounded-[2rem] border-2 transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-90 group animate-card-float",
+            "flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 group",
             currentStatus.bg, currentStatus.border
           )}
-          style={{ animationDelay: '0ms' }}
         >
-           <div className="w-11 h-11 rounded-2xl mb-2 flex items-center justify-center bg-white/50 border border-white/50 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-sm">
-              {currentStatus.value === 'pendente' && <Clock className={`h-5 w-5 ${currentStatus.text}`} />}
-              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-5 w-5 ${currentStatus.text}`} />}
-              {currentStatus.value === 'transferido' && <CalendarDays className={`h-5 w-5 ${currentStatus.text}`} />}
-              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-5 w-5 ${currentStatus.text}`} />}
+           <div className="w-9 h-9 rounded-xl mb-1.5 flex items-center justify-center bg-white/50 border border-white/50 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm animate-pulse">
+              {currentStatus.value === 'pendente' && <Clock className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'realizado' && <CheckCircle2 className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'transferido' && <CalendarDays className={`h-4 w-4 ${currentStatus.text}`} />}
+              {currentStatus.value === 'cancelado' && <AlertCircle className={`h-4 w-4 ${currentStatus.text}`} />}
            </div>
-           <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${currentStatus.text}`}>Status: {currentStatus.label}</span>
+           <span className={`text-[9px] font-black uppercase tracking-widest ${currentStatus.text}`}>Status: {currentStatus.label}</span>
         </button>
         
         {/* Presença */}
         <button 
           onClick={() => setShowPresenca(true)} 
-          className="flex flex-col items-center justify-center py-5 px-1 rounded-[2rem] border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-90 transition-all duration-500 group animate-card-float"
-          style={{ animationDelay: '200ms' }}
+          className="flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
         >
-           <div className="w-11 h-11 flex items-center justify-center bg-white/50 rounded-2xl mb-2 border border-white/50 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 shadow-sm">
-             <Users className="h-5 w-5 text-orange-600" />
+           <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 shadow-sm animate-pulse">
+             <Users className="h-4 w-4 text-orange-600" />
            </div>
-           <span className="text-[10px] font-black uppercase tracking-[0.15em] text-orange-700">Presença</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-orange-700">Presença</span>
         </button>
 
         {/* Avaliar */}
         <button 
           onClick={() => setShowOcorrencias(true)} 
-          className="flex flex-col items-center justify-center py-5 px-1 rounded-[2rem] border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-90 transition-all duration-500 group animate-card-float"
-          style={{ animationDelay: '400ms' }}
+          className="flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
         >
-           <div className="w-11 h-11 flex items-center justify-center bg-white/50 rounded-2xl mb-2 border border-white/50 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-sm">
-             <FileText className="h-5 w-5 text-blue-600" />
+           <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm animate-pulse">
+             <FileText className="h-4 w-4 text-blue-600" />
            </div>
-           <span className="text-[10px] font-black uppercase tracking-[0.15em] text-blue-700">Avaliar</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-blue-700">Avaliar</span>
         </button>
 
         {/* Apresentar */}
         <button 
           onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} 
-          className="flex flex-col items-center justify-center py-5 px-1 rounded-[2rem] border-2 border-liturgical/20 bg-gradient-to-br from-liturgical/5 to-liturgical/10 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-90 transition-all duration-500 group animate-card-float"
-          style={{ animationDelay: '600ms' }}
+          className="flex flex-col items-center justify-center py-3.5 px-1 rounded-[1.5rem] border-2 border-liturgical/20 bg-gradient-to-br from-liturgical/5 to-liturgical/10 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
         >
-           <div className="w-11 h-11 flex items-center justify-center bg-white/50 rounded-2xl mb-2 border border-white/50 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500 shadow-sm">
-             <Play className="h-5 w-5 text-liturgical" />
+           <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 shadow-sm animate-pulse">
+             <Play className="h-4 w-4 text-liturgical" />
            </div>
-           <span className="text-[10px] font-black uppercase tracking-[0.15em] text-liturgical">Apresentar</span>
+           <span className="text-[9px] font-black uppercase tracking-widest text-liturgical">Apresentar</span>
         </button>
       </div>
 
