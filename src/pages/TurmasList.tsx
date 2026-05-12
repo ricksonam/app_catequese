@@ -67,6 +67,45 @@ export default function TurmasList() {
       {/* Header */}
       <div className="flex flex-col items-center justify-center gap-4 animate-fade-in text-center">
         <h1 className="text-3xl font-black text-foreground tracking-tight font-liturgical">Turmas</h1>
+      </div>
+
+      <div className="flex flex-col items-end gap-3">
+        {/* Join with Code Card — Premium & Compact */}
+        <div
+          onClick={() => setJoinModalOpen(true)}
+          className="w-full group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.5rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-zinc-600 to-zinc-700"
+          style={{ animationDelay: "0ms" }}
+        >
+          {/* Glow blobs */}
+          <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none group-hover:bg-[#D4AF37]/20 transition-colors duration-700 -mr-10 -mt-10" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
+
+          {/* Animated icon */}
+          <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] border border-white/20 flex items-center justify-center text-slate-900 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
+            <Link2 className="h-5 w-5" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+              <Sparkles className="h-2 w-2 text-[#B8860B] animate-pulse" />
+            </div>
+          </div>
+
+          <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
+            <p 
+              className="text-lg sm:text-xl font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
+            >
+              Entrar em uma Turma
+            </p>
+            <p className="text-[9px] sm:text-[10px] font-bold text-zinc-200 uppercase tracking-[0.2em] mt-1 drop-shadow-sm">
+              Com código de acesso
+            </p>
+          </div>
+          
+          {/* More visible arrow */}
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] group-hover:text-slate-900 transition-all duration-300 shadow-inner">
+            <ArrowRight className="h-4 w-4 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+          </div>
+        </div>
+
+        {/* Nova Turma Button */}
         <button
           onClick={() => navigate("/turmas/nova")}
           className="flex items-center gap-2 px-6 py-2.5 rounded-2xl text-white shadow-lg active:scale-95 transition-all font-bold text-xs uppercase tracking-widest hover:brightness-110"
@@ -74,41 +113,6 @@ export default function TurmasList() {
         >
           <Plus className="h-4 w-4" /> Nova Turma
         </button>
-      </div>
-
-      {/* Join with Code Card — Premium */}
-      <div
-        onClick={() => setJoinModalOpen(true)}
-        className="group relative overflow-hidden flex items-center gap-4 p-5 rounded-[2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 animate-fade-in animate-card-float border-2 border-[#D4AF37]/30 bg-gradient-to-br from-zinc-600 to-zinc-700"
-        style={{ animationDelay: "0ms" }}
-      >
-        {/* Glow blobs */}
-        <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#D4AF37]/10 blur-3xl pointer-events-none group-hover:bg-[#D4AF37]/20 transition-colors duration-700 -mr-10 -mt-10" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
-
-        {/* Animated icon */}
-        <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] border border-white/20 flex items-center justify-center text-slate-900 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
-          <Link2 className="h-6 w-6" />
-          <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-            <Sparkles className="h-3 w-3 text-[#B8860B] animate-pulse" />
-          </div>
-        </div>
-
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center">
-          <p 
-            className="text-xl sm:text-2xl font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-[#D4AF37] transition-colors"
-          >
-            Entrar em uma Turma
-          </p>
-          <p className="text-[10px] sm:text-[11px] font-bold text-zinc-200 uppercase tracking-[0.2em] mt-1.5 drop-shadow-sm">
-            Com código de acesso
-          </p>
-        </div>
-        
-        {/* More visible arrow */}
-        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/20 group-hover:bg-[#D4AF37] group-hover:border-[#D4AF37] group-hover:text-slate-900 transition-all duration-300 shadow-inner">
-          <ArrowRight className="h-5 w-5 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
-        </div>
       </div>
 
       {/* Turmas List */}
