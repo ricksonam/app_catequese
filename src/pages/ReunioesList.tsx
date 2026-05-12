@@ -818,15 +818,31 @@ export default function ReunioesList() {
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
                 <div className="flex items-center gap-3 z-50 mr-12 sm:mr-8">
-                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm" title="Editar"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm" title="Excluir"><Trash2 className="h-4 w-4" /></button>
                 </div>
               </div>
 
               <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
-                {/* Botão de Relatórios no Topo */}
-                <div className="flex justify-end mb-2">
-                  <ReportModule context="reunioes" turmaId={id!} initialDocId={viewItem.id} instantReport="reun_complet" />
+                {/* Barra de Ações Superior */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex-1">
+                    <ReportModule context="reunioes" turmaId={id!} initialDocId={viewItem.id} instantReport="reun_complet" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }}
+                      className="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900 transition-all flex items-center justify-center border border-zinc-200/50"
+                      title="Editar Reunião"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setViewItem(viewItem); setDeleteConfirmOpen(true); }}
+                      className="w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 transition-all flex items-center justify-center border border-red-100/50"
+                      title="Excluir Reunião"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="text-center sm:text-left">
