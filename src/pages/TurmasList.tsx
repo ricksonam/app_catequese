@@ -108,11 +108,30 @@ export default function TurmasList() {
         {/* Nova Turma Button */}
         <button
           onClick={() => navigate("/turmas/nova")}
-          className="flex flex-col items-center justify-center gap-0 px-4 py-2 rounded-[1.5rem] text-white shadow-xl active:scale-95 transition-all font-bold text-[11px] uppercase tracking-wider hover:brightness-110 border-2 border-blue-400/30 shrink-0"
-          style={{ background: "linear-gradient(135deg, #2563EB, #1D4ED8)" }}
+          className="group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-5 py-3 rounded-[1.5rem] text-white shadow-2xl active:scale-95 transition-all duration-500 font-bold text-[11px] uppercase tracking-[0.15em] border-2 border-blue-400/40 shrink-0"
+          style={{ background: "linear-gradient(135deg, #3B82F6, #1D4ED8, #1E3A8A)" }}
         >
-          <Plus className="h-8 w-8" />
-          <span className="whitespace-nowrap -mt-1">Nova Turma</span>
+          {/* Animated Glow Blobs */}
+          <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-blue-300/20 blur-2xl pointer-events-none group-hover:bg-blue-300/40 transition-colors duration-700 -mr-4 -mt-4" />
+          <div className="absolute bottom-0 left-0 w-12 h-12 rounded-full bg-indigo-500/20 blur-xl pointer-events-none group-hover:bg-indigo-500/40 transition-colors duration-700 -ml-4 -mb-4" />
+          
+          {/* Glass reflection */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-30 pointer-events-none group-hover:opacity-50 transition-opacity" />
+
+          {/* Icon Container with animation */}
+          <div className="relative z-10 w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 group-hover:bg-white/20 transition-all duration-500">
+            <Plus className="h-7 w-7 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.8)]">
+              <Sparkles className="h-2.5 w-2.5 text-blue-600 animate-pulse" />
+            </div>
+          </div>
+          
+          <span className="relative z-10 whitespace-nowrap mt-2 drop-shadow-md group-hover:text-blue-100 transition-colors">
+            Nova Turma
+          </span>
+
+          {/* Interactive highlight overlay */}
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
       </div>
 
