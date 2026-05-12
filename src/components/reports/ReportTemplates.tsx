@@ -628,39 +628,56 @@ export const ReuniaoFullSheet = ({ doc, org, turma, catequizandos }: any) => (
       </div>
 
       <div className="break-inside-avoid">
-        <h3 className="text-sm font-serif font-black uppercase border-b-2 border-[#2c1810] pb-2 mb-6 tracking-widest text-[#2c1810]">Registro de Presença</h3>
+        <h3 className="text-sm font-serif font-black uppercase border-b-2 border-[#2c1810] pb-2 mb-6 tracking-widest text-[#2c1810]">Registro de Decisões e Presença</h3>
+        
+        {doc.ataDecisoes && (
+          <div className="mb-6 p-6 border-2 border-[#2c1810] bg-gray-50 italic font-serif text-sm leading-relaxed whitespace-pre-wrap">
+            <h4 className="not-italic font-sans font-black uppercase text-[10px] tracking-widest text-[#2c1810] mb-2 border-b border-[#2c1810]/10 pb-1">Deliberações e Conclusões</h4>
+            {doc.ataDecisoes}
+          </div>
+        )}
+
         <table className="w-full border-collapse border-2 border-[#2c1810]">
           <thead>
             <tr className="bg-gray-100 border-b-2 border-[#2c1810] text-[10px] font-black uppercase tracking-widest">
               <th className="border-r border-[#2c1810] p-2 w-12 text-center">Nº</th>
-              <th className="border-r border-[#2c1810] p-2 text-left">Participante</th>
+              <th className="border-r border-[#2c1810] p-2 text-left">Participante (Catequistas e Convidados)</th>
               <th className="border-r border-[#2c1810] p-2 w-24 text-center">Presente</th>
-              <th className="border-r border-[#2c1810] p-2 w-24 text-center">Falta</th>
               <th className="p-2 text-left w-48">Assinatura / Rubrica</th>
             </tr>
           </thead>
           <tbody>
-            {(doc.presenca || []).map((p: any, idx: number) => {
-              const cat = catequizandos.find((c: any) => c.id === p.id);
-              return (
-                <tr key={idx} className="border-b border-gray-300 text-sm">
-                  <td className="border-r border-[#2c1810] p-3 text-center font-bold">{idx + 1}</td>
-                  <td className="border-r border-[#2c1810] p-3 font-bold uppercase">{cat?.nome || "Participante"}</td>
-                  <td className="border-r border-[#2c1810] p-3 text-center font-black text-xl text-emerald-800">{p.presente ? 'X' : ''}</td>
-                  <td className="border-r border-[#2c1810] p-3 text-center font-black text-xl text-red-800">{!p.presente ? 'X' : ''}</td>
-                  <td className="p-3"></td>
+            {(doc.presencas || []).length === 0 && (doc.outrosParticipantes || []).length === 0 ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <tr key={`blank-${i}`} className="h-10 border-b border-gray-300">
+                  <td className="border-r border-[#2c1810] p-2 text-center text-xs text-gray-300">{i+1}</td>
+                  <td className="border-r border-[#2c1810]"></td>
+                  <td className="border-r border-[#2c1810]"></td>
+                  <td></td>
                 </tr>
-              );
-            })}
-            {Array.from({ length: 4 }).map((_, i) => (
-              <tr key={`blank-${i}`} className="h-10 border-b border-gray-300">
-                <td className="border-r border-[#2c1810]"></td>
-                <td className="border-r border-[#2c1810]"></td>
-                <td className="border-r border-[#2c1810]"></td>
-                <td className="border-r border-[#2c1810]"></td>
-                <td></td>
-              </tr>
-            ))}
+              ))
+            ) : (
+              <>
+                {/* Aqui idealmente precisaríamos dos nomes dos catequistas, mas o template recebe apenas IDs em doc.presencas */}
+                {/* No contexto do PDF, se não tivermos os nomes pré-carregados, mostramos apenas o indicador */}
+                {(doc.presencas || []).map((id: string, idx: number) => (
+                  <tr key={`pres-${idx}`} className="border-b border-gray-300 text-sm">
+                    <td className="border-r border-[#2c1810] p-3 text-center font-bold">{idx + 1}</td>
+                    <td className="border-r border-[#2c1810] p-3 font-bold uppercase text-xs">Catequista Registrado</td>
+                    <td className="border-r border-[#2c1810] p-3 text-center font-black text-xl text-emerald-800">X</td>
+                    <td className="p-3"></td>
+                  </tr>
+                ))}
+                {(doc.outrosParticipantes || []).map((name: string, idx: number) => (
+                  <tr key={`other-${idx}`} className="border-b border-gray-300 text-sm">
+                    <td className="border-r border-[#2c1810] p-3 text-center font-bold">{(doc.presencas || []).length + idx + 1}</td>
+                    <td className="border-r border-[#2c1810] p-3 font-bold uppercase text-xs">{name}</td>
+                    <td className="border-r border-[#2c1810] p-3 text-center font-black text-xl text-emerald-800">X</td>
+                    <td className="p-3"></td>
+                  </tr>
+                ))}
+              </>
+            )}
           </tbody>
         </table>
       </div>

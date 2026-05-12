@@ -67,7 +67,7 @@ const MODULE_CONFIG: any = {
     icon: Users,
     color: "from-blue-500 to-indigo-600",
     reports: [
-      { id: "reun_complet", label: "Ata Completa da Reunião", icon: FileText, desc: "Pautas, local e presença", needsSelect: true },
+      { id: "reun_complet", label: "Ata Completa da Reunião", icon: FileText, desc: "Pautas, decisões e presença", needsSelect: true },
       { id: "pres_reuniao", label: "Lista de Presença", icon: ClipboardList, desc: "Ficha em branco para a reunião", needsSelect: true },
     ]
   }

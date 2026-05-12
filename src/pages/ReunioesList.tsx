@@ -190,8 +190,6 @@ export default function ReunioesList() {
           local: form.local, 
           horario: form.horario, 
           observacao: form.observacao, 
-          ataDecisoes: form.ataDecisoes,
-          outrosParticipantes: form.outrosParticipantes,
           presencas: [], 
           criadoEm: new Date().toISOString() 
         });
@@ -691,16 +689,6 @@ export default function ReunioesList() {
 
                 {/* --- CAMPOS GERAIS (RESTANTES) --- */}
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Decisões da Reunião / Pós Registro</label>
-                    <textarea 
-                      value={form.ataDecisoes} 
-                      onChange={(e) => updateField("ataDecisoes", e.target.value)} 
-                      placeholder="Registre aqui o que foi decidido, conclusões das pautas, etc..." 
-                      className="form-input min-h-[120px] resize-y border-2 border-zinc-900 focus:ring-zinc-900" 
-                    />
-                  </div>
-
                   <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
                   
                   <div>
@@ -845,23 +833,45 @@ export default function ReunioesList() {
                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
                 </div>
 
-                {viewItem.ataDecisoes && (
-                  <div className="bg-zinc-900 text-white rounded-3xl p-6 shadow-xl space-y-4 border-2 border-zinc-800">
+                {/* --- PAINEL PREMIUM: REGISTRO DE DECISÕES --- */}
+                <div className="bg-zinc-900 text-white rounded-3xl p-6 shadow-2xl space-y-6 border-2 border-zinc-800 animate-in fade-in zoom-in duration-500">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
-                        <FileSignature className="h-5 w-5 text-white" />
+                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/5">
+                        <FileSignature className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Decisões & Registro</h4>
-                        <p className="text-sm font-bold">O que foi definido</p>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-0.5">Gestão da Reunião</h4>
+                        <p className="text-sm font-black uppercase tracking-tight">Registro de Decisões</p>
                       </div>
                     </div>
-                    <div className="h-px bg-white/10" />
-                    <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium opacity-90">
-                      {viewItem.ataDecisoes}
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all text-[10px] font-black uppercase border border-white/5"
+                      >
+                        <Users className="h-3.5 w-3.5" />
+                        <span>Presença ({(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length})</span>
+                      </button>
                     </div>
                   </div>
-                )}
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">O que foi decidido?</label>
+                    <textarea 
+                      defaultValue={viewItem.ataDecisoes || ""}
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        if (val !== viewItem.ataDecisoes) {
+                          mutation.mutate({ ...viewItem, ataDecisoes: val });
+                        }
+                      }}
+                      placeholder="Descreva aqui os acordos, decisões e próximos passos da reunião..."
+                      className="w-full min-h-[160px] bg-white/5 border-2 border-white/10 focus:border-white/20 rounded-2xl p-4 text-sm font-medium leading-relaxed placeholder:text-white/10 transition-all resize-none focus:ring-0"
+                    />
+                    <p className="text-[9px] text-white/30 font-bold italic text-right">* As alterações são salvas automaticamente ao clicar fora da caixa.</p>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Tempo */}
@@ -1006,13 +1016,9 @@ export default function ReunioesList() {
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <button onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-success/10 text-success hover:bg-success/20 transition-all font-bold text-xs ring-1 ring-inset ring-success/20">
-                    <Users className="h-4 w-4" /> 
-                    <span>Lista de Presença <span className="bg-success text-white rounded-full px-1.5 py-0.5 ml-1 text-[10px]">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span></span>
-                  </button>
-                  <button onClick={() => { navigate(`/turmas/${id}/reunioes/${viewItem.id}/apresentacao`); }} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-100 text-violet-700 hover:bg-violet-200 transition-all font-bold text-xs ring-1 ring-inset ring-violet-200">
-                    <Play className="h-4 w-4 fill-current" /> <span>Apresentar</span>
-                  </button>
+                  <div className="flex-1">
+                    <ReportModule context="reunioes" turmaId={id!} initialDocId={viewItem.id} instantReport="reun_complet" />
+                  </div>
                 </div>
               </div>
             </div>
