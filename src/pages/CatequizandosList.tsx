@@ -1226,12 +1226,13 @@ export default function CatequizandosList() {
               {/* Top Bar Accent */}
               <div className="h-2 w-full bg-gradient-to-r from-primary via-primary/60 to-primary/30" />
               
-              {/* Control Buttons */}
-              <div className="absolute top-6 right-6 flex items-center gap-2 z-50">
-                 <button onClick={handleEdit} className="p-2.5 rounded-xl bg-white text-muted-foreground border-2 border-zinc-100 shadow-sm hover:bg-primary/10 hover:text-primary transition-all active:scale-95"><Pencil className="h-4 w-4" /></button>
-                 <button onClick={handleDelete} className="p-2.5 rounded-xl bg-white text-muted-foreground border-2 border-zinc-100 shadow-sm hover:bg-destructive/10 hover:text-destructive transition-all active:scale-95"><Trash2 className="h-4 w-4" /></button>
-                 <button onClick={() => { setViewItem(null); setEditMode(false); }} className="p-2.5 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all active:scale-90 shadow-lg"><X className="h-4 w-4" /></button>
-              </div>
+              {/* Close Button */}
+              <button 
+                onClick={() => { setViewItem(null); setEditMode(false); }} 
+                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur-sm text-zinc-500 border-2 border-black/5 shadow-sm hover:bg-zinc-50 transition-all active:scale-90 z-50"
+              >
+                <X className="h-5 w-5" />
+              </button>
 
               <div className="p-6 sm:p-8 space-y-8 overflow-y-auto">
                 {/* Profile Header */}
@@ -1244,6 +1245,14 @@ export default function CatequizandosList() {
                       </div>
                    </div>
                    <div className="flex-1 text-center sm:text-left pt-2">
+                       <div className="flex justify-center sm:justify-end gap-2 mb-2">
+                          <button onClick={handleEdit} className="w-9 h-9 flex items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95">
+                             <Pencil className="h-4 w-4" />
+                          </button>
+                          <button onClick={handleDelete} className="w-9 h-9 flex items-center justify-center rounded-xl bg-destructive/10 text-destructive border border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95">
+                             <Trash2 className="h-4 w-4" />
+                          </button>
+                       </div>
                       <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
                          <span className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] shadow-sm", statusConfig[viewItem.status || 'ativo'].color)}>
@@ -1263,8 +1272,8 @@ export default function CatequizandosList() {
                 </div>
 
                 {/* Status Quick Switch */}
-                <div className="bg-white rounded-[2.5rem] p-6 border-2 border-zinc-100 shadow-xl shadow-zinc-200/50">
-                   <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 text-center">Alterar Situação</h3>
+                <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-xl">
+                   <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4 text-center">Alterar Situação</h3>
                    <div className="grid grid-cols-3 gap-2">
                       {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                         const isAtivo = (viewItem.status || 'ativo') === s;
@@ -1290,7 +1299,7 @@ export default function CatequizandosList() {
                 <div className="grid grid-cols-1 gap-6">
                    {/* Personal Info Section */}
                    <section className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-xl">
-                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Dados de Identificação</h3>
+                      <h3 className="text-sm font-black text-black uppercase tracking-widest mb-6 text-center">Dados de Identificação</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 px-4">
                          <div className="space-y-4 text-left">
                             <div className="flex flex-col gap-1">
@@ -1331,7 +1340,7 @@ export default function CatequizandosList() {
 
                    {/* Family Section */}
                    <section className="bg-white rounded-3xl p-6 border-2 border-blue-100 shadow-xl shadow-blue-200/50">
-                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Responsáveis Legais</h3>
+                      <h3 className="text-sm font-black text-black uppercase tracking-widest mb-6 text-center">Responsáveis Legais</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                          {viewItem.responsaveis?.length ? (
                            viewItem.responsaveis.map(resp => (
@@ -1359,7 +1368,7 @@ export default function CatequizandosList() {
 
                    {/* Sacramental Section */}
                    <section className="bg-white rounded-3xl p-6 border-2 border-orange-100 shadow-xl shadow-orange-200/50">
-                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Caminhada Sacramental</h3>
+                      <h3 className="text-sm font-black text-black uppercase tracking-widest mb-6 text-center">Caminhada Sacramental</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                          {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
                            const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
@@ -1390,7 +1399,7 @@ export default function CatequizandosList() {
                      <section className="bg-zinc-900 rounded-3xl p-8 text-white shadow-2xl">
                         <div className="flex items-center justify-center gap-2 mb-6">
                            <MessageSquare className="w-4 h-4 text-primary" />
-                           <h3 className="text-base font-black uppercase tracking-widest text-zinc-400">Memorial de Acompanhamento</h3>
+                           <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400">Memorial de Acompanhamento</h3>
                         </div>
                         <p className="text-sm font-medium leading-relaxed text-zinc-400 text-center italic">"{viewItem.observacao}"</p>
                      </section>
