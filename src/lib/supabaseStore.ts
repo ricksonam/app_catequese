@@ -156,6 +156,8 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
     necessidadeEspecial: c.necessidade_especial,
     observacao: c.observacao, status: c.status, foto: c.foto || undefined,
     sacramentos: c.sacramentos || undefined,
+    responsaveis: c.responsaveis || undefined,
+    dadosPastorais: c.dados_pastorais || undefined,
     criadoEm: c.criado_em,
     origem: c.origem,
   }));
@@ -171,6 +173,8 @@ export async function upsertCatequizando(c: Catequizando) {
     necessidade_especial: c.necessidadeEspecial || '',
     observacao: c.observacao || '', status: c.status, foto: c.foto || null,
     sacramentos: c.sacramentos || null,
+    responsaveis: c.responsaveis || null,
+    dados_pastorais: c.dadosPastorais || null,
     origem: c.origem || 'manual',
   });
 

@@ -1289,8 +1289,8 @@ export default function CatequizandosList() {
 
                 <div className="grid grid-cols-1 gap-6">
                    {/* Personal Info Section */}
-                   <section className="bg-white rounded-[2.5rem] p-6 border-2 border-zinc-100 shadow-xl shadow-zinc-200/50">
-                      <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6 text-center">Dados Pessoais e Endereço</h3>
+                   <section className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-xl">
+                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Dados de Identificação</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 px-4">
                          <div className="space-y-4 text-left">
                             <div className="flex flex-col gap-1">
@@ -1330,13 +1330,12 @@ export default function CatequizandosList() {
                    </section>
 
                    {/* Family Section */}
-                   <section className="bg-white rounded-[2.5rem] p-6 border-2 border-blue-100 shadow-xl shadow-blue-200/50">
-                      <h3 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-6 text-center">Responsáveis Legais</h3>
+                   <section className="bg-white rounded-3xl p-6 border-2 border-blue-100 shadow-xl shadow-blue-200/50">
+                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Responsáveis Legais</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                          {viewItem.responsaveis?.length ? (
                            viewItem.responsaveis.map(resp => (
                              <div key={resp.id} className="bg-blue-50/30 p-4 rounded-2xl border border-blue-100 flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">{resp.vinculo.charAt(0).toUpperCase()}</div>
                                 <div className="flex-1 min-w-0 text-left">
                                    <p className="text-sm font-black text-zinc-900 uppercase leading-tight">{resp.nome}</p>
                                    <div className="flex items-center gap-2 mt-1">
@@ -1349,7 +1348,6 @@ export default function CatequizandosList() {
                            ))
                          ) : (
                            <div className="col-span-full bg-blue-50/30 p-4 rounded-2xl border border-blue-100 flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">R</div>
                               <div className="flex-1 min-w-0 text-left">
                                  <p className="text-sm font-black text-zinc-900 uppercase leading-tight">{viewItem.responsavel || "Não informado"}</p>
                                  <p className="text-xs font-black text-blue-600 mt-1">{viewItem.telefone}</p>
@@ -1360,8 +1358,8 @@ export default function CatequizandosList() {
                    </section>
 
                    {/* Sacramental Section */}
-                   <section className="bg-white rounded-[2.5rem] p-6 border-2 border-orange-100 shadow-xl shadow-orange-200/50">
-                      <h3 className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] mb-6 text-center">Caminhada Sacramental</h3>
+                   <section className="bg-white rounded-3xl p-6 border-2 border-orange-100 shadow-xl shadow-orange-200/50">
+                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Caminhada Sacramental</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                          {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
                            const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
@@ -1389,10 +1387,10 @@ export default function CatequizandosList() {
 
                    {/* Memorial */}
                    {viewItem.observacao && (
-                     <section className="bg-zinc-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
+                     <section className="bg-zinc-900 rounded-3xl p-8 text-white shadow-2xl">
                         <div className="flex items-center justify-center gap-2 mb-6">
                            <MessageSquare className="w-4 h-4 text-primary" />
-                           <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Memorial de Acompanhamento</h3>
+                           <h3 className="text-base font-black uppercase tracking-widest text-zinc-400">Memorial de Acompanhamento</h3>
                         </div>
                         <p className="text-sm font-medium leading-relaxed text-zinc-400 text-center italic">"{viewItem.observacao}"</p>
                      </section>
