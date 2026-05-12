@@ -194,11 +194,6 @@ export default function EncontroDetail() {
           <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
-          
-          <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
-            <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-          </button>
-
         </div>
         
         <div className="flex flex-col items-center w-full px-6 mb-2">
@@ -208,10 +203,15 @@ export default function EncontroDetail() {
         </div>
 
         {/* Edit Button positioned above grid */}
-        <div className="flex items-center justify-center gap-3 mb-2 animate-float-up" style={{ animationDelay: '50ms' }}>
+        {/* Edit & Delete Actions */}
+        <div className="relative flex items-center justify-center gap-3 mb-2 animate-float-up px-4" style={{ animationDelay: '50ms' }}>
           <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group">
             <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
             <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
+          </button>
+
+          <button onClick={() => { setMotivoText(""); setDeleteConfirmOpen(true); }} className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm">
+            <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
           </button>
         </div>
       </div>
