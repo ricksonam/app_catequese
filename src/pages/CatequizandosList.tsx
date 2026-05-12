@@ -1229,9 +1229,9 @@ export default function CatequizandosList() {
               {/* Close Button */}
               <button 
                 onClick={() => { setViewItem(null); setEditMode(false); }} 
-                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur-sm text-zinc-500 border-2 border-black/5 shadow-sm hover:bg-zinc-50 transition-all active:scale-90 z-50"
+                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 text-white shadow-lg hover:bg-zinc-800 transition-all active:scale-90 z-50"
               >
-                <X className="h-5 w-5" />
+                <X className="h-6 w-6" />
               </button>
 
               <div className="p-6 sm:p-8 space-y-8 overflow-y-auto">
@@ -1244,20 +1244,17 @@ export default function CatequizandosList() {
                          </div>
                       </div>
                    </div>
-                   <div className="flex-1 text-center sm:text-left pt-2">
-                       <div className="flex justify-center sm:justify-end gap-2 mb-2">
-                          <button onClick={handleEdit} className="w-9 h-9 flex items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95">
+                   <div className="flex-1 text-center sm:text-left pt-2 relative">
+                       <div className="flex justify-center sm:absolute sm:top-0 sm:right-0 gap-2 mb-3 sm:mb-0">
+                          <button onClick={handleEdit} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95">
                              <Pencil className="h-4 w-4" />
                           </button>
-                          <button onClick={handleDelete} className="w-9 h-9 flex items-center justify-center rounded-xl bg-destructive/10 text-destructive border border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95">
+                          <button onClick={handleDelete} className="w-8 h-8 flex items-center justify-center rounded-lg bg-destructive/10 text-destructive border border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95">
                              <Trash2 className="h-4 w-4" />
                           </button>
                        </div>
-                      <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
+                      <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight uppercase pr-0 sm:pr-20" title={viewItem.nome}>{viewItem.nome}</h2>
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
-                         <span className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] shadow-sm", statusConfig[viewItem.status || 'ativo'].color)}>
-                            {statusConfig[viewItem.status || 'ativo'].label}
-                         </span>
                          <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs bg-white border-2 border-zinc-100 px-3 py-1.5 rounded-full shadow-sm">
                             <Users className="w-3.5 h-3.5" />
                             {turma?.nome}
@@ -1272,8 +1269,8 @@ export default function CatequizandosList() {
                 </div>
 
                 {/* Status Quick Switch */}
-                <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-xl">
-                   <h3 className="text-sm font-black text-black uppercase tracking-widest mb-4 text-center">Alterar Situação</h3>
+                <div className="bg-white rounded-3xl p-4 border-2 border-zinc-100 shadow-xl">
+                   <h3 className="text-sm font-black text-black uppercase tracking-widest mb-3 text-center">Alterar Situação</h3>
                    <div className="grid grid-cols-3 gap-2">
                       {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                         const isAtivo = (viewItem.status || 'ativo') === s;
