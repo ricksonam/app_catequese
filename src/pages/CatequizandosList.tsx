@@ -1222,37 +1222,39 @@ export default function CatequizandosList() {
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
         <DialogContent hideClose className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
-            <div className="flex flex-col h-full bg-white rounded-3xl overflow-hidden relative">
+            <div className="flex flex-col h-full bg-[#F8F9FE] rounded-3xl overflow-hidden relative">
               {/* Top Bar Accent */}
               <div className="h-2 w-full bg-gradient-to-r from-primary via-primary/60 to-primary/30" />
               
               {/* Control Buttons */}
               <div className="absolute top-6 right-6 flex items-center gap-2 z-50">
-                 <button onClick={handleEdit} className="p-2.5 rounded-xl bg-muted/50 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all active:scale-95"><Pencil className="h-4 w-4" /></button>
-                 <button onClick={handleDelete} className="p-2.5 rounded-xl bg-muted/50 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all active:scale-95"><Trash2 className="h-4 w-4" /></button>
-                 <button onClick={() => { setViewItem(null); setEditMode(false); }} className="p-2.5 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all active:scale-90"><X className="h-4 w-4" /></button>
+                 <button onClick={handleEdit} className="p-2.5 rounded-xl bg-white text-muted-foreground border-2 border-zinc-100 shadow-sm hover:bg-primary/10 hover:text-primary transition-all active:scale-95"><Pencil className="h-4 w-4" /></button>
+                 <button onClick={handleDelete} className="p-2.5 rounded-xl bg-white text-muted-foreground border-2 border-zinc-100 shadow-sm hover:bg-destructive/10 hover:text-destructive transition-all active:scale-95"><Trash2 className="h-4 w-4" /></button>
+                 <button onClick={() => { setViewItem(null); setEditMode(false); }} className="p-2.5 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all active:scale-90 shadow-lg"><X className="h-4 w-4" /></button>
               </div>
 
               <div className="p-6 sm:p-8 space-y-8 overflow-y-auto">
                 {/* Profile Header */}
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                    <div className="relative shrink-0">
-                      <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-[2rem] bg-muted overflow-hidden shadow-2xl ring-4 ring-white">
-                         {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-4xl font-black text-primary/40">{viewItem.nome.charAt(0).toUpperCase()}</div>}
+                      <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-[2.5rem] bg-white p-1 shadow-2xl shadow-primary/20 ring-4 ring-white">
+                         <div className="w-full h-full rounded-[2rem] bg-muted overflow-hidden">
+                            {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-4xl font-black text-primary/40">{viewItem.nome.charAt(0).toUpperCase()}</div>}
+                         </div>
                       </div>
                    </div>
                    <div className="flex-1 text-center sm:text-left pt-2">
-                      <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight truncate max-w-[300px] sm:max-w-none" title={viewItem.nome}>{viewItem.nome}</h2>
+                      <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
                          <span className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] shadow-sm", statusConfig[viewItem.status || 'ativo'].color)}>
                             {statusConfig[viewItem.status || 'ativo'].label}
                          </span>
-                         <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs bg-muted/30 px-3 py-1.5 rounded-full">
+                         <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs bg-white border-2 border-zinc-100 px-3 py-1.5 rounded-full shadow-sm">
                             <Users className="w-3.5 h-3.5" />
                             {turma?.nome}
                          </div>
                          {viewItem.dataNascimento && (
-                            <div className="flex items-center gap-2 text-primary font-black text-xs bg-primary/5 px-3 py-1.5 rounded-full">
+                            <div className="flex items-center gap-2 text-primary font-black text-xs bg-primary/5 px-3 py-1.5 rounded-full border-2 border-primary/10">
                                {calcularIdade(viewItem.dataNascimento)}
                             </div>
                          )}
@@ -1261,9 +1263,9 @@ export default function CatequizandosList() {
                 </div>
 
                 {/* Status Quick Switch */}
-                <div className="space-y-4">
-                   <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] text-center">Alterar Situação</h3>
-                   <div className="flex justify-center gap-2 flex-wrap">
+                <div className="bg-white rounded-[2.5rem] p-6 border-2 border-zinc-100 shadow-xl shadow-zinc-200/50">
+                   <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 text-center">Alterar Situação</h3>
+                   <div className="grid grid-cols-3 gap-2">
                       {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                         const isAtivo = (viewItem.status || 'ativo') === s;
                         const config = statusConfig[s];
@@ -1272,10 +1274,10 @@ export default function CatequizandosList() {
                             key={s} 
                             onClick={() => handleStatusChange(viewItem, s)} 
                             className={cn(
-                              "px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 active:scale-95",
+                              "py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 active:scale-95",
                               isAtivo 
                                 ? config.activeClasses
-                                : "bg-white text-zinc-400 border-zinc-100 hover:border-zinc-200"
+                                : "bg-zinc-50 text-zinc-400 border-zinc-100 hover:border-zinc-200"
                             )}
                           >
                              {config.label}
@@ -1287,7 +1289,7 @@ export default function CatequizandosList() {
 
                 <div className="grid grid-cols-1 gap-6">
                    {/* Personal Info Section */}
-                   <section className="bg-zinc-50/50 rounded-[2.5rem] p-6 border border-zinc-100">
+                   <section className="bg-white rounded-[2.5rem] p-6 border-2 border-zinc-100 shadow-xl shadow-zinc-200/50">
                       <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6 text-center">Dados Pessoais e Endereço</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 px-4">
                          <div className="space-y-4 text-left">
@@ -1301,12 +1303,12 @@ export default function CatequizandosList() {
                             </div>
                             <div className="flex flex-col gap-1">
                                <span className="text-[9px] font-black text-primary uppercase tracking-widest">E-mail</span>
-                               <p className="text-sm font-bold text-zinc-900 truncate">{viewItem.email || "—"}</p>
+                               <p className="text-sm font-bold text-zinc-900 break-all">{viewItem.email || "—"}</p>
                             </div>
                          </div>
                          <div className="space-y-4 text-left">
                             <div className="flex flex-col gap-1">
-                               <span className="text-[9px] font-black text-primary uppercase tracking-widest">Endereço Completo</span>
+                               <span className="text-[9px] font-black text-primary uppercase tracking-widest">Residência</span>
                                {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
                                  <p className="text-sm font-bold text-zinc-900 leading-relaxed">
                                     {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}<br/>
@@ -1314,34 +1316,43 @@ export default function CatequizandosList() {
                                  </p>
                                ) : <p className="text-sm font-bold text-zinc-300 italic">—</p>}
                             </div>
+                            {viewItem.necessidadeEspecial && viewItem.necessidadeEspecial !== 'nenhuma' && (
+                               <div className="flex flex-col gap-1">
+                                  <span className="text-[9px] font-black text-destructive uppercase tracking-widest">Necessidade Especial</span>
+                                  <div className="flex items-center gap-2">
+                                     <div className={cn("w-2 h-2 rounded-full", NECESSIDADES_ESPECIAIS.find(n => n.id === viewItem.necessidadeEspecial)?.color)} />
+                                     <p className="text-sm font-black text-zinc-900">{NECESSIDADES_ESPECIAIS.find(n => n.id === viewItem.necessidadeEspecial)?.label}</p>
+                                  </div>
+                               </div>
+                            )}
                          </div>
                       </div>
                    </section>
 
                    {/* Family Section */}
-                   <section className="bg-blue-50/30 rounded-[2.5rem] p-6 border border-blue-100">
+                   <section className="bg-white rounded-[2.5rem] p-6 border-2 border-blue-100 shadow-xl shadow-blue-200/50">
                       <h3 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-6 text-center">Responsáveis Legais</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                          {viewItem.responsaveis?.length ? (
                            viewItem.responsaveis.map(resp => (
-                             <div key={resp.id} className="bg-white p-4 rounded-2xl shadow-sm border border-blue-50 flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0">{resp.vinculo.charAt(0).toUpperCase()}</div>
+                             <div key={resp.id} className="bg-blue-50/30 p-4 rounded-2xl border border-blue-100 flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">{resp.vinculo.charAt(0).toUpperCase()}</div>
                                 <div className="flex-1 min-w-0 text-left">
-                                   <p className="text-sm font-black text-zinc-900 truncate uppercase">{resp.nome}</p>
-                                   <div className="flex items-center gap-2 mt-0.5">
+                                   <p className="text-sm font-black text-zinc-900 uppercase leading-tight">{resp.nome}</p>
+                                   <div className="flex items-center gap-2 mt-1">
                                       <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{resp.vinculo}</span>
-                                      <span className="w-1 h-1 rounded-full bg-blue-100" />
+                                      <span className="w-1 h-1 rounded-full bg-blue-200" />
                                       <span className="text-xs font-black text-blue-600">{resp.telefone}</span>
                                    </div>
                                 </div>
                              </div>
                            ))
                          ) : (
-                           <div className="col-span-full bg-white p-4 rounded-2xl shadow-sm border border-blue-50 flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0">R</div>
+                           <div className="col-span-full bg-blue-50/30 p-4 rounded-2xl border border-blue-100 flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">R</div>
                               <div className="flex-1 min-w-0 text-left">
-                                 <p className="text-sm font-black text-zinc-900 truncate uppercase">{viewItem.responsavel || "Não informado"}</p>
-                                 <p className="text-xs font-black text-blue-600 mt-0.5">{viewItem.telefone}</p>
+                                 <p className="text-sm font-black text-zinc-900 uppercase leading-tight">{viewItem.responsavel || "Não informado"}</p>
+                                 <p className="text-xs font-black text-blue-600 mt-1">{viewItem.telefone}</p>
                               </div>
                            </div>
                          )}
@@ -1349,7 +1360,7 @@ export default function CatequizandosList() {
                    </section>
 
                    {/* Sacramental Section */}
-                   <section className="bg-orange-50/30 rounded-[2.5rem] p-6 border border-orange-100">
+                   <section className="bg-white rounded-[2.5rem] p-6 border-2 border-orange-100 shadow-xl shadow-orange-200/50">
                       <h3 className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] mb-6 text-center">Caminhada Sacramental</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                          {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
@@ -1357,19 +1368,20 @@ export default function CatequizandosList() {
                            const isOk = s?.recebido;
                            const label = sac === 'eucaristia' ? '1ª Eucaristia' : sac;
                            return (
-                             <div key={sac} className={cn("p-4 rounded-2xl border-2 transition-all text-center", isOk ? "bg-white border-success/30 shadow-sm" : "bg-white/50 border-zinc-100 opacity-60")}>
-                                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md", isOk ? "bg-success text-white" : "bg-zinc-200 text-zinc-400")}>
+                             <div key={sac} className={cn("p-4 rounded-2xl border-2 transition-all text-center", isOk ? "bg-orange-50/30 border-orange-200" : "bg-zinc-50 border-zinc-100 opacity-60")}>
+                                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md", isOk ? "bg-orange-500 text-white" : "bg-zinc-200 text-zinc-400")}>
                                    {isOk ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
                                 </div>
-                                <p className={cn("text-[9px] font-black uppercase tracking-widest", isOk ? "text-success" : "text-zinc-500")}>{label}</p>
+                                <p className={cn("text-[9px] font-black uppercase tracking-widest", isOk ? "text-orange-600" : "text-zinc-500")}>{label}</p>
+                                {isOk && s.paroquia && <p className="text-[9px] font-black text-orange-400 mt-1 uppercase tracking-tight leading-tight">{s.paroquia}</p>}
                                 {isOk && s.data && <p className="text-xs font-black text-zinc-900 mt-1">{new Date(s.data + 'T12:00').toLocaleDateString("pt-BR")}</p>}
                              </div>
                            );
                          })}
                       </div>
                       {viewItem.dadosPastorais?.participacaoPastoral && (
-                        <div className="mt-4 p-4 bg-white/50 rounded-2xl border border-orange-100 italic text-center">
-                           <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest block mb-1">Engajamento</span>
+                        <div className="mt-4 p-4 bg-orange-50/20 rounded-2xl border border-orange-100 italic text-center">
+                           <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest block mb-1">Engajamento Comunitário</span>
                            <p className="text-sm font-bold text-zinc-800">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
                         </div>
                       )}
@@ -1377,7 +1389,7 @@ export default function CatequizandosList() {
 
                    {/* Memorial */}
                    {viewItem.observacao && (
-                     <section className="bg-zinc-900 rounded-[2.5rem] p-8 text-white">
+                     <section className="bg-zinc-900 rounded-[2.5rem] p-8 text-white shadow-2xl">
                         <div className="flex items-center justify-center gap-2 mb-6">
                            <MessageSquare className="w-4 h-4 text-primary" />
                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Memorial de Acompanhamento</h3>
