@@ -130,10 +130,22 @@ const emptyForm: CatequizandoForm = {
   responsaveis: [{ id: generateUUID(), nome: "", telefone: "", vinculo: 'pais' }],
 };
 
-const statusConfig: Record<CatequizandoStatus, { label: string; color: string }> = {
-  ativo: { label: "Ativo", color: "bg-success/10 text-success" },
-  desistente: { label: "Desistente", color: "bg-destructive/10 text-destructive" },
-  afastado: { label: "Afastado", color: "bg-warning/10 text-warning" },
+const statusConfig: Record<CatequizandoStatus, { label: string; color: string; activeClasses: string }> = {
+  ativo: { 
+    label: "Ativo", 
+    color: "bg-emerald-500 text-white", 
+    activeClasses: "bg-emerald-600 text-white border-emerald-700 shadow-emerald-200" 
+  },
+  desistente: { 
+    label: "Desistente", 
+    color: "bg-orange-500 text-white", 
+    activeClasses: "bg-orange-600 text-white border-orange-700 shadow-orange-200" 
+  },
+  afastado: { 
+    label: "Afastado", 
+    color: "bg-red-500 text-white", 
+    activeClasses: "bg-red-600 text-white border-red-700 shadow-red-200" 
+  },
 };
 
 export default function CatequizandosList() {
@@ -867,6 +879,9 @@ export default function CatequizandosList() {
             <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className={cn("relative flex flex-col bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98] overflow-hidden", emAlerta ? "border-destructive group-hover:shadow-md" : "border-zinc-800 group-hover:shadow-md group-hover:border-primary")}>
+                {/* Sinalização de Status Lateral */}
+                <div className={cn("absolute left-0 top-0 bottom-0 w-1.5", st.color.split(' ')[0])} />
+                
                 {emAlerta && (
                   <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse w-full">
                     <BellRing className="w-3 h-3 text-destructive" />
@@ -874,19 +889,13 @@ export default function CatequizandosList() {
                   </div>
                 )}
                 <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 w-full">
-                <div className="relative shrink-0">
+                <div className="relative shrink-0 ml-1.5">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shadow-inner ring-2 ring-background">
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
                   </div>
-                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${st.color.split(' ')[0]}`} title={`Status: ${st.label}`} />
                   {isAniversarianteMes(c.dataNascimento) && (
                     <div className="absolute -top-1 -right-1 w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce z-20">
                       <Cake className="h-3.5 w-3.5 text-white" />
-                    </div>
-                  )}
-                  {!isAniversarianteMes(c.dataNascimento) && isAniversarianteMesBatismo(c.sacramentos?.batismo?.data) && (
-                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce z-20">
-                      <Cross className="h-3.5 w-3.5 text-white" />
                     </div>
                   )}
                 </div>
@@ -894,22 +903,13 @@ export default function CatequizandosList() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm sm:text-base font-bold text-foreground truncate leading-tight group-hover:text-primary transition-colors">{c.nome}</h3>
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                    {c.dataNascimento ? (
-                      <span className="inline-flex items-center text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full truncate">
-                         Nasc: <span className="text-foreground ml-1">{new Date(c.dataNascimento + 'T12:00:00').toLocaleDateString('pt-BR')}</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-[10px] sm:text-xs font-semibold text-muted-foreground italic truncate">
-                        Nasc. não informado
-                      </span>
-                    )}
+                    <span className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-black/5", st.color.split(' ')[0], "text-white")}>
+                      {st.label}
+                    </span>
                     {c.dataNascimento && (
-                      <>
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary/20 hidden sm:block" />
-                        <span className="text-xs sm:text-sm font-black text-primary bg-primary/10 px-2.5 py-1 rounded-lg border-2 border-primary/20 shadow-sm">
-                          {calcularIdade(c.dataNascimento)}
-                        </span>
-                      </>
+                      <span className="text-xs sm:text-sm font-black text-primary bg-primary/10 px-2.5 py-1 rounded-lg border-2 border-primary/20 shadow-sm">
+                        {calcularIdade(c.dataNascimento)}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -1243,9 +1243,6 @@ export default function CatequizandosList() {
                            {viewItem.foto ? <img src={viewItem.foto} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full flex items-center justify-center bg-primary/5 text-4xl font-black text-primary/40">{viewItem.nome.charAt(0).toUpperCase()}</div>}
                         </div>
                       </div>
-                      <div className={`absolute -bottom-2 -right-2 px-3 py-1 rounded-full border-2 border-white shadow-lg text-[10px] font-black uppercase tracking-widest text-white ${statusConfig[viewItem.status || 'ativo'].color.replace('bg-', 'bg-').replace('text-', 'bg-')}`}>
-                        {statusConfig[viewItem.status || 'ativo'].label}
-                      </div>
                    </div>
                 </div>
               </div>
@@ -1253,7 +1250,7 @@ export default function CatequizandosList() {
               <div className="pt-16 pb-8 px-5 sm:px-8 space-y-8 overflow-y-auto">
                 {/* Nome e Título */}
                 <div className="text-center sm:text-left space-y-1">
-                   <h2 className="text-3xl font-black text-zinc-900 tracking-tight leading-none uppercase">{viewItem.nome}</h2>
+                   <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 tracking-tight leading-none uppercase truncate w-full" title={viewItem.nome}>{viewItem.nome}</h2>
                    <div className="flex items-center justify-center sm:justify-start gap-2 text-muted-foreground font-bold text-xs uppercase tracking-widest">
                       <Users className="w-3.5 h-3.5" />
                       {turma?.nome}
@@ -1268,7 +1265,7 @@ export default function CatequizandosList() {
 
                 {/* Status Switcher (Premium) */}
                 <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-sm">
-                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 text-center sm:text-left">Situação do Catequizando</p>
+                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4 text-center">Situação do Catequizando</p>
                    <div className="grid grid-cols-3 gap-2">
                      {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
                        const isAtivo = (viewItem.status || 'ativo') === s;
@@ -1280,11 +1277,11 @@ export default function CatequizandosList() {
                            className={cn(
                              "py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 flex flex-col items-center gap-1.5 shadow-sm active:scale-95",
                              isAtivo 
-                               ? "bg-zinc-900 text-white border-zinc-900 shadow-lg scale-[1.02]" 
+                               ? config.activeClasses
                                : "bg-zinc-50 text-zinc-400 border-zinc-100 hover:bg-zinc-100 hover:border-zinc-200"
                            )}
                          >
-                            <div className={cn("w-2 h-2 rounded-full", isAtivo ? "bg-primary animate-pulse" : "bg-zinc-300")} />
+                            <div className={cn("w-2 h-2 rounded-full", isAtivo ? "bg-white animate-pulse" : "bg-zinc-300")} />
                             {config.label}
                          </button>
                        );
@@ -1296,33 +1293,33 @@ export default function CatequizandosList() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                    {/* Dados Pessoais Card */}
                    <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-sm space-y-5">
-                      <div className="flex items-center justify-between">
-                         <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Dados de Contato</h4>
+                      <div className="flex flex-col items-center gap-2">
                          <div className="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><UserPlus className="w-4 h-4" /></div>
+                         <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">Dados de Contato</h4>
                       </div>
                       <div className="space-y-4">
-                        <div className="flex flex-col">
+                        <div className="flex flex-col items-center sm:items-start">
                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Nascimento</span>
                            <span className="text-sm font-bold text-zinc-900">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T12:00').toLocaleDateString("pt-BR") : "Não informado"}</span>
                         </div>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col items-center sm:items-start">
                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Telefone Celular</span>
                            <span className="text-sm font-bold text-zinc-900">{viewItem.telefone || "Não cadastrado"}</span>
                         </div>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col items-center sm:items-start">
                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">E-mail</span>
-                           <span className="text-sm font-bold text-zinc-900 truncate">{viewItem.email || "Não cadastrado"}</span>
+                           <span className="text-sm font-bold text-zinc-900 truncate w-full text-center sm:text-left">{viewItem.email || "Não cadastrado"}</span>
                         </div>
                       </div>
                    </div>
 
                    {/* Endereço Card */}
                    <div className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-sm space-y-5">
-                      <div className="flex items-center justify-between">
-                         <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Localização</h4>
+                      <div className="flex flex-col items-center gap-2">
                          <div className="w-8 h-8 rounded-xl bg-primary/5 flex items-center justify-center text-primary">📍</div>
+                         <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">Localização</h4>
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-1 text-center sm:text-left">
                         <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Residência</span>
                         {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
                           <div className="space-y-1">
@@ -1336,30 +1333,30 @@ export default function CatequizandosList() {
 
                 {/* Responsaveis Premium */}
                 <div className="bg-white rounded-3xl p-6 border-2 border-blue-100 shadow-sm">
-                   <div className="flex items-center justify-between mb-6">
-                      <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Família / Responsáveis</h4>
+                   <div className="flex flex-col items-center gap-2 mb-6">
                       <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500"><Users className="w-4 h-4" /></div>
+                      <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-widest text-center">Família / Responsáveis</h4>
                    </div>
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {viewItem.responsaveis?.length ? (
                         viewItem.responsaveis.map(resp => (
                           <div key={resp.id} className="p-4 bg-blue-50/30 border border-blue-100 rounded-2xl flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm border border-blue-100 font-black text-xs">{resp.vinculo.charAt(0).toUpperCase()}</div>
+                             <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm border border-blue-100 font-black text-sm shrink-0">{resp.vinculo.charAt(0).toUpperCase()}</div>
                              <div className="flex-1 min-w-0">
                                 <p className="text-sm font-bold text-zinc-900 truncate uppercase">{resp.nome}</p>
-                                <div className="flex items-center justify-between mt-0.5">
+                                <div className="flex flex-col mt-1">
                                    <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">{resp.vinculo}</span>
-                                   <span className="text-[10px] font-bold text-zinc-500">{resp.telefone}</span>
+                                   <span className="text-xs font-black text-zinc-900">{resp.telefone}</span>
                                 </div>
                              </div>
                           </div>
                         ))
                       ) : (
                         <div className="col-span-2 p-4 bg-blue-50/30 border border-blue-100 rounded-2xl flex items-center gap-3">
-                           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm border border-blue-100 font-black text-xs">R</div>
+                           <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm border border-blue-100 font-black text-sm shrink-0">R</div>
                            <div className="flex-1 min-w-0">
                               <p className="text-sm font-bold text-zinc-900 truncate uppercase">{viewItem.responsavel || "Não informado"}</p>
-                              <span className="text-[10px] font-bold text-zinc-500">{viewItem.telefone}</span>
+                              <span className="text-xs font-black text-zinc-900 mt-1 block">{viewItem.telefone}</span>
                            </div>
                         </div>
                       )}
@@ -1368,9 +1365,9 @@ export default function CatequizandosList() {
 
                 {/* Dados Pastorais Premium */}
                 <div className="bg-white rounded-3xl p-6 border-2 border-orange-100 shadow-sm space-y-6">
-                   <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Caminhada Litúrgica</h4>
+                   <div className="flex flex-col items-center gap-2">
                       <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">✝️</div>
+                      <h4 className="text-[10px] font-black text-orange-600 uppercase tracking-widest text-center">Caminhada Sacramental</h4>
                    </div>
 
                    {/* Sacramentos */}
@@ -1378,13 +1375,14 @@ export default function CatequizandosList() {
                       {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
                         const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
                         const isOk = s?.recebido;
+                        const label = sac === 'eucaristia' ? 'Primeira Eucaristia' : sac;
                         return (
                           <div key={sac} className={cn("relative p-4 rounded-3xl border-2 transition-all overflow-hidden", isOk ? "bg-success/5 border-success/20" : "bg-zinc-50 border-zinc-100 opacity-60")}>
                              <div className="flex flex-col items-center gap-2 text-center relative z-10">
                                 <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-1", isOk ? "bg-success text-white shadow-lg shadow-success/20" : "bg-zinc-200 text-zinc-400")}>
                                    {isOk ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
                                 </div>
-                                <span className={cn("text-[10px] font-black uppercase tracking-widest", isOk ? "text-success" : "text-zinc-500")}>{sac}</span>
+                                <span className={cn("text-[9px] font-black uppercase tracking-widest", isOk ? "text-success" : "text-zinc-500")}>{label}</span>
                                 {isOk && s.data && <span className="text-[9px] font-bold text-success/60">{new Date(s.data + 'T12:00').toLocaleDateString("pt-BR")}</span>}
                              </div>
                              {isOk && <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-success/10 rounded-full blur-xl" />}
