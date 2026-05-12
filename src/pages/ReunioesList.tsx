@@ -824,6 +824,11 @@ export default function ReunioesList() {
               </div>
 
               <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
+                {/* Botão de Relatórios no Topo */}
+                <div className="flex justify-end mb-2">
+                  <ReportModule context="reunioes" turmaId={id!} initialDocId={viewItem.id} instantReport="reun_complet" />
+                </div>
+
                 <div className="text-center sm:text-left">
                    <div className="flex justify-center sm:justify-start gap-2 mb-3">
                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-current/10 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
@@ -834,21 +839,21 @@ export default function ReunioesList() {
                 </div>
 
                 {/* --- PAINEL PREMIUM: REGISTRO DE DECISÕES --- */}
-                <div className="bg-zinc-900 text-white rounded-3xl p-6 shadow-2xl space-y-6 border-2 border-zinc-800 animate-in fade-in zoom-in duration-500">
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-2xl space-y-6 border-2 border-white/10 animate-in fade-in zoom-in duration-500">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/5">
+                      <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center border border-white/10">
                         <FileSignature className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-0.5">Gestão da Reunião</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-0.5">Gestão da Reunião</h4>
                         <p className="text-sm font-black uppercase tracking-tight">Registro de Decisões</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all text-[10px] font-black uppercase border border-white/5"
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all text-[10px] font-black uppercase border border-white/10 shadow-sm"
                       >
                         <Users className="h-3.5 w-3.5" />
                         <span>Presença ({(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length})</span>
@@ -857,7 +862,7 @@ export default function ReunioesList() {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">O que foi decidido?</label>
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-widest ml-1">O que foi decidido?</label>
                     <textarea 
                       defaultValue={viewItem.ataDecisoes || ""}
                       onBlur={(e) => {
@@ -867,9 +872,9 @@ export default function ReunioesList() {
                         }
                       }}
                       placeholder="Descreva aqui os acordos, decisões e próximos passos da reunião..."
-                      className="w-full min-h-[160px] bg-white/5 border-2 border-white/10 focus:border-white/20 rounded-2xl p-4 text-sm font-medium leading-relaxed placeholder:text-white/10 transition-all resize-none focus:ring-0"
+                      className="w-full min-h-[160px] bg-white border-2 border-white/20 rounded-2xl p-4 text-sm font-bold leading-relaxed text-zinc-900 placeholder:text-zinc-300 transition-all shadow-inner focus:ring-4 focus:ring-white/10 focus:outline-none"
                     />
-                    <p className="text-[9px] text-white/30 font-bold italic text-right">* As alterações são salvas automaticamente ao clicar fora da caixa.</p>
+                    <p className="text-[9px] text-white/50 font-bold italic text-right">* As alterações são salvas automaticamente ao clicar fora da caixa.</p>
                   </div>
                 </div>
 
@@ -1014,12 +1019,6 @@ export default function ReunioesList() {
                     <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
                   </div>
                 )}
-
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <div className="flex-1">
-                    <ReportModule context="reunioes" turmaId={id!} initialDocId={viewItem.id} instantReport="reun_complet" />
-                  </div>
-                </div>
               </div>
             </div>
           )}
