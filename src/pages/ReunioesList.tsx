@@ -967,9 +967,10 @@ export default function ReunioesList() {
                   )}
                 </div>
               </div>
-            )}
-          </DialogContent>
-        </Dialog>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
         <DialogContent className="rounded-3xl border-border/30 max-w-sm p-0 overflow-hidden">
