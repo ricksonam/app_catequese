@@ -845,7 +845,7 @@ export default function ReunioesList() {
                  </div>
               </div>
 
-              <div className="p-6 sm:p-8 space-y-8 overflow-y-auto custom-scrollbar relative z-10">
+              <div className="flex-1 p-6 sm:p-8 space-y-8 overflow-y-auto custom-scrollbar relative z-10">
                 {/* Main Title Area */}
                 <div className="text-center space-y-4">
                   <div className="flex justify-center gap-2 flex-wrap">
@@ -895,14 +895,14 @@ export default function ReunioesList() {
                   </div>
 
                   {/* Participantes Card Premium */}
-                  <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-3xl p-6 border border-zinc-700 shadow-xl shadow-black/10 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-                     <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-colors duration-500" />
+                  <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 border border-white shadow-xl shadow-black/5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+                     <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors duration-500" />
                      <div className="relative z-10 flex items-center justify-between mb-4">
-                       <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                         <Users className="w-3.5 h-3.5" /> Presenças Confirmadas
+                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                         <Users className="w-4 h-4 text-primary/70" /> Presenças Confirmadas
                        </p>
-                       <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10">
-                         <span className="text-xl font-black text-white">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span>
+                       <div className="bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                         <span className="text-xl font-black text-primary">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span>
                        </div>
                      </div>
                      
