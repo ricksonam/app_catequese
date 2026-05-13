@@ -849,9 +849,9 @@ export default function ReunioesList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent className="w-full sm:max-w-2xl rounded-[2rem] border-0 p-0 overflow-hidden max-h-[90vh] bg-transparent shadow-2xl flex flex-col">
+        <DialogContent className="w-full sm:max-w-2xl rounded-none sm:rounded-[2rem] border-0 p-0 overflow-hidden h-[100dvh] sm:max-h-[90vh] bg-transparent shadow-2xl flex flex-col">
           {viewItem && (
-            <div className="flex flex-col flex-1 min-h-0 bg-white/95 backdrop-blur-xl rounded-[2rem] overflow-hidden relative">
+            <div className="flex flex-col flex-1 min-h-0 bg-white/95 backdrop-blur-xl rounded-none sm:rounded-[2rem] overflow-hidden relative">
               {/* Dynamic Header Gradient Background */}
               <div className={`absolute top-0 left-0 right-0 h-48 bg-gradient-to-br opacity-10 ${
                   viewItem.tipo === 'Reunião de preparação de encontro' ? 'from-emerald-400 to-teal-600' :
@@ -882,7 +882,7 @@ export default function ReunioesList() {
                  </div>
               </div>
 
-              <div className="flex-1 p-6 sm:p-8 space-y-8 overflow-y-auto custom-scrollbar relative z-10">
+              <div className="flex-1 px-4 py-6 sm:p-8 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar relative z-10">
                 {/* Main Title Area */}
                 <div className="text-center space-y-5">
                   <div className="flex justify-center gap-2 flex-wrap">
@@ -894,14 +894,6 @@ export default function ReunioesList() {
                      }`}>
                        {viewItem.tipo}
                      </span>
-                     <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border shadow-sm ${
-                       viewItem.status === 'realizado' ? 'bg-emerald-500 text-white border-emerald-600' : 
-                       viewItem.status === 'cancelado' ? 'bg-rose-500 text-white border-rose-600' :
-                       'bg-amber-400 text-amber-950 border-amber-500'
-                     }`}>
-                       <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                       {viewItem.status}
-                     </div>
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight tracking-tighter max-w-2xl mx-auto">{viewItem.nome}</h2>
                   
@@ -927,7 +919,7 @@ export default function ReunioesList() {
                 </div>
 
                 {/* Unified Info Card: Logística + Pautas + Ata */}
-                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl shadow-black/5 relative overflow-hidden group">
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-slate-200 shadow-xl shadow-black/5 relative overflow-hidden group">
                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl" />
                    
                    <div className="space-y-8 relative z-10">
@@ -990,15 +982,15 @@ export default function ReunioesList() {
                                 </div>
                                 
                                 {activePautaId === p.id && (
-                                  <div className="mt-2 w-full sm:pl-12" onClick={e => e.stopPropagation()}>
+                                  <div className="mt-3 w-full" onClick={e => e.stopPropagation()}>
                                      <textarea 
                                        defaultValue={p.decisao || ""}
                                        placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
-                                       className="w-full min-h-[100px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-sky-50/50 rounded-xl border border-sky-100 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 transition-all leading-relaxed"
+                                       className="w-full min-h-[140px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-sky-50/50 rounded-xl border border-sky-100 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 transition-all leading-relaxed block"
                                        onBlur={(e) => handleSavePautaDecisao(p.id, e.target.value)}
                                      />
                                      <div className="flex items-center justify-between mt-3">
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Salva automaticamente ao sair do campo</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Salva ao sair do campo</p>
                                         <button onClick={() => setActivePautaId(null)} className="px-5 py-2 rounded-lg bg-sky-600 text-white text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-sky-700 hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all">Fechar</button>
                                      </div>
                                   </div>
