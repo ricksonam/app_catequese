@@ -897,10 +897,10 @@ export default function ReunioesList() {
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight tracking-tighter max-w-2xl mx-auto">{viewItem.nome}</h2>
                   
-                  <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                  <div className="flex flex-row gap-3 pt-2 w-full">
                      <button 
                       onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                      className="flex-1 flex justify-center items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
+                      className="flex-1 flex justify-center items-center gap-2 px-4 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
                       <ClipboardCheck className="h-4 w-4 shrink-0" /> 
                       <span className="truncate">Registrar Presença</span>
@@ -911,7 +911,7 @@ export default function ReunioesList() {
 
                     <button 
                       onClick={() => setAtaCompletaOpen(true)}
-                      className="flex-1 flex justify-center items-center gap-2 px-6 py-3 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-900/25 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:translate-y-0"
+                      className="flex-1 flex justify-center items-center gap-2 px-4 py-3 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-900/25 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
                       <FileText className="h-4 w-4 shrink-0" /> <span className="truncate">Ata Completa</span>
                     </button>
@@ -919,14 +919,14 @@ export default function ReunioesList() {
                 </div>
 
                 {/* Unified Info Card: Logística + Pautas + Ata */}
-                <div className="bg-white/60 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-slate-200 shadow-xl shadow-black/5 relative overflow-hidden group">
+                <div className="bg-white/60 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-black shadow-xl shadow-black/5 relative overflow-hidden group">
                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl" />
                    
                    <div className="space-y-8 relative z-10">
                      {/* 1. Logística */}
-                     <div className="flex flex-col sm:flex-row sm:items-center sm:divide-x divide-black/5 gap-5 sm:gap-0">
+                     <div className="flex flex-col sm:flex-row sm:items-center sm:divide-x divide-black/10 gap-4 sm:gap-0 p-4 rounded-xl border border-black bg-white/50">
                        <div className="flex items-center gap-4 flex-1 sm:pr-5">
-                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-sm"><Calendar className="w-4.5 h-4.5" /></div>
+                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-black flex items-center justify-center shrink-0 text-blue-600 shadow-sm"><Calendar className="w-4.5 h-4.5" /></div>
                          <div className="flex-1 min-w-0 text-left">
                            <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest leading-none mb-1">Data e Horário</p>
                            <p className="text-base font-bold text-foreground">
@@ -934,27 +934,25 @@ export default function ReunioesList() {
                            </p>
                          </div>
                        </div>
-                       <div className="h-px sm:h-auto sm:w-px bg-gradient-to-r sm:bg-gradient-to-b from-transparent via-black/5 to-transparent" />
+                       <div className="h-px sm:h-10 sm:w-px bg-black/10" />
                        <div className="flex items-center gap-4 flex-1 sm:pl-5">
-                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-sm"><MapPin className="w-4.5 h-4.5" /></div>
+                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-black flex items-center justify-center shrink-0 text-emerald-600 shadow-sm"><MapPin className="w-4.5 h-4.5" /></div>
                          <div className="flex-1 min-w-0 text-left">
-                           <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest leading-none mb-1">Localização</p>
+                           <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest leading-none mb-1">Local</p>
                            <p className="text-base font-bold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
                          </div>
                        </div>
                      </div>
 
-                     <div className="h-px w-full bg-gradient-to-r from-transparent via-black/5 to-transparent" />
-
                      {/* 2. Pautas com Registro Inteligente */}
-                     <div>
+                     <div className="border border-black rounded-2xl p-4">
                         <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
                           <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas e Decisões
                         </h4>
                         <div className="space-y-4">
                           {(viewItem.pautas && viewItem.pautas.length > 0) ? (
                             viewItem.pautas.map((p, i) => (
-                              <div key={p.id} className="flex flex-col gap-3 group/pauta border border-black/5 rounded-2xl p-4 hover:border-primary/20 transition-all cursor-pointer bg-white/40" onClick={() => setActivePautaId(activePautaId === p.id ? null : p.id)}>
+                              <div key={p.id} className="flex flex-col gap-3 group/pauta border border-black rounded-2xl p-4 hover:border-primary/40 transition-all cursor-pointer bg-white/40" onClick={() => setActivePautaId(activePautaId === p.id ? null : p.id)}>
                                 <div className="flex gap-4">
                                   <div className="flex flex-col items-center">
                                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0 transition-colors shadow-sm ${activePautaId === p.id || p.decisao ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover/pauta:bg-primary/20'}`}>
@@ -973,7 +971,7 @@ export default function ReunioesList() {
                                     
                                     {/* Mostrar resumo da decisão se estiver preenchido e não estiver editando */}
                                     {p.decisao && activePautaId !== p.id && (
-                                       <div className="mt-3 p-3 bg-emerald-50/50 rounded-xl border border-emerald-100/50 text-emerald-900 text-sm font-medium leading-relaxed">
+                                       <div className="mt-3 p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 text-emerald-900 text-sm font-medium leading-relaxed">
                                           <span className="font-bold text-emerald-700 uppercase tracking-wider text-[10px] block mb-1">Decisão:</span>
                                           {p.decisao}
                                        </div>
@@ -986,7 +984,7 @@ export default function ReunioesList() {
                                      <textarea 
                                        defaultValue={p.decisao || ""}
                                        placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
-                                       className="w-full min-h-[140px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-sky-50/50 rounded-xl border border-sky-100 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 transition-all leading-relaxed block"
+                                       className="w-full min-h-[140px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all leading-relaxed block"
                                        onBlur={(e) => handleSavePautaDecisao(p.id, e.target.value)}
                                      />
                                      <div className="flex items-center justify-between mt-3">
@@ -998,32 +996,28 @@ export default function ReunioesList() {
                               </div>
                             ))
                           ) : (
-                            <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/10">
+                            <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/20">
                               <p className="text-sm font-medium text-muted-foreground italic">Nenhuma pauta detalhada para este encontro.</p>
                             </div>
                           )}
                         </div>
                      </div>
 
-                     <div className="h-px w-full bg-gradient-to-r from-transparent via-black/5 to-transparent" />
-
                      {/* 3. Anotações Gerais */}
-                     <div>
+                     <div className="border border-black rounded-2xl p-4">
                         <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                           <FileSignature className="h-4 w-4 text-sky-600" /> Anotações Gerais Extras
                         </h4>
-                        <div className="bg-white/60 rounded-2xl border border-black/5 focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100 transition-all p-1 shadow-inner shadow-black/5">
-                          <textarea 
-                            id="ata-textarea"
-                            defaultValue={viewItem.ataDecisoes || ""}
-                            placeholder="Registre anotações extras que não se encaixam em nenhuma pauta específica..."
-                            className="w-full min-h-[120px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent placeholder:text-slate-400 leading-relaxed"
-                            onBlur={(e) => {
-                               mutation.mutate({ ...viewItem, ataDecisoes: e.target.value });
-                               toast.success("Anotações gerais salvas com sucesso!");
-                            }}
-                          />
-                        </div>
+                        <textarea 
+                          id="ata-textarea"
+                          defaultValue={viewItem.ataDecisoes || ""}
+                          placeholder="Registre anotações extras que não se encaixam em nenhuma pauta específica..."
+                          className="w-full min-h-[140px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all placeholder:text-slate-400 leading-relaxed"
+                          onBlur={(e) => {
+                             mutation.mutate({ ...viewItem, ataDecisoes: e.target.value });
+                             toast.success("Anotações gerais salvas com sucesso!");
+                          }}
+                        />
                      </div>
                    </div>
                 </div>
