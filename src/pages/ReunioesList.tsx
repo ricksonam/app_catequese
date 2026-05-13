@@ -160,22 +160,16 @@ export default function ReunioesList() {
 
   const gerarAtaTexto = () => {
     if (!viewItem) return "";
-    const linha = "═".repeat(48);
-    const linhaFina = "─".repeat(48);
     const agora = new Date().toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' });
 
-    let ata = `${linha}\n`;
-    ata += `       📋 ATA DE REUNIÃO\n`;
-    ata += `${linha}\n\n`;
+    let ata = `📋 ATA DE REUNIÃO\n\n`;
     ata += `📌 REUNIÃO: ${viewItem.nome}\n`;
-    ata += `🏷️  TIPO: ${viewItem.tipo}\n`;
+    ata += `🏷️ TIPO: ${viewItem.tipo}\n`;
     ata += `📅 DATA: ${viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} às ${viewItem.horario || 'A definir'}\n`;
     ata += `📍 LOCAL: ${viewItem.local || 'Não informado'}\n`;
     if (turma) ata += `👥 TURMA: ${turma.nome}\n`;
-    ata += `\n${linha}\n`;
-    ata += `              ✅ PRESENTES\n`;
-    ata += `${linha}\n\n`;
-
+    
+    ata += `\n✅ PRESENTES\n`;
     const presentes = catequistas.filter(c => (viewItem.presencas || []).includes(c.id));
     if (presentes.length > 0) {
       ata += `Catequistas:\n`;
@@ -186,31 +180,25 @@ export default function ReunioesList() {
       viewItem.outrosParticipantes.forEach((n, i) => { ata += `  ${i + 1}. ${n}\n`; });
     }
     const total = (presentes.length) + (viewItem.outrosParticipantes?.length || 0);
-    ata += `\n  Total de participantes: ${total}\n`;
-    ata += `\n${linha}\n`;
-    ata += `         📝 ROTEIRO E DECISÕES\n`;
-    ata += `${linha}\n\n`;
-
+    ata += `Total de participantes: ${total}\n`;
+    
+    ata += `\n📝 ROTEIRO E DECISÕES\n\n`;
     if (viewItem.pautas && viewItem.pautas.length > 0) {
       viewItem.pautas.forEach((p, i) => {
         ata += `${i + 1}. ${p.titulo.toUpperCase()}\n`;
         if (p.descricao) ata += `   ${p.descricao}\n`;
-        ata += `   ${linhaFina}\n`;
         ata += `   → Decisão/Encaminhamento:\n`;
         ata += `     ${p.decisao || 'Nenhuma decisão registrada.'}\n\n`;
       });
     } else {
-      ata += `  Nenhuma pauta detalhada foi registrada.\n\n`;
+      ata += `Nenhuma pauta detalhada foi registrada.\n\n`;
     }
 
-    ata += `${linha}\n`;
-    ata += `          📌 ANOTAÇÕES GERAIS\n`;
-    ata += `${linha}\n\n`;
+    ata += `📌 ANOTAÇÕES GERAIS\n`;
     ata += `${viewItem.ataDecisoes && viewItem.ataDecisoes.trim() ? viewItem.ataDecisoes : 'Nenhuma anotação adicional.'}\n\n`;
-    ata += `${linha}\n`;
-    ata += `  Ata gerada pelo iCatequese\n`;
-    ata += `  ${agora}\n`;
-    ata += `${linha}\n`;
+    
+    ata += `Ata gerada pelo iCatequese\n`;
+    ata += `${agora}\n`;
 
     return ata;
   };
