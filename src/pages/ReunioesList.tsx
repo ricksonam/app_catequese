@@ -1218,19 +1218,19 @@ export default function ReunioesList() {
       </Dialog>
 
       <Dialog open={ataCompletaOpen} onOpenChange={setAtaCompletaOpen}>
-        <DialogContent className="w-full sm:max-w-3xl rounded-[2rem] p-6 sm:p-8 bg-white border-black/5 shadow-2xl overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-600">
-                <FileSignature className="h-5 w-5" />
+        <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[92vh] rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-8 bg-white border-black/5 shadow-2xl overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 shrink-0">
+                <FileSignature className="h-4 w-4 sm:h-5 sm:h-5" />
               </div>
-              <h2 className="text-2xl font-black text-foreground">Ata Completa</h2>
+              <h2 className="text-xl sm:text-2xl font-black text-foreground truncate">Ata Completa</h2>
             </div>
-            <button onClick={() => setAtaCompletaOpen(false)} className="p-2 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-200 transition-colors"><X className="h-5 w-5" /></button>
+            <button onClick={() => setAtaCompletaOpen(false)} className="p-2 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-200 transition-colors shrink-0"><X className="h-5 w-5" /></button>
           </div>
           
-          <div className="flex-1 bg-slate-50 rounded-2xl p-6 border border-slate-200 overflow-y-auto custom-scrollbar">
-             <pre className="whitespace-pre-wrap font-mono text-sm text-slate-700 leading-relaxed max-w-full">
+          <div className="flex-1 bg-slate-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200 overflow-y-auto custom-scrollbar">
+             <pre className="whitespace-pre-wrap font-mono text-xs sm:text-sm text-slate-700 leading-relaxed max-w-full">
                {gerarAtaTexto()}
              </pre>
           </div>
