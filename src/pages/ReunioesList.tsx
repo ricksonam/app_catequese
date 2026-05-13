@@ -273,15 +273,17 @@ export default function ReunioesList() {
                   </select>
                 </div>
 
-                <div className="space-y-4">
-                  {form.tipo !== 'Reunião de catequistas' && form.tipo !== 'Reunião de pais' && (
-                    <FieldInput 
-                      label={form.tipo === 'Reunião de preparação de sacramento' ? "Sacramento/Rito/Etapa *" : "Nome da Reunião *"} 
-                      value={form.nome} 
-                      onChange={(v) => updateField("nome", v)} 
-                      placeholder={form.tipo === 'Reunião de preparação de sacramento' ? "Ex: Primeira Eucaristia - Rito de Entrega" : "Ex: Planejamento Mensal"} 
-                    />
-                  )}
+                  <FieldInput 
+                    label={form.tipo === 'Reunião de preparação de sacramento' ? "Sacramento/Rito/Etapa *" : "Nome da Reunião *"} 
+                    value={form.nome} 
+                    onChange={(v) => updateField("nome", v)} 
+                    placeholder={
+                      form.tipo === 'Reunião de preparação de sacramento' ? "Ex: Crisma - Rito de Eleição" : 
+                      form.tipo === 'Reunião de catequistas' ? "Ex: Planejamento Mensal" :
+                      form.tipo === 'Reunião de pais' ? "Ex: Primeira Reunião de Pais" :
+                      "Ex: Preparação do Encontro X"
+                    } 
+                  />
 
                   <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                     <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
@@ -515,31 +517,31 @@ export default function ReunioesList() {
 
                     <div className="h-px bg-zinc-100" />
 
-                    {/* Momento de Oração Unificado (Refinado: Tipo primeiro, depois Leitura) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo de Oração</label>
-                    <select 
-                      value={form.oracaoTipo || ""} 
-                      onChange={(e) => updateField("oracaoTipo", e.target.value as any)}
-                      className="w-full h-10 px-4 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-4 focus:ring-primary/10 outline-none cursor-pointer"
-                    >
-                      <option value="">Selecione a Oração...</option>
-                      {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
+                    {/* Momento de Oração Unificado (Lado a Lado) */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo de Oração</label>
+                        <select 
+                          value={form.oracaoTipo || ""} 
+                          onChange={(e) => updateField("oracaoTipo", e.target.value as any)}
+                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
+                        >
+                          <option value="">Escolher...</option>
+                          {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Leitura Bíblica</label>
-                    <input 
-                      type="text" 
-                      value={form.oracaoInicial || ""} 
-                      onChange={(e) => updateField("oracaoInicial", e.target.value)}
-                      placeholder="Ex: Mt 5, 1-12"
-                      className="w-full h-10 px-4 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-4 focus:ring-primary/10 outline-none"
-                    />
-                  </div>
-                </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Leitura Bíblica</label>
+                        <input 
+                          type="text" 
+                          value={form.oracaoInicial || ""} 
+                          onChange={(e) => updateField("oracaoInicial", e.target.value)}
+                          placeholder="Ex: Mt 5, 1-12"
+                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+                        />
+                      </div>
+                    </div>
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between px-1">
