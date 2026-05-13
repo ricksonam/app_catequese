@@ -254,6 +254,7 @@ export default function ReunioesList() {
     const newItem = { ...presencaItem, presencas: updated };
     mutation.mutate(newItem);
     setPresencaItem(newItem);
+    setViewItem(newItem);
   };
 
   if (isLoading || tLoading) {
@@ -904,23 +905,23 @@ export default function ReunioesList() {
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight tracking-tighter max-w-2xl mx-auto">{viewItem.nome}</h2>
                   
-                  <div className="flex justify-center gap-3 pt-2">
+                  <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
                      <button 
                       onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
+                      className="flex-1 flex justify-center items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
-                      <ClipboardCheck className="h-4 w-4" /> 
-                      Registrar Presença 
-                      <span className="bg-white/20 px-2 py-0.5 rounded-full ml-1 text-[10px]">
+                      <ClipboardCheck className="h-4 w-4 shrink-0" /> 
+                      <span className="truncate">Registrar Presença</span>
+                      <span className="bg-white/20 px-2 py-0.5 rounded-full ml-1 text-[10px] shrink-0">
                         {(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}
                       </span>
                     </button>
 
                     <button 
                       onClick={() => setAtaCompletaOpen(true)}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
+                      className="flex-1 flex justify-center items-center gap-2 px-6 py-3 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-900/25 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
-                      <FileText className="h-4 w-4" /> Ata Completa
+                      <FileText className="h-4 w-4 shrink-0" /> <span className="truncate">Ata Completa</span>
                     </button>
                   </div>
                 </div>
@@ -989,7 +990,7 @@ export default function ReunioesList() {
                                 </div>
                                 
                                 {activePautaId === p.id && (
-                                  <div className="mt-2 sm:pl-12" onClick={e => e.stopPropagation()}>
+                                  <div className="mt-2 w-full sm:pl-12" onClick={e => e.stopPropagation()}>
                                      <textarea 
                                        defaultValue={p.decisao || ""}
                                        placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
@@ -1101,6 +1102,7 @@ export default function ReunioesList() {
                         const newItem = { ...presencaItem, outrosParticipantes: next };
                         mutation.mutate(newItem);
                         setPresencaItem(newItem);
+                        setViewItem(newItem);
                         input.value = "";
                       }
                     }
@@ -1115,6 +1117,7 @@ export default function ReunioesList() {
                       const newItem = { ...presencaItem, outrosParticipantes: next };
                       mutation.mutate(newItem);
                       setPresencaItem(newItem);
+                      setViewItem(newItem);
                       input.value = "";
                     }
                   }}
@@ -1135,6 +1138,7 @@ export default function ReunioesList() {
                           const newItem = { ...presencaItem, outrosParticipantes: next };
                           mutation.mutate(newItem);
                           setPresencaItem(newItem);
+                          setViewItem(newItem);
                         }}
                         className="p-1 text-zinc-300 hover:text-red-500 transition-colors"
                       >
