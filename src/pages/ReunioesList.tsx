@@ -519,23 +519,14 @@ export default function ReunioesList() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo de Oração</label>
-                    <div className="flex flex-wrap gap-2">
-                      {ORACAO_TIPOS.map(tipo => (
-                        <button
-                          key={tipo}
-                          type="button"
-                          onClick={() => updateField("oracaoTipo", tipo)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all",
-                            form.oracaoTipo === tipo 
-                              ? "bg-sky-600 text-white border-sky-600 shadow-md scale-105" 
-                              : "bg-white text-slate-500 border-slate-200 hover:border-sky-200"
-                          )}
-                        >
-                          {tipo}
-                        </button>
-                      ))}
-                    </div>
+                    <select 
+                      value={form.oracaoTipo || ""} 
+                      onChange={(e) => updateField("oracaoTipo", e.target.value as any)}
+                      className="w-full h-10 px-4 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-4 focus:ring-primary/10 outline-none cursor-pointer"
+                    >
+                      <option value="">Selecione a Oração...</option>
+                      {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
                   </div>
 
                   <div className="space-y-2">
@@ -823,196 +814,132 @@ export default function ReunioesList() {
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
         <DialogContent className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
           {viewItem && (
-            <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
-              <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
-                <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
-                <div className="flex items-center gap-3 z-50 mr-12 sm:mr-8">
-                </div>
-              </div>
+             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
+                {/* Header Bar Clean (Igual ao Evento) */}
+                <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
+                  <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
+                  <div className="flex items-center gap-1.5 z-50">
+                    <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
+                    <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
 
-              <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
-                {/* Barra de Ações Superior */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex-1">
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }}
-                      className="w-10 h-10 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900 transition-all flex items-center justify-center border border-zinc-200/50"
-                      title="Editar Reunião"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setViewItem(viewItem); setDeleteConfirmOpen(true); }}
-                      className="w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 transition-all flex items-center justify-center border border-red-100/50"
-                      title="Excluir Reunião"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="w-px h-4 bg-black/10 mx-1" />
+                    <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
                   </div>
                 </div>
 
-                <div className="p-0 space-y-0 overflow-y-auto bg-slate-50/30">
-                {/* --- SMART HEADER (SOFT BLUE) --- */}
-                <div className="bg-white border-b border-slate-200/60 p-6 space-y-5">
-                  <div className="flex flex-col items-center justify-center text-center space-y-4">
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-center gap-2">
-                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${tipoColors[viewItem.tipo] || 'bg-slate-100 text-slate-500 border-slate-200'}`}>
-                          {viewItem.tipo}
-                        </span>
-                      </div>
-                      <h2 className="text-xl font-black text-slate-900 tracking-tight leading-tight max-w-2xl">{viewItem.nome}</h2>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-center gap-3">
-                      <button 
-                        onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50 text-sky-700 hover:bg-sky-100 transition-all text-[10px] font-black uppercase border border-sky-100 shadow-sm"
-                      >
-                        <Users className="h-4 w-4" />
-                        <span>Participantes Presentes: {(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span>
-                      </button>
-                      
-                      <div className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border ${
+                <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
+                  <div className="text-center">
+                    <div className="flex justify-center gap-2 mb-3">
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-current/10 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
+                        {viewItem.tipo}
+                      </span>
+                      <div className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border ${
                         viewItem.status === 'realizado' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
                         viewItem.status === 'cancelado' ? 'bg-rose-50 text-rose-700 border-rose-100' :
                         'bg-amber-50 text-amber-700 border-amber-100'
                       }`}>
-                        <div className={`w-2 h-2 rounded-full ${
+                        <div className={`w-1.5 h-1.5 rounded-full ${
                           viewItem.status === 'realizado' ? 'bg-emerald-500' : 
                           viewItem.status === 'cancelado' ? 'bg-rose-500' : 'bg-amber-500'
                         }`} />
                         {viewItem.status}
                       </div>
                     </div>
+                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2 max-w-2xl mx-auto">{viewItem.nome}</h2>
                   </div>
 
-                  {/* QUICK INFO BAR */}
-                  <div className="flex flex-wrap items-center gap-6 py-4 px-5 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="flex items-center gap-2.5">
-                      <Calendar className="h-4 w-4 text-sky-500" />
-                      <span className="text-xs font-bold text-slate-600">{viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'}</span>
-                    </div>
-                    <div className="h-4 w-px bg-slate-200 hidden sm:block" />
-                    <div className="flex items-center gap-2.5">
-                      <Clock className="h-4 w-4 text-sky-500" />
-                      <span className="text-xs font-bold text-slate-600">{viewItem.horario || 'Horário Livre'}</span>
-                    </div>
-                    <div className="h-4 w-px bg-slate-200 hidden sm:block" />
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <MapPin className="h-4 w-4 text-sky-500 shrink-0" />
-                      <span className="text-xs font-bold text-slate-600 truncate">{viewItem.local || 'Local não definido'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-8 max-w-4xl mx-auto">
-                  {/* --- INTERACTIVE TABS/SECTIONS --- */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    
-                    {/* ESQUERDA: PAUTAS (AGENDA DINÂMICA) */}
-                    <div className="lg:col-span-7 space-y-6">
-                      <div className="flex items-center justify-between mb-2 px-1">
-                        <div className="flex items-center gap-2">
-                          <ListChecks className="h-4 w-4 text-slate-900" />
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Roteiro da Reunião</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Logística Card */}
+                    <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm space-y-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary"><Calendar className="w-4 h-4" /></div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-0.5">Data e Horário</p>
+                          <p className="text-sm font-semibold text-foreground">
+                            {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} • {viewItem.horario || 'A definir'}
+                          </p>
                         </div>
-                        {viewItem.pautas && viewItem.pautas.length > 0 && (
-                          <span className="px-2 py-0.5 rounded bg-slate-100 text-[9px] font-black text-slate-500">{viewItem.pautas.length} PONTOS</span>
-                        )}
                       </div>
+                      <div className="h-px bg-black/5" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-600"><MapPin className="w-4 h-4" /></div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest leading-none mb-0.5">Local</p>
+                          <p className="text-sm font-semibold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
+                        </div>
+                      </div>
+                    </div>
 
-                      <div className="space-y-3">
-                        {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                          viewItem.pautas.map((p, i) => (
-                            <div key={p.id} className="group relative flex gap-4 animate-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${i * 100}ms` }}>
-                              <div className="flex flex-col items-center gap-1 shrink-0 pt-1">
-                                <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:border-sky-300 group-hover:text-sky-600 transition-colors shadow-sm">
-                                  {i + 1}
-                                </div>
-                                {i < viewItem.pautas.length - 1 && <div className="w-px h-full bg-slate-200" />}
-                              </div>
-                              
-                              <div className="flex-1 bg-white rounded-2xl p-4 border border-slate-200/60 shadow-sm hover:shadow-md hover:border-sky-100 transition-all">
-                                <div className="flex items-start justify-between gap-3 mb-1.5">
-                                  <h4 className="text-[13px] font-black text-slate-800 uppercase tracking-tight">{p.titulo}</h4>
-                                  {p.tempo && (
-                                    <span className="text-[9px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{p.tempo}m</span>
-                                  )}
-                                </div>
-                                <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 group-hover:line-clamp-none transition-all">{p.descricao}</p>
-                              </div>
+                    {/* Participação Card */}
+                    <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm flex flex-col justify-center items-center gap-2">
+                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Participantes</p>
+                       <p className="text-2xl font-black text-primary">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</p>
+                       <button 
+                        onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                        className="mt-2 w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all font-bold text-[10px] uppercase tracking-widest border border-primary/10"
+                      >
+                        <Users className="h-3.5 w-3.5" /> Registrar Presença
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Pautas */}
+                  <div className="bg-white rounded-2xl p-6 border border-black/5 shadow-sm">
+                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <ListChecks className="h-3.5 w-3.5" /> Roteiro de Pautas
+                    </h4>
+                    <div className="space-y-4">
+                      {(viewItem.pautas && viewItem.pautas.length > 0) ? (
+                        viewItem.pautas.map((p, i) => (
+                          <div key={p.id} className="flex gap-4 group">
+                            <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-[10px] font-black text-muted-foreground shrink-0">{i + 1}</div>
+                            <div>
+                              <h5 className="text-[13px] font-bold text-foreground uppercase tracking-tight">{p.titulo}</h5>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{p.descricao}</p>
                             </div>
-                          ))
-                        ) : (
-                          <div className="bg-slate-50/50 rounded-2xl p-8 border-2 border-dashed border-slate-200 text-center">
-                            <p className="text-xs font-bold text-slate-400 italic">O roteiro desta reunião ainda não possui pautas detalhadas.</p>
                           </div>
-                        )}
-                      </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-muted-foreground italic">Nenhuma pauta detalhada.</p>
+                      )}
                     </div>
+                  </div>
 
-                    {/* DIREITA: DECISÕES E AÇÕES (SMART CARD) */}
-                    <div className="lg:col-span-5 space-y-6">
-                      <div className="flex items-center gap-2 mb-2 px-1">
-                        <FileSignature className="h-4 w-4 text-slate-900" />
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Registro & Decisões</h3>
-                      </div>
-
-                      <div className="bg-white rounded-[2rem] border border-slate-200 shadow-xl overflow-hidden flex flex-col h-full min-h-[400px]">
-                        <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Texto da Ata</span>
-                          <button 
-                            onClick={() => {
-                              const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
-                              if (textarea) {
-                                mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
-                                toast.success("Ata salva com sucesso!");
-                              }
-                            }}
-                            className="p-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 transition-all shadow-lg shadow-sky-200 active:scale-95"
-                            title="Salvar Alterações"
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="flex-1 relative">
-                          <textarea 
-                            id="ata-textarea"
-                            defaultValue={viewItem.ataDecisoes || ""}
-                            placeholder="Escreva aqui o que foi decidido..."
-                            className="w-full h-full min-h-[300px] p-6 text-[13px] font-medium leading-relaxed text-slate-700 placeholder:text-slate-300 border-0 focus:ring-0 focus:outline-none resize-none bg-transparent"
-                          />
-                        </div>
-                        
-                        <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                          <div className="flex -space-x-2">
-                             {(viewItem.presencas || []).slice(0, 3).map((_, i) => (
-                               <div key={i} className="w-6 h-6 rounded-full bg-sky-200 border-2 border-white flex items-center justify-center text-[8px] font-black text-sky-700">P</div>
-                             ))}
-                             {(viewItem.presencas || []).length > 3 && (
-                               <div className="w-6 h-6 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[8px] font-black text-slate-500">+{(viewItem.presencas || []).length - 3}</div>
-                             )}
-                          </div>
-                          <span className="text-[9px] font-black text-slate-400 uppercase">Última edição: {new Date().toLocaleDateString()}</span>
-                        </div>
-                      </div>
-
+                  {/* Registro de Decisões (Mesma largura do card de info se empilhado) */}
+                  <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
+                    <div className="p-4 border-b border-black/5 bg-slate-50 flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                         <FileSignature className="h-4 w-4 text-primary" />
+                         <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Registro de Decisões / Ata</h4>
+                       </div>
+                       <button 
+                          onClick={() => {
+                            const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
+                              toast.success("Ata salva com sucesso!");
+                            }
+                          }}
+                          className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition-all text-[10px] font-black uppercase shadow-sm"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Salvar
+                        </button>
                     </div>
+                    <textarea 
+                      id="ata-textarea"
+                      defaultValue={viewItem.ataDecisoes || ""}
+                      placeholder="Registre aqui as conclusões..."
+                      className="w-full min-h-[150px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent"
+                    />
                   </div>
 
                   {viewItem.observacao && (
-                    <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden group">
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-400" />
-                      <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Notas do Moderador</h4>
-                      <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
+                    <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
+                      <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2">Observação</h4>
+                      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
                     </div>
                   )}
                 </div>
-              </div>
             </div>
           </div>
         )}
