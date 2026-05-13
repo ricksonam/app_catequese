@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info, FileText, ChevronDown, ChevronUp, Share2, Wand2 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -159,27 +159,60 @@ export default function ReunioesList() {
   };
 
   const gerarAtaTexto = () => {
-     if (!viewItem) return "";
-     let ata = `ATA DE REUNIÃO - ${viewItem.nome}\n`;
-     ata += `Data: ${viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} às ${viewItem.horario || 'A definir'}\n`;
-     ata += `Local: ${viewItem.local || 'Não informado'}\n`;
-     ata += `Tipo: ${viewItem.tipo}\n\n`;
-     ata += `DECISÕES E ENCAMINHAMENTOS:\n`;
-     ata += `----------------------------------------\n\n`;
-  
-     if (viewItem.pautas && viewItem.pautas.length > 0) {
-        viewItem.pautas.forEach((p, i) => {
-           ata += `${i + 1}. ${p.titulo}\n`;
-           ata += `Decisão: ${p.decisao || "Nenhuma decisão registrada."}\n\n`;
-        });
-     } else {
-        ata += `Nenhuma pauta detalhada.\n\n`;
-     }
-  
-     ata += `----------------------------------------\n`;
-     ata += `Anotações Gerais:\n${viewItem.ataDecisoes || "Nenhuma anotação adicional."}\n`;
-  
-     return ata;
+    if (!viewItem) return "";
+    const linha = "═".repeat(48);
+    const linhaFina = "─".repeat(48);
+    const agora = new Date().toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' });
+
+    let ata = `${linha}\n`;
+    ata += `       📋 ATA DE REUNIÃO\n`;
+    ata += `${linha}\n\n`;
+    ata += `📌 REUNIÃO: ${viewItem.nome}\n`;
+    ata += `🏷️  TIPO: ${viewItem.tipo}\n`;
+    ata += `📅 DATA: ${viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} às ${viewItem.horario || 'A definir'}\n`;
+    ata += `📍 LOCAL: ${viewItem.local || 'Não informado'}\n`;
+    if (turma) ata += `👥 TURMA: ${turma.nome}\n`;
+    ata += `\n${linha}\n`;
+    ata += `              ✅ PRESENTES\n`;
+    ata += `${linha}\n\n`;
+
+    const presentes = catequistas.filter(c => (viewItem.presencas || []).includes(c.id));
+    if (presentes.length > 0) {
+      ata += `Catequistas:\n`;
+      presentes.forEach((c, i) => { ata += `  ${i + 1}. ${c.nome}\n`; });
+    }
+    if (viewItem.outrosParticipantes && viewItem.outrosParticipantes.length > 0) {
+      ata += `\nOutros participantes:\n`;
+      viewItem.outrosParticipantes.forEach((n, i) => { ata += `  ${i + 1}. ${n}\n`; });
+    }
+    const total = (presentes.length) + (viewItem.outrosParticipantes?.length || 0);
+    ata += `\n  Total de participantes: ${total}\n`;
+    ata += `\n${linha}\n`;
+    ata += `         📝 ROTEIRO E DECISÕES\n`;
+    ata += `${linha}\n\n`;
+
+    if (viewItem.pautas && viewItem.pautas.length > 0) {
+      viewItem.pautas.forEach((p, i) => {
+        ata += `${i + 1}. ${p.titulo.toUpperCase()}\n`;
+        if (p.descricao) ata += `   ${p.descricao}\n`;
+        ata += `   ${linhaFina}\n`;
+        ata += `   → Decisão/Encaminhamento:\n`;
+        ata += `     ${p.decisao || 'Nenhuma decisão registrada.'}\n\n`;
+      });
+    } else {
+      ata += `  Nenhuma pauta detalhada foi registrada.\n\n`;
+    }
+
+    ata += `${linha}\n`;
+    ata += `          📌 ANOTAÇÕES GERAIS\n`;
+    ata += `${linha}\n\n`;
+    ata += `${viewItem.ataDecisoes && viewItem.ataDecisoes.trim() ? viewItem.ataDecisoes : 'Nenhuma anotação adicional.'}\n\n`;
+    ata += `${linha}\n`;
+    ata += `  Ata gerada pelo iCatequese\n`;
+    ata += `  ${agora}\n`;
+    ata += `${linha}\n`;
+
+    return ata;
   };
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
@@ -429,6 +462,30 @@ export default function ReunioesList() {
                           })}
                         </div>
                       )}
+
+                      {/* Botão Gerar Pautas dos Encontros */}
+                      {form.encontrosPreparados && form.encontrosPreparados.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const novasPautas = form.encontrosPreparados!.flatMap(eid => {
+                              const enc = encontros.find(e => e.id === eid);
+                              if (!enc) return [];
+                              return [
+                                { id: crypto.randomUUID(), titulo: `Apresentação do Tema: ${enc.tema}`, descricao: 'Apresentar o tema central do encontro e seus objetivos.', tempo: 10 },
+                                { id: crypto.randomUUID(), titulo: `Atividade Principal: ${enc.tema}`, descricao: 'Discutir e preparar a dinâmica/atividade central do encontro.', tempo: 20 },
+                                { id: crypto.randomUUID(), titulo: `Momento de Oração: ${enc.tema}`, descricao: 'Preparar o momento de oração e a leitura bíblica do encontro.', tempo: 10 },
+                                { id: crypto.randomUUID(), titulo: `Materiais e Avisos: ${enc.tema}`, descricao: 'Listar materiais necessários e informes para o encontro.', tempo: 5 },
+                              ];
+                            });
+                            updateField('pautas', [...(form.pautas || []), ...novasPautas] as any);
+                            toast.success('Pautas geradas a partir dos encontros selecionados!');
+                          }}
+                          className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 hover:border-emerald-400 text-emerald-700 font-black text-xs uppercase tracking-widest transition-all active:scale-95"
+                        >
+                          <Wand2 className="h-4 w-4" /> Gerar Pautas dos Encontros Selecionados
+                        </button>
+                      )}
                     </div>
 
                   </div>
@@ -531,6 +588,30 @@ export default function ReunioesList() {
                             );
                           })}
                         </div>
+                      )}
+
+                      {/* Botão Gerar Pautas dos Eventos */}
+                      {form.eventosPreparados && form.eventosPreparados.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const novasPautas = form.eventosPreparados!.flatMap(aid => {
+                              const act = atividades.find(a => a.id === aid);
+                              if (!act) return [];
+                              return [
+                                { id: crypto.randomUUID(), titulo: `Planejamento: ${act.nome}`, descricao: 'Definir responsáveis e cronograma geral do evento.', tempo: 15 },
+                                { id: crypto.randomUUID(), titulo: `Divulgação: ${act.nome}`, descricao: 'Estratégias de comunicação e convite para o evento.', tempo: 10 },
+                                { id: crypto.randomUUID(), titulo: `Materiais e Logística: ${act.nome}`, descricao: 'Listar e confirmar materiais, local e recursos necessários.', tempo: 10 },
+                                { id: crypto.randomUUID(), titulo: `Oração e Espiritualidade: ${act.nome}`, descricao: 'Preparar o momento espiritual do evento.', tempo: 10 },
+                              ];
+                            });
+                            updateField('pautas', [...(form.pautas || []), ...novasPautas] as any);
+                            toast.success('Pautas geradas a partir dos eventos selecionados!');
+                          }}
+                          className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-indigo-50 border-2 border-indigo-200 hover:border-indigo-400 text-indigo-700 font-black text-xs uppercase tracking-widest transition-all active:scale-95"
+                        >
+                          <Wand2 className="h-4 w-4" /> Gerar Pautas dos Eventos Selecionados
+                        </button>
                       )}
                     </div>
                   </div>
@@ -981,7 +1062,7 @@ export default function ReunioesList() {
                               <textarea
                                 defaultValue={p.decisao || ""}
                                 placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
-                                className="w-full min-h-[160px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all leading-relaxed block"
+                                className="w-full min-h-[200px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-y bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all leading-relaxed block"
                                 onBlur={(e) => handleSavePautaDecisao(p.id, e.target.value)}
                               />
                               <div className="flex items-center justify-between mt-2">
@@ -1011,7 +1092,9 @@ export default function ReunioesList() {
                     placeholder="Registre anotações extras que não se encaixam em nenhuma pauta específica..."
                     className="w-full min-h-[160px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all placeholder:text-slate-400 leading-relaxed"
                     onBlur={(e) => {
-                      mutation.mutate({ ...viewItem, ataDecisoes: e.target.value });
+                      const updated = { ...viewItem, ataDecisoes: e.target.value };
+                      mutation.mutate(updated);
+                      setViewItem(updated);
                       toast.success("Anotações gerais salvas com sucesso!");
                     }}
                   />
@@ -1153,14 +1236,20 @@ export default function ReunioesList() {
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(gerarAtaTexto());
-                toast.success("Ata copiada para a área de transferência!");
-              }} 
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-sky-600 text-white font-black text-[11px] uppercase tracking-widest hover:bg-sky-700 transition-all shadow-lg shadow-sky-600/20 active:scale-95 hover:-translate-y-0.5"
+            <button
+              onClick={async () => {
+                const texto = gerarAtaTexto();
+                if (navigator.share) {
+                  try {
+                    await navigator.share({ title: `Ata - ${viewItem?.nome}`, text: texto });
+                  } catch (e) { /* usuário cancelou */ }
+                } else {
+                  window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+                }
+              }}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-black text-[11px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 hover:-translate-y-0.5"
             >
-              <ClipboardCheck className="h-4 w-4" /> Copiar Ata para a Área de Transferência
+              <Share2 className="h-4 w-4" /> Compartilhar Ata
             </button>
           </div>
         </DialogContent>
