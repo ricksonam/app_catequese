@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info, FileText } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -145,6 +145,42 @@ export default function ReunioesList() {
 
   const [presencaOpen, setPresencaOpen] = useState(false);
   const [presencaItem, setPresencaItem] = useState<Reuniao | null>(null);
+
+  const [activePautaId, setActivePautaId] = useState<string | null>(null);
+  const [ataCompletaOpen, setAtaCompletaOpen] = useState(false);
+
+  const handleSavePautaDecisao = (pautaId: string, decisao: string) => {
+    if (!viewItem) return;
+    const updatedPautas = viewItem.pautas?.map(p => p.id === pautaId ? { ...p, decisao } : p) || [];
+    const updatedReuniao = { ...viewItem, pautas: updatedPautas };
+    setViewItem(updatedReuniao);
+    mutation.mutate(updatedReuniao);
+    toast.success("Decisão da pauta salva com sucesso!", { icon: "📝" });
+  };
+
+  const gerarAtaTexto = () => {
+     if (!viewItem) return "";
+     let ata = `ATA DE REUNIÃO - ${viewItem.nome}\n`;
+     ata += `Data: ${viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} às ${viewItem.horario || 'A definir'}\n`;
+     ata += `Local: ${viewItem.local || 'Não informado'}\n`;
+     ata += `Tipo: ${viewItem.tipo}\n\n`;
+     ata += `DECISÕES E ENCAMINHAMENTOS:\n`;
+     ata += `----------------------------------------\n\n`;
+  
+     if (viewItem.pautas && viewItem.pautas.length > 0) {
+        viewItem.pautas.forEach((p, i) => {
+           ata += `${i + 1}. ${p.titulo}\n`;
+           ata += `Decisão: ${p.decisao || "Nenhuma decisão registrada."}\n\n`;
+        });
+     } else {
+        ata += `Nenhuma pauta detalhada.\n\n`;
+     }
+  
+     ata += `----------------------------------------\n`;
+     ata += `Anotações Gerais:\n${viewItem.ataDecisoes || "Nenhuma anotação adicional."}\n`;
+  
+     return ata;
+  };
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
 
@@ -868,7 +904,7 @@ export default function ReunioesList() {
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight tracking-tighter max-w-2xl mx-auto">{viewItem.nome}</h2>
                   
-                  <div className="flex justify-center pt-2">
+                  <div className="flex justify-center gap-3 pt-2">
                      <button 
                       onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0"
@@ -876,8 +912,15 @@ export default function ReunioesList() {
                       <ClipboardCheck className="h-4 w-4" /> 
                       Registrar Presença 
                       <span className="bg-white/20 px-2 py-0.5 rounded-full ml-1 text-[10px]">
-                        {(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length} confirmados
+                        {(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}
                       </span>
+                    </button>
+
+                    <button 
+                      onClick={() => setAtaCompletaOpen(true)}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-900/25 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      <FileText className="h-4 w-4" /> Ver Ata Completa
                     </button>
                   </div>
                 </div>
@@ -910,23 +953,52 @@ export default function ReunioesList() {
 
                      <div className="h-px w-full bg-gradient-to-r from-transparent via-black/5 to-transparent" />
 
-                     {/* 2. Pautas */}
+                     {/* 2. Pautas com Registro Inteligente */}
                      <div>
                         <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
-                          <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas
+                          <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas e Decisões
                         </h4>
-                        <div className="space-y-5">
+                        <div className="space-y-4">
                           {(viewItem.pautas && viewItem.pautas.length > 0) ? (
                             viewItem.pautas.map((p, i) => (
-                              <div key={p.id} className="flex gap-4 group/pauta">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-[12px] font-black text-primary shrink-0 group-hover/pauta:bg-primary group-hover/pauta:text-white transition-colors shadow-sm">{i + 1}</div>
-                                  {i !== viewItem.pautas.length - 1 && <div className="w-px h-full bg-black/5 mt-2" />}
+                              <div key={p.id} className="flex flex-col gap-3 group/pauta border border-black/5 rounded-2xl p-4 hover:border-primary/20 transition-all cursor-pointer bg-white/40" onClick={() => setActivePautaId(activePautaId === p.id ? null : p.id)}>
+                                <div className="flex gap-4">
+                                  <div className="flex flex-col items-center">
+                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0 transition-colors shadow-sm ${activePautaId === p.id || p.decisao ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover/pauta:bg-primary/20'}`}>
+                                      {i + 1}
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 pb-1">
+                                    <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1 flex items-center justify-between">
+                                      {p.titulo}
+                                      {p.decisao && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                                    </h5>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
+                                    
+                                    {/* Mostrar resumo da decisão se estiver preenchido e não estiver editando */}
+                                    {p.decisao && activePautaId !== p.id && (
+                                       <div className="mt-3 p-3 bg-emerald-50/50 rounded-xl border border-emerald-100/50 text-emerald-900 text-sm font-medium leading-relaxed">
+                                          <span className="font-bold text-emerald-700 uppercase tracking-wider text-[10px] block mb-1">Decisão:</span>
+                                          {p.decisao}
+                                       </div>
+                                    )}
+                                  </div>
                                 </div>
-                                <div className="pb-4">
-                                  <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1">{p.titulo}</h5>
-                                  <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
-                                </div>
+                                
+                                {activePautaId === p.id && (
+                                  <div className="mt-2 sm:pl-12" onClick={e => e.stopPropagation()}>
+                                     <textarea 
+                                       defaultValue={p.decisao || ""}
+                                       placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
+                                       className="w-full min-h-[100px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-sky-50/50 rounded-xl border border-sky-100 focus:border-sky-300 focus:ring-4 focus:ring-sky-100 transition-all leading-relaxed"
+                                       onBlur={(e) => handleSavePautaDecisao(p.id, e.target.value)}
+                                     />
+                                     <div className="flex items-center justify-between mt-3">
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Salva automaticamente ao sair do campo</p>
+                                        <button onClick={() => setActivePautaId(null)} className="px-5 py-2 rounded-lg bg-sky-600 text-white text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-sky-700 hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all">Fechar</button>
+                                     </div>
+                                  </div>
+                                )}
                               </div>
                             ))
                           ) : (
@@ -939,34 +1011,22 @@ export default function ReunioesList() {
 
                      <div className="h-px w-full bg-gradient-to-r from-transparent via-black/5 to-transparent" />
 
-                     {/* 3. Ata / Registro de Decisões */}
+                     {/* 3. Anotações Gerais */}
                      <div>
                         <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                          <FileSignature className="h-4 w-4 text-sky-600" /> Ata & Registro de Decisões
+                          <FileSignature className="h-4 w-4 text-sky-600" /> Anotações Gerais Extras
                         </h4>
                         <div className="bg-white/60 rounded-2xl border border-black/5 focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100 transition-all p-1 shadow-inner shadow-black/5">
                           <textarea 
                             id="ata-textarea"
                             defaultValue={viewItem.ataDecisoes || ""}
-                            placeholder="Descreva as decisões tomadas, encaminhamentos e registros importantes desta reunião..."
-                            className="w-full min-h-[140px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent placeholder:text-slate-400 leading-relaxed"
+                            placeholder="Registre anotações extras que não se encaixam em nenhuma pauta específica..."
+                            className="w-full min-h-[120px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent placeholder:text-slate-400 leading-relaxed"
+                            onBlur={(e) => {
+                               mutation.mutate({ ...viewItem, ataDecisoes: e.target.value });
+                               toast.success("Anotações gerais salvas com sucesso!");
+                            }}
                           />
-                        </div>
-                        
-                        {/* Salvar Ata Centered */}
-                        <div className="flex justify-center mt-5">
-                           <button 
-                              onClick={() => {
-                                const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
-                                if (textarea) {
-                                  mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
-                                  toast.success("Ata salva com sucesso!");
-                                }
-                              }}
-                              className="flex items-center gap-2 px-8 py-2.5 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all text-[11px] font-black uppercase shadow-lg shadow-sky-900/20 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:scale-95"
-                            >
-                              <CheckCircle2 className="h-4 w-4" /> Salvar Ata
-                            </button>
                         </div>
                      </div>
                    </div>
@@ -1082,6 +1142,39 @@ export default function ReunioesList() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={ataCompletaOpen} onOpenChange={setAtaCompletaOpen}>
+        <DialogContent className="w-full sm:max-w-3xl rounded-[2rem] p-6 sm:p-8 bg-white border-black/5 shadow-2xl overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-600">
+                <FileSignature className="h-5 w-5" />
+              </div>
+              <h2 className="text-2xl font-black text-foreground">Ata Completa</h2>
+            </div>
+            <button onClick={() => setAtaCompletaOpen(false)} className="p-2 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-200 transition-colors"><X className="h-5 w-5" /></button>
+          </div>
+          
+          <div className="flex-1 bg-slate-50 rounded-2xl p-6 border border-slate-200 overflow-y-auto custom-scrollbar">
+             <pre className="whitespace-pre-wrap font-mono text-sm text-slate-700 leading-relaxed max-w-full">
+               {gerarAtaTexto()}
+             </pre>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <button 
+              onClick={() => {
+                navigator.clipboard.writeText(gerarAtaTexto());
+                toast.success("Ata copiada para a área de transferência!");
+              }} 
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-sky-600 text-white font-black text-[11px] uppercase tracking-widest hover:bg-sky-700 transition-all shadow-lg shadow-sky-600/20 active:scale-95 hover:-translate-y-0.5"
+            >
+              <ClipboardCheck className="h-4 w-4" /> Copiar Ata para a Área de Transferência
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <DeleteConfirmationDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}

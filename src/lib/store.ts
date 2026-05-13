@@ -156,6 +156,7 @@ export interface PautaItem {
   titulo: string;
   descricao: string;
   tempo?: number;
+  decisao?: string;
 }
 
 export interface Reuniao {
