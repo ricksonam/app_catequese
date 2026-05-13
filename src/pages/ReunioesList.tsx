@@ -882,11 +882,13 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-5">
-                  {/* Logística Card Premium */}
-                  <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 border border-white shadow-xl shadow-black/5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-                     <div className="space-y-0 relative z-10 flex flex-col sm:flex-row sm:items-center sm:divide-x divide-black/5 gap-5 sm:gap-0">
+                {/* Unified Info Card: Logística + Pautas + Ata */}
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-xl shadow-black/5 relative overflow-hidden group">
+                   <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl" />
+                   
+                   <div className="space-y-8 relative z-10">
+                     {/* 1. Logística */}
+                     <div className="flex flex-col sm:flex-row sm:items-center sm:divide-x divide-black/5 gap-5 sm:gap-0">
                        <div className="flex items-center gap-4 flex-1 sm:pr-5">
                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-sm"><Calendar className="w-4.5 h-4.5" /></div>
                          <div className="flex-1 min-w-0 text-left">
@@ -905,63 +907,69 @@ export default function ReunioesList() {
                          </div>
                        </div>
                      </div>
-                  </div>
-                </div>
 
-                {/* Roteiro de Pautas Premium */}
-                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-black/5 shadow-lg shadow-black/5 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-primary/50 to-transparent" />
-                  <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas
-                  </h4>
-                  <div className="space-y-5">
-                    {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                      viewItem.pautas.map((p, i) => (
-                        <div key={p.id} className="flex gap-4 group/pauta">
-                          <div className="flex flex-col items-center">
-                            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-[12px] font-black text-primary shrink-0 group-hover/pauta:bg-primary group-hover/pauta:text-white transition-colors shadow-sm">{i + 1}</div>
-                            {i !== viewItem.pautas.length - 1 && <div className="w-px h-full bg-black/5 mt-2" />}
-                          </div>
-                          <div className="pb-4">
-                            <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1">{p.titulo}</h5>
-                            <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
-                          </div>
+                     <div className="h-px w-full bg-gradient-to-r from-transparent via-black/5 to-transparent" />
+
+                     {/* 2. Pautas */}
+                     <div>
+                        <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
+                          <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas
+                        </h4>
+                        <div className="space-y-5">
+                          {(viewItem.pautas && viewItem.pautas.length > 0) ? (
+                            viewItem.pautas.map((p, i) => (
+                              <div key={p.id} className="flex gap-4 group/pauta">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-[12px] font-black text-primary shrink-0 group-hover/pauta:bg-primary group-hover/pauta:text-white transition-colors shadow-sm">{i + 1}</div>
+                                  {i !== viewItem.pautas.length - 1 && <div className="w-px h-full bg-black/5 mt-2" />}
+                                </div>
+                                <div className="pb-4">
+                                  <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1">{p.titulo}</h5>
+                                  <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/10">
+                              <p className="text-sm font-medium text-muted-foreground italic">Nenhuma pauta detalhada para este encontro.</p>
+                            </div>
+                          )}
                         </div>
-                      ))
-                    ) : (
-                      <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/10">
-                        <p className="text-sm font-medium text-muted-foreground italic">Nenhuma pauta detalhada para este encontro.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Registro de Decisões / Ata */}
-                <div className="bg-white rounded-3xl border border-sky-100 shadow-xl shadow-sky-900/5 overflow-hidden group focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100 transition-all">
-                  <div className="p-5 border-b border-sky-50 bg-gradient-to-r from-sky-50 to-white flex items-center justify-between flex-wrap gap-3">
-                     <div className="flex items-center gap-2.5">
-                       <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center text-sky-600"><FileSignature className="h-4 w-4" /></div>
-                       <h4 className="text-[11px] font-black text-sky-900 uppercase tracking-widest">Ata & Registro de Decisões</h4>
                      </div>
-                     <button 
-                        onClick={() => {
-                          const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
-                          if (textarea) {
-                            mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
-                            toast.success("Ata salva com sucesso!");
-                          }
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 transition-all text-[10px] font-black uppercase shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
-                      >
-                        <CheckCircle2 className="h-4 w-4" /> Salvar Ata
-                      </button>
-                  </div>
-                  <textarea 
-                    id="ata-textarea"
-                    defaultValue={viewItem.ataDecisoes || ""}
-                    placeholder="Descreva as decisões tomadas, encaminhamentos e registros importantes desta reunião..."
-                    className="w-full min-h-[160px] p-6 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent placeholder:text-slate-300 leading-relaxed"
-                  />
+
+                     <div className="h-px w-full bg-gradient-to-r from-transparent via-black/5 to-transparent" />
+
+                     {/* 3. Ata / Registro de Decisões */}
+                     <div>
+                        <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                          <FileSignature className="h-4 w-4 text-sky-600" /> Ata & Registro de Decisões
+                        </h4>
+                        <div className="bg-white/60 rounded-2xl border border-black/5 focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100 transition-all p-1 shadow-inner shadow-black/5">
+                          <textarea 
+                            id="ata-textarea"
+                            defaultValue={viewItem.ataDecisoes || ""}
+                            placeholder="Descreva as decisões tomadas, encaminhamentos e registros importantes desta reunião..."
+                            className="w-full min-h-[140px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent placeholder:text-slate-400 leading-relaxed"
+                          />
+                        </div>
+                        
+                        {/* Salvar Ata Centered */}
+                        <div className="flex justify-center mt-5">
+                           <button 
+                              onClick={() => {
+                                const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
+                                if (textarea) {
+                                  mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
+                                  toast.success("Ata salva com sucesso!");
+                                }
+                              }}
+                              className="flex items-center gap-2 px-8 py-2.5 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all text-[11px] font-black uppercase shadow-lg shadow-sky-900/20 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:scale-95"
+                            >
+                              <CheckCircle2 className="h-4 w-4" /> Salvar Ata
+                            </button>
+                        </div>
+                     </div>
+                   </div>
                 </div>
 
                 {viewItem.observacao && (
