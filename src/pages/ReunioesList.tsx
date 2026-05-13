@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -812,137 +812,178 @@ export default function ReunioesList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-full sm:max-w-2xl rounded-[2rem] border-0 p-0 overflow-hidden max-h-[90vh] bg-transparent shadow-2xl">
           {viewItem && (
-             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
-                {/* Header Bar Clean (Igual ao Evento) */}
-                <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
-                  <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes da Reunião</span>
-                  <div className="flex items-center gap-1.5 z-50">
-                    <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
+            <div className="flex flex-col h-full bg-white/95 backdrop-blur-xl rounded-[2rem] overflow-hidden relative">
+              {/* Dynamic Header Gradient Background */}
+              <div className={`absolute top-0 left-0 right-0 h-48 bg-gradient-to-br opacity-10 ${
+                  viewItem.tipo === 'Reunião de preparação de encontro' ? 'from-emerald-400 to-teal-600' :
+                  viewItem.tipo === 'Reunião de preparação de eventos' ? 'from-indigo-400 to-purple-600' :
+                  viewItem.tipo === 'Reunião de preparação de sacramento' ? 'from-amber-400 to-orange-600' :
+                  'from-primary to-primary/60'
+              }`} />
 
-                    <div className="w-px h-4 bg-black/10 mx-1" />
-                    <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
+              {/* Header Bar */}
+              <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 border-b border-black/5 bg-white/80 backdrop-blur-md">
+                 <div className="flex items-center gap-3">
+                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white shadow-md bg-gradient-to-br ${
+                      viewItem.tipo === 'Reunião de preparação de encontro' ? 'from-emerald-400 to-emerald-600' :
+                      viewItem.tipo === 'Reunião de preparação de eventos' ? 'from-indigo-400 to-indigo-600' :
+                      viewItem.tipo === 'Reunião de preparação de sacramento' ? 'from-amber-400 to-amber-600' :
+                      'from-primary to-primary/80'
+                   }`}>
+                     <ListChecks className="w-4 h-4" />
+                   </div>
+                   <span className="text-sm font-bold text-foreground truncate">Ficha da Reunião</span>
+                 </div>
+                 {/* Actions */}
+                 <div className="flex items-center gap-2 z-50">
+                   <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="p-2.5 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-primary/10 hover:text-primary transition-all shadow-sm"><Pencil className="h-4 w-4" /></button>
+                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2.5 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-destructive/10 hover:text-destructive transition-all shadow-sm"><Trash2 className="h-4 w-4" /></button>
+                   <div className="w-px h-5 bg-black/10 mx-1" />
+                   <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 text-white shadow-md hover:bg-zinc-800 transition-all active:scale-95"><X className="h-5 w-5" /></button>
+                 </div>
+              </div>
+
+              <div className="p-6 sm:p-8 space-y-8 overflow-y-auto custom-scrollbar relative z-10">
+                {/* Main Title Area */}
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center gap-2 flex-wrap">
+                     <span className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border shadow-sm ${
+                       viewItem.tipo === 'Reunião de preparação de encontro' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                       viewItem.tipo === 'Reunião de preparação de eventos' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                       viewItem.tipo === 'Reunião de preparação de sacramento' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                       'bg-zinc-50 text-zinc-700 border-zinc-200'
+                     }`}>
+                       {viewItem.tipo}
+                     </span>
+                     <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border shadow-sm ${
+                       viewItem.status === 'realizado' ? 'bg-emerald-500 text-white border-emerald-600' : 
+                       viewItem.status === 'cancelado' ? 'bg-rose-500 text-white border-rose-600' :
+                       'bg-amber-400 text-amber-950 border-amber-500'
+                     }`}>
+                       <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                       {viewItem.status}
+                     </div>
                   </div>
+                  <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight tracking-tighter max-w-2xl mx-auto">{viewItem.nome}</h2>
                 </div>
 
-                <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
-                  <div className="text-center">
-                    <div className="flex justify-center gap-2 mb-3">
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-current/10 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
-                        {viewItem.tipo}
-                      </span>
-                      <div className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 border ${
-                        viewItem.status === 'realizado' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
-                        viewItem.status === 'cancelado' ? 'bg-rose-50 text-rose-700 border-rose-100' :
-                        'bg-amber-50 text-amber-700 border-amber-100'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                          viewItem.status === 'realizado' ? 'bg-emerald-500' : 
-                          viewItem.status === 'cancelado' ? 'bg-rose-500' : 'bg-amber-500'
-                        }`} />
-                        {viewItem.status}
-                      </div>
-                    </div>
-                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2 max-w-2xl mx-auto">{viewItem.nome}</h2>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Logística Card */}
-                    <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm space-y-3.5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary"><Calendar className="w-4 h-4" /></div>
-                        <div className="flex-1 min-w-0 text-left">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-0.5">Data e Horário</p>
-                          <p className="text-sm font-semibold text-foreground">
-                            {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} • {viewItem.horario || 'A definir'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="h-px bg-black/5" />
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-600"><MapPin className="w-4 h-4" /></div>
-                        <div className="flex-1 min-w-0 text-left">
-                          <p className="text-[10px] font-bold text-emerald-600/70 uppercase tracking-widest leading-none mb-0.5">Local</p>
-                          <p className="text-sm font-semibold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Participação Card */}
-                    <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm flex flex-col justify-center items-center gap-2">
-                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">Participantes</p>
-                       <p className="text-2xl font-black text-primary">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</p>
-                       <button 
-                        onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                        className="mt-2 w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all font-bold text-[10px] uppercase tracking-widest border border-primary/10"
-                      >
-                        <Users className="h-3.5 w-3.5" /> Registrar Presença
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Pautas */}
-                  <div className="bg-white rounded-2xl p-6 border border-black/5 shadow-sm">
-                    <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <ListChecks className="h-3.5 w-3.5" /> Roteiro de Pautas
-                    </h4>
-                    <div className="space-y-4">
-                      {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                        viewItem.pautas.map((p, i) => (
-                          <div key={p.id} className="flex gap-4 group">
-                            <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-[10px] font-black text-muted-foreground shrink-0">{i + 1}</div>
-                            <div>
-                              <h5 className="text-[13px] font-bold text-foreground uppercase tracking-tight">{p.titulo}</h5>
-                              <p className="text-xs text-muted-foreground leading-relaxed">{p.descricao}</p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-xs text-muted-foreground italic">Nenhuma pauta detalhada.</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Registro de Decisões (Mesma largura do card de info se empilhado) */}
-                  <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
-                    <div className="p-4 border-b border-black/5 bg-slate-50 flex items-center justify-between">
-                       <div className="flex items-center gap-2">
-                         <FileSignature className="h-4 w-4 text-primary" />
-                         <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Registro de Decisões / Ata</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Logística Card Premium */}
+                  <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 border border-white shadow-xl shadow-black/5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+                     <div className="space-y-5 relative z-10">
+                       <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-sm"><Calendar className="w-4.5 h-4.5" /></div>
+                         <div className="flex-1 min-w-0 text-left">
+                           <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest leading-none mb-1">Data e Horário</p>
+                           <p className="text-base font-bold text-foreground">
+                             {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} <span className="text-muted-foreground font-medium mx-1">•</span> {viewItem.horario || 'A definir'}
+                           </p>
+                         </div>
                        </div>
-                       <button 
-                          onClick={() => {
-                            const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
-                            if (textarea) {
-                              mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
-                              toast.success("Ata salva com sucesso!");
-                            }
-                          }}
-                          className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition-all text-[10px] font-black uppercase shadow-sm"
-                        >
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Salvar
-                        </button>
-                    </div>
-                    <textarea 
-                      id="ata-textarea"
-                      defaultValue={viewItem.ataDecisoes || ""}
-                      placeholder="Registre aqui as conclusões..."
-                      className="w-full min-h-[150px] p-5 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent"
-                    />
+                       <div className="h-px bg-gradient-to-r from-transparent via-black/5 to-transparent" />
+                       <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-sm"><MapPin className="w-4.5 h-4.5" /></div>
+                         <div className="flex-1 min-w-0 text-left">
+                           <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest leading-none mb-1">Localização</p>
+                           <p className="text-base font-bold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
+                         </div>
+                       </div>
+                     </div>
                   </div>
 
-                  {viewItem.observacao && (
-                    <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
-                      <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2">Observação</h4>
-                      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
-                    </div>
-                  )}
+                  {/* Participantes Card Premium */}
+                  <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-3xl p-6 border border-zinc-700 shadow-xl shadow-black/10 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+                     <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-colors duration-500" />
+                     <div className="relative z-10 flex items-center justify-between mb-4">
+                       <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                         <Users className="w-3.5 h-3.5" /> Presenças Confirmadas
+                       </p>
+                       <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10">
+                         <span className="text-xl font-black text-white">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span>
+                       </div>
+                     </div>
+                     
+                     <button 
+                      onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                      className="relative z-10 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-black text-[11px] uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95"
+                    >
+                      <ClipboardCheck className="h-4 w-4" /> Registrar Presença
+                    </button>
+                  </div>
                 </div>
-            </div>
-        )}
-      </DialogContent>
+
+                {/* Roteiro de Pautas Premium */}
+                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-black/5 shadow-lg shadow-black/5 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary via-primary/50 to-transparent" />
+                  <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas
+                  </h4>
+                  <div className="space-y-5">
+                    {(viewItem.pautas && viewItem.pautas.length > 0) ? (
+                      viewItem.pautas.map((p, i) => (
+                        <div key={p.id} className="flex gap-4 group/pauta">
+                          <div className="flex flex-col items-center">
+                            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-[12px] font-black text-primary shrink-0 group-hover/pauta:bg-primary group-hover/pauta:text-white transition-colors shadow-sm">{i + 1}</div>
+                            {i !== viewItem.pautas.length - 1 && <div className="w-px h-full bg-black/5 mt-2" />}
+                          </div>
+                          <div className="pb-4">
+                            <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1">{p.titulo}</h5>
+                            <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/10">
+                        <p className="text-sm font-medium text-muted-foreground italic">Nenhuma pauta detalhada para este encontro.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Registro de Decisões / Ata */}
+                <div className="bg-white rounded-3xl border border-sky-100 shadow-xl shadow-sky-900/5 overflow-hidden group focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100 transition-all">
+                  <div className="p-5 border-b border-sky-50 bg-gradient-to-r from-sky-50 to-white flex items-center justify-between flex-wrap gap-3">
+                     <div className="flex items-center gap-2.5">
+                       <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center text-sky-600"><FileSignature className="h-4 w-4" /></div>
+                       <h4 className="text-[11px] font-black text-sky-900 uppercase tracking-widest">Ata & Registro de Decisões</h4>
+                     </div>
+                     <button 
+                        onClick={() => {
+                          const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
+                          if (textarea) {
+                            mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
+                            toast.success("Ata salva com sucesso!");
+                          }
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 transition-all text-[10px] font-black uppercase shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
+                      >
+                        <CheckCircle2 className="h-4 w-4" /> Salvar Ata
+                      </button>
+                  </div>
+                  <textarea 
+                    id="ata-textarea"
+                    defaultValue={viewItem.ataDecisoes || ""}
+                    placeholder="Descreva as decisões tomadas, encaminhamentos e registros importantes desta reunião..."
+                    className="w-full min-h-[160px] p-6 text-sm font-medium text-slate-700 focus:outline-none resize-none bg-transparent placeholder:text-slate-300 leading-relaxed"
+                  />
+                </div>
+
+                {viewItem.observacao && (
+                  <div className="bg-amber-50/50 rounded-3xl p-6 border border-amber-200/50 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10"><Info className="w-24 h-24 text-amber-500" /></div>
+                    <div className="relative z-10">
+                      <h4 className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-3 flex items-center gap-2"><Info className="w-3.5 h-3.5" /> Observações Adicionais</h4>
+                      <p className="text-sm font-medium text-amber-900/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+          </div>
+          )}
+        </DialogContent>
     </Dialog>
 
       <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
