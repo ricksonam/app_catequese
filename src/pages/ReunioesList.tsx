@@ -516,28 +516,39 @@ export default function ReunioesList() {
                     <div className="h-px bg-zinc-100" />
 
                     {/* Momento de Oração Unificado (Refinado: Tipo primeiro, depois Leitura) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-zinc-50 border-2 border-zinc-200">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-zinc-700 uppercase tracking-widest ml-1">Tipo de Oração</label>
-                        <select 
-                          value={form.oracaoTipo} 
-                          onChange={(e) => updateField("oracaoTipo", e.target.value)} 
-                          className="w-full bg-white border-zinc-200 rounded-xl text-xs font-bold p-2.5 focus:ring-zinc-900 focus:border-zinc-900"
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo de Oração</label>
+                    <div className="flex flex-wrap gap-2">
+                      {ORACAO_TIPOS.map(tipo => (
+                        <button
+                          key={tipo}
+                          type="button"
+                          onClick={() => updateField("oracaoTipo", tipo)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all",
+                            form.oracaoTipo === tipo 
+                              ? "bg-sky-600 text-white border-sky-600 shadow-md scale-105" 
+                              : "bg-white text-slate-500 border-slate-200 hover:border-sky-200"
+                          )}
                         >
-                          <option value="">Selecione...</option>
-                          {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black text-zinc-700 uppercase tracking-widest ml-1">Leitura Bíblica</label>
-                        <input 
-                          value={form.oracaoInicial} 
-                          onChange={(e) => updateField("oracaoInicial", e.target.value)} 
-                          placeholder="Ex: Mateus 5, 1-12" 
-                          className="w-full bg-white border-zinc-200 rounded-xl text-xs font-bold p-2.5 focus:ring-zinc-900 focus:border-zinc-900" 
-                        />
-                      </div>
+                          {tipo}
+                        </button>
+                      ))}
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Leitura Bíblica</label>
+                    <input 
+                      type="text" 
+                      value={form.oracaoInicial || ""} 
+                      onChange={(e) => updateField("oracaoInicial", e.target.value)}
+                      placeholder="Ex: Mt 5, 1-12"
+                      className="w-full h-10 px-4 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-4 focus:ring-primary/10 outline-none"
+                    />
+                  </div>
+                </div>
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between px-1">
@@ -845,33 +856,31 @@ export default function ReunioesList() {
                 <div className="p-0 space-y-0 overflow-y-auto bg-slate-50/30">
                 {/* --- SMART HEADER (SOFT BLUE) --- */}
                 <div className="bg-white border-b border-slate-200/60 p-6 space-y-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border ${tipoColors[viewItem.tipo] || 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                  <div className="flex flex-col items-center justify-center text-center space-y-4">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-center gap-2">
+                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${tipoColors[viewItem.tipo] || 'bg-slate-100 text-slate-500 border-slate-200'}`}>
                           {viewItem.tipo}
                         </span>
-                        <div className="h-1 w-1 rounded-full bg-slate-300" />
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">#{viewItem.id.slice(0,5)}</span>
                       </div>
-                      <h2 className="text-xl font-black text-slate-900 tracking-tight leading-tight">{viewItem.nome}</h2>
+                      <h2 className="text-xl font-black text-slate-900 tracking-tight leading-tight max-w-2xl">{viewItem.nome}</h2>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center justify-center gap-3">
                       <button 
                         onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-50 text-sky-700 hover:bg-sky-100 transition-all text-[10px] font-black uppercase border border-sky-100 shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50 text-sky-700 hover:bg-sky-100 transition-all text-[10px] font-black uppercase border border-sky-100 shadow-sm"
                       >
-                        <Users className="h-3.5 w-3.5" />
-                        <span>Presentes ({(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length})</span>
+                        <Users className="h-4 w-4" />
+                        <span>Participantes Presentes: {(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span>
                       </button>
                       
-                      <div className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 border ${
+                      <div className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border ${
                         viewItem.status === 'realizado' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
                         viewItem.status === 'cancelado' ? 'bg-rose-50 text-rose-700 border-rose-100' :
                         'bg-amber-50 text-amber-700 border-amber-100'
                       }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
+                        <div className={`w-2 h-2 rounded-full ${
                           viewItem.status === 'realizado' ? 'bg-emerald-500' : 
                           viewItem.status === 'cancelado' ? 'bg-rose-500' : 'bg-amber-500'
                         }`} />
@@ -992,18 +1001,6 @@ export default function ReunioesList() {
                         </div>
                       </div>
 
-                      {/* QUICK ACTION CHIPS */}
-                      <div className="grid grid-cols-2 gap-2">
-                         <button className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 transition-all text-[10px] font-black uppercase text-slate-600 group">
-                            <Printer className="h-3.5 w-3.5 group-hover:text-sky-600" /> Relatório
-                         </button>
-                         <button 
-                           onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }}
-                           className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 transition-all text-[10px] font-black uppercase text-slate-600 group"
-                         >
-                            <Pencil className="h-3.5 w-3.5 group-hover:text-sky-600" /> Editar
-                         </button>
-                      </div>
                     </div>
                   </div>
 
