@@ -842,228 +842,134 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                {/* Cabeçalho Litúrgico Premium */}
-                <div className="relative pt-4 pb-2">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-rose-900/10 flex items-center justify-center shadow-lg">
-                    <span className="text-rose-900 font-serif text-lg">✝</span>
-                  </div>
-                  <div className="text-center space-y-2">
-                    <div className="flex justify-center gap-2">
-                       <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-current/20 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
-                         {viewItem.tipo}
-                       </span>
+                <div className="p-0 space-y-0 overflow-y-auto bg-zinc-50/50">
+                {/* --- HEADER UNIFICADO (PRETO) --- */}
+                <div className="bg-zinc-900 text-white p-8 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Registro de Reunião</span>
+                      <h2 className="text-3xl font-black tracking-tight">{viewItem.nome}</h2>
                     </div>
-                    <h2 className="text-3xl font-serif font-black text-rose-950 leading-tight tracking-tight px-4">{viewItem.nome}</h2>
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="h-px w-8 bg-rose-900/20" />
-                      <p className="text-[10px] font-black text-rose-900/60 uppercase tracking-[0.3em]">Registro de Ata</p>
-                      <div className="h-px w-8 bg-rose-900/20" />
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all text-[10px] font-black uppercase border border-white/5"
+                      >
+                        <Users className="h-4 w-4" />
+                        <span>Presença ({(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length})</span>
+                      </button>
                     </div>
                   </div>
-                </div>
 
-                {/* --- CARD UNIFICADO: LOGÍSTICA (ESTILO PERGAMINHO) --- */}
-                <div className="bg-[#fdfcf7] rounded-3xl p-6 border-2 border-[#e8e4d9] shadow-sm relative overflow-hidden group">
-                  <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-900/20" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center shrink-0 text-rose-900 border border-rose-100 shadow-inner">
-                        <CalendarDays className="h-6 w-6" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[10px] font-black text-rose-900/50 uppercase tracking-widest leading-none mb-1.5">Quando e Onde</p>
-                        <p className="text-[13px] font-bold text-zinc-800 leading-snug">
-                          {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'}
-                        </p>
-                        <p className="text-xs font-medium text-zinc-500 mt-0.5">
-                          {viewItem.horario || 'Horário a definir'} • {viewItem.local || 'Local não informado'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-end">
-                      <div className="bg-rose-900/5 px-4 py-2 rounded-2xl border border-rose-900/10 flex items-center gap-3">
-                        <div className="text-right">
-                          <p className="text-[9px] font-black text-rose-900/40 uppercase tracking-widest">Participantes</p>
-                          <p className="text-sm font-black text-rose-900">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length} Presentes</p>
-                        </div>
-                        <button 
-                          onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                          className="w-8 h-8 rounded-lg bg-rose-900 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md shadow-rose-900/20"
-                        >
-                          <Users className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* --- PAINEL: LIVRO DE ATAS (ESTILO PREMIUM BURGUNDY) --- */}
-                <div className="bg-rose-950 text-rose-50 rounded-[2.5rem] p-7 shadow-2xl space-y-6 border-4 border-rose-900/50 relative overflow-hidden animate-in fade-in zoom-in duration-700">
-                  {/* Decorative Elements */}
-                  <div className="absolute top-0 right-0 p-8 opacity-5">
-                    <FileSignature className="w-32 h-32" />
-                  </div>
-                  
-                  <div className="flex items-center justify-between relative z-10">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-800 to-rose-900 flex items-center justify-center border border-rose-700 shadow-xl">
-                        <FileSignature className="h-7 w-7 text-rose-100" />
-                      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><Calendar className="h-5 w-5 text-zinc-400" /></div>
                       <div>
-                        <h4 className="text-[11px] font-black uppercase tracking-[0.25em] text-rose-300/60 mb-1">Livro de Atas</h4>
-                        <p className="text-lg font-serif font-black tracking-tight">Decisões & Registros</p>
+                        <p className="text-[9px] font-black uppercase text-zinc-500 tracking-widest">Data</p>
+                        <p className="text-sm font-bold">{viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'}</p>
                       </div>
                     </div>
-                    
-                    <button 
-                      onClick={() => {
-                        const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
-                        if (textarea) {
-                          mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
-                          toast.success("Ata salva com sucesso!");
-                        }
-                      }}
-                      className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-rose-100 hover:bg-white text-rose-950 transition-all font-black text-[11px] uppercase tracking-widest shadow-xl active:scale-95"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-rose-700 group-hover:scale-125 transition-transform" />
-                      <span>Salvar Ata</span>
-                    </button>
-                  </div>
-
-                  <div className="space-y-3 relative z-10">
-                    <div className="flex items-center justify-between px-1">
-                      <label className="text-[10px] font-black text-rose-300/40 uppercase tracking-[0.2em]">Conteúdo do Registro</label>
-                      <span className="text-[9px] font-bold italic text-rose-300/30">* Recomenda-se salvar após cada edição</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><Clock className="h-5 w-5 text-zinc-400" /></div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-zinc-500 tracking-widest">Horário</p>
+                        <p className="text-sm font-bold">{viewItem.horario || 'A definir'}</p>
+                      </div>
                     </div>
-                    <div className="relative">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10"><MapPin className="h-5 w-5 text-zinc-400" /></div>
+                      <div>
+                        <p className="text-[9px] font-black uppercase text-zinc-500 tracking-widest">Local</p>
+                        <p className="text-sm font-bold truncate">{viewItem.local || 'Não informado'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-8 max-w-3xl mx-auto">
+                  {/* --- ROTEIRO DA AGENDA (TIMELINE) --- */}
+                  <section className="space-y-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center shadow-lg shadow-zinc-900/20">
+                        <ListChecks className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-900">Roteiro de Pautas</h3>
+                    </div>
+
+                    <div className="space-y-4 relative pl-4">
+                      <div className="absolute left-6 top-0 bottom-0 w-px bg-zinc-200" />
+                      
+                      {(viewItem.pautas && viewItem.pautas.length > 0) ? (
+                        viewItem.pautas.map((p, i) => (
+                          <div key={p.id} className="relative pl-10 group animate-in slide-in-from-left-2 duration-300" style={{ animationDelay: `${i * 100}ms` }}>
+                            <div className="absolute left-0 top-0 w-6 h-6 rounded-full bg-zinc-900 border-4 border-zinc-50 flex items-center justify-center text-[9px] font-black text-white z-10 shadow-md">
+                              {i + 1}
+                            </div>
+                            <div className="bg-white rounded-2xl p-5 border-2 border-zinc-100 shadow-sm group-hover:border-zinc-200 transition-all">
+                              <div className="flex items-start justify-between gap-4 mb-2">
+                                <h4 className="text-sm font-black text-zinc-900 uppercase tracking-tight">{p.titulo}</h4>
+                                {p.tempo && (
+                                  <span className="text-[9px] font-black uppercase text-zinc-400 bg-zinc-50 px-2 py-1 rounded-md">{p.tempo} min</span>
+                                )}
+                              </div>
+                              <p className="text-xs text-zinc-500 leading-relaxed">{p.descricao}</p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="bg-white rounded-2xl p-8 border-2 border-dashed border-zinc-200 text-center space-y-2">
+                          <p className="text-sm font-bold text-zinc-400 italic">Nenhuma pauta detalhada para esta reunião.</p>
+                          <p className="text-xs text-zinc-300">O roteiro será seguido conforme as observações gerais.</p>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* --- REGISTRO DE DECISÕES (FINALIZAÇÃO) --- */}
+                  <section className="space-y-4 pt-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center shadow-lg shadow-zinc-900/20">
+                          <FileSignature className="h-4 w-4" />
+                        </div>
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-900">Registro de Decisões</h3>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
+                          if (textarea) {
+                            mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
+                            toast.success("Decisões salvas com sucesso!");
+                          }
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all text-[10px] font-black uppercase shadow-xl active:scale-95"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>Salvar Registro</span>
+                      </button>
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-2 border-2 border-zinc-100 shadow-xl overflow-hidden focus-within:border-zinc-300 transition-all">
                       <textarea 
                         id="ata-textarea"
                         defaultValue={viewItem.ataDecisoes || ""}
-                        placeholder="Em nome do Pai, do Filho e do Espírito Santo... Registre aqui as decisões desta reunião."
-                        className="w-full min-h-[220px] bg-white border-2 border-rose-800/20 rounded-3xl p-6 text-base font-medium leading-relaxed text-zinc-900 placeholder:text-zinc-300 transition-all shadow-inner focus:ring-8 focus:ring-rose-500/10 focus:outline-none scrollbar-thin scrollbar-thumb-rose-200"
+                        placeholder="Descreva aqui as conclusões, acordos e próximos passos definidos durante a reunião..."
+                        className="w-full min-h-[200px] bg-white border-0 rounded-2xl p-6 text-sm font-medium leading-relaxed text-zinc-800 placeholder:text-zinc-300 focus:ring-0 focus:outline-none"
                       />
-                      <div className="absolute bottom-4 right-4 opacity-10">
-                        <span className="text-4xl">✒️</span>
-                      </div>
                     </div>
-                  </div>
-                </div>
+                  </section>
 
-                {(viewItem.oracaoTipo || viewItem.oracaoInicial) && (
-                  <div className="mt-4 p-5 rounded-2xl bg-amber-50 border-2 border-amber-100/50 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-                        <Book className="h-4 w-4" />
-                      </div>
-                      <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Roteiro de Oração</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {viewItem.oracaoTipo && (
-                        <div>
-                          <p className="text-[10px] font-black text-amber-700/50 uppercase tracking-tighter">Tipo de Oração</p>
-                          <p className="text-sm font-bold text-amber-900">{viewItem.oracaoTipo}</p>
-                        </div>
-                      )}
-                      {viewItem.oracaoInicial && (
-                        <div>
-                          <p className="text-[10px] font-black text-amber-700/50 uppercase tracking-tighter">Leitura Bíblica</p>
-                          <p className="text-sm font-bold text-amber-900 italic">"{viewItem.oracaoInicial}"</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Serviços de Liturgia no Detalhe */}
-                {viewItem.servicosLiturgia && Object.values(viewItem.servicosLiturgia).some(v => v) && (
-                  <div className="mt-6 p-5 rounded-[2rem] bg-liturgical/5 border border-liturgical/10 space-y-4">
-                    <p className="text-[10px] font-black uppercase text-liturgical tracking-[0.2em] border-b border-liturgical/10 pb-1.5 flex items-center gap-2">
-                      <Sparkles className="h-3 w-3" /> Equipe de Liturgia / Trabalho
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
-                      {Object.entries({
-                        'Celebrante': viewItem.servicosLiturgia.celebrante,
-                        'Animador': viewItem.servicosLiturgia.animador,
-                        '1º Leitor': viewItem.servicosLiturgia['1_leitor'],
-                        'Salmista': viewItem.servicosLiturgia.salmista,
-                        '2º Leitor': viewItem.servicosLiturgia['2_leitor'],
-                        'Preces': viewItem.servicosLiturgia.preces,
-                        'Cantores': viewItem.servicosLiturgia.cantores,
-                      }).map(([label, value]) => value && (
-                        <div key={label} className="space-y-0.5">
-                          <p className="text-[10px] font-black text-liturgical/50 uppercase tracking-tighter">{label}</p>
-                          <p className="text-sm font-bold text-foreground">{value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-6 space-y-6">
-                  <div className="flex items-center justify-between border-b border-primary/10 pb-1.5">
-                    <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Pautas e Tópicos</p>
-                    {viewItem.pautas && viewItem.pautas.length > 0 && (
-                      <span className="text-[9px] font-bold text-muted-foreground uppercase">{viewItem.pautas.length} tópicos</span>
-                    )}
-                  </div>
-
-                  {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                    <div className="grid grid-cols-1 gap-6 relative pl-4">
-                      {/* Timeline Line */}
-                      <div className="absolute left-6 top-2 bottom-6 w-px bg-gradient-to-b from-primary/20 via-primary/5 to-transparent" />
-
-                      {viewItem.pautas.map((p, i) => (
-                        <div key={p.id} className="relative pl-10 group animate-float-up" style={{ animationDelay: `${i * 100}ms` }}>
-                           {/* Number Indicator */}
-                           <div className="absolute left-0 top-0 w-6 h-6 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center text-[10px] font-black text-primary z-10 shadow-sm group-hover:scale-110 transition-transform">
-                             {i+1}
-                           </div>
-
-                           <div className="bg-card rounded-[1.5rem] p-5 border border-black/5 shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all relative overflow-hidden">
-                             <div className="flex items-start justify-between gap-4 mb-2">
-                                <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-snug">{p.titulo}</h4>
-                                {p.tempo !== undefined && p.tempo > 0 && (
-                                  <span className="shrink-0 flex items-center gap-1 text-[9px] font-black uppercase text-primary bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
-                                    <Clock className="h-3 w-3" /> {p.tempo} min
-                                  </span>
-                                )}
-                             </div>
-                             {p.descricao && (
-                               <p className="text-[13px] text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                                 {p.descricao}
-                               </p>
-                             )}
-                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm bg-[repeating-linear-gradient(white,white_27px,#e5e7eb_27px,#e5e7eb_28px)]">
-                      <div className="text-sm text-zinc-800 font-medium space-y-0 leading-[28px] whitespace-pre-wrap">
-                        {viewItem.descricao?.split('\n').filter(line => line.trim()).map((line, idx) => (
-                          <div key={idx} className="flex gap-2">
-                            <span className="text-primary font-bold min-w-[20px]">{idx + 1}.</span>
-                            <span>{line}</span>
-                          </div>
-                        ))}
-                      </div>
+                  {viewItem.observacao && (
+                    <div className="bg-zinc-100 rounded-2xl p-5 border border-zinc-200">
+                      <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">Observação Extra</h4>
+                      <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
                     </div>
                   )}
                 </div>
-                
-                {viewItem.observacao && (
-                  <div className="bg-accent/5 rounded-2xl p-5 border border-accent/10">
-                    <h4 className="text-[10px] font-black text-accent-foreground uppercase tracking-widest mb-2">Observação</h4>
-                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.observacao}</p>
-                  </div>
-                )}
               </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            )}
+          </DialogContent>
+        </Dialog>
 
       <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
         <DialogContent className="rounded-3xl border-border/30 max-w-sm p-0 overflow-hidden">
