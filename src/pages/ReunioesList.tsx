@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info, FileText } from "lucide-react";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info, FileText, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -874,10 +874,10 @@ export default function ReunioesList() {
                  </div>
                  {/* Actions */}
                  <div className="flex items-center gap-2 z-50">
-                   <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="p-2.5 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-primary/10 hover:text-primary transition-all shadow-sm"><Pencil className="h-4 w-4" /></button>
-                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2.5 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-destructive/10 hover:text-destructive transition-all shadow-sm"><Trash2 className="h-4 w-4" /></button>
+                   <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20" title="Editar"><Pencil className="h-4 w-4" /></button>
+                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20" title="Excluir"><Trash2 className="h-4 w-4" /></button>
                    <div className="w-px h-5 bg-black/10 mx-1" />
-                   <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900 text-white shadow-md hover:bg-zinc-800 transition-all active:scale-95"><X className="h-5 w-5" /></button>
+                   <button onClick={() => setViewItem(null)} className="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all active:scale-95 border border-zinc-200" title="Fechar"><X className="h-5 w-5" /></button>
                  </div>
               </div>
 
@@ -907,7 +907,7 @@ export default function ReunioesList() {
                   <div className="flex justify-center gap-3 pt-2">
                      <button 
                       onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
                       <ClipboardCheck className="h-4 w-4" /> 
                       Registrar Presença 
@@ -918,15 +918,15 @@ export default function ReunioesList() {
 
                     <button 
                       onClick={() => setAtaCompletaOpen(true)}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-sky-600 text-white hover:bg-sky-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-sky-900/25 hover:shadow-sky-900/40 hover:-translate-y-0.5 active:translate-y-0"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-900/25 hover:shadow-emerald-900/40 hover:-translate-y-0.5 active:translate-y-0"
                     >
-                      <FileText className="h-4 w-4" /> Ver Ata Completa
+                      <FileText className="h-4 w-4" /> Ata Completa
                     </button>
                   </div>
                 </div>
 
                 {/* Unified Info Card: Logística + Pautas + Ata */}
-                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white shadow-xl shadow-black/5 relative overflow-hidden group">
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl shadow-black/5 relative overflow-hidden group">
                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl" />
                    
                    <div className="space-y-8 relative z-10">
@@ -971,7 +971,10 @@ export default function ReunioesList() {
                                   <div className="flex-1 pb-1">
                                     <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1 flex items-center justify-between">
                                       {p.titulo}
-                                      {p.decisao && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                                      <div className="flex items-center gap-2">
+                                        {p.decisao && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                                        {activePautaId === p.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                                      </div>
                                     </h5>
                                     <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
                                     
@@ -1048,10 +1051,13 @@ export default function ReunioesList() {
     </Dialog>
 
       <Dialog open={presencaOpen} onOpenChange={setPresencaOpen}>
-        <DialogContent className="rounded-3xl border-border/30 max-w-sm p-0 overflow-hidden">
-          <div className="p-6 bg-zinc-900 text-white">
-            <DialogHeader><DialogTitle className="text-white">Presença na Reunião</DialogTitle></DialogHeader>
-            <p className="text-[10px] font-black uppercase opacity-60 mt-1">Catequistas e Participantes</p>
+        <DialogContent className="rounded-3xl border-border/30 max-w-sm p-0 overflow-hidden shadow-2xl">
+          <div className="p-6 bg-emerald-600 text-white text-center">
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto backdrop-blur-sm mb-3">
+              <ClipboardCheck className="h-6 w-6" />
+            </div>
+            <DialogHeader><DialogTitle className="text-white text-xl font-black uppercase tracking-tight text-center">Presença na Reunião</DialogTitle></DialogHeader>
+            <p className="text-[10px] font-black uppercase text-emerald-100 tracking-widest mt-1">Catequistas e Participantes</p>
           </div>
           
           <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
