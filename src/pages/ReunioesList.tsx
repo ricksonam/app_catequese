@@ -941,7 +941,6 @@ export default function ReunioesList() {
                   )}
                 </div>
             </div>
-          </div>
         )}
       </DialogContent>
     </Dialog>
