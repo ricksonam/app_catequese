@@ -289,8 +289,6 @@ export default function ReunioesList() {
                     <FieldInput label="Data *" type="date" value={form.data} onChange={(v) => updateField("data", v)} />
                     <FieldInput label="Horário *" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} />
                   </div>
-                </div>
-
                 {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE ENCONTRO --- */}
                 {form.tipo === 'Reunião de preparação de encontro' && (
                   <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -701,8 +699,8 @@ export default function ReunioesList() {
                   <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">
                     {mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Reunião'}
                   </button>
-                  </div>
-               </div>
+                </div>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
