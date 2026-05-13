@@ -812,9 +812,9 @@ export default function ReunioesList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent className="w-full sm:max-w-2xl rounded-[2rem] border-0 p-0 overflow-hidden max-h-[90vh] bg-transparent shadow-2xl">
+        <DialogContent className="w-full sm:max-w-2xl rounded-[2rem] border-0 p-0 overflow-hidden max-h-[90vh] bg-transparent shadow-2xl flex flex-col">
           {viewItem && (
-            <div className="flex flex-col h-full bg-white/95 backdrop-blur-xl rounded-[2rem] overflow-hidden relative">
+            <div className="flex flex-col flex-1 min-h-0 bg-white/95 backdrop-blur-xl rounded-[2rem] overflow-hidden relative">
               {/* Dynamic Header Gradient Background */}
               <div className={`absolute top-0 left-0 right-0 h-48 bg-gradient-to-br opacity-10 ${
                   viewItem.tipo === 'Reunião de preparação de encontro' ? 'from-emerald-400 to-teal-600' :
@@ -824,7 +824,7 @@ export default function ReunioesList() {
               }`} />
 
               {/* Header Bar */}
-              <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 border-b border-black/5 bg-white/80 backdrop-blur-md">
+              <div className="sticky top-0 z-20 shrink-0 flex items-center justify-between px-6 py-4 border-b border-black/5 bg-white/80 backdrop-blur-md">
                  <div className="flex items-center gap-3">
                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white shadow-md bg-gradient-to-br ${
                       viewItem.tipo === 'Reunião de preparação de encontro' ? 'from-emerald-400 to-emerald-600' :
@@ -847,7 +847,7 @@ export default function ReunioesList() {
 
               <div className="flex-1 p-6 sm:p-8 space-y-8 overflow-y-auto custom-scrollbar relative z-10">
                 {/* Main Title Area */}
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-5">
                   <div className="flex justify-center gap-2 flex-wrap">
                      <span className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border shadow-sm ${
                        viewItem.tipo === 'Reunião de preparação de encontro' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
@@ -867,14 +867,27 @@ export default function ReunioesList() {
                      </div>
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-tight tracking-tighter max-w-2xl mx-auto">{viewItem.nome}</h2>
+                  
+                  <div className="flex justify-center pt-2">
+                     <button 
+                      onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                      <ClipboardCheck className="h-4 w-4" /> 
+                      Registrar Presença 
+                      <span className="bg-white/20 px-2 py-0.5 rounded-full ml-1 text-[10px]">
+                        {(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length} confirmados
+                      </span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 gap-5">
                   {/* Logística Card Premium */}
                   <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 border border-white shadow-xl shadow-black/5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                      <div className="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-                     <div className="space-y-5 relative z-10">
-                       <div className="flex items-center gap-4">
+                     <div className="space-y-0 relative z-10 flex flex-col sm:flex-row sm:items-center sm:divide-x divide-black/5 gap-5 sm:gap-0">
+                       <div className="flex items-center gap-4 flex-1 sm:pr-5">
                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-sm"><Calendar className="w-4.5 h-4.5" /></div>
                          <div className="flex-1 min-w-0 text-left">
                            <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-widest leading-none mb-1">Data e Horário</p>
@@ -883,8 +896,8 @@ export default function ReunioesList() {
                            </p>
                          </div>
                        </div>
-                       <div className="h-px bg-gradient-to-r from-transparent via-black/5 to-transparent" />
-                       <div className="flex items-center gap-4">
+                       <div className="h-px sm:h-auto sm:w-px bg-gradient-to-r sm:bg-gradient-to-b from-transparent via-black/5 to-transparent" />
+                       <div className="flex items-center gap-4 flex-1 sm:pl-5">
                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-sm"><MapPin className="w-4.5 h-4.5" /></div>
                          <div className="flex-1 min-w-0 text-left">
                            <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest leading-none mb-1">Localização</p>
@@ -892,26 +905,6 @@ export default function ReunioesList() {
                          </div>
                        </div>
                      </div>
-                  </div>
-
-                  {/* Participantes Card Premium */}
-                  <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 border border-white shadow-xl shadow-black/5 relative overflow-hidden group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-                     <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors duration-500" />
-                     <div className="relative z-10 flex items-center justify-between mb-4">
-                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                         <Users className="w-4 h-4 text-primary/70" /> Presenças Confirmadas
-                       </p>
-                       <div className="bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-                         <span className="text-xl font-black text-primary">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length}</span>
-                       </div>
-                     </div>
-                     
-                     <button 
-                      onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                      className="relative z-10 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-black text-[11px] uppercase tracking-widest shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95"
-                    >
-                      <ClipboardCheck className="h-4 w-4" /> Registrar Presença
-                    </button>
                   </div>
                 </div>
 
