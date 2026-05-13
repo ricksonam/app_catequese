@@ -842,78 +842,110 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                <div className="text-center sm:text-left">
-                   <div className="flex justify-center sm:justify-start gap-2 mb-3">
-                     <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-current/10 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
-                       <span>{TIPO_ICONES[viewItem.tipo] || '🤝'}</span> {viewItem.tipo}
-                     </span>
-                   </div>
-                   <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
+                {/* Cabeçalho Litúrgico Premium */}
+                <div className="relative pt-4 pb-2">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border-2 border-rose-900/10 flex items-center justify-center shadow-lg">
+                    <span className="text-rose-900 font-serif text-lg">✝</span>
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="flex justify-center gap-2">
+                       <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border border-current/20 ${tipoColors[viewItem.tipo] || 'bg-muted text-muted-foreground'}`}>
+                         {viewItem.tipo}
+                       </span>
+                    </div>
+                    <h2 className="text-3xl font-serif font-black text-rose-950 leading-tight tracking-tight px-4">{viewItem.nome}</h2>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="h-px w-8 bg-rose-900/20" />
+                      <p className="text-[10px] font-black text-rose-900/60 uppercase tracking-[0.3em]">Registro de Ata</p>
+                      <div className="h-px w-8 bg-rose-900/20" />
+                    </div>
+                  </div>
                 </div>
 
-                {/* --- PAINEL PREMIUM: REGISTRO DE DECISÕES --- */}
-                <div className="bg-gradient-to-br from-sky-400 to-blue-600 text-white rounded-3xl p-6 shadow-xl space-y-6 border border-white/20 animate-in fade-in zoom-in duration-500">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center border border-white/10">
-                        <FileSignature className="h-6 w-6 text-white" />
+                {/* --- CARD UNIFICADO: LOGÍSTICA (ESTILO PERGAMINHO) --- */}
+                <div className="bg-[#fdfcf7] rounded-3xl p-6 border-2 border-[#e8e4d9] shadow-sm relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-900/20" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center shrink-0 text-rose-900 border border-rose-100 shadow-inner">
+                        <CalendarDays className="h-6 w-6" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black text-rose-900/50 uppercase tracking-widest leading-none mb-1.5">Quando e Onde</p>
+                        <p className="text-[13px] font-bold text-zinc-800 leading-snug">
+                          {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'}
+                        </p>
+                        <p className="text-xs font-medium text-zinc-500 mt-0.5">
+                          {viewItem.horario || 'Horário a definir'} • {viewItem.local || 'Local não informado'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-end">
+                      <div className="bg-rose-900/5 px-4 py-2 rounded-2xl border border-rose-900/10 flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-[9px] font-black text-rose-900/40 uppercase tracking-widest">Participantes</p>
+                          <p className="text-sm font-black text-rose-900">{(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length} Presentes</p>
+                        </div>
+                        <button 
+                          onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
+                          className="w-8 h-8 rounded-lg bg-rose-900 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md shadow-rose-900/20"
+                        >
+                          <Users className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* --- PAINEL: LIVRO DE ATAS (ESTILO PREMIUM BURGUNDY) --- */}
+                <div className="bg-rose-950 text-rose-50 rounded-[2.5rem] p-7 shadow-2xl space-y-6 border-4 border-rose-900/50 relative overflow-hidden animate-in fade-in zoom-in duration-700">
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 p-8 opacity-5">
+                    <FileSignature className="w-32 h-32" />
+                  </div>
+                  
+                  <div className="flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-800 to-rose-900 flex items-center justify-center border border-rose-700 shadow-xl">
+                        <FileSignature className="h-7 w-7 text-rose-100" />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80 mb-0.5">Gestão da Reunião</h4>
-                        <p className="text-sm font-black uppercase tracking-tight">Registro de Decisões</p>
+                        <h4 className="text-[11px] font-black uppercase tracking-[0.25em] text-rose-300/60 mb-1">Livro de Atas</h4>
+                        <p className="text-lg font-serif font-black tracking-tight">Decisões & Registros</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => { setPresencaItem(viewItem); setPresencaOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all text-[10px] font-black uppercase border border-white/10 shadow-sm"
-                      >
-                        <Users className="h-3.5 w-3.5" />
-                        <span>Presença ({(viewItem.presencas||[]).length + (viewItem.outrosParticipantes||[]).length})</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/80 uppercase tracking-widest ml-1">O que foi decidido?</label>
-                    <textarea 
-                      defaultValue={viewItem.ataDecisoes || ""}
-                      onBlur={(e) => {
-                        const val = e.target.value;
-                        if (val !== viewItem.ataDecisoes) {
-                          mutation.mutate({ ...viewItem, ataDecisoes: val });
+                    
+                    <button 
+                      onClick={() => {
+                        const textarea = document.getElementById('ata-textarea') as HTMLTextAreaElement;
+                        if (textarea) {
+                          mutation.mutate({ ...viewItem, ataDecisoes: textarea.value });
+                          toast.success("Ata salva com sucesso!");
                         }
                       }}
-                      placeholder="Descreva aqui os acordos, decisões e próximos passos da reunião..."
-                      className="w-full min-h-[160px] bg-white border border-white/20 rounded-2xl p-4 text-sm font-bold leading-relaxed text-zinc-900 placeholder:text-zinc-300 transition-all shadow-inner focus:ring-4 focus:ring-white/10 focus:outline-none"
-                    />
-                    <p className="text-[9px] text-white/60 font-bold italic text-right">* As alterações são salvas automaticamente ao clicar fora da caixa.</p>
+                      className="group flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-rose-100 hover:bg-white text-rose-950 transition-all font-black text-[11px] uppercase tracking-widest shadow-xl active:scale-95"
+                    >
+                      <CheckCircle2 className="h-4 w-4 text-rose-700 group-hover:scale-125 transition-transform" />
+                      <span>Salvar Ata</span>
+                    </button>
                   </div>
-                </div>
 
-                {/* --- CARD UNIFICADO: DATA, HORÁRIO E LOCAL --- */}
-                <div className="bg-zinc-50 rounded-3xl p-6 border border-zinc-200/50 shadow-sm flex flex-col sm:flex-row gap-6 sm:items-center">
-                  <div className="flex-1 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
-                      <CalendarDays className="h-5 w-5" />
+                  <div className="space-y-3 relative z-10">
+                    <div className="flex items-center justify-between px-1">
+                      <label className="text-[10px] font-black text-rose-300/40 uppercase tracking-[0.2em]">Conteúdo do Registro</label>
+                      <span className="text-[9px] font-bold italic text-rose-300/30">* Recomenda-se salvar após cada edição</span>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">Quando</p>
-                      <p className="text-sm font-bold text-foreground truncate">
-                        {viewItem.data ? formatarDataVigente(viewItem.data) : 'A definir'} • {viewItem.horario || 'A definir'}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="hidden sm:block w-px h-10 bg-zinc-200" />
-                  
-                  <div className="flex-1 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0 text-emerald-600">
-                      <MapPin className="h-5 w-5" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-black text-emerald-600/70 uppercase tracking-widest leading-none mb-1">Onde</p>
-                      <p className="text-sm font-bold text-foreground truncate">{viewItem.local || 'Não informado'}</p>
+                    <div className="relative">
+                      <textarea 
+                        id="ata-textarea"
+                        defaultValue={viewItem.ataDecisoes || ""}
+                        placeholder="Em nome do Pai, do Filho e do Espírito Santo... Registre aqui as decisões desta reunião."
+                        className="w-full min-h-[220px] bg-white border-2 border-rose-800/20 rounded-3xl p-6 text-base font-medium leading-relaxed text-zinc-900 placeholder:text-zinc-300 transition-all shadow-inner focus:ring-8 focus:ring-rose-500/10 focus:outline-none scrollbar-thin scrollbar-thumb-rose-200"
+                      />
+                      <div className="absolute bottom-4 right-4 opacity-10">
+                        <span className="text-4xl">✒️</span>
+                      </div>
                     </div>
                   </div>
                 </div>
