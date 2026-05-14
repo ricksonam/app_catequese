@@ -451,29 +451,7 @@ export default function ReunioesList() {
                         </div>
                       )}
 
-                      {/* Botão Gerar Pautas dos Encontros */}
-                      {form.encontrosPreparados && form.encontrosPreparados.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const novasPautas = form.encontrosPreparados!.flatMap(eid => {
-                              const enc = encontros.find(e => e.id === eid);
-                              if (!enc) return [];
-                              return [
-                                { id: crypto.randomUUID(), titulo: `Apresentação do Tema: ${enc.tema}`, descricao: 'Apresentar o tema central do encontro e seus objetivos.', tempo: 10 },
-                                { id: crypto.randomUUID(), titulo: `Atividade Principal: ${enc.tema}`, descricao: 'Discutir e preparar a dinâmica/atividade central do encontro.', tempo: 20 },
-                                { id: crypto.randomUUID(), titulo: `Momento de Oração: ${enc.tema}`, descricao: 'Preparar o momento de oração e a leitura bíblica do encontro.', tempo: 10 },
-                                { id: crypto.randomUUID(), titulo: `Materiais e Avisos: ${enc.tema}`, descricao: 'Listar materiais necessários e informes para o encontro.', tempo: 5 },
-                              ];
-                            });
-                            updateField('pautas', [...(form.pautas || []), ...novasPautas] as any);
-                            toast.success('Pautas geradas a partir dos encontros selecionados!');
-                          }}
-                          className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 hover:border-emerald-400 text-emerald-700 font-black text-xs uppercase tracking-widest transition-all active:scale-95"
-                        >
-                          <Wand2 className="h-4 w-4" /> Gerar Pautas dos Encontros Selecionados
-                        </button>
-                      )}
+                      {/* Removido Botão Gerar Pautas dos Encontros */}
                     </div>
 
                   </div>
@@ -647,98 +625,100 @@ export default function ReunioesList() {
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between px-1">
-                        <div className="flex flex-col">
-                          <label className="text-[10px] font-black text-zinc-700 uppercase tracking-widest leading-none">Tópicos da Reunião</label>
-                          <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">Pautas e horários previstos</p>
-                        </div>
-                        <button 
-                          type="button" 
-                          onClick={() => {
-                            const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }];
-                            updateField("pautas", next);
-                          }}
-                          className="text-[9px] font-black text-white bg-zinc-900 px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 hover:bg-zinc-800 transition-all border-2 border-zinc-900 shadow-sm active:scale-95"
-                        >
-                          <Plus className="h-3.5 w-3.5" /> Adicionar Pauta
-                        </button>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 gap-4">
-                        {(form.pautas || []).length === 0 ? (
-                          <div className="py-8 px-4 border-2 border-dashed border-zinc-100 rounded-2xl flex flex-col items-center justify-center gap-2">
-                            <ListChecks className="h-8 w-8 text-zinc-200" />
-                            <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">Nenhuma pauta adicionada</p>
+                    {form.tipo !== 'Reunião de preparação de encontro' && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between px-1">
+                          <div className="flex flex-col">
+                            <label className="text-[10px] font-black text-zinc-700 uppercase tracking-widest leading-none">Tópicos da Reunião</label>
+                            <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">Pautas e horários previstos</p>
                           </div>
-                        ) : (
-                          (form.pautas || []).map((p, idx) => (
-                            <div key={p.id} className="relative group animate-in slide-in-from-right-4 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
-                              <div className="absolute -left-1 top-0 bottom-0 w-1 bg-zinc-900 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                              <div className="bg-white rounded-[1.5rem] p-4 sm:p-5 border-2 border-zinc-900 shadow-sm group-hover:shadow-md transition-all space-y-3.5">
-                                <div className="flex items-start gap-3">
-                                  <div className="w-6 h-6 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm">
-                                    {idx + 1}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <input 
-                                      placeholder="Título da pauta..." 
-                                      value={p.titulo} 
-                                      onChange={(e) => {
-                                        const next = [...(form.pautas || [])];
-                                        next[idx] = { ...p, titulo: e.target.value };
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }];
+                              updateField("pautas", next);
+                            }}
+                            className="text-[9px] font-black text-white bg-zinc-900 px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 hover:bg-zinc-800 transition-all border-2 border-zinc-900 shadow-sm active:scale-95"
+                          >
+                            <Plus className="h-3.5 w-3.5" /> Adicionar Pauta
+                          </button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-4">
+                          {(form.pautas || []).length === 0 ? (
+                            <div className="py-8 px-4 border-2 border-dashed border-zinc-100 rounded-2xl flex flex-col items-center justify-center gap-2">
+                              <ListChecks className="h-8 w-8 text-zinc-200" />
+                              <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">Nenhuma pauta adicionada</p>
+                            </div>
+                          ) : (
+                            (form.pautas || []).map((p, idx) => (
+                              <div key={p.id} className="relative group animate-in slide-in-from-right-4 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
+                                <div className="absolute -left-1 top-0 bottom-0 w-1 bg-zinc-900 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                                <div className="bg-white rounded-[1.5rem] p-4 sm:p-5 border-2 border-zinc-900 shadow-sm group-hover:shadow-md transition-all space-y-3.5">
+                                  <div className="flex items-start gap-3">
+                                    <div className="w-6 h-6 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm">
+                                      {idx + 1}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <input 
+                                        placeholder="Título da pauta..." 
+                                        value={p.titulo} 
+                                        onChange={(e) => {
+                                          const next = [...(form.pautas || [])];
+                                          next[idx] = { ...p, titulo: e.target.value };
+                                          updateField("pautas", next);
+                                        }}
+                                        className="w-full bg-transparent border-none focus:ring-0 text-base font-black p-0 text-zinc-900 placeholder:text-zinc-200"
+                                      />
+                                    </div>
+                                    <button 
+                                      type="button"
+                                      onClick={() => {
+                                        const next = (form.pautas || []).filter(x => x.id !== p.id);
                                         updateField("pautas", next);
                                       }}
-                                      className="w-full bg-transparent border-none focus:ring-0 text-base font-black p-0 text-zinc-900 placeholder:text-zinc-200"
-                                    />
+                                      className="p-1.5 rounded-lg text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </button>
                                   </div>
-                                  <button 
-                                    type="button"
-                                    onClick={() => {
-                                      const next = (form.pautas || []).filter(x => x.id !== p.id);
+
+                                  <textarea 
+                                    placeholder="O que será discutido neste tópico?" 
+                                    value={p.descricao}
+                                    onChange={(e) => {
+                                      const next = [...(form.pautas || [])];
+                                      next[idx] = { ...p, descricao: e.target.value };
                                       updateField("pautas", next);
                                     }}
-                                    className="p-1.5 rounded-lg text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
-                                </div>
+                                    className="w-full bg-zinc-50 border-none focus:ring-2 focus:ring-zinc-900 rounded-xl text-sm font-medium text-zinc-700 p-3 min-h-[80px] resize-none placeholder:text-zinc-300 leading-relaxed transition-all shadow-inner"
+                                  />
 
-                                <textarea 
-                                  placeholder="O que será discutido neste tópico?" 
-                                  value={p.descricao}
-                                  onChange={(e) => {
-                                    const next = [...(form.pautas || [])];
-                                    next[idx] = { ...p, descricao: e.target.value };
-                                    updateField("pautas", next);
-                                  }}
-                                  className="w-full bg-zinc-50 border-none focus:ring-2 focus:ring-zinc-900 rounded-xl text-sm font-medium text-zinc-700 p-3 min-h-[80px] resize-none placeholder:text-zinc-300 leading-relaxed transition-all shadow-inner"
-                                />
-
-                                <div className="flex items-center gap-2 pt-1">
-                                  <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 rounded-lg border border-zinc-200">
-                                    <Clock className="h-3 w-3 text-zinc-900" />
-                                    <span className="text-[10px] font-black text-zinc-900 uppercase">Tempo:</span>
-                                    <input 
-                                      type="number"
-                                      value={p.tempo || 0}
-                                      onChange={(e) => {
-                                        const next = [...(form.pautas || [])];
-                                        next[idx] = { ...p, tempo: parseInt(e.target.value) || 0 };
-                                        updateField("pautas", next);
-                                      }}
-                                      className="w-12 bg-transparent border-none focus:ring-0 text-xs font-black p-0 text-zinc-900"
-                                      min="0"
-                                    />
-                                    <span className="text-[9px] font-bold text-zinc-500">min</span>
+                                  <div className="flex items-center gap-2 pt-1">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 rounded-lg border border-zinc-200">
+                                      <Clock className="h-3 w-3 text-zinc-900" />
+                                      <span className="text-[10px] font-black text-zinc-900 uppercase">Tempo:</span>
+                                      <input 
+                                        type="number"
+                                        value={p.tempo || 0}
+                                        onChange={(e) => {
+                                          const next = [...(form.pautas || [])];
+                                          next[idx] = { ...p, tempo: parseInt(e.target.value) || 0 };
+                                          updateField("pautas", next);
+                                        }}
+                                        className="w-12 bg-transparent border-none focus:ring-0 text-xs font-black p-0 text-zinc-900"
+                                        min="0"
+                                      />
+                                      <span className="text-[9px] font-bold text-zinc-500">min</span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          ))
-                        )}
+                            ))
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
@@ -1015,56 +995,82 @@ export default function ReunioesList() {
                   </div>
                 </div>
 
-                {/* Card: Roteiro de Pautas e Decisões */}
+                {/* Card: Roteiro de Pautas e Decisões / Encontros Preparados */}
                 <div className="border border-black rounded-2xl p-4 bg-white/60 shadow-sm">
                   <h4 className="text-xs font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <ListChecks className="h-4 w-4 text-primary" /> Roteiro de Pautas e Decisões
+                    <ListChecks className="h-4 w-4 text-primary" /> {viewItem.tipo === 'Reunião de preparação de encontro' ? 'Encontros a Preparar' : 'Roteiro de Pautas e Decisões'}
                   </h4>
                   <div className="space-y-3">
-                    {(viewItem.pautas && viewItem.pautas.length > 0) ? (
-                      viewItem.pautas.map((p, i) => (
-                        <div key={p.id} className="flex flex-col gap-3 group/pauta border border-black rounded-2xl p-4 hover:border-primary/40 transition-all cursor-pointer bg-white" onClick={() => setActivePautaId(activePautaId === p.id ? null : p.id)}>
-                          <div className="flex gap-3">
-                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0 transition-colors shadow-sm ${activePautaId === p.id || p.decisao ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover/pauta:bg-primary/20'}`}>
-                              {i + 1}
-                            </div>
-                            <div className="flex-1 pb-1">
-                              <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1 flex items-center justify-between">
-                                {p.titulo}
-                                <div className="flex items-center gap-2">
-                                  {p.decisao && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
-                                  {activePautaId === p.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                    {viewItem.tipo === 'Reunião de preparação de encontro' ? (
+                      (viewItem.encontrosPreparados && viewItem.encontrosPreparados.length > 0) ? (
+                        viewItem.encontrosPreparados.map((eid, i) => {
+                          const enc = encontros.find(e => e.id === eid);
+                          if (!enc) return null;
+                          return (
+                            <div key={eid} className="flex flex-col gap-3 border border-black rounded-2xl p-4 bg-white">
+                              <div className="flex gap-3">
+                                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0 bg-primary/10 text-primary shadow-sm">
+                                  {i + 1}
                                 </div>
-                              </h5>
-                              <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
-                              {p.decisao && activePautaId !== p.id && (
-                                <div className="mt-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 text-sm font-medium leading-relaxed">
-                                  <span className="font-bold text-emerald-700 uppercase tracking-wider text-[10px] block mb-1">Decisão:</span>
-                                  {p.decisao}
+                                <div className="flex-1 pb-1">
+                                  <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1">{enc.tema}</h5>
+                                  <p className="text-sm text-muted-foreground leading-relaxed">{'Preparação para este encontro.'}</p>
                                 </div>
-                              )}
-                            </div>
-                          </div>
-                          {activePautaId === p.id && (
-                            <div className="w-full" onClick={e => e.stopPropagation()}>
-                              <textarea
-                                defaultValue={p.decisao || ""}
-                                placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
-                                className="w-full min-h-[200px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-y bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all leading-relaxed block"
-                                onBlur={(e) => handleSavePautaDecisao(p.id, e.target.value)}
-                              />
-                              <div className="flex items-center justify-between mt-2">
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Salva ao sair do campo</p>
-                                <button onClick={() => setActivePautaId(null)} className="px-4 py-1.5 rounded-lg bg-sky-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-sky-700 active:scale-95 transition-all">Fechar</button>
                               </div>
                             </div>
-                          )}
+                          );
+                        })
+                      ) : (
+                        <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/20">
+                          <p className="text-sm font-medium text-muted-foreground italic">Nenhum encontro selecionado para preparação.</p>
                         </div>
-                      ))
+                      )
                     ) : (
-                      <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/20">
-                        <p className="text-sm font-medium text-muted-foreground italic">Nenhuma pauta detalhada para este encontro.</p>
-                      </div>
+                      (viewItem.pautas && viewItem.pautas.length > 0) ? (
+                        viewItem.pautas.map((p, i) => (
+                          <div key={p.id} className="flex flex-col gap-3 group/pauta border border-black rounded-2xl p-4 hover:border-primary/40 transition-all cursor-pointer bg-white" onClick={() => setActivePautaId(activePautaId === p.id ? null : p.id)}>
+                            <div className="flex gap-3">
+                              <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[12px] font-black shrink-0 transition-colors shadow-sm ${activePautaId === p.id || p.decisao ? 'bg-primary text-white' : 'bg-primary/10 text-primary group-hover/pauta:bg-primary/20'}`}>
+                                {i + 1}
+                              </div>
+                              <div className="flex-1 pb-1">
+                                <h5 className="text-sm font-bold text-foreground uppercase tracking-tight mb-1 flex items-center justify-between">
+                                  {p.titulo}
+                                  <div className="flex items-center gap-2">
+                                    {p.decisao && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                                    {activePautaId === p.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                                  </div>
+                                </h5>
+                                <p className="text-sm text-muted-foreground leading-relaxed">{p.descricao}</p>
+                                {p.decisao && activePautaId !== p.id && (
+                                  <div className="mt-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 text-sm font-medium leading-relaxed">
+                                    <span className="font-bold text-emerald-700 uppercase tracking-wider text-[10px] block mb-1">Decisão:</span>
+                                    {p.decisao}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {activePautaId === p.id && (
+                              <div className="w-full" onClick={e => e.stopPropagation()}>
+                                <textarea
+                                  defaultValue={p.decisao || ""}
+                                  placeholder="Registre a decisão ou encaminhamento sobre esta pauta..."
+                                  className="w-full min-h-[200px] p-4 text-sm font-medium text-slate-700 focus:outline-none resize-y bg-white rounded-xl border border-black focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all leading-relaxed block"
+                                  onBlur={(e) => handleSavePautaDecisao(p.id, e.target.value)}
+                                />
+                                <div className="flex items-center justify-between mt-2">
+                                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Salva ao sair do campo</p>
+                                  <button onClick={() => setActivePautaId(null)} className="px-4 py-1.5 rounded-lg bg-sky-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-sky-700 active:scale-95 transition-all">Fechar</button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-black/20">
+                          <p className="text-sm font-medium text-muted-foreground italic">Nenhuma pauta detalhada para esta reunião.</p>
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
