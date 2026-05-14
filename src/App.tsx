@@ -51,6 +51,7 @@ import ComunicacaoBuilder from "@/pages/ComunicacaoBuilder";
 import ComunicacaoDetail from "@/pages/ComunicacaoDetail";
 import PublicFormResponder from "@/pages/PublicFormResponder";
 import PublicInscricao from "@/pages/PublicInscricao";
+import MapaPanoramico from "@/pages/MapaPanoramico";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import LandingPage from "@/pages/LandingPage";
@@ -171,6 +172,7 @@ const AppRoutes = () => (
       <Route path="/comunicacao/novo" element={<ComunicacaoBuilder />} />
       <Route path="/comunicacao/:id/editar" element={<ComunicacaoBuilder />} />
       <Route path="/comunicacao/:id" element={<ComunicacaoDetail />} />
+      <Route path="/mapa-panoramico" element={<MapaPanoramico />} />
     </Route>
     <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
     <Route path="*" element={<NotFound />} />
