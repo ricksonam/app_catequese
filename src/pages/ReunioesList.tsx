@@ -836,55 +836,52 @@ export default function ReunioesList() {
                         style={{ animationDelay: `${i * 75}ms` }}
                       >
                         {/* Hover glow effect behind the card */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 rounded-[2rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 rounded-3xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500" />
                         
-                        <div className="relative bg-white dark:bg-zinc-900 rounded-[2rem] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 border border-zinc-200/80 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30 transition-all duration-300 active:scale-[0.99]">
+                        <div className="relative bg-white dark:bg-zinc-900 rounded-3xl p-3 sm:p-4 flex flex-row items-center gap-3 sm:gap-4 border border-zinc-200/80 dark:border-zinc-800 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 active:scale-[0.99]">
                           
-                          {/* Side indicator strip */}
-                          <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-12 rounded-r-full ${cor.split(' ')[0]} opacity-80 group-hover:h-24 transition-all duration-300`} />
-
-                          {/* Date Display */}
-                          <div className="flex flex-col items-center justify-center w-16 h-16 sm:w-[84px] sm:h-[84px] rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 shrink-0 relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
-                            <div className={`absolute top-0 w-full h-1.5 ${cor.split(' ')[0]} opacity-80`} />
-                            <span className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">{DIAS[d.getDay()]}</span>
-                            <span className="text-2xl sm:text-3xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
-                            <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest mt-1">{MESES[d.getMonth()].substring(0,3)}</span>
+                          {/* Compact Date Display */}
+                          <div className="flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 shrink-0 relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                            <div className={`absolute top-0 w-full h-1 ${cor.split(' ')[0]} opacity-80`} />
+                            <span className="text-[8px] sm:text-[9px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-0.5 mt-1">{DIAS[d.getDay()].substring(0,3)}</span>
+                            <span className="text-xl sm:text-2xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
+                            <span className="text-[8px] sm:text-[9px] font-bold text-muted-foreground/70 uppercase tracking-widest mt-0.5 hidden sm:block">{MESES[d.getMonth()].substring(0,3)}</span>
                           </div>
 
                           {/* Content */}
-                          <div className="flex-1 min-w-0 flex flex-col justify-center w-full">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className={`inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl border border-current/10 ${cor}`}>
-                                <span className="text-xs">{icone}</span> {item.tipo}
+                          <div className="flex-1 min-w-0 flex flex-col justify-center">
+                            <div className="flex items-center gap-1.5 mb-1 sm:mb-1.5">
+                              <span className={`inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border border-current/10 ${cor}`}>
+                                <span className="text-[10px]">{icone}</span> {item.tipo}
                               </span>
                             </div>
-                            <h3 className="text-lg sm:text-xl font-black text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
+                            <h3 className="text-base sm:text-lg font-black text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
                             
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                            <div className="flex items-center gap-x-3 mt-1 sm:mt-1.5 overflow-hidden whitespace-nowrap text-ellipsis">
                               {item.horario && (
-                                <p className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
-                                  <Clock className="h-3.5 w-3.5 text-primary/60" /> {item.horario}
+                                <p className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold text-muted-foreground shrink-0">
+                                  <Clock className="h-3 w-3 text-primary/60" /> {item.horario}
                                 </p>
                               )}
                               {item.local && (
-                                <p className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground max-w-[200px] sm:max-w-[300px]">
-                                  <MapPin className="h-3.5 w-3.5 text-primary/60 shrink-0" /> <span className="truncate">{item.local}</span>
+                                <p className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold text-muted-foreground truncate">
+                                  <MapPin className="h-3 w-3 text-primary/60 shrink-0" /> <span className="truncate">{item.local}</span>
                                 </p>
                               )}
                             </div>
                           </div>
 
                           {/* Actions */}
-                          <div className="flex items-center justify-end gap-3 w-full sm:w-auto mt-3 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800">
+                          <div className="flex items-center gap-1.5 sm:gap-2 pl-2 sm:pl-3 border-l border-zinc-100 dark:border-zinc-800 shrink-0">
                             <button 
                               onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/reunioes/${item.id}/apresentacao`); }}
-                              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 sm:py-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm hover:shadow-indigo-600/20 active:scale-95 group/btn"
+                              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all shadow-sm hover:shadow-indigo-600/20 active:scale-95 group/btn"
+                              title="Apresentar"
                             >
                               <Play className="h-4 w-4 fill-current group-hover/btn:scale-110 transition-transform" />
-                              <span>Apresentar</span>
                             </button>
-                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-primary/30 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
-                              <ChevronRight className="h-5 w-5 group-hover:translate-x-0.5 transition-transform" />
+                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-primary/30 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
+                              <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                             </div>
                           </div>
                         </div>
