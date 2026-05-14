@@ -1,7 +1,7 @@
-import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, Church, Maximize2, Minimize2, Cake, StickyNote, Plus, Trash2, Save, X, BookOpen, Lightbulb, Users, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
-import { useCatequizandos, useCatequistas, useCalendarioNotas, useCalendarioNotaMutation, useDeleteCalendarioNota, useEncontros, useAtividades, useTurmas } from "@/hooks/useSupabaseData";
+import { useCatequizandos, useCatequistas, useCalendarioNotas, useCalendarioNotaMutation, useDeleteCalendarioNota, useEncontros, useAtividades, useTurmas, useReunioes } from "@/hooks/useSupabaseData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { formatarDataVigente } from "@/lib/utils";
@@ -82,6 +82,7 @@ export default function CalendarioLiturgico() {
   const { data: notas = [] } = useCalendarioNotas();
   const { data: encontros = [] } = useEncontros();
   const { data: atividades = [] } = useAtividades();
+  const { data: reunioes = [] } = useReunioes();
   const { data: turmas = [] } = useTurmas();
   
   const notaMutation = useCalendarioNotaMutation();
@@ -113,14 +114,15 @@ export default function CalendarioLiturgico() {
     return notas.filter(n => n.data.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`));
   }, [notas, currentMonth, currentYear]);
 
-  // Map Encontros and Atividades to the current month days
+  // Map Encontros, Atividades and Reunioes to the current month days
   const currentMonthEvents = useMemo(() => {
     const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
     return {
-      encontros: encontros.filter(e => e.data.startsWith(prefix)),
-      atividades: atividades.filter(a => a.data.startsWith(prefix))
+      encontros: encontros.filter(e => e.data && e.data.startsWith(prefix)),
+      atividades: atividades.filter(a => a.data && a.data.startsWith(prefix)),
+      reunioes: reunioes.filter(r => r.data && r.data.startsWith(prefix))
     };
-  }, [encontros, atividades, currentMonth, currentYear]);
+  }, [encontros, atividades, reunioes, currentMonth, currentYear]);
 
   const getDayColor = (day: number) => {
     const evt = EVENTS.find(e => e.month === currentMonth + 1 && e.day === day);
@@ -267,6 +269,7 @@ export default function CalendarioLiturgico() {
                       {dayBirthdays.length > 0 && <Cake className="h-3 w-3 text-pink-500 animate-bounce" />}
                       {currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <BookOpen className="h-3 w-3 text-blue-500" />}
                       {currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Lightbulb className="h-3 w-3 text-emerald-500" />}
+                      {currentMonthEvents.reunioes.some(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Users className="h-3 w-3 text-violet-500" />}
                       {dayNote && <StickyNote className="h-3 w-3 text-amber-500" />}
                     </div>
                   )}
@@ -302,6 +305,12 @@ export default function CalendarioLiturgico() {
                         <div key={idx} className="flex items-center gap-1.5 bg-success/10 rounded-lg px-2 py-1 border border-success/20 text-success">
                           <Lightbulb className="h-2.5 w-2.5 shrink-0" />
                           <span className="text-[9px] font-bold truncate leading-none">{a.nome}</span>
+                        </div>
+                      ))}
+                      {currentMonthEvents.reunioes.filter(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)).map((r, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5 bg-violet-500/10 rounded-lg px-2 py-1 border border-violet-200/20 text-violet-700 dark:text-violet-400">
+                          <Users className="h-2.5 w-2.5 shrink-0" />
+                          <span className="text-[9px] font-bold truncate leading-none">{r.nome}</span>
                         </div>
                       ))}
                       {dayNote && (
@@ -368,34 +377,80 @@ export default function CalendarioLiturgico() {
               </div>
             ))}
             
-            {/* Catechism Encounters inside Modal */}
+            {/* Catechism Encounters inside Modal - CLICKABLE */}
             {selectedDay !== null && currentMonthEvents.encontros.filter(e => e.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((e, idx) => {
               const turma = turmas.find(t => t.id === e.turmaId);
               return (
-                <div key={idx} className="p-3 rounded-2xl bg-blue-500/10 border border-blue-200/30 text-blue-700 dark:text-blue-400 flex items-center gap-3">
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (turma?.id && e.turmaId) {
+                      navigate(`/turmas/${e.turmaId}/encontros/${e.id}`);
+                    }
+                  }}
+                  className="w-full p-3 rounded-2xl bg-blue-500/10 border border-blue-200/30 text-blue-700 dark:text-blue-400 flex items-center gap-3 hover:bg-blue-500/20 transition-all active:scale-[0.98] group text-left"
+                >
                   <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
                     <BookOpen className="h-4 w-4" />
                   </div>
-                  <div>
-                    <p className="text-sm font-bold">{e.tema}</p>
-                    <p className="text-[10px] uppercase font-bold opacity-70">Encontro: {turma?.nome || 'Turma'}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{e.tema}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70">Encontro · {turma?.nome || 'Turma'}</p>
                   </div>
-                </div>
+                  <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
+                </button>
               );
             })}
 
-            {/* Activities/Events inside Modal */}
-            {selectedDay !== null && currentMonthEvents.atividades.filter(a => a.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((a, idx) => (
-              <div key={idx} className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-200/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
-                  <Lightbulb className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold">{a.nome}</p>
-                  <p className="text-[10px] uppercase font-bold opacity-70">Atividade: {a.tipo}</p>
-                </div>
-              </div>
-            ))}
+            {/* Activities/Events inside Modal - CLICKABLE */}
+            {selectedDay !== null && currentMonthEvents.atividades.filter(a => a.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((a, idx) => {
+              const turma = turmas.find(t => t.id === a.turmaId);
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (a.turmaId) {
+                      navigate(`/turmas/${a.turmaId}/eventos?view=${a.id}`);
+                    }
+                  }}
+                  className="w-full p-3 rounded-2xl bg-emerald-500/10 border border-emerald-200/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3 hover:bg-emerald-500/20 transition-all active:scale-[0.98] group text-left"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
+                    <Lightbulb className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{a.nome}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70">Evento · {a.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
+                  </div>
+                  <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
+                </button>
+              );
+            })}
+
+            {/* Reunioes inside Modal - CLICKABLE */}
+            {selectedDay !== null && currentMonthEvents.reunioes.filter(r => r.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((r, idx) => {
+              const turma = turmas.find(t => t.id === r.turmaId);
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    if (r.turmaId) {
+                      navigate(`/turmas/${r.turmaId}/reunioes?view=${r.id}`);
+                    }
+                  }}
+                  className="w-full p-3 rounded-2xl bg-violet-500/10 border border-violet-200/30 text-violet-700 dark:text-violet-400 flex items-center gap-3 hover:bg-violet-500/20 transition-all active:scale-[0.98] group text-left"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{r.nome}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70">Reunião · {r.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
+                  </div>
+                  <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
+                </button>
+              );
+            })}
 
             {/* Note Area */}
             {isEditingNote ? (
