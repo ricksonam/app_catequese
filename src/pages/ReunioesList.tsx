@@ -832,58 +832,59 @@ export default function ReunioesList() {
                       <button
                         key={item.id}
                         onClick={() => setViewItem(item)}
-                        className="w-full text-left group animate-float-up"
-                        style={{ animationDelay: `${i * 55}ms` }}
+                        className="w-full text-left group relative animate-in fade-in slide-in-from-bottom-4 duration-500"
+                        style={{ animationDelay: `${i * 75}ms` }}
                       >
-                        <div className="flex flex-col bg-card rounded-2xl border border-black shadow-sm group-hover:shadow-md group-hover:border-primary/20 transition-all active:scale-[0.98] overflow-hidden relative">
-                          <div className={`absolute top-0 bottom-0 left-0 w-1 ${cor.split(' ')[0].replace('bg-','bg-')}`} />
+                        {/* Hover glow effect behind the card */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 rounded-[2rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                        
+                        <div className="relative bg-white dark:bg-zinc-900 rounded-[2rem] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5 border border-zinc-200/80 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:border-primary/30 transition-all duration-300 active:scale-[0.99]">
                           
-                          <div className="flex items-stretch flex-1">
-                            {/* Coluna da data */}
-                            <div className="flex flex-col items-center justify-center px-4 py-4 border-r border-black/5 shrink-0 min-w-[75px] bg-muted/30 group-hover:bg-primary/5 transition-colors pl-5">
-                              <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none mb-1">{DIAS[d.getDay()]}</span>
-                              <span className="text-3xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
-                              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">{MESES[d.getMonth()].substring(0,3)}</span>
-                            </div>
+                          {/* Side indicator strip */}
+                          <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-12 rounded-r-full ${cor.split(' ')[0]} opacity-80 group-hover:h-24 transition-all duration-300`} />
 
-                            {/* Conteúdo */}
-                            <div className="flex-1 px-4 sm:px-5 py-3 sm:py-4 min-w-0 flex flex-col justify-center">
-                              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                                <span className="text-base leading-none bg-muted/50 p-1 rounded-md">{icone}</span>
-                                <span className={`inline-block text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border border-current/10 ${cor}`}>
-                                  {item.tipo}
-                                </span>
-                              </div>
-                              <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
-                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-2">
-                                {item.horario && (
-                                  <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground">
-                                    <Clock className="h-3.5 w-3.5 text-primary/70" /> {item.horario}
-                                  </p>
-                                )}
-                                {item.local && (
-                                  <p className="flex items-center gap-1 text-[10px] sm:text-xs font-semibold text-muted-foreground max-w-full">
-                                    <MapPin className="h-3.5 w-3.5 text-primary/70 shrink-0" /> <span className="truncate">{item.local}</span>
-                                  </p>
-                                )}
-                              </div>
+                          {/* Date Display */}
+                          <div className="flex flex-col items-center justify-center w-16 h-16 sm:w-[84px] sm:h-[84px] rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 shrink-0 relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                            <div className={`absolute top-0 w-full h-1.5 ${cor.split(' ')[0]} opacity-80`} />
+                            <span className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mb-1">{DIAS[d.getDay()]}</span>
+                            <span className="text-2xl sm:text-3xl font-black text-foreground leading-none">{String(d.getDate()).padStart(2,'0')}</span>
+                            <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest mt-1">{MESES[d.getMonth()].substring(0,3)}</span>
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-center w-full">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className={`inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-xl border border-current/10 ${cor}`}>
+                                <span className="text-xs">{icone}</span> {item.tipo}
+                              </span>
+                            </div>
+                            <h3 className="text-lg sm:text-xl font-black text-foreground leading-tight truncate group-hover:text-primary transition-colors">{item.nome}</h3>
+                            
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                              {item.horario && (
+                                <p className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+                                  <Clock className="h-3.5 w-3.5 text-primary/60" /> {item.horario}
+                                </p>
+                              )}
+                              {item.local && (
+                                <p className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground max-w-[200px] sm:max-w-[300px]">
+                                  <MapPin className="h-3.5 w-3.5 text-primary/60 shrink-0" /> <span className="truncate">{item.local}</span>
+                                </p>
+                              )}
                             </div>
                           </div>
 
-                          {/* Chips na parte de baixo */}
-                          <div className="flex items-center gap-2 px-4 pb-3 sm:px-5 sm:pb-4 ml-[75px]">
+                          {/* Actions */}
+                          <div className="flex items-center justify-end gap-3 w-full sm:w-auto mt-3 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800">
                             <button 
                               onClick={(e) => { e.stopPropagation(); navigate(`/turmas/${id}/reunioes/${item.id}/apresentacao`); }}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-100 text-violet-700 hover:bg-violet-200 transition-all shadow-sm active:scale-95 group/btn"
+                              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 sm:py-3 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm hover:shadow-indigo-600/20 active:scale-95 group/btn"
                             >
-                              <Play className="h-3 w-3 fill-current" />
-                              <span className="text-[10px] font-black uppercase tracking-widest">Apresentar</span>
+                              <Play className="h-4 w-4 fill-current group-hover/btn:scale-110 transition-transform" />
+                              <span>Apresentar</span>
                             </button>
-                            <div 
-                              className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 text-zinc-600 group-hover:bg-primary/10 group-hover:text-primary transition-all shadow-sm"
-                            >
-                              <span className="text-[10px] font-black uppercase tracking-widest">Abrir</span>
-                              <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-primary/30 group-hover:bg-primary/5 group-hover:text-primary transition-all shrink-0">
+                              <ChevronRight className="h-5 w-5 group-hover:translate-x-0.5 transition-transform" />
                             </div>
                           </div>
                         </div>
