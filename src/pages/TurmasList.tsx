@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 
 // Palette: more vibrant gradients for each turma
 const CARD_PALETTES = [
-  { bg: "from-emerald-100 to-emerald-200", accent: "bg-emerald-300", text: "text-emerald-950", sub: "text-emerald-800/80", border: "border-emerald-300", borderMain: "border-emerald-400", badge: "bg-emerald-300 text-emerald-950", icon: "text-emerald-700" },
-  { bg: "from-blue-100 to-blue-200", accent: "bg-blue-300", text: "text-blue-950", sub: "text-blue-800/80", border: "border-blue-300", borderMain: "border-blue-400", badge: "bg-blue-300 text-blue-950", icon: "text-blue-700" },
-  { bg: "from-purple-100 to-purple-200", accent: "bg-purple-300", text: "text-purple-950", sub: "text-purple-800/80", border: "border-purple-300", borderMain: "border-purple-400", badge: "bg-purple-300 text-purple-950", icon: "text-purple-700" },
-  { bg: "from-rose-100 to-rose-200", accent: "bg-rose-300", text: "text-rose-950", sub: "text-rose-800/80", border: "border-rose-300", borderMain: "border-rose-400", badge: "bg-rose-300 text-rose-950", icon: "text-rose-700" },
-  { bg: "from-sky-100 to-sky-200", accent: "bg-sky-300", text: "text-sky-950", sub: "text-sky-800/80", border: "border-sky-300", borderMain: "border-sky-400", badge: "bg-sky-300 text-sky-950", icon: "text-sky-700" },
-  { bg: "from-amber-100 to-amber-200", accent: "bg-amber-300", text: "text-amber-950", sub: "text-amber-800/80", border: "border-amber-300", borderMain: "border-amber-400", badge: "bg-amber-300 text-amber-950", icon: "text-amber-700" },
+  { bg: "from-emerald-100 to-emerald-200", accent: "bg-emerald-300", text: "text-black", sub: "text-black/70", border: "border-emerald-300", borderMain: "border-emerald-400", badge: "bg-emerald-300 text-black", icon: "text-emerald-700" },
+  { bg: "from-blue-100 to-blue-200", accent: "bg-blue-300", text: "text-black", sub: "text-black/70", border: "border-blue-300", borderMain: "border-blue-400", badge: "bg-blue-300 text-black", icon: "text-blue-700" },
+  { bg: "from-purple-100 to-purple-200", accent: "bg-purple-300", text: "text-black", sub: "text-black/70", border: "border-purple-300", borderMain: "border-purple-400", badge: "bg-purple-300 text-black", icon: "text-purple-700" },
+  { bg: "from-rose-100 to-rose-200", accent: "bg-rose-300", text: "text-black", sub: "text-black/70", border: "border-rose-300", borderMain: "border-rose-400", badge: "bg-rose-300 text-black", icon: "text-rose-700" },
+  { bg: "from-sky-100 to-sky-200", accent: "bg-sky-300", text: "text-black", sub: "text-black/70", border: "border-sky-300", borderMain: "border-sky-400", badge: "bg-sky-300 text-black", icon: "text-sky-700" },
+  { bg: "from-amber-100 to-amber-200", accent: "bg-amber-300", text: "text-black", sub: "text-black/70", border: "border-amber-300", borderMain: "border-amber-400", badge: "bg-amber-300 text-black", icon: "text-amber-700" },
 ];
 
 // ... (skipping formatDate)
@@ -73,31 +73,31 @@ export default function TurmasList() {
         {/* Join with Code Card — Premium & Compact */}
         <div
           onClick={() => setJoinModalOpen(true)}
-          className="flex-1 group relative overflow-hidden flex items-center gap-3 p-3.5 rounded-[1.5rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 animate-fade-in animate-card-float border-2 border-yellow-400/40 bg-gradient-to-br from-zinc-700 to-zinc-800"
+          className="flex-1 group relative overflow-hidden flex items-center gap-2 p-2.5 rounded-[1.2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-lg hover:shadow-xl hover:-translate-y-1 animate-fade-in animate-card-float border border-yellow-400/40 bg-gradient-to-br from-zinc-700 to-zinc-800"
           style={{ animationDelay: "0ms" }}
         >
           {/* Glow blobs */}
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-yellow-400/20 blur-3xl pointer-events-none group-hover:bg-yellow-400/30 transition-colors duration-700 -mr-10 -mt-10" />
-          <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-yellow-400/20 blur-3xl pointer-events-none group-hover:bg-yellow-400/30 transition-colors duration-700 -mr-10 -mt-10" />
+          <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
 
           {/* Animated icon */}
-          <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 border border-white/30 flex items-center justify-center text-slate-900 shadow-lg shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-            <Link2 className="h-5 w-5 animate-pulse" />
+          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-600 border border-white/30 flex items-center justify-center text-slate-900 shadow-md shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
+            <Link2 className="h-4 w-4 animate-pulse" />
           </div>
 
           <div className="relative z-10 flex-1 flex flex-col items-start justify-center">
             <p 
-              className="text-sm sm:text-base font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-yellow-400 transition-colors"
+              className="text-xs sm:text-sm font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-yellow-400 transition-colors"
             >
-              Entrar em uma Turma
+              Entrar na Turma
             </p>
-            <p className="text-[8px] font-bold text-zinc-200 uppercase tracking-[0.1em] mt-0.5 drop-shadow-sm">
+            <p className="text-[7px] font-bold text-zinc-200 uppercase tracking-[0.1em] mt-0.5 drop-shadow-sm">
               Com código
             </p>
           </div>
           
           {/* More visible arrow */}
-          <div className="hidden sm:flex w-7 h-7 rounded-full bg-white/10 items-center justify-center border border-white/20 group-hover:bg-yellow-400 group-hover:border-yellow-400 group-hover:text-slate-900 transition-all duration-300 shadow-inner">
+          <div className="hidden sm:flex w-6 h-6 rounded-full bg-white/10 items-center justify-center border border-white/20 group-hover:bg-yellow-400 group-hover:border-yellow-400 group-hover:text-slate-900 transition-all duration-300 shadow-inner shrink-0">
             <ArrowRight className="h-3 w-3 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
           </div>
         </div>
@@ -105,22 +105,22 @@ export default function TurmasList() {
         {/* Nova Turma Button */}
         <button
           onClick={() => navigate("/turmas/nova")}
-          className="group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-5 py-3 rounded-[1.5rem] text-white shadow-2xl active:scale-95 transition-all duration-500 font-bold text-[11px] uppercase tracking-[0.15em] border-2 border-blue-400/40 shrink-0"
+          className="group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-3 py-2 rounded-[1.2rem] text-white shadow-lg active:scale-95 transition-all duration-500 font-bold text-[9px] uppercase tracking-[0.15em] border border-blue-400/40 shrink-0"
           style={{ background: "linear-gradient(135deg, #3B82F6, #1D4ED8, #1E3A8A)" }}
         >
           {/* Animated Glow Blobs */}
-          <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-blue-300/20 blur-2xl pointer-events-none group-hover:bg-blue-300/40 transition-colors duration-700 -mr-4 -mt-4" />
-          <div className="absolute bottom-0 left-0 w-12 h-12 rounded-full bg-indigo-500/20 blur-xl pointer-events-none group-hover:bg-indigo-500/40 transition-colors duration-700 -ml-4 -mb-4" />
+          <div className="absolute top-0 right-0 w-12 h-12 rounded-full bg-blue-300/20 blur-2xl pointer-events-none group-hover:bg-blue-300/40 transition-colors duration-700 -mr-2 -mt-2" />
+          <div className="absolute bottom-0 left-0 w-10 h-10 rounded-full bg-indigo-500/20 blur-xl pointer-events-none group-hover:bg-indigo-500/40 transition-colors duration-700 -ml-2 -mb-2" />
           
           {/* Glass reflection */}
           <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-30 pointer-events-none group-hover:opacity-50 transition-opacity" />
 
           {/* Icon Container with animation */}
-          <div className="relative z-10 w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-12 group-hover:bg-white/20 transition-all duration-500">
-            <Plus className="h-7 w-7 text-white animate-pulse drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+          <div className="relative z-10 w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-12 group-hover:bg-white/20 transition-all duration-500">
+            <Plus className="h-5 w-5 text-white animate-pulse drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
           </div>
           
-          <span className="relative z-10 whitespace-nowrap mt-2 drop-shadow-md group-hover:text-blue-100 transition-colors">
+          <span className="relative z-10 whitespace-nowrap mt-1.5 drop-shadow-md group-hover:text-blue-100 transition-colors">
             Nova Turma
           </span>
 

@@ -197,7 +197,7 @@ export default function CalendarioLiturgico() {
               if (isFullscreen) setIsFullscreen(false);
               else navigate(-1);
             }}
-            className="back-btn"
+            className="back-btn bg-white dark:bg-zinc-800"
           >
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
@@ -344,7 +344,7 @@ export default function CalendarioLiturgico() {
 
       {/* Note Editor Modal */}
       <Dialog open={!!selectedDay} onOpenChange={(o) => !o && setSelectedDay(null)}>
-        <DialogContent className="max-w-md w-[calc(100vw-2rem)] mx-auto rounded-3xl p-5 border-border/30 overflow-hidden max-h-[85vh] overflow-y-auto">
+        <DialogContent className="!w-[90vw] !max-w-md mx-auto rounded-3xl p-5 border-border/30 overflow-hidden max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">

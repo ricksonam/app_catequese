@@ -869,6 +869,23 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
+
+          {/* Mapa Panorâmico */}
+          <div className="w-full relative z-10 px-2 mt-2">
+            <button
+              onClick={() => navigate("/modulos/mapa-panoramico")}
+              className="w-full relative overflow-hidden rounded-[20px] bg-gradient-to-r from-amber-500 to-orange-500 shadow-md border border-white/20 flex items-center p-3.5 hover:scale-[1.02] active:scale-[0.98] transition-all group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 shadow-sm border border-white/30">
+                <Compass className="h-5 w-5 text-white animate-pulse" />
+              </div>
+              <div className="flex-1 text-left px-3">
+                <h3 className="text-white font-black text-sm tracking-tight font-liturgical leading-tight">Mapa Panorâmico</h3>
+                <p className="text-white/90 text-[9px] font-bold uppercase tracking-wider mt-0.5">Itinerário IVC</p>
+              </div>
+              <ChevronRight className="h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
+            </button>
+          </div>
         </div>
       )}
 
