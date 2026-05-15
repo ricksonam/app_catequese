@@ -192,11 +192,15 @@ export default function CalendarioLiturgico() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">
-          {!isFullscreen && (
-            <button onClick={() => navigate(-1)} className="back-btn">
-              <ArrowLeft className="h-5 w-5 text-foreground" />
-            </button>
-          )}
+          <button
+            onClick={() => {
+              if (isFullscreen) setIsFullscreen(false);
+              else navigate(-1);
+            }}
+            className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95"
+          >
+            <X className="h-5 w-5 text-foreground" />
+          </button>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
               <Church className="h-5 w-5 text-primary" />
@@ -207,7 +211,10 @@ export default function CalendarioLiturgico() {
             </div>
           </div>
         </div>
-        <button onClick={toggleFullscreen} className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95">
+        <button
+          onClick={toggleFullscreen}
+          className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95"
+        >
           {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
         </button>
       </div>
@@ -250,37 +257,38 @@ export default function CalendarioLiturgico() {
               const colorClasses = getDayColor(day);
               const todayMark = isToday(day);
 
+              const hasAnyIndicator = liturgicalEvts.length > 0 || dayBirthdays.length > 0 ||
+                currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) ||
+                currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) ||
+                currentMonthEvents.reunioes.some(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)) ||
+                !!dayNote;
+
               return (
                 <button
                   key={day}
                   onClick={() => setSelectedDay(day)}
-                  className={`relative aspect-square rounded-2xl flex flex-col p-2 transition-all border-2 overflow-hidden active:scale-95 group
+                  className={`relative aspect-square rounded-2xl flex flex-col transition-all border-2 overflow-hidden active:scale-95 group
                     ${todayMark ? 'ring-2 ring-primary ring-offset-2 z-10' : ''}
                     ${colorClasses} hover:brightness-95 hover:shadow-md
-                    ${isFullscreen ? 'items-start text-left p-3' : 'justify-center items-center'}
+                    ${isFullscreen ? 'items-start text-left p-3' : 'p-1 justify-start items-center'}
                   `}
                 >
-                  <span className={`text-sm font-black ${todayMark ? 'text-primary' : ''}`}>{day}</span>
-                  
-                  {/* Indicators (Simplified for small view) */}
-                  {!isFullscreen && (
-                    <div className="flex flex-wrap justify-center gap-0.5 mt-1">
+                  {/* Número do dia — sempre no topo, nunca empurrado */}
+                  <span className={`text-sm font-black leading-none ${todayMark ? 'text-primary' : ''} ${!isFullscreen ? 'mt-1' : ''}`}>{day}</span>
+
+                  {/* Indicadores (vista compacta) — abaixo do número */}
+                  {!isFullscreen && hasAnyIndicator && (
+                    <div className="flex flex-wrap justify-center gap-0.5 mt-0.5">
                       {liturgicalEvts.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />}
-                      {dayBirthdays.length > 0 && <Cake className="h-3 w-3 text-pink-500 animate-bounce" />}
-                      {currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <BookOpen className="h-3 w-3 text-blue-500" />}
-                      {currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Lightbulb className="h-3 w-3 text-emerald-500" />}
-                      {currentMonthEvents.reunioes.some(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Users className="h-3 w-3 text-violet-500" />}
-                      {dayNote && <StickyNote className="h-3 w-3 text-amber-500" />}
+                      {dayBirthdays.length > 0 && <Cake className="h-2.5 w-2.5 text-pink-500" />}
+                      {currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <BookOpen className="h-2.5 w-2.5 text-blue-500" />}
+                      {currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Lightbulb className="h-2.5 w-2.5 text-emerald-500" />}
+                      {currentMonthEvents.reunioes.some(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Users className="h-2.5 w-2.5 text-violet-500" />}
+                      {dayNote && <StickyNote className="h-2.5 w-2.5 text-amber-500" />}
                     </div>
                   )}
 
-                  {!isFullscreen && (liturgicalEvts.length > 0 || dayNote) && (
-                    <span className="text-[9px] font-bold text-center truncate w-full px-0.5 mt-0.5 opacity-90 leading-tight z-10">
-                      {dayNote ? dayNote.nota : liturgicalEvts[0].name}
-                    </span>
-                  )}
-
-                  {/* Detailed Layout for Fullscreen */}
+                  {/* Fullscreen: lista de eventos */}
                   {isFullscreen && (
                     <div className="flex-1 w-full mt-1.5 space-y-1.5 overflow-hidden">
                       {liturgicalEvts.map((e, idx) => (
@@ -321,8 +329,7 @@ export default function CalendarioLiturgico() {
                       )}
                     </div>
                   )}
-                  
-                  {/* Bottom line for liturgical event types (Small view) */}
+
                   {!isFullscreen && liturgicalEvts.length > 0 && (
                     <div className="absolute top-1 right-1">
                       <Star className="h-2 w-2 opacity-40" />
@@ -337,7 +344,7 @@ export default function CalendarioLiturgico() {
 
       {/* Note Editor Modal */}
       <Dialog open={!!selectedDay} onOpenChange={(o) => !o && setSelectedDay(null)}>
-        <DialogContent className="max-w-md rounded-3xl p-6 border-border/30 overflow-hidden">
+        <DialogContent className="max-w-md w-[calc(100vw-2rem)] mx-auto rounded-3xl p-5 border-border/30 overflow-hidden max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
