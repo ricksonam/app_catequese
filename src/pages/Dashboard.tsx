@@ -588,7 +588,7 @@ export default function Dashboard() {
                   </>
                 )}
               </button>
-            </div>>
+            </div>
           </div>
           {/* Linha dourada inferior ornamental */}
           <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
