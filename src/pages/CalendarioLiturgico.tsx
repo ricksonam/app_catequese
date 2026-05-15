@@ -343,10 +343,11 @@ export default function CalendarioLiturgico() {
       </div>
 
       {/* Note Editor Modal */}
-      <Dialog open={!!selectedDay} onOpenChange={(o) => !o && setSelectedDay(null)}>
-        <DialogContent className="!w-[90vw] !max-w-md mx-auto rounded-3xl p-5 border-border/30 overflow-hidden max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
+      {/* Selected Day Details */}
+      {selectedDay !== null && (
+        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-sm border border-border/30 animate-fade-in mt-2 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
                 <StickyNote className="h-5 w-5 text-amber-600" />
               </div>
@@ -354,12 +355,18 @@ export default function CalendarioLiturgico() {
                 <p className="text-sm font-black text-foreground">{selectedDay} de {MONTH_NAMES[currentMonth]}</p>
                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Anotações e Eventos</p>
               </div>
-            </DialogTitle>
-          </DialogHeader>
+            </div>
+            <button 
+              onClick={() => setSelectedDay(null)}
+              className="w-8 h-8 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
+          </div>
 
-          <div className="space-y-4 mt-2">
-            {/* Liturgical Info inside Modal */}
-            {selectedDay !== null && EVENTS.filter(e => e.month === currentMonth + 1 && e.day === selectedDay).map((e, idx) => (
+          <div className="space-y-3">
+            {/* Liturgical Info */}
+            {EVENTS.filter(e => e.month === currentMonth + 1 && e.day === selectedDay).map((e, idx) => (
               <div key={idx} className={`p-3 rounded-2xl border ${COLOR_MAP[e.color || 'verde']} flex items-center gap-3`}>
                 <div className="w-8 h-8 rounded-lg bg-background/40 flex items-center justify-center shrink-0">
                   <Star className="h-4 w-4" />
@@ -371,8 +378,8 @@ export default function CalendarioLiturgico() {
               </div>
             ))}
 
-            {/* Birthday Info inside Modal */}
-            {selectedDay !== null && birthdays.filter(b => b.day === selectedDay).map((b, idx) => (
+            {/* Birthday Info */}
+            {birthdays.filter(b => b.day === selectedDay).map((b, idx) => (
               <div key={idx} className="p-3 rounded-2xl bg-pink-500/10 border border-pink-200/30 text-pink-700 dark:text-pink-400 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
                   <Cake className="h-4 w-4" />
@@ -384,8 +391,8 @@ export default function CalendarioLiturgico() {
               </div>
             ))}
             
-            {/* Catechism Encounters inside Modal - CLICKABLE */}
-            {selectedDay !== null && currentMonthEvents.encontros.filter(e => e.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((e, idx) => {
+            {/* Catechism Encounters - CLICKABLE */}
+            {currentMonthEvents.encontros.filter(e => e.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((e, idx) => {
               const turma = turmas.find(t => t.id === e.turmaId);
               return (
                 <button
@@ -409,8 +416,8 @@ export default function CalendarioLiturgico() {
               );
             })}
 
-            {/* Activities/Events inside Modal - CLICKABLE */}
-            {selectedDay !== null && currentMonthEvents.atividades.filter(a => a.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((a, idx) => {
+            {/* Activities/Events - CLICKABLE */}
+            {currentMonthEvents.atividades.filter(a => a.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((a, idx) => {
               const turma = turmas.find(t => t.id === a.turmaId);
               return (
                 <button
@@ -434,8 +441,8 @@ export default function CalendarioLiturgico() {
               );
             })}
 
-            {/* Reunioes inside Modal - CLICKABLE */}
-            {selectedDay !== null && currentMonthEvents.reunioes.filter(r => r.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((r, idx) => {
+            {/* Reunioes - CLICKABLE */}
+            {currentMonthEvents.reunioes.filter(r => r.data.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((r, idx) => {
               const turma = turmas.find(t => t.id === r.turmaId);
               return (
                 <button
@@ -519,10 +526,9 @@ export default function CalendarioLiturgico() {
                 )}
               </div>
             )}
-            
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }
