@@ -1,7 +1,7 @@
-import { useMemo, useState, useEffect, useRef } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, ListChecks, Church, Compass, ChevronDown, Star } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAtividades, useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useReunioes } from "@/hooks/useSupabaseData";
+import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -22,24 +22,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
 
-const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-const MESES_ABREV = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [selectedTurmaId, setSelectedTurmaIdRaw] = useState<string | "all">(
     () => localStorage.getItem("ivc_selected_turma") || "all"
   );
-  const [isAgendaExpanded, setIsAgendaExpanded] = useState(false);
-  const agendaRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (isAgendaExpanded && agendaRef.current) {
-      setTimeout(() => {
-        agendaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-    }
-  }, [isAgendaExpanded]);
 
   // Persiste a turma selecionada no localStorage
   const setSelectedTurmaId = (id: string | "all") => {
@@ -51,11 +40,8 @@ export default function Dashboard() {
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
-  const { data: reunioes = [] } = useReunioes(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const { data: paroquias = [] } = useParoquias();
   const { data: comunidades = [] } = useComunidades();
-  const { data: atividades = [], isLoading: aLoading } = useAtividades(selectedTurmaId === "all" ? undefined : selectedTurmaId);
-  const { data: missoes = [], isLoading: mLoading } = useMissoesFamilia(selectedTurmaId === "all" ? undefined : selectedTurmaId);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "turma-choice" | "intro" | "paroquia" | "catequista" | "turma" | "welcome" | "join-code">("none");
@@ -139,7 +125,7 @@ export default function Dashboard() {
 
 
 
-  const loading = tLoading || eLoading || cLoading || catLoading || aLoading || mLoading;
+  const loading = tLoading || eLoading || cLoading || catLoading;
 
   useEffect(() => {
     if (!loading && !tError && isReady && user) {
@@ -283,9 +269,6 @@ export default function Dashboard() {
     return d;
   }, []);
 
-  const nomeMesCompleto = useMemo(() => {
-    return hoje.toLocaleString('pt-BR', { month: 'long' }).toUpperCase();
-  }, [hoje]);
 
   const parseDataLocal = (dataStr: string) => {
     if (!dataStr) return new Date();
@@ -315,19 +298,8 @@ export default function Dashboard() {
 
   const heroColors = getEtapaColor(selectedTurma?.etapa);
 
-  const proximoEncontro = useMemo(() => {
-    const pendentes = filteredEncontros
-      .filter((e) => parseDataLocal(e.data) >= hoje && e.status === 'pendente')
-      .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime());
-    return pendentes[0] || null;
-  }, [filteredEncontros, hoje]);
 
-  const proximaReuniao = useMemo(() => {
-    const pendentes = reunioes
-      .filter((r) => parseDataLocal(r.data) >= hoje)
-      .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime());
-    return pendentes[0] || null;
-  }, [reunioes, hoje]);
+
 
   const mesAtual = hoje.getMonth();
   const aniversariantesMes = useMemo(() => {
@@ -410,46 +382,10 @@ export default function Dashboard() {
     return result;
   }, [filteredCatequizandos, catequistas, hoje]);
 
-  const proximasAtividades = useMemo(() => {
-    const combined = [
-      ...atividades.map(a => ({ ...a, itemType: 'atividade' as const })),
-      ...missoes.map(m => ({ ...m, data: m.criadoEm, itemType: 'missao' as const }))
-    ];
-
-    return combined
-      .filter(item => {
-        const d = parseDataLocal(item.data);
-        return d >= hoje;
-      })
-      .sort((a, b) => parseDataLocal(a.data).getTime() - parseDataLocal(b.data).getTime())
-      .slice(0, 1);
-  }, [atividades, missoes, hoje]);
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
 
-  function getDiasRestantes(dataStr: string) {
-    const d = parseDataLocal(dataStr);
-    d.setHours(0, 0, 0, 0);
-    return Math.round((d.getTime() - hoje.getTime()) / 86400000);
-  }
 
-  const liturgicalClasses = useMemo(() => {
-    const month = hoje.getMonth() + 1;
-    const day = hoje.getDate();
-    let theme = "emerald";
-    if ((month === 11 && day >= 27) || (month === 12 && day <= 24)) theme = "purple"; // Advento
-    else if ((month === 12 && day >= 25) || (month === 1 && day <= 10)) theme = "slate"; // Natal
-    else if ((month === 2 && day >= 14) || month === 3 || (month === 4 && day <= 5)) theme = "purple"; // Quaresma
-    else if ((month === 4 && day > 5) || month === 5) theme = "slate"; // Pascal
-    
-    if (theme === "purple") {
-      return { border: "border-purple-400", ring: "ring-purple-400/20", shadow: "shadow-purple-400/10", bgIcon: "bg-purple-50", textMonth: "text-purple-700", textHint: "text-purple-600/70", iconColor: "text-purple-600" };
-    }
-    if (theme === "slate") {
-      return { border: "border-slate-400", ring: "ring-slate-400/20", shadow: "shadow-slate-400/10", bgIcon: "bg-slate-50", textMonth: "text-slate-700", textHint: "text-slate-600/70", iconColor: "text-slate-600" };
-    }
-    return { border: "border-emerald-400", ring: "ring-emerald-400/20", shadow: "shadow-emerald-400/10", bgIcon: "bg-emerald-50", textMonth: "text-emerald-700", textHint: "text-emerald-600/70", iconColor: "text-emerald-600" };
-  }, [hoje]);
 
 
 
@@ -486,12 +422,7 @@ export default function Dashboard() {
     );
   }
 
-  const dias = proximoEncontro ? getDiasRestantes(proximoEncontro.data) : 0;
-  const isUrgent = proximoEncontro ? dias <= 3 : false;
-  const turmaEncontro = proximoEncontro ? turmas.find((t) => t.id === proximoEncontro.turmaId) : null;
-  const diaLabel = proximoEncontro
-    ? (dias === 0 ? "Hoje!" : dias === 1 ? "Amanhã" : DIAS_SEMANA[parseDataLocal(proximoEncontro.data).getDay()])
-    : "";
+
 
 
 
@@ -948,195 +879,7 @@ export default function Dashboard() {
 
 
 
-      {/* ── CARD AGENDA LITÚRGICA ── */}
-      {turmas.length > 0 && (
-        <div className="pt-6 mt-4 mb-2">
-          <div className="animate-float-up relative" style={{ animationDelay: '200ms' }}>
 
-          
-          {/* Card Nome da Agenda (Clicável) */}
-          <button 
-            onClick={() => setIsAgendaExpanded(!isAgendaExpanded)}
-            className={cn(
-              `absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 px-4 py-2.5 flex items-center gap-2.5 transition-all duration-500 active:scale-95 group rounded-2xl border shadow-lg bg-white`,
-              liturgicalClasses.border,
-              `ring-2 ${liturgicalClasses.ring}`,
-              liturgicalClasses.shadow,
-              !isAgendaExpanded && "scale-105"
-            )}
-          >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${liturgicalClasses.bgIcon}`}>
-              <img src="/icone_agenda.png" alt="Agenda" className={cn("w-8 h-8 object-contain shrink-0", !isAgendaExpanded && "animate-bounce-subtle drop-shadow-sm")} />
-            </div>
-            <div className="flex flex-col items-start">
-              <h3 className="text-[13px] font-black uppercase tracking-widest whitespace-nowrap leading-none">
-                <span className="text-black">AGENDA DA TURMA</span>
-                <span className={`ml-1 ${liturgicalClasses.textMonth}`}>- {nomeMesCompleto}</span>
-              </h3>
-              <span className={`text-[8px] font-bold uppercase tracking-tight mt-1 ${liturgicalClasses.textHint}`}>
-                {isAgendaExpanded ? "Próximos encontros e eventos" : "Toque para ver a agenda"}
-              </span>
-            </div>
-            <ChevronDown className={cn(
-              `h-5 w-5 transition-transform duration-300 ${liturgicalClasses.iconColor}`,
-              isAgendaExpanded ? "rotate-180" : "rotate-0"
-            )} />
-          </button>
-
-          <div ref={agendaRef} className={cn(
-            "relative rounded-3xl overflow-hidden bg-orange-100/40 shadow-sm border-2 border-orange-200/60 transition-all duration-500 ease-in-out",
-            isAgendaExpanded ? "pt-8 pb-2 opacity-100" : "h-0 pt-0 pb-0 opacity-0 border-none"
-          )}>
-
-            {/* ── TIMELINE DE EVENTOS ── */}
-            <div className="relative pb-4 px-4">
-              {/* Mês no topo da linha */}
-              <div className="absolute left-[36px] top-0 -translate-x-1/2 bg-primary text-white font-black text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-xl z-10 shadow-lg shadow-primary/20 border border-primary/20">
-                {MESES_ABREV[hoje.getMonth()]}
-              </div>
-
-              {/* Fio vertical descendo do mês */}
-              <div className="absolute left-[36px] top-5 bottom-4 w-[2px]"
-                style={{ background: 'linear-gradient(180deg, #6366f133 0%, #6366f155 40%, #3b82f633 100%)' }} />
-
-              <div className="space-y-4 ml-[16px] pt-4">
-                {/* ── EVENTO: PRÓXIMO ENCONTRO ── */}
-                {proximoEncontro && (() => {
-                  const dataE = parseDataLocal(proximoEncontro.data);
-                  return (
-                    <div key={`encontro-${proximoEncontro.id}`} className="relative pl-8 animate-float-up">
-                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-primary ring-4 ring-background z-10" />
-                      <button 
-                        onClick={() => navigate(`/turmas/${proximoEncontro.turmaId}/encontros/${proximoEncontro.id}`)}
-                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-blue-50/40 border-2 border-blue-200/60 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-primary/40 hover:-translate-y-1 active:scale-95"
-                      >
-                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
-                          <Church className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                            {proximoEncontro.tema}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">Encontro</span>
-                            {diaLabel && (
-                              <span className={cn(
-                                "text-[7px] font-black px-1.5 py-0.5 rounded text-white leading-none uppercase tracking-widest",
-                                isUrgent ? "bg-red-500 animate-pulse" : "bg-emerald-500"
-                              )}>{diaLabel}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-center justify-center min-w-[45px] h-[45px] bg-primary/5 rounded-2xl border border-primary/10 shrink-0">
-                          <p className="text-[9px] font-black text-primary/60 uppercase leading-none mb-0.5">Dia</p>
-                          <p className="text-xl font-black text-primary leading-none">
-                            {String(dataE.getDate()).padStart(2, '0')}
-                          </p>
-                        </div>
-                      </button>
-                    </div>
-                  );
-                })()}
-
-                {/* ── EVENTOS: ATIVIDADES ── */}
-                {proximasAtividades.map((item, index) => {
-                  const isMissao = item.itemType === 'missao';
-                  const dataObj = parseDataLocal(item.data);
-                  return (
-                    <div key={`atividade-${item.id}`} className="relative pl-8 animate-float-up" style={{ animationDelay: `${(index + 1) * 50}ms` }}>
-                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-background z-10" />
-                      <button 
-                        onClick={() => {
-                          if (isMissao) navigate(`/turmas/${item.turmaId}/familia`);
-                          else navigate(`/turmas/${item.turmaId}/eventos?view=${item.id}`);
-                        }}
-                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-emerald-50/40 border-2 border-emerald-200/60 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-emerald-500/40 hover:-translate-y-1 active:scale-95"
-                      >
-                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-emerald-50 text-emerald-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                          <Sparkles className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-foreground leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
-                            {isMissao ? (item as any).titulo : (item as any).nome}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">
-                              Evento
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-center justify-center min-w-[45px] h-[45px] bg-blue-50 rounded-2xl border border-blue-100 shrink-0">
-                          <p className="text-[9px] font-black text-blue-600/60 uppercase leading-none mb-0.5">Dia</p>
-                          <p className="text-xl font-black text-blue-600 leading-none">
-                            {String(dataObj.getDate()).padStart(2, '0')}
-                          </p>
-                        </div>
-                      </button>
-                    </div>
-                  );
-                })}
-
-                {/* ── EVENTO: PRÓXIMA REUNIÃO ── */}
-                {proximaReuniao && (() => {
-                  const dataR = parseDataLocal(proximaReuniao.data);
-                  const diasR = getDiasRestantes(proximaReuniao.data);
-                  const isUrgentR = diasR <= 3;
-                  const diaLabelR = diasR === 0 ? "Hoje!" : diasR === 1 ? "Amanhã" : DIAS_SEMANA[dataR.getDay()];
-                  
-                  return (
-                    <div key={`reuniao-${proximaReuniao.id}`} className="relative pl-8 animate-float-up">
-                      <div className="absolute left-[-5px] top-5 w-2.5 h-2.5 rounded-full bg-violet-500 ring-4 ring-background z-10" />
-                      <button 
-                        onClick={() => navigate(`/turmas/${proximaReuniao.turmaId}/reunioes?view=${proximaReuniao.id}`)}
-                        className="w-full float-card flex items-center gap-3 p-4 text-left group bg-violet-50/40 border-2 border-violet-200/60 shadow-sm rounded-2xl transition-all duration-300 hover:shadow-md hover:border-violet-400/40 hover:-translate-y-1 active:scale-95"
-                      >
-                        <div className="icon-box w-10 h-10 rounded-xl shrink-0 bg-violet-100 text-violet-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                          <ListChecks className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold text-foreground leading-tight group-hover:text-violet-600 transition-colors line-clamp-2">
-                            {proximaReuniao.nome}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            <span className="px-1.5 py-0.5 rounded bg-muted text-[9px] font-bold text-muted-foreground uppercase">Reunião</span>
-                            {diaLabelR && (
-                              <span className={cn(
-                                "text-[7px] font-black px-1.5 py-0.5 rounded text-white leading-none uppercase tracking-widest",
-                                isUrgentR ? "bg-red-500 animate-pulse" : "bg-violet-500"
-                              )}>{diaLabelR}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-center justify-center min-w-[45px] h-[45px] bg-violet-50 rounded-2xl border border-violet-100 shrink-0">
-                          <p className="text-[9px] font-black text-violet-600/60 uppercase leading-none mb-0.5">Dia</p>
-                          <p className="text-xl font-black text-violet-600 leading-none">
-                            {String(dataR.getDate()).padStart(2, '0')}
-                          </p>
-                        </div>
-                      </button>
-                    </div>
-                  );
-                })()}
-
-                {/* ── ESTADO VAZIO: NENHUM EVENTO ── */}
-                {!proximoEncontro && !proximaReuniao && proximasAtividades.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center opacity-60">
-                    <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3">
-                      <CalendarDays className="h-6 w-6 text-orange-400" />
-                    </div>
-                    <p className="text-[10px] font-bold text-orange-900/60 uppercase tracking-widest">Nenhum evento agendado</p>
-                    <p className="text-[8px] text-orange-800/50 mt-1 max-w-[150px]">Fique de olho! Seus próximos encontros aparecerão aqui.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Faixa dourada inferior */}
-            <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, transparent, #f59e0b44, #f5d06088, #f59e0b44, transparent)' }} />
-          </div>
-        </div>
-        </div>
-      )}
 
 
 
