@@ -26,7 +26,7 @@ import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 export default function TurmaDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: turmas = [], isLoading } = useTurmas();
+  const { data: turmas = [], isLoading, isFetching } = useTurmas();
   const { data: encontros = [] } = useEncontros(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
@@ -53,7 +53,6 @@ export default function TurmaDetail() {
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const queryClient = useQueryClient();
-
 
   const alertConfig = useMemo(() => {
     const saved = localStorage.getItem('ivc_alertas_config');
@@ -212,7 +211,7 @@ export default function TurmaDetail() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || (!turma && isFetching)) {
     return <div className="flex items-center justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-lg bg-primary/20 animate-pulse" /></div>;
   }
 

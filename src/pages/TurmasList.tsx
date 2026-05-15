@@ -73,32 +73,31 @@ export default function TurmasList() {
         {/* Join with Code Card — Premium & Compact */}
         <div
           onClick={() => setJoinModalOpen(true)}
-          className="flex-1 group relative overflow-hidden flex items-center gap-2 p-2.5 rounded-[1.2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-lg hover:shadow-xl hover:-translate-y-1 animate-fade-in animate-card-float border border-yellow-400/40 bg-gradient-to-br from-zinc-700 to-zinc-800"
+          className="flex-1 group relative overflow-hidden flex items-center gap-2 p-2.5 rounded-[1.2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-sm hover:shadow-md hover:-translate-y-1 animate-fade-in animate-card-float border border-zinc-200 bg-gradient-to-br from-zinc-100 to-zinc-200"
           style={{ animationDelay: "0ms" }}
         >
           {/* Glow blobs */}
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-yellow-400/20 blur-3xl pointer-events-none group-hover:bg-yellow-400/30 transition-colors duration-700 -mr-10 -mt-10" />
-          <div className="absolute bottom-0 left-0 w-16 h-16 rounded-full bg-blue-500/10 blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-700 -ml-10 -mb-10" />
+          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/60 blur-3xl pointer-events-none group-hover:bg-white/80 transition-colors duration-700 -mr-10 -mt-10" />
 
           {/* Animated icon */}
-          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-amber-600 border border-white/30 flex items-center justify-center text-slate-900 shadow-md shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-            <Link2 className="h-4 w-4 animate-pulse" />
+          <div className="relative w-8 h-8 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-zinc-600 shadow-sm shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
+            <Link2 className="h-4 w-4 animate-pulse text-zinc-500" />
           </div>
 
           <div className="relative z-10 flex-1 flex flex-col items-start justify-center">
             <p 
-              className="text-xs sm:text-sm font-black text-white font-liturgical leading-tight tracking-wide drop-shadow-md group-hover:text-yellow-400 transition-colors"
+              className="text-xs sm:text-sm font-black text-zinc-800 font-liturgical leading-tight tracking-wide group-hover:text-primary transition-colors"
             >
               Entrar na Turma
             </p>
-            <p className="text-[7px] font-bold text-zinc-200 uppercase tracking-[0.1em] mt-0.5 drop-shadow-sm">
+            <p className="text-[7px] font-bold text-zinc-500 uppercase tracking-[0.1em] mt-0.5">
               Com código
             </p>
           </div>
           
           {/* More visible arrow */}
-          <div className="hidden sm:flex w-6 h-6 rounded-full bg-white/10 items-center justify-center border border-white/20 group-hover:bg-yellow-400 group-hover:border-yellow-400 group-hover:text-slate-900 transition-all duration-300 shadow-inner shrink-0">
-            <ArrowRight className="h-3 w-3 text-white group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+          <div className="hidden sm:flex w-6 h-6 rounded-full bg-white/50 items-center justify-center border border-zinc-200 group-hover:bg-white group-hover:border-zinc-300 group-hover:text-primary transition-all duration-300 shadow-inner shrink-0">
+            <ArrowRight className="h-3 w-3 text-zinc-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
           </div>
         </div>
 
@@ -187,31 +186,26 @@ export default function TurmasList() {
                   </div>
 
                   {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className={`text-lg font-black ${palette.text} truncate font-liturgical leading-tight`}>{turma.nome}</h3>
-                      {turma.isShared && (
-                        <span className={`shrink-0 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${palette.badge}`}>Partilhada</span>
-                      )}
-                    </div>
-
+                  <div className="flex-1 min-w-0 pr-8">
+                    <h3 className={`text-lg font-black ${palette.text} truncate font-liturgical leading-tight mb-0.5`}>{turma.nome}</h3>
+                    
                     {turmaCom && (
-                      <p className={`text-[10px] font-bold ${palette.sub} uppercase tracking-widest truncate mb-2`}>{turmaCom}</p>
+                      <p className={`text-[9px] font-bold ${palette.sub} uppercase tracking-widest truncate mb-2`}>{turmaCom}</p>
                     )}
 
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <span className={`flex items-center gap-1.5 text-[10px] ${palette.sub} font-bold bg-black/10 px-2 py-1 rounded-md`}>
+                    <div className="flex flex-col gap-1 mt-1">
+                      <div className={`flex items-center gap-1.5 text-[9px] ${palette.sub} font-bold bg-black/5 px-2 py-1 rounded-md w-fit`}>
                         <CalendarDays className="h-3 w-3 opacity-70" />
-                        {turma.diaCatequese} • {turma.horario}
-                      </span>
-                      <span className={`flex items-center gap-1.5 text-[10px] ${palette.sub} font-bold bg-black/10 px-2 py-1 rounded-md`}>
+                        {turma.diaCatequese}, {turma.horario}
+                      </div>
+                      <div className={`flex items-center gap-1.5 text-[9px] ${palette.sub} font-bold bg-black/5 px-2 py-1 rounded-md w-fit`}>
                         <Users className="h-3 w-3 opacity-70" />
-                        {tCatequizandos.length} catequiz. • {tEncontros.length} enc.
-                      </span>
+                        {tCatequizandos.length} inscritos • {tEncontros.length} encontros
+                      </div>
                     </div>
 
                     {dataCriacao && (
-                      <p className={`text-[9px] ${palette.sub} font-bold mt-2.5 opacity-80 uppercase tracking-wider`}>
+                      <p className={`text-[8px] ${palette.sub} font-bold mt-2.5 opacity-60 uppercase tracking-widest`}>
                         Criada em {dataCriacao}
                       </p>
                     )}
@@ -219,16 +213,23 @@ export default function TurmasList() {
 
                   {/* Badges Stack - Top Right */}
                   <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
+                    <span className={`text-[10px] font-black ${palette.badge} px-2 py-0.5 rounded-md shadow-sm border border-black/5`}>{turma.ano}</span>
+                    
+                    {turma.isShared && (
+                      <span className={`shrink-0 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${palette.badge} border border-black/5 shadow-sm`}>
+                        Partilhada
+                      </span>
+                    )}
+
                     {turma.id === selectedTurmaId && (
-                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
+                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20 mt-0.5">
                         <Sparkles className="h-2 w-2" /> Selecionada
                       </span>
                     )}
-                    <span className={`text-[10px] font-black ${palette.badge} px-2 py-0.5 rounded-md shadow-sm backdrop-blur-sm`}>{turma.ano}</span>
                     
                     {/* Arrow at the bottom-right of this flex stack or separate */}
                     <div className={cn(
-                      "w-7 h-7 rounded-full bg-black/5 flex items-center justify-center border border-black/5 transition-all duration-300 mt-2",
+                      "w-7 h-7 rounded-full bg-black/5 flex items-center justify-center border border-black/5 transition-all duration-300 mt-1",
                       "group-hover:bg-black/10 group-hover:translate-x-1"
                     )}>
                       <ArrowRight className="h-3.5 w-3.5" />
