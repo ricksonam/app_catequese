@@ -71,35 +71,25 @@ export default function TurmasList() {
 
       <div className="flex flex-row items-stretch gap-3">
         {/* Join with Code Card — Premium & Compact */}
-        <div
+        <button
           onClick={() => setJoinModalOpen(true)}
-          className="flex-1 group relative overflow-hidden flex items-center gap-2 p-2.5 rounded-[1.2rem] cursor-pointer active:scale-[0.98] transition-all duration-500 shadow-sm hover:shadow-md hover:-translate-y-1 animate-fade-in animate-card-float border border-zinc-200 bg-gradient-to-br from-zinc-100 to-zinc-200"
-          style={{ animationDelay: "0ms" }}
+          className="flex-1 group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-3 py-2 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border border-black/10 hover:border-black/20 shrink-0"
         >
-          {/* Glow blobs */}
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/60 blur-3xl pointer-events-none group-hover:bg-white/80 transition-colors duration-700 -mr-10 -mt-10" />
+          {/* Glass reflection */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
 
-          {/* Animated icon */}
-          <div className="relative w-8 h-8 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-zinc-600 shadow-sm shrink-0 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-            <Link2 className="h-4 w-4 animate-pulse text-zinc-500" />
-          </div>
-
-          <div className="relative z-10 flex-1 flex flex-col items-start justify-center">
-            <p 
-              className="text-xs sm:text-sm font-black text-zinc-800 font-liturgical leading-tight tracking-wide group-hover:text-primary transition-colors"
-            >
-              Entrar na Turma
-            </p>
-            <p className="text-[7px] font-bold text-zinc-500 uppercase tracking-[0.1em] mt-0.5">
-              Com código
-            </p>
+          {/* Icon Container with animation */}
+          <div className="relative z-10 w-8 h-8 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-zinc-100 transition-all duration-500">
+            <Link2 className="h-4 w-4 text-zinc-600 animate-pulse" />
           </div>
           
-          {/* More visible arrow */}
-          <div className="hidden sm:flex w-6 h-6 rounded-full bg-white/50 items-center justify-center border border-zinc-200 group-hover:bg-white group-hover:border-zinc-300 group-hover:text-primary transition-all duration-300 shadow-inner shrink-0">
-            <ArrowRight className="h-3 w-3 text-zinc-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
-          </div>
-        </div>
+          <span className="relative z-10 whitespace-nowrap mt-1.5 font-bold text-[9px] uppercase tracking-[0.15em] text-zinc-800 drop-shadow-sm group-hover:text-primary transition-colors">
+            Entrar com Código
+          </span>
+
+          {/* Interactive highlight overlay */}
+          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        </button>
 
         {/* Nova Turma Button */}
         <button
