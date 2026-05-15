@@ -73,22 +73,27 @@ export default function TurmasList() {
         {/* Join with Code Card — Premium & Compact */}
         <button
           onClick={() => setJoinModalOpen(true)}
-          className="flex-1 group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-3 py-2 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border border-black/10 hover:border-black/20 shrink-0"
+          className="flex-[1.2] group relative overflow-hidden flex flex-row items-center justify-center gap-2.5 px-3 py-2 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
         >
           {/* Glass reflection */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
 
           {/* Icon Container with animation */}
-          <div className="relative z-10 w-8 h-8 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-zinc-100 transition-all duration-500">
-            <Link2 className="h-4 w-4 text-zinc-600 animate-pulse" />
+          <div className="relative z-10 w-8 h-8 shrink-0 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
+            <Link2 className="h-4 w-4 text-blue-600 animate-pulse" />
           </div>
           
-          <span className="relative z-10 whitespace-nowrap mt-1.5 font-bold text-[9px] uppercase tracking-[0.15em] text-zinc-800 drop-shadow-sm group-hover:text-primary transition-colors">
-            Entrar com Código
-          </span>
+          <div className="relative z-10 flex flex-col items-start text-left">
+            <span className="font-black text-[9px] uppercase tracking-widest text-blue-900 group-hover:text-blue-700 transition-colors leading-tight">
+              Entrar na Turma
+            </span>
+            <span className="font-bold text-[8px] text-blue-500 uppercase tracking-widest leading-tight">
+              com código
+            </span>
+          </div>
 
           {/* Interactive highlight overlay */}
-          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          <div className="absolute inset-0 bg-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </button>
 
         {/* Nova Turma Button */}
