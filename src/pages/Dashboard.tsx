@@ -21,7 +21,7 @@ import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
-
+import { MapaTimeline } from "@/components/MapaTimeline";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -870,21 +870,22 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Mapa Panorâmico */}
-          <div className="w-full relative z-10 px-2 mt-2">
-            <button
-              onClick={() => navigate("/modulos/mapa-panoramico")}
-              className="w-full relative overflow-hidden rounded-[20px] bg-gradient-to-r from-amber-500 to-orange-500 shadow-md border border-white/20 flex items-center p-3.5 hover:scale-[1.02] active:scale-[0.98] transition-all group"
-            >
-              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 shadow-sm border border-white/30">
-                <Compass className="h-5 w-5 text-white animate-pulse" />
+          {/* Mapa Panorâmico Direto na Home */}
+          <div className="w-full relative z-10 mt-6 bg-white dark:bg-zinc-900 rounded-[2rem] p-4 sm:p-6 shadow-sm border border-black/5 dark:border-white/5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Compass className="h-5 w-5 text-primary animate-pulse" />
               </div>
-              <div className="flex-1 text-left px-3">
-                <h3 className="text-white font-black text-sm tracking-tight font-liturgical leading-tight">Mapa Panorâmico</h3>
-                <p className="text-white/90 text-[9px] font-bold uppercase tracking-wider mt-0.5">Itinerário IVC</p>
+              <div>
+                <h3 className="text-foreground font-black text-lg tracking-tight font-liturgical leading-tight uppercase">Mapa Panorâmico</h3>
+                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider mt-0.5">Itinerário de Iniciação à Vida Cristã</p>
               </div>
-              <ChevronRight className="h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
-            </button>
+            </div>
+            
+            {/* Componente extraído da Timeline do Mapa */}
+            <div className="mt-4 -mx-2 sm:-mx-4">
+              <MapaTimeline />
+            </div>
           </div>
         </div>
       )}
