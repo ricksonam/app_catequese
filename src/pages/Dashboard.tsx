@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas } from "@/hooks/useSupabaseData";
+import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -38,6 +38,8 @@ export default function Dashboard() {
   };
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch, isFetching: tFetching } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
+  const { data: atividades = [] } = useAtividades();
+  const { data: reunioes = [] } = useReunioes();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
   const { data: paroquias = [] } = useParoquias();
@@ -276,6 +278,18 @@ export default function Dashboard() {
     if (parts.length === 3) return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
     return new Date(dataStr);
   };
+
+  const temAtividadeHoje = useMemo(() => {
+    const isToday = (dataStr: string) => {
+      if (!dataStr) return false;
+      const d = parseDataLocal(dataStr);
+      return d.getDate() === hoje.getDate() && d.getMonth() === hoje.getMonth() && d.getFullYear() === hoje.getFullYear();
+    };
+    const checkTurma = (item: any) => selectedTurmaId === "all" ? true : item.turmaId === selectedTurmaId;
+    return encontros.some(e => checkTurma(e) && isToday(e.data)) || 
+           atividades.some(a => checkTurma(a) && isToday(a.data)) || 
+           reunioes.some(r => checkTurma(r) && isToday(r.data));
+  }, [encontros, atividades, reunioes, selectedTurmaId, hoje]);
 
   const filteredCatequizandos = useMemo(() => {
     const validTurmaIds = new Set(turmas.map(t => t.id));
@@ -545,23 +559,36 @@ export default function Dashboard() {
                 <span className="inline-block animate-waving-hand text-sm">👋</span>
               </h1>
             </div>
-            {/* Ícone de mensagens */}
-            <button
-              onClick={handleMessagesClick}
-              className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm"
-            >
-              <Mail className={cn("h-4 w-4 text-white shadow-sm", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
-              {totalMensagens > lastSeenMensagens && (
-                <>
-                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#8b5cf6] animate-pulse" />
-                  {showNovaMensagem && (
-                    <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
-                      Nova Mensagem
-                    </div>
-                  )}
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Ícone de Agenda Inteligente */}
+              <button
+                onClick={() => navigate("/modulos/calendario")}
+                className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm group"
+              >
+                <CalendarDays className={cn("h-4 w-4 text-white shadow-sm transition-all", temAtividadeHoje && "animate-bounce text-[#FDE047]")} />
+                {temAtividadeHoje && (
+                  <span className="absolute top-0 right-0 w-3 h-3 bg-[#FDE047] rounded-full border-2 border-[#8b5cf6] animate-pulse" />
+                )}
+              </button>
+              
+              {/* Ícone de mensagens */}
+              <button
+                onClick={handleMessagesClick}
+                className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm"
+              >
+                <Mail className={cn("h-4 w-4 text-white shadow-sm", totalMensagens > lastSeenMensagens && "animate-bounce-subtle")} />
+                {totalMensagens > lastSeenMensagens && (
+                  <>
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#8b5cf6] animate-pulse" />
+                    {showNovaMensagem && (
+                      <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
+                        Nova Mensagem
+                      </div>
+                    )}
+                  </>
+                )}
+              </button>
+            </div>>
           </div>
           {/* Linha dourada inferior ornamental */}
           <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
@@ -600,10 +627,11 @@ export default function Dashboard() {
                   
                   <button
                     onClick={() => setJoinModalOpen(true)}
-                    className="w-full bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 h-12 rounded-xl font-black uppercase tracking-widest text-xs border-2 border-emerald-500/20 hover:bg-emerald-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full bg-white dark:bg-zinc-800 text-blue-700 dark:text-blue-400 h-12 rounded-xl font-black uppercase tracking-widest text-xs border-2 border-blue-500 hover:bg-blue-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2 relative overflow-hidden group"
                   >
-                    <Link2 className="h-4 w-4" />
-                    Entrar com Código
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                    <Link2 className="h-4 w-4 relative z-10" />
+                    <span className="relative z-10">Entrar na Turma com código</span>
                   </button>
                 </div>
               </div>
@@ -870,23 +898,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Mapa Panorâmico Direto na Home */}
-          <div className="w-full relative z-10 mt-6 bg-white dark:bg-zinc-900 rounded-[2rem] p-4 sm:p-6 shadow-sm border border-black/5 dark:border-white/5">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Compass className="h-5 w-5 text-primary animate-pulse" />
-              </div>
-              <div>
-                <h3 className="text-foreground font-black text-lg tracking-tight font-liturgical leading-tight uppercase">Mapa Panorâmico</h3>
-                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider mt-0.5">Itinerário de Iniciação à Vida Cristã</p>
-              </div>
-            </div>
-            
-            {/* Componente extraído da Timeline do Mapa */}
-            <div className="mt-4 -mx-2 sm:-mx-4">
-              <MapaTimeline />
-            </div>
-          </div>
+
         </div>
       )}
 
