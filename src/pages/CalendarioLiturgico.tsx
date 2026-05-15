@@ -197,9 +197,9 @@ export default function CalendarioLiturgico() {
               if (isFullscreen) setIsFullscreen(false);
               else navigate(-1);
             }}
-            className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95"
+            className="back-btn"
           >
-            <X className="h-5 w-5 text-foreground" />
+            <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
@@ -402,7 +402,7 @@ export default function CalendarioLiturgico() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{e.tema}</p>
-                    <p className="text-[10px] uppercase font-bold opacity-70">Encontro · {turma?.nome || 'Turma'}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70 truncate block">Encontro · {turma?.nome || 'Turma'}</p>
                   </div>
                   <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
@@ -427,7 +427,7 @@ export default function CalendarioLiturgico() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{a.nome}</p>
-                    <p className="text-[10px] uppercase font-bold opacity-70">Evento · {a.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70 truncate block">Evento · {a.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
                   </div>
                   <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
@@ -452,7 +452,7 @@ export default function CalendarioLiturgico() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{r.nome}</p>
-                    <p className="text-[10px] uppercase font-bold opacity-70">Reunião · {r.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70 truncate block">Reunião · {r.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
                   </div>
                   <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>

@@ -578,8 +578,8 @@ export default function Dashboard() {
               </div>
               
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-20 h-20 rounded-3xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner overflow-hidden animate-bounce-subtle">
-                  <img src="/acesso_nova_turma.png" alt="Nova Turma" className="w-16 h-16 object-contain" />
+                <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner overflow-hidden animate-bounce-subtle">
+                  <img src="/acesso_nova_turma.png" alt="Nova Turma" className="w-10 h-10 object-contain" />
                 </div>
                 
                 <div className="space-y-2">
@@ -592,17 +592,17 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 gap-3 w-full mt-2">
                   <button
                     onClick={() => setShowCreateTurma(true)}
-                    className="w-full bg-emerald-600 text-white h-14 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 active:scale-95 transition-all shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-3"
+                    className="w-full bg-emerald-600 text-white h-12 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2"
                   >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4" />
                     Criar Minha Primeira Turma
                   </button>
                   
                   <button
                     onClick={() => setJoinModalOpen(true)}
-                    className="w-full bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 h-14 rounded-2xl font-black uppercase tracking-widest text-xs border-2 border-emerald-500/20 hover:bg-emerald-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-3"
+                    className="w-full bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-400 h-12 rounded-xl font-black uppercase tracking-widest text-xs border-2 border-emerald-500/20 hover:bg-emerald-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2"
                   >
-                    <Link2 className="h-5 w-5" />
+                    <Link2 className="h-4 w-4" />
                     Entrar com Código
                   </button>
                 </div>
@@ -725,18 +725,13 @@ export default function Dashboard() {
 
             return (
               <div className="w-full max-w-[340px] relative mb-4" style={{ zIndex: 10 }}>
-                {/* Halo de brilho */}
-                <div className="absolute -inset-2 rounded-[28px] blur-xl opacity-30 pointer-events-none"
-                  style={{ background: `radial-gradient(ellipse at 50% 50%, ${colors.from}, transparent 70%)` }} />
-
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[22px] overflow-hidden shadow-xl border border-white/20 transition-all hover:scale-[1.02] active:scale-[0.98] group"
-                  style={{ background: `linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%)` }}>
-
-                  {/* Raios de luz de fundo */}
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${colors.accent}40, transparent 60%)` }} />
+                  className="w-full text-left relative rounded-[22px] overflow-hidden shadow-md border border-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-primary"
+                >
+                  {/* Raios de luz de fundo subtis */}
+                  <div className="absolute inset-0 pointer-events-none opacity-20"
+                    style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, white, transparent 60%)` }} />
 
                   {/* Conteúdo */}
                   <div className="relative z-10 px-4 py-3.5 flex flex-col items-center text-center">
