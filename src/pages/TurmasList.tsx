@@ -79,15 +79,15 @@ export default function TurmasList() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
 
           {/* Icon Container with animation */}
-          <div className="relative z-10 w-8 h-8 shrink-0 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
-            <Link2 className="h-4 w-4 text-blue-600 animate-pulse" />
+          <div className="relative z-10 w-10 h-10 shrink-0 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
+            <Link2 className="h-5 w-5 text-blue-600 animate-pulse" />
           </div>
           
           <div className="relative z-10 flex flex-col items-start text-left">
-            <span className="font-black text-[9px] uppercase tracking-widest text-blue-900 group-hover:text-blue-700 transition-colors leading-tight">
+            <span className="font-black text-[11px] uppercase tracking-widest text-blue-900 group-hover:text-blue-700 transition-colors leading-tight">
               Entrar na Turma
             </span>
-            <span className="font-bold text-[8px] text-blue-500 uppercase tracking-widest leading-tight">
+            <span className="font-bold text-[9px] text-blue-500 uppercase tracking-widest leading-tight">
               com código
             </span>
           </div>
