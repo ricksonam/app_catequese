@@ -22,24 +22,13 @@ export function PWAInstallChip() {
       return;
     }
 
-    // Check if dismissed recently (24h)
-    const dismissed = localStorage.getItem("pwa_chip_dismissed");
-    if (dismissed) {
-      const dismissedAt = parseInt(dismissed);
-      const hoursSince = (Date.now() - dismissedAt) / (1000 * 60 * 60);
-      if (hoursSince < 24) return;
-    }
-
     // Detect iOS
     const iosDevice = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
     setIsIOS(iosDevice);
-    if (iosDevice) {
-      // For iOS, we show the chip to guide manual install
-      const timer = setTimeout(() => setShowChip(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    
+    // Show chip after a short delay regardless of event (fallback logic)
+    const timer = setTimeout(() => setShowChip(true), 1000);
 
-    // For Android/Chrome
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -47,7 +36,10 @@ export function PWAInstallChip() {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -59,7 +51,14 @@ export function PWAInstallChip() {
       return;
     }
 
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      toast.info("Instalação do Aplicativo", {
+        description: "Para baixar, clique nos três pontinhos do seu navegador (no canto superior ou inferior) e selecione 'Instalar aplicativo' ou 'Adicionar à tela inicial'.",
+        duration: 8000,
+      });
+      return;
+    }
+
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -74,26 +73,32 @@ export function PWAInstallChip() {
 
   const handleDismiss = () => {
     setShowChip(false);
-    localStorage.setItem("pwa_chip_dismissed", Date.now().toString());
+    // We don't save to localStorage here to keep it "fixed" as requested, 
+    // it will reappear on next reload if not installed.
   };
 
   if (!showChip || isInstalled) return null;
 
   return (
-    <div className="w-full flex justify-center -mt-2 mb-4 animate-in fade-in slide-in-from-top-4 duration-1000 relative z-30">
+    <div className="w-full flex justify-center sticky top-[68px] z-40 px-4 -mt-2 mb-6 animate-in fade-in slide-in-from-top-4 duration-700 pointer-events-none">
       <div 
         onClick={handleInstall}
-        className="group flex items-center gap-2.5 px-4 py-2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-primary/20 rounded-full shadow-lg shadow-primary/5 hover:shadow-primary/10 transition-all hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+        className="group flex items-center gap-2.5 px-5 py-2.5 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-primary/30 rounded-full shadow-xl shadow-primary/10 hover:shadow-primary/20 transition-all hover:scale-[1.03] active:scale-[0.98] cursor-pointer pointer-events-auto border-b-2 border-r-2"
       >
-        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center border border-primary/10 group-hover:bg-primary group-hover:text-white transition-all">
-          <Download className="w-3 h-3 text-primary group-hover:text-white transition-all" />
+        <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-all shadow-inner">
+          <Download className="w-3.5 h-3.5 text-primary group-hover:text-white transition-all" />
         </div>
         
-        <span className="text-[11px] font-black uppercase tracking-[0.15em] text-foreground/80 group-hover:text-primary transition-colors">
-          Baixar App iCatequese
-        </span>
+        <div className="flex flex-col items-start leading-none">
+          <span className="text-[11px] font-black uppercase tracking-[0.12em] text-foreground group-hover:text-primary transition-colors">
+            Baixar App iCatequese
+          </span>
+          <span className="text-[7px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+            Instalar na tela inicial
+          </span>
+        </div>
         
-        <div className="w-px h-3 bg-primary/20 mx-0.5" />
+        <div className="w-px h-4 bg-primary/20 mx-1" />
         
         <button 
           onClick={(e) => {
@@ -102,7 +107,7 @@ export function PWAInstallChip() {
           }}
           className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors group/close"
         >
-          <X className="w-3 h-3 text-muted-foreground/30 group-hover/close:text-muted-foreground transition-colors" />
+          <X className="w-3.5 h-3.5 text-muted-foreground/40 group-hover/close:text-muted-foreground transition-colors" />
         </button>
       </div>
     </div>
