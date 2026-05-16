@@ -442,7 +442,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-2.5">
-      <PWAInstallBanner />
       {/* ONBOARDING FLOW */}
 
       {/* 0. Termos de Uso (Gate Inicial) */}
