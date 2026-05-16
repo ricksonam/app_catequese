@@ -34,8 +34,9 @@ export function usePremium() {
     fetchStatus();
 
     // Listen for real-time premium activation
+    const channelName = `premium-check-${session.user.id}-${Math.random().toString(36).substring(7)}`;
     const channel = supabase
-      .channel(`premium-check-${session.user.id}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
