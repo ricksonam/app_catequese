@@ -11,7 +11,7 @@ import { getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import PWAInstallBanner from "@/components/PWAInstallBanner";
+import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 
 /* ─── Ornamento SVG de cruz ─── */
 const CrossOrnament = ({ className = "" }: { className?: string }) => (
@@ -59,7 +59,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#FDF8F5] text-stone-900 overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
-      <PWAInstallBanner />
+      <PWAInstallChip />
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Gradiente radial central */}
