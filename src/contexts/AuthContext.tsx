@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useRef, ReactNode } fro
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { logError } from "@/lib/errorLogger";
+import { toast } from "sonner";
 
 interface AuthContextType {
   session: Session | null;
@@ -33,7 +34,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const initialized = useRef(false);
   const resolved = useRef(false);
 
-  const handleSession = (s: Session | null) => {
+  const handleSession = async (s: Session | null) => {
+    if (s?.user) {
+      try {
+        // Verificar se o usuário está bloqueado
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("is_blocked, motivo_bloqueio")
+          .eq("id", s.user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("[iCatequese] Erro ao verificar status do perfil:", error);
+        } else if (profile?.is_blocked) {
+          console.warn("[iCatequese] Usuário bloqueado tentou acessar:", s.user.email);
+          
+          // Mostrar mensagem de erro
+          toast.error("Acesso Negado", {
+            description: profile.motivo_bloqueio || "Sua conta foi suspensa por violação dos termos de uso.",
+            duration: 6000,
+          });
+          
+          // Desloga imediatamente no servidor e localmente
+          await supabase.auth.signOut();
+          setSession(null);
+          
+          // Resolve o estado de loading para não travar a tela
+          if (!resolved.current) {
+            resolved.current = true;
+            setLoading(false);
+            setIsReady(true);
+          }
+          return;
+        }
+      } catch (err) {
+        console.error("[iCatequese] Exceção ao verificar status do perfil:", err);
+      }
+    }
+
     setSession(s);
     if (!resolved.current) {
       resolved.current = true;
@@ -96,6 +134,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const isAdmin = session?.user?.email === "icatequese2026@gmail.com";
+
+  // Subscription para monitorar bloqueio em tempo real
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const channel = supabase
+      .channel(`profile-block-check-${session.user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${session.user.id}`
+        },
+        (payload) => {
+          console.log("[iCatequese] Mudança de perfil detectada via Realtime:", payload);
+          if (payload.new.is_blocked) {
+            console.warn("[iCatequese] Usuário bloqueado em tempo real!");
+            
+            // Mostrar toast e deslogar
+            toast.error("Sua conta foi suspensa", {
+              description: `${payload.new.motivo_bloqueio || "Acesso negado pela administração."} Para suporte, entre em contato: ricksonam@hotmail.com`,
+              duration: 10000,
+            });
+            
+            // Força deslogar
+            signOut();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user?.id]);
 
   return (
     <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, isAdmin, signOut }}>
