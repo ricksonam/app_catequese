@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Sparkles, Star, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { MessageCircle } from "lucide-react";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
@@ -37,12 +38,17 @@ export default function PaymentSuccess() {
       } else if (attempts < maxAttempts) {
         setTimeout(check, 2000); // retry every 2s
       } else {
-        setChecking(false); // gave up, show generic success
+        setChecking(false); // gave up, show generic success with manual action
       }
     };
 
     check();
   }, [session?.user?.id]);
+
+  const handleWhatsApp = () => {
+    const text = encodeURIComponent(`Olá! Acabei de assinar o iCatequese Premium.\n\nMeu email de acesso é: ${session?.user?.email}\n\n[Envie o comprovante de pagamento da InfinitePay nesta conversa para liberarmos seu acesso]`);
+    window.open(`https://wa.me/5598984920624?text=${text}`, "_blank");
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
@@ -114,10 +120,22 @@ export default function PaymentSuccess() {
             ) : (
               <>
                 <div>
-                  <h1 className="text-2xl font-black text-foreground mb-2">Pagamento Recebido!</h1>
+                  <h1 className="text-2xl font-black text-foreground mb-2">Pagamento Realizado!</h1>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Recebemos seu pagamento! Seu acesso Premium será ativado em instantes. Se demorar mais de 5 minutos, entre em contato com o suporte.
+                    Como o pagamento via link leva alguns minutos para processar, a liberação automática pode não acontecer na mesma hora.
                   </p>
+                  <div className="mt-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-left">
+                    <p className="text-xs font-bold text-green-800 dark:text-green-300 mb-3">
+                      Quer liberar o acesso imediatamente? Envie seu comprovante para nosso suporte no WhatsApp:
+                    </p>
+                    <button
+                      onClick={handleWhatsApp}
+                      className="w-full h-12 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-black text-sm uppercase flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 active:scale-95 transition-all"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      Enviar Comprovante
+                    </button>
+                  </div>
                 </div>
               </>
             )}

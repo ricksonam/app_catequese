@@ -22,6 +22,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 import { MapaTimeline } from "@/components/MapaTimeline";
+import { usePremium } from "@/hooks/usePremium";
+import confetti from "canvas-confetti";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -50,6 +52,7 @@ export default function Dashboard() {
   const { user, isReady, signOut } = useAuth();
   const [showCreateTurma, setShowCreateTurma] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
+  const { isPremium } = usePremium();
 
   const { data: globalMissoes = [] } = useMissoesFamilia();
   const { data: comunicacaoForms = [] } = useComunicacaoForms();
@@ -128,6 +131,25 @@ export default function Dashboard() {
 
 
   const loading = tLoading || eLoading || cLoading || catLoading;
+
+  useEffect(() => {
+    if (isPremium && user) {
+      const hasSeenWelcome = localStorage.getItem(`ivc_premium_welcome_${user.id}`);
+      if (!hasSeenWelcome) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#F59E0B', '#D97706', '#FCD34D']
+        });
+        toast.success("✨ Bem-vindo ao Premium!", {
+          description: "Sua assinatura de 1 ano foi ativada. Todos os recursos estão liberados!",
+          duration: 10000,
+        });
+        localStorage.setItem(`ivc_premium_welcome_${user.id}`, "true");
+      }
+    }
+  }, [isPremium, user]);
 
   useEffect(() => {
     if (!loading && !tError && isReady && user) {
