@@ -3,6 +3,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { logError } from "@/lib/errorLogger";
 import { toast } from "sonner";
+import { BlockedUserModal } from "@/components/Onboarding/BlockedUserModal";
 
 interface AuthContextType {
   session: Session | null;
@@ -31,6 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
+  const [blockedReason, setBlockedReason] = useState("");
   const initialized = useRef(false);
   const resolved = useRef(false);
 
@@ -49,15 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (profile?.is_blocked) {
           console.warn("[iCatequese] Usuário bloqueado tentou acessar:", s.user.email);
           
-          // Mostrar mensagem de erro
-          toast.error("Acesso Negado", {
-            description: profile.motivo_bloqueio || "Sua conta foi suspensa por violação dos termos de uso.",
-            duration: 6000,
-          });
-          
-          // Desloga imediatamente no servidor e localmente
-          await supabase.auth.signOut();
-          setSession(null);
+          setBlockedReason(profile.motivo_bloqueio || "Violação dos termos de uso da plataforma.");
+          setIsBlockedModalOpen(true);
           
           // Resolve o estado de loading para não travar a tela
           if (!resolved.current) {
@@ -154,14 +150,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (payload.new.is_blocked) {
             console.warn("[iCatequese] Usuário bloqueado em tempo real!");
             
-            // Mostrar toast e deslogar
-            toast.error("Sua conta foi suspensa", {
-              description: `${payload.new.motivo_bloqueio || "Acesso negado pela administração."} Para suporte, entre em contato: ricksonam@hotmail.com`,
-              duration: 10000,
-            });
-            
-            // Força deslogar
-            signOut();
+            setBlockedReason(payload.new.motivo_bloqueio || "Acesso negado pela administração.");
+            setIsBlockedModalOpen(true);
           }
         }
       )
@@ -175,6 +165,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, isAdmin, signOut }}>
       {children}
+      <BlockedUserModal 
+        open={isBlockedModalOpen} 
+        reason={blockedReason}
+        onClose={() => {
+          setIsBlockedModalOpen(false);
+          signOut();
+        }}
+      />
     </AuthContext.Provider>
   );
 }
