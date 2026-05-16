@@ -1,5 +1,6 @@
 import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, Hash, UsersRound, Theater } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PremiumGate } from "@/components/PremiumGate";
 
 const jogos = [
   {
@@ -65,33 +66,35 @@ export default function JogosHub() {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center gap-3 animate-fade-in">
-        <div className="icon-box w-10 h-10 rounded-2xl bg-primary/10 text-primary">
-          <Dices className="h-5 w-5" />
+    <PremiumGate feature="Módulo de Jogos" description="Acesse nossa biblioteca completa de jogos interativos para dinamizar seus encontros de catequese.">
+      <div className="space-y-5">
+        <div className="flex items-center gap-3 animate-fade-in">
+          <div className="icon-box w-10 h-10 rounded-2xl bg-primary/10 text-primary">
+            <Dices className="h-5 w-5" />
+          </div>
+          <h1 className="text-xl font-bold text-foreground">Jogos</h1>
         </div>
-        <h1 className="text-xl font-bold text-foreground">Jogos</h1>
-      </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        {jogos.map((jogo, i) => {
-          const Icon = jogo.icon;
-          return (
-            <button
-              key={jogo.path}
-              onClick={() => navigate(jogo.path)}
-              className="float-card p-5 text-center animate-float-up group"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div className={`icon-box w-13 h-13 rounded-2xl ${jogo.color} mb-3 mx-auto group-hover:scale-110 transition-transform duration-500 shadow-sm`}>
-                <Icon className="h-6 w-6" />
-              </div>
-              <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">{jogo.label}</h3>
-              <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight font-medium opacity-80">{jogo.desc}</p>
-            </button>
-          );
-        })}
+        <div className="grid grid-cols-2 gap-3">
+          {jogos.map((jogo, i) => {
+            const Icon = jogo.icon;
+            return (
+              <button
+                key={jogo.path}
+                onClick={() => navigate(jogo.path)}
+                className="float-card p-5 text-center animate-float-up group"
+                style={{ animationDelay: `${i * 80}ms` }}
+              >
+                <div className={`icon-box w-13 h-13 rounded-2xl ${jogo.color} mb-3 mx-auto group-hover:scale-110 transition-transform duration-500 shadow-sm`}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-sm font-black text-foreground group-hover:text-primary transition-colors">{jogo.label}</h3>
+                <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight font-medium opacity-80">{jogo.desc}</p>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </PremiumGate>
   );
 }

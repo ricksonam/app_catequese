@@ -6,6 +6,7 @@ import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias,
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
+import { PremiumGate } from "@/components/PremiumGate";
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
 const S_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899'];
@@ -57,7 +58,8 @@ export default function RelatoriosTurma() {
   };
 
   return (
-    <div className="space-y-6 print:m-0 print:p-0 print:space-y-0 pb-10">
+    <PremiumGate feature="Central de Relatórios" description="Acesse relatórios completos, gráficos de frequência, documentos e fichas da sua turma.">
+      <div className="space-y-6 print:m-0 print:p-0 print:space-y-0 pb-10">
       <div className="space-y-4 animate-fade-in flex flex-col pt-4 print:hidden">
         {/* Row 1: Back Button + Título (Centralizado) */}
         <div className="flex items-center justify-center min-h-[44px] relative">
@@ -101,7 +103,8 @@ export default function RelatoriosTurma() {
       ) : (
         <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} />
       )}
-    </div>
+      </div>
+    </PremiumGate>
   );
 }
 

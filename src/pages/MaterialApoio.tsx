@@ -2,6 +2,7 @@ import { ArrowLeft, FileText, Link2, ExternalLink, FolderOpen, Download, BookOpe
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PremiumGate } from "@/components/PremiumGate";
 
 // Mapeamento de ícones do banco para componentes Lucide
 const ICON_MAP: Record<string, any> = {
@@ -56,6 +57,7 @@ export default function MaterialApoio() {
       : materiais.filter((m) => m.categoria === filtro);
 
   return (
+    <PremiumGate feature="Material de Apoio" description="Acesse nossa biblioteca de materiais, documentos litúrgicos e recursos para catequistas.">
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 animate-fade-in">
@@ -153,6 +155,7 @@ export default function MaterialApoio() {
         </>
       )}
     </div>
+    </PremiumGate>
   );
 }
 

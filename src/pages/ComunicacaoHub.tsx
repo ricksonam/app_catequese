@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import type { ComunicacaoForm } from "@/lib/store";
+import { PremiumGate } from "@/components/PremiumGate";
 
 
 export default function ComunicacaoHub() {
@@ -82,6 +83,7 @@ export default function ComunicacaoHub() {
   };
 
   return (
+    <PremiumGate feature="Conecta Famílias" description="Crie pesquisas, questionários e formulários para se comunicar com as famílias dos seus catequizandos.">
     <div className="flex flex-col gap-6 animate-fade-in relative min-h-[80vh]">
 
       {/* ── MODAL DE INFORMAÇÕES ── */}
@@ -353,6 +355,7 @@ export default function ComunicacaoHub() {
         isLoading={deleteForm.isPending}
       />
     </div>
+    </PremiumGate>
   );
 }
 

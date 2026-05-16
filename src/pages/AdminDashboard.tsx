@@ -5,7 +5,7 @@ import {
   Users, UserX, MessageSquare, Settings, Search, MapPin, 
   ShieldAlert, ShieldCheck, Trash2, ArrowLeft, TrendingUp, 
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
-  BarChart3, PieChart, Activity, ExternalLink
+  BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -38,6 +38,8 @@ interface Profile {
   email: string;
   last_login: string | null;
   is_blocked: boolean;
+  is_premium: boolean;
+  premium_since: string | null;
   created_at: string;
   cidade?: string;
   estado?: string;
@@ -399,6 +401,7 @@ export default function AdminDashboard() {
                         <TableHead className="font-bold text-xs uppercase tracking-wider">Usuário</TableHead>
                         <TableHead className="font-bold text-xs uppercase tracking-wider">Localização</TableHead>
                         <TableHead className="font-bold text-xs uppercase tracking-wider">Último Acesso</TableHead>
+                        <TableHead className="font-bold text-xs uppercase tracking-wider">Plano</TableHead>
                         <TableHead className="font-bold text-xs uppercase tracking-wider">Status</TableHead>
                         <TableHead className="text-right font-bold text-xs uppercase tracking-wider">Ações</TableHead>
                       </TableRow>
@@ -425,6 +428,25 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
+                             <div className="flex flex-col gap-1">
+                               {(p as any).is_premium ? (
+                                 <Badge className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit bg-amber-100 text-amber-700 border border-amber-300">
+                                   <Star className="h-2.5 w-2.5 mr-1" />
+                                   Premium
+                                 </Badge>
+                               ) : (
+                                 <Badge variant="outline" className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit text-slate-500">
+                                   Básico
+                                 </Badge>
+                               )}
+                               {(p as any).premium_since && (
+                                 <span className="text-[9px] text-muted-foreground">
+                                   desde {new Date((p as any).premium_since).toLocaleDateString('pt-BR')}
+                                 </span>
+                               )}
+                             </div>
+                           </TableCell>
+                          <TableCell>
                             <div className="flex flex-col gap-1">
                               <Badge variant={p.is_blocked ? "destructive" : "outline"} className={cn(
                                 "rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit",
@@ -440,25 +462,49 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => {
-                                if (p.is_blocked) {
-                                  toggleBlockMutation.mutate({ id: p.id, is_blocked: true });
-                                } else {
-                                  setUserToBlock(p);
-                                  setIsBlockDialogOpen(true);
-                                }
-                              }}
-                              className={cn(
-                                "rounded-xl h-9 px-3",
-                                p.is_blocked ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-destructive hover:text-destructive hover:bg-destructive/10"
-                              )}
-                            >
-                              {p.is_blocked ? <Unlock className="h-4 w-4 mr-1.5" /> : <Lock className="h-4 w-4 mr-1.5" />}
-                              {p.is_blocked ? "Desbloquear" : "Bloquear"}
-                            </Button>
+                             <div className="flex flex-col gap-1 items-end">
+                               <Button 
+                                 variant="ghost" 
+                                 size="sm" 
+                                 onClick={() => {
+                                   if (p.is_blocked) {
+                                     toggleBlockMutation.mutate({ id: p.id, is_blocked: true });
+                                   } else {
+                                     setUserToBlock(p);
+                                     setIsBlockDialogOpen(true);
+                                   }
+                                 }}
+                                 className={cn(
+                                   "rounded-xl h-9 px-3",
+                                   p.is_blocked ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-destructive hover:text-destructive hover:bg-destructive/10"
+                                 )}
+                               >
+                                 {p.is_blocked ? <Unlock className="h-4 w-4 mr-1.5" /> : <Lock className="h-4 w-4 mr-1.5" />}
+                                 {p.is_blocked ? "Desbloquear" : "Bloquear"}
+                               </Button>
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={async () => {
+                                   const newVal = !(p as any).is_premium;
+                                   await supabase.from('profiles').update({ 
+                                     is_premium: newVal,
+                                     premium_since: newVal ? new Date().toISOString() : null
+                                   }).eq('id', p.id);
+                                   queryClient.invalidateQueries({ queryKey: ['admin_profiles'] });
+                                   toast.success(newVal ? 'Premium ativado!' : 'Premium removido.');
+                                 }}
+                                 className={cn(
+                                   "rounded-xl h-9 px-3 text-xs",
+                                   (p as any).is_premium 
+                                     ? "text-amber-600 hover:text-amber-700 hover:bg-amber-50" 
+                                     : "text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+                                 )}
+                               >
+                                 <Star className="h-3.5 w-3.5 mr-1" />
+                                 {(p as any).is_premium ? "Remover Premium" : "Dar Premium"}
+                               </Button>
+                             </div>
                           </TableCell>
                         </TableRow>
                       ))}

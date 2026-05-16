@@ -19,6 +19,7 @@ import Spinner from "@/components/ui/spinner";
 import { categoriasMissao, missoesTemplates } from "@/lib/missoesTemplates";
 import { useAuth } from "@/contexts/AuthContext";
 import { copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
+import { PremiumGate } from "@/components/PremiumGate";
 
 export default function MissoesFamilia() {
   const { id: turmaId } = useParams();
@@ -161,6 +162,7 @@ export default function MissoesFamilia() {
   const currentCategoryObj = categoriasMissao.find(c => c.id === selectedCategoria);
 
   return (
+    <PremiumGate feature="Catequese em Família" description="Crie missões semanais e envie links para engajar as famílias dos seus catequizandos.">
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 pb-24">
       {/* Header Premium - Now with Title */}
       <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-border/50 px-4 pt-4 pb-3 sticky top-0 z-20">
@@ -413,5 +415,6 @@ export default function MissoesFamilia() {
         </DialogContent>
       </Dialog>
     </div>
+    </PremiumGate>
   );
 }

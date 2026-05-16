@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTurmas } from "@/lib/supabaseStore";
+import { usePremium } from "@/hooks/usePremium";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,6 +60,7 @@ const comunicacao = [
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isPremium, redirectToPayment } = usePremium();
   
   // Queries
   const { data: turmas = [], isLoading: isLoadingTurmas } = useQuery({
@@ -72,6 +74,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
   const [showTransferDialog, setShowTransferDialog] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
 
   // Lê a turma selecionada do localStorage (sincronizado com o Dashboard)
@@ -533,7 +536,16 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                 <span className="text-sm font-bold text-foreground/80 text-left">Dar Sugestão</span>
               </button>
 
-              <button onClick={() => setShowTransferDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+              <button 
+                onClick={() => {
+                  if (isPremium) {
+                    setShowTransferDialog(true);
+                  } else {
+                    setShowPremiumModal(true);
+                  }
+                }} 
+                className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+              >
                 <div className="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
                 <span className="text-sm font-bold text-foreground/80 text-left">Transferir Dados</span>
               </button>
@@ -864,6 +876,35 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </DialogContent>
       </Dialog>
       
+       {/* Premium Modal */}
+       <Dialog open={showPremiumModal} onOpenChange={setShowPremiumModal}>
+        <DialogContent className="max-w-sm w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
+          <div className="h-2 w-full bg-gradient-to-r from-amber-400 to-orange-500" />
+          <div className="p-8 text-center">
+            <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center mx-auto mb-5 border-2 border-amber-200 shadow-inner">
+              <Sparkles className="h-10 w-10 text-amber-500" />
+            </div>
+            <h2 className="text-2xl font-black text-foreground tracking-tight mb-1">Recurso Premium</h2>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              A transferência de dados é um recurso exclusivo do plano Premium. Faça o upgrade para utilizar!
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => { setShowPremiumModal(false); redirectToPayment(); }}
+                className="w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest text-white shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
+                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+              >
+                <Sparkles className="h-4 w-4" />
+                Assinar Premium – R$ 9,90/mês
+              </button>
+              <button onClick={() => setShowPremiumModal(false)} className="text-xs text-muted-foreground font-bold hover:text-foreground transition-colors py-2 w-full">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
