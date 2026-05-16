@@ -20,7 +20,7 @@ import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import PWAInstallBanner from "@/components/PWAInstallBanner";
+import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 import { MapaTimeline } from "@/components/MapaTimeline";
 
 export default function Dashboard() {
@@ -595,6 +595,8 @@ export default function Dashboard() {
           <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
         </div>
       </div>
+
+      <PWAInstallChip />
 
       {/* CARD DE CRIAR TURMA (QUANDO NÃO HÁ TURMAS) */}
       {turmas.length === 0 && onboardingStep === "none" && (
