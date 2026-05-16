@@ -487,12 +487,15 @@ export default function AdminDashboard() {
                                  size="sm"
                                  onClick={async () => {
                                    const newVal = !(p as any).is_premium;
+                                   const now = new Date();
+                                   const expiresAt = new Date(now.setFullYear(now.getFullYear() + 1));
                                    await supabase.from('profiles').update({ 
                                      is_premium: newVal,
-                                     premium_since: newVal ? new Date().toISOString() : null
+                                     premium_since: newVal ? new Date().toISOString() : null,
+                                     premium_expires_at: newVal ? expiresAt.toISOString() : null
                                    }).eq('id', p.id);
                                    queryClient.invalidateQueries({ queryKey: ['admin_profiles'] });
-                                   toast.success(newVal ? 'Premium ativado!' : 'Premium removido.');
+                                   toast.success(newVal ? 'Premium ativado por 1 ano!' : 'Premium removido.');
                                  }}
                                  className={cn(
                                    "rounded-xl h-9 px-3 text-xs",
