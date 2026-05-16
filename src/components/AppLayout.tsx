@@ -191,10 +191,10 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                     }
                   }}
                   className="flex flex-col items-center gap-2 group animate-scale-in"
-                  style={{ animationDelay: `${i * 30}ms` }}
+                  style={{ animationDelay: `${i * 10}ms` }}
                 >
                   <div className="w-24 h-24 rounded-[32px] bg-white dark:bg-zinc-900 shadow-sm border border-black/5 dark:border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg group-active:scale-95 group-hover:border-primary/30">
-                    <img src={item.img} alt={item.label} loading="eager" className="w-18 h-18 object-contain animate-bounce-subtle" style={{ animationDelay: `${i * 100}ms` }} />
+                    <img src={item.img} alt={item.label} loading="eager" className="w-18 h-18 object-contain animate-bounce-subtle" />
                   </div>
                   <span className="text-[11px] font-black text-center text-muted-foreground uppercase tracking-wider leading-tight group-hover:text-primary transition-colors">
                     {item.label}
