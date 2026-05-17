@@ -56,7 +56,7 @@ export function PremiumGate({ feature, description, children }: PremiumGateProps
 
         <div className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-500/30 transition-all group-hover:scale-105">
           <Star className="h-3.5 w-3.5" />
-          Assinar por R$ 9,90/mês
+          Assinar por R$ 9,90/ano
         </div>
       </div>
 
@@ -102,7 +102,7 @@ export function PremiumGate({ feature, description, children }: PremiumGateProps
                 style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               >
                 <Star className="h-4 w-4" />
-                Assinar Agora – R$ 9,90/mês
+                Assinar Agora – R$ 9,90/ano
               </button>
               <button
                 onClick={() => setModalOpen(false)}
@@ -158,7 +158,7 @@ export function PremiumActionGate({ onContinue, feature }: PremiumActionGateProp
               style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
             >
               <Star className="h-4 w-4" />
-              Assinar Premium – R$ 9,90/mês
+              Assinar Premium – R$ 9,90/ano
             </button>
             <button onClick={() => setModalOpen(false)} className="mt-3 text-xs text-muted-foreground font-bold hover:text-foreground transition-colors">
               Fechar
