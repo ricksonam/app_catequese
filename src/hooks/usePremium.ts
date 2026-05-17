@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-const CHECKOUT_URL = "https://checkout.infinitepay.io/ricksonam/2VEWnyvl5h";
+const CHECKOUT_URL = "https://checkout.infinitepay.io/ricksonam/TmDHBX1ASB";
 
 export function usePremium() {
   const { session } = useAuth();
