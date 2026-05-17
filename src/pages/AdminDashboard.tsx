@@ -251,6 +251,7 @@ export default function AdminDashboard() {
   const stats = useMemo(() => {
     const total = profiles.length;
     const blocked = profiles.filter(p => p.is_blocked).length;
+    const premium = profiles.filter(p => p.is_premium).length;
     const activeToday = profiles.filter(p => {
       if (!p.last_login) return false;
       const date = new Date(p.last_login);
@@ -260,7 +261,7 @@ export default function AdminDashboard() {
     const deletedReasons = sugestoes.filter(s => s.tipo === 'exclusao').length;
     const safetyAlertsCount = safetyAlerts.length;
 
-    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount };
+    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount, premium };
   }, [profiles, sugestoes, safetyAlerts]);
 
 
@@ -315,8 +316,8 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 animate-in fade-in duration-700">
         
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Stats Cards — single horizontal row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <StatsCard 
             title="Total de Usuários" 
             value={stats.total} 
@@ -330,31 +331,31 @@ export default function AdminDashboard() {
             value={stats.activeToday} 
             icon={Activity} 
             color="success" 
-            description="Sessões iniciadas hoje"
+            description="Sessões hoje"
             onClick={() => setActiveTab("users")}
           />
           <StatsCard 
-            title="Usuários Bloqueados" 
+            title="Premium" 
+            value={stats.premium} 
+            icon={Star} 
+            color="amber" 
+            description="Assinaturas ativas"
+            onClick={() => setActiveTab("users")}
+          />
+          <StatsCard 
+            title="Bloqueados" 
             value={stats.blocked} 
             icon={UserX} 
             color="destructive" 
-            description="Contas com acesso restrito"
+            description="Acesso restrito"
             onClick={() => setActiveTab("users")}
           />
           <StatsCard 
-            title="Taxa de Churn" 
-            value={stats.deletedReasons} 
-            icon={TrendingUp} 
-            color="amber" 
-            description="Usuários que excluiram conta"
-            onClick={() => setActiveTab("churn")}
-          />
-          <StatsCard 
-            title="Alertas de Segurança" 
+            title="Alertas" 
             value={stats.safetyAlertsCount} 
             icon={ShieldAlert} 
             color="destructive" 
-            description="Conteúdo impróprio detectado"
+            description="Conteúdo sinalizado"
             onClick={() => setActiveTab("safety")}
           />
         </div>
@@ -377,142 +378,56 @@ export default function AdminDashboard() {
           {/* Tab Content */}
           <div className="flex-1 p-8">
             {activeTab === "users" && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div>
                     <h2 className="text-xl font-bold text-foreground">Gestão de Usuários</h2>
-                    <p className="text-sm text-muted-foreground">Monitore e controle o acesso à plataforma</p>
+                    <p className="text-sm text-muted-foreground">{filteredProfiles.length} usuários encontrados</p>
                   </div>
-                  <div className="relative w-full sm:w-64">
+                  <div className="relative w-full sm:w-72">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
                       placeholder="Buscar por email, cidade..." 
-                      className="pl-9 rounded-xl border-border/50" 
+                      className="pl-9 rounded-xl border-border/50 h-10" 
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
                 </div>
 
-                <div className="border border-border/50 rounded-2xl overflow-hidden shadow-inner bg-white">
-                  <Table>
-                    <TableHeader className="bg-slate-50">
-                      <TableRow>
-                        <TableHead className="font-bold text-xs uppercase tracking-wider">Usuário</TableHead>
-                        <TableHead className="font-bold text-xs uppercase tracking-wider">Localização</TableHead>
-                        <TableHead className="font-bold text-xs uppercase tracking-wider">Último Acesso</TableHead>
-                        <TableHead className="font-bold text-xs uppercase tracking-wider">Plano</TableHead>
-                        <TableHead className="font-bold text-xs uppercase tracking-wider">Status</TableHead>
-                        <TableHead className="text-right font-bold text-xs uppercase tracking-wider">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredProfiles.map((p) => (
-                        <TableRow key={p.id} className="group transition-colors hover:bg-slate-50/50">
-                          <TableCell>
-                            <div className="flex flex-col">
-                              <span className="text-sm font-bold text-foreground">{p.email}</span>
-                              <span className="text-[10px] text-muted-foreground">ID: {p.id.slice(0, 8)}...</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                              <MapPin className="h-3 w-3 text-primary/60" />
-                              {p.cidade}, {p.estado}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {p.last_login ? new Date(p.last_login).toLocaleString("pt-BR") : "Nunca logou"}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                             <div className="flex flex-col gap-1">
-                               {(p as any).is_premium ? (
-                                 <Badge className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit bg-amber-100 text-amber-700 border border-amber-300">
-                                   <Star className="h-2.5 w-2.5 mr-1" />
-                                   Premium
-                                 </Badge>
-                               ) : (
-                                 <Badge variant="outline" className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit text-slate-500">
-                                   Básico
-                                 </Badge>
-                               )}
-                               {(p as any).premium_since && (
-                                 <span className="text-[9px] text-muted-foreground">
-                                   desde {new Date((p as any).premium_since).toLocaleDateString('pt-BR')}
-                                 </span>
-                               )}
-                             </div>
-                           </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              <Badge variant={p.is_blocked ? "destructive" : "outline"} className={cn(
-                                "rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider w-fit",
-                                !p.is_blocked && "text-emerald-600 border-emerald-200 bg-emerald-50"
-                              )}>
-                                {p.is_blocked ? "Bloqueado" : "Ativo"}
-                              </Badge>
-                              {p.is_blocked && p.motivo_bloqueio && (
-                                <span className="text-[9px] text-destructive font-medium max-w-[150px] truncate" title={p.motivo_bloqueio}>
-                                  Razão: {p.motivo_bloqueio}
-                                </span>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                             <div className="flex flex-col gap-1 items-end">
-                               <Button 
-                                 variant="ghost" 
-                                 size="sm" 
-                                 onClick={() => {
-                                   if (p.is_blocked) {
-                                     toggleBlockMutation.mutate({ id: p.id, is_blocked: true });
-                                   } else {
-                                     setUserToBlock(p);
-                                     setIsBlockDialogOpen(true);
-                                   }
-                                 }}
-                                 className={cn(
-                                   "rounded-xl h-9 px-3",
-                                   p.is_blocked ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" : "text-destructive hover:text-destructive hover:bg-destructive/10"
-                                 )}
-                               >
-                                 {p.is_blocked ? <Unlock className="h-4 w-4 mr-1.5" /> : <Lock className="h-4 w-4 mr-1.5" />}
-                                 {p.is_blocked ? "Desbloquear" : "Bloquear"}
-                               </Button>
-                               <Button
-                                 variant="ghost"
-                                 size="sm"
-                                 onClick={async () => {
-                                   const newVal = !(p as any).is_premium;
-                                   const now = new Date();
-                                   const expiresAt = new Date(now.setFullYear(now.getFullYear() + 1));
-                                   await supabase.from('profiles').update({ 
-                                     is_premium: newVal,
-                                     premium_since: newVal ? new Date().toISOString() : null,
-                                     premium_expires_at: newVal ? expiresAt.toISOString() : null
-                                   }).eq('id', p.id);
-                                   queryClient.invalidateQueries({ queryKey: ['admin_profiles'] });
-                                   toast.success(newVal ? 'Premium ativado por 1 ano!' : 'Premium removido.');
-                                 }}
-                                 className={cn(
-                                   "rounded-xl h-9 px-3 text-xs",
-                                   (p as any).is_premium 
-                                     ? "text-amber-600 hover:text-amber-700 hover:bg-amber-50" 
-                                     : "text-amber-500 hover:text-amber-600 hover:bg-amber-50"
-                                 )}
-                               >
-                                 <Star className="h-3.5 w-3.5 mr-1" />
-                                 {(p as any).is_premium ? "Remover Premium" : "Dar Premium"}
-                               </Button>
-                             </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                <div className="space-y-3">
+                  {filteredProfiles.map((p) => (
+                    <UserCard
+                      key={p.id}
+                      profile={p}
+                      onBlock={() => {
+                        if (p.is_blocked) {
+                          toggleBlockMutation.mutate({ id: p.id, is_blocked: false });
+                        } else {
+                          setUserToBlock(p);
+                          setIsBlockDialogOpen(true);
+                        }
+                      }}
+                      onTogglePremium={async () => {
+                        const newVal = !p.is_premium;
+                        const expiresAt = new Date();
+                        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+                        await supabase.from('profiles').update({ 
+                          is_premium: newVal,
+                          premium_since: newVal ? new Date().toISOString() : null,
+                          premium_expires_at: newVal ? expiresAt.toISOString() : null
+                        }).eq('id', p.id);
+                        qc.invalidateQueries({ queryKey: ['admin_profiles'] });
+                        toast.success(newVal ? 'Premium ativado por 1 ano!' : 'Premium removido.');
+                      }}
+                    />
+                  ))}
+                  {filteredProfiles.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                      <Users className="h-12 w-12 mb-3 opacity-20" />
+                      <p className="text-sm font-bold">Nenhum usuário encontrado</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -808,6 +723,119 @@ export default function AdminDashboard() {
   );
 }
 
+
+// ─── UserCard Component ───────────────────────────────────────────────────────
+function UserCard({
+  profile: p,
+  onBlock,
+  onTogglePremium,
+}: {
+  profile: Profile;
+  onBlock: () => void;
+  onTogglePremium: () => void;
+}) {
+  const initials = p.email.slice(0, 2).toUpperCase();
+  const avatarColors = [
+    "bg-primary/10 text-primary",
+    "bg-emerald-100 text-emerald-700",
+    "bg-purple-100 text-purple-700",
+    "bg-pink-100 text-pink-700",
+    "bg-amber-100 text-amber-700",
+  ];
+  const colorIdx = p.email.charCodeAt(0) % avatarColors.length;
+
+  return (
+    <div className={cn(
+      "rounded-2xl border bg-white p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:shadow-md transition-all",
+      p.is_blocked ? "border-destructive/30 bg-destructive/5" : "border-border/50"
+    )}>
+      {/* Avatar */}
+      <div className={cn(
+        "w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm shrink-0",
+        avatarColors[colorIdx]
+      )}>
+        {initials}
+      </div>
+
+      {/* Main info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-2 mb-1">
+          <span className="text-sm font-black text-foreground truncate">{p.email}</span>
+          {/* Status chips */}
+          {p.is_premium && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-300 text-[10px] font-black uppercase tracking-wider">
+              <Star className="h-2.5 w-2.5" /> Premium
+            </span>
+          )}
+          {p.is_blocked && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20 text-[10px] font-black uppercase tracking-wider">
+              <Lock className="h-2.5 w-2.5" /> Bloqueado
+            </span>
+          )}
+          {!p.is_premium && !p.is_blocked && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black uppercase tracking-wider">
+              Ativo
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+            <MapPin className="h-3 w-3" /> {p.cidade || "—"}, {p.estado || "—"}
+          </span>
+          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            {p.last_login ? new Date(p.last_login).toLocaleString("pt-BR") : "Nunca logou"}
+          </span>
+          {p.premium_since && (
+            <span className="text-[11px] text-amber-600 flex items-center gap-1">
+              <Sparkles className="h-3 w-3" /> Premium desde {new Date(p.premium_since).toLocaleDateString("pt-BR")}
+            </span>
+          )}
+          {p.is_blocked && p.motivo_bloqueio && (
+            <span className="text-[11px] text-destructive font-bold">
+              Razão: {p.motivo_bloqueio}
+            </span>
+          )}
+        </div>
+        <p className="text-[9px] text-muted-foreground/60 mt-0.5 font-mono">ID: {p.id}</p>
+      </div>
+
+      {/* Action chips */}
+      <div className="flex flex-wrap gap-2 shrink-0">
+        {/* Block/Unblock chip */}
+        <button
+          onClick={onBlock}
+          className={cn(
+            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all active:scale-95",
+            p.is_blocked
+              ? "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100"
+              : "bg-destructive/8 text-destructive border-destructive/30 hover:bg-destructive/15"
+          )}
+        >
+          {p.is_blocked ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+          {p.is_blocked ? "Desbloquear" : "Bloquear"}
+        </button>
+
+        {/* Premium chip */}
+        <button
+          onClick={onTogglePremium}
+          className={cn(
+            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all active:scale-95",
+            p.is_premium
+              ? "bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100"
+              : "bg-amber-50/50 text-amber-600 border-amber-200 hover:bg-amber-100"
+          )}
+        >
+          <Star className="h-3 w-3" />
+          {p.is_premium ? "Remover Premium" : "Dar Premium"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── StatsCard Component ──────────────────────────────────────────────────────
 function StatsCard({ title, value, icon: Icon, color, description, onClick }: { 
   title: string; 
   value: number; 
