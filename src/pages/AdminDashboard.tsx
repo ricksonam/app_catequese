@@ -5,7 +5,7 @@ import {
   Users, UserX, MessageSquare, Settings, Search, MapPin, 
   ShieldAlert, ShieldCheck, Trash2, ArrowLeft, TrendingUp, 
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
-  BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles
+  BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -87,6 +87,12 @@ export default function AdminDashboard() {
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [blockReason, setBlockReason] = useState("");
   const [userToBlock, setUserToBlock] = useState<Profile | null>(null);
+  const [financeFilters, setFinanceFilters] = useState({
+    estado: "Todos",
+    cidade: "Todas",
+    mes: "Todos",
+    dia: "Todos"
+  });
 
   // Queries
   const { data: profiles = [], isLoading: loadingProfiles } = useQuery({
@@ -205,6 +211,18 @@ export default function AdminDashboard() {
     }
   });
 
+  const { data: payments = [], isLoading: loadingPayments } = useQuery({
+    queryKey: ["admin_payments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("webhook_logs")
+        .select("*")
+        .eq("processed", true)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
 
   // Mutations
   const toggleBlockMutation = useMutation({
@@ -264,11 +282,48 @@ export default function AdminDashboard() {
     return { total, blocked, activeToday, deletedReasons, safetyAlertsCount, premium };
   }, [profiles, sugestoes, safetyAlerts]);
 
+  const processedPayments = useMemo(() => {
+    return payments.map(pay => {
+      const profile = profiles.find(p => p.id === pay.activated_user_id);
+      const amount = (pay.payload as any)?.paid_amount || (pay.payload as any)?.amount || 0;
+      const date = new Date(pay.created_at);
+      return {
+        ...pay,
+        valor: amount / 100, // Assuming cents
+        cidade: profile?.cidade || "Não informado",
+        estado: profile?.estado || "—",
+        email: profile?.email || "Desconhecido",
+        data: date,
+        mes: (date.getMonth() + 1).toString().padStart(2, '0'),
+        dia: date.getDate().toString().padStart(2, '0'),
+        ano: date.getFullYear().toString(),
+      };
+    });
+  }, [payments, profiles]);
+
+  const filteredPayments = useMemo(() => {
+    return processedPayments.filter(p => {
+      if (financeFilters.estado !== "Todos" && p.estado !== financeFilters.estado) return false;
+      if (financeFilters.cidade !== "Todas" && p.cidade !== financeFilters.cidade) return false;
+      if (financeFilters.mes !== "Todos" && p.mes !== financeFilters.mes) return false;
+      if (financeFilters.dia !== "Todos" && p.dia !== financeFilters.dia) return false;
+      return true;
+    });
+  }, [processedPayments, financeFilters]);
+
+  const totalRevenue = filteredPayments.reduce((acc, curr) => acc + curr.valor, 0);
+
+  // Lists for filters
+  const estadosList = ["Todos", ...Array.from(new Set(processedPayments.map(p => p.estado).filter(Boolean)))];
+  const cidadesList = ["Todas", ...Array.from(new Set(processedPayments.filter(p => financeFilters.estado === "Todos" || p.estado === financeFilters.estado).map(p => p.cidade).filter(Boolean)))];
+  const mesesList = ["Todos", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+  const diasList = ["Todos", ...Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'))];
+
 
   const feedbackList = sugestoes.filter(s => s.tipo !== 'exclusao');
   const churnList = sugestoes.filter(s => s.tipo === 'exclusao');
 
-  if (loadingProfiles || loadingSugestoes || loadingSafety) {
+  if (loadingProfiles || loadingSugestoes || loadingSafety || loadingPayments) {
 
     return (
       <div className="p-8 space-y-6">
@@ -368,6 +423,7 @@ export default function AdminDashboard() {
           <aside className="w-full md:w-64 border-r border-border/50 bg-slate-50/50 p-6 space-y-2">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
+            <TabButton active={activeTab === "finance"} onClick={() => setActiveTab("finance")} icon={CircleDollarSign} label="Financeiro" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
             <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={MessageSquare} label="Sugestões" />
@@ -520,6 +576,121 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {activeTab === "finance" && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Gestão Financeira</h2>
+                    <p className="text-sm text-muted-foreground">Monitore o faturamento do Premium</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white rounded-2xl border shadow-sm">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Estado</label>
+                    <select 
+                      value={financeFilters.estado}
+                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, estado: e.target.value, cidade: "Todas" }))}
+                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
+                    >
+                      {estadosList.map(e => <option key={e} value={e}>{e}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cidade</label>
+                    <select 
+                      value={financeFilters.cidade}
+                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, cidade: e.target.value }))}
+                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
+                    >
+                      {cidadesList.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Mês</label>
+                    <select 
+                      value={financeFilters.mes}
+                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, mes: e.target.value }))}
+                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
+                    >
+                      {mesesList.map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Dia</label>
+                    <select 
+                      value={financeFilters.dia}
+                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, dia: e.target.value }))}
+                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
+                    >
+                      {diasList.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Faturamento Card */}
+                  <Card className="col-span-1 md:col-span-1 rounded-[32px] bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xl shadow-emerald-500/20 border-none overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
+                    <CardContent className="p-8 relative z-10">
+                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-6">
+                        <CircleDollarSign className="h-8 w-8 text-white" />
+                      </div>
+                      <p className="text-sm font-bold text-emerald-50 uppercase tracking-widest mb-1">
+                        Faturamento Filtrado
+                      </p>
+                      <h3 className="text-4xl font-black tracking-tighter">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
+                      </h3>
+                      <p className="text-xs text-emerald-100 mt-4 font-medium opacity-80">
+                        {filteredPayments.length} {filteredPayments.length === 1 ? 'assinatura' : 'assinaturas'} encontradas
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Lista de Pagamentos */}
+                  <Card className="col-span-1 md:col-span-2 rounded-[32px] border-border shadow-sm bg-white overflow-hidden flex flex-col">
+                    <CardHeader className="p-6 pb-2">
+                      <CardTitle className="text-lg font-bold">Histórico de Transações</CardTitle>
+                      <CardDescription>Visualização detalhada baseada nos filtros acima</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0 flex-1 relative">
+                      <ScrollArea className="h-[280px] w-full border-t">
+                        {filteredPayments.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center h-full py-16 text-muted-foreground">
+                            <CircleDollarSign className="h-10 w-10 mb-3 opacity-20" />
+                            <p className="text-sm font-bold">Nenhum pagamento encontrado</p>
+                          </div>
+                        ) : (
+                          <div className="divide-y divide-border/50">
+                            {filteredPayments.map(pay => (
+                              <div key={pay.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shrink-0">
+                                    <Star className="h-4 w-4 text-emerald-600" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-bold text-foreground">{pay.email}</p>
+                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                                      {pay.cidade}, {pay.estado} • {pay.data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' })}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-sm font-black text-emerald-600">
+                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pay.valor)}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
 
             {activeTab === "churn" && (
               <div className="space-y-6">
