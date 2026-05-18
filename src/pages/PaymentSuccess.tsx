@@ -15,11 +15,23 @@ export default function PaymentSuccess() {
   const attemptsRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Extract transaction details from InfinitePay's checkout redirect URL query params
+  const params = new URLSearchParams(window.location.search);
+  const transactionId = params.get("transaction_id") || 
+                        params.get("nsu") || 
+                        params.get("invoice_slug") || 
+                        params.get("slug") || 
+                        params.get("id");
+
   const tryActivate = async () => {
     if (!session?.access_token) return;
 
     try {
       const res = await supabase.functions.invoke("activate-premium", {
+        body: { 
+          token: session.access_token,
+          transactionId: transactionId || undefined
+        },
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
 
@@ -196,7 +208,7 @@ export default function PaymentSuccess() {
             )}
 
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/")}
               className="w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest text-white shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
               style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
             >

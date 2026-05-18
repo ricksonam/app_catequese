@@ -272,10 +272,24 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
   return (
     <div className="flex flex-col h-full bg-slate-100 dark:bg-zinc-950 overflow-hidden">
-      {/* Nome do Usuário Logado */}
-      <div className="p-4 pb-1 border-b border-black/5 mb-1">
-        <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
-        <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
+      {/* Nome do Usuário Logado & Assinatura */}
+      <div className="p-4 pb-2 border-b border-black/5 mb-2 flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
+          <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
+        </div>
+        <button 
+          onClick={() => go("/assinatura")}
+          className={cn(
+            "px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all shadow-sm shrink-0",
+            isPremium 
+              ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-amber-500/20" 
+              : "bg-slate-200 dark:bg-zinc-800 text-muted-foreground border border-black/5"
+          )}
+        >
+          <Sparkles className="h-2.5 w-2.5" />
+          {isPremium ? "Premium" : "Grátis"}
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-hide">
@@ -511,11 +525,21 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                    <Users className="h-5 w-5" />
                  </div>
-                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Configurações</span>
+                 <div className="flex-1 flex flex-col items-start gap-1">
+                   <span className="text-[11px] font-black text-foreground uppercase tracking-[0.2em]">Configurações</span>
+                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${isPremium ? 'bg-amber-500/20 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
+                     {isPremium ? "Assinatura Premium" : "Plano Gratuito"}
+                   </span>
+                 </div>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-1 px-1 space-y-1">
+              <button onClick={() => go("/assinatura")} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
+                <span className="text-sm font-bold text-foreground/80 text-left">Minha Assinatura</span>
+              </button>
+              
               <button onClick={() => setShowPasswordDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:rotate-12 transition-transform"><KeyRound className="h-4 w-4" /></div>
                 <span className="text-sm font-bold text-foreground/80 text-left">Alterar Senha</span>

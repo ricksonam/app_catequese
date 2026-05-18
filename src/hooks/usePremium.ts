@@ -7,12 +7,14 @@ const CHECKOUT_URL = "https://checkout.infinitepay.io/ricksonam/TmDHBX1ASB";
 export function usePremium() {
   const { session } = useAuth();
   const [isPremium, setIsPremium] = useState<boolean>(false);
+  const [premiumExpiresAt, setPremiumExpiresAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const activationAttempted = useRef(false);
 
   useEffect(() => {
     if (!session?.user?.id) {
       setIsPremium(false);
+      setPremiumExpiresAt(null);
       setLoading(false);
       return;
     }
@@ -31,6 +33,7 @@ export function usePremium() {
 
       if (currentlyPremium) {
         setIsPremium(true);
+        setPremiumExpiresAt(data?.premium_expires_at || null);
         setLoading(false);
         return;
       }
@@ -41,15 +44,18 @@ export function usePremium() {
         activationAttempted.current = true;
         try {
           const result = await supabase.functions.invoke("activate-premium", {
+            body: { token: session.access_token },
             headers: { Authorization: `Bearer ${session.access_token}` },
           });
           const resData = result.data as {
             success?: boolean;
             no_payment?: boolean;
+            expires_at?: string;
           } | null;
 
           if (resData?.success) {
             setIsPremium(true);
+            setPremiumExpiresAt(resData.expires_at || null);
             setLoading(false);
             return;
           }
@@ -59,6 +65,7 @@ export function usePremium() {
       }
 
       setIsPremium(false);
+      setPremiumExpiresAt(null);
       setLoading(false);
     };
 
@@ -81,9 +88,11 @@ export function usePremium() {
             const exp = payload.new.premium_expires_at;
             if (!exp || new Date(exp) > new Date()) {
               setIsPremium(true);
+              setPremiumExpiresAt(exp || null);
             }
           } else {
             setIsPremium(false);
+            setPremiumExpiresAt(null);
           }
         }
       )
@@ -98,5 +107,5 @@ export function usePremium() {
     window.open(CHECKOUT_URL, "_blank");
   };
 
-  return { isPremium, loading, redirectToPayment };
+  return { isPremium, premiumExpiresAt, loading, redirectToPayment };
 }
