@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ObjectiveModal } from "@/components/ObjectiveModal";
 import { TurmaChoiceStep } from "@/components/Onboarding/TurmaChoiceStep";
 import { OnboardingIntroStep } from "@/components/Onboarding/OnboardingIntroStep";
-import { OnboardingWizard } from "@/components/Onboarding/OnboardingWizard";
+import { ConversationalOnboarding } from "@/components/Onboarding/ConversationalOnboarding";
 import WelcomeModal from "@/components/WelcomeModal";
 import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
 import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
@@ -508,9 +508,8 @@ export default function Dashboard() {
         onStart={() => setOnboardingStep("paroquia")}
       />
 
-      <OnboardingWizard 
-        currentStep={["paroquia", "catequista", "turma"].includes(onboardingStep) ? onboardingStep as any : "none"}
-        onStepChange={(step) => setOnboardingStep(step as any)}
+      <ConversationalOnboarding 
+        open={["paroquia", "catequista", "turma"].includes(onboardingStep)}
         onComplete={async () => {
           localStorage.setItem("ivc_onboarding_completed", "true");
           setOnboardingStep("none");
