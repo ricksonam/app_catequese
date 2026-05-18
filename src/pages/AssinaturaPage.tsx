@@ -184,7 +184,7 @@ export default function AssinaturaPage() {
                 style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               >
                 <Sparkles className="h-4 w-4" />
-                Assinar Premium – R$ 9,90/mês
+                Assinar Premium – Plano Anual
               </button>
 
               <div className="flex items-center justify-center gap-2 text-[10px] uppercase font-black tracking-widest text-muted-foreground py-2 border-t border-black/5 dark:border-white/5 mt-4">

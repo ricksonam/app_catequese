@@ -448,7 +448,7 @@ export default function PlanoTurma() {
                 style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               >
                 <Sparkles className="h-4 w-4" />
-                Assinar Premium – R$ 9,90/mês
+                Assinar Premium – Plano Anual
               </button>
               <button onClick={() => setShowPremiumModal(false)} className="text-xs text-muted-foreground font-bold hover:text-foreground transition-colors py-2 w-full">
                 Cancelar

@@ -8,6 +8,7 @@ export function usePremium() {
   const { session } = useAuth();
   const [isPremium, setIsPremium] = useState<boolean>(false);
   const [premiumExpiresAt, setPremiumExpiresAt] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const activationAttempted = useRef(false);
 
@@ -15,12 +16,37 @@ export function usePremium() {
     if (!session?.user?.id) {
       setIsPremium(false);
       setPremiumExpiresAt(null);
+      setUserName(null);
       setLoading(false);
       return;
     }
 
     const fetchStatus = async () => {
       setLoading(true);
+      
+      // Get user name from auth metadata
+      let resolvedName = session.user.user_metadata?.full_name || 
+                         session.user.user_metadata?.name || 
+                         "";
+
+      // If not in metadata, fetch from catequistas table
+      if (!resolvedName) {
+        try {
+          const { data: catequista } = await supabase
+            .from("catequistas")
+            .select("nome")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+          if (catequista?.nome) {
+            resolvedName = catequista.nome;
+          }
+        } catch {
+          // Silent catch
+        }
+      }
+
+      setUserName(resolvedName || null);
+
       const { data } = await supabase
         .from("profiles")
         .select("is_premium, premium_expires_at")
@@ -104,8 +130,21 @@ export function usePremium() {
   }, [session?.user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const redirectToPayment = () => {
-    window.open(CHECKOUT_URL, "_blank");
+    if (!session?.user) {
+      window.open(CHECKOUT_URL, "_blank");
+      return;
+    }
+
+    const email = session.user.email || "";
+    const name = userName || "";
+
+    const emailParam = email ? `&email=${encodeURIComponent(email)}&customer_email=${encodeURIComponent(email)}&buyer_email=${encodeURIComponent(email)}` : "";
+    const nameParam = name ? `&name=${encodeURIComponent(name)}&customer_name=${encodeURIComponent(name)}&buyer_name=${encodeURIComponent(name)}` : "";
+    
+    // Construct final payment URL with robust prefilled query parameters
+    const finalUrl = `${CHECKOUT_URL}?utm_source=app${emailParam}${nameParam}`;
+    window.open(finalUrl, "_blank");
   };
 
-  return { isPremium, premiumExpiresAt, loading, redirectToPayment };
+  return { isPremium, premiumExpiresAt, userName, loading, redirectToPayment };
 }

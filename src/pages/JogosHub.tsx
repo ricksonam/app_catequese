@@ -185,7 +185,7 @@ export default function JogosHub() {
                 style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
               >
                 <Star className="h-4 w-4" />
-                Assinar Agora – R$ 9,90/ano
+                Assinar Premium – Plano Anual
               </button>
               <button
                 onClick={() => setModalOpen(false)}
