@@ -15,8 +15,27 @@ Deno.serve(async (req: Request) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Initialize service role client early for logging
+  const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+  const logToDatabase = async (mensagem: string, metadata: any = {}, userId: string | null = null, userEmail: string | null = null) => {
+    try {
+      console.log(`[activate-premium-log] ${mensagem}`, JSON.stringify(metadata));
+      await serviceClient.from("error_logs").insert([{
+        tipo: "activate_premium_log",
+        mensagem: `[activate-premium] ${mensagem}`,
+        metadata,
+        user_id: userId,
+        user_email: userEmail,
+        pagina: "edge-function"
+      }]);
+    } catch (err) {
+      console.error("Failed to log to database error_logs:", err);
+    }
+  };
+
   try {
-    console.log(`[activate-premium] Called with method: ${req.method}`);
+    await logToDatabase("Method received", { method: req.method, url: req.url });
     
     let token: string | null = null;
     let transactionId: string | null = null;
@@ -39,61 +58,69 @@ Deno.serve(async (req: Request) => {
                       url.searchParams.get("slug");
     if (queryTxId) transactionId = queryTxId;
 
-    // Try to parse JSON body (only for POST/PUT)
+    // Try to parse JSON body
     if (req.method === "POST" || req.method === "PUT") {
       try {
         const body = await req.json();
+        await logToDatabase("Parsed request body", { body });
         if (body.token) token = body.token;
         if (body.transactionId) transactionId = body.transactionId;
         if (body.transaction_id) transactionId = body.transaction_id;
         if (body.nsu) transactionId = body.nsu;
         if (body.invoice_slug) transactionId = body.invoice_slug;
         if (body.slug) transactionId = body.slug;
-      } catch (_e) {
-        // Body was not JSON or empty - ignore
+      } catch (e) {
+        await logToDatabase("Body parsing failed or empty", { error: e.message });
       }
     }
 
+    await logToDatabase("Parsed parameters", { 
+      hasToken: !!token, 
+      tokenPrefix: token ? token.substring(0, 15) + "..." : null,
+      transactionId 
+    });
+
     if (!token) {
-      console.error("[activate-premium] Missing user access token.");
+      await logToDatabase("Missing user access token", { status: 401 });
       return new Response(JSON.stringify({ error: "Unauthorized", message: "Token missing" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // 2. Initialize Supabase Service Client
-    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    // 3. Authenticate User using Service Client
+    // 3. Authenticate User
     const { data: { user }, error: authError } = await serviceClient.auth.getUser(token);
     if (authError || !user) {
-      console.error("[activate-premium] Auth verification failed:", authError);
+      await logToDatabase("Auth verification failed", { error: authError?.message || "User is null", tokenPrefix: token.substring(0, 15) + "..." });
       return new Response(JSON.stringify({ error: "Unauthorized", message: "Invalid token" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    console.log(`[activate-premium] Authenticated user: ${user.email} (ID: ${user.id})`);
+    await logToDatabase("User authenticated successfully", {}, user.id, user.email);
 
     // 4. Check if user is already premium
-    const { data: profile } = await serviceClient
+    const { data: profile, error: profileError } = await serviceClient
       .from("profiles")
       .select("is_premium, premium_expires_at")
       .eq("id", user.id)
       .maybeSingle();
 
-    const alreadyPremium =
+    if (profileError) {
+      await logToDatabase("Error fetching profile", { error: profileError.message }, user.id, user.email);
+    }
+
+    const currentlyPremium =
       profile?.is_premium &&
       (!profile.premium_expires_at || new Date(profile.premium_expires_at) > new Date());
 
-    if (alreadyPremium) {
-      console.log(`[activate-premium] User ${user.email} is already premium.`);
+    if (currentlyPremium) {
+      await logToDatabase("User is already premium", { premium_expires_at: profile?.premium_expires_at }, user.id, user.email);
       return new Response(JSON.stringify({ 
         success: true, 
         already_premium: true,
-        expires_at: profile.premium_expires_at 
+        expires_at: profile?.premium_expires_at 
       }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -102,7 +129,7 @@ Deno.serve(async (req: Request) => {
 
     // 5. Look for unprocessed payments in the last 48 hours
     const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
-    console.log(`[activate-premium] Searching unprocessed webhook_logs since ${cutoff} (filter key: ${transactionId || "None"})`);
+    await logToDatabase("Searching unprocessed webhook_logs", { cutoff, filterTxId: transactionId }, user.id, user.email);
     
     const { data: logs, error: logsError } = await serviceClient
       .from("webhook_logs")
@@ -112,7 +139,7 @@ Deno.serve(async (req: Request) => {
       .order("created_at", { ascending: false });
 
     if (logsError) {
-      console.error("[activate-premium] Error querying webhook_logs:", logsError.message);
+      await logToDatabase("Error querying webhook_logs", { error: logsError.message }, user.id, user.email);
       return new Response(JSON.stringify({ success: false, error: "Database error" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -120,20 +147,20 @@ Deno.serve(async (req: Request) => {
     }
 
     if (!logs || logs.length === 0) {
-      console.log(`[activate-premium] No unprocessed payments found in the last 48h for user ${user.email}`);
+      await logToDatabase("No unprocessed payments found in last 48h", { cutoff }, user.id, user.email);
       return new Response(JSON.stringify({ success: false, no_payment: true }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // 6. Perform precise matching in Deno
+    await logToDatabase("Unprocessed logs found", { count: logs.length, logIds: logs.map(l => l.id) }, user.id, user.email);
+
+    // 6. Perform precise matching
     let matchedLog = null;
 
     if (transactionId) {
       const lowerTxId = String(transactionId).trim().toLowerCase();
-      console.log(`[activate-premium] Attempting precise match for identifier: "${lowerTxId}"`);
-      
       matchedLog = logs.find(log => {
         const payload = log.payload || {};
         const nsu = String(payload.transaction_nsu || "").trim().toLowerCase();
@@ -145,22 +172,22 @@ Deno.serve(async (req: Request) => {
       });
 
       if (matchedLog) {
-        console.log(`[activate-premium] Precise match found! Log ID: ${matchedLog.id}`);
+        await logToDatabase("Precise match found", { matchedLogId: matchedLog.id, transactionId }, user.id, user.email);
       } else {
-        console.log(`[activate-premium] No precise match found for identifier: "${lowerTxId}".`);
+        await logToDatabase("No precise match found for transactionId, falling back to latest", { transactionId }, user.id, user.email);
       }
     }
 
     // Fallback: if no specific transactionId was requested or no match was found, use the latest unprocessed log
     if (!matchedLog) {
-      console.log(`[activate-premium] Falling back to the most recent unprocessed payment log.`);
       matchedLog = logs[0];
+      await logToDatabase("Using fallback latest unprocessed log", { matchedLogId: matchedLog.id }, user.id, user.email);
     }
 
     const payload = matchedLog.payload || {};
     const finalTransactionNsu = payload.transaction_nsu || payload.invoice_slug || matchedLog.id;
 
-    console.log(`[activate-premium] Activating premium using log ${matchedLog.id} (NSU: ${finalTransactionNsu})...`);
+    await logToDatabase("Updating profile to premium", { matchedLogId: matchedLog.id, nsu: finalTransactionNsu }, user.id, user.email);
 
     // 7. Activate premium for 1 year
     const expiresAt = new Date();
@@ -178,7 +205,7 @@ Deno.serve(async (req: Request) => {
       .eq("id", user.id);
 
     if (updateError) {
-      console.error("[activate-premium] Failed to update profile:", updateError.message);
+      await logToDatabase("Failed to update profile to premium", { error: updateError.message }, user.id, user.email);
       return new Response(JSON.stringify({ success: false, error: "Update failed" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -186,7 +213,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // 8. Mark the webhook log as processed
-    await serviceClient
+    const { error: logUpdateError } = await serviceClient
       .from("webhook_logs")
       .update({
         processed: true,
@@ -195,7 +222,13 @@ Deno.serve(async (req: Request) => {
       })
       .eq("id", matchedLog.id);
 
-    console.log(`[activate-premium] Premium successfully activated for user ${user.id} (${user.email})`);
+    if (logUpdateError) {
+      await logToDatabase("Warning: failed to mark webhook log as processed", { error: logUpdateError.message, matchedLogId: matchedLog.id }, user.id, user.email);
+    } else {
+      await logToDatabase("Webhook log marked as processed successfully", { matchedLogId: matchedLog.id }, user.id, user.email);
+    }
+
+    await logToDatabase("Premium successfully activated!", { expiresAt: expiresAt.toISOString() }, user.id, user.email);
 
     return new Response(
       JSON.stringify({ success: true, expires_at: expiresAt.toISOString() }),
@@ -203,7 +236,7 @@ Deno.serve(async (req: Request) => {
     );
 
   } catch (err) {
-    console.error("[activate-premium] Unexpected error:", err);
+    await logToDatabase("Unexpected execution error", { error: err.message, stack: err.stack });
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

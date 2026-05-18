@@ -60,7 +60,7 @@ const comunicacao = [
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isPremium, redirectToPayment } = usePremium();
+  const { isPremium, premiumExpiresAt, redirectToPayment } = usePremium();
   
   // Queries
   const { data: turmas = [], isLoading: isLoadingTurmas } = useQuery({
@@ -435,6 +435,59 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
           {/* CARD STANDALONE: CENTRAL DE RELATÓRIOS */}
         </Accordion>
+
+        {/* Standalone card: Minha Assinatura */}
+        <div className="mt-2 mb-2">
+          {isPremium ? (
+            /* Premium active card in the menu */
+            <button
+              onClick={() => go("/assinatura")}
+              className="w-full group flex items-center gap-3 px-4 py-4 rounded-2xl bg-gradient-to-r from-amber-400/10 to-orange-500/10 dark:from-amber-500/10 dark:to-orange-500/10 border-2 border-amber-500/40 dark:border-amber-500/30 shadow-md hover:shadow-lg active:scale-[0.98] transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Sparkles className="h-5 w-5 animate-pulse" />
+              </div>
+              <div className="flex-1 text-left">
+                <span className="block text-[10px] font-black text-amber-800 dark:text-amber-300 uppercase tracking-[0.15em] whitespace-nowrap">
+                  Assinatura Premium Anual
+                </span>
+                <span className="block text-[9px] text-muted-foreground font-bold mt-0.5">
+                  Acesso Total Liberado ⭐
+                </span>
+              </div>
+              
+              {/* Countdown chip inside the menu */}
+              {premiumExpiresAt && (
+                <div className="px-2 py-1 rounded-lg bg-orange-500 text-white text-[8px] font-black uppercase tracking-widest shrink-0 shadow-sm animate-pulse">
+                  {Math.ceil((new Date(premiumExpiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) > 0 
+                    ? `Faltam ${Math.ceil((new Date(premiumExpiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias`
+                    : "Ativa"}
+                </div>
+              )}
+            </button>
+          ) : (
+            /* Free/Inactive card in the menu with subscribe button */
+            <button
+              onClick={redirectToPayment}
+              className="w-full group flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-black/10 dark:border-white/10 hover:border-amber-500/50 shadow-md hover:shadow-lg active:scale-[0.98] transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div className="flex-1 text-left">
+                <span className="block text-[10px] font-black text-foreground uppercase tracking-[0.15em] whitespace-nowrap">
+                  Assinatura Premium
+                </span>
+                <span className="block text-[9px] text-muted-foreground font-bold mt-0.5">
+                  Clique para assinar o Plano Anual
+                </span>
+              </div>
+              <div className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[9px] font-black uppercase tracking-widest shrink-0 shadow-sm border border-amber-300">
+                Assinar
+              </div>
+            </button>
+          )}
+        </div>
 
         <div className="mt-2 mb-2">
           <button

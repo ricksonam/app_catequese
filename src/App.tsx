@@ -127,6 +127,7 @@ const AppRoutes = () => (
     <Route path="/missao/:codigo" element={<PublicMissao />} />
     <Route path="/f/:codigo" element={<PublicFormResponder />} />
     <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
+    <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
     <Route
       element={
         <ProtectedRoute>
@@ -134,7 +135,6 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     >
-      <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
       <Route path="/assinatura" element={<AssinaturaPage />} />
       <Route path="/turmas" element={<TurmasList />} />
       <Route path="/turmas/nova" element={<TurmaForm />} />
