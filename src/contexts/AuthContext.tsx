@@ -11,6 +11,8 @@ interface AuthContextType {
   loading: boolean;
   isReady: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
+  isSubAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -20,6 +22,8 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   isReady: false,
   isAdmin: false,
+  isSuperAdmin: false,
+  isSubAdmin: false,
   signOut: async () => {},
 });
 
@@ -34,41 +38,95 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false);
   const [blockedReason, setBlockedReason] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isSubAdmin, setIsSubAdmin] = useState(false);
   const initialized = useRef(false);
   const resolved = useRef(false);
 
   const handleSession = async (s: Session | null) => {
+    let subAdminActive = false;
+    let subAdminPaused = false;
+    let subAdminRevoked = false;
+
     if (s?.user) {
       try {
-        // Verificar se o usuário está bloqueado
+        // Verificar se o usuário está bloqueado ou é sub-admin
         const { data: profile, error } = await supabase
           .from("profiles")
-          .select("is_blocked, motivo_bloqueio")
+          .select("is_blocked, motivo_bloqueio, role, sub_admin_status")
           .eq("id", s.user.id)
           .maybeSingle();
 
         if (error) {
           console.error("[iCatequese] Erro ao verificar status do perfil:", error);
-        } else if (profile?.is_blocked) {
-          console.warn("[iCatequese] Usuário bloqueado tentou acessar:", s.user.email);
-          
-          setBlockedReason(profile.motivo_bloqueio || "Violação dos termos de uso da plataforma.");
-          setIsBlockedModalOpen(true);
-          
-          // Resolve o estado de loading para não travar a tela
-          if (!resolved.current) {
-            resolved.current = true;
-            setLoading(false);
-            setIsReady(true);
+        } else if (profile) {
+          if (profile.is_blocked) {
+            console.warn("[iCatequese] Usuário bloqueado tentou acessar:", s.user.email);
+            
+            setBlockedReason(profile.motivo_bloqueio || "Violação dos termos de uso da plataforma.");
+            setIsBlockedModalOpen(true);
+            
+            if (!resolved.current) {
+              resolved.current = true;
+              setLoading(false);
+              setIsReady(true);
+            }
+            return;
           }
-          return;
+
+          if (profile.role === "sub_admin") {
+            if (profile.sub_admin_status === "paused") {
+              subAdminPaused = true;
+            } else if (profile.sub_admin_status === "revoked") {
+              subAdminRevoked = true;
+            } else if (profile.sub_admin_status === "active") {
+              subAdminActive = true;
+            }
+          }
         }
       } catch (err) {
         console.error("[iCatequese] Exceção ao verificar status do perfil:", err);
       }
     }
 
+    if (subAdminPaused) {
+      toast.error("Seu acesso como administrador está pausado temporariamente.");
+      setSession(null);
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      setIsSubAdmin(false);
+      setTimeout(() => supabase.auth.signOut(), 500);
+      if (!resolved.current) {
+        resolved.current = true;
+        setLoading(false);
+        setIsReady(true);
+      }
+      return;
+    }
+
+    if (subAdminRevoked) {
+      toast.error("Seu acesso como administrador foi revogado pelo super-admin.");
+      setSession(null);
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      setIsSubAdmin(false);
+      setTimeout(() => supabase.auth.signOut(), 500);
+      if (!resolved.current) {
+        resolved.current = true;
+        setLoading(false);
+        setIsReady(true);
+      }
+      return;
+    }
+
+    const superAdmin = s?.user?.email === "icatequese2026@gmail.com";
+    
+    setIsSuperAdmin(superAdmin);
+    setIsSubAdmin(subAdminActive);
+    setIsAdmin(superAdmin || subAdminActive);
     setSession(s);
+
     if (!resolved.current) {
       resolved.current = true;
       setLoading(false);
@@ -114,14 +172,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Tenta deslogar no servidor
       await supabase.auth.signOut();
     } catch (err) {
       console.error("[iCatequese] Erro ao deslogar no servidor:", err);
     } finally {
-      // SEMPRE limpa o estado local para não travar o usuário
       setSession(null);
-      // Opcional: Limpar localStorage manualmente se o supabase.auth não o fizer
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      setIsSubAdmin(false);
       localStorage.removeItem("supabase.auth.token");
       localStorage.removeItem("ivc_saved_email");
       localStorage.removeItem("ivc_onboarding_completed");
@@ -129,9 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const isAdmin = session?.user?.email === "icatequese2026@gmail.com";
-
-  // Subscription para monitorar bloqueio em tempo real
+  // Subscription para monitorar bloqueio e status do sub_admin em tempo real
   useEffect(() => {
     if (!session?.user?.id) return;
 
@@ -149,9 +205,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log("[iCatequese] Mudança de perfil detectada via Realtime:", payload);
           if (payload.new.is_blocked) {
             console.warn("[iCatequese] Usuário bloqueado em tempo real!");
-            
             setBlockedReason(payload.new.motivo_bloqueio || "Acesso negado pela administração.");
             setIsBlockedModalOpen(true);
+          }
+          
+          if (payload.new.role === "sub_admin") {
+            if (payload.new.sub_admin_status === "paused") {
+              toast.error("Seu acesso como administrador foi pausado.");
+              signOut();
+            } else if (payload.new.sub_admin_status === "revoked") {
+              toast.error("Seu acesso como administrador foi revogado.");
+              signOut();
+            }
           }
         }
       )
@@ -163,7 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session?.user?.id]);
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, isAdmin, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, isAdmin, isSuperAdmin, isSubAdmin, signOut }}>
       {children}
       <BlockedUserModal 
         open={isBlockedModalOpen} 

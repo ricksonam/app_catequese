@@ -44,6 +44,7 @@ import ParoquiaComunidadeCadastro from "@/pages/ParoquiaComunidadeCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminLogin from "@/pages/AdminLogin";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import PublicPlano from "@/pages/PublicPlano";
 import ComunicacaoHub from "@/pages/ComunicacaoHub";
@@ -99,7 +100,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { session, loading, isAdmin } = useAuth();
   if (loading) return null;
-  if (!session || !isAdmin) return <Navigate to="/" replace />;
+  if (!session || !isAdmin) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 }
 
@@ -121,6 +122,7 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<HomeOrLanding />} />
     <Route path="/auth" element={<AuthPage />} />
+    <Route path="/admin/login" element={<AdminLogin />} />
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
     <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />

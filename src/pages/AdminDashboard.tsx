@@ -44,6 +44,9 @@ interface Profile {
   cidade?: string;
   estado?: string;
   motivo_bloqueio?: string | null;
+  role?: string;
+  sub_admin_status?: string;
+  sub_admin_created_by?: string;
 }
 
 const BLOCK_REASONS = [
@@ -77,7 +80,7 @@ interface SafetyAlert {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, isSuperAdmin } = useAuth();
   const qc = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("users");
@@ -87,6 +90,13 @@ export default function AdminDashboard() {
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [blockReason, setBlockReason] = useState("");
   const [userToBlock, setUserToBlock] = useState<Profile | null>(null);
+  
+  // Sub-admin states
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [isSubAdminLoading, setIsSubAdminLoading] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState<{ email: string; password: string } | null>(null);
+
   const [financeFilters, setFinanceFilters] = useState({
     estado: "Todos",
     cidade: "Todas",
@@ -437,7 +447,9 @@ export default function AdminDashboard() {
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
             <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={MessageSquare} label="Sugestões" />
-
+            {isSuperAdmin && (
+              <TabButton active={activeTab === "admins"} onClick={() => setActiveTab("admins")} icon={ShieldCheck} label="Administradores" />
+            )}
             <TabButton active={activeTab === "settings"} onClick={() => setActiveTab("settings")} icon={Settings} label="Configurações" />
           </aside>
 
@@ -805,6 +817,245 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {activeTab === "admins" && isSuperAdmin && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">Gestão de Sub-Administradores</h2>
+                  <p className="text-sm text-muted-foreground">Crie e controle o acesso de outros administradores para a plataforma.</p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Formulário de Criação */}
+                  <Card className="rounded-[24px] border-border/50 shadow-sm p-6 space-y-4 lg:col-span-1 bg-white">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <ShieldCheck className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-foreground text-sm">Novo Sub-Admin</h3>
+                        <p className="text-xs text-muted-foreground">Criar credenciais de acesso</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Email do Administrador</label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            type="email"
+                            placeholder="admin2@icatequese.com"
+                            value={adminEmail}
+                            onChange={(e) => setAdminEmail(e.target.value)}
+                            className="pl-10 rounded-xl h-11 border-2 focus:border-primary"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Senha Provisória</label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                          <Input
+                            type="password"
+                            placeholder="Mínimo 6 caracteres"
+                            value={adminPassword}
+                            onChange={(e) => setAdminPassword(e.target.value)}
+                            className="pl-10 rounded-xl h-11 border-2 focus:border-primary"
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={async () => {
+                          if (!adminEmail || !adminPassword) {
+                            toast.error("Por favor, informe email e senha.");
+                            return;
+                          }
+                          if (adminPassword.length < 6) {
+                            toast.error("A senha deve conter no mínimo 6 caracteres.");
+                            return;
+                          }
+
+                          setIsSubAdminLoading(true);
+                          try {
+                            const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
+                              body: { action: "create", email: adminEmail, password: adminPassword }
+                            });
+
+                            if (error) {
+                              toast.error(error.message || "Erro ao criar sub-administrador.");
+                              return;
+                            }
+
+                            setCreatedCredentials({ email: adminEmail, password: adminPassword });
+                            setAdminEmail("");
+                            setAdminPassword("");
+                            qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                            toast.success("Sub-admin criado com sucesso!");
+                          } catch (err: any) {
+                            console.error("[iCatequese] Erro ao criar sub-admin:", err);
+                            toast.error(err.message || "Erro ao criar sub-administrador.");
+                          } finally {
+                            setIsSubAdminLoading(false);
+                          }
+                        }}
+                        disabled={isSubAdminLoading || !adminEmail || !adminPassword}
+                        className="w-full rounded-xl h-11 font-bold gap-2 mt-2"
+                      >
+                        {isSubAdminLoading ? "Criando..." : "Criar Administrador"}
+                      </Button>
+                    </div>
+                  </Card>
+
+                  {/* Lista de Administradores */}
+                  <Card className="rounded-[24px] border-border/50 shadow-sm p-6 lg:col-span-2 space-y-4 bg-white">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="font-bold text-foreground text-sm">Administradores Ativos</h3>
+                        <p className="text-xs text-muted-foreground">Total de administradores gerenciáveis</p>
+                      </div>
+                      <Badge className="bg-primary/10 text-primary border-none text-xs font-bold px-3 py-1">
+                        {profiles.filter(p => p.role === "sub_admin").length} Sub-Admins
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-3 pt-2">
+                      {profiles.filter(p => p.role === "sub_admin").length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
+                          <ShieldCheck className="h-10 w-10 mb-2 opacity-20" />
+                          <p className="text-sm font-medium">Nenhum sub-administrador cadastrado</p>
+                        </div>
+                      ) : (
+                        profiles.filter(p => p.role === "sub_admin").map((admin) => (
+                          <div key={admin.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border/50 rounded-2xl hover:bg-slate-50 transition-colors gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold border border-indigo-100 shrink-0">
+                                {admin.email.substring(0, 2).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-sm font-bold text-foreground">{admin.email}</p>
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5",
+                                      admin.sub_admin_status === "active" && "border-emerald-200 bg-emerald-50 text-emerald-700",
+                                      admin.sub_admin_status === "paused" && "border-amber-200 bg-amber-50 text-amber-700",
+                                      admin.sub_admin_status === "revoked" && "border-destructive bg-destructive/5 text-destructive"
+                                    )}
+                                  >
+                                    {admin.sub_admin_status === "active" ? "Ativo" : admin.sub_admin_status === "paused" ? "Pausado" : "Revogado"}
+                                  </Badge>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">Criado por: {admin.sub_admin_created_by || "Sistema"}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              {admin.sub_admin_status === "active" ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={async () => {
+                                    try {
+                                      const { error } = await supabase
+                                        .from("profiles")
+                                        .update({ sub_admin_status: "paused" })
+                                        .eq("id", admin.id);
+                                      if (error) throw error;
+                                      qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                                      toast.success("Acesso pausado temporariamente.");
+                                    } catch (err: any) {
+                                      toast.error("Erro ao pausar acesso.");
+                                    }
+                                  }}
+                                  className="rounded-xl text-xs font-bold border-2 gap-1.5 h-9"
+                                >
+                                  <Lock className="w-3.5 h-3.5" /> Pausar
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={async () => {
+                                    try {
+                                      const { error } = await supabase
+                                        .from("profiles")
+                                        .update({ sub_admin_status: "active" })
+                                        .eq("id", admin.id);
+                                      if (error) throw error;
+                                      qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                                      toast.success("Acesso reativado.");
+                                    } catch (err: any) {
+                                      toast.error("Erro ao ativar acesso.");
+                                    }
+                                  }}
+                                  className="rounded-xl text-xs font-bold border-2 gap-1.5 h-9"
+                                >
+                                  <Unlock className="w-3.5 h-3.5" /> Reativar
+                                </Button>
+                              )}
+
+                              {admin.sub_admin_status !== "revoked" && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={async () => {
+                                    try {
+                                      const { error } = await supabase
+                                        .from("profiles")
+                                        .update({ sub_admin_status: "revoked" })
+                                        .eq("id", admin.id);
+                                      if (error) throw error;
+                                      qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                                      toast.success("Acesso revogado com sucesso.");
+                                    } catch (err: any) {
+                                      toast.error("Erro ao revogar acesso.");
+                                    }
+                                  }}
+                                  className="rounded-xl text-xs font-bold border-2 text-destructive hover:bg-destructive/5 hover:text-destructive border-destructive/20 gap-1.5 h-9"
+                                >
+                                  <XCircle className="w-3.5 h-3.5" /> Revogar
+                                </Button>
+                              )}
+
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                  if (!confirm(`Tem certeza que deseja excluir permanentemente o sub-admin ${admin.email}?`)) return;
+                                  setIsSubAdminLoading(true);
+                                  try {
+                                    const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
+                                      body: { action: "delete", userId: admin.id }
+                                    });
+                                    if (error) {
+                                      toast.error(error.message || "Erro ao excluir sub-admin.");
+                                      return;
+                                    }
+                                    qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                                    toast.success("Sub-admin excluído com sucesso!");
+                                  } catch (err: any) {
+                                    toast.error(err.message || "Erro ao excluir sub-admin.");
+                                  } finally {
+                                    setIsSubAdminLoading(false);
+                                  }
+                                }}
+                                className="rounded-xl text-xs font-bold border-2 hover:bg-destructive hover:text-white border-destructive/30 hover:border-destructive text-destructive gap-1.5 h-9"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" /> Excluir
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            )}
+
             {activeTab === "settings" && (
               <div className="space-y-6 max-w-md">
                 <div>
@@ -917,6 +1168,46 @@ export default function AdminDashboard() {
               className="flex-1 rounded-xl h-12 font-bold bg-destructive hover:bg-destructive/90"
             >
               {toggleBlockMutation.isPending ? "Bloqueando..." : "Confirmar Bloqueio"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sub-Admin Credentials Dialog */}
+      <Dialog open={!!createdCredentials} onOpenChange={() => setCreatedCredentials(null)}>
+        <DialogContent className="rounded-[32px] border-none shadow-2xl p-8 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-center flex items-center justify-center gap-2">
+              <ShieldCheck className="h-6 w-6 text-indigo-600 animate-bounce" />
+              Sub-Admin Criado!
+            </DialogTitle>
+            <DialogDescription className="text-center text-xs">
+              Copie as credenciais abaixo para enviar ao novo administrador. Por segurança, elas não serão exibidas novamente.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="space-y-1 bg-slate-50 p-4 rounded-2xl border font-mono text-sm relative">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Email</p>
+              <p className="text-slate-800 break-all select-all font-bold">{createdCredentials?.email}</p>
+            </div>
+            
+            <div className="space-y-1 bg-slate-50 p-4 rounded-2xl border font-mono text-sm relative">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Senha</p>
+              <p className="text-slate-800 break-all select-all font-bold">{createdCredentials?.password}</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                navigator.clipboard.writeText(`Acesso Administrativo iCatequese\n\nURL: ${window.location.origin}/admin/login\nEmail: ${createdCredentials?.email}\nSenha: ${createdCredentials?.password}`);
+                toast.success("Credenciais copiadas!");
+                setCreatedCredentials(null);
+              }}
+              className="w-full rounded-xl h-12 font-bold bg-indigo-600 hover:bg-indigo-500 text-white"
+            >
+              Copiar Credenciais & Fechar
             </Button>
           </DialogFooter>
         </DialogContent>
