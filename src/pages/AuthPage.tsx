@@ -17,6 +17,8 @@ import {
   X as XIcon,
   ChevronRight,
   Check,
+  User,
+  Lock,
 } from "lucide-react";
 import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import { getAppUrl } from "@/lib/utils";
@@ -47,7 +49,9 @@ export default function AuthPage() {
   // Signup state
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
+  const [signupConfirmEmail, setSignupConfirmEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirm, setSignupConfirm] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
 
@@ -143,8 +147,16 @@ export default function AuthPage() {
 
   const handleSignupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (signupEmail !== signupConfirmEmail) {
+      toast({ title: "Erro de digitação", description: "Os e-mails informados não coincidem. Por favor, verifique-os.", variant: "destructive" });
+      return;
+    }
+    if (signupPassword !== signupConfirm) {
+      toast({ title: "Erro de segurança", description: "As senhas digitadas não coincidem. Certifique-se de que são iguais.", variant: "destructive" });
+      return;
+    }
     if (signupPassword.length < 6) {
-      toast({ title: "Erro", description: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
+      toast({ title: "Senha fraca", description: "A senha deve ter pelo menos 6 caracteres para sua proteção.", variant: "destructive" });
       return;
     }
     setShowConsentModal(true);
@@ -465,73 +477,138 @@ export default function AuthPage() {
               </div>
             </div>
 
-            <form onSubmit={handleSignupSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label className="text-slate-600 text-sm font-bold ml-1">Nome Completo</Label>
-                <Input
-                  id="signup-name"
-                  type="text"
-                  value={signupName}
-                  onChange={(e) => setSignupName(e.target.value)}
-                  placeholder="Seu nome"
-                  required
-                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
-                />
-              </div>
+            <form onSubmit={handleSignupSubmit} className="space-y-6">
+              
+              {/* Seção 1: Identificação */}
+              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-5 rounded-3xl border border-slate-200/60 dark:border-slate-800/60 shadow-xl shadow-slate-100/40 dark:shadow-none space-y-4 text-left">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="w-7 h-7 rounded-lg bg-sky-100 dark:bg-sky-950 flex items-center justify-center">
+                    <User className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  </div>
+                  <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Seus Dados Pessoais</h3>
+                </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-slate-600 text-sm font-bold ml-1">Email</Label>
-                <Input
-                  id="signup-email"
-                  type="email"
-                  value={signupEmail}
-                  onChange={(e) => setSignupEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                  required
-                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
-                />
-              </div>
+                {/* Nome Completo */}
+                <div className="space-y-1.5">
+                  <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1">Nome Completo</Label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      value={signupName}
+                      onChange={(e) => setSignupName(e.target.value)}
+                      placeholder="Ex: Maria de Souza"
+                      required
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm"
+                    />
+                  </div>
+                </div>
 
+                {/* Email */}
+                <div className="space-y-1.5">
+                  <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1">E-mail</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                      placeholder="seu@email.com"
+                      required
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm"
+                    />
+                  </div>
+                </div>
 
-
-              <div className="space-y-1.5">
-                <Label className="text-slate-600 text-sm font-bold ml-1">Senha</Label>
-                <div className="relative">
-                  <Input
-                    id="signup-password"
-                    type={showSignupPassword ? "text" : "password"}
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    placeholder="Mín. 6 caracteres"
-                    required
-                    className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm pr-11"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowSignupPassword(!showSignupPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
-                  >
-                    {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                {/* Confirmar Email */}
+                <div className="space-y-1.5 bg-slate-50/50 dark:bg-slate-950/20 p-3 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                  <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1 flex items-center gap-1">
+                    <Check className="h-3 w-3 text-emerald-500" strokeWidth={3} /> Confirmar E-mail
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Input
+                      id="signup-confirm-email"
+                      type="email"
+                      value={signupConfirmEmail}
+                      onChange={(e) => setSignupConfirmEmail(e.target.value)}
+                      placeholder="Repita o seu e-mail"
+                      required
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
+              {/* Seção 2: Dados de Acesso */}
+              <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-5 rounded-3xl border border-slate-200/60 dark:border-slate-800/60 shadow-xl shadow-slate-100/40 dark:shadow-none space-y-4 text-left">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950 flex items-center justify-center">
+                    <Lock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">Senha & Segurança</h3>
+                </div>
 
+                {/* Senha */}
+                <div className="space-y-1.5">
+                  <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1">Senha de Acesso</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Input
+                      id="signup-password"
+                      type={showSignupPassword ? "text" : "password"}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      placeholder="Mínimo 6 caracteres"
+                      required
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 pr-12 h-12 rounded-2xl shadow-sm text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSignupPassword(!showSignupPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-primary transition-colors"
+                    >
+                      {showSignupPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
 
-              <p className="text-slate-400 text-xs text-center px-2 font-medium">
-                Ao cadastrar, você será solicitado a aceitar nossos <span className="text-primary font-bold">Termos de Uso</span>.
+                {/* Confirmar Senha */}
+                <div className="space-y-1.5 bg-slate-50/50 dark:bg-slate-950/20 p-3 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                  <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1 flex items-center gap-1">
+                    <Check className="h-3 w-3 text-emerald-500" strokeWidth={3} /> Confirmar Senha
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Input
+                      id="signup-confirm"
+                      type={showSignupPassword ? "text" : "password"}
+                      value={signupConfirm}
+                      onChange={(e) => setSignupConfirm(e.target.value)}
+                      placeholder="Repita a sua senha"
+                      required
+                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 pr-12 h-12 rounded-2xl shadow-sm text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-slate-400 dark:text-slate-500 text-xs text-center px-4 font-bold uppercase tracking-wider">
+                Ao cadastrar, você aceita nossos <span className="text-primary font-black underline cursor-pointer" onClick={() => setShowConsentModal(true)}>Termos de Uso</span>.
               </p>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold text-base shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-2"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.97] transition-all disabled:opacity-60 mt-4"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    <UserPlus className="h-4 w-4" /> Cadastrar
+                    <UserPlus className="h-4 w-4" strokeWidth={3} /> Criar Minha Conta
                   </>
                 )}
               </button>

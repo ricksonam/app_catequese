@@ -163,9 +163,52 @@ export function ConsentModal({
           </div>
 
           <div className="space-y-1">
-            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">10 a 14. DISPOSIÇÕES GERAIS</h4>
+            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">10. SUSPENSÃO E CANCELAMENTO</h4>
             <p className="text-sm leading-relaxed">
-              O iCatequese não se responsabiliza por informações inseridas por usuários ou uso inadequado da ferramenta. O Termo pode ser atualizado periodicamente. O foro da comarca competente no Brasil fica eleito para resolução de conflitos.
+              O iCatequese poderá suspender ou cancelar contas que:
+            </p>
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              <li>Violaram este Termo;</li>
+              <li>Utilizem a plataforma para fins políticos;</li>
+              <li>Pratiquem atividades ilícitas;</li>
+              <li>Coloquem em risco dados de menores;</li>
+              <li>Promovam conteúdos ofensivos ou discriminatórios.</li>
+            </ul>
+          </div>
+
+          <div className="space-y-1">
+            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">11. LIMITAÇÃO DE RESPONSABILIDADE</h4>
+            <p className="text-sm leading-relaxed">
+              O sistema atua como ferramenta de apoio pastoral e administrativo.<br /><br />
+              O iCatequese não se responsabiliza por:
+            </p>
+            <ul className="list-disc pl-5 text-sm space-y-1">
+              <li>Informações inseridas por usuários;</li>
+              <li>Uso inadequado da plataforma;</li>
+              <li>Compartilhamento indevido realizado por terceiros;</li>
+              <li>Danos decorrentes de falhas externas de internet ou serviços de terceiros.</li>
+            </ul>
+          </div>
+
+          <div className="space-y-1">
+            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">12. ALTERAÇÕES DOS TERMOS</h4>
+            <p className="text-sm leading-relaxed">
+              Este Termo poderá ser atualizado periodicamente para adequação legal, tecnológica ou pastoral.<br /><br />
+              A continuidade do uso da plataforma após alterações será interpretada como concordância com os novos termos.
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">13. CONTATO</h4>
+            <p className="text-sm leading-relaxed">
+              Para dúvidas relacionadas a este Termo, proteção de dados ou segurança digital, o usuário poderá entrar em contato pelos canais oficiais do iCatequese.
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">14. FORO</h4>
+            <p className="text-sm leading-relaxed">
+              Fica eleito o foro da comarca de Manaus, Estado do Amazonas para resolução de quaisquer conflitos relacionados ao uso da plataforma, com renúncia a qualquer outro, por mais privilegiado que seja.
             </p>
           </div>
 
