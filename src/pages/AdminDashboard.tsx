@@ -217,7 +217,6 @@ export default function AdminDashboard() {
       const { data, error } = await supabase
         .from("webhook_logs")
         .select("*")
-        .eq("processed", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -284,7 +283,18 @@ export default function AdminDashboard() {
 
   const processedPayments = useMemo(() => {
     return payments.map(pay => {
-      const profile = profiles.find(p => p.id === pay.activated_user_id);
+      // Find profile by activated_user_id or premium_transaction_nsu
+      let profile = profiles.find(p => p.id === pay.activated_user_id);
+      if (!profile) {
+        const payload = pay.payload || {};
+        const nsu = payload.transaction_nsu;
+        const slug = payload.invoice_slug;
+        profile = profiles.find(p => 
+          (nsu && p.premium_transaction_nsu === nsu) ||
+          (slug && p.premium_transaction_nsu === slug) ||
+          (p.premium_transaction_nsu === pay.id)
+        );
+      }
       const amount = (pay.payload as any)?.paid_amount || (pay.payload as any)?.amount || 0;
       const date = new Date(pay.created_at);
       return {
@@ -292,7 +302,7 @@ export default function AdminDashboard() {
         valor: amount / 100, // Assuming cents
         cidade: profile?.cidade || "Não informado",
         estado: profile?.estado || "—",
-        email: profile?.email || "Desconhecido",
+        email: profile?.email || "Pendente de Ativação (Pix)",
         data: date,
         mes: (date.getMonth() + 1).toString().padStart(2, '0'),
         dia: date.getDate().toString().padStart(2, '0'),
@@ -666,20 +676,41 @@ export default function AdminDashboard() {
                             {filteredPayments.map(pay => (
                               <div key={pay.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shrink-0">
-                                    <Star className="h-4 w-4 text-emerald-600" />
+                                  <div className={cn(
+                                    "w-10 h-10 rounded-xl flex items-center justify-center border shrink-0",
+                                    pay.processed 
+                                      ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
+                                      : "bg-amber-50 border-amber-100 text-amber-600"
+                                  )}>
+                                    <Star className="h-4 w-4" />
                                   </div>
                                   <div>
-                                    <p className="text-sm font-bold text-foreground">{pay.email}</p>
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-sm font-bold text-foreground">{pay.email}</p>
+                                      <Badge 
+                                        variant="outline" 
+                                        className={cn(
+                                          "text-[8px] uppercase tracking-wider font-extrabold px-1.5 py-0.25",
+                                          pay.processed 
+                                            ? "border-emerald-200 bg-emerald-50 text-emerald-700" 
+                                            : "border-amber-200 bg-amber-50 text-amber-700 animate-pulse"
+                                        )}
+                                      >
+                                        {pay.processed ? "Ativo" : "Pendente"}
+                                      </Badge>
+                                    </div>
                                     <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
                                       {pay.cidade}, {pay.estado} • {pay.data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' })}
                                     </p>
                                   </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-right flex flex-col items-end">
                                   <p className="text-sm font-black text-emerald-600">
                                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pay.valor)}
                                   </p>
+                                  <span className="text-[9px] text-muted-foreground font-mono">
+                                    NSU: {(pay.payload as any)?.transaction_nsu || (pay.payload as any)?.invoice_slug || "—"}
+                                  </span>
                                 </div>
                               </div>
                             ))}

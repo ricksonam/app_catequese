@@ -919,6 +919,72 @@ export default function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
+
+            {/* Card Plano da Turma */}
+            <div className="relative group">
+              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-emerald-200 via-teal-200 to-green-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/plano`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                style={{ boxShadow: '0 8px 20px -4px rgba(16,185,129,0.15), 0 4px 8px -2px rgba(5,150,105,0.1)' }}
+              >
+                <img src="/acesso_relatorios.jpg" alt="Plano da Turma" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+              </button>
+            </div>
+
+            {/* Card Eventos */}
+            <div className="relative group">
+              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-amber-200 via-orange-200 to-yellow-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.2s', animationDelay: '0.8s' }} />
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/eventos`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                style={{ boxShadow: '0 8px 20px -4px rgba(245,158,11,0.15), 0 4px 8px -2px rgba(217,119,6,0.1)' }}
+              >
+                <img src="/acesso_atividades.jpg" alt="Eventos" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+              </button>
+            </div>
+
+            {/* Card Reuniões */}
+            <div className="relative group">
+              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-purple-200 via-violet-200 to-indigo-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.8s', animationDelay: '1.2s' }} />
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/reunioes`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                style={{ boxShadow: '0 8px 20px -4px rgba(139,92,246,0.15), 0 4px 8px -2px rgba(109,40,217,0.1)' }}
+              >
+                <img src="/acesso_agenda.jpg" alt="Reuniões" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+              </button>
+            </div>
           </div>
 
 
