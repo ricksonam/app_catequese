@@ -129,10 +129,22 @@ export function usePremium() {
     };
   }, [session?.user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const redirectToPayment = () => {
+  const redirectToPayment = async () => {
     if (!session?.user) {
       window.open(CHECKOUT_URL, "_blank");
       return;
+    }
+
+    // ✅ CRITICAL: Register payment intent timestamp BEFORE opening checkout.
+    // InfinitePay PIX webhooks don't include customer email or redirect the user,
+    // so the webhook uses this timestamp to find who just clicked "pay".
+    try {
+      await supabase
+        .from("profiles")
+        .update({ pending_premium_at: new Date().toISOString() })
+        .eq("id", session.user.id);
+    } catch {
+      // Non-blocking — still open checkout even if this fails
     }
 
     const email = session.user.email || "";
