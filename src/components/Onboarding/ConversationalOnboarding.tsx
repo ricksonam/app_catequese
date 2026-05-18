@@ -67,13 +67,6 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
       placeholder: "Sua cidade"
     },
     {
-      id: "estado",
-      message: "E qual o **estado**? (UF)",
-      type: "input",
-      field: "estado",
-      placeholder: "Ex: AM, SP, RJ..."
-    },
-    {
       id: "comunidade",
       message: "Ótimo! E qual o nome da sua **comunidade** inicial?",
       type: "input",
@@ -150,7 +143,7 @@ export function ConversationalOnboarding({ open, onComplete }: ConversationalOnb
       addAssistantMessage(steps[nextStep].message);
     }
 
-    if (currentStep === 6) {
+    if (currentStep === steps.findIndex(s => s.id === "dataNascimento")) {
       // Save data
       handleSave(updatedFormData);
     }

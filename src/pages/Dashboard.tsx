@@ -464,6 +464,8 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-2.5">
+      <PWAInstallChip />
+
       {/* ONBOARDING FLOW */}
 
       {/* 0. Termos de Uso (Gate Inicial) */}
@@ -615,8 +617,6 @@ export default function Dashboard() {
           <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
         </div>
       </div>
-
-      <PWAInstallChip />
 
       {/* CARD DE CRIAR TURMA (QUANDO NÃO HÁ TURMAS) */}
       {turmas.length === 0 && onboardingStep === "none" && (
