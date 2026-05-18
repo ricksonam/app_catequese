@@ -245,7 +245,7 @@ export function ConsentModal({
             disabled={!agreed}
             className="w-full rounded-2xl h-12 font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all"
           >
-            {isSignup ? "Confirmar Cadastro" : "Entrar no Aplicativo"}
+            {isSignup ? "Aceitar Termos e Criar Conta" : "Entrar no Aplicativo"}
           </Button>
           {!isSignup && (
             <button onClick={onCancel} className="w-full text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest py-1 hover:text-destructive transition-colors">

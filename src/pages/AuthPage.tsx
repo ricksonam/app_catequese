@@ -492,7 +492,7 @@ export default function AuthPage() {
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1">Nome Completo</Label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
                     <Input
                       id="signup-name"
                       type="text"
@@ -500,7 +500,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignupName(e.target.value)}
                       placeholder="Ex: Maria de Souza"
                       required
-                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm"
+                      className="bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm font-semibold"
                     />
                   </div>
                 </div>
@@ -509,7 +509,7 @@ export default function AuthPage() {
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1">E-mail</Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
                     <Input
                       id="signup-email"
                       type="email"
@@ -517,7 +517,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignupEmail(e.target.value)}
                       placeholder="seu@email.com"
                       required
-                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm"
+                      className="bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm font-semibold"
                     />
                   </div>
                 </div>
@@ -528,7 +528,7 @@ export default function AuthPage() {
                     <Check className="h-3 w-3 text-emerald-500" strokeWidth={3} /> Confirmar E-mail
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
                     <Input
                       id="signup-confirm-email"
                       type="email"
@@ -536,7 +536,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignupConfirmEmail(e.target.value)}
                       placeholder="Repita o seu e-mail"
                       required
-                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm"
+                      className="bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 h-12 rounded-2xl shadow-sm text-sm font-semibold"
                     />
                   </div>
                 </div>
@@ -555,7 +555,7 @@ export default function AuthPage() {
                 <div className="space-y-1.5">
                   <Label className="text-slate-600 dark:text-slate-400 text-xs font-bold ml-1">Senha de Acesso</Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
                     <Input
                       id="signup-password"
                       type={showSignupPassword ? "text" : "password"}
@@ -563,7 +563,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignupPassword(e.target.value)}
                       placeholder="Mínimo 6 caracteres"
                       required
-                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 pr-12 h-12 rounded-2xl shadow-sm text-sm"
+                      className="bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 pr-12 h-12 rounded-2xl shadow-sm text-sm font-semibold"
                     />
                     <button
                       type="button"
@@ -581,7 +581,7 @@ export default function AuthPage() {
                     <Check className="h-3 w-3 text-emerald-500" strokeWidth={3} /> Confirmar Senha
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 h-4 w-4" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
                     <Input
                       id="signup-confirm"
                       type={showSignupPassword ? "text" : "password"}
@@ -589,7 +589,7 @@ export default function AuthPage() {
                       onChange={(e) => setSignupConfirm(e.target.value)}
                       placeholder="Repita a sua senha"
                       required
-                      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 pr-12 h-12 rounded-2xl shadow-sm text-sm"
+                      className="bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-primary/20 focus:border-primary pl-12 pr-12 h-12 rounded-2xl shadow-sm text-sm font-semibold"
                     />
                   </div>
                 </div>
@@ -608,7 +608,7 @@ export default function AuthPage() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    <UserPlus className="h-4 w-4" strokeWidth={3} /> Criar Minha Conta
+                    <ChevronRight className="h-4 w-4" strokeWidth={3} /> Prosseguir
                   </>
                 )}
               </button>
