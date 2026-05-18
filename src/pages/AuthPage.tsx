@@ -47,9 +47,7 @@ export default function AuthPage() {
   // Signup state
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
-  const [signupConfirmEmail, setSignupConfirmEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
-  const [signupConfirm, setSignupConfirm] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
 
@@ -145,14 +143,6 @@ export default function AuthPage() {
 
   const handleSignupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (signupEmail !== signupConfirmEmail) {
-      toast({ title: "Erro", description: "Os e-mails não coincidem", variant: "destructive" });
-      return;
-    }
-    if (signupPassword !== signupConfirm) {
-      toast({ title: "Erro", description: "As senhas não coincidem", variant: "destructive" });
-      return;
-    }
     if (signupPassword.length < 6) {
       toast({ title: "Erro", description: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
       return;
@@ -502,18 +492,7 @@ export default function AuthPage() {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-slate-600 text-sm font-bold ml-1">Confirmar Email</Label>
-                <Input
-                  id="signup-confirm-email"
-                  type="email"
-                  value={signupConfirmEmail}
-                  onChange={(e) => setSignupConfirmEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                  required
-                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
-                />
-              </div>
+
 
               <div className="space-y-1.5">
                 <Label className="text-slate-600 text-sm font-bold ml-1">Senha</Label>
@@ -537,18 +516,7 @@ export default function AuthPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-slate-600 text-sm font-bold ml-1">Confirmar Senha</Label>
-                <Input
-                  id="signup-confirm"
-                  type="password"
-                  value={signupConfirm}
-                  onChange={(e) => setSignupConfirm(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="bg-white border-2 border-slate-100 text-slate-800 placeholder:text-slate-300 focus:border-primary h-12 rounded-xl shadow-sm"
-                />
-              </div>
+
 
               <p className="text-slate-400 text-xs text-center px-2 font-medium">
                 Ao cadastrar, você será solicitado a aceitar nossos <span className="text-primary font-bold">Termos de Uso</span>.
