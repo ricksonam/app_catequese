@@ -54,6 +54,7 @@ export default function AuthPage() {
   const [signupConfirm, setSignupConfirm] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
+  const [showVerificationNotice, setShowVerificationNotice] = useState(false);
 
   // Forgot password
   const [forgotEmail, setForgotEmail] = useState("");
@@ -179,8 +180,7 @@ export default function AuthPage() {
     if (error) {
       toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Cadastro realizado! 🎉", description: "Verifique seu email para confirmar a conta." });
-      setView("login");
+      setShowVerificationNotice(true);
     }
   };
 
@@ -421,6 +421,51 @@ export default function AuthPage() {
           onCancel={() => setShowConsentModal(false)}
           isSignup
         />
+
+        {showVerificationNotice && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+            <div className="bg-white dark:bg-slate-900 border-2 border-emerald-500/20 rounded-[32px] shadow-2xl p-8 max-w-md w-full text-center relative overflow-hidden animate-in zoom-in-95 duration-200">
+              
+              {/* Elementos decorativos */}
+              <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
+
+              {/* Ícone Animado */}
+              <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border-4 border-emerald-100 dark:border-emerald-900 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-100/50 dark:shadow-none">
+                <Mail className="h-9 w-9 text-emerald-600 dark:text-emerald-400 animate-bounce" strokeWidth={2.5} />
+              </div>
+
+              {/* Título */}
+              <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-3 tracking-tight">
+                Verifique seu E-mail! ✉️
+              </h3>
+              
+              {/* Mensagem principal */}
+              <p className="text-slate-600 dark:text-slate-300 text-sm font-semibold mb-2 leading-relaxed">
+                Enviamos um link de confirmação para o endereço:
+              </p>
+              <div className="bg-slate-50 dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 py-3 px-4 rounded-2xl font-mono text-xs text-primary dark:text-sky-400 font-bold break-all mb-5">
+                {signupEmail}
+              </div>
+              
+              {/* Instruções adicionais */}
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold leading-relaxed mb-6">
+                Por favor, acesse sua caixa de entrada (e verifique também a pasta de spam/lixo eletrônico) e clique no link para ativar sua conta e liberar seu acesso ao iCatequese.
+              </p>
+
+              {/* Botão de Fechar / Login */}
+              <Button
+                onClick={() => {
+                  setShowVerificationNotice(false);
+                  setView("login");
+                }}
+                className="w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-xl shadow-emerald-500/25 active:scale-95 transition-all"
+              >
+                Entendido, ir para o Login
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-6 py-10">
           <div className="w-full max-w-sm">
