@@ -255,7 +255,7 @@ export default function LandingPage() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#D4AF37]/10 transition-colors" />
             
             <Avatar className="h-16 w-16 border-2 border-[#D4AF37]/30 shrink-0 shadow-md">
-              <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
+              <AvatarImage src="/Avatar.png" alt="Rickson Amazonas" />
               <AvatarFallback className="bg-[#D4AF37]/20 text-[#D4AF37] font-black text-sm">RA</AvatarFallback>
             </Avatar>
             <div className="flex-1 text-center sm:text-left relative z-10">

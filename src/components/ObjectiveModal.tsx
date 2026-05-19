@@ -142,7 +142,7 @@ export function ObjectiveModal({ open, onOpenChange, onStartTour, hideClose }: O
           <div className="w-full px-6 mb-2">
             <div className="flex items-center gap-4 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm p-4 rounded-[20px] border border-black/5 dark:border-white/5">
               <Avatar className="h-10 w-10 border border-black/10 dark:border-white/10 shrink-0">
-                <AvatarImage src="/rickson-avatar.png" alt="Rickson Amazonas" />
+                <AvatarImage src="/Avatar.png" alt="Rickson Amazonas" />
                 <AvatarFallback className="bg-primary text-white font-black text-xs">RA</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

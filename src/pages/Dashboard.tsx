@@ -863,39 +863,39 @@ export default function Dashboard() {
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[340px] relative mb-4" style={{ zIndex: 10 }}>
+              <div className="w-full max-w-[280px] relative mb-4" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[22px] overflow-hidden shadow-md border border-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-primary"
+                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-md border border-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-primary"
                 >
                   {/* Raios de luz de fundo subtis */}
                   <div className="absolute inset-0 pointer-events-none opacity-20"
                     style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, white, transparent 60%)` }} />
 
                   {/* Conteúdo */}
-                  <div className="relative z-10 px-4 py-3.5 flex flex-col items-center text-center">
+                  <div className="relative z-10 px-3 py-2.5 flex flex-col items-center text-center">
                     
                     {/* Botão Trocar (Visual) */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                      <div className="absolute top-2.5 right-3 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[7px] font-black uppercase tracking-widest bg-white/10 text-white border border-white/20">
-                          <RefreshCw className="h-2 w-2" />
+                      <div className="absolute top-1.5 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10 text-white border border-white/20 text-[6px] font-black uppercase tracking-widest">
+                          <RefreshCw className="h-1.5 w-1.5" />
                           Trocar
                         </div>
                       </div>
                     )}
 
                     {/* Nome da turma */}
-                    <div className="mb-2.5 mt-0.5">
-                      <p className="text-[8px] font-bold uppercase tracking-[0.25em] mb-0.5 text-blue-100">
+                    <div className="mb-2 mt-0.5">
+                      <p className="text-[7px] font-bold uppercase tracking-[0.25em] mb-0.5 text-blue-100">
                         Turma Selecionada
                       </p>
-                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                        <h3 className="text-xl font-black tracking-tight leading-tight text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
+                      <div className="flex items-center justify-center gap-1 flex-wrap">
+                        <h3 className="text-base font-black tracking-tight leading-tight text-white drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.5)]">
                           {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
                         </h3>
                         {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/30 backdrop-blur-sm drop-shadow-sm">
+                          <span className="text-[9px] font-black bg-white/20 text-white px-1.5 py-0.5 rounded-full border border-white/30 backdrop-blur-sm drop-shadow-sm">
                             {selectedTurma.ano || selectedTurma.etapa}
                           </span>
                         )}
@@ -903,16 +903,16 @@ export default function Dashboard() {
                     </div>
 
                     {/* Stats dinâmicos */}
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 shadow-sm">
-                        <Users className="h-3.5 w-3.5 text-blue-100" />
-                        <span className="text-[11px] font-black text-white">
+                    <div className="flex items-center justify-center gap-2 w-full">
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 border border-white/20 shadow-sm">
+                        <Users className="h-3 w-3 text-blue-100" />
+                        <span className="text-[10px] font-black text-white">
                           {catCount} <span className="opacity-80 font-bold">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/20 shadow-sm">
-                        <BookOpen className="h-3.5 w-3.5 text-blue-100" />
-                        <span className="text-[11px] font-black text-white">
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 border border-white/20 shadow-sm">
+                        <BookOpen className="h-3 w-3 text-blue-100" />
+                        <span className="text-[10px] font-black text-white">
                           {encCount} <span className="opacity-80 font-bold">encontros</span>
                         </span>
                       </div>
@@ -952,7 +952,7 @@ export default function Dashboard() {
           {/* Grid de Módulos — cards flutuantes side-by-side (MAXIMIZADOS) */}
           <div className="grid grid-cols-3 gap-2 w-full relative z-10 px-2">
             {/* Card Catequizandos */}
-            <div className="relative group">
+            <div className="relative group animate-welcome-float" style={{ animationDelay: '0s' }}>
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-blue-200 via-indigo-200 to-violet-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3s' }} />
               <button
                 onClick={() => {
@@ -974,7 +974,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Encontros */}
-            <div className="relative group">
+            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.2s' }}>
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-rose-200 via-pink-200 to-orange-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }} />
               <button
                 onClick={() => {
@@ -996,7 +996,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Biblia Online */}
-            <div className="relative group">
+            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.4s' }}>
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-slate-200 via-zinc-200 to-slate-200 opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-500" />
               <button
                 onClick={() => navigate("/modulos/biblia")}
@@ -1009,7 +1009,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Plano da Turma */}
-            <div className="relative group">
+            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.6s' }}>
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-emerald-200 via-teal-200 to-green-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
               <button
                 onClick={() => {
@@ -1022,16 +1022,15 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50 bg-white dark:bg-zinc-900"
                 style={{ boxShadow: '0 8px 20px -4px rgba(16,185,129,0.15), 0 4px 8px -2px rgba(5,150,105,0.1)' }}
               >
-                <img src="/acesso_relatorios.jpg" alt="Plano da Turma" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+                <img src="/icone-plano da turma.png" alt="Plano da Turma" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
               </button>
             </div>
 
             {/* Card Eventos */}
-            <div className="relative group">
+            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.8s' }}>
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-amber-200 via-orange-200 to-yellow-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.2s', animationDelay: '0.8s' }} />
               <button
                 onClick={() => {
@@ -1044,16 +1043,15 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50 bg-white dark:bg-zinc-900"
                 style={{ boxShadow: '0 8px 20px -4px rgba(245,158,11,0.15), 0 4px 8px -2px rgba(217,119,6,0.1)' }}
               >
-                <img src="/acesso_atividades.jpg" alt="Eventos" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+                <img src="/icone-eventos.png" alt="Eventos" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
               </button>
             </div>
 
             {/* Card Reuniões */}
-            <div className="relative group">
+            <div className="relative group animate-welcome-float" style={{ animationDelay: '1.0s' }}>
               <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-purple-200 via-violet-200 to-indigo-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.8s', animationDelay: '1.2s' }} />
               <button
                 onClick={() => {
@@ -1066,11 +1064,10 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50 bg-white dark:bg-zinc-900"
                 style={{ boxShadow: '0 8px 20px -4px rgba(139,92,246,0.15), 0 4px 8px -2px rgba(109,40,217,0.1)' }}
               >
-                <img src="/acesso_agenda.jpg" alt="Reuniões" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+                <img src="/icone-reunioes.png" alt="Reuniões" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
               </button>
             </div>
           </div>
