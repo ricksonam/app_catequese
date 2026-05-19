@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  LogIn, UserPlus, Heart, Users, Calendar,
+  LogIn, UserPlus, Users, Calendar,
   Book, Image as ImageIcon, Dices, MessageSquare,
-  Share2, Mail, Smartphone, Gift, ListChecks,
+  Mail, Smartphone, Gift, ListChecks,
   CalendarDays, Sparkles, Church, CheckCircle2, Lock
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
-import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 
 /* ─── Ornamento SVG de cruz ─── */
@@ -42,17 +40,6 @@ const FEATURES = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [apoieOpen, setApoieOpen] = useState(false);
-
-  const handleShare = async () => {
-    const url = getAppUrl();
-    if (navigator.share) {
-      try { await navigator.share({ title: "iCatequese", text: "Gestão para catequistas!", url }); } catch {}
-    } else {
-      navigator.clipboard.writeText(url);
-      toast.success("Link copiado!");
-    }
-  };
 
   const handleWhatsApp = () =>
     window.open("https://wa.me/5592993371259?text=Olá! Vim pelo site do iCatequese.", "_blank");
@@ -97,19 +84,6 @@ export default function LandingPage() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-900/90 hover:bg-stone-900 text-white text-[11px] font-black uppercase tracking-wide border border-stone-700/50 transition-all active:scale-95 shadow-sm"
           >
             <Lock className="h-3 w-3" /> Acesso Restrito
-          </button>
-          <button
-            onClick={handleShare}
-            className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all active:scale-95 shadow-sm"
-            title="Compartilhar"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => setApoieOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/90 hover:bg-rose-500 text-white text-[11px] font-black uppercase tracking-wide border border-rose-400/30 transition-all active:scale-95 shadow-sm"
-          >
-            <Heart className="h-3 w-3 fill-white" /> Apoie
           </button>
         </div>
       </nav>
@@ -284,35 +258,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* ── DIALOG APOIE ── */}
-      <Dialog open={apoieOpen} onOpenChange={setApoieOpen}>
-        <DialogContent className="sm:max-w-md bg-white border border-stone-200 p-0 overflow-hidden rounded-[32px] shadow-2xl">
-          <div className="p-8 text-center relative overflow-hidden"
-            style={{ background: "linear-gradient(135deg, #7c2d12, #9f1239)" }}>
-            <div className="absolute inset-0 opacity-10">
-              <CrossOrnament className="absolute top-2 right-2 w-24 h-24 text-white" />
-            </div>
-            <Heart className="w-14 h-14 fill-white text-white mx-auto mb-3 animate-heartbeat relative z-10 drop-shadow-md" />
-            <h2 className="text-xl font-black relative z-10 text-white drop-shadow-md">Apoie o iCatequese!</h2>
-          </div>
-          <div className="p-6 text-center space-y-4">
-            <p className="text-sm text-stone-600 leading-relaxed font-medium">
-              Projeto independente mantido com recursos próprios. Sua doação ajuda a manter tudo <strong className="text-stone-900 font-black">gratuito para todos</strong>.
-            </p>
-            <div className="p-4 rounded-2xl bg-stone-50 border border-[#D4AF37]/30 shadow-inner">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]/90 mb-2">Chave PIX</p>
-              <p className="font-black text-lg text-stone-900">ricksonam@hotmail.com</p>
-              <button
-                onClick={() => { navigator.clipboard.writeText("ricksonam@hotmail.com"); toast.success("Chave PIX copiada!"); }}
-                className="mt-4 px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-white transition-all active:scale-95 shadow-md hover:shadow-lg"
-                style={{ background: "linear-gradient(135deg, #D4AF37, #B8860B)" }}
-              >
-                Copiar Chave
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* ── WHATSAPP FLUTUANTE ── */}
       <button
