@@ -1,11 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, UserX, MessageSquare, Settings, Search, MapPin, 
   ShieldAlert, ShieldCheck, Trash2, ArrowLeft, TrendingUp, 
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
-  BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter
+  BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter,
+  BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -103,6 +104,84 @@ export default function AdminDashboard() {
     mes: "Todos",
     dia: "Todos"
   });
+
+  // Catalog states
+  const [catalogMateriais, setCatalogMateriais] = useState<any[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogUploading, setCatalogUploading] = useState(false);
+  const [catalogForm, setCatalogForm] = useState({ titulo: "", descricao: "", categoria: "" });
+  const [catalogFile, setCatalogFile] = useState<File | null>(null);
+  const catalogFileRef = useRef<HTMLInputElement>(null);
+
+  const fetchCatalogMateriais = async () => {
+    setCatalogLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("material_apoio")
+        .select("*")
+        .order("publicado_em", { ascending: false });
+      if (!error) setCatalogMateriais(data || []);
+    } finally {
+      setCatalogLoading(false);
+    }
+  };
+
+  const handleCatalogUpload = async () => {
+    if (!catalogForm.titulo.trim()) { toast.error("Informe o nome do material."); return; }
+    if (!catalogFile) { toast.error("Selecione um arquivo PDF ou imagem."); return; }
+    setCatalogUploading(true);
+    try {
+      const ext = catalogFile.name.split(".").pop()?.toLowerCase() || "pdf";
+      const tipo = ["jpg","jpeg","png","webp","gif"].includes(ext) ? "image" : "pdf";
+      const fileName = `${Date.now()}_${catalogFile.name.replace(/\s+/g, "_")}`;
+      const { error: upErr } = await supabase.storage
+        .from("materiais-apoio")
+        .upload(fileName, catalogFile, { contentType: catalogFile.type, upsert: false });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from("materiais-apoio").getPublicUrl(fileName);
+      const arquivo_url = urlData.publicUrl;
+      const { error: dbErr } = await supabase.from("material_apoio").insert({
+        titulo: catalogForm.titulo.trim(),
+        descricao: catalogForm.descricao.trim() || null,
+        categoria: catalogForm.categoria.trim() || null,
+        arquivo_url,
+        arquivo_tipo: tipo,
+        tamanho_bytes: catalogFile.size,
+        publicado_em: new Date().toISOString(),
+        ativo: true,
+        tipo: "link",
+        url: arquivo_url,
+        icone: tipo === "pdf" ? "FileText" : "Image",
+        cor: tipo === "pdf" ? "bg-red-100 text-red-600" : "bg-violet-100 text-violet-600",
+        ordem: 999
+      });
+      if (dbErr) throw dbErr;
+      toast.success("Material publicado com sucesso!");
+      setCatalogForm({ titulo: "", descricao: "", categoria: "" });
+      setCatalogFile(null);
+      if (catalogFileRef.current) catalogFileRef.current.value = "";
+      fetchCatalogMateriais();
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao fazer upload.");
+    } finally {
+      setCatalogUploading(false);
+    }
+  };
+
+  const handleDeleteMaterial = async (id: string, arquivo_url: string | null) => {
+    if (!confirm("Deseja excluir este material permanentemente?")) return;
+    try {
+      if (arquivo_url) {
+        const path = arquivo_url.split("/materiais-apoio/")[1];
+        if (path) await supabase.storage.from("materiais-apoio").remove([path]);
+      }
+      await supabase.from("material_apoio").delete().eq("id", id);
+      toast.success("Material excluído.");
+      fetchCatalogMateriais();
+    } catch (err: any) {
+      toast.error("Erro ao excluir material.");
+    }
+  };
 
   // Queries
   const { data: profiles = [], isLoading: loadingProfiles } = useQuery({
@@ -444,6 +523,7 @@ export default function AdminDashboard() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
             <TabButton active={activeTab === "finance"} onClick={() => setActiveTab("finance")} icon={CircleDollarSign} label="Financeiro" />
+            <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Catálogo" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
             <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={MessageSquare} label="Sugestões" />
@@ -1052,6 +1132,232 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </Card>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "catalog" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Catálogo de Materiais</h2>
+                    <p className="text-sm text-muted-foreground">Publique PDFs e imagens para usuários premium</p>
+                  </div>
+                </div>
+
+                {/* Upload Card */}
+                <Card className="rounded-[24px] border-2 border-dashed border-primary/30 bg-primary/2 shadow-none">
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center gap-3 mb-1">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <Upload className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-foreground text-sm">Novo Material</h3>
+                        <p className="text-xs text-muted-foreground">PDF ou imagem (máx. 50MB)</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Nome *</label>
+                        <Input
+                          placeholder="Ex: Hinário da Quaresma 2025"
+                          value={catalogForm.titulo}
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, titulo: e.target.value }))}
+                          className="rounded-xl h-10 border-border/50"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Categoria</label>
+                        <Input
+                          placeholder="Ex: Hinários, Liturgia, Formação..."
+                          value={catalogForm.categoria}
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, categoria: e.target.value }))}
+                          className="rounded-xl h-10 border-border/50"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Descrição (opcional)</label>
+                      <Input
+                        placeholder="Breve descrição do conteúdo..."
+                        value={catalogForm.descricao}
+                        onChange={(e) => setCatalogForm(prev => ({ ...prev, descricao: e.target.value }))}
+                        className="rounded-xl h-10 border-border/50"
+                      />
+                    </div>
+
+                    {/* File Picker */}
+                    <div
+                      onClick={() => catalogFileRef.current?.click()}
+                      className="relative border-2 border-dashed border-border/50 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-primary/3 transition-all group"
+                    >
+                      <input
+                        ref={catalogFileRef}
+                        type="file"
+                        accept="application/pdf,image/jpeg,image/png,image/webp,image/gif"
+                        className="hidden"
+                        onChange={(e) => setCatalogFile(e.target.files?.[0] || null)}
+                      />
+                      {catalogFile ? (
+                        <>
+                          <div className="flex items-center gap-3">
+                            {["jpg","jpeg","png","webp","gif"].includes(catalogFile.name.split(".").pop()?.toLowerCase() || "") ? (
+                              <Image className="h-8 w-8 text-violet-500" />
+                            ) : (
+                              <FileText className="h-8 w-8 text-red-500" />
+                            )}
+                            <div>
+                              <p className="text-sm font-bold text-foreground">{catalogFile.name}</p>
+                              <p className="text-xs text-muted-foreground">{(catalogFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setCatalogFile(null); if (catalogFileRef.current) catalogFileRef.current.value = ""; }}
+                            className="text-[10px] font-bold text-destructive hover:text-destructive/80 flex items-center gap-1 mt-1"
+                          >
+                            <X className="h-3 w-3" /> Remover arquivo
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Upload className="h-6 w-6 text-primary" />
+                          </div>
+                          <p className="text-sm font-bold text-foreground">Clique para selecionar o arquivo</p>
+                          <p className="text-xs text-muted-foreground">PDF, JPG, PNG, WEBP ou GIF</p>
+                        </>
+                      )}
+                    </div>
+
+                    <Button
+                      onClick={handleCatalogUpload}
+                      disabled={catalogUploading || !catalogFile || !catalogForm.titulo.trim()}
+                      className="w-full rounded-xl h-11 font-bold gap-2"
+                    >
+                      {catalogUploading ? (
+                        <><Loader2 className="h-4 w-4 animate-spin" /> Enviando...</>
+                      ) : (
+                        <><Plus className="h-4 w-4" /> Publicar Material</>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Materials Grid */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-bold text-foreground text-sm">Materiais Publicados</h3>
+                    <Badge className="bg-primary/10 text-primary border-none text-xs font-bold px-3 py-1">
+                      {catalogMateriais.filter(m => m.ativo !== false).length} ativos
+                    </Badge>
+                  </div>
+
+                  {catalogLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                    </div>
+                  ) : catalogMateriais.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
+                      <BookOpen className="h-10 w-10 mb-2 opacity-20" />
+                      <p className="text-sm font-bold">Nenhum material publicado ainda</p>
+                      <p className="text-xs mt-1">Use o formulário acima para adicionar o primeiro</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {catalogMateriais.map((mat) => {
+                        const isPdf = mat.arquivo_tipo === "pdf" || (mat.arquivo_url && mat.arquivo_url.includes(".pdf"));
+                        const fileUrl = mat.arquivo_url || mat.url;
+                        const isNew = mat.publicado_em && (Date.now() - new Date(mat.publicado_em).getTime() < 7 * 24 * 60 * 60 * 1000);
+                        return (
+                          <div key={mat.id} className={cn(
+                            "rounded-2xl border bg-white p-4 flex flex-col gap-3 hover:shadow-md transition-all",
+                            !mat.ativo && "opacity-50 border-dashed"
+                          )}>
+                            {/* Preview */}
+                            <div className="w-full aspect-video rounded-xl overflow-hidden flex items-center justify-center relative">
+                              {isPdf ? (
+                                <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-700 flex flex-col items-center justify-center gap-1">
+                                  <FileText className="h-10 w-10 text-white" strokeWidth={1.5} />
+                                  <span className="text-[10px] font-black text-white tracking-widest bg-red-900/40 px-2 py-0.5 rounded">PDF</span>
+                                </div>
+                              ) : mat.arquivo_url ? (
+                                <img src={mat.arquivo_url} alt={mat.titulo} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
+                                  <Image className="h-10 w-10 text-white" strokeWidth={1.5} />
+                                </div>
+                              )}
+                              {isNew && (
+                                <span className="absolute top-2 left-2 text-[9px] font-black bg-amber-400 text-white px-2 py-0.5 rounded-full">NOVO</span>
+                              )}
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1">
+                              {mat.categoria && (
+                                <span className="text-[9px] font-black uppercase tracking-widest text-primary/60 bg-primary/8 px-2 py-0.5 rounded-full">{mat.categoria}</span>
+                              )}
+                              <p className="text-sm font-bold text-foreground mt-1 line-clamp-2">{mat.titulo}</p>
+                              {mat.descricao && (
+                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{mat.descricao}</p>
+                              )}
+                              <div className="flex items-center gap-3 mt-1">
+                                {mat.tamanho_bytes && (
+                                  <span className="text-[10px] text-muted-foreground/60">
+                                    {mat.tamanho_bytes > 1024*1024 ? `${(mat.tamanho_bytes/1024/1024).toFixed(1)} MB` : `${Math.round(mat.tamanho_bytes/1024)} KB`}
+                                  </span>
+                                )}
+                                {mat.publicado_em && (
+                                  <span className="text-[10px] text-muted-foreground/60">
+                                    {new Date(mat.publicado_em).toLocaleDateString("pt-BR")}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-2">
+                              {fileUrl && (
+                                <a
+                                  href={fileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-muted text-foreground text-xs font-bold hover:bg-primary/10 hover:text-primary transition-colors"
+                                >
+                                  <Eye className="h-3.5 w-3.5" /> Ver
+                                </a>
+                              )}
+                              <button
+                                onClick={async () => {
+                                  const newAtivo = !mat.ativo;
+                                  await supabase.from("material_apoio").update({ ativo: newAtivo }).eq("id", mat.id);
+                                  toast.success(newAtivo ? "Material ativado." : "Material ocultado.");
+                                  fetchCatalogMateriais();
+                                }}
+                                className={cn(
+                                  "flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-bold transition-colors",
+                                  mat.ativo
+                                    ? "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200"
+                                    : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
+                                )}
+                              >
+                                {mat.ativo ? "Ocultar" : "Ativar"}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMaterial(mat.id, mat.arquivo_url)}
+                                className="w-9 flex items-center justify-center rounded-xl bg-destructive/8 text-destructive hover:bg-destructive hover:text-white border border-destructive/20 hover:border-destructive transition-all"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
