@@ -82,7 +82,13 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
 
             {/* Botão Agenda */}
             <button
-              onClick={() => navigate("/modulos/calendario")}
+              onClick={() => {
+                if (currentPath === "/modulos/calendario") {
+                  navigate("/");
+                } else {
+                  navigate("/modulos/calendario");
+                }
+              }}
               className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-md shadow-emerald-500/30 border border-emerald-400 overflow-hidden"
             >
               {/* shimmer */}

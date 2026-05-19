@@ -196,9 +196,9 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
             onClick={() => {
               if (isFullscreen) setIsFullscreen(false);
               else if (onClose) onClose();
-              else navigate(-1);
+              else navigate("/");
             }}
-            className="back-btn bg-white dark:bg-zinc-800"
+            className="back-btn bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 border-2 border-white dark:border-zinc-700 shadow-md"
           >
             <X className="h-5 w-5 text-foreground" />
           </button>
@@ -359,9 +359,9 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
             </div>
             <button 
               onClick={() => setSelectedDay(null)}
-              className="w-8 h-8 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-white hover:bg-zinc-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors shadow-md border-2 border-white dark:border-zinc-700"
             >
-              <X className="h-4 w-4 text-muted-foreground" />
+              <X className="h-4 w-4 text-foreground" />
             </button>
           </div>
 
