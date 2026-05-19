@@ -949,11 +949,10 @@ export default function Dashboard() {
             <div className="absolute top-1/2 right-[calc(25%+12px)] w-[2px] h-1/2 bg-blue-600" />
           </div>
 
-          {/* Grid de Módulos — cards flutuantes side-by-side (MAXIMIZADOS) */}
+          {/* Grid de Módulos (MAXIMIZADOS) */}
           <div className="grid grid-cols-3 gap-2 w-full relative z-10 px-2">
             {/* Card Catequizandos */}
-            <div className="relative group animate-welcome-float" style={{ animationDelay: '0s' }}>
-              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-blue-200 via-indigo-200 to-violet-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="relative group">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -965,8 +964,7 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
-                style={{ boxShadow: '0 8px 20px -4px rgba(99,102,241,0.15), 0 4px 8px -2px rgba(59,130,246,0.1)' }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
                 <img src="/card_catequizandos.jpg" alt="Catequizandos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
@@ -974,8 +972,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Encontros */}
-            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.2s' }}>
-              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-rose-200 via-pink-200 to-orange-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '0.5s' }} />
+            <div className="relative group">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -987,30 +984,15 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
-                style={{ boxShadow: '0 8px 20px -4px rgba(244,63,94,0.15), 0 4px 8px -2px rgba(251,113,133,0.1)' }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
                 <img src="/card_encontros.jpg" alt="Encontros" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
 
-            {/* Card Biblia Online */}
-            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.4s' }}>
-              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-slate-200 via-zinc-200 to-slate-200 opacity-20 blur-xl group-hover:opacity-30 transition-opacity duration-500" />
-              <button
-                onClick={() => navigate("/modulos/biblia")}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50"
-                style={{ boxShadow: '0 8px 20px -4px rgba(0,0,0,0.1), 0 4px 8px -2px rgba(0,0,0,0.05)' }}
-              >
-                <img src="/card_biblia.jpg" alt="Bíblia Online" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-            </div>
-
             {/* Card Plano da Turma */}
-            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.6s' }}>
-              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-emerald-200 via-teal-200 to-green-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }} />
+            <div className="relative group">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1022,52 +1004,20 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50 bg-white dark:bg-zinc-900"
-                style={{ boxShadow: '0 8px 20px -4px rgba(16,185,129,0.15), 0 4px 8px -2px rgba(5,150,105,0.1)' }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50 bg-white dark:bg-zinc-900"
               >
                 <img src="/icone-plano da turma.png" alt="Plano da Turma" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
               </button>
             </div>
 
-            {/* Card Eventos */}
-            <div className="relative group animate-welcome-float" style={{ animationDelay: '0.8s' }}>
-              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-amber-200 via-orange-200 to-yellow-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.2s', animationDelay: '0.8s' }} />
+            {/* Card Biblia Online */}
+            <div className="relative group col-start-2 col-span-1">
               <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/eventos`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50 bg-white dark:bg-zinc-900"
-                style={{ boxShadow: '0 8px 20px -4px rgba(245,158,11,0.15), 0 4px 8px -2px rgba(217,119,6,0.1)' }}
+                onClick={() => navigate("/modulos/biblia")}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/icone-eventos.png" alt="Eventos" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
-              </button>
-            </div>
-
-            {/* Card Reuniões */}
-            <div className="relative group animate-welcome-float" style={{ animationDelay: '1.0s' }}>
-              <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-purple-200 via-violet-200 to-indigo-200 opacity-25 blur-xl group-hover:opacity-40 transition-opacity duration-500 animate-pulse" style={{ animationDuration: '3.8s', animationDelay: '1.2s' }} />
-              <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/reunioes`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-xl border-2 border-white/50 bg-white dark:bg-zinc-900"
-                style={{ boxShadow: '0 8px 20px -4px rgba(139,92,246,0.15), 0 4px 8px -2px rgba(109,40,217,0.1)' }}
-              >
-                <img src="/icone-reunioes.png" alt="Reuniões" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
+                <img src="/card_biblia.jpg" alt="Bíblia Online" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
             </div>
           </div>
