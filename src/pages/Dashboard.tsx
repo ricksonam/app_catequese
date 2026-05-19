@@ -752,18 +752,18 @@ export default function Dashboard() {
       )}
 
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
-      <div className="relative pt-2 pb-5 mb-0 animate-fade-in">
+      <div className="relative pt-1 pb-2 mb-0 animate-fade-in">
         {/* Título da Seção — estilo litúrgico */}
-        <div className="flex items-center gap-2 justify-center mb-3">
+        <div className="flex items-center gap-2 justify-center mb-2">
           <div className="h-px flex-1 max-w-[40px]" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5))' }} />
-          <h2 className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: '#B8860B' }}>Próximos Aniversários</h2>
+          <h2 className="text-[9px] font-black uppercase tracking-[0.25em]" style={{ color: '#B8860B' }}>Próximos Aniversários</h2>
           <div className="h-px flex-1 max-w-[40px]" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))' }} />
         </div>
 
         {aniversariantesMes.length > 0 ? (
           <div className={cn(
-            "flex gap-2 px-1 min-h-[90px]",
-            aniversariantesMes.length === 1 ? "justify-center" : "justify-center sm:gap-4"
+            "flex gap-1.5 px-1 min-h-[64px] pb-1",
+            aniversariantesMes.length === 1 ? "justify-center" : "justify-center sm:gap-3"
           )}>
             {aniversariantesMes.map((c, i) => {
               const rotations = ['-2deg', '2deg', '-1deg', '3deg'];
@@ -780,36 +780,36 @@ export default function Dashboard() {
                     className="relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95"
                     style={{ transform: `rotate(${rotations[i % 4]})` }}
                   >
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-5 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-3.5 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
                     <div className={cn(
-                      "bg-white p-1.5 shadow-md border relative overflow-hidden transition-colors",
+                      "bg-white p-1 shadow-sm border relative overflow-hidden transition-colors rounded-lg",
                       isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-black/10"
                     )}>
-                      <div className="w-10 h-10 overflow-hidden bg-muted relative">
+                      <div className="w-8 h-8 overflow-hidden bg-muted relative rounded-md">
                         {c.foto ? (
                           <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-xl font-black">
+                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-xs font-black">
                             {c.nome.charAt(0)}
                           </div>
                         )}
                         {c.hasBoth && (
-                          <div className="absolute top-0 right-0 bg-amber-400 text-white p-0.5 rounded-bl-lg shadow-sm">
-                            <Sparkles className="w-2.5 h-2.5" />
+                          <div className="absolute top-0 right-0 bg-amber-400 text-white p-0.5 rounded-bl shadow-sm">
+                            <Sparkles className="w-2 h-2" />
                           </div>
                         )}
                       </div>
-                      <div className="mt-1.5 text-center px-0.5">
-                        <p className="text-[10px] font-black text-black leading-tight uppercase tracking-tighter truncate w-full px-1">
+                      <div className="mt-1 text-center px-0.5">
+                        <p className="text-[8px] font-black text-black leading-tight uppercase tracking-tighter truncate w-14 px-0.5">
                           {c.nome.split(' ')[0]}
                         </p>
-                        <div className="flex flex-col items-center mt-1">
-                          <span className="text-[13px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
+                        <div className="flex flex-col items-center mt-0.5">
+                          <span className="text-[10px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
                           {isHoje ? (
-                            <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">HOJE</span>
+                            <span className="text-[5.5px] font-black bg-red-500 text-white px-1 py-0.2 rounded-full animate-heartbeat mt-0.5 uppercase">HOJE</span>
                           ) : (
-                            <p className={cn("text-[7px] font-black uppercase tracking-tighter mt-0.5", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
-                              {c.hasBoth ? "🎉 Nasc. & Batismo" : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo")}
+                            <p className={cn("text-[5.5px] font-black uppercase tracking-tighter mt-0.5", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
+                              {c.hasBoth ? "🎉 N&B" : (c.tipo === 'nascimento' ? "Nasc" : "Bat")}
                             </p>
                           )}
                         </div>
@@ -821,17 +821,17 @@ export default function Dashboard() {
             })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-3 px-4 min-h-[80px]">
-            <div className="flex items-center gap-2 text-muted-foreground/40">
-              <Cake className="w-5 h-5" />
-              <p className="text-[10px] font-black uppercase tracking-widest">Nenhum aniversariante cadastrado</p>
+          <div className="flex flex-col items-center justify-center py-1.5 px-4 min-h-[44px]">
+            <div className="flex items-center gap-1.5 text-muted-foreground/40">
+              <Cake className="w-4 h-4" />
+              <p className="text-[9px] font-black uppercase tracking-widest">Nenhum aniversariante cadastrado</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Espaço entre aniversariantes e módulos */}
-      <div className="mb-6" />
+      <div className="mb-2" />
 
       {/* Tarja de Aprovação Pendente */}
       {selectedTurmaId !== "all" && selectedTurma?.status === 'pending' && (
@@ -1004,9 +1004,9 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50 bg-white dark:bg-zinc-900"
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/icone-plano da turma.png" alt="Plano da Turma" loading="lazy" className="w-full h-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-105" />
+                <img src="/icone-plano da turma.png" alt="Plano da Turma" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </button>
             </div>
 
