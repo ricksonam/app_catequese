@@ -914,12 +914,12 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Hero Creation Card */}
-                <div className="relative overflow-hidden rounded-[32px] shadow-2xl shadow-indigo-500/25">
+                <div className="relative overflow-hidden rounded-[32px] shadow-2xl shadow-sky-500/25">
                   {/* Gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-indigo-900" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-sky-500 via-blue-500 to-sky-700" />
                   {/* Decorative orbs */}
-                  <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-sky-300/20 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
                   {/* Grid pattern */}
                   <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
@@ -932,7 +932,7 @@ export default function AdminDashboard() {
                       </div>
                       <div>
                         <h3 className="text-xl font-black text-white tracking-tight">Novo Sub-Administrador</h3>
-                        <p className="text-indigo-200 text-sm mt-0.5">Conceda acesso ao painel de controle iCatequese</p>
+                        <p className="text-sky-100 text-sm mt-0.5">Conceda acesso ao painel de controle iCatequese</p>
                       </div>
                       <div className="ml-auto hidden md:flex items-center gap-1.5 bg-white/10 border border-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
                         <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -943,29 +943,29 @@ export default function AdminDashboard() {
                     {/* Fields */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div className="space-y-2">
-                        <label className="text-xs font-black text-indigo-200 uppercase tracking-[0.15em]">Email do Administrador</label>
+                        <label className="text-xs font-black text-sky-100 uppercase tracking-[0.15em]">Email do Administrador</label>
                         <div className="relative">
-                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-300 z-10" />
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-200 z-10" />
                           <input
                             type="email"
                             placeholder="admin@icatequese.com"
                             value={adminEmail}
                             onChange={(e) => setAdminEmail(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-indigo-300/50 text-sm font-medium focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all"
+                            className="w-full pl-11 pr-4 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-sky-200/50 text-sm font-medium focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-xs font-black text-indigo-200 uppercase tracking-[0.15em]">Senha Provisória</label>
+                        <label className="text-xs font-black text-sky-100 uppercase tracking-[0.15em]">Senha Provisória</label>
                         <div className="relative">
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-300 z-10" />
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-sky-200 z-10" />
                           <input
                             type="password"
                             placeholder="Mínimo 6 caracteres"
                             value={adminPassword}
                             onChange={(e) => setAdminPassword(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-indigo-300/50 text-sm font-medium focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all"
+                            className="w-full pl-11 pr-4 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-sky-200/50 text-sm font-medium focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all"
                           />
                         </div>
                         {adminPassword.length > 0 && adminPassword.length < 6 && (
@@ -975,11 +975,11 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Info notice */}
-                    <div className="mt-5 p-4 bg-white/8 border border-white/15 rounded-2xl flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center shrink-0">
-                        <Sparkles className="h-4 w-4 text-amber-300" />
+                    <div className="mt-5 p-4 bg-white/10 border border-white/15 rounded-2xl flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
+                        <Sparkles className="h-4 w-4 text-white" />
                       </div>
-                      <p className="text-[11px] text-indigo-200/80 leading-relaxed">
+                      <p className="text-[11px] text-sky-100/90 leading-relaxed">
                         <span className="font-bold text-white">Permissões do Sub-Admin:</span> Acesso completo ao painel exceto criação de outros admins e configurações do sistema.
                       </p>
                     </div>
@@ -991,7 +991,7 @@ export default function AdminDashboard() {
                         if (adminPassword.length < 6) { toast.error("A senha deve conter no mínimo 6 caracteres."); return; }
                         setIsSubAdminLoading(true);
                         try {
-                          const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
+                          const { data, error } = await supabase.functions.invoke("update-platform-access", {
                             body: { action: "create", email: adminEmail, password: adminPassword, adminSecret: "icatequese-admin-2026" }
                           });
                           if (error) { toast.error(error.message || "Erro ao criar sub-administrador."); return; }
@@ -1110,7 +1110,7 @@ export default function AdminDashboard() {
                               if (!confirm(`Excluir permanentemente ${admin.email}?`)) return;
                               setIsSubAdminLoading(true);
                               try {
-                                const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
+                                const { data, error } = await supabase.functions.invoke("update-platform-access", {
                                   body: { action: "delete", userId: admin.id, adminSecret: "icatequese-admin-2026" }
                                 });
                                 if (error || data?.error) { toast.error((error?.message || data?.error) || "Erro ao excluir."); return; }
