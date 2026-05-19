@@ -5,7 +5,7 @@ import {
   LogIn, UserPlus, Heart, Users, Calendar,
   Book, Image as ImageIcon, Dices, MessageSquare,
   Share2, Mail, Smartphone, Gift, ListChecks,
-  CalendarDays, Sparkles, Church, CheckCircle2
+  CalendarDays, Sparkles, Church, CheckCircle2, Lock
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
@@ -166,13 +166,22 @@ export default function LandingPage() {
           className="flex flex-col items-center gap-6 w-full max-w-xs"
         >
           {/* Entrar — bordado */}
-          <button
-            onClick={() => navigate("/auth?view=login")}
-            className="group w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-blue-600/40 text-blue-600 hover:bg-blue-50 hover:border-blue-600 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
-          >
-            <LogIn className="h-4 w-4 shrink-0" />
-            Entrar
-          </button>
+          <div className="flex w-full gap-3">
+            <button
+              onClick={() => navigate("/auth?view=login")}
+              className="flex-1 group flex items-center justify-center gap-2 px-4 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-blue-600/40 text-blue-600 hover:bg-blue-50 hover:border-blue-600 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
+            >
+              <LogIn className="h-4 w-4 shrink-0" />
+              Catequista
+            </button>
+            <button
+              onClick={() => navigate("/admin/login")}
+              className="flex-1 group flex items-center justify-center gap-2 px-4 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-stone-900 border-2 border-stone-900 text-white hover:bg-stone-800 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
+            >
+              <Lock className="h-4 w-4 shrink-0" />
+              Admin
+            </button>
+          </div>
 
           {/* CTA Relocado do final da página — Versão Premium */}
           <motion.div
