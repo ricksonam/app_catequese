@@ -65,7 +65,7 @@ const EVENTS: LiturgicalEvent[] = [
 const MONTH_NAMES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
-export default function CalendarioLiturgico() {
+export default function CalendarioLiturgico({ onClose }: { onClose?: () => void } = {}) {
   const navigate = useNavigate();
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -195,11 +195,12 @@ export default function CalendarioLiturgico() {
           <button
             onClick={() => {
               if (isFullscreen) setIsFullscreen(false);
+              else if (onClose) onClose();
               else navigate(-1);
             }}
             className="back-btn bg-white dark:bg-zinc-800"
           >
-            <ArrowLeft className="h-5 w-5 text-foreground" />
+            <X className="h-5 w-5 text-foreground" />
           </button>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">

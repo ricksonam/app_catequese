@@ -24,6 +24,7 @@ import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 import { MapaTimeline } from "@/components/MapaTimeline";
 import { usePremium } from "@/hooks/usePremium";
 import confetti from "canvas-confetti";
+import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -111,6 +112,7 @@ export default function Dashboard() {
   });
   const [showNovaMensagem, setShowNovaMensagem] = useState(false);
   const [messagesModalOpen, setMessagesModalOpen] = useState(false);
+  const [showCalendario, setShowCalendario] = useState(false);
 
   useEffect(() => {
     if (totalMensagens > lastSeenMensagens) {
@@ -585,11 +587,18 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               {/* Ícone de Agenda Inteligente */}
               <button
-                onClick={() => navigate("/modulos/calendario")}
-                className="relative w-10 h-10 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-all border border-white/40 shadow-md backdrop-blur-sm group"
+                onClick={() => setShowCalendario(!showCalendario)}
+                className={cn(
+                  "relative w-10 h-10 flex items-center justify-center rounded-full transition-all border shadow-md backdrop-blur-sm group",
+                  showCalendario 
+                    ? "bg-[#FDE047] border-[#FDE047] text-purple-950 scale-105" 
+                    : "bg-white/20 hover:bg-white/30 border-white/40 text-white"
+                )}
               >
-                <CalendarDays className={cn("h-4 w-4 text-white shadow-sm transition-all", temAtividadeHoje && "animate-bounce text-[#FDE047]")} />
-                {temAtividadeHoje && (
+                <CalendarDays className={cn("h-4 w-4 shadow-sm transition-all", 
+                  showCalendario ? "text-purple-950" : (temAtividadeHoje && "animate-bounce text-[#FDE047]")
+                )} />
+                {temAtividadeHoje && !showCalendario && (
                   <span className="absolute top-0 right-0 w-3 h-3 bg-[#FDE047] rounded-full border-2 border-[#8b5cf6] animate-pulse" />
                 )}
               </button>
@@ -617,6 +626,12 @@ export default function Dashboard() {
           <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
         </div>
       </div>
+
+      {showCalendario && (
+        <div className="animate-fade-in bg-card p-5 rounded-[32px] border-2 border-primary/20 shadow-2xl mb-4 relative z-20">
+          <CalendarioLiturgico onClose={() => setShowCalendario(false)} />
+        </div>
+      )}
 
       {/* CARD DE CRIAR TURMA (QUANDO NÃO HÁ TURMAS) */}
       {turmas.length === 0 && onboardingStep === "none" && (
