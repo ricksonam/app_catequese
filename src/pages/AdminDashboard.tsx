@@ -899,242 +899,240 @@ export default function AdminDashboard() {
 
             {activeTab === "admins" && isSuperAdmin && (
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">Gestão de Sub-Administradores</h2>
-                  <p className="text-sm text-muted-foreground">Crie e controle o acesso de outros administradores para a plataforma.</p>
+                {/* Page Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Gestão de Administradores</h2>
+                    <p className="text-sm text-muted-foreground">Crie e gerencie o acesso de sub-administradores da plataforma</p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-4 py-2 rounded-2xl self-start sm:self-auto">
+                    <ShieldCheck className="h-4 w-4 text-indigo-600" />
+                    <span className="text-xs font-black text-indigo-700 uppercase tracking-widest">
+                      {profiles.filter(p => p.role === "sub_admin").length} Sub-Admins Ativos
+                    </span>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Formulário de Criação */}
-                  <Card className="rounded-[24px] border-border/50 shadow-sm p-6 space-y-4 lg:col-span-1 bg-white">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <ShieldCheck className="h-5 w-5" />
+                {/* Hero Creation Card */}
+                <div className="relative overflow-hidden rounded-[32px] shadow-2xl shadow-indigo-500/25">
+                  {/* Gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-700 to-indigo-900" />
+                  {/* Decorative orbs */}
+                  <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl -mr-24 -mt-24 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+                  {/* Grid pattern */}
+                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                    style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+
+                  <div className="relative z-10 p-8">
+                    {/* Card header */}
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
+                        <ShieldCheck className="h-7 w-7 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-foreground text-sm">Novo Sub-Admin</h3>
-                        <p className="text-xs text-muted-foreground">Criar credenciais de acesso</p>
+                        <h3 className="text-xl font-black text-white tracking-tight">Novo Sub-Administrador</h3>
+                        <p className="text-indigo-200 text-sm mt-0.5">Conceda acesso ao painel de controle iCatequese</p>
+                      </div>
+                      <div className="ml-auto hidden md:flex items-center gap-1.5 bg-white/10 border border-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">Sistema Online</span>
                       </div>
                     </div>
 
-                    <div className="space-y-4 pt-2">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Email do Administrador</label>
+                    {/* Fields */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-indigo-200 uppercase tracking-[0.15em]">Email do Administrador</label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                          <Input
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-300 z-10" />
+                          <input
                             type="email"
-                            placeholder="admin2@icatequese.com"
+                            placeholder="admin@icatequese.com"
                             value={adminEmail}
                             onChange={(e) => setAdminEmail(e.target.value)}
-                            className="pl-10 rounded-xl h-11 border-2 focus:border-primary"
+                            className="w-full pl-11 pr-4 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-indigo-300/50 text-sm font-medium focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all"
                           />
                         </div>
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Senha Provisória</label>
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-indigo-200 uppercase tracking-[0.15em]">Senha Provisória</label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                          <Input
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-300 z-10" />
+                          <input
                             type="password"
                             placeholder="Mínimo 6 caracteres"
                             value={adminPassword}
                             onChange={(e) => setAdminPassword(e.target.value)}
-                            className="pl-10 rounded-xl h-11 border-2 focus:border-primary"
+                            className="w-full pl-11 pr-4 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-indigo-300/50 text-sm font-medium focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all"
                           />
                         </div>
+                        {adminPassword.length > 0 && adminPassword.length < 6 && (
+                          <p className="text-[10px] text-orange-300 font-bold flex items-center gap-1">⚠ Mínimo 6 caracteres</p>
+                        )}
                       </div>
-
-                      <Button
-                        onClick={async () => {
-                          if (!adminEmail || !adminPassword) {
-                            toast.error("Por favor, informe email e senha.");
-                            return;
-                          }
-                          if (adminPassword.length < 6) {
-                            toast.error("A senha deve conter no mínimo 6 caracteres.");
-                            return;
-                          }
-
-                          setIsSubAdminLoading(true);
-                          try {
-                            const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
-                              body: { action: "create", email: adminEmail, password: adminPassword }
-                            });
-
-                            if (error) {
-                              toast.error(error.message || "Erro ao criar sub-administrador.");
-                              return;
-                            }
-
-                            setCreatedCredentials({ email: adminEmail, password: adminPassword });
-                            setAdminEmail("");
-                            setAdminPassword("");
-                            qc.invalidateQueries({ queryKey: ["admin_profiles"] });
-                            toast.success("Sub-admin criado com sucesso!");
-                          } catch (err: any) {
-                            console.error("[iCatequese] Erro ao criar sub-admin:", err);
-                            toast.error(err.message || "Erro ao criar sub-administrador.");
-                          } finally {
-                            setIsSubAdminLoading(false);
-                          }
-                        }}
-                        disabled={isSubAdminLoading || !adminEmail || !adminPassword}
-                        className="w-full rounded-xl h-11 font-bold gap-2 mt-2"
-                      >
-                        {isSubAdminLoading ? "Criando..." : "Criar Administrador"}
-                      </Button>
-                    </div>
-                  </Card>
-
-                  {/* Lista de Administradores */}
-                  <Card className="rounded-[24px] border-border/50 shadow-sm p-6 lg:col-span-2 space-y-4 bg-white">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-bold text-foreground text-sm">Administradores Ativos</h3>
-                        <p className="text-xs text-muted-foreground">Total de administradores gerenciáveis</p>
-                      </div>
-                      <Badge className="bg-primary/10 text-primary border-none text-xs font-bold px-3 py-1">
-                        {profiles.filter(p => p.role === "sub_admin").length} Sub-Admins
-                      </Badge>
                     </div>
 
-                    <div className="space-y-3 pt-2">
-                      {profiles.filter(p => p.role === "sub_admin").length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
-                          <ShieldCheck className="h-10 w-10 mb-2 opacity-20" />
-                          <p className="text-sm font-medium">Nenhum sub-administrador cadastrado</p>
-                        </div>
+                    {/* Info notice */}
+                    <div className="mt-5 p-4 bg-white/8 border border-white/15 rounded-2xl flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center shrink-0">
+                        <Sparkles className="h-4 w-4 text-amber-300" />
+                      </div>
+                      <p className="text-[11px] text-indigo-200/80 leading-relaxed">
+                        <span className="font-bold text-white">Permissões do Sub-Admin:</span> Acesso completo ao painel exceto criação de outros admins e configurações do sistema.
+                      </p>
+                    </div>
+
+                    {/* Submit */}
+                    <button
+                      onClick={async () => {
+                        if (!adminEmail || !adminPassword) { toast.error("Por favor, informe email e senha."); return; }
+                        if (adminPassword.length < 6) { toast.error("A senha deve conter no mínimo 6 caracteres."); return; }
+                        setIsSubAdminLoading(true);
+                        try {
+                          const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
+                            body: { action: "create", email: adminEmail, password: adminPassword, adminSecret: "icatequese-admin-2026" }
+                          });
+                          if (error) { toast.error(error.message || "Erro ao criar sub-administrador."); return; }
+                          if (data?.error) { toast.error(data.error); return; }
+                          setCreatedCredentials({ email: adminEmail, password: adminPassword });
+                          setAdminEmail(""); setAdminPassword("");
+                          qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                          toast.success(data?.promoted ? "Usuário promovido a Sub-Admin!" : "Sub-admin criado com sucesso!");
+                        } catch (err: any) {
+                          console.error("[iCatequese] Erro:", err);
+                          toast.error(err.message || "Erro ao criar sub-administrador.");
+                        } finally {
+                          setIsSubAdminLoading(false);
+                        }
+                      }}
+                      disabled={isSubAdminLoading || !adminEmail || adminPassword.length < 6}
+                      className="mt-6 w-full h-14 rounded-2xl bg-white text-indigo-700 font-black text-sm uppercase tracking-widest hover:bg-indigo-50 active:scale-[0.98] transition-all shadow-xl shadow-indigo-900/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    >
+                      {isSubAdminLoading ? (
+                        <><div className="w-5 h-5 border-2 border-indigo-200 border-t-indigo-700 rounded-full animate-spin" /> Criando Administrador...</>
                       ) : (
-                        profiles.filter(p => p.role === "sub_admin").map((admin) => (
-                          <div key={admin.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border/50 rounded-2xl hover:bg-slate-50 transition-colors gap-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold border border-indigo-100 shrink-0">
-                                {admin.email.substring(0, 2).toUpperCase()}
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="text-sm font-bold text-foreground">{admin.email}</p>
-                                  <Badge
-                                    variant="outline"
-                                    className={cn(
-                                      "text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5",
-                                      admin.sub_admin_status === "active" && "border-emerald-200 bg-emerald-50 text-emerald-700",
-                                      admin.sub_admin_status === "paused" && "border-amber-200 bg-amber-50 text-amber-700",
-                                      admin.sub_admin_status === "revoked" && "border-destructive bg-destructive/5 text-destructive"
-                                    )}
-                                  >
-                                    {admin.sub_admin_status === "active" ? "Ativo" : admin.sub_admin_status === "paused" ? "Pausado" : "Revogado"}
-                                  </Badge>
-                                </div>
-                                <p className="text-[10px] text-muted-foreground mt-0.5">Criado por: {admin.sub_admin_created_by || "Sistema"}</p>
-                              </div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-2">
-                              {admin.sub_admin_status === "active" ? (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={async () => {
-                                    try {
-                                      const { error } = await supabase
-                                        .from("profiles")
-                                        .update({ sub_admin_status: "paused" })
-                                        .eq("id", admin.id);
-                                      if (error) throw error;
-                                      qc.invalidateQueries({ queryKey: ["admin_profiles"] });
-                                      toast.success("Acesso pausado temporariamente.");
-                                    } catch (err: any) {
-                                      toast.error("Erro ao pausar acesso.");
-                                    }
-                                  }}
-                                  className="rounded-xl text-xs font-bold border-2 gap-1.5 h-9"
-                                >
-                                  <Lock className="w-3.5 h-3.5" /> Pausar
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={async () => {
-                                    try {
-                                      const { error } = await supabase
-                                        .from("profiles")
-                                        .update({ sub_admin_status: "active" })
-                                        .eq("id", admin.id);
-                                      if (error) throw error;
-                                      qc.invalidateQueries({ queryKey: ["admin_profiles"] });
-                                      toast.success("Acesso reativado.");
-                                    } catch (err: any) {
-                                      toast.error("Erro ao ativar acesso.");
-                                    }
-                                  }}
-                                  className="rounded-xl text-xs font-bold border-2 gap-1.5 h-9"
-                                >
-                                  <Unlock className="w-3.5 h-3.5" /> Reativar
-                                </Button>
-                              )}
-
-                              {admin.sub_admin_status !== "revoked" && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={async () => {
-                                    try {
-                                      const { error } = await supabase
-                                        .from("profiles")
-                                        .update({ sub_admin_status: "revoked" })
-                                        .eq("id", admin.id);
-                                      if (error) throw error;
-                                      qc.invalidateQueries({ queryKey: ["admin_profiles"] });
-                                      toast.success("Acesso revogado com sucesso.");
-                                    } catch (err: any) {
-                                      toast.error("Erro ao revogar acesso.");
-                                    }
-                                  }}
-                                  className="rounded-xl text-xs font-bold border-2 text-destructive hover:bg-destructive/5 hover:text-destructive border-destructive/20 gap-1.5 h-9"
-                                >
-                                  <XCircle className="w-3.5 h-3.5" /> Revogar
-                                </Button>
-                              )}
-
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={async () => {
-                                  if (!confirm(`Tem certeza que deseja excluir permanentemente o sub-admin ${admin.email}?`)) return;
-                                  setIsSubAdminLoading(true);
-                                  try {
-                                    const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
-                                      body: { action: "delete", userId: admin.id }
-                                    });
-                                    if (error) {
-                                      toast.error(error.message || "Erro ao excluir sub-admin.");
-                                      return;
-                                    }
-                                    qc.invalidateQueries({ queryKey: ["admin_profiles"] });
-                                    toast.success("Sub-admin excluído com sucesso!");
-                                  } catch (err: any) {
-                                    toast.error(err.message || "Erro ao excluir sub-admin.");
-                                  } finally {
-                                    setIsSubAdminLoading(false);
-                                  }
-                                }}
-                                className="rounded-xl text-xs font-bold border-2 hover:bg-destructive hover:text-white border-destructive/30 hover:border-destructive text-destructive gap-1.5 h-9"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" /> Excluir
-                              </Button>
-                            </div>
-                          </div>
-                        ))
+                        <><Plus className="h-5 w-5" /> Criar Administrador</>
                       )}
-                    </div>
-                  </Card>
+                    </button>
+                  </div>
                 </div>
+
+                {/* List separator */}
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border/50" />
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Administradores Cadastrados</span>
+                  <div className="h-px flex-1 bg-border/50" />
+                </div>
+
+
+                {profiles.filter(p => p.role === "sub_admin").length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-slate-200 rounded-[28px] bg-slate-50/50">
+                    <div className="w-16 h-16 rounded-3xl bg-slate-100 flex items-center justify-center mb-4">
+                      <ShieldCheck className="h-8 w-8 opacity-20" />
+                    </div>
+                    <p className="text-sm font-bold">Nenhum sub-administrador cadastrado ainda</p>
+                    <p className="text-xs text-muted-foreground mt-1">Use o formulário acima para criar o primeiro</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {profiles.filter(p => p.role === "sub_admin").map((admin) => (
+                      <div key={admin.id} className={cn(
+                        "relative overflow-hidden rounded-[24px] border bg-white hover:shadow-lg transition-all duration-300",
+                        admin.sub_admin_status === "active" ? "border-emerald-200/60 hover:border-emerald-300" :
+                        admin.sub_admin_status === "paused" ? "border-amber-200/60 hover:border-amber-300" :
+                        "border-destructive/20 opacity-70"
+                      )}>
+                        <div className={cn("h-1.5 w-full",
+                          admin.sub_admin_status === "active" ? "bg-gradient-to-r from-emerald-400 to-teal-500" :
+                          admin.sub_admin_status === "paused" ? "bg-gradient-to-r from-amber-400 to-orange-400" :
+                          "bg-gradient-to-r from-red-400/50 to-red-300/30"
+                        )} />
+                        <div className="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                          <div className={cn(
+                            "w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg shrink-0 border",
+                            admin.sub_admin_status === "active" ? "bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-700 border-indigo-200" :
+                            admin.sub_admin_status === "paused" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                            "bg-slate-100 text-slate-400 border-slate-200"
+                          )}>
+                            {admin.email.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <p className="text-sm font-black text-foreground truncate">{admin.email}</p>
+                              <span className={cn(
+                                "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                admin.sub_admin_status === "active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                admin.sub_admin_status === "paused" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                                "bg-red-50 text-red-600 border-red-200"
+                              )}>
+                                <span className={cn("w-1.5 h-1.5 rounded-full",
+                                  admin.sub_admin_status === "active" ? "bg-emerald-500 animate-pulse" :
+                                  admin.sub_admin_status === "paused" ? "bg-amber-500" : "bg-red-500"
+                                )} />
+                                {admin.sub_admin_status === "active" ? "Ativo" : admin.sub_admin_status === "paused" ? "Pausado" : "Revogado"}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <ShieldCheck className="h-3 w-3 shrink-0" /> Sub-Administrador
+                              {admin.sub_admin_created_by && ` · Criado por: ${admin.sub_admin_created_by}`}
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap gap-2 shrink-0">
+                            {admin.sub_admin_status === "active" ? (
+                              <button onClick={async () => {
+                                const { error } = await supabase.from("profiles").update({ sub_admin_status: "paused" }).eq("id", admin.id);
+                                if (!error) { qc.invalidateQueries({ queryKey: ["admin_profiles"] }); toast.success("Acesso pausado."); }
+                                else toast.error("Erro ao pausar acesso.");
+                              }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold hover:bg-amber-100 transition-colors active:scale-95">
+                                <Lock className="h-3.5 w-3.5" /> Pausar
+                              </button>
+                            ) : (
+                              <button onClick={async () => {
+                                const { error } = await supabase.from("profiles").update({ sub_admin_status: "active" }).eq("id", admin.id);
+                                if (!error) { qc.invalidateQueries({ queryKey: ["admin_profiles"] }); toast.success("Acesso reativado."); }
+                                else toast.error("Erro ao ativar acesso.");
+                              }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors active:scale-95">
+                                <Unlock className="h-3.5 w-3.5" /> Reativar
+                              </button>
+                            )}
+                            {admin.sub_admin_status !== "revoked" && (
+                              <button onClick={async () => {
+                                const { error } = await supabase.from("profiles").update({ sub_admin_status: "revoked" }).eq("id", admin.id);
+                                if (!error) { qc.invalidateQueries({ queryKey: ["admin_profiles"] }); toast.success("Acesso revogado."); }
+                                else toast.error("Erro ao revogar acesso.");
+                              }} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors active:scale-95">
+                                <XCircle className="h-3.5 w-3.5" /> Revogar
+                              </button>
+                            )}
+                            <button onClick={async () => {
+                              if (!confirm(`Excluir permanentemente ${admin.email}?`)) return;
+                              setIsSubAdminLoading(true);
+                              try {
+                                const { data, error } = await supabase.functions.invoke("manage-sub-admin", {
+                                  body: { action: "delete", userId: admin.id, adminSecret: "icatequese-admin-2026" }
+                                });
+                                if (error || data?.error) { toast.error((error?.message || data?.error) || "Erro ao excluir."); return; }
+                                qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                                toast.success("Sub-admin excluído com sucesso!");
+                              } catch (err: any) {
+                                toast.error(err.message || "Erro ao excluir.");
+                              } finally {
+                                setIsSubAdminLoading(false);
+                              }
+                            }} className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-muted-foreground hover:bg-destructive hover:border-destructive hover:text-white transition-all active:scale-95">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
+
 
             {activeTab === "catalog" && (
               <div className="space-y-6">
