@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
@@ -38,6 +38,33 @@ export default function Dashboard() {
     setSelectedTurmaIdRaw(id);
     if (id === "all") localStorage.removeItem("ivc_selected_turma");
     else localStorage.setItem("ivc_selected_turma", id);
+  };
+
+  const [activeModuleIndex, setActiveModuleIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const handleCarouselScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const children = Array.from(container.children) as HTMLElement[];
+    if (children.length === 0) return;
+    
+    let closestIndex = 0;
+    let minDiff = Infinity;
+    const containerCenter = container.getBoundingClientRect().left + container.clientWidth / 2;
+    
+    children.forEach((child, index) => {
+      const childRect = child.getBoundingClientRect();
+      const childCenter = childRect.left + childRect.width / 2;
+      const diff = Math.abs(childCenter - containerCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = index;
+      }
+    });
+    
+    if (closestIndex >= 0 && closestIndex < 6) {
+      setActiveModuleIndex(closestIndex);
+    }
   };
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch, isFetching: tFetching } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
@@ -941,9 +968,13 @@ export default function Dashboard() {
           </div>
 
           {/* Carrossel de Módulos (Rolagem Horizontal) */}
-          <div className="w-full relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 px-4 -mx-4 pb-4 mt-4">
+          <div 
+            ref={carouselRef}
+            onScroll={handleCarouselScroll}
+            className="w-full relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 px-4 -mx-4 pb-2 mt-4"
+          >
             {/* Card Catequizandos */}
-            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -966,7 +997,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Encontros */}
-            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -989,7 +1020,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Plano da Turma */}
-            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1011,7 +1042,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Eventos */}
-            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1033,7 +1064,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Reuniões */}
-            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1055,7 +1086,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Biblia Online */}
-            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => navigate("/modulos/biblia")}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
@@ -1067,6 +1098,33 @@ export default function Dashboard() {
                 Bíblia
               </span>
             </div>
+          </div>
+
+          {/* Indicador de Bolinhas (Pagination Dots) */}
+          <div className="flex justify-center items-center gap-1.5 mt-2 mb-4">
+            {[0, 1, 2, 3, 4, 5].map((idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  if (carouselRef.current) {
+                    const children = Array.from(carouselRef.current.children) as HTMLElement[];
+                    if (children[idx]) {
+                      children[idx].scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest",
+                        inline: "center",
+                      });
+                    }
+                  }
+                }}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  activeModuleIndex === idx
+                    ? "w-4 bg-primary"
+                    : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                }`}
+                aria-label={`Ir para módulo ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       )}

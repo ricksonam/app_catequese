@@ -378,208 +378,15 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               )}
             </AccordionContent>
           </AccordionItem>
-
-          {/* SEÇÃO: MÓDULOS GLOBAIS */}
-          <AccordionItem value="modulos" className="border-none shadow-none">
+          {/* SEÇÃO: MINHA CONTA */}
+          <AccordionItem value="minha-conta" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
                <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
-                 <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-                   <Sparkles className="h-5 w-5" />
-                 </div>
-                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Gerais</span>
-                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
-               </div>
-            </AccordionTrigger>
-            <AccordionContent className="pt-1 px-1 space-y-1">
-              {modulosGlobais.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => go(item.path)}
-                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
-                    <item.icon className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
-                </button>
-              ))}
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* SEÇÃO: FEEDBACK INTERATIVO */}
-          <AccordionItem value="comunicacao" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
-                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-                   <MessageSquare className="h-5 w-5" />
-                 </div>
-                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">CONECTA FAMÍLIAS</span>
-                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
-               </div>
-            </AccordionTrigger>
-            <AccordionContent className="pt-1 px-1 space-y-1">
-              {comunicacao.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => go(item.path)}
-                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
-                    <item.icon className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
-                </button>
-              ))}
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* CARD STANDALONE: CENTRAL DE RELATÓRIOS */}
-        </Accordion>
-
-        {/* Standalone card: Minha Assinatura */}
-        <div className="mt-2 mb-2">
-          {isPremium ? (
-            /* Premium active card in the menu */
-            <button
-              onClick={() => go("/assinatura")}
-              className="w-full group flex items-center gap-3 px-4 py-4 rounded-2xl bg-gradient-to-r from-amber-400/10 to-orange-500/10 dark:from-amber-500/10 dark:to-orange-500/10 border-2 border-amber-500/40 dark:border-amber-500/30 shadow-md hover:shadow-lg active:scale-[0.98] transition-all"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <Sparkles className="h-5 w-5 animate-pulse" />
-              </div>
-              <div className="flex-1 text-left">
-                <span className="block text-[10px] font-black text-amber-800 dark:text-amber-300 uppercase tracking-[0.15em] whitespace-nowrap">
-                  Assinatura Premium Anual
-                </span>
-                <span className="block text-[9px] text-muted-foreground font-bold mt-0.5">
-                  Acesso Total Liberado ⭐
-                </span>
-              </div>
-              
-              {/* Countdown chip inside the menu */}
-              {premiumExpiresAt && (
-                <div className="px-2 py-1 rounded-lg bg-orange-500 text-white text-[8px] font-black uppercase tracking-widest shrink-0 shadow-sm animate-pulse">
-                  {Math.ceil((new Date(premiumExpiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) > 0 
-                    ? `Faltam ${Math.ceil((new Date(premiumExpiresAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} dias`
-                    : "Ativa"}
-                </div>
-              )}
-            </button>
-          ) : (
-            /* Free/Inactive card in the menu with subscribe button */
-            <button
-              onClick={redirectToPayment}
-              className="w-full group flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-black/10 dark:border-white/10 hover:border-amber-500/50 shadow-md hover:shadow-lg active:scale-[0.98] transition-all"
-            >
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <div className="flex-1 text-left">
-                <span className="block text-[10px] font-black text-foreground uppercase tracking-[0.15em] whitespace-nowrap">
-                  Assinatura Premium
-                </span>
-                <span className="block text-[9px] text-muted-foreground font-bold mt-0.5">
-                  Clique para assinar o Plano Anual
-                </span>
-              </div>
-              <div className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[9px] font-black uppercase tracking-widest shrink-0 shadow-sm border border-amber-300">
-                Assinar
-              </div>
-            </button>
-          )}
-        </div>
-
-        <div className="mt-2 mb-2">
-          <button
-            onClick={() => {
-              if (selectedTurmaId && turmas.find(t => t.id === selectedTurmaId)) {
-                go(`/turmas/${selectedTurmaId}/relatorios`);
-              } else if (turmas.length === 1) {
-                go(`/turmas/${turmas[0].id}/relatorios`);
-              } else if (turmas.length > 1) {
-                setTurmaPickerOpen(true);
-              } else {
-                toast({ title: "Nenhuma turma encontrada", description: "Crie uma turma primeiro.", variant: "destructive" });
-              }
-            }}
-            className="w-full group flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-violet-500/50 dark:border-violet-400/30 shadow-md hover:shadow-lg hover:border-violet-500/80 active:scale-[0.98]"
-          >
-            <div className="w-10 h-10 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-              <BarChart2 className="h-5 w-5" />
-            </div>
-            <div className="flex-1 text-left">
-              <span className="block text-[10px] font-black text-foreground uppercase tracking-[0.15em] whitespace-nowrap">Central de Relatórios</span>
-              {selectedTurmaId && turmas.find(t => t.id === selectedTurmaId) && (
-                <span className="block text-[9px] text-violet-500 font-bold mt-0.5 truncate">
-                  {turmas.find(t => t.id === selectedTurmaId)?.nome}
-                </span>
-              )}
-            </div>
-            <ChevronRight className="h-4 w-4 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-          </button>
-        </div>
-
-        {/* Modal: selecionar turma para os relatórios */}
-        {turmaPickerOpen && (
-          <div
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setTurmaPickerOpen(false)}
-          >
-            <div
-              className="w-full max-w-xs bg-white dark:bg-zinc-900 rounded-[2rem] shadow-2xl overflow-hidden"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="h-1.5 w-full bg-gradient-to-r from-violet-400 to-purple-600" />
-              <div className="p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-base font-black text-foreground">Escolher Turma</h3>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">Selecione para ver os relatórios</p>
-                  </div>
-                  <button
-                    onClick={() => setTurmaPickerOpen(false)}
-                    className="w-7 h-7 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-all"
-                  >
-                    <X className="h-3.5 w-3.5 text-muted-foreground" />
-                  </button>
-                </div>
-                <div className="space-y-2">
-                  {turmas.map(t => (
-                    <button
-                      key={t.id}
-                      onClick={() => {
-                        localStorage.setItem("ivc_selected_turma", t.id);
-                        setTurmaPickerOpen(false);
-                        go(`/turmas/${t.id}/relatorios`);
-                      }}
-                      className="w-full flex items-center gap-3 p-3 rounded-2xl border-2 border-transparent bg-muted/30 hover:bg-violet-500/10 hover:border-violet-500/30 transition-all active:scale-[0.98] text-left"
-                    >
-                      <div className="w-9 h-9 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0">
-                        <BarChart2 className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-black text-foreground truncate">{t.nome}</p>
-                        <p className="text-[9px] text-muted-foreground">{t.etapa} • {t.ano}</p>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-violet-400" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <Accordion type="single" collapsible className="w-full space-y-2 border-none">
-          {/* SEÇÃO: CONTA */}
-          <AccordionItem value="conta" className="border-none shadow-none">
-            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
-               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
-                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                   <Users className="h-5 w-5" />
+                 <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                   <UserCheck className="h-5 w-5" />
                  </div>
                  <div className="flex-1 flex flex-col items-start gap-1">
-                   <span className="text-[11px] font-black text-foreground uppercase tracking-[0.2em]">Configurações</span>
+                   <span className="text-[11px] font-black text-foreground uppercase tracking-[0.2em] text-left">Minha Conta</span>
                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${isPremium ? 'bg-amber-500/20 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
                      {isPremium ? "Assinatura Premium" : "Plano Gratuito"}
                    </span>
@@ -588,16 +395,53 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-1 px-1 space-y-1">
-              <button onClick={() => go("/assinatura")} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
-                <span className="text-sm font-bold text-foreground/80 text-left">Minha Assinatura</span>
-              </button>
-              
-              <button onClick={() => setShowPasswordDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:rotate-12 transition-transform"><KeyRound className="h-4 w-4" /></div>
-                <span className="text-sm font-bold text-foreground/80 text-left">Alterar Senha</span>
-              </button>
-              
+              <div className="p-3 bg-slate-50 dark:bg-zinc-900/50 rounded-2xl border border-black/5 dark:border-white/5 space-y-1">
+                <p className="px-3 pb-2 text-[9px] font-black uppercase text-muted-foreground tracking-widest border-b border-black/5 dark:border-white/5 mb-2">Meus Dados</p>
+                
+                <button onClick={() => go("/assinatura")} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
+                  <span className="text-sm font-bold text-foreground/80 text-left">Minha Assinatura</span>
+                </button>
+                
+                <button onClick={() => setShowPasswordDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:rotate-12 transition-transform"><KeyRound className="h-4 w-4" /></div>
+                  <span className="text-sm font-bold text-foreground/80 text-left">Alterar Senha</span>
+                </button>
+                
+                <button 
+                  onClick={() => {
+                    if (isPremium) {
+                      setShowTransferDialog(true);
+                    } else {
+                      setShowPremiumModal(true);
+                    }
+                  }} 
+                  className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
+                  <span className="text-sm font-bold text-foreground/80 text-left">Transferir Dados</span>
+                </button>
+                
+                <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
+                  <div className="w-8 h-8 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:skew-x-6 transition-transform"><Trash className="h-4 w-4" /></div>
+                  <span className="text-sm font-black text-left">Excluir Usuário</span>
+                </button>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* SEÇÃO: CONFIGURAÇÕES */}
+          <AccordionItem value="configuracoes" className="border-none shadow-none">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
+                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                   <Settings className="h-5 w-5" />
+                 </div>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Configurações</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
+               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-1 px-1 space-y-1">
               <button onClick={() => setShowNotificationDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:animate-icon-pulse"><Bell className="h-4 w-4" /></div>
                 <span className="text-sm font-bold text-foreground/80 text-left">Notificações</span>
@@ -611,25 +455,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               <button onClick={() => setShowSuggestionDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform"><MessageSquare className="h-4 w-4" /></div>
                 <span className="text-sm font-bold text-foreground/80 text-left">Dar Sugestão</span>
-              </button>
-
-              <button 
-                onClick={() => {
-                  if (isPremium) {
-                    setShowTransferDialog(true);
-                  } else {
-                    setShowPremiumModal(true);
-                  }
-                }} 
-                className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
-              >
-                <div className="w-9 h-9 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
-                <span className="text-sm font-bold text-foreground/80 text-left">Transferir Dados</span>
-              </button>
-
-              <button onClick={() => setShowDeleteAccountDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors text-destructive">
-                <div className="w-9 h-9 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:skew-x-6 transition-transform"><Trash className="h-4 w-4" /></div>
-                <span className="text-sm font-black text-left">Excluir Usuário</span>
               </button>
             </AccordionContent>
           </AccordionItem>

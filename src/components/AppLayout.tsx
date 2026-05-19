@@ -7,6 +7,12 @@ import {
   Dices,
   CalendarDays,
   Book,
+  Map,
+  MessageSquare,
+  FileText,
+  Library,
+  BarChart2,
+  ChevronRight,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -39,6 +45,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const [showObjective, setShowObjective] = useState(false);
 
   const [maisOpen, setMaisOpen] = useState(false);
+  const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [sugestaoOpen, setSugestaoOpen] = useState(false);
   const [suggestionText, setSuggestionText] = useState("");
   const [isSavingSuggestion, setIsSavingSuggestion] = useState(false);
@@ -164,50 +171,121 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
           </div>
         </nav>
       )}
-
       {/* Modal Mais / Acesso Rápido */}
       <Dialog open={maisOpen} onOpenChange={setMaisOpen}>
-        <DialogContent className="max-w-md w-[95vw] p-0 overflow-hidden border-2 border-black/5 dark:border-white/5 rounded-[40px] shadow-2xl bg-zinc-50 dark:bg-zinc-950">
-          <div className="flex flex-col p-8">
-            <h2 className="text-2xl font-black text-center text-foreground mb-8 tracking-tight">Acesso Rápido</h2>
+        <DialogContent className="max-w-md w-[95vw] p-0 overflow-y-auto max-h-[85vh] border-2 border-black/5 dark:border-white/5 rounded-[40px] shadow-2xl bg-zinc-50 dark:bg-zinc-950">
+          <div className="flex flex-col p-6 space-y-6">
+            <h2 className="text-2xl font-black text-center text-foreground tracking-tight">Mais Opções</h2>
             
-            <div className="grid grid-cols-3 gap-6">
-              {[
-                { label: "Nova Turma", path: "/turmas/nova", img: "/acesso_nova_turma.jpg" },
-                { label: "Cadastros", path: "/cadastros/paroquia-comunidade", img: "/acesso_cadastros.jpg" },
-                { label: "Encontro", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/encontros/novo` : "/turmas", img: "/mais_1.png" },
-                { label: "Catequizando", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/catequizandos` : "/turmas", img: "/acesso_catequizando.jpg" },
-                { label: "Evento", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/eventos` : "/turmas", img: "/acesso_atividades.jpg" },
-                { label: "Reunião", path: turmas.length > 0 ? `/turmas/${turmas[0].id}/reunioes` : "/turmas", img: "/mais_2.png" },
-                { label: "Agenda", path: "/modulos/calendario", img: "/acesso_agenda.jpg" },
-                { label: "Bíblia Online", path: "/modulos/biblia", img: "/acesso_biblia.jpg" },
-                { label: "Jogos", path: "/jogos", img: "/acesso_jogos.jpg" },
-                { label: "Relatórios", path: turmas.length > 0 ? `/turmas/${(localStorage.getItem("ivc_selected_turma") && localStorage.getItem("ivc_selected_turma") !== "all") ? localStorage.getItem("ivc_selected_turma") : turmas[0].id}/relatorios` : "/turmas", img: "/acesso_relatorios.jpg" },
-                { label: "Conecta", path: "/comunicacao", img: "/acesso_conecta.jpg" },
-                { label: "Sugestões", onClick: () => setSugestaoOpen(true), img: "/acesso_sugestoes.jpg" }
-              ].map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    setMaisOpen(false);
-                    if (item.onClick) {
-                      item.onClick();
-                    } else if (item.path) {
+            {/* SEÇÃO: MÓDULOS GERAIS */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <div className="w-1.5 h-4 rounded-full bg-amber-500" />
+                <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Módulos Gerais</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600" },
+                  { label: "Agenda", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
+                  { label: "Mural", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
+                  { label: "Bíblia", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
+                  { label: "Material", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
+                  { label: "Biblioteca", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
+                  { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
+                ].map((item, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setMaisOpen(false);
                       navigate(item.path);
-                    }
-                  }}
-                  className="flex flex-col items-center gap-2 group animate-scale-in"
-                  style={{ animationDelay: `${i * 10}ms` }}
-                >
-                  <div className="w-24 h-24 rounded-[32px] bg-white dark:bg-zinc-900 shadow-sm border border-black/5 dark:border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 group-hover:shadow-lg group-active:scale-95 group-hover:border-primary/30">
-                    <img src={item.img} alt={item.label} loading="eager" className="w-18 h-18 object-contain animate-bounce-subtle" />
-                  </div>
-                  <span className="text-[11px] font-black text-center text-muted-foreground uppercase tracking-wider leading-tight group-hover:text-primary transition-colors">
-                    {item.label}
-                  </span>
-                </button>
-              ))}
+                    }}
+                    className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-center group"
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform`}>
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <span className="text-[10px] font-black text-foreground/80 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors">
+                      {item.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* SEÇÃO: CONECTA FAMÍLIAS */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <div className="w-1.5 h-4 rounded-full bg-purple-500" />
+                <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Conecta Famílias</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Painel Conecta", path: "/comunicacao", icon: MessageSquare, color: "bg-purple-500/15 text-purple-500", desc: "Ver comunicados" },
+                  { label: "Criar Novo", path: "/comunicacao/novo", icon: FileText, color: "bg-emerald-500/15 text-emerald-600", desc: "Questionário" },
+                ].map((item, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setMaisOpen(false);
+                      navigate(item.path);
+                    }}
+                    className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-left group w-full"
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.color} group-hover:scale-110 transition-transform`}>
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="block text-[11px] font-black text-foreground/80 uppercase tracking-wider group-hover:text-primary transition-colors">
+                        {item.label}
+                      </span>
+                      <span className="block text-[9px] text-muted-foreground font-bold truncate">
+                        {item.desc}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* SEÇÃO: CENTRAL DE RELATÓRIOS */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <div className="w-1.5 h-4 rounded-full bg-violet-500" />
+                <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Central de Relatórios</h3>
+              </div>
+              <button
+                onClick={() => {
+                  setMaisOpen(false);
+                  const activeTurma = localStorage.getItem("ivc_selected_turma");
+                  if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
+                    navigate(`/turmas/${activeTurma}/relatorios`);
+                  } else if (turmas.length === 1) {
+                    navigate(`/turmas/${turmas[0].id}/relatorios`);
+                  } else if (turmas.length > 1) {
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.error("Crie uma turma primeiro.");
+                  }
+                }}
+                className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
+              >
+                <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <BarChart2 className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="block text-xs font-black text-foreground uppercase tracking-wider">Acessar Relatórios</span>
+                  <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
+                    {(() => {
+                      const activeTurmaId = localStorage.getItem("ivc_selected_turma");
+                      const found = turmas.find(t => t.id === activeTurmaId);
+                      return found ? `Turma ativa: ${found.nome}` : "Selecione uma turma para ver relatórios";
+                    })()}
+                  </span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
+
           </div>
         </DialogContent>
       </Dialog>
@@ -254,6 +332,39 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
              >
                 {isSavingSuggestion ? "Enviando..." : "Enviar Sugestão"}
              </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Turma picker dialog for Reports */}
+      <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
+        <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black tracking-tight text-center">Selecionar Turma</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-4">
+            {turmas.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => {
+                  setTurmaPickerOpen(false);
+                  navigate(`/turmas/${t.id}/relatorios`);
+                }}
+                className="w-full p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 flex items-center justify-between group hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-violet-500/30"
+              >
+                <div className="text-left">
+                  <span className="block text-sm font-black text-foreground group-hover:text-violet-600 transition-colors">
+                    {t.nome}
+                  </span>
+                  {t.ano && (
+                    <span className="text-[10px] font-bold text-muted-foreground">
+                      Ano: {t.ano}
+                    </span>
+                  )}
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-violet-600 transition-colors" />
+              </button>
+            ))}
           </div>
         </DialogContent>
       </Dialog>
