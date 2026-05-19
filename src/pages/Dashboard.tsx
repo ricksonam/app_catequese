@@ -940,21 +940,10 @@ export default function Dashboard() {
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
           </div>
 
-          {/* Linhas de conexão (Árvore) */}
-          <div className="relative w-full h-5 flex justify-center z-0">
-            {/* Linha vertical central descendo do card da turma */}
-            <div className="absolute top-0 w-[2px] h-1/2 bg-blue-600" />
-            {/* Linha horizontal dividindo para as duas colunas */}
-            <div className="absolute top-1/2 w-[calc(50%-24px)] h-[2px] bg-blue-600" />
-            {/* Linhas verticais descendo para os cards */}
-            <div className="absolute top-1/2 left-[calc(25%+12px)] w-[2px] h-1/2 bg-blue-600" />
-            <div className="absolute top-1/2 right-[calc(25%+12px)] w-[2px] h-1/2 bg-blue-600" />
-          </div>
-
-          {/* Grid de Módulos (MAXIMIZADOS) */}
-          <div className="grid grid-cols-3 gap-2 w-full relative z-10 px-2">
+          {/* Carrossel de Módulos (Rolagem Horizontal) */}
+          <div className="w-full relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 px-4 -mx-4 pb-4 mt-4">
             {/* Card Catequizandos */}
-            <div className="relative group">
+            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -971,10 +960,13 @@ export default function Dashboard() {
                 <img src="/card_catequizandos.jpg" alt="Catequizandos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Catequizandos
+              </span>
             </div>
 
             {/* Card Encontros */}
-            <div className="relative group">
+            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -991,10 +983,13 @@ export default function Dashboard() {
                 <img src="/card_encontros.jpg" alt="Encontros" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Encontros
+              </span>
             </div>
 
             {/* Card Plano da Turma */}
-            <div className="relative group">
+            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1010,10 +1005,57 @@ export default function Dashboard() {
               >
                 <img src="/icone-plano da turma.png" alt="Plano da Turma" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Plano
+              </span>
+            </div>
+
+            {/* Card Eventos */}
+            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/eventos`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+              >
+                <img src="/icone-eventos.png" alt="Eventos" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Eventos
+              </span>
+            </div>
+
+            {/* Card Reuniões */}
+            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/reunioes`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+              >
+                <img src="/icone-reunioes.png" alt="Reuniões" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Reuniões
+              </span>
             </div>
 
             {/* Card Biblia Online */}
-            <div className="relative group col-start-2 col-span-1">
+            <div className="w-[105px] sm:w-[115px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => navigate("/modulos/biblia")}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
@@ -1021,10 +1063,11 @@ export default function Dashboard() {
                 <img src="/card_biblia.jpg" alt="Bíblia Online" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Bíblia
+              </span>
             </div>
           </div>
-
-
         </div>
       )}
 

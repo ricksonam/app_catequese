@@ -114,8 +114,8 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
 
       {/* Tab Bar */}
       {!isPresentationMode && (
-        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-1 print:hidden transition-all duration-200">
-          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 rounded-[32px] sm:rounded-full bg-white/95 dark:bg-zinc-900 backdrop-blur-xl border border-black dark:border-white/20 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] pb-2 relative">
+        <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border-t border-black/10 dark:border-white/10 print:hidden transition-all duration-200 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[58px] px-6 pb-1 relative">
             {tabs.map((tab) => {
               const isMais = tab.path === "__mais__";
               const isTurmas = tab.path === "/turmas";
@@ -130,11 +130,11 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   <div key={tab.path} className="relative flex flex-col items-center justify-end h-full px-2">
                     <button
                       onClick={() => navigate(tab.path)}
-                      className="absolute -top-6 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 border-4 border-white dark:border-zinc-900 transition-transform active:scale-90 hover:scale-105"
+                      className="absolute -top-5 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 border-4 border-white dark:border-zinc-900 transition-transform active:scale-90 hover:scale-105"
                     >
-                      <Icon className="w-7 h-7" strokeWidth={2.5} />
+                      <Icon className="w-6 h-6" strokeWidth={2.5} />
                     </button>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-700 dark:text-purple-400 mt-auto">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-purple-700 dark:text-purple-400 mt-auto pb-0.5">
                       Turmas
                     </span>
                   </div>
@@ -145,18 +145,18 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                 <button
                   key={tab.path}
                   onClick={() => isMais ? setMaisOpen(true) : navigate(tab.path)}
-                  className={`group relative flex flex-col items-center justify-end h-full px-3 pb-0.5 transition-all duration-300 active:scale-90 ${
+                  className={`group relative flex flex-col items-center justify-end h-full px-3 pb-1 transition-all duration-300 active:scale-90 ${
                     isActive
                       ? tab.color
                       : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-400"
                   }`}
                 >
-                  <Icon className={`h-6 w-6 mb-1 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon className={`h-5 w-5 mb-0.5 transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} strokeWidth={isActive ? 2.5 : 2} />
                   <span className={`text-[8px] font-black uppercase tracking-[0.05em] text-center transition-all opacity-100`}>
                     {tab.label}
                   </span>
                   {isActive && (
-                    <div className={`absolute -bottom-2 w-1.5 h-1.5 rounded-full ${tab.dot}`} />
+                    <div className={`absolute -bottom-1 w-1.5 h-1.5 rounded-full ${tab.dot}`} />
                   )}
                 </button>
               );
