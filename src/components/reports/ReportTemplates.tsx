@@ -691,3 +691,52 @@ export const ReuniaoFullSheet = ({ doc, org, turma, catequizandos }: any) => (
     </div>
   </div>
 );
+
+export const MateriaisApoioSheet = ({ org, turma, encontros, filtroInfo }: any) => {
+  return (
+    <div className="p-8 text-black bg-white font-sans min-h-screen">
+      <PrintHeader 
+        titulo="Relatório de Materiais de Apoio" 
+        subtitulo={`Período/Filtro: ${filtroInfo}`}
+        paroquia={org.paroquia} 
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+      
+      {encontros.length === 0 ? (
+        <p className="text-center py-10 text-sm text-gray-500 italic">Nenhum material de apoio cadastrado para o período selecionado.</p>
+      ) : (
+        <table className="w-full border-collapse border-2 border-[#2c1810] text-xs">
+          <thead>
+            <tr className="bg-gray-100 border-b-2 border-[#2c1810]">
+              <th className="border-r border-[#2c1810] p-3 text-center font-black uppercase w-28">Data</th>
+              <th className="border-r border-[#2c1810] p-3 text-left font-black uppercase w-1/3">Encontro / Tema</th>
+              <th className="p-3 text-left font-black uppercase">Materiais de Apoio Cadastrados</th>
+            </tr>
+          </thead>
+          <tbody>
+            {encontros.map((enc: any, i: number) => (
+              <tr key={enc.id || i} className="border-b border-[#2c1810] last:border-b-0 align-top">
+                <td className="border-r border-[#2c1810] p-3 text-center font-bold">
+                  {formatarDataVigente(enc.data)}
+                </td>
+                <td className="border-r border-[#2c1810] p-3 font-bold uppercase">
+                  {enc.tema}
+                </td>
+                <td className="p-3 text-gray-800 font-serif leading-relaxed whitespace-pre-wrap">
+                  {enc.materialApoio}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      
+      <div className="mt-12 flex justify-between text-[10px] font-bold uppercase tracking-widest text-gray-500">
+        <p>Gerado em: {new Date().toLocaleDateString('pt-BR')}</p>
+        <p>Assinatura Catequista: ___________________________</p>
+      </div>
+    </div>
+  );
+};

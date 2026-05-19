@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
@@ -311,11 +311,53 @@ const DOC_TYPES = [
   { id: "ficha_enc", label: "Fichas de Encontros", icon: CalendarDays, color: "from-sky-500 to-blue-600", bg: "bg-sky-500/10", border: "border-sky-500/30", text: "text-sky-600" },
   { id: "lista_chamada", label: "Grade de Frequência", icon: CheckCircle2, color: "from-emerald-500 to-teal-600", bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-600" },
   { id: "boletim_turma", label: "Relatório da Turma", icon: FileText, color: "from-amber-500 to-orange-600", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-600" },
+  { id: "materiais_apoio", label: "Materiais de Apoio", icon: BookOpen, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-600" },
 ];
 
 function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
   const [docTipo, setDocTipo] = useState<string>("ficha_cat");
   const [printTarget, setPrintTarget] = useState<any>(null);
+
+  // Filtros para Relatório de Materiais de Apoio
+  const [filtroTipo, setFiltroTipo] = useState<"todos" | "mes" | "periodo">("todos");
+  const [mesSelecionado, setMesSelecionado] = useState<number>(new Date().getMonth());
+  const [dataInicio, setDataInicio] = useState<string>("");
+  const [dataFim, setDataFim] = useState<string>("");
+
+  const meses = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
+  const encontrosComMaterial = useMemo(() => {
+    return encontros.filter((e: any) => e.materialApoio && e.materialApoio.trim() !== "");
+  }, [encontros]);
+
+  const filteredEncontros = useMemo(() => {
+    let list = [...encontrosComMaterial];
+    list.sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime());
+
+    if (filtroTipo === "mes") {
+      list = list.filter((e: any) => {
+        const d = new Date(e.data + 'T12:00:00');
+        return d.getMonth() === mesSelecionado;
+      });
+    } else if (filtroTipo === "periodo") {
+      if (dataInicio) {
+        list = list.filter((e: any) => e.data >= dataInicio);
+      }
+      if (dataFim) {
+        list = list.filter((e: any) => e.data <= dataFim);
+      }
+    }
+    return list;
+  }, [encontrosComMaterial, filtroTipo, mesSelecionado, dataInicio, dataFim]);
+
+  const getFiltroInfo = () => {
+    if (filtroTipo === "todos") return "Todos os Encontros";
+    if (filtroTipo === "mes") return `Mês de ${meses[mesSelecionado]}`;
+    return `Período de ${dataInicio ? formatarDataVigente(dataInicio) : "Início"} até ${dataFim ? formatarDataVigente(dataFim) : "Fim"}`;
+  };
 
   const selectedType = DOC_TYPES.find(d => d.id === docTipo)!;
 
@@ -334,6 +376,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
         {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
         {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+        {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
       </>
     );
 
@@ -499,6 +542,107 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     <Printer className="h-3 w-3" /> Imprimir
                   </div>
                 </button>
+              )}
+
+              {docTipo === "materiais_apoio" && (
+                <div className="p-5 space-y-5 bg-card">
+                  {/* Controles de Filtro */}
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Filtrar por</p>
+                    <div className="flex gap-2">
+                      {["todos", "mes", "periodo"].map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setFiltroTipo(t as any)}
+                          className={cn(
+                            "px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            filtroTipo === t
+                              ? "bg-indigo-600 text-white shadow-sm scale-105"
+                              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                          )}
+                        >
+                          {t === "todos" ? "Todos" : t === "mes" ? "Por Mês" : "Por Período"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {filtroTipo === "mes" && (
+                      <div className="flex flex-col gap-1.5 pt-2 animate-fade-in">
+                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Selecione o Mês</label>
+                        <select
+                          value={mesSelecionado}
+                          onChange={(e) => setMesSelecionado(Number(e.target.value))}
+                          className="w-full px-3.5 py-2.5 text-sm bg-background border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        >
+                          {meses.map((m, idx) => (
+                            <option key={idx} value={idx}>{m}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    {filtroTipo === "periodo" && (
+                      <div className="grid grid-cols-2 gap-3 pt-2 animate-fade-in">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Data Inicial</label>
+                          <input
+                            type="date"
+                            value={dataInicio}
+                            onChange={(e) => setDataInicio(e.target.value)}
+                            className="w-full px-3.5 py-2.5 text-sm bg-background border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Data Final</label>
+                          <input
+                            type="date"
+                            value={dataFim}
+                            onChange={(e) => setDataFim(e.target.value)}
+                            className="w-full px-3.5 py-2.5 text-sm bg-background border border-black/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Botão de Imprimir */}
+                  <button
+                    onClick={() => handlePrint({ encontros: filteredEncontros, filtroInfo: getFiltroInfo() })}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-indigo-600/10 active:scale-[0.98]"
+                  >
+                    <Printer className="h-4 w-4" /> Imprimir Relatório ({filteredEncontros.length})
+                  </button>
+
+                  {/* Pré-visualização dos itens */}
+                  <div className="pt-4 border-t border-black/5 space-y-3">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Lista de Materiais de Apoio ({filteredEncontros.length})</p>
+                    
+                    {filteredEncontros.length === 0 ? (
+                      <div className="py-10 text-center text-xs text-muted-foreground italic bg-muted/20 rounded-2xl border border-dashed border-black/5">
+                        Nenhum material de apoio encontrado para os filtros selecionados.
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                        {filteredEncontros.map((enc: any) => (
+                          <div key={enc.id} className="p-4 bg-muted/30 rounded-2xl border border-black/5 hover:bg-muted/50 transition-all">
+                            <div className="flex justify-between items-center gap-4 mb-2">
+                              <span className="text-[10px] font-bold text-foreground truncate max-w-[200px]">
+                                {enc.tema}
+                              </span>
+                              <span className="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-md border border-indigo-100 dark:border-indigo-900/30 shrink-0">
+                                {formatarDataVigente(enc.data)}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground font-serif whitespace-pre-wrap leading-relaxed">
+                              {enc.materialApoio}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
