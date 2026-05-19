@@ -81,8 +81,18 @@ interface SafetyAlert {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { signOut, isSuperAdmin } = useAuth();
+  const { signOut, isSuperAdmin, user } = useAuth();
   const qc = useQueryClient();
+
+  const { data: currentAdminProfile } = useQuery({
+    queryKey: ["currentAdminProfile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabase.from("profiles").select("nome, email").eq("id", user.id).single();
+      return data;
+    },
+    enabled: !!user?.id
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("users");
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
@@ -454,7 +464,13 @@ export default function AdminDashboard() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            {currentAdminProfile && (
+              <div className="hidden sm:flex flex-col items-end mr-2">
+                <span className="text-xs font-bold text-foreground">{currentAdminProfile.nome || 'Administrador'}</span>
+                <span className="text-[10px] text-muted-foreground">{currentAdminProfile.email}</span>
+              </div>
+            )}
             <Button variant="outline" size="sm" onClick={() => navigate("/")} className="rounded-xl border-2 font-bold text-xs">
               <ArrowLeft className="mr-2 h-4 w-4" /> Voltar ao App
             </Button>

@@ -93,6 +93,12 @@ export default function LandingPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={() => navigate("/admin/login")}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-900/90 hover:bg-stone-900 text-white text-[11px] font-black uppercase tracking-wide border border-stone-700/50 transition-all active:scale-95 shadow-sm"
+          >
+            <Lock className="h-3 w-3" /> Acesso Restrito
+          </button>
+          <button
             onClick={handleShare}
             className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all active:scale-95 shadow-sm"
             title="Compartilhar"
@@ -166,22 +172,13 @@ export default function LandingPage() {
           className="flex flex-col items-center gap-6 w-full max-w-xs"
         >
           {/* Entrar — bordado */}
-          <div className="flex w-full gap-3">
-            <button
-              onClick={() => navigate("/auth?view=login")}
-              className="flex-1 group flex items-center justify-center gap-2 px-4 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-blue-600/40 text-blue-600 hover:bg-blue-50 hover:border-blue-600 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
-            >
-              <LogIn className="h-4 w-4 shrink-0" />
-              Catequista
-            </button>
-            <button
-              onClick={() => navigate("/admin/login")}
-              className="flex-1 group flex items-center justify-center gap-2 px-4 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-stone-900 border-2 border-stone-900 text-white hover:bg-stone-800 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
-            >
-              <Lock className="h-4 w-4 shrink-0" />
-              Admin
-            </button>
-          </div>
+          <button
+            onClick={() => navigate("/auth?view=login")}
+            className="group w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-white border-2 border-blue-600/40 text-blue-600 hover:bg-blue-50 hover:border-blue-600 transition-all active:scale-95 hover:scale-[1.03] shadow-md"
+          >
+            <LogIn className="h-4 w-4 shrink-0" />
+            Entrar
+          </button>
 
           {/* CTA Relocado do final da página — Versão Premium */}
           <motion.div
