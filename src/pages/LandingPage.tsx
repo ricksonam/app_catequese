@@ -95,7 +95,7 @@ export default function LandingPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="flex items-center gap-3 mb-6 bg-gradient-to-r from-transparent via-[#D4AF37]/10 to-transparent py-2 px-8 rounded-full border border-[#D4AF37]/20 shadow-sm">
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
-          <span className="text-sm font-black uppercase tracking-[0.2em] bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#B8860B] bg-clip-text text-transparent drop-shadow-sm text-center leading-relaxed">
+          <span className="text-base sm:text-lg font-black uppercase tracking-[0.1em] text-[#9c7100] drop-shadow-md text-center leading-relaxed">
             Gestão de Turmas de catequese<br className="sm:hidden" /> para Catequistas
           </span>
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
