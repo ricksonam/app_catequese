@@ -678,31 +678,12 @@ export default function Dashboard() {
           </div>
           <div className="relative z-10 flex items-center justify-between px-4 py-2">
             <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#FDE047] mb-0.5 drop-shadow-sm">Bem-vindo de volta</p>
               <h1 className="text-base font-black text-white uppercase tracking-tight flex items-center gap-1.5 drop-shadow-md">
                 Olá, Catequista!
                 <span className="inline-block animate-waving-hand text-sm">👋</span>
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              {/* Ícone de Agenda Inteligente */}
-              <button
-                onClick={() => setShowCalendario(!showCalendario)}
-                className={cn(
-                  "relative w-10 h-10 flex items-center justify-center rounded-full transition-all border shadow-md backdrop-blur-sm group",
-                  showCalendario 
-                    ? "bg-[#FDE047] border-[#FDE047] text-purple-950 scale-105" 
-                    : "bg-white/20 hover:bg-white/30 border-white/40 text-white"
-                )}
-              >
-                <CalendarDays className={cn("h-4 w-4 shadow-sm transition-all", 
-                  showCalendario ? "text-purple-950" : (temAtividadeHoje && "animate-bounce text-[#FDE047]")
-                )} />
-                {temAtividadeHoje && !showCalendario && (
-                  <span className="absolute top-0 right-0 w-3 h-3 bg-[#FDE047] rounded-full border-2 border-[#8b5cf6] animate-pulse" />
-                )}
-              </button>
-              
               {/* Ícone de mensagens */}
               <button
                 onClick={handleMessagesClick}
@@ -1177,7 +1158,7 @@ export default function Dashboard() {
                 toast.info("Crie uma turma para acessar os relatórios.");
               }
             }}
-            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left mt-5"
+            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
           >
             <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
               <BarChart2 className="h-6 w-6" />

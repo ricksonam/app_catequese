@@ -58,7 +58,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const isPresentationMode = currentPath.endsWith("/apresentacao");
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950 flex flex-col print:block print:min-h-0 print:bg-white">
+    <div className="min-h-screen bg-background flex flex-col print:block print:min-h-0 print:bg-white">
       {/* Header */}
       {!isPresentationMode && (
         <header className="sticky top-0 z-50 glass-card rounded-none border-x-0 border-t-0 print:hidden">
@@ -71,7 +71,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               </SheetTrigger>
               <SheetContent 
                 side="left" 
-                className="w-80 p-0 bg-slate-100 dark:bg-zinc-950 border-r border-black/5 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left transition-transform duration-300"
+                className="w-80 p-0 bg-background border-r border-black/5 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left transition-transform duration-300"
               >
                 <MenuContent 
                   onClose={() => setMenuOpen(false)} 
@@ -173,7 +173,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
       )}
       {/* Modal Mais / Acesso Rápido */}
       <Dialog open={maisOpen} onOpenChange={setMaisOpen}>
-        <DialogContent className="max-w-md w-[95vw] p-0 overflow-y-auto max-h-[85vh] border-2 border-black/5 dark:border-white/5 rounded-[40px] shadow-2xl bg-zinc-50 dark:bg-zinc-950">
+        <DialogContent className="max-w-md w-[95vw] p-0 overflow-y-auto max-h-[85vh] border-2 border-black/5 dark:border-white/5 rounded-[40px] shadow-2xl bg-background">
           <div className="flex flex-col p-6 space-y-6">
             <h2 className="text-2xl font-black text-center text-foreground tracking-tight">Mais Opções</h2>
             
@@ -183,7 +183,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                 <div className="w-1.5 h-4 rounded-full bg-amber-500" />
                 <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Módulos Gerais</h3>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
                   { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600" },
                   { label: "Agenda Catequética", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
