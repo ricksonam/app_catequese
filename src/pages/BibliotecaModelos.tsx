@@ -40,7 +40,7 @@ export default function BibliotecaModelos() {
       <div className="page-header animate-fade-in">
         <button onClick={() => navigate(backPath)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <div>
-          <h1 className="text-xl font-bold text-foreground">Biblioteca de Modelos</h1>
+          <h1 className="text-xl font-bold text-foreground">Biblioteca de Encontros</h1>
           <p className="text-xs text-muted-foreground">{MODELOS_ENCONTROS.length} modelos disponíveis</p>
         </div>
       </div>

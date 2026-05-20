@@ -205,7 +205,7 @@ export default function EncontroForm() {
 
         <Dialog open={showModelos} onOpenChange={setShowModelos}>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
-            <DialogHeader><DialogTitle>Biblioteca de Modelos</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>Biblioteca de Encontros</DialogTitle></DialogHeader>
             <div className="relative mt-2"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><input type="text" value={modeloSearch} onChange={(e) => setModeloSearch(e.target.value)} placeholder="Buscar modelo..." className="form-input pl-10" /></div>
             <div className="space-y-2 mt-2 max-h-[50vh] overflow-y-auto">
               {filteredModelos.map((m) => (

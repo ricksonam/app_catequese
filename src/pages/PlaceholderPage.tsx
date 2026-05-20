@@ -12,7 +12,7 @@ export default function PlaceholderPage() {
     "/modulos/mural": "Mural de Fotos",
     "/modulos/biblia": "Bíblia",
     "/modulos/material": "Material de Apoio",
-    "/modulos/biblioteca": "Biblioteca de Modelos",
+    "/modulos/biblioteca": "Biblioteca de Encontros",
   };
 
   const title = titles[location.pathname] || "Em Desenvolvimento";

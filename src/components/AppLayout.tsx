@@ -197,7 +197,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   { label: "Mural de Fotos", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
                   { label: "Bíblia Online", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
                   { label: "Material de Apoio", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
-                  { label: "Biblioteca de Modelos", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
+                  { label: "Biblioteca de Encontros", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
                   { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
                   { label: "Dar Sugestão", onClick: () => setSugestaoOpen(true), icon: MessageSquare, color: "bg-teal-500/15 text-teal-600" },
                 ].map((item, i) => (

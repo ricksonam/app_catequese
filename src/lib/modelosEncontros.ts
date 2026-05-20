@@ -33,7 +33,12 @@ export const CATEGORIAS_MODELOS = [
   "Catequese Infantil",
   "Adolescentes",
   "Juventude",
-];
+  "Catequese com as Famílias",
+  "Tempo Comum",
+  "Tempo da Quaresma",
+  "Tempo Pascal",
+  "Tempo do Advento",
+  "Solenidades e Festas",
 
 export const MODELOS_ENCONTROS: ModeloEncontro[] = [
   // Jesus Cristo
@@ -602,4 +607,101 @@ export const MODELOS_ENCONTROS: ModeloEncontro[] = [
       step("oracao_final", "Oração Final", "Oração de envio missionário.", 5),
     ],
   },
+  // NOVOS MODELOS BASEADOS NAS IMAGENS
+  {
+    id: "m40", tema: "2ª catequese - O amor de Deus e o pecado", categoria: "Catequese com as Famílias",
+    leituraBiblica: "Lc 15,11-32 - O filho pródigo",
+    materialApoio: "Quadro de Jesus misericordioso e uma vasilha com água benta.",
+    roteiro: [
+      step("acolhida", "Acolhida", "A(o) catequista, às portas do local preparado, dá as boas-vindas aos pais e catequizandos com alegria. Canto de acolhimento: 'Este pranto' (Eugenio Jorge).", 10),
+      step("oracao_inicial", "Saudação e Oração", "Saudação: 'Em nome do Pai... Que o Deus da esperança os encha de toda alegria'. Oração espontânea ressaltando o quanto Deus nos ama e quão grande é a sua misericórdia.", 10, "Oração Simples"),
+      step("desenvolvimento", "Leitura da Palavra", "Canto de aclamação. Proclamação do Evangelho de Lucas 15,11-32. Objetivo: Reconhecer Deus como fonte do amor e tomar consciência da misericórdia do Pai que perdoa.", 25),
+      step("dinamica", "Dinâmica / Reflexão", "Partilha em família sobre o perdão e o amor incondicional de Deus.", 10),
+      step("oracao_final", "Oração Final", "Canto meditativo: 'Onde reina o amor' (Taizé).", 5),
+    ],
+  },
+  {
+    id: "m41", tema: "1ª catequese - Jesus caminha conosco", categoria: "Catequese com as Famílias",
+    leituraBiblica: "Lc 24,13-35 - Os discípulos de Emaús",
+    materialApoio: "Bíblia, vela, imagem de Jesus.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Recepção das famílias com música suave. Ambiente preparado para o diálogo.", 10),
+      step("oracao_inicial", "Oração Inicial", "Oração de abertura pedindo a companhia de Jesus.", 5, "Oração Simples"),
+      step("desenvolvimento", "Desenvolvimento do Tema", "Refletir sobre como Jesus nos acompanha nas dificuldades, assim como fez com os discípulos a caminho de Emaús.", 20),
+      step("dinamica", "Dinâmica", "Cada família partilha um momento em que sentiram Jesus caminhar com eles.", 20),
+      step("oracao_final", "Oração Final", "Preces espontâneas e Pai Nosso.", 5),
+    ],
+  },
+  {
+    id: "m42", tema: "Deus nos criou à sua imagem e semelhança", categoria: "Tempo Comum",
+    leituraBiblica: "Gn 1,26-27 - Façamos o homem à nossa imagem",
+    materialApoio: "Espelho, cartolina, lápis.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Brincadeira do espelho (imitar o colega).", 10),
+      step("oracao_inicial", "Oração Inicial", "Canto de louvor pela criação.", 5, "Louvor"),
+      step("desenvolvimento", "Desenvolvimento", "Explicar que somos a obra-prima de Deus, criados por amor para amar.", 25),
+      step("dinamica", "Dinâmica", "Olhar-se no espelho e agradecer a Deus por uma qualidade própria.", 15),
+      step("oracao_final", "Oração Final", "Oração de gratidão pela vida.", 5),
+    ],
+  },
+  {
+    id: "m43", tema: "Moisés recebe de Deus os Mandamentos", categoria: "Tempo Comum",
+    leituraBiblica: "Ex 20,1-17 - Os Dez Mandamentos",
+    materialApoio: "Duas tábuas de isopor ou papelão.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Recepção com dinâmica sobre regras de convivência.", 10),
+      step("oracao_inicial", "Oração Inicial", "Salmo responsorial sobre a Lei do Senhor.", 5, "Leitura Orante"),
+      step("desenvolvimento", "Desenvolvimento", "A história de Moisés no Monte Sinai. As tábuas da Lei como um caminho de amor.", 25),
+      step("dinamica", "Dinâmica", "Montar os 10 mandamentos nas tábuas da turma.", 15),
+      step("oracao_final", "Oração Final", "Oração pedindo força para seguir os mandamentos.", 5),
+    ],
+  },
+  {
+    id: "m44", tema: "Advento: tempo de preparação", categoria: "Tempo do Advento",
+    leituraBiblica: "Is 40,3-5 - Preparai o caminho do Senhor",
+    materialApoio: "Coroa do Advento, velas coloridas.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Apresentar a Coroa do Advento apagada.", 10),
+      step("oracao_inicial", "Oração Inicial", "Oração da primeira semana do Advento.", 5, "Oração Simples"),
+      step("desenvolvimento", "Desenvolvimento", "Significado do Advento: vigilância, esperança, alegria e conversão. Esperar a vinda do Salvador.", 25),
+      step("dinamica", "Dinâmica", "Escrever compromissos de mudança para preparar o coração como manjedoura.", 15),
+      step("oracao_final", "Oração Final", "Canto 'Vem, Senhor Jesus'.", 5),
+    ],
+  },
+  {
+    id: "m45", tema: "A origem do pecado", categoria: "Tempo da Quaresma",
+    leituraBiblica: "Gn 3,1-15 - A queda do homem",
+    materialApoio: "Cruz de madeira, tecido roxo.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Ambiente reflexivo, luz reduzida. Falar sobre escolhas ruins.", 10),
+      step("oracao_inicial", "Oração Inicial", "Ato penitencial.", 5, "Oração Simples"),
+      step("desenvolvimento", "Desenvolvimento", "A história de Adão e Eva. O que é o pecado e como ele nos afasta de Deus. A promessa de salvação.", 25),
+      step("dinamica", "Dinâmica", "Escrever atitudes pecaminosas em papéis e colar numa cruz.", 15),
+      step("oracao_final", "Oração Final", "Oração pedindo perdão.", 5),
+    ],
+  },
+  {
+    id: "m46", tema: "Domingo, dia do Senhor", categoria: "Tempo Pascal",
+    leituraBiblica: "Jo 20,1-9 - A ressurreição no primeiro dia da semana",
+    materialApoio: "Vela (Círio Pascal em miniatura), flores.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Ambiente festivo e iluminado. Saudação de 'Feliz Páscoa'.", 10),
+      step("oracao_inicial", "Oração Inicial", "Canto 'Aleluia'.", 5, "Louvor"),
+      step("desenvolvimento", "Desenvolvimento", "A ressurreição de Jesus no domingo. Por que guardamos o domingo. A importância da missa dominical.", 25),
+      step("dinamica", "Dinâmica", "Desenhar como é (ou deveria ser) o domingo na família.", 15),
+      step("oracao_final", "Oração Final", "Oração de júbilo pela vida nova em Cristo.", 5),
+    ],
+  },
+  {
+    id: "m47", tema: "Jesus Cristo, Rei do Universo", categoria: "Solenidades e Festas",
+    leituraBiblica: "Jo 18,33-37 - Meu Reino não é deste mundo",
+    materialApoio: "Coroa de espinhos e coroa dourada.",
+    roteiro: [
+      step("acolhida", "Acolhida", "Debate: O que faz um rei? Jesus foi um rei como os outros?", 10),
+      step("oracao_inicial", "Oração Inicial", "Salmo 93 - O Senhor é Rei.", 5, "Leitura Orante"),
+      step("desenvolvimento", "Desenvolvimento", "O reinado de Jesus é feito de amor, serviço e verdade, culminando na Cruz.", 25),
+      step("dinamica", "Dinâmica", "Escolher ações que demonstram o Reino de Deus no mundo hoje.", 15),
+      step("oracao_final", "Oração Final", "Oração a Cristo Rei.", 5),
+    ],
+  }
 ];

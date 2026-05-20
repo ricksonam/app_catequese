@@ -39,7 +39,7 @@ const modulosGlobais = [
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-success/10 text-success" },
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
   { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
-  { label: "Biblioteca de Modelos", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
+  { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
   { label: "Mapa Panorâmico IVC", icon: Map, path: "/mapa-panoramico", color: "bg-rose-500/10 text-rose-500" },
 ];
 
