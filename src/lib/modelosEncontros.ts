@@ -39,6 +39,7 @@ export const CATEGORIAS_MODELOS = [
   "Tempo Pascal",
   "Tempo do Advento",
   "Solenidades e Festas",
+];
 
 export const MODELOS_ENCONTROS: ModeloEncontro[] = [
   // Jesus Cristo
