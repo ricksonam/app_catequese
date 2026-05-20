@@ -13,6 +13,7 @@ import {
   Library,
   BarChart2,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -35,7 +36,7 @@ const baseTabs = [
   { path: "/jogos", icon: Dices, label: "Jogos", color: "text-amber-600", dot: "bg-amber-600" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
   { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-rose-600", dot: "bg-rose-600" },
-  { path: "__mais__", icon: Menu, label: "Mais", color: "text-emerald-600", dot: "bg-emerald-600" },
+  { path: "__mais__", icon: Menu, label: "Módulos", color: "text-emerald-600", dot: "bg-emerald-600" },
 ];
 
 export default function AppLayout({ children }: { children?: React.ReactNode }) {
@@ -173,9 +174,15 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
       )}
       {/* Modal Mais / Acesso Rápido */}
       <Dialog open={maisOpen} onOpenChange={setMaisOpen}>
-        <DialogContent className="max-w-md w-[95vw] p-0 overflow-y-auto max-h-[85vh] border-2 border-black/5 dark:border-white/5 rounded-[40px] shadow-2xl bg-background">
-          <div className="flex flex-col p-6 space-y-6">
-            <h2 className="text-2xl font-black text-center text-foreground tracking-tight">Mais Opções</h2>
+        <DialogContent className="max-w-none w-screen h-[100dvh] max-h-screen p-0 overflow-y-auto border-none rounded-none shadow-none bg-background flex flex-col">
+          <div className="flex flex-col p-6 space-y-6 flex-1 pb-24 relative">
+            <button 
+              onClick={() => setMaisOpen(false)} 
+              className="absolute top-6 right-6 p-2 rounded-full bg-muted/50 hover:bg-muted text-muted-foreground transition-colors z-10"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="text-3xl font-black text-center text-foreground tracking-tight pt-4">Módulos</h2>
             
             {/* SEÇÃO: MÓDULOS GERAIS */}
             <div>
