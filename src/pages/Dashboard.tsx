@@ -952,7 +952,7 @@ export default function Dashboard() {
           <div 
             ref={carouselRef}
             onScroll={handleCarouselScroll}
-            className="w-[100vw] relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 px-6 pb-2 mt-4"
+            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-2 mt-4"
           >
             {/* Card Catequizandos */}
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
@@ -1117,7 +1117,7 @@ export default function Dashboard() {
           </div>
 
           {/* Indicador de Bolinhas (Pagination Dots) */}
-          <div className="flex justify-center items-center gap-1.5 mt-4 mb-8">
+          <div className="flex justify-center items-center gap-1.5 mt-4 mb-10">
             {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => (
               <button
                 key={idx}
@@ -1158,7 +1158,7 @@ export default function Dashboard() {
                 toast.info("Crie uma turma para acessar os relatórios.");
               }
             }}
-            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left mt-2"
+            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left mt-8"
           >
             <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
               <BarChart2 className="h-6 w-6" />
