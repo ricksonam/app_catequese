@@ -876,7 +876,7 @@ export default function Dashboard() {
               <div className="w-full max-w-[280px] relative mb-4" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-md border border-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-primary"
+                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-md border border-blue-400/30 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-blue-500"
                 >
                   {/* Raios de luz de fundo subtis */}
                   <div className="absolute inset-0 pointer-events-none opacity-20"
@@ -1144,37 +1144,39 @@ export default function Dashboard() {
           </div>
 
           {/* Card Central de Relatórios */}
-          <button
-            onClick={() => {
-              const activeTurma = localStorage.getItem("ivc_selected_turma");
-              const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
-              if (validTurma) {
-                navigate(`/turmas/${activeTurma}/relatorios`);
-              } else if (turmas.length === 1) {
-                navigate(`/turmas/${turmas[0].id}/relatorios`);
-              } else if (turmas.length > 1) {
-                setTurmaPickerOpen(true);
-              } else {
-                toast.info("Crie uma turma para acessar os relatórios.");
-              }
-            }}
-            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left mt-8"
-          >
-            <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-              <BarChart2 className="h-6 w-6" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
-              <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
-                {(() => {
-                  const activeTurmaId = localStorage.getItem("ivc_selected_turma");
-                  const found = turmas.find(t => t.id === activeTurmaId);
-                  return found ? `Turma ativa: ${found.nome}` : "Selecione uma turma para ver relatórios";
-                })()}
-              </span>
-            </div>
-            <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-          </button>
+          <div className="w-full pt-8 pb-4">
+            <button
+              onClick={() => {
+                const activeTurma = localStorage.getItem("ivc_selected_turma");
+                const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
+                if (validTurma) {
+                  navigate(`/turmas/${activeTurma}/relatorios`);
+                } else if (turmas.length === 1) {
+                  navigate(`/turmas/${turmas[0].id}/relatorios`);
+                } else if (turmas.length > 1) {
+                  setTurmaPickerOpen(true);
+                } else {
+                  toast.info("Crie uma turma para acessar os relatórios.");
+                }
+              }}
+              className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
+            >
+              <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                <BarChart2 className="h-6 w-6" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
+                <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
+                  {(() => {
+                    const activeTurmaId = localStorage.getItem("ivc_selected_turma");
+                    const found = turmas.find(t => t.id === activeTurmaId);
+                    return found ? `Turma ativa: ${found.nome}` : "Selecione uma turma para ver relatórios";
+                  })()}
+                </span>
+              </div>
+              <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+            </button>
+          </div>
         </div>
       )}
 

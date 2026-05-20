@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
@@ -63,8 +63,8 @@ export default function RelatoriosTurma() {
       <div className="space-y-4 animate-fade-in flex flex-col pt-4 print:hidden">
         {/* Row 1: Back Button + Título (Centralizado) */}
         <div className="flex items-center justify-center min-h-[44px] relative">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
+          <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+            <X className="h-5 w-5 text-foreground" />
           </button>
           
           <div className="flex flex-col items-center gap-1 text-center">
