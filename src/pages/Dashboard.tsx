@@ -1177,7 +1177,7 @@ export default function Dashboard() {
                 toast.info("Crie uma turma para acessar os relatórios.");
               }
             }}
-            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left mt-1"
+            className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left mt-5"
           >
             <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
               <BarChart2 className="h-6 w-6" />
