@@ -272,24 +272,10 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
   return (
     <div className="flex flex-col h-full bg-slate-100 dark:bg-zinc-950 overflow-hidden">
-      {/* Nome do Usuário Logado & Assinatura */}
-      <div className="p-4 pr-12 pb-2 border-b border-black/5 mb-2 flex items-center justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
-          <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
-        </div>
-        <button 
-          onClick={() => go("/assinatura")}
-          className={cn(
-            "px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all shadow-sm shrink-0",
-            isPremium 
-              ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-amber-500/20" 
-              : "bg-slate-200 dark:bg-zinc-800 text-muted-foreground border border-black/5"
-          )}
-        >
-          <Sparkles className="h-2.5 w-2.5" />
-          {isPremium ? "Premium" : "Grátis"}
-        </button>
+      {/* Nome do Usuário Logado */}
+      <div className="p-4 pr-12 pb-2 border-b border-black/5 mb-2">
+        <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
+        <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-6 scrollbar-hide">

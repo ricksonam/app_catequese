@@ -186,11 +186,11 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600" },
-                  { label: "Agenda", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
-                  { label: "Mural", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
-                  { label: "Bíblia", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
-                  { label: "Material", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
-                  { label: "Biblioteca", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
+                  { label: "Agenda Catequética", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
+                  { label: "Mural de Fotos", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
+                  { label: "Bíblia Online", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
+                  { label: "Material de Apoio", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
+                  { label: "Biblioteca de Modelos", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
                   { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
                   { label: "Dar Sugestão", onClick: () => setSugestaoOpen(true), icon: MessageSquare, color: "bg-teal-500/15 text-teal-600" },
                 ].map((item, i) => (
@@ -209,7 +209,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform shadow-inner`}>
                       <item.icon className="h-7 w-7" />
                     </div>
-                    <span className="text-[10px] font-black text-foreground/80 leading-normal uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
+                    <span className="text-[9px] font-black text-foreground/80 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
                       {item.label}
                     </span>
                   </button>
@@ -217,34 +217,30 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               </div>
             </div>
 
-            {/* SEÇÃO: CONECTA FAMÍLIAS */}
+            {/* SEÇÃO: CONECTA FAMÍLIAS — card único igual ao de Relatórios */}
             <div>
               <div className="flex items-center gap-2 mb-3 px-1">
                 <div className="w-1.5 h-4 rounded-full bg-purple-500" />
                 <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Conecta Famílias</h3>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: "Painel Conecta", path: "/comunicacao", icon: MessageSquare, color: "bg-purple-500/15 text-purple-500" },
-                  { label: "Criar Novo", path: "/comunicacao/novo", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
-                ].map((item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setMaisOpen(false);
-                      navigate(item.path);
-                    }}
-                    className="flex flex-col items-center gap-2 p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-center group min-h-[110px] w-full"
-                  >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform shadow-inner`}>
-                      <item.icon className="h-7 w-7" />
-                    </div>
-                    <span className="text-[10px] font-black text-foreground/80 leading-normal uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={() => {
+                  setMaisOpen(false);
+                  navigate("/comunicacao");
+                }}
+                className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-purple-500/40 dark:border-purple-400/20 shadow-md hover:shadow-lg hover:border-purple-500 active:scale-[0.98] text-left"
+              >
+                <div className="w-12 h-12 rounded-xl bg-purple-500/15 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <MessageSquare className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="block text-xs font-black text-foreground uppercase tracking-wider">Conecta Famílias</span>
+                  <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
+                    Comunicados e questionários para as famílias
+                  </span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-purple-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </button>
             </div>
 
             {/* SEÇÃO: CENTRAL DE RELATÓRIOS */}
