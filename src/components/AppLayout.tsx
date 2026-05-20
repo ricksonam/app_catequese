@@ -192,19 +192,24 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   { label: "Material", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
                   { label: "Biblioteca", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
                   { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
+                  { label: "Dar Sugestão", onClick: () => setSugestaoOpen(true), icon: MessageSquare, color: "bg-teal-500/15 text-teal-600" },
                 ].map((item, i) => (
                   <button
                     key={i}
                     onClick={() => {
                       setMaisOpen(false);
-                      navigate(item.path);
+                      if (item.onClick) {
+                        item.onClick();
+                      } else if (item.path) {
+                        navigate(item.path);
+                      }
                     }}
-                    className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-center group"
+                    className="flex flex-col items-center gap-2 p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-center group min-h-[110px] w-full"
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform`}>
-                      <item.icon className="h-5 w-5" />
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform shadow-inner`}>
+                      <item.icon className="h-7 w-7" />
                     </div>
-                    <span className="text-[10px] font-black text-foreground/80 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors">
+                    <span className="text-[10px] font-black text-foreground/80 leading-normal uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
                       {item.label}
                     </span>
                   </button>
@@ -218,10 +223,10 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                 <div className="w-1.5 h-4 rounded-full bg-purple-500" />
                 <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Conecta Famílias</h3>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Painel Conecta", path: "/comunicacao", icon: MessageSquare, color: "bg-purple-500/15 text-purple-500", desc: "Ver comunicados" },
-                  { label: "Criar Novo", path: "/comunicacao/novo", icon: FileText, color: "bg-emerald-500/15 text-emerald-600", desc: "Questionário" },
+                  { label: "Painel Conecta", path: "/comunicacao", icon: MessageSquare, color: "bg-purple-500/15 text-purple-500" },
+                  { label: "Criar Novo", path: "/comunicacao/novo", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
                 ].map((item, i) => (
                   <button
                     key={i}
@@ -229,19 +234,14 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                       setMaisOpen(false);
                       navigate(item.path);
                     }}
-                    className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-left group w-full"
+                    className="flex flex-col items-center gap-2 p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-center group min-h-[110px] w-full"
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.color} group-hover:scale-110 transition-transform`}>
-                      <item.icon className="h-5 w-5" />
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform shadow-inner`}>
+                      <item.icon className="h-7 w-7" />
                     </div>
-                    <div className="min-w-0">
-                      <span className="block text-[11px] font-black text-foreground/80 uppercase tracking-wider group-hover:text-primary transition-colors">
-                        {item.label}
-                      </span>
-                      <span className="block text-[9px] text-muted-foreground font-bold truncate">
-                        {item.desc}
-                      </span>
-                    </div>
+                    <span className="text-[10px] font-black text-foreground/80 leading-normal uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
+                      {item.label}
+                    </span>
                   </button>
                 ))}
               </div>

@@ -62,7 +62,7 @@ export default function Dashboard() {
       }
     });
     
-    if (closestIndex >= 0 && closestIndex < 6) {
+    if (closestIndex >= 0 && closestIndex < 8) {
       setActiveModuleIndex(closestIndex);
     }
   };
@@ -1098,11 +1098,46 @@ export default function Dashboard() {
                 Bíblia
               </span>
             </div>
+
+            {/* Card Jogos */}
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+              <button
+                onClick={() => navigate("/jogos")}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+              >
+                <img src="/icone-jogos.png" alt="Jogos" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Jogos
+              </span>
+            </div>
+
+            {/* Card Catequese em Família */}
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/familia`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+              >
+                <img src="/icone-catequese em familia.png" alt="Catequese em Família" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+                Família
+              </span>
+            </div>
           </div>
 
           {/* Indicador de Bolinhas (Pagination Dots) */}
           <div className="flex justify-center items-center gap-1.5 mt-2 mb-4">
-            {[0, 1, 2, 3, 4, 5].map((idx) => (
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => (
               <button
                 key={idx}
                 onClick={() => {

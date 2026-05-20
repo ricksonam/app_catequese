@@ -273,7 +273,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   return (
     <div className="flex flex-col h-full bg-slate-100 dark:bg-zinc-950 overflow-hidden">
       {/* Nome do Usuário Logado & Assinatura */}
-      <div className="p-4 pb-2 border-b border-black/5 mb-2 flex items-center justify-between gap-3">
+      <div className="p-4 pr-12 pb-2 border-b border-black/5 mb-2 flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-[9px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-0.5">Conta Ativa</p>
           <p className="text-xs font-bold text-foreground truncate">{user?.email}</p>
