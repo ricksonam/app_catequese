@@ -45,7 +45,7 @@ export default function LandingPage() {
     window.open("https://wa.me/5592993371259?text=Olá! Vim pelo site do iCatequese.", "_blank");
 
   return (
-    <div className="min-h-screen bg-[#FDF8F5] text-stone-900 overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
+    <div className="min-h-screen bg-white text-stone-900 overflow-x-hidden font-sans selection:bg-[#D4AF37]/30">
       <PWAInstallChip />
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -159,7 +159,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 }}
-            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-white border border-stone-200/60 shadow-[0_20px_50px_rgba(0,0,0,0.08)] group hover:border-[#D4AF37]/30 transition-all"
+            className="w-full p-8 rounded-[40px] text-center relative overflow-hidden bg-white border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.08)] group hover:border-[#D4AF37]/50 transition-all"
           >
             {/* Efeitos de Fundo Premium */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/5 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none" />
@@ -203,7 +203,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: false }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 p-4 rounded-[28px] border border-blue-500/10 bg-white hover:border-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/5 transition-all group"
+              className="flex items-center gap-4 p-4 rounded-[28px] border border-stone-200 bg-white hover:border-blue-500/40 hover:shadow-2xl hover:shadow-blue-500/10 transition-all group"
             >
               <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md overflow-hidden bg-zinc-100 border border-black/5">
                 <img src={f.img} alt={f.title} className="w-full h-full object-cover" />
@@ -236,7 +236,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="p-8 rounded-[40px] bg-white border-2 border-stone-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative"
+            className="p-8 rounded-[40px] bg-white border border-stone-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative"
           >
             <h3 className="text-2xl font-black text-stone-900 mb-2 font-liturgical">Plano Gratuito</h3>
             <div className="flex items-baseline gap-1 mb-6">
@@ -323,7 +323,7 @@ export default function LandingPage() {
       <footer className="relative z-10 border-t border-stone-200/80 py-10 px-5 bg-white/40">
         <div className="max-w-lg mx-auto">
           {/* Card idealizador Premium */}
-          <div className="p-6 rounded-[32px] bg-white border border-stone-200/60 shadow-xl flex flex-col sm:flex-row items-center gap-5 mb-8 relative overflow-hidden group hover:border-[#D4AF37]/30 transition-all">
+          <div className="p-6 rounded-[32px] bg-white border border-stone-200 shadow-xl flex flex-col sm:flex-row items-center gap-5 mb-8 relative overflow-hidden group hover:border-[#D4AF37]/50 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-[#D4AF37]/10 transition-colors" />
             
             <Avatar className="h-16 w-16 border-2 border-[#D4AF37]/30 shrink-0 shadow-md">
