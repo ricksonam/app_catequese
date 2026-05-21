@@ -959,14 +959,21 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/catequizandos`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
+                  setModuleInfo({
+                    title: "Catequizandos",
+                    desc: "Gerencie a lista de catequizandos, visualize aniversariantes, presença e histórico individual de cada um.",
+                    icon: "/card_catequizandos.jpg",
+                    onAccess: () => {
+                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                        navigate(`/turmas/${selectedTurmaId}/catequizandos`);
+                      } else if (selectedTurmaId === "all") {
+                        toast.info("Selecione uma turma para acessar este módulo.");
+                        setTurmaPickerOpen(true);
+                      } else {
+                        toast.info("Aguarde a aprovação do acesso.");
+                      }
+                    }
+                  });
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1197,17 +1204,24 @@ export default function Dashboard() {
           <div className="w-full pt-8 pb-4">
             <button
               onClick={() => {
-                const activeTurma = localStorage.getItem("ivc_selected_turma");
-                const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
-                if (validTurma) {
-                  navigate(`/turmas/${activeTurma}/relatorios`);
-                } else if (turmas.length === 1) {
-                  navigate(`/turmas/${turmas[0].id}/relatorios`);
-                } else if (turmas.length > 1) {
-                  setTurmaPickerOpen(true);
-                } else {
-                  toast.info("Crie uma turma para acessar os relatórios.");
-                }
+                setModuleInfo({
+                  title: "Central de Relatórios",
+                  desc: "Visualize métricas, gráficos de frequência, progresso e dados importantes sobre o desenvolvimento da turma.",
+                  icon: "/acesso_relatorios.jpg",
+                  onAccess: () => {
+                    const activeTurma = localStorage.getItem("ivc_selected_turma");
+                    const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
+                    if (validTurma) {
+                      navigate(`/turmas/${activeTurma}/relatorios`);
+                    } else if (turmas.length === 1) {
+                      navigate(`/turmas/${turmas[0].id}/relatorios`);
+                    } else if (turmas.length > 1) {
+                      setTurmaPickerOpen(true);
+                    } else {
+                      toast.info("Crie uma turma para acessar os relatórios.");
+                    }
+                  }
+                });
               }}
               className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
             >
@@ -1391,7 +1405,7 @@ export default function Dashboard() {
           </DialogHeader>
           
           <div className="flex-1 overflow-y-auto space-y-3 px-1 custom-scrollbar">
-            {allRespostas.length === 0 ? (
+            {feedMensagens.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <p>Nenhuma mensagem recebida ainda.</p>
               </div>
