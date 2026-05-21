@@ -93,7 +93,7 @@ export default function LandingPage() {
 
         {/* Linha ornamental topo */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="flex items-center gap-3 mb-6 bg-gradient-to-r from-transparent via-[#D4AF37]/10 to-transparent py-2 px-8 rounded-full border border-[#D4AF37]/20 shadow-sm">
+          className="flex items-center justify-center gap-3 mb-6">
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
           <span className="text-lg sm:text-xl font-black uppercase tracking-[0.1em] text-[#FFD700] drop-shadow-lg text-center leading-relaxed" style={{ textShadow: "0 2px 10px rgba(255, 215, 0, 0.4)" }}>
             Gestão de Turmas de catequese<br className="sm:hidden" /> para Catequistas
