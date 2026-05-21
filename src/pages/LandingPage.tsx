@@ -95,7 +95,7 @@ export default function LandingPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="flex items-center gap-3 mb-6 bg-gradient-to-r from-transparent via-[#D4AF37]/10 to-transparent py-2 px-8 rounded-full border border-[#D4AF37]/20 shadow-sm">
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
-          <span className="text-base sm:text-lg font-black uppercase tracking-[0.1em] text-[#9c7100] drop-shadow-md text-center leading-relaxed">
+          <span className="text-lg sm:text-xl font-black uppercase tracking-[0.1em] text-[#FFD700] drop-shadow-lg text-center leading-relaxed" style={{ textShadow: "0 2px 10px rgba(255, 215, 0, 0.4)" }}>
             Gestão de Turmas de catequese<br className="sm:hidden" /> para Catequistas
           </span>
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
@@ -219,6 +219,104 @@ export default function LandingPage() {
 
 
 
+      </section>
+
+      {/* ── PLANOS E PREÇOS ── */}
+      <section className="relative z-10 px-5 pb-20 pt-4 max-w-lg mx-auto">
+        <div className="text-center mb-10">
+          <OrnamentalDivider />
+          <p className="text-[12px] font-black uppercase tracking-[0.35em] mt-2 bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#B8860B] bg-clip-text text-transparent drop-shadow-sm">
+            Nossos Planos
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-8">
+          {/* PLANO GRATUITO */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="p-8 rounded-[40px] bg-white border-2 border-stone-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative"
+          >
+            <h3 className="text-2xl font-black text-stone-900 mb-2 font-liturgical">Plano Gratuito</h3>
+            <div className="flex items-baseline gap-1 mb-6">
+              <span className="text-4xl font-black text-stone-900">R$ 0</span>
+              <span className="text-sm text-stone-500 font-bold uppercase tracking-widest">/ano</span>
+            </div>
+            
+            <p className="text-sm text-stone-500 font-medium mb-6 leading-relaxed">
+              Ideal para quem está começando e quer organizar sua turma com facilidade.
+            </p>
+
+            <ul className="space-y-4 mb-8">
+              {[
+                "Gestão gratuita de 1 turma de catequese",
+                "Mural de fotos",
+                "Biblioteca de encontros",
+                "Agenda de eventos",
+                "Bíblia online",
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-sm text-stone-700 font-medium">
+                  <CheckCircle2 className="w-5 h-5 text-stone-400 shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => navigate("/auth?view=signup")}
+              className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-stone-600 bg-stone-100 hover:bg-stone-200 transition-colors active:scale-95"
+            >
+              Começar Grátis
+            </button>
+          </motion.div>
+
+          {/* PLANO PREMIUM */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="p-8 rounded-[40px] bg-gradient-to-b from-blue-600 to-blue-800 text-white shadow-[0_20px_50px_rgba(37,99,235,0.25)] relative overflow-hidden group border border-blue-400/30"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+            <div className="absolute top-4 right-6 bg-[#FFD700] text-stone-900 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+              <Sparkles className="w-3 h-3" />
+              Recomendado
+            </div>
+
+            <h3 className="text-2xl font-black text-white mb-2 font-liturgical">Plano Premium</h3>
+            <div className="flex items-baseline gap-1 mb-6 relative z-10">
+              <span className="text-4xl font-black text-white drop-shadow-md">R$ 14,90</span>
+              <span className="text-sm text-blue-200 font-bold uppercase tracking-widest">/ano</span>
+            </div>
+
+            <p className="text-sm text-blue-100 font-medium mb-6 leading-relaxed relative z-10">
+              Tenha acesso a todas as ferramentas avançadas para a melhor experiência.
+            </p>
+
+            <ul className="space-y-4 mb-8 relative z-10">
+              {[
+                "Acesso a todas as ferramentas e módulos",
+                "Gestão de mais de 1 turma de catequese",
+                "Turmas e catequizandos ilimitados",
+                "Suporte técnico prioritário",
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-sm text-white font-medium">
+                  <CheckCircle2 className="w-5 h-5 text-[#FFD700] shrink-0 drop-shadow-sm" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => navigate("/auth?view=signup")}
+              className="relative z-10 w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-blue-900 bg-[#FFD700] hover:bg-[#FFC000] shadow-[0_0_20px_rgba(255,215,0,0.3)] transition-all active:scale-95"
+            >
+              Assinar Premium
+            </button>
+          </motion.div>
+        </div>
       </section>
 
       {/* ── FOOTER ── */}
