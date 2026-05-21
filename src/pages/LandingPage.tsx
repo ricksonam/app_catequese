@@ -49,10 +49,6 @@ export default function LandingPage() {
       <PWAInstallChip />
       {/* ── BG ornamental ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Gradiente radial central */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(212,175,55,0.1),transparent)]" />
-        {/* Luz central dourada suave */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#D4AF37]/5 rounded-full blur-[120px]" />
         {/* Padrão de cruzes decorativas */}
         {[
           { top: "8%", left: "6%", s: 0.7, o: 0.15 },
@@ -95,7 +91,7 @@ export default function LandingPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="flex items-center justify-center gap-3 mb-6">
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
-          <span className="text-lg sm:text-xl font-black uppercase tracking-[0.1em] text-[#FFD700] drop-shadow-lg text-center leading-relaxed" style={{ textShadow: "0 2px 10px rgba(255, 215, 0, 0.4)" }}>
+          <span className="text-lg sm:text-xl font-black uppercase tracking-[0.1em] text-slate-400 drop-shadow-lg text-center leading-relaxed" style={{ textShadow: "0 2px 10px rgba(148, 163, 184, 0.4)" }}>
             Gestão de Turmas de catequese<br className="sm:hidden" /> para Catequistas
           </span>
           <CrossOrnament className="w-4 h-4 text-[#D4AF37]" />
