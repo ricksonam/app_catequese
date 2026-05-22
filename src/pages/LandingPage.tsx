@@ -25,15 +25,7 @@ const OrnamentalDivider = () => (
   </div>
 );
 
-const TIMELINE = [
-  { year: "1992", title: "Catecismo da Igreja Católica", desc: "Apresenta a síntese orgânica e essencial da fé católica.", icon: Book },
-  { year: "1997", title: "Diretório Geral para a Catequese", desc: "Orientações fundamentais para a ação catequética no mundo.", icon: ScrollText },
-  { year: "2005", title: "Diretório Nacional de Catequese", desc: "Documento 84 da CNBB, adaptando as diretrizes para a realidade do Brasil.", icon: Map },
-  { year: "2007", title: "Documento de Aparecida", desc: "O impulso missionário e a urgência de formar discípulos missionários.", icon: Flame },
-  { year: "2017", title: "Iniciação à Vida Cristã (Doc 107)", desc: "A catequese de inspiração catecumenal no Brasil.", icon: Cross },
-  { year: "2020", title: "Novo Diretório para a Catequese", desc: "A catequese no contexto da nova evangelização e cultura digital.", icon: BookOpen },
-  { year: "2021", title: "Antiquum Ministerium", desc: "Instituição formal do Ministério de Catequista pelo Papa Francisco.", icon: Users },
-];
+
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -45,30 +37,33 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#FDFBF7] text-stone-800 overflow-x-hidden font-sans selection:bg-[#8C2A3C]/20">
       <PWAInstallChip />
 
-      {/* ── NAVBAR Clássica ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-stone-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+      {/* ── NAVBAR (Estilo Tela de Início) ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 shadow-sm" style={{ background: 'linear-gradient(135deg, #6b46c1 0%, #8b5cf6 50%, #6b46c1 100%)' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 80% at 50% 0%, rgba(212,175,55,0.12), transparent)' }} />
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded bg-[#8C2A3C] flex items-center justify-center shadow-sm">
-              <img src="/app-logo.png" alt="Logo" className="w-6 h-6 object-contain brightness-0 invert" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-[#8C2A3C] font-liturgical">iCatequese</span>
+            <Avatar className="h-9 w-9 border border-white/20 shadow-sm">
+              <AvatarImage src="/Avatar.png" alt="Avatar" />
+              <AvatarFallback>A</AvatarFallback>
+            </Avatar>
+            <span className="text-xl font-bold tracking-tight text-white font-liturgical drop-shadow-md">iCatequese</span>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/admin/login")}
-              className="hidden sm:flex items-center gap-1.5 text-stone-500 hover:text-[#8C2A3C] font-semibold text-sm transition-colors"
+              className="hidden sm:flex items-center gap-1.5 text-white/80 hover:text-white font-semibold text-sm transition-colors"
             >
               <Lock className="h-4 w-4" /> Restrito
             </button>
             <button
               onClick={() => navigate("/auth?view=login")}
-              className="px-6 py-2 rounded bg-[#8C2A3C] text-white text-sm font-semibold hover:bg-[#6b1e2c] transition-colors"
+              className="px-6 py-2 rounded bg-white text-[#6b46c1] text-sm font-bold hover:bg-white/90 transition-colors shadow-sm"
             >
               Acessar Plataforma
             </button>
           </div>
         </div>
+        <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />
       </nav>
 
       {/* ── HERO Solene ── */}
@@ -79,20 +74,7 @@ export default function LandingPage() {
           </span>
         </motion.div>
 
-        <motion.h1 
-          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="text-5xl sm:text-6xl text-[#2C241B] mb-8 font-liturgical leading-tight"
-        >
-          Formando discípulos.<br/>
-          <span className="text-[#8C2A3C] italic">Organizando a missão.</span>
-        </motion.h1>
 
-        <motion.p 
-          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="text-lg text-stone-600 max-w-2xl leading-relaxed mb-12"
-        >
-          Muito mais que um diário de classe. Um ecossistema digital elegante e sereno para apoiar catequistas no processo de Iniciação à Vida Cristã.
-        </motion.p>
 
         <motion.div 
           initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -227,35 +209,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── TIMELINE DA CATEQUESE ── */}
-      <section className="py-20 px-6 bg-white border-y border-stone-200">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl text-[#2C241B] mb-4 font-liturgical">O Magistério e a Catequese</h2>
-            <p className="text-stone-500 text-lg">Caminhando em sintonia com a Igreja Universal.</p>
-          </div>
 
-          <div className="relative border-l border-stone-300 ml-4 md:ml-1/2 md:-translate-x-[0.5px]">
-            {TIMELINE.map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div key={idx} className={`relative pl-8 md:pl-0 mb-10 md:w-1/2 ${idx % 2 === 0 ? "md:pr-12 md:text-right" : "md:pl-12 md:ml-auto"}`}>
-                  <div className={`absolute top-0 -left-[17px] md:-translate-x-1/2 md:left-auto ${idx % 2 === 0 ? "md:right-[-17px]" : "md:left-0"} w-8 h-8 bg-[#FDFBF7] border-2 border-[#8C2A3C] rounded-full flex items-center justify-center z-10`}>
-                    <Icon className="w-4 h-4 text-[#8C2A3C]" />
-                  </div>
-                  <div>
-                    <span className="inline-block text-[#D4AF37] text-sm font-bold tracking-widest mb-1">
-                      {item.year}
-                    </span>
-                    <h4 className="text-lg text-[#2C241B] mb-1 font-liturgical">{item.title}</h4>
-                    <p className="text-stone-600 text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* ── PLANOS E PREÇOS Clássicos ── */}
       <section className="py-24 px-6 bg-[#FDFBF7]">
@@ -281,7 +235,7 @@ export default function LandingPage() {
                   "1 Turma ativa",
                   "Mural de fotos básico",
                   "Agenda de encontros",
-                  "Acesso restrito a jogos"
+                  "Bíblia online"
                 ].map((item, idx) => (
                   <li key={idx} className="flex items-center gap-3 text-sm text-stone-700">
                     <CheckCircle2 className="w-4 h-4 text-stone-300" />
