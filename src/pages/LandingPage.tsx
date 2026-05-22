@@ -536,7 +536,7 @@ const ScreenCarousel = () => {
               animate={{
                 scale: isCenter ? 1 : absOffset === 1 ? 0.9 : 0.8,
                 opacity: isCenter ? 1 : absOffset === 1 ? 0.9 : 0.5,
-                x: normalizedOffset * 180,
+                x: normalizedOffset * 120,
                 zIndex: isCenter ? 10 : absOffset === 1 ? 5 : 1,
                 rotateY: normalizedOffset * -5,
               }}
