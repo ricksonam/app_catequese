@@ -486,11 +486,11 @@ const ModuleModal = ({ module, onClose }: { module: Module; onClose: () => void 
 
 /* ─── Screen Carousel ─── */
 const screens = [
-  { src: "/acesso_biblia.jpg", label: "Bíblia Online" },
-  { src: "/acesso_relatorios.jpg", label: "Relatórios" },
-  { src: "/acesso_jogos.jpg", label: "Jogos" },
-  { src: "/acesso_atividades.jpg", label: "Atividades" },
-  { src: "/acesso_nova_turma.jpg", label: "Turmas" },
+  { src: "/tela_1.jpg", label: "Bíblia Online" },
+  { src: "/tela_2.jpg", label: "Relatórios" },
+  { src: "/tela_3.jpg", label: "Jogos" },
+  { src: "/tela_4.jpg", label: "Atividades" },
+  { src: "/tela_5.jpg", label: "Turmas" },
 ];
 
 const ScreenCarousel = () => {
