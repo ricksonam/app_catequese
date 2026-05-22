@@ -486,11 +486,11 @@ const ModuleModal = ({ module, onClose }: { module: Module; onClose: () => void 
 
 /* ─── Screen Carousel ─── */
 const screens = [
-  { src: "/card_encontros.jpg", label: "Encontros" },
-  { src: "/acesso_agenda.jpg", label: "Agenda" },
-  { src: "/acesso_biblia.jpg", label: "Bíblia" },
-  { src: "/acesso_conecta.jpg", label: "Conecta" },
+  { src: "/acesso_biblia.jpg", label: "Bíblia Online" },
+  { src: "/acesso_relatorios.jpg", label: "Relatórios" },
   { src: "/acesso_jogos.jpg", label: "Jogos" },
+  { src: "/acesso_atividades.jpg", label: "Atividades" },
+  { src: "/acesso_nova_turma.jpg", label: "Turmas" },
 ];
 
 const ScreenCarousel = () => {
@@ -498,49 +498,60 @@ const ScreenCarousel = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const nextRandom = Math.floor(Math.random() * screens.length);
-      setCurrentIndex(nextRandom);
-    }, 3500);
+      setCurrentIndex((prev) => (prev + 1) % screens.length);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, []);
 
   return (
     <div className="relative w-full max-w-5xl mx-auto px-4 py-8">
       {/* Screens row */}
-      <div className="flex items-center justify-center gap-4 overflow-hidden py-4">
+      <motion.div 
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={(e, { offset }) => {
+          if (offset.x < -50) {
+            setCurrentIndex((prev) => (prev + 1) % screens.length);
+          } else if (offset.x > 50) {
+            setCurrentIndex((prev) => (prev - 1 + screens.length) % screens.length);
+          }
+        }}
+        className="flex items-center justify-center gap-4 overflow-hidden py-8 cursor-grab active:cursor-grabbing relative h-[560px]"
+      >
         {screens.map((screen, i) => {
           const offset = i - currentIndex;
-          const absOffset = Math.abs(offset);
-          const isCenter = offset === 0;
+          
+          let normalizedOffset = offset;
+          if (offset < -2) normalizedOffset += screens.length;
+          if (offset > 2) normalizedOffset -= screens.length;
+          
+          const absOffset = Math.abs(normalizedOffset);
+          const isCenter = normalizedOffset === 0;
           const isVisible = absOffset <= 2;
 
           return (
             <motion.div
               key={screen.src}
               animate={{
-                scale: isCenter ? 1 : absOffset === 1 ? 0.85 : 0.7,
-                opacity: isCenter ? 1 : absOffset === 1 ? 0.6 : 0.2,
-                x: offset * 280,
+                scale: isCenter ? 1 : absOffset === 1 ? 0.9 : 0.8,
+                opacity: isCenter ? 1 : absOffset === 1 ? 0.9 : 0.5,
+                x: normalizedOffset * 180,
                 zIndex: isCenter ? 10 : absOffset === 1 ? 5 : 1,
-                rotateY: offset * -8,
+                rotateY: normalizedOffset * -5,
               }}
               transition={{ type: "spring", damping: 30, stiffness: 200 }}
-              className={`absolute rounded-2xl overflow-hidden shadow-2xl border border-stone-200/50 ${isVisible ? "" : "opacity-0 pointer-events-none"}`}
-              style={{ width: 280, height: 170 }}
+              className={`absolute rounded-3xl overflow-hidden shadow-2xl border border-stone-200 ${isVisible ? "" : "opacity-0 pointer-events-none"}`}
+              style={{ width: 240, height: 500 }}
             >
-              <img src={screen.src} alt={screen.label} className="w-full h-full object-cover bg-stone-100" />
-              {isCenter && (
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent flex items-end p-4">
-                  <span className="text-white text-sm font-bold shadow-sm">{screen.label}</span>
-                </div>
-              )}
+              <img src={screen.src} alt={screen.label} className="w-full h-full object-cover bg-white pointer-events-none" />
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Dots */}
-      <div className="flex justify-center gap-2 mt-12">
+      <div className="flex justify-center gap-2 mt-4">
         {screens.map((_, i) => (
           <button
             key={i}
@@ -766,36 +777,15 @@ export default function LandingPage() {
           </button>
         </motion.div>
 
-        {/* Trust badges */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex flex-wrap items-center justify-center gap-6 mt-12 text-stone-500 text-sm font-medium"
-        >
-          {[
-            { icon: <Shield className="w-4 h-4 text-emerald-500" />, text: "Grátis para começar" },
-            { icon: <Users className="w-4 h-4 text-blue-500" />, text: "Para catequistas e paróquias" },
-            { icon: <Star className="w-4 h-4 text-amber-500" />, text: "CNBB Doc. 107" },
-          ].map((badge) => (
-            <div key={badge.text} className="flex items-center gap-2 bg-stone-50 px-4 py-2 rounded-full border border-stone-100">
-              {badge.icon} {badge.text}
-            </div>
-          ))}
-        </motion.div>
+
       </section>
 
       {/* ── TELAS LADO A LADO — SLIDESHOW ── */}
-      <section className="relative z-10 pb-20 pt-8 bg-stone-50/50 border-y border-stone-100">
-        <div className="relative h-64 flex items-center justify-center overflow-hidden">
+      <section className="relative z-10 pb-20 pt-8 bg-white border-y border-stone-100">
+        <div className="relative flex items-center justify-center overflow-hidden w-full">
           <ScreenCarousel />
         </div>
 
-        {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 pointer-events-none z-20"
-          style={{ background: "linear-gradient(90deg, rgba(250,250,250,1), transparent)" }} />
-        <div className="absolute right-0 top-0 bottom-0 w-32 pointer-events-none z-20"
-          style={{ background: "linear-gradient(-90deg, rgba(250,250,250,1), transparent)" }} />
       </section>
 
       {/* ── MÓDULOS ── */}
@@ -882,7 +872,6 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
-
       {/* ── PLANOS ── */}
       <section className="relative z-10 py-24 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
@@ -890,37 +879,36 @@ export default function LandingPage() {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-stone-900 mb-5 tracking-tight">
               Planos e <span className="text-[#D4AF37]">Assinaturas</span>
             </h2>
-            <p className="text-stone-500 text-lg">Escolha como apoiar e estruturar a sua missão.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 items-stretch">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch max-w-3xl mx-auto">
             {/* Gratuito */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-10 rounded-[2rem] flex flex-col bg-stone-50 border border-stone-200 shadow-sm"
+              className="p-4 sm:p-8 rounded-2xl flex flex-col bg-stone-50 border border-stone-200 shadow-sm"
             >
-              <h3 className="text-2xl font-extrabold text-stone-800 mb-2">Uso Gratuito</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-6xl font-black text-stone-900">R$ 0</span>
+              <h3 className="text-sm sm:text-2xl font-extrabold text-stone-800 mb-1 sm:mb-2">Uso Gratuito</h3>
+              <div className="flex items-baseline gap-1 mb-3 sm:mb-6">
+                <span className="text-2xl sm:text-6xl font-black text-stone-900">R$ 0</span>
               </div>
-              <p className="text-stone-600 mb-8 text-base leading-relaxed flex-1">
+              <p className="hidden sm:block text-stone-600 mb-6 text-sm leading-relaxed flex-1">
                 Acesso básico para organizar uma turma e conhecer as ferramentas fundamentais do iCatequese.
               </p>
-              <ul className="space-y-4 mb-10">
-                {["1 Turma ativa", "Mural de fotos básico", "Agenda de encontros", "Bíblia online"].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm font-medium text-stone-700">
-                    <CheckCircle2 className="w-5 h-5 text-stone-400" />
+              <ul className="space-y-2 sm:space-y-4 mb-4 sm:mb-8 flex-1">
+                {["1 Turma ativa", "Mural básico", "Agenda", "Bíblia"].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-[10px] sm:text-sm font-medium text-stone-700">
+                    <CheckCircle2 className="w-3 h-3 sm:w-5 sm:h-5 text-stone-400 shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
               <button
                 onClick={() => navigate("/auth?view=signup")}
-                className="w-full py-4 rounded-xl border-2 border-stone-300 text-stone-700 font-bold hover:border-stone-400 hover:bg-stone-100 transition-all text-base"
+                className="mt-auto w-full py-2 sm:py-4 rounded-lg border-2 border-stone-300 text-stone-700 font-bold hover:border-stone-400 hover:bg-stone-100 transition-all text-xs sm:text-base"
               >
-                Começar de Graça
+                Grátis
               </button>
             </motion.div>
 
@@ -930,142 +918,70 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="p-10 rounded-[2rem] flex flex-col relative overflow-hidden"
+              className="p-4 sm:p-8 rounded-2xl flex flex-col relative overflow-hidden"
               style={{
                 background: "linear-gradient(145deg, #6b1e2c 0%, #8C2A3C 100%)",
-                boxShadow: "0 25px 50px -12px rgba(140, 42, 60, 0.4)",
+                boxShadow: "0 10px 20px -5px rgba(140, 42, 60, 0.4)",
               }}
             >
-              {/* Gold glow */}
-              <div
-                className="absolute -top-24 -right-24 w-64 h-64 rounded-full opacity-20 pointer-events-none"
-                style={{ background: "radial-gradient(circle, #D4AF37 0%, transparent 70%)" }}
-              />
-              <div className="absolute top-6 right-6">
-                <CrossOrnament className="w-24 h-24 text-white opacity-5" />
+              <div className="flex items-center gap-1 sm:gap-3 mb-1 sm:mb-6">
+                <h3 className="text-sm sm:text-2xl font-extrabold text-white">Premium</h3>
               </div>
-
-              <div className="flex items-center gap-3 mb-6">
-                <h3 className="text-2xl font-extrabold text-white">Acesso Premium</h3>
-                <span className="text-[10px] px-2.5 py-1 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30 font-black tracking-widest uppercase">
-                  Anual
-                </span>
+              <div className="flex items-baseline gap-1 mb-3 sm:mb-6">
+                <span className="text-2xl sm:text-6xl font-black text-white">14,90</span>
+                <span className="text-[#D4AF37] text-[10px] sm:text-sm uppercase tracking-widest font-bold">/ano</span>
               </div>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-6xl font-black text-white">R$ 14,90</span>
-                <span className="text-[#D4AF37] text-sm uppercase tracking-widest font-bold">/ano</span>
-              </div>
-              <p className="text-white/80 mb-8 text-base leading-relaxed flex-1">
-                Acesso integral a todos os recursos. Uma contribuição mínima para manter a plataforma viva e sem anúncios.
+              <p className="hidden sm:block text-white/80 mb-6 text-sm leading-relaxed flex-1">
+                Acesso integral a todos os recursos. Uma contribuição mínima para manter a plataforma viva.
               </p>
-              <ul className="space-y-4 mb-10 relative z-10">
+              <ul className="space-y-2 sm:space-y-4 mb-4 sm:mb-8 flex-1 relative z-10">
                 {[
-                  "Turmas Ilimitadas",
-                  "Catequizandos Ilimitados",
-                  "Todos os Jogos Interativos",
-                  "Missões em Família e Formulários",
-                  "Relatórios Completos de Turma",
-                  "Suporte Prioritário",
+                  "Ilimitado",
+                  "Jogos Interativos",
+                  "Missões",
+                  "Relatórios",
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm font-medium text-white">
-                    <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
+                  <li key={item} className="flex items-center gap-2 text-[10px] sm:text-sm font-medium text-white">
+                    <CheckCircle2 className="w-3 h-3 sm:w-5 sm:h-5 text-[#D4AF37] shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => navigate("/auth?view=signup")}
-                className="w-full py-4 rounded-xl font-black text-base text-[#2C241B] relative z-10 overflow-hidden group shadow-xl"
-                style={{
-                  background: "linear-gradient(135deg, #D4AF37, #f0cc5a)",
-                }}
+                className="mt-auto w-full py-2 sm:py-4 rounded-lg font-black text-xs sm:text-base text-[#2C241B] relative z-10 overflow-hidden shadow-xl"
+                style={{ background: "linear-gradient(135deg, #D4AF37, #f0cc5a)" }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <span className="relative flex items-center justify-center gap-2">
-                  <Award className="w-5 h-5" /> Assinar Premium
-                </span>
-              </motion.button>
+                Assinar
+              </button>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ── CTA FINAL ── */}
-      <section className="relative z-10 py-24 px-6 text-center bg-stone-50 border-t border-stone-200">
-        <div
-          className="max-w-4xl mx-auto p-12 sm:p-16 rounded-[2.5rem] relative overflow-hidden bg-white shadow-xl border border-stone-200"
-        >
-          <div
-            className="absolute inset-0 opacity-5"
-            style={{ background: "radial-gradient(circle at center, #8C2A3C 0%, transparent 70%)" }}
-          />
-          <CrossOrnament className="w-10 h-10 text-[#8C2A3C] mx-auto mb-8 opacity-20" />
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-stone-900 mb-6 tracking-tight">
-            Comece a transformar<br />
-            <span className="text-[#8C2A3C]">sua catequese hoje</span>
-          </h2>
-          <p className="text-stone-600 text-lg mb-10 max-w-2xl mx-auto">
-            Junte-se a catequistas de todo o Brasil que já usam o iCatequese para
-            organizar e evangelizar com mais eficiência e beleza.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/auth?view=signup")}
-              className="relative w-full sm:w-auto px-10 py-4.5 rounded-2xl font-bold text-base text-white overflow-hidden group shadow-lg"
-              style={{
-                background: "linear-gradient(135deg, #8C2A3C 0%, #c93a56 100%)",
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              <span className="relative flex items-center justify-center gap-2">
-                <UserPlus className="w-5 h-5" /> Criar conta grátis
-              </span>
-            </motion.button>
-            <button
-              onClick={handleWhatsApp}
-              className="w-full sm:w-auto px-10 py-4.5 rounded-2xl font-bold text-base text-stone-700 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-all"
-            >
-              Falar no WhatsApp
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="relative z-10 py-16 px-6 text-center bg-white border-t border-stone-200">
-        <div className="max-w-4xl mx-auto flex flex-col items-center">
-          <CrossOrnament className="w-6 h-6 text-stone-300 mb-6" />
-          <h2 className="text-2xl font-black text-stone-800 mb-1">
-            i<span className="text-[#8C2A3C]">Catequese</span>
-          </h2>
-          <p className="text-xs text-stone-400 font-bold uppercase tracking-[0.2em] mb-10">Ad maiorem Dei gloriam</p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-12">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12 border border-stone-200 shadow-sm">
-                <AvatarImage src="/Avatar.png" alt="Rickson Amazonas" />
-                <AvatarFallback>RA</AvatarFallback>
-              </Avatar>
-              <div className="text-left">
-                <p className="text-base font-bold text-stone-800">Rickson Amazonas</p>
-                <p className="text-xs text-stone-500 uppercase tracking-widest font-semibold mt-0.5">Criador & Catequista</p>
-              </div>
+      {/* ── CTA FINAL E FOOTER ── */}
+      <footer className="relative z-10 py-6 px-6 bg-white border-t border-stone-200">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-10 w-10 border border-stone-200 shadow-sm">
+              <AvatarImage src="/Avatar.png" alt="Rickson Amazonas" />
+              <AvatarFallback>RA</AvatarFallback>
+            </Avatar>
+            <div className="text-left">
+              <p className="text-sm font-bold text-stone-800">Rickson Amazonas</p>
+              <p className="text-[10px] text-stone-500 uppercase tracking-widest font-semibold mt-0.5">Catequista e Idealizador do iCatequese</p>
             </div>
-            <div className="hidden sm:block w-px h-10 bg-stone-200" />
+          </div>
+          <div className="flex items-center gap-4">
             <button
               onClick={handleWhatsApp}
-              className="px-6 py-2.5 rounded-xl border-2 border-stone-200 text-stone-600 text-sm font-bold hover:border-stone-300 hover:bg-stone-50 transition-all"
+              className="px-5 py-2 rounded-lg border border-stone-200 text-stone-600 text-xs font-bold hover:border-stone-300 hover:bg-stone-50 transition-all"
             >
               Contato WhatsApp
             </button>
-          </div>
-
-          <div className="text-[11px] font-medium text-stone-400 uppercase tracking-widest">
-            © {new Date().getFullYear()} iCatequese. Todos os direitos reservados.
+            <div className="hidden sm:block text-[10px] font-medium text-stone-400 uppercase tracking-widest">
+              © {new Date().getFullYear()} iCatequese.
+            </div>
           </div>
         </div>
       </footer>
