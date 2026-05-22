@@ -714,18 +714,46 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative z-10 pt-40 pb-20 px-6 flex flex-col items-center text-center max-w-5xl mx-auto">
-        {/* Top label */}
+      <section className="relative z-10 pt-32 pb-10 px-6 flex flex-col items-center text-center max-w-5xl mx-auto">
+        {/* ── BOTÃO PREMIUM ENTRAR NA PLATAFORMA (Movido para o topo) ── */}
+        <div className="relative z-10 flex flex-col items-center justify-center mb-10 w-full">
+          <motion.button
+            whileHover={{ scale: 1.04, boxShadow: "0 20px 40px -8px rgba(140,42,60,0.45)" }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/auth?view=login")}
+            className="relative flex items-center justify-center gap-3 px-12 py-4 rounded-2xl font-black text-lg text-white overflow-hidden group w-full sm:w-auto"
+            style={{
+              background: "linear-gradient(135deg, #6b1e2c 0%, #8C2A3C 40%, #b33a52 100%)",
+              boxShadow: "0 12px 30px -6px rgba(140,42,60,0.4), 0 0 0 1px rgba(212,175,55,0.25)",
+              minWidth: 280,
+            }}
+          >
+            {/* Shimmer */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            {/* Gold top border */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[2px]"
+              style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }}
+            />
+            <LogIn className="w-6 h-6 relative z-10" />
+            <span className="relative z-10">Entrar na Plataforma</span>
+            <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+          </motion.button>
+          <p className="mt-3 text-xs text-stone-500 font-medium">
+            Já tem uma conta? Acesse aqui.
+          </p>
+        </div>
+
+        {/* Logo */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 flex justify-center"
         >
-          <span
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase bg-amber-50 text-amber-700 border border-amber-200 shadow-sm"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Evangelização e Organização
-          </span>
+          <Avatar className="h-24 w-24 border-2 border-stone-200 shadow-xl bg-white">
+            <AvatarImage src="/Avatar.png" alt="iCatequese Logo" className="object-contain" />
+            <AvatarFallback className="bg-purple-100 text-purple-900 text-2xl font-bold">iC</AvatarFallback>
+          </Avatar>
         </motion.div>
 
         {/* Title */}
@@ -735,13 +763,13 @@ export default function LandingPage() {
           transition={{ delay: 0.1 }}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight mb-6 text-stone-900"
         >
-          A plataforma completa
+          Uma plataforma
           <br />
           <span
             className="text-transparent bg-clip-text"
             style={{ backgroundImage: "linear-gradient(135deg, #8C2A3C 0%, #c93a56 100%)" }}
           >
-            para catequistas
+            para gerenciar turmas de catequese.
           </span>
         </motion.h1>
 
@@ -796,7 +824,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── TELAS LADO A LADO — SLIDESHOW ── */}
-      <section className="relative z-10 pb-20 pt-8 bg-white border-y border-stone-100">
+      <section className="relative z-10 pb-12 pt-4 bg-white border-y border-stone-100">
         <div className="relative flex items-center justify-center overflow-hidden w-full">
           <ScreenCarousel />
         </div>
@@ -804,7 +832,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── MÓDULOS ── */}
-      <section id="modulos" className="relative z-10 py-24 px-6 bg-white">
+      <section id="modulos" className="relative z-10 py-12 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
@@ -845,8 +873,8 @@ export default function LandingPage() {
       </section>
 
       {/* ── IVC SECTION ── */}
-      <section className="relative z-10 py-24 px-6 bg-[#FDFBF7] border-y border-stone-200">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
+      <section className="relative z-10 py-12 px-6 bg-[#FDFBF7] border-y border-stone-200">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center relative z-10">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 bg-white border border-stone-200 shadow-sm">
               <Cross className="w-4 h-4 text-[#8C2A3C]" />
@@ -888,7 +916,7 @@ export default function LandingPage() {
         </div>
       </section>
       {/* ── PLANOS ── */}
-      <section className="relative z-10 py-24 px-6 bg-white">
+      <section className="relative z-10 py-12 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-stone-900 mb-5 tracking-tight">
@@ -1000,35 +1028,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-      {/* ── BOTÃO PREMIUM ENTRAR NA PLATAFORMA ── */}
-      <div className="relative z-10 flex flex-col items-center justify-center py-10 px-6 bg-gradient-to-b from-white to-stone-50">
-        <motion.button
-          whileHover={{ scale: 1.04, boxShadow: "0 20px 40px -8px rgba(140,42,60,0.45)" }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => navigate("/auth?view=login")}
-          className="relative flex items-center justify-center gap-3 px-12 py-5 rounded-2xl font-black text-lg text-white overflow-hidden group"
-          style={{
-            background: "linear-gradient(135deg, #6b1e2c 0%, #8C2A3C 40%, #b33a52 100%)",
-            boxShadow: "0 12px 30px -6px rgba(140,42,60,0.4), 0 0 0 1px rgba(212,175,55,0.25)",
-            minWidth: 280,
-          }}
-        >
-          {/* Shimmer */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-          {/* Gold top border */}
-          <div
-            className="absolute top-0 left-0 right-0 h-[2px]"
-            style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }}
-          />
-          <LogIn className="w-6 h-6 relative z-10" />
-          <span className="relative z-10">Entrar na Plataforma</span>
-          <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-        </motion.button>
-        <p className="mt-3 text-xs text-stone-400 font-medium">
-          Já tem uma conta? Acesse aqui.
-        </p>
-      </div>
     </div>
   );
 }

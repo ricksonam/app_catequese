@@ -959,21 +959,14 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Catequizandos",
-                    desc: "Gerencie a lista de catequizandos, visualize aniversariantes, presença e histórico individual de cada um.",
-                    icon: "/card_catequizandos.jpg",
-                    onAccess: () => {
-                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                        navigate(`/turmas/${selectedTurmaId}/catequizandos`);
-                      } else if (selectedTurmaId === "all") {
-                        toast.info("Selecione uma turma para acessar este módulo.");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.info("Aguarde a aprovação do acesso.");
-                      }
-                    }
-                  });
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/catequizandos`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -989,21 +982,14 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Encontros",
-                    desc: "Planeje e registre as presenças de cada encontro da catequese. Avalie a participação da turma com facilidade.",
-                    icon: "/card_encontros.jpg",
-                    onAccess: () => {
-                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                        navigate(`/turmas/${selectedTurmaId}/encontros`);
-                      } else if (selectedTurmaId === "all") {
-                        toast.info("Selecione uma turma para acessar este módulo.");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.info("Aguarde a aprovação do acesso.");
-                      }
-                    }
-                  });
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/encontros`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1019,21 +1005,14 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Plano da Turma",
-                    desc: "Visualize e gerencie o planejamento anual da turma, definindo objetivos e cronograma de conteúdos.",
-                    icon: "/icone-plano da turma.png",
-                    onAccess: () => {
-                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                        navigate(`/turmas/${selectedTurmaId}/plano`);
-                      } else if (selectedTurmaId === "all") {
-                        toast.info("Selecione uma turma para acessar este módulo.");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.info("Aguarde a aprovação do acesso.");
-                      }
-                    }
-                  });
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/plano`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1048,21 +1027,14 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Eventos",
-                    desc: "Acompanhe celebrações, retiros e datas importantes programadas para a sua turma.",
-                    icon: "/icone-eventos.png",
-                    onAccess: () => {
-                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                        navigate(`/turmas/${selectedTurmaId}/eventos`);
-                      } else if (selectedTurmaId === "all") {
-                        toast.info("Selecione uma turma para acessar este módulo.");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.info("Aguarde a aprovação do acesso.");
-                      }
-                    }
-                  });
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/eventos`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1077,21 +1049,14 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Reuniões",
-                    desc: "Gerencie as reuniões com os pais e responsáveis, registrando atas e decisões.",
-                    icon: "/icone-reunioes.png",
-                    onAccess: () => {
-                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                        navigate(`/turmas/${selectedTurmaId}/reunioes`);
-                      } else if (selectedTurmaId === "all") {
-                        toast.info("Selecione uma turma para acessar este módulo.");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.info("Aguarde a aprovação do acesso.");
-                      }
-                    }
-                  });
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/reunioes`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1106,12 +1071,7 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Bíblia Online",
-                    desc: "Acesse e consulte passagens bíblicas de forma rápida para auxiliar na catequese.",
-                    icon: "/card_biblia.jpg",
-                    onAccess: () => navigate("/modulos/biblia")
-                  });
+                  navigate("/modulos/biblia");
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1127,12 +1087,7 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Jogos",
-                    desc: "Biblioteca interativa de jogos educativos católicos para engajar seus catequizandos.",
-                    icon: "/acesso_jogos.jpg",
-                    onAccess: () => navigate("/jogos")
-                  });
+                  navigate("/jogos");
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1147,21 +1102,14 @@ export default function Dashboard() {
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
                 onClick={() => {
-                  setModuleInfo({
-                    title: "Catequese em Família",
-                    desc: "Aproxime a família da catequese: envie atividades, enquetes e acompanhe missões semanais em casa.",
-                    icon: "/acesso_conecta.jpg",
-                    onAccess: () => {
-                      if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                        navigate(`/turmas/${selectedTurmaId}/familia`);
-                      } else if (selectedTurmaId === "all") {
-                        toast.info("Selecione uma turma para acessar este módulo.");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.info("Aguarde a aprovação do acesso.");
-                      }
-                    }
-                  });
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/familia`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
@@ -1204,24 +1152,17 @@ export default function Dashboard() {
           <div className="w-full pt-8 pb-4">
             <button
               onClick={() => {
-                setModuleInfo({
-                  title: "Central de Relatórios",
-                  desc: "Visualize métricas, gráficos de frequência, progresso e dados importantes sobre o desenvolvimento da turma.",
-                  icon: "/acesso_relatorios.jpg",
-                  onAccess: () => {
-                    const activeTurma = localStorage.getItem("ivc_selected_turma");
-                    const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
-                    if (validTurma) {
-                      navigate(`/turmas/${activeTurma}/relatorios`);
-                    } else if (turmas.length === 1) {
-                      navigate(`/turmas/${turmas[0].id}/relatorios`);
-                    } else if (turmas.length > 1) {
-                      setTurmaPickerOpen(true);
-                    } else {
-                      toast.info("Crie uma turma para acessar os relatórios.");
-                    }
-                  }
-                });
+                const activeTurma = localStorage.getItem("ivc_selected_turma");
+                const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
+                if (validTurma) {
+                  navigate(`/turmas/${activeTurma}/relatorios`);
+                } else if (turmas.length === 1) {
+                  navigate(`/turmas/${turmas[0].id}/relatorios`);
+                } else if (turmas.length > 1) {
+                  setTurmaPickerOpen(true);
+                } else {
+                  toast.info("Crie uma turma para acessar os relatórios.");
+                }
               }}
               className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
             >
@@ -1455,32 +1396,6 @@ export default function Dashboard() {
               Fechar
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Detalhes do Módulo */}
-      <Dialog open={!!moduleInfo} onOpenChange={(open) => !open && setModuleInfo(null)}>
-        <DialogContent className="rounded-[32px] max-w-[340px] w-[90vw] mx-auto overflow-hidden p-0 bg-background/95 backdrop-blur-xl border-none shadow-2xl">
-          {moduleInfo && (
-            <>
-              <div className="h-40 w-full relative">
-                 <img src={moduleInfo.icon} alt={moduleInfo.title} className="w-full h-full object-cover" />
-                 <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-              </div>
-              <div className="px-6 pb-6 pt-2">
-                <DialogHeader>
-                  <DialogTitle className="text-xl font-black text-center tracking-tight text-foreground">{moduleInfo.title}</DialogTitle>
-                  <DialogDescription className="text-center pt-2 text-sm font-medium text-muted-foreground leading-relaxed">
-                    {moduleInfo.desc}
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => setModuleInfo(null)} className="flex-1 py-3 px-4 rounded-xl font-black text-xs uppercase tracking-widest text-muted-foreground hover:bg-secondary transition-all active:scale-95">Voltar</button>
-                  <button onClick={() => { setModuleInfo(null); moduleInfo.onAccess(); }} className="flex-1 py-3 px-4 rounded-xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest hover:opacity-90 transition-all shadow-md active:scale-95">Acessar</button>
-                </DialogFooter>
-              </div>
-            </>
-          )}
         </DialogContent>
       </Dialog>
     </div>
