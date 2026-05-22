@@ -61,11 +61,12 @@ export default function AdminLogin() {
       }
 
       toast.success("Acesso autorizado! Carregando painel...");
-      navigate("/admin", { replace: true });
+      // A navegação acontecerá automaticamente pelo useEffect/if no topo do componente
+      // assim que o AuthContext atualizar o estado isAdmin para true.
+      // Mantemos loading=true para evitar múltiplos cliques.
     } catch (err: any) {
       console.error("[iCatequese] Erro no login administrativo:", err);
       toast.error("Ocorreu um erro ao tentar fazer login.");
-    } finally {
       setLoading(false);
     }
   };

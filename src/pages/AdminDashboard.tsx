@@ -373,9 +373,9 @@ export default function AdminDashboard() {
   // Derived Data
   const filteredProfiles = useMemo(() => {
     return profiles.filter(p => 
-      p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.cidade?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.estado?.toLowerCase().includes(searchTerm.toLowerCase())
+      (p.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (p.cidade?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (p.estado?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     );
   }, [profiles, searchTerm]);
 

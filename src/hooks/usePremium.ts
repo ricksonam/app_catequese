@@ -95,9 +95,23 @@ export function usePremium() {
     };
   }, [session?.user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const redirectToPayment = () => {
+  const redirectToPayment = async () => {
     const email = session?.user?.email || "";
     const name = userName || "";
+
+    // Grava o timestamp de início do checkout no perfil do usuário.
+    // O webhook usa isso para identificar o usuário quando a InfinitePay
+    // não inclui email no payload.
+    if (session?.user?.id) {
+      try {
+        await supabase
+          .from("profiles")
+          .update({ pending_premium_at: new Date().toISOString() })
+          .eq("id", session.user.id);
+      } catch {
+        // Silencioso — não impede o redirecionamento
+      }
+    }
 
     const emailParam = email
       ? `&email=${encodeURIComponent(email)}&customer_email=${encodeURIComponent(email)}`

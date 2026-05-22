@@ -73,8 +73,8 @@ export default function Dashboard() {
   const { data: reunioes = [] } = useReunioes();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
   const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
-  const { data: paroquias = [] } = useParoquias();
-  const { data: comunidades = [] } = useComunidades();
+  const { data: paroquias = [], isLoading: pLoading } = useParoquias();
+  const { data: comunidades = [], isLoading: comLoading } = useComunidades();
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "turma-choice" | "intro" | "paroquia" | "catequista" | "turma" | "welcome" | "join-code">("none");
@@ -192,7 +192,7 @@ export default function Dashboard() {
 
 
 
-  const loading = tLoading || eLoading || cLoading || catLoading;
+  const loading = tLoading || eLoading || cLoading || catLoading || pLoading || comLoading;
 
   useEffect(() => {
     if (isPremium && user) {
@@ -232,7 +232,9 @@ export default function Dashboard() {
         return;
       }
 
-      if (onboardingStep === "none") {
+      const onboardingCompleted = localStorage.getItem("ivc_onboarding_completed") === "true";
+
+      if (onboardingStep === "none" && !onboardingCompleted) {
         if (paroquias.length === 0 && comunidades.length === 0) {
           setOnboardingStep("paroquia");
         } else if (catequistas.length === 0) {
