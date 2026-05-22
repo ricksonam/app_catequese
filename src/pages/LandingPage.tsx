@@ -504,7 +504,7 @@ const ScreenCarousel = () => {
   }, []);
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto px-4 py-8">
+    <div className="relative w-full max-w-5xl mx-auto px-4 py-12">
       {/* Screens row */}
       <motion.div 
         drag="x"
@@ -517,7 +517,7 @@ const ScreenCarousel = () => {
             setCurrentIndex((prev) => (prev - 1 + screens.length) % screens.length);
           }
         }}
-        className="flex items-center justify-center gap-4 overflow-hidden py-8 cursor-grab active:cursor-grabbing relative h-[560px]"
+        className="flex items-center justify-center overflow-hidden py-10 cursor-grab active:cursor-grabbing relative h-[700px]"
       >
         {screens.map((screen, i) => {
           const offset = i - currentIndex;
@@ -534,24 +534,40 @@ const ScreenCarousel = () => {
             <motion.div
               key={screen.src}
               animate={{
-                scale: isCenter ? 1 : absOffset === 1 ? 0.9 : 0.8,
-                opacity: isCenter ? 1 : absOffset === 1 ? 0.9 : 0.5,
-                x: normalizedOffset * 120,
+                scale: isCenter ? 1 : absOffset === 1 ? 0.88 : 0.76,
+                opacity: isCenter ? 1 : absOffset === 1 ? 0.85 : 0.45,
+                x: normalizedOffset * 330,
                 zIndex: isCenter ? 10 : absOffset === 1 ? 5 : 1,
                 rotateY: normalizedOffset * -5,
               }}
               transition={{ type: "spring", damping: 30, stiffness: 200 }}
-              className={`absolute rounded-3xl overflow-hidden shadow-2xl border border-stone-200 ${isVisible ? "" : "opacity-0 pointer-events-none"}`}
-              style={{ width: 240, height: 500 }}
+              className={`absolute rounded-[2.5rem] overflow-hidden ${isVisible ? "" : "opacity-0 pointer-events-none"}`}
+              style={{
+                width: 290,
+                height: 580,
+                border: "10px solid white",
+                boxShadow: isCenter
+                  ? "0 32px 80px -10px rgba(140,42,60,0.25), 0 0 0 2px rgba(140,42,60,0.12), 0 8px 32px rgba(0,0,0,0.18)"
+                  : "0 16px 48px -8px rgba(0,0,0,0.18), 0 0 0 1.5px rgba(0,0,0,0.07)",
+                outline: "2px solid rgba(212,175,55,0.18)",
+                outlineOffset: "3px",
+              }}
             >
-              <img src={screen.src} alt={screen.label} className="w-full h-full object-cover bg-white pointer-events-none" />
+              {/* Moldura interna decorativa */}
+              <div
+                className="absolute inset-0 z-10 pointer-events-none rounded-[1.8rem]"
+                style={{
+                  boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.6)",
+                }}
+              />
+              <img src={screen.src} alt={screen.label} className="w-full h-full object-contain bg-stone-100 pointer-events-none" />
             </motion.div>
           );
         })}
       </motion.div>
 
       {/* Dots */}
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-2 mt-6">
         {screens.map((_, i) => (
           <button
             key={i}
@@ -569,7 +585,6 @@ const ScreenCarousel = () => {
 /* ─── MAIN COMPONENT ─── */
 export default function LandingPage() {
   const navigate = useNavigate();
-  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
@@ -807,7 +822,7 @@ export default function LandingPage() {
                 Tudo para a sua <span className="text-[#8C2A3C]">Missão</span>
               </h2>
               <p className="text-stone-500 text-lg max-w-2xl mx-auto">
-                Clique em um módulo para ver uma prévia interativa das ferramentas projetadas para facilitar seu dia a dia.
+                Explore os módulos da plataforma e entre para começar a usar.
               </p>
             </motion.div>
           </div>
@@ -822,7 +837,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
               >
-                <ModuleCard module={module} onClick={() => setSelectedModule(module)} />
+                <ModuleCard module={module} onClick={() => navigate("/auth?view=signup")} />
               </motion.div>
             ))}
           </div>
@@ -986,10 +1001,34 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* ── MODULE MODAL ── */}
-      {selectedModule && (
-        <ModuleModal module={selectedModule} onClose={() => setSelectedModule(null)} />
-      )}
+      {/* ── BOTÃO PREMIUM ENTRAR NA PLATAFORMA ── */}
+      <div className="relative z-10 flex flex-col items-center justify-center py-10 px-6 bg-gradient-to-b from-white to-stone-50">
+        <motion.button
+          whileHover={{ scale: 1.04, boxShadow: "0 20px 40px -8px rgba(140,42,60,0.45)" }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => navigate("/auth?view=login")}
+          className="relative flex items-center justify-center gap-3 px-12 py-5 rounded-2xl font-black text-lg text-white overflow-hidden group"
+          style={{
+            background: "linear-gradient(135deg, #6b1e2c 0%, #8C2A3C 40%, #b33a52 100%)",
+            boxShadow: "0 12px 30px -6px rgba(140,42,60,0.4), 0 0 0 1px rgba(212,175,55,0.25)",
+            minWidth: 280,
+          }}
+        >
+          {/* Shimmer */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+          {/* Gold top border */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[2px]"
+            style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }}
+          />
+          <LogIn className="w-6 h-6 relative z-10" />
+          <span className="relative z-10">Entrar na Plataforma</span>
+          <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+        </motion.button>
+        <p className="mt-3 text-xs text-stone-400 font-medium">
+          Já tem uma conta? Acesse aqui.
+        </p>
+      </div>
     </div>
   );
 }
