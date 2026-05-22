@@ -6,7 +6,7 @@ import {
   ShieldAlert, ShieldCheck, Trash2, ArrowLeft, TrendingUp, 
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
   BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter,
-  BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2
+  BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2, Tag, Gift
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -314,13 +314,28 @@ export default function AdminDashboard() {
     queryKey: ["admin_payments"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("webhook_logs")
+        .from("subscription_payments")
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     }
   });
+
+  const { data: promoCodes = [], isLoading: loadingPromoCodes } = useQuery({
+    queryKey: ["admin_promo_codes"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("promo_codes")
+        .select("*, profiles:created_by(email)")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const [promoForm, setPromoForm] = useState({ code: "", description: "", max_uses: 1, expires_at: "" });
+  const [promoLoading, setPromoLoading] = useState(false);
 
   // Mutations
   const toggleBlockMutation = useMutation({
@@ -382,26 +397,15 @@ export default function AdminDashboard() {
 
   const processedPayments = useMemo(() => {
     return payments.map(pay => {
-      // Find profile by activated_user_id or premium_transaction_nsu
-      let profile = profiles.find(p => p.id === pay.activated_user_id);
-      if (!profile) {
-        const payload = pay.payload || {};
-        const nsu = payload.transaction_nsu;
-        const slug = payload.invoice_slug;
-        profile = profiles.find(p => 
-          (nsu && p.premium_transaction_nsu === nsu) ||
-          (slug && p.premium_transaction_nsu === slug) ||
-          (p.premium_transaction_nsu === pay.id)
-        );
-      }
-      const amount = (pay.payload as any)?.paid_amount || (pay.payload as any)?.amount || 0;
+      let profile = profiles.find(p => p.id === pay.user_id);
+      const amount = Number(pay.amount) || 0;
       const date = new Date(pay.created_at);
       return {
         ...pay,
-        valor: amount / 100, // Assuming cents
+        valor: amount,
         cidade: profile?.cidade || "Não informado",
         estado: profile?.estado || "—",
-        email: profile?.email || "Pendente de Ativação (Pix)",
+        email: pay.user_email || profile?.email || "Desconhecido",
         data: date,
         mes: (date.getMonth() + 1).toString().padStart(2, '0'),
         dia: date.getDate().toString().padStart(2, '0'),
@@ -432,7 +436,7 @@ export default function AdminDashboard() {
   const feedbackList = sugestoes.filter(s => s.tipo !== 'exclusao');
   const churnList = sugestoes.filter(s => s.tipo === 'exclusao');
 
-  if (loadingProfiles || loadingSugestoes || loadingSafety || loadingPayments) {
+  if (loadingProfiles || loadingSugestoes || loadingSafety || loadingPayments || loadingPromoCodes) {
 
     return (
       <div className="p-8 space-y-6">
@@ -539,6 +543,7 @@ export default function AdminDashboard() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
             <TabButton active={activeTab === "finance"} onClick={() => setActiveTab("finance")} icon={CircleDollarSign} label="Financeiro" />
+            <TabButton active={activeTab === "promo"} onClick={() => setActiveTab("promo")} icon={Tag} label="Promo Codes" />
             <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Catálogo" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
@@ -786,9 +791,9 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-4">
                                   <div className={cn(
                                     "w-10 h-10 rounded-xl flex items-center justify-center border shrink-0",
-                                    pay.processed 
+                                    pay.status === 'confirmed' 
                                       ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
-                                      : "bg-amber-50 border-amber-100 text-amber-600"
+                                      : pay.status === 'promo' ? "bg-purple-50 border-purple-100 text-purple-600" : "bg-amber-50 border-amber-100 text-amber-600"
                                   )}>
                                     <Star className="h-4 w-4" />
                                   </div>
@@ -799,12 +804,12 @@ export default function AdminDashboard() {
                                         variant="outline" 
                                         className={cn(
                                           "text-[8px] uppercase tracking-wider font-extrabold px-1.5 py-0.25",
-                                          pay.processed 
+                                          pay.status === 'confirmed' 
                                             ? "border-emerald-200 bg-emerald-50 text-emerald-700" 
-                                            : "border-amber-200 bg-amber-50 text-amber-700 animate-pulse"
+                                            : pay.status === 'promo' ? "border-purple-200 bg-purple-50 text-purple-700" : "border-amber-200 bg-amber-50 text-amber-700 animate-pulse"
                                         )}
                                       >
-                                        {pay.processed ? "Ativo" : "Pendente"}
+                                        {pay.status === 'confirmed' ? "Confirmado" : pay.status === 'promo' ? "Cortesia" : "Pendente"}
                                       </Badge>
                                     </div>
                                     <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
@@ -817,7 +822,7 @@ export default function AdminDashboard() {
                                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pay.valor)}
                                   </p>
                                   <span className="text-[9px] text-muted-foreground font-mono">
-                                    NSU: {(pay.payload as any)?.transaction_nsu || (pay.payload as any)?.invoice_slug || "—"}
+                                    {pay.payment_method || "N/A"} • NSU: {pay.transaction_nsu || pay.invoice_slug || "—"}
                                   </span>
                                 </div>
                               </div>
@@ -827,6 +832,135 @@ export default function AdminDashboard() {
                       </ScrollArea>
                     </CardContent>
                   </Card>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "promo" && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">Códigos Promocionais</h2>
+                  <p className="text-sm text-muted-foreground">Crie códigos para oferecer Premium gratuitamente</p>
+                </div>
+
+                <Card className="rounded-[24px] border-2 border-dashed border-primary/30 bg-primary/5 shadow-none p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Código *</label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="EX: NATAL2026"
+                          value={promoForm.code}
+                          onChange={(e) => setPromoForm(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
+                          className="rounded-xl h-10 border-border/50 uppercase"
+                        />
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setPromoForm(prev => ({ ...prev, code: "PROMO" + Math.random().toString(36).substring(2, 6).toUpperCase() }))}
+                          className="px-3"
+                        >
+                          <Gift className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Descrição</label>
+                      <Input
+                        placeholder="Ex: Evento XYZ"
+                        value={promoForm.description}
+                        onChange={(e) => setPromoForm(prev => ({ ...prev, description: e.target.value }))}
+                        className="rounded-xl h-10 border-border/50"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Limite de Usos *</label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={promoForm.max_uses}
+                        onChange={(e) => setPromoForm(prev => ({ ...prev, max_uses: parseInt(e.target.value) || 1 }))}
+                        className="rounded-xl h-10 border-border/50"
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <Button
+                        disabled={promoLoading || !promoForm.code}
+                        onClick={async () => {
+                          setPromoLoading(true);
+                          try {
+                            const { error } = await supabase.from("promo_codes").insert({
+                              code: promoForm.code,
+                              description: promoForm.description || null,
+                              max_uses: promoForm.max_uses,
+                              created_by: user?.id
+                            });
+                            if (error) {
+                              if (error.code === '23505') toast.error("Este código já existe!");
+                              else throw error;
+                            } else {
+                              toast.success("Código promocional criado!");
+                              setPromoForm({ code: "", description: "", max_uses: 1, expires_at: "" });
+                              qc.invalidateQueries({ queryKey: ["admin_promo_codes"] });
+                            }
+                          } catch (err: any) {
+                            toast.error("Erro ao criar código.");
+                          } finally {
+                            setPromoLoading(false);
+                          }
+                        }}
+                        className="w-full h-10 rounded-xl"
+                      >
+                        {promoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar Código"}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {promoCodes.length === 0 ? (
+                    <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
+                      <Tag className="h-10 w-10 mb-3 opacity-20" />
+                      <p className="text-sm font-medium">Nenhum código promocional criado</p>
+                    </div>
+                  ) : (
+                    promoCodes.map((c: any) => {
+                      const isActive = c.is_active && (!c.max_uses || c.used_count < c.max_uses);
+                      return (
+                        <Card key={c.id} className={cn("rounded-2xl border shadow-sm transition-all overflow-hidden", isActive ? "border-emerald-200" : "border-slate-200 opacity-70")}>
+                          <div className={cn("h-1 w-full", isActive ? "bg-emerald-500" : "bg-slate-300")} />
+                          <CardContent className="p-5 flex justify-between items-center">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-black text-lg text-foreground tracking-widest">{c.code}</h3>
+                                <Badge variant="outline" className={cn("text-[9px] uppercase tracking-widest", isActive ? "text-emerald-600 border-emerald-200 bg-emerald-50" : "text-slate-500 bg-slate-100")}>
+                                  {isActive ? "Ativo" : "Inativo"}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground font-medium mb-2">{c.description || "Sem descrição"}</p>
+                              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500">
+                                <span>Usos: {c.used_count} / {c.max_uses || "∞"}</span>
+                                <span>Criado em: {new Date(c.created_at).toLocaleDateString('pt-BR')}</span>
+                              </div>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-xs text-destructive hover:bg-destructive/10"
+                              onClick={async () => {
+                                const { error } = await supabase.from("promo_codes").update({ is_active: !c.is_active }).eq("id", c.id);
+                                if (!error) {
+                                  toast.success("Status atualizado!");
+                                  qc.invalidateQueries({ queryKey: ["admin_promo_codes"] });
+                                }
+                              }}
+                            >
+                              {c.is_active ? "Desativar" : "Ativar"}
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             )}
