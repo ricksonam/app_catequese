@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight, Plus, Trash2, Mail, Phone, User } from "lucide-react";
-import { useTurmaMutation, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
+import { useTurmaMutation, useParoquias, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { NOMES_TURMA, DIAS_SEMANA } from "@/lib/store";
 import { EtapaMap } from "@/components/EtapaMap";
@@ -29,7 +30,9 @@ const CAT_COLORS = [
 ];
 
 export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps) {
+  const { user } = useAuth();
   const mutation = useTurmaMutation();
+  const { data: paroquias = [] } = useParoquias();
   const { data: comunidades = [] } = useComunidades();
   const { data: catequistas = [] } = useCatequistas();
   const { data: turmas = [] } = useTurmas();
@@ -42,13 +45,22 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     local: "",
     etapa: "",
     outrosDados: "",
-    comunidadeId: comunidades[0]?.id || "",
+    comunidadeId: "",
+    paroquiaId: "",
     catequistasIds: [] as string[],
     coordenadores: [] as CoordenadorInfo[],
   });
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user && catequistas.length > 0 && form.catequistasIds.length === 0) {
+      if (catequistas.some(c => c.id === user.id)) {
+        setForm(f => ({ ...f, catequistasIds: [user.id] }));
+      }
+    }
+  }, [user, catequistas]);
 
   const update = (key: string, value: any) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -97,7 +109,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
         local: form.local,
         etapa: form.etapa,
         outrosDados: form.outrosDados,
-        comunidadeId: form.comunidadeId || comunidades[0]?.id || "",
+        comunidadeId: form.comunidadeId || "",
         catequistasIds: form.catequistasIds.length > 0 ? form.catequistasIds : [catequistas[0]?.id].filter(Boolean) as string[],
         coordenadores: form.coordenadores,
         criadoEm: new Date().toISOString(),
@@ -212,12 +224,21 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
             <span className="text-sm font-black uppercase tracking-wider text-blue-600">Comunidade</span>
           </div>
           <div className="p-5 space-y-5">
-            <div className="space-y-2">
-              <label className={labelCls}>{labelWithRedAsterisk("Comunidade *")}</label>
-              <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input h-11">
-                <option value="">Selecione...</option>
-                {comunidades.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className={labelCls}>{labelWithRedAsterisk("Paróquia *")}</label>
+                <select value={form.paroquiaId} onChange={(e) => { update("paroquiaId", e.target.value); update("comunidadeId", ""); }} className="form-input h-11">
+                  <option value="">Selecione...</option>
+                  {paroquias.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className={labelCls}>{labelWithRedAsterisk("Comunidade *")}</label>
+                <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input h-11" disabled={!form.paroquiaId}>
+                  <option value="">Selecione...</option>
+                  {comunidades.filter(c => c.paroquiaId === form.paroquiaId).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                </select>
+              </div>
             </div>
 
             <div className="pt-4 border-t border-black/5 space-y-4">

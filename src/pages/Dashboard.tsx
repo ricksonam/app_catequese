@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
+import { upsertCatequista } from "@/lib/supabaseStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { formatarDataVigente, cn } from "@/lib/utils";
@@ -66,7 +67,7 @@ export default function Dashboard() {
   const { data: atividades = [] } = useAtividades();
   const { data: reunioes = [] } = useReunioes();
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos();
-  const { data: catequistas = [], isLoading: catLoading } = useCatequistas();
+  const { data: catequistas = [], isLoading: catLoading, refetch: catRefetch } = useCatequistas();
   const { data: paroquias = [], isLoading: pLoading } = useParoquias();
   const { data: comunidades = [], isLoading: comLoading } = useComunidades();
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
@@ -198,8 +199,31 @@ export default function Dashboard() {
         // Redireciona ou abre o modal caso falte o termo. O ideal seria forçar logout se não aceitou, mas
         // como os termos estarão na tela de cadastro (AuthPage), isso será mais raro.
       }
+
+      // 2. Criar perfil de catequista caso não exista
+      if (catequistas && !catequistas.find(c => c.id === user.id)) {
+        const meta = user.user_metadata || {};
+        upsertCatequista({
+          id: user.id,
+          nome: meta.full_name || user.email?.split('@')[0] || "Catequista",
+          email: user.email || "",
+          telefone: meta.phone || "",
+          dataNascimento: meta.birthdate || "",
+          endereco: "",
+          numero: "",
+          bairro: "",
+          complemento: "",
+          profissao: "",
+          comunidadeId: "",
+          formacao: "",
+          anosExperiencia: "0",
+          status: "ativo"
+        }).then(() => {
+          catRefetch();
+        }).catch(err => console.error("Erro ao criar perfil de catequista:", err));
+      }
     }
-  }, [loading, tError, user, isReady]);
+  }, [loading, tError, user, isReady, catequistas]);
 
   // Realtime subscriptions for notifications
   useEffect(() => {
@@ -490,47 +514,6 @@ export default function Dashboard() {
       />
 
 
-
-      {/* ── NOVOS MATERIAIS DISPONÍVEIS ── */}
-      {showMaterialBanner && (
-        <div className="animate-card-activate relative overflow-hidden rounded-[32px] border-none bg-gradient-to-br from-amber-400 via-orange-500 to-amber-500 shadow-xl shadow-amber-500/30 p-[1.5px]">
-          <div className="bg-white/96 dark:bg-gray-900/96 backdrop-blur-xl rounded-[30px] p-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0 border border-amber-200 dark:border-amber-700/50 animate-bounce-subtle">
-                <BookOpen className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-foreground leading-tight flex items-center gap-1.5">
-                  Novos Materiais Disponíveis!
-                  <span className="bg-amber-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{novosMateriaisCount}</span>
-                </h3>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Acesse o catálogo para visualizar e baixar</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  localStorage.setItem('ivc_materiais_ultimo_visto', new Date().toISOString());
-                  setShowMaterialBanner(false);
-                  navigate('/material-apoio');
-                }}
-                className="bg-amber-500 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 active:scale-95 transition-all shadow-lg shadow-amber-500/30"
-              >
-                Ver
-              </button>
-              <button
-                onClick={() => {
-                  localStorage.setItem('ivc_materiais_ultimo_visto', new Date().toISOString());
-                  setShowMaterialBanner(false);
-                }}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── ATIVAR NOTIFICAÇÕES ── */}
       {permission === "default" && (

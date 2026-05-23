@@ -67,7 +67,7 @@ const InputLine = ({
   maxLength?: number;
 }) => (
   <div className="mb-6 relative">
-    <label className="block text-[#f7931a] text-base font-semibold mb-2">{label}</label>
+    <label className="block text-[#f7931a] text-lg font-bold mb-2">{label}</label>
     <div className="relative">
       <input
         type={type}
@@ -100,13 +100,13 @@ const SelectLine = ({
   disabled?: boolean;
 }) => (
   <div className="mb-6 relative flex-1">
-    <label className="block text-[#f7931a] text-base font-semibold mb-2">{label}</label>
+    <label className="block text-[#f7931a] text-lg font-bold mb-2">{label}</label>
     <div className="relative">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full bg-transparent border-b-2 border-slate-200 text-slate-800 text-base py-2 pl-0 pr-8 focus:outline-none focus:border-[#f7931a] transition-colors appearance-none disabled:opacity-50"
+        className="w-full bg-transparent border-b-2 border-slate-200 text-slate-800 text-base py-3 pl-0 pr-10 min-h-[48px] focus:outline-none focus:border-[#f7931a] transition-colors appearance-none disabled:opacity-50"
       >
         <option value="" className="bg-white text-slate-400">Selecione...</option>
         {options.map(o => (
