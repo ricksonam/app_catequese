@@ -67,7 +67,7 @@ const InputLine = ({
   maxLength?: number;
 }) => (
   <div className="mb-6 relative">
-    <label className="block text-[#f7931a] text-sm font-semibold mb-2">{label}</label>
+    <label className="block text-[#f7931a] text-base font-semibold mb-2">{label}</label>
     <div className="relative">
       <input
         type={type}
@@ -100,13 +100,13 @@ const SelectLine = ({
   disabled?: boolean;
 }) => (
   <div className="mb-6 relative flex-1">
-    <label className="block text-[#f7931a] text-sm font-semibold mb-2">{label}</label>
+    <label className="block text-[#f7931a] text-base font-semibold mb-2">{label}</label>
     <div className="relative">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full bg-transparent border-b-2 border-slate-200 text-slate-800 text-base py-2 px-0 focus:outline-none focus:border-[#f7931a] transition-colors appearance-none disabled:opacity-50"
+        className="w-full bg-transparent border-b-2 border-slate-200 text-slate-800 text-base py-2 pl-0 pr-8 focus:outline-none focus:border-[#f7931a] transition-colors appearance-none disabled:opacity-50"
       >
         <option value="" className="bg-white text-slate-400">Selecione...</option>
         {options.map(o => (
@@ -484,7 +484,7 @@ export default function AuthPage() {
         <div className="flex-1 overflow-y-auto px-6 pb-12">
           {signupStep === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h2 className="text-3xl font-black text-slate-800 mb-2">Seus dados</h2>
+              <h2 className="text-3xl font-black text-slate-800 mb-2">Criar Conta</h2>
               <p className="text-slate-500 text-sm mb-8">Preencha com atenção. Os campos confirmados ficam com ✓ verde.</p>
 
               <InputLine
