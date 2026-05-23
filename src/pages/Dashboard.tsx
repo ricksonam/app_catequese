@@ -756,36 +756,36 @@ export default function Dashboard() {
               <div className="w-full max-w-[280px] relative mb-4" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-lg border-2 border-blue-400 ring-4 ring-blue-200 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-gradient-to-br from-slate-100 to-slate-300"
+                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-lg border-2 border-blue-200/80 ring-4 ring-blue-50 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-white/95 backdrop-blur-md"
                 >
                   {/* Raios de luz de fundo subtis */}
                   <div className="absolute inset-0 pointer-events-none opacity-20"
-                    style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.8), transparent 60%)` }} />
+                    style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.15), transparent 70%)` }} />
 
                   {/* Conteúdo */}
-                  <div className="relative z-10 px-3 py-2.5 flex flex-col items-center text-center">
+                  <div className="relative z-10 px-3 py-3 flex flex-col items-center text-center">
                     
                     {/* Botão Trocar (Visual) */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                      <div className="absolute top-1.5 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-900/5 text-slate-800 border border-slate-900/10 text-[6px] font-black uppercase tracking-widest">
-                          <RefreshCw className="h-1.5 w-1.5" />
+                      <div className="absolute top-2 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100 text-[7px] font-black uppercase tracking-widest">
+                          <RefreshCw className="h-2 w-2" />
                           Trocar
                         </div>
                       </div>
                     )}
 
                     {/* Nome da turma */}
-                    <div className="mb-2 mt-0.5">
-                      <p className="text-[7px] font-bold uppercase tracking-[0.25em] mb-0.5 text-slate-500">
+                    <div className="mb-3 mt-1">
+                      <p className="text-[8px] font-bold uppercase tracking-[0.3em] mb-1 text-slate-400">
                         Turma Selecionada
                       </p>
-                      <div className="flex items-center justify-center gap-1 flex-wrap">
-                        <h3 className="text-base font-black tracking-tight leading-tight text-slate-800 drop-shadow-sm">
+                      <div className="flex flex-col items-center justify-center gap-1.5">
+                        <h3 className="text-xl font-black tracking-tight leading-tight text-blue-950 drop-shadow-sm">
                           {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
                         </h3>
                         {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[9px] font-black bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full border border-amber-500 drop-shadow-sm">
+                          <span className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 px-2 py-0.5 rounded-full shadow-sm">
                             {selectedTurma.ano || selectedTurma.etapa}
                           </span>
                         )}
@@ -793,16 +793,16 @@ export default function Dashboard() {
                     </div>
 
                     {/* Stats dinâmicos */}
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-500 border border-blue-600 shadow-sm">
-                        <Users className="h-3 w-3 text-white" />
-                        <span className="text-[10px] font-black text-white">
+                    <div className="flex items-center justify-center gap-2 w-full mt-1">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md border border-indigo-400/50 text-white">
+                        <Users className="h-3.5 w-3.5" />
+                        <span className="text-[11px] font-black">
                           {catCount} <span className="opacity-90 font-bold">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500 border border-emerald-600 shadow-sm">
-                        <BookOpen className="h-3 w-3 text-white" />
-                        <span className="text-[10px] font-black text-white">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-md border border-teal-400/50 text-white">
+                        <BookOpen className="h-3.5 w-3.5" />
+                        <span className="text-[11px] font-black">
                           {encCount} <span className="opacity-90 font-bold">encontros</span>
                         </span>
                       </div>
