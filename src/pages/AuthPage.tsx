@@ -418,9 +418,7 @@ export default function AuthPage() {
   if (view === "signup") {
     return (
       <div className="min-h-screen bg-white text-slate-800 flex flex-col relative overflow-hidden">
-        {/* Background elements */}
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-50/50 via-white to-white pointer-events-none" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#f7931a]/5 rounded-full blur-[100px] pointer-events-none" />
+
         
         <div className="relative z-10 flex-1 flex flex-col">
         {showVerificationNotice && (
