@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight, Plus, Trash2, Mail, Phone, User } from "lucide-react";
-import { useTurmaMutation, useParoquias, useComunidades, useCatequistas, useTurmas } from "@/hooks/useSupabaseData";
+import { useTurmaMutation, useParoquias, useComunidades, useCatequistas, useTurmas, useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -36,6 +36,8 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
   const { data: comunidades = [] } = useComunidades();
   const { data: catequistas = [] } = useCatequistas();
   const { data: turmas = [] } = useTurmas();
+  const paroquiaMutation = useParoquiaMutation();
+  const comunidadeMutation = useComunidadeMutation();
 
   const [form, setForm] = useState({
     nome: "",
@@ -45,8 +47,8 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     local: "",
     etapa: "",
     outrosDados: "",
-    comunidadeId: "",
-    paroquiaId: "",
+    comunidadeNome: "",
+    paroquiaNome: "",
     catequistasIds: [] as string[],
     coordenadores: [] as CoordenadorInfo[],
   });
@@ -85,8 +87,8 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
   };
 
   const handleSave = async () => {
-    if (!form.nome || !form.diaCatequese || !form.horario) {
-      toast.error("Preencha os campos obrigatórios da turma");
+    if (!form.nome || !form.diaCatequese || !form.horario || !form.paroquiaNome || !form.comunidadeNome) {
+      toast.error("Preencha os campos obrigatórios da turma, paróquia e comunidade");
       return;
     }
     
@@ -99,6 +101,42 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     if (isSaving) return;
     setIsSaving(true);
     try {
+      let finalParoquiaId = "";
+      if (form.paroquiaNome) {
+        const existingParoquia = paroquias.find(p => p.nome.toLowerCase() === form.paroquiaNome.trim().toLowerCase());
+        if (existingParoquia) {
+          finalParoquiaId = existingParoquia.id;
+        } else {
+          finalParoquiaId = crypto.randomUUID();
+          await paroquiaMutation.mutateAsync({
+            id: finalParoquiaId,
+            nome: form.paroquiaNome.trim(),
+            endereco: "",
+            telefone: "",
+            email: "",
+            responsavel: ""
+          });
+        }
+      }
+
+      let finalComunidadeId = "";
+      if (form.comunidadeNome) {
+        const existingComunidade = comunidades.find(c => c.nome.toLowerCase() === form.comunidadeNome.trim().toLowerCase() && c.paroquiaId === finalParoquiaId);
+        if (existingComunidade) {
+          finalComunidadeId = existingComunidade.id;
+        } else {
+          finalComunidadeId = crypto.randomUUID();
+          await comunidadeMutation.mutateAsync({
+            id: finalComunidadeId,
+            nome: form.comunidadeNome.trim(),
+            paroquiaId: finalParoquiaId,
+            endereco: "",
+            responsavel: "",
+            telefone: ""
+          });
+        }
+      }
+
       const id = crypto.randomUUID();
       await mutation.mutateAsync({
         id,
@@ -109,7 +147,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
         local: form.local,
         etapa: form.etapa,
         outrosDados: form.outrosDados,
-        comunidadeId: form.comunidadeId || "",
+        comunidadeId: finalComunidadeId,
         catequistasIds: form.catequistasIds.length > 0 ? form.catequistasIds : [catequistas[0]?.id].filter(Boolean) as string[],
         coordenadores: form.coordenadores,
         criadoEm: new Date().toISOString(),
@@ -227,17 +265,31 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className={labelCls}>{labelWithRedAsterisk("Paróquia *")}</label>
-                <select value={form.paroquiaId} onChange={(e) => { update("paroquiaId", e.target.value); update("comunidadeId", ""); }} className="form-input h-11">
-                  <option value="">Selecione...</option>
-                  {paroquias.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
-                </select>
+                <input 
+                  type="text" 
+                  value={form.paroquiaNome} 
+                  onChange={(e) => update("paroquiaNome", e.target.value)} 
+                  className="form-input h-11" 
+                  placeholder="Nome da Paróquia" 
+                  list="paroquias-list"
+                />
+                <datalist id="paroquias-list">
+                  {paroquias.map(p => <option key={p.id} value={p.nome} />)}
+                </datalist>
               </div>
               <div className="space-y-2">
                 <label className={labelCls}>{labelWithRedAsterisk("Comunidade *")}</label>
-                <select value={form.comunidadeId} onChange={(e) => update("comunidadeId", e.target.value)} className="form-input h-11" disabled={!form.paroquiaId}>
-                  <option value="">Selecione...</option>
-                  {comunidades.filter(c => c.paroquiaId === form.paroquiaId).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-                </select>
+                <input 
+                  type="text" 
+                  value={form.comunidadeNome} 
+                  onChange={(e) => update("comunidadeNome", e.target.value)} 
+                  className="form-input h-11" 
+                  placeholder="Nome da Comunidade" 
+                  list="comunidades-list"
+                />
+                <datalist id="comunidades-list">
+                  {comunidades.map(c => <option key={c.id} value={c.nome} />)}
+                </datalist>
               </div>
             </div>
 
