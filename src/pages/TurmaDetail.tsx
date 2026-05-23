@@ -451,26 +451,35 @@ export default function TurmaDetail() {
                     </div>
                     
                     <div className="flex items-center gap-2 shrink-0">
-                      {m.status === 'pending' && (
+                      {m.status === 'pending' ? (
+                        <>
+                          <button 
+                            onClick={() => handleApproveMembro(m.user_id)}
+                            className="flex items-center justify-center px-4 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest shadow-sm"
+                          >
+                            Autorizar
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setMemberToRemove(m.user_id);
+                              setMemberEmailToRemove(m.email);
+                            }}
+                            className="flex items-center justify-center px-4 py-1.5 rounded-xl bg-red-100 text-red-600 hover:bg-red-200 transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest border border-red-200/50"
+                          >
+                            Recusar
+                          </button>
+                        </>
+                      ) : (
                         <button 
-                          onClick={() => handleApproveMembro(m.user_id)}
-                          className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-all active:scale-95 border border-emerald-200/50"
-                          title="Aprovar Acesso"
+                          onClick={() => {
+                            setMemberToRemove(m.user_id);
+                            setMemberEmailToRemove(m.email);
+                          }}
+                          className="flex items-center justify-center px-4 py-1.5 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all active:scale-95 text-[10px] font-black uppercase tracking-widest border border-destructive/20"
                         >
-                          <CheckCircle2 className="h-4 w-4" />
+                          Cancelar Acesso
                         </button>
                       )}
-
-                      <button 
-                        onClick={() => {
-                          setMemberToRemove(m.user_id);
-                          setMemberEmailToRemove(m.email);
-                        }}
-                        className="flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20"
-                      >
-                        <UserMinus className="h-3.5 w-3.5" />
-                      </button>
-
                     </div>
                   </div>
                 ))}
