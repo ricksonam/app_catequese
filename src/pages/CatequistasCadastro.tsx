@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { ImagePicker } from "@/components/ImagePicker";
 import { mascaraTelefone } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
-
+import { CustomDatePicker } from "@/components/CustomDatePicker";
 
 type CatequistaStatus = "ativo" | "inativo" | "afastado";
 
@@ -215,8 +215,12 @@ export default function CatequistasCadastro() {
             </div>
             <FieldInput label="Nome completo *" value={form.nome} onChange={(v) => updateField("nome", v)} />
             <div className="grid grid-cols-2 gap-2">
-              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Data de nascimento</label><input type="date" value={form.dataNascimento} onChange={(e) => updateField("dataNascimento", e.target.value)} className="form-input" /></div>
-              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label><div className="form-input text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
+              <CustomDatePicker 
+                label="Data de nascimento" 
+                value={form.dataNascimento} 
+                onChange={(v) => updateField("dataNascimento", v)} 
+              />
+              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label><div className="form-input flex items-center text-muted-foreground">{form.dataNascimento ? `${calcAge(form.dataNascimento)} anos` : "—"}</div></div>
             </div>
             <FieldInput label="Rua / Logradouro" value={form.endereco} onChange={(v) => updateField("endereco", v)} />
             <div className="grid grid-cols-3 gap-2">
