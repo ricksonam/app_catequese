@@ -221,6 +221,8 @@ export interface CatequistaCadastro {
   comunidadeId: string;
   formacao?: string;
   anosExperiencia: string;
+  cidade?: string;
+  estado?: string;
   observacao?: string;
   foto?: string;
   status?: string;

@@ -387,6 +387,7 @@ export async function fetchCatequistas(): Promise<(CatequistaCadastro & { isShar
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidadeId: c.comunidade_id || '', formacao: c.formacao,
     anosExperiencia: c.anos_experiencia, observacao: c.observacao,
+    cidade: c.cidade || undefined, estado: c.estado || undefined,
     foto: c.foto || undefined, status: c.status || 'ativo',
     isShared: shared,
   });
@@ -413,6 +414,7 @@ export async function upsertCatequista(c: CatequistaCadastro) {
     profissao: c.profissao, telefone: c.telefone, email: c.email,
     comunidade_id: c.comunidadeId || null, formacao: c.formacao,
     anos_experiencia: c.anosExperiencia, observacao: c.observacao,
+    cidade: c.cidade || null, estado: c.estado || null,
     foto: c.foto || null, status: c.status || 'ativo',
   });
   if (error) throw error;

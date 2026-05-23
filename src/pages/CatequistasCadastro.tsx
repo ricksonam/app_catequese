@@ -18,6 +18,7 @@ interface FormData {
   telefone: string;
   email: string; comunidadeId: string;
   anosExperiencia: string;
+  cidade: string; estado: string;
   foto: string;
 }
 const emptyForm: FormData = {
@@ -25,6 +26,7 @@ const emptyForm: FormData = {
   numero: "", bairro: "",
   telefone: "",
   email: "", comunidadeId: "", anosExperiencia: "",
+  cidade: "", estado: "",
   foto: "",
 };
 
@@ -107,6 +109,8 @@ export default function CatequistasCadastro() {
       telefone: item.telefone, email: item.email,
       comunidadeId: item.comunidadeId || "",
       anosExperiencia: item.anosExperiencia,
+      cidade: item.cidade || "",
+      estado: item.estado || "",
       foto: item.foto || "",
     });
     setEditMode(true);
@@ -175,9 +179,14 @@ export default function CatequistasCadastro() {
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.bg} ${st.color}`}>{st.label}</span>
-                      {item.anosExperiencia && (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                          {item.anosExperiencia} anos exp.
+                      {item.dataNascimento && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                          {new Date(item.dataNascimento).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                        </span>
+                      )}
+                      {age !== null && (
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                          {age} anos
                         </span>
                       )}
                     </div>
@@ -219,6 +228,10 @@ export default function CatequistasCadastro() {
             <div className="grid grid-cols-2 gap-2">
               <FieldInput label="Telefone/WhatsApp" type="tel" value={form.telefone} onChange={(v) => updateField("telefone", mascaraTelefone(v))} placeholder="(00) 00000-0000" />
               <FieldInput label="E-mail" type="email" value={form.email} onChange={(v) => updateField("email", v)} />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <FieldInput label="Estado" value={form.estado} onChange={(v) => updateField("estado", v)} placeholder="Ex: SP" />
+              <FieldInput label="Cidade" value={form.cidade} onChange={(v) => updateField("cidade", v)} placeholder="Ex: São Paulo" />
             </div>
             <FieldInput label="Profissão" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
             

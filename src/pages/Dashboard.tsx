@@ -208,10 +208,12 @@ export default function Dashboard() {
           nome: meta.full_name || user.email?.split('@')[0] || "Catequista",
           email: user.email || "",
           telefone: meta.phone || "",
-          dataNascimento: meta.birthdate || "",
+          dataNascimento: meta.data_nascimento || "",
           endereco: "",
           numero: "",
           bairro: "",
+          cidade: meta.cidade || "",
+          estado: meta.estado || "",
           complemento: "",
           profissao: "",
           comunidadeId: "",
@@ -754,7 +756,7 @@ export default function Dashboard() {
               <div className="w-full max-w-[280px] relative mb-4" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-md border border-slate-300 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-gradient-to-br from-slate-100 to-slate-300"
+                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-lg border-2 border-blue-400 ring-4 ring-blue-200 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-gradient-to-br from-slate-100 to-slate-300"
                 >
                   {/* Raios de luz de fundo subtis */}
                   <div className="absolute inset-0 pointer-events-none opacity-20"
@@ -783,7 +785,7 @@ export default function Dashboard() {
                           {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
                         </h3>
                         {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[9px] font-black bg-slate-900/10 text-slate-800 px-1.5 py-0.5 rounded-full border border-slate-900/20 drop-shadow-sm">
+                          <span className="text-[9px] font-black bg-amber-400 text-amber-900 px-1.5 py-0.5 rounded-full border border-amber-500 drop-shadow-sm">
                             {selectedTurma.ano || selectedTurma.etapa}
                           </span>
                         )}
@@ -792,16 +794,16 @@ export default function Dashboard() {
 
                     {/* Stats dinâmicos */}
                     <div className="flex items-center justify-center gap-2 w-full">
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-900/5 border border-slate-900/10 shadow-sm">
-                        <Users className="h-3 w-3 text-slate-600" />
-                        <span className="text-[10px] font-black text-slate-800">
-                          {catCount} <span className="opacity-80 font-bold">catequizandos</span>
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-500 border border-blue-600 shadow-sm">
+                        <Users className="h-3 w-3 text-white" />
+                        <span className="text-[10px] font-black text-white">
+                          {catCount} <span className="opacity-90 font-bold">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-900/5 border border-slate-900/10 shadow-sm">
-                        <BookOpen className="h-3 w-3 text-slate-600" />
-                        <span className="text-[10px] font-black text-slate-800">
-                          {encCount} <span className="opacity-80 font-bold">encontros</span>
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500 border border-emerald-600 shadow-sm">
+                        <BookOpen className="h-3 w-3 text-white" />
+                        <span className="text-[10px] font-black text-white">
+                          {encCount} <span className="opacity-90 font-bold">encontros</span>
                         </span>
                       </div>
                     </div>
