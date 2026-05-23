@@ -10,12 +10,54 @@ import { Zap } from "lucide-react";
 
 // Palette: more vibrant gradients for each turma
 const CARD_PALETTES = [
-  { bg: "from-emerald-100 to-emerald-200", accent: "bg-emerald-300", text: "text-black", sub: "text-black/70", border: "border-emerald-300", borderMain: "border-emerald-400", badge: "bg-emerald-300 text-black", icon: "text-emerald-700" },
-  { bg: "from-blue-100 to-blue-200", accent: "bg-blue-300", text: "text-black", sub: "text-black/70", border: "border-blue-300", borderMain: "border-blue-400", badge: "bg-blue-300 text-black", icon: "text-blue-700" },
-  { bg: "from-purple-100 to-purple-200", accent: "bg-purple-300", text: "text-black", sub: "text-black/70", border: "border-purple-300", borderMain: "border-purple-400", badge: "bg-purple-300 text-black", icon: "text-purple-700" },
-  { bg: "from-rose-100 to-rose-200", accent: "bg-rose-300", text: "text-black", sub: "text-black/70", border: "border-rose-300", borderMain: "border-rose-400", badge: "bg-rose-300 text-black", icon: "text-rose-700" },
-  { bg: "from-sky-100 to-sky-200", accent: "bg-sky-300", text: "text-black", sub: "text-black/70", border: "border-sky-300", borderMain: "border-sky-400", badge: "bg-sky-300 text-black", icon: "text-sky-700" },
-  { bg: "from-amber-100 to-amber-200", accent: "bg-amber-300", text: "text-black", sub: "text-black/70", border: "border-amber-300", borderMain: "border-amber-400", badge: "bg-amber-300 text-black", icon: "text-amber-700" },
+  {
+    bg: "from-emerald-50 to-teal-50", borderMain: "border-emerald-300",
+    accent: "bg-gradient-to-br from-emerald-400 to-teal-500", icon: "text-white",
+    text: "text-emerald-950", sub: "text-emerald-700/80",
+    chipCal: "bg-gradient-to-r from-emerald-500 to-teal-500",
+    chipUsers: "bg-gradient-to-r from-green-500 to-emerald-600",
+    badge: "bg-emerald-500 text-white",
+  },
+  {
+    bg: "from-blue-50 to-indigo-50", borderMain: "border-blue-300",
+    accent: "bg-gradient-to-br from-blue-400 to-indigo-500", icon: "text-white",
+    text: "text-blue-950", sub: "text-blue-700/80",
+    chipCal: "bg-gradient-to-r from-blue-500 to-indigo-500",
+    chipUsers: "bg-gradient-to-r from-indigo-500 to-blue-600",
+    badge: "bg-blue-500 text-white",
+  },
+  {
+    bg: "from-purple-50 to-violet-50", borderMain: "border-purple-300",
+    accent: "bg-gradient-to-br from-purple-400 to-violet-500", icon: "text-white",
+    text: "text-purple-950", sub: "text-purple-700/80",
+    chipCal: "bg-gradient-to-r from-purple-500 to-violet-500",
+    chipUsers: "bg-gradient-to-r from-violet-500 to-purple-600",
+    badge: "bg-purple-500 text-white",
+  },
+  {
+    bg: "from-rose-50 to-pink-50", borderMain: "border-rose-300",
+    accent: "bg-gradient-to-br from-rose-400 to-pink-500", icon: "text-white",
+    text: "text-rose-950", sub: "text-rose-700/80",
+    chipCal: "bg-gradient-to-r from-rose-500 to-pink-500",
+    chipUsers: "bg-gradient-to-r from-pink-500 to-rose-600",
+    badge: "bg-rose-500 text-white",
+  },
+  {
+    bg: "from-sky-50 to-cyan-50", borderMain: "border-sky-300",
+    accent: "bg-gradient-to-br from-sky-400 to-cyan-500", icon: "text-white",
+    text: "text-sky-950", sub: "text-sky-700/80",
+    chipCal: "bg-gradient-to-r from-sky-500 to-cyan-500",
+    chipUsers: "bg-gradient-to-r from-cyan-500 to-sky-600",
+    badge: "bg-sky-500 text-white",
+  },
+  {
+    bg: "from-amber-50 to-orange-50", borderMain: "border-amber-300",
+    accent: "bg-gradient-to-br from-amber-400 to-orange-500", icon: "text-white",
+    text: "text-amber-950", sub: "text-amber-700/80",
+    chipCal: "bg-gradient-to-r from-amber-500 to-orange-500",
+    chipUsers: "bg-gradient-to-r from-orange-500 to-amber-600",
+    badge: "bg-amber-500 text-white",
+  },
 ];
 
 // ... (skipping formatDate)
@@ -163,50 +205,49 @@ export default function TurmasList() {
                 key={turma.id}
                 onClick={() => handleTurmaClick(turma.id)}
                 className={cn(
-                  "group relative overflow-hidden rounded-[2rem] p-0.5 cursor-pointer transition-all duration-500 shadow-xl hover:shadow-2xl hover:-translate-y-2 active:scale-95 animate-fade-in animate-card-float border-2",
+                  "group relative overflow-hidden rounded-[2rem] p-0.5 cursor-pointer transition-all duration-500 shadow-lg hover:shadow-xl hover:-translate-y-1.5 active:scale-95 animate-fade-in border-2",
                   isClicking ? "scale-95 opacity-80" : "scale-100",
-                  palette.borderMain,
-                  `bg-gradient-to-br ${palette.bg}`
+                  palette.borderMain
                 )}
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
               >
                 <div className={cn(
-                  "relative overflow-hidden rounded-[1.95rem] bg-white p-5 flex items-center gap-5 h-full",
-                  `bg-gradient-to-br ${palette.bg} border-b-4 ${palette.border}/50`
+                  "relative overflow-hidden rounded-[1.95rem] p-5 flex items-center gap-4 h-full bg-gradient-to-br",
+                  palette.bg
                 )}>
-                  {/* Subtle light blobs */}
-                  <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/20 blur-3xl pointer-events-none group-hover:bg-white/30 transition-colors duration-500" />
+                  {/* Subtle glow top right */}
+                  <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full opacity-20 blur-3xl pointer-events-none bg-white" />
 
                   {/* Animated Icon */}
                   <div className={cn(
-                    `w-14 h-14 rounded-2xl ${palette.accent} border ${palette.border} flex items-center justify-center ${palette.icon} shadow-sm shrink-0 transition-all duration-500`,
+                    `w-14 h-14 rounded-2xl ${palette.accent} flex items-center justify-center shadow-md shrink-0 transition-all duration-500`,
                     "group-hover:scale-110 group-hover:-rotate-6",
                     isClicking && "scale-90 rotate-12"
                   )}>
-                    <UsersRound className="h-7 w-7" />
+                    <UsersRound className={`h-7 w-7 ${palette.icon}`} />
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0 pr-8">
-                    <h3 className={`text-lg font-black ${palette.text} truncate font-liturgical leading-tight mb-0.5`}>{turma.nome}</h3>
-                    
+                    <h3 className={`text-xl font-black ${palette.text} truncate font-liturgical leading-tight mb-0.5 drop-shadow-sm`}>{turma.nome}</h3>
+
                     {turmaCom && (
                       <p className={`text-[9px] font-bold ${palette.sub} uppercase tracking-widest truncate mb-2`}>{turmaCom}</p>
                     )}
 
-                    <div className="flex flex-col gap-1 mt-1">
-                      <div className={`flex items-center gap-1.5 text-[9px] ${palette.sub} font-bold bg-black/5 px-2 py-1 rounded-md w-fit`}>
-                        <CalendarDays className="h-3 w-3 opacity-70" />
+                    <div className="flex flex-col gap-1.5 mt-1.5">
+                      <div className={`flex items-center gap-1.5 text-white text-[9px] font-black px-2.5 py-1 rounded-lg shadow-sm w-fit ${palette.chipCal}`}>
+                        <CalendarDays className="h-3 w-3" />
                         {turma.diaCatequese}, {turma.horario}
                       </div>
-                      <div className={`flex items-center gap-1.5 text-[9px] ${palette.sub} font-bold bg-black/5 px-2 py-1 rounded-md w-fit`}>
-                        <Users className="h-3 w-3 opacity-70" />
+                      <div className={`flex items-center gap-1.5 text-white text-[9px] font-black px-2.5 py-1 rounded-lg shadow-sm w-fit ${palette.chipUsers}`}>
+                        <Users className="h-3 w-3" />
                         {tCatequizandos.length} inscritos • {tEncontros.length} encontros
                       </div>
                     </div>
 
                     {dataCriacao && (
-                      <p className={`text-[8px] ${palette.sub} font-bold mt-2.5 opacity-60 uppercase tracking-widest`}>
+                      <p className={`text-[8px] ${palette.sub} font-bold mt-2 opacity-60 uppercase tracking-widest`}>
                         Criada em {dataCriacao}
                       </p>
                     )}
@@ -214,26 +255,27 @@ export default function TurmasList() {
 
                   {/* Badges Stack - Top Right */}
                   <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
-                    <span className={`text-[10px] font-black ${palette.badge} px-2 py-0.5 rounded-md shadow-sm border border-black/5`}>{turma.ano}</span>
-                    
+                    {turma.ano && (
+                      <span className={`text-[10px] font-black ${palette.badge} px-2 py-0.5 rounded-full shadow-sm`}>{turma.ano}</span>
+                    )}
+
                     {turma.isShared && (
-                      <span className={`shrink-0 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${palette.badge} border border-black/5 shadow-sm`}>
+                      <span className={`shrink-0 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${palette.badge} shadow-sm`}>
                         Partilhada
                       </span>
                     )}
 
                     {turma.id === selectedTurmaId && (
-                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20 mt-0.5">
+                      <span className="shrink-0 flex items-center gap-0.5 text-[7px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20">
                         <Sparkles className="h-2 w-2" /> Selecionada
                       </span>
                     )}
-                    
-                    {/* Arrow at the bottom-right of this flex stack or separate */}
+
                     <div className={cn(
-                      "w-7 h-7 rounded-full bg-black/5 flex items-center justify-center border border-black/5 transition-all duration-300 mt-1",
-                      "group-hover:bg-black/10 group-hover:translate-x-1"
+                      "w-7 h-7 rounded-full bg-white/40 flex items-center justify-center border border-white/60 transition-all duration-300 mt-1 shadow-sm",
+                      "group-hover:bg-white/60 group-hover:translate-x-1"
                     )}>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      <ArrowRight className={`h-3.5 w-3.5 ${palette.text}`} />
                     </div>
                   </div>
                 </div>
