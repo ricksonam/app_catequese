@@ -294,7 +294,6 @@ const modules: Module[] = [
     gradient: "from-violet-600 to-purple-500",
     title: "Dinâmicas e Jogos",
     description: "Biblioteca de jogos bíblicos interativos para animar e engajar os catequizandos.",
-    badge: "Premium",
     features: ["Quiz Bíblico", "Bingo Bíblico", "Mímica Sagrada", "Sorteio de grupos"],
     previewContent: <JogosPreview />,
   },
@@ -305,7 +304,6 @@ const modules: Module[] = [
     gradient: "from-rose-600 to-pink-500",
     title: "Apoio às Famílias",
     description: "Missões semanais, mural de fotos e comunicados direto para as famílias.",
-    badge: "Premium",
     features: ["Missões em família", "Mural de fotos", "Formulários", "Comunicados"],
     previewContent: <FamiliaPreview />,
   },
@@ -326,7 +324,6 @@ const modules: Module[] = [
     gradient: "from-blue-600 to-indigo-500",
     title: "Comunicação",
     description: "Crie avisos e comunicados profissionais e envie para pais e catequizandos.",
-    badge: "Premium",
     features: ["Avisos em massa", "Modelos prontos", "WhatsApp integrado", "Histórico"],
     previewContent: <ComunicacaoPreview />,
   },
@@ -915,92 +912,7 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
-      {/* ── PLANOS ── */}
-      <section className="relative z-10 py-12 px-6 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-stone-900 mb-5 tracking-tight">
-              Planos e <span className="text-[#D4AF37]">Assinaturas</span>
-            </h2>
-          </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch max-w-3xl mx-auto">
-            {/* Gratuito */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="p-4 sm:p-8 rounded-2xl flex flex-col bg-stone-50 border border-stone-200 shadow-sm"
-            >
-              <h3 className="text-sm sm:text-2xl font-extrabold text-stone-800 mb-1 sm:mb-2">Uso Gratuito</h3>
-              <div className="flex items-baseline gap-1 mb-3 sm:mb-6">
-                <span className="text-2xl sm:text-6xl font-black text-stone-900">R$ 0</span>
-              </div>
-              <p className="hidden sm:block text-stone-600 mb-6 text-sm leading-relaxed flex-1">
-                Acesso básico para organizar uma turma e conhecer as ferramentas fundamentais do iCatequese.
-              </p>
-              <ul className="space-y-2 sm:space-y-4 mb-4 sm:mb-8 flex-1">
-                {["1 Turma ativa", "Mural básico", "Agenda", "Bíblia"].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-[10px] sm:text-sm font-medium text-stone-700">
-                    <CheckCircle2 className="w-3 h-3 sm:w-5 sm:h-5 text-stone-400 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => navigate("/auth?view=signup")}
-                className="mt-auto w-full py-2 sm:py-4 rounded-lg border-2 border-stone-300 text-stone-700 font-bold hover:border-stone-400 hover:bg-stone-100 transition-all text-xs sm:text-base"
-              >
-                Grátis
-              </button>
-            </motion.div>
-
-            {/* Premium */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="p-4 sm:p-8 rounded-2xl flex flex-col relative overflow-hidden"
-              style={{
-                background: "linear-gradient(145deg, #6b1e2c 0%, #8C2A3C 100%)",
-                boxShadow: "0 10px 20px -5px rgba(140, 42, 60, 0.4)",
-              }}
-            >
-              <div className="flex items-center gap-1 sm:gap-3 mb-1 sm:mb-6">
-                <h3 className="text-sm sm:text-2xl font-extrabold text-white">Premium</h3>
-              </div>
-              <div className="flex items-baseline gap-1 mb-3 sm:mb-6">
-                <span className="text-2xl sm:text-6xl font-black text-white">14,90</span>
-                <span className="text-[#D4AF37] text-[10px] sm:text-sm uppercase tracking-widest font-bold">/ano</span>
-              </div>
-              <p className="hidden sm:block text-white/80 mb-6 text-sm leading-relaxed flex-1">
-                Acesso integral a todos os recursos. Uma contribuição mínima para manter a plataforma viva.
-              </p>
-              <ul className="space-y-2 sm:space-y-4 mb-4 sm:mb-8 flex-1 relative z-10">
-                {[
-                  "Ilimitado",
-                  "Jogos Interativos",
-                  "Missões",
-                  "Relatórios",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-[10px] sm:text-sm font-medium text-white">
-                    <CheckCircle2 className="w-3 h-3 sm:w-5 sm:h-5 text-[#D4AF37] shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => navigate("/auth?view=signup")}
-                className="mt-auto w-full py-2 sm:py-4 rounded-lg font-black text-xs sm:text-base text-[#2C241B] relative z-10 overflow-hidden shadow-xl"
-                style={{ background: "linear-gradient(135deg, #D4AF37, #f0cc5a)" }}
-              >
-                Assinar
-              </button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* ── CTA FINAL E FOOTER ── */}
       <footer className="relative z-10 py-6 px-6 bg-white border-t border-stone-200">

@@ -39,8 +39,6 @@ interface Profile {
   email: string;
   last_login: string | null;
   is_blocked: boolean;
-  is_premium: boolean;
-  premium_since: string | null;
   created_at: string;
   cidade?: string;
   estado?: string;
@@ -53,8 +51,7 @@ interface Profile {
 const BLOCK_REASONS = [
   "Usuário violou os termos de uso",
   "Uso do sistema para fins comerciais",
-  "Usuário violou as regras de LGPD",
-  "Usuário não renovou a assinatura"
+  "Usuário violou as regras de LGPD"
 ];
 
 interface Sugestao {
@@ -310,32 +307,6 @@ export default function AdminDashboard() {
     }
   });
 
-  const { data: payments = [], isLoading: loadingPayments } = useQuery({
-    queryKey: ["admin_payments"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("subscription_payments")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const { data: promoCodes = [], isLoading: loadingPromoCodes } = useQuery({
-    queryKey: ["admin_promo_codes"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("promo_codes")
-        .select("*, profiles:created_by(email)")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    }
-  });
-
-  const [promoForm, setPromoForm] = useState({ code: "", description: "", max_uses: 1, expires_at: "" });
-  const [promoLoading, setPromoLoading] = useState(false);
 
   // Mutations
   const toggleBlockMutation = useMutation({
@@ -382,7 +353,7 @@ export default function AdminDashboard() {
   const stats = useMemo(() => {
     const total = profiles.length;
     const blocked = profiles.filter(p => p.is_blocked).length;
-    const premium = profiles.filter(p => p.is_premium).length;
+
     const activeToday = profiles.filter(p => {
       if (!p.last_login) return false;
       const date = new Date(p.last_login);
@@ -392,51 +363,15 @@ export default function AdminDashboard() {
     const deletedReasons = sugestoes.filter(s => s.tipo === 'exclusao').length;
     const safetyAlertsCount = safetyAlerts.length;
 
-    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount, premium };
+    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount };
   }, [profiles, sugestoes, safetyAlerts]);
 
-  const processedPayments = useMemo(() => {
-    return payments.map(pay => {
-      let profile = profiles.find(p => p.id === pay.user_id);
-      const amount = Number(pay.amount) || 0;
-      const date = new Date(pay.created_at);
-      return {
-        ...pay,
-        valor: amount,
-        cidade: profile?.cidade || "Não informado",
-        estado: profile?.estado || "—",
-        email: pay.user_email || profile?.email || "Desconhecido",
-        data: date,
-        mes: (date.getMonth() + 1).toString().padStart(2, '0'),
-        dia: date.getDate().toString().padStart(2, '0'),
-        ano: date.getFullYear().toString(),
-      };
-    });
-  }, [payments, profiles]);
-
-  const filteredPayments = useMemo(() => {
-    return processedPayments.filter(p => {
-      if (financeFilters.estado !== "Todos" && p.estado !== financeFilters.estado) return false;
-      if (financeFilters.cidade !== "Todas" && p.cidade !== financeFilters.cidade) return false;
-      if (financeFilters.mes !== "Todos" && p.mes !== financeFilters.mes) return false;
-      if (financeFilters.dia !== "Todos" && p.dia !== financeFilters.dia) return false;
-      return true;
-    });
-  }, [processedPayments, financeFilters]);
-
-  const totalRevenue = filteredPayments.reduce((acc, curr) => acc + curr.valor, 0);
-
-  // Lists for filters
-  const estadosList = ["Todos", ...Array.from(new Set(processedPayments.map(p => p.estado).filter(Boolean)))];
-  const cidadesList = ["Todas", ...Array.from(new Set(processedPayments.filter(p => financeFilters.estado === "Todos" || p.estado === financeFilters.estado).map(p => p.cidade).filter(Boolean)))];
-  const mesesList = ["Todos", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-  const diasList = ["Todos", ...Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'))];
 
 
   const feedbackList = sugestoes.filter(s => s.tipo !== 'exclusao');
   const churnList = sugestoes.filter(s => s.tipo === 'exclusao');
 
-  if (loadingProfiles || loadingSugestoes || loadingSafety || loadingPayments || loadingPromoCodes) {
+  if (loadingProfiles || loadingSugestoes || loadingSafety) {
 
     return (
       <div className="p-8 space-y-6">
@@ -508,14 +443,7 @@ export default function AdminDashboard() {
             description="Sessões hoje"
             onClick={() => setActiveTab("users")}
           />
-          <StatsCard 
-            title="Premium" 
-            value={stats.premium} 
-            icon={Star} 
-            color="amber" 
-            description="Assinaturas ativas"
-            onClick={() => setActiveTab("users")}
-          />
+
           <StatsCard 
             title="Bloqueados" 
             value={stats.blocked} 
@@ -542,8 +470,7 @@ export default function AdminDashboard() {
           <aside className="w-full md:w-64 border-r border-border/50 bg-slate-50/50 p-6 space-y-2">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
-            <TabButton active={activeTab === "finance"} onClick={() => setActiveTab("finance")} icon={CircleDollarSign} label="Financeiro" />
-            <TabButton active={activeTab === "promo"} onClick={() => setActiveTab("promo")} icon={Tag} label="Promo Codes" />
+
             <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Catálogo" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
@@ -586,18 +513,6 @@ export default function AdminDashboard() {
                           setUserToBlock(p);
                           setIsBlockDialogOpen(true);
                         }
-                      }}
-                      onTogglePremium={async () => {
-                        const newVal = !p.is_premium;
-                        const expiresAt = new Date();
-                        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-                        await supabase.from('profiles').update({ 
-                          is_premium: newVal,
-                          premium_since: newVal ? new Date().toISOString() : null,
-                          premium_expires_at: newVal ? expiresAt.toISOString() : null
-                        }).eq('id', p.id);
-                        qc.invalidateQueries({ queryKey: ['admin_profiles'] });
-                        toast.success(newVal ? 'Premium ativado por 1 ano!' : 'Premium removido.');
                       }}
                     />
                   ))}
@@ -699,271 +614,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {activeTab === "finance" && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div>
-                    <h2 className="text-xl font-bold text-foreground">Gestão Financeira</h2>
-                    <p className="text-sm text-muted-foreground">Monitore o faturamento do Premium</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-5 bg-white rounded-2xl border shadow-sm">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Estado</label>
-                    <select 
-                      value={financeFilters.estado}
-                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, estado: e.target.value, cidade: "Todas" }))}
-                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
-                    >
-                      {estadosList.map(e => <option key={e} value={e}>{e}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Cidade</label>
-                    <select 
-                      value={financeFilters.cidade}
-                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, cidade: e.target.value }))}
-                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
-                    >
-                      {cidadesList.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Mês</label>
-                    <select 
-                      value={financeFilters.mes}
-                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, mes: e.target.value }))}
-                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
-                    >
-                      {mesesList.map(m => <option key={m} value={m}>{m}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Dia</label>
-                    <select 
-                      value={financeFilters.dia}
-                      onChange={(e) => setFinanceFilters(prev => ({ ...prev, dia: e.target.value }))}
-                      className="w-full h-10 rounded-xl border-border bg-slate-50 text-sm font-medium focus:ring-primary focus:border-primary px-3"
-                    >
-                      {diasList.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Faturamento Card */}
-                  <Card className="col-span-1 md:col-span-1 rounded-[32px] bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xl shadow-emerald-500/20 border-none overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
-                    <CardContent className="p-8 relative z-10">
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-6">
-                        <CircleDollarSign className="h-8 w-8 text-white" />
-                      </div>
-                      <p className="text-sm font-bold text-emerald-50 uppercase tracking-widest mb-1">
-                        Faturamento Filtrado
-                      </p>
-                      <h3 className="text-4xl font-black tracking-tighter">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRevenue)}
-                      </h3>
-                      <p className="text-xs text-emerald-100 mt-4 font-medium opacity-80">
-                        {filteredPayments.length} {filteredPayments.length === 1 ? 'assinatura' : 'assinaturas'} encontradas
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  {/* Lista de Pagamentos */}
-                  <Card className="col-span-1 md:col-span-2 rounded-[32px] border-border shadow-sm bg-white overflow-hidden flex flex-col">
-                    <CardHeader className="p-6 pb-2">
-                      <CardTitle className="text-lg font-bold">Histórico de Transações</CardTitle>
-                      <CardDescription>Visualização detalhada baseada nos filtros acima</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0 flex-1 relative">
-                      <ScrollArea className="h-[280px] w-full border-t">
-                        {filteredPayments.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center h-full py-16 text-muted-foreground">
-                            <CircleDollarSign className="h-10 w-10 mb-3 opacity-20" />
-                            <p className="text-sm font-bold">Nenhum pagamento encontrado</p>
-                          </div>
-                        ) : (
-                          <div className="divide-y divide-border/50">
-                            {filteredPayments.map(pay => (
-                              <div key={pay.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                                <div className="flex items-center gap-4">
-                                  <div className={cn(
-                                    "w-10 h-10 rounded-xl flex items-center justify-center border shrink-0",
-                                    pay.status === 'confirmed' 
-                                      ? "bg-emerald-50 border-emerald-100 text-emerald-600" 
-                                      : pay.status === 'promo' ? "bg-purple-50 border-purple-100 text-purple-600" : "bg-amber-50 border-amber-100 text-amber-600"
-                                  )}>
-                                    <Star className="h-4 w-4" />
-                                  </div>
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <p className="text-sm font-bold text-foreground">{pay.email}</p>
-                                      <Badge 
-                                        variant="outline" 
-                                        className={cn(
-                                          "text-[8px] uppercase tracking-wider font-extrabold px-1.5 py-0.25",
-                                          pay.status === 'confirmed' 
-                                            ? "border-emerald-200 bg-emerald-50 text-emerald-700" 
-                                            : pay.status === 'promo' ? "border-purple-200 bg-purple-50 text-purple-700" : "border-amber-200 bg-amber-50 text-amber-700 animate-pulse"
-                                        )}
-                                      >
-                                        {pay.status === 'confirmed' ? "Confirmado" : pay.status === 'promo' ? "Cortesia" : "Pendente"}
-                                      </Badge>
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                                      {pay.cidade}, {pay.estado} • {pay.data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' })}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="text-right flex flex-col items-end">
-                                  <p className="text-sm font-black text-emerald-600">
-                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pay.valor)}
-                                  </p>
-                                  <span className="text-[9px] text-muted-foreground font-mono">
-                                    {pay.payment_method || "N/A"} • NSU: {pay.transaction_nsu || pay.invoice_slug || "—"}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </ScrollArea>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "promo" && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">Códigos Promocionais</h2>
-                  <p className="text-sm text-muted-foreground">Crie códigos para oferecer Premium gratuitamente</p>
-                </div>
-
-                <Card className="rounded-[24px] border-2 border-dashed border-primary/30 bg-primary/5 shadow-none p-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Código *</label>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="EX: NATAL2026"
-                          value={promoForm.code}
-                          onChange={(e) => setPromoForm(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                          className="rounded-xl h-10 border-border/50 uppercase"
-                        />
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setPromoForm(prev => ({ ...prev, code: "PROMO" + Math.random().toString(36).substring(2, 6).toUpperCase() }))}
-                          className="px-3"
-                        >
-                          <Gift className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Descrição</label>
-                      <Input
-                        placeholder="Ex: Evento XYZ"
-                        value={promoForm.description}
-                        onChange={(e) => setPromoForm(prev => ({ ...prev, description: e.target.value }))}
-                        className="rounded-xl h-10 border-border/50"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Limite de Usos *</label>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={promoForm.max_uses}
-                        onChange={(e) => setPromoForm(prev => ({ ...prev, max_uses: parseInt(e.target.value) || 1 }))}
-                        className="rounded-xl h-10 border-border/50"
-                      />
-                    </div>
-                    <div className="flex items-end">
-                      <Button
-                        disabled={promoLoading || !promoForm.code}
-                        onClick={async () => {
-                          setPromoLoading(true);
-                          try {
-                            const { error } = await supabase.from("promo_codes").insert({
-                              code: promoForm.code,
-                              description: promoForm.description || null,
-                              max_uses: promoForm.max_uses,
-                              created_by: user?.id
-                            });
-                            if (error) {
-                              if (error.code === '23505') toast.error("Este código já existe!");
-                              else throw error;
-                            } else {
-                              toast.success("Código promocional criado!");
-                              setPromoForm({ code: "", description: "", max_uses: 1, expires_at: "" });
-                              qc.invalidateQueries({ queryKey: ["admin_promo_codes"] });
-                            }
-                          } catch (err: any) {
-                            toast.error("Erro ao criar código.");
-                          } finally {
-                            setPromoLoading(false);
-                          }
-                        }}
-                        className="w-full h-10 rounded-xl"
-                      >
-                        {promoLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar Código"}
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {promoCodes.length === 0 ? (
-                    <div className="col-span-full flex flex-col items-center justify-center py-12 text-muted-foreground">
-                      <Tag className="h-10 w-10 mb-3 opacity-20" />
-                      <p className="text-sm font-medium">Nenhum código promocional criado</p>
-                    </div>
-                  ) : (
-                    promoCodes.map((c: any) => {
-                      const isActive = c.is_active && (!c.max_uses || c.used_count < c.max_uses);
-                      return (
-                        <Card key={c.id} className={cn("rounded-2xl border shadow-sm transition-all overflow-hidden", isActive ? "border-emerald-200" : "border-slate-200 opacity-70")}>
-                          <div className={cn("h-1 w-full", isActive ? "bg-emerald-500" : "bg-slate-300")} />
-                          <CardContent className="p-5 flex justify-between items-center">
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-black text-lg text-foreground tracking-widest">{c.code}</h3>
-                                <Badge variant="outline" className={cn("text-[9px] uppercase tracking-widest", isActive ? "text-emerald-600 border-emerald-200 bg-emerald-50" : "text-slate-500 bg-slate-100")}>
-                                  {isActive ? "Ativo" : "Inativo"}
-                                </Badge>
-                              </div>
-                              <p className="text-xs text-muted-foreground font-medium mb-2">{c.description || "Sem descrição"}</p>
-                              <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500">
-                                <span>Usos: {c.used_count} / {c.max_uses || "∞"}</span>
-                                <span>Criado em: {new Date(c.created_at).toLocaleDateString('pt-BR')}</span>
-                              </div>
-                            </div>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="text-xs text-destructive hover:bg-destructive/10"
-                              onClick={async () => {
-                                const { error } = await supabase.from("promo_codes").update({ is_active: !c.is_active }).eq("id", c.id);
-                                if (!error) {
-                                  toast.success("Status atualizado!");
-                                  qc.invalidateQueries({ queryKey: ["admin_promo_codes"] });
-                                }
-                              }}
-                            >
-                              {c.is_active ? "Desativar" : "Ativar"}
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
 
             {activeTab === "churn" && (
               <div className="space-y-6">
@@ -1289,7 +939,7 @@ export default function AdminDashboard() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className="text-xl font-bold text-foreground">Catálogo de Materiais</h2>
-                    <p className="text-sm text-muted-foreground">Publique PDFs e imagens para usuários premium</p>
+                    <p className="text-sm text-muted-foreground">Publique PDFs e imagens para os usuários</p>
                   </div>
                 </div>
 
@@ -1675,11 +1325,9 @@ export default function AdminDashboard() {
 function UserCard({
   profile: p,
   onBlock,
-  onTogglePremium,
 }: {
   profile: Profile;
   onBlock: () => void;
-  onTogglePremium: () => void;
 }) {
   const initials = p.email.slice(0, 2).toUpperCase();
   const avatarColors = [
@@ -1708,18 +1356,12 @@ function UserCard({
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="text-sm font-black text-foreground truncate">{p.email}</span>
-          {/* Status chips */}
-          {p.is_premium && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-300 text-[10px] font-black uppercase tracking-wider">
-              <Star className="h-2.5 w-2.5" /> Premium
-            </span>
-          )}
           {p.is_blocked && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20 text-[10px] font-black uppercase tracking-wider">
               <Lock className="h-2.5 w-2.5" /> Bloqueado
             </span>
           )}
-          {!p.is_premium && !p.is_blocked && (
+          {!p.is_blocked && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black uppercase tracking-wider">
               Ativo
             </span>
@@ -1734,11 +1376,7 @@ function UserCard({
             <Calendar className="h-3 w-3" />
             {p.last_login ? new Date(p.last_login).toLocaleString("pt-BR") : "Nunca logou"}
           </span>
-          {p.premium_since && (
-            <span className="text-[11px] text-amber-600 flex items-center gap-1">
-              <Sparkles className="h-3 w-3" /> Premium desde {new Date(p.premium_since).toLocaleDateString("pt-BR")}
-            </span>
-          )}
+
           {p.is_blocked && p.motivo_bloqueio && (
             <span className="text-[11px] text-destructive font-bold">
               Razão: {p.motivo_bloqueio}
@@ -1764,19 +1402,7 @@ function UserCard({
           {p.is_blocked ? "Desbloquear" : "Bloquear"}
         </button>
 
-        {/* Premium chip */}
-        <button
-          onClick={onTogglePremium}
-          className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all active:scale-95",
-            p.is_premium
-              ? "bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100"
-              : "bg-amber-50/50 text-amber-600 border-amber-200 hover:bg-amber-100"
-          )}
-        >
-          <Star className="h-3 w-3" />
-          {p.is_premium ? "Remover Premium" : "Dar Premium"}
-        </button>
+
       </div>
     </div>
   );

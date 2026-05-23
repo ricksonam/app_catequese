@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
-import { usePremium } from "@/hooks/usePremium";
 import { Sparkles } from "lucide-react";
 
 type TimelineItem = { id: string; tipo: 'encontro' | 'atividade' | 'reuniao'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
@@ -25,8 +24,7 @@ export default function PlanoTurma() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'encontro' | 'atividade' | 'reuniao'>('all');
   const [viewItem, setViewItem] = useState<TimelineItem | null>(null);
   const [presencaOpen, setPresencaOpen] = useState(false);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const { isPremium, redirectToPayment } = usePremium();
+
   
   const atividadeMut = useAtividadeMutation();
   const encontroMut = useEncontroMutation();
@@ -117,10 +115,6 @@ export default function PlanoTurma() {
   };
 
   const shareWithParents = async () => {
-    if (!isPremium) {
-      setShowPremiumModal(true);
-      return;
-    }
 
     if (!turma?.codigoAcesso) {
       toast.error("Turma sem código de acesso.");
@@ -429,34 +423,7 @@ export default function PlanoTurma() {
         </DialogContent>
       </Dialog>
 
-      {/* Premium Modal */}
-      <Dialog open={showPremiumModal} onOpenChange={setShowPremiumModal}>
-        <DialogContent className="max-w-sm w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
-          <div className="h-2 w-full bg-gradient-to-r from-amber-400 to-orange-500" />
-          <div className="p-8 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center mx-auto mb-5 border-2 border-amber-200 shadow-inner">
-              <Sparkles className="h-10 w-10 text-amber-500" />
-            </div>
-            <h2 className="text-2xl font-black text-foreground tracking-tight mb-1">Recurso Premium</h2>
-            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-              O compartilhamento do Plano da Turma é um recurso exclusivo do plano Premium. Faça o upgrade para utilizar!
-            </p>
-            <div className="space-y-3">
-              <button
-                onClick={() => { setShowPremiumModal(false); redirectToPayment(); }}
-                className="w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest text-white shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
-              >
-                <Sparkles className="h-4 w-4" />
-                Assinar Premium – Plano Anual
-              </button>
-              <button onClick={() => setShowPremiumModal(false)} className="text-xs text-muted-foreground font-bold hover:text-foreground transition-colors py-2 w-full">
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }

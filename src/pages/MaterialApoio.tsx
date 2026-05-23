@@ -2,7 +2,7 @@ import { ArrowLeft, FolderOpen, Download, Eye, FileText, Image, Loader2, Sparkle
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { PremiumGate } from "@/components/PremiumGate";
+
 import { cn } from "@/lib/utils";
 
 interface MaterialCatalogo {
@@ -229,10 +229,7 @@ export default function MaterialApoio() {
   const totalNovos = materiais.filter((m) => isNovo(m.publicado_em)).length;
 
   return (
-    <PremiumGate
-      feature="Catálogo de Material de Apoio"
-      description="Acesse nossa biblioteca de documentos, PDFs e recursos exclusivos para catequistas."
-    >
+
       <div className="space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3 animate-fade-in">
@@ -317,6 +314,6 @@ export default function MaterialApoio() {
           </>
         )}
       </div>
-    </PremiumGate>
+
   );
 }

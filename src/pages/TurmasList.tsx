@@ -4,7 +4,7 @@ import { useTurmas, useEncontros, useCatequizandos, useComunidades } from "@/hoo
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Star, Sparkles, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePremium } from "@/hooks/usePremium";
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Zap } from "lucide-react";
 
@@ -40,8 +40,7 @@ export default function TurmasList() {
   const { data: comunidades = [] } = useComunidades();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [clickingId, setClickingId] = useState<string | null>(null);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const { isPremium, redirectToPayment } = usePremium();
+
   const selectedTurmaId = localStorage.getItem("ivc_selected_turma");
 
   // Sort by criadoEm ascending (first created = first shown)
@@ -104,12 +103,7 @@ export default function TurmasList() {
         {/* Nova Turma Button */}
         <button
           onClick={() => {
-            // Block 2nd+ turma creation for non-premium users
-            if (!isPremium && turmas.length >= 1) {
-              setShowPremiumModal(true);
-            } else {
-              navigate("/turmas/nova");
-            }
+            navigate("/turmas/nova");
           }}
           className="group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-3 py-2 rounded-[1.2rem] text-white shadow-lg active:scale-95 transition-all duration-500 font-bold text-[9px] uppercase tracking-[0.15em] border border-blue-400/40 shrink-0"
           style={{ background: "linear-gradient(135deg, #3B82F6, #1D4ED8, #1E3A8A)" }}
@@ -251,34 +245,7 @@ export default function TurmasList() {
 
       <JoinTurmaModal open={joinModalOpen} onClose={() => setJoinModalOpen(false)} />
 
-      {/* Premium Modal for 2nd Turma */}
-      <Dialog open={showPremiumModal} onOpenChange={setShowPremiumModal}>
-        <DialogContent className="max-w-sm w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
-          <div className="h-2 w-full bg-gradient-to-r from-amber-400 to-orange-500" />
-          <div className="p-8 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center mx-auto mb-5 border-2 border-amber-200 shadow-inner">
-              <Lock className="h-10 w-10 text-amber-500" />
-            </div>
-            <h2 className="text-2xl font-black text-foreground tracking-tight mb-1">Múltiplas Turmas</h2>
-            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-              O plano básico permite apenas <strong>1 turma</strong>. Faça upgrade para o Premium e crie quantas turmas precisar!
-            </p>
-            <div className="space-y-3">
-              <button
-                onClick={() => { setShowPremiumModal(false); redirectToPayment(); }}
-                className="w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest text-white shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
-              >
-                <Star className="h-4 w-4" />
-                Assinar Premium – Plano Anual
-              </button>
-              <button onClick={() => setShowPremiumModal(false)} className="text-xs text-muted-foreground font-bold hover:text-foreground transition-colors py-2 w-full">
-                Continuar com o plano básico
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }

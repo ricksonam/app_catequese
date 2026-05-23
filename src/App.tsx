@@ -57,8 +57,8 @@ import NotFound from "@/pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import LandingPage from "@/pages/LandingPage";
 import SplashScreen from "@/components/SplashScreen";
-import PaymentSuccess from "@/pages/PaymentSuccess";
-import AssinaturaPage from "@/pages/AssinaturaPage";
+
+
 import { useState, useEffect } from "react";
 
 // QueryClient com configuração de resiliência
@@ -129,7 +129,7 @@ const AppRoutes = () => (
     <Route path="/missao/:codigo" element={<PublicMissao />} />
     <Route path="/f/:codigo" element={<PublicFormResponder />} />
     <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
-    <Route path="/pagamento-confirmado" element={<PaymentSuccess />} />
+
     <Route
       element={
         <ProtectedRoute>
@@ -137,7 +137,6 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     >
-      <Route path="/assinatura" element={<AssinaturaPage />} />
       <Route path="/turmas" element={<TurmasList />} />
       <Route path="/turmas/nova" element={<TurmaForm />} />
       <Route path="/turmas/:id/editar" element={<TurmaForm />} />

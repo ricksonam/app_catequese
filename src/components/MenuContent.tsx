@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTurmas } from "@/lib/supabaseStore";
-import { usePremium } from "@/hooks/usePremium";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,6 @@ const comunicacao = [
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isPremium, premiumExpiresAt, redirectToPayment } = usePremium();
   
   // Queries
   const { data: turmas = [], isLoading: isLoadingTurmas } = useQuery({
@@ -74,7 +73,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
   const [showTransferDialog, setShowTransferDialog] = useState(false);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
 
   // Lê a turma selecionada do localStorage (sincronizado com o Dashboard)
@@ -373,9 +371,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  </div>
                  <div className="flex-1 flex flex-col items-start gap-1">
                    <span className="text-[11px] font-black text-foreground uppercase tracking-[0.2em] text-left">Minha Conta</span>
-                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${isPremium ? 'bg-amber-500/20 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
-                     {isPremium ? "Assinatura Premium" : "Plano Gratuito"}
-                   </span>
                  </div>
                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
                </div>
@@ -384,24 +379,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               <div className="p-3 bg-slate-50 dark:bg-zinc-900/50 rounded-2xl border border-black/5 dark:border-white/5 space-y-1">
                 <p className="px-3 pb-2 text-[9px] font-black uppercase text-muted-foreground tracking-widest border-b border-black/5 dark:border-white/5 mb-2">Meus Dados</p>
                 
-                <button onClick={() => go("/assinatura")} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
-                  <span className="text-sm font-bold text-foreground/80 text-left">Minha Assinatura</span>
-                </button>
-                
                 <button onClick={() => setShowPasswordDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                   <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:rotate-12 transition-transform"><KeyRound className="h-4 w-4" /></div>
                   <span className="text-sm font-bold text-foreground/80 text-left">Alterar Senha</span>
                 </button>
                 
                 <button 
-                  onClick={() => {
-                    if (isPremium) {
-                      setShowTransferDialog(true);
-                    } else {
-                      setShowPremiumModal(true);
-                    }
-                  }} 
+                  onClick={() => setShowTransferDialog(true)} 
                   className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
@@ -764,34 +748,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         </DialogContent>
       </Dialog>
       
-       {/* Premium Modal */}
-       <Dialog open={showPremiumModal} onOpenChange={setShowPremiumModal}>
-        <DialogContent className="max-w-sm w-[95vw] rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
-          <div className="h-2 w-full bg-gradient-to-r from-amber-400 to-orange-500" />
-          <div className="p-8 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center mx-auto mb-5 border-2 border-amber-200 shadow-inner">
-              <Sparkles className="h-10 w-10 text-amber-500" />
-            </div>
-            <h2 className="text-2xl font-black text-foreground tracking-tight mb-1">Recurso Premium</h2>
-            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-              A transferência de dados é um recurso exclusivo do plano Premium. Faça o upgrade para utilizar!
-            </p>
-            <div className="space-y-3">
-              <button
-                onClick={() => { setShowPremiumModal(false); redirectToPayment(); }}
-                className="w-full h-14 rounded-2xl font-black text-sm uppercase tracking-widest text-white shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
-              >
-                <Sparkles className="h-4 w-4" />
-                Assinar Premium – Plano Anual
-              </button>
-              <button onClick={() => setShowPremiumModal(false)} className="text-xs text-muted-foreground font-bold hover:text-foreground transition-colors py-2 w-full">
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
     </div>
   );

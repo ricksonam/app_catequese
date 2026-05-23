@@ -156,13 +156,6 @@ export function ConsentModal({
           </div>
 
           <div className="space-y-1">
-            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">9. PLANOS PREMIUM</h4>
-            <p className="text-sm leading-relaxed">
-              A plataforma disponibiliza recursos pagos com funcionalidades avançadas. Os valores e condições podem ser alterados mediante comunicação prévia.
-            </p>
-          </div>
-
-          <div className="space-y-1">
             <h4 className="text-sm font-black text-foreground uppercase tracking-wider">10. SUSPENSÃO E CANCELAMENTO</h4>
             <p className="text-sm leading-relaxed">
               O iCatequese poderá suspender ou cancelar contas que:
