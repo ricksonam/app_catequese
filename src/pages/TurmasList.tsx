@@ -227,7 +227,7 @@ export default function TurmasList() {
                   )}>
                     {isPending
                       ? <Lock className="h-6 w-6 text-white" />
-                      : <UsersRound className={`h-7 w-7 ${palette.icon}`} />
+                      : <img src="/turma_sem_fundo.png" alt="Turma" className="w-10 h-10 object-contain drop-shadow-sm" />
                     }
                   </div>
 
@@ -251,9 +251,15 @@ export default function TurmasList() {
                           <CalendarDays className="h-3.5 w-3.5" />
                           {turma.diaCatequese}, {turma.horario}
                         </div>
-                        <div className={`flex items-center gap-2 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-sm w-fit ${palette.chipUsers}`}>
-                          <Users className="h-3.5 w-3.5" />
-                          {tCatequizandos.length} catequizandos • {tEncontros.length} encontros
+                        <div className={`flex flex-col gap-1.5 mt-0.5`}>
+                          <div className={`flex items-center gap-2 text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-sm w-fit bg-white/50 backdrop-blur-sm border border-white/40 ${palette.text}`}>
+                            <Users className="h-3.5 w-3.5 opacity-70" />
+                            {tCatequizandos.length} catequizandos
+                          </div>
+                          <div className={`flex items-center gap-2 text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-sm w-fit bg-white/50 backdrop-blur-sm border border-white/40 ${palette.text}`}>
+                            <BookOpen className="h-3.5 w-3.5 opacity-70" />
+                            {tEncontros.length} encontros
+                          </div>
                         </div>
                       </div>
                     )}

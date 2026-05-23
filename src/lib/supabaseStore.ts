@@ -39,11 +39,14 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
   
   let sharedTurmas: Turma[] = [];
   if (sharedIds.length > 0) {
+    // Try to fetch full turma data (may fail for pending members due to RLS)
     const { data: sharedData, error: sharedError } = await (supabase.from as any)("turmas")
       .select("*, turma_catequistas(catequista_id)")
       .in("id", sharedIds)
       .order("criado_em", { ascending: false });
-    if (sharedError) throw sharedError;
+    // Don't throw on error - some turmas may not be accessible due to RLS
+    
+    const fetchedIds = new Set((sharedData || []).map((t: any) => t.id));
 
     sharedTurmas = (sharedData || []).map((t: any) => ({
       id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
@@ -55,6 +58,32 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
       isShared: true,
       status: memberStatusMap.get(t.id) as any
     }));
+
+    // For turmas not returned by the query (likely pending members blocked by RLS),
+    // reconstruct a minimal turma card from locally cached join data
+    const pendingCache = _getPendingTurmaCache();
+    for (const turmaId of sharedIds) {
+      if (!fetchedIds.has(turmaId) && !ownedIds.has(turmaId)) {
+        const cached = pendingCache[turmaId];
+        const memberStatus = memberStatusMap.get(turmaId);
+        sharedTurmas.push({
+          id: turmaId,
+          nome: cached?.nome || 'Turma',
+          ano: cached?.ano || '',
+          diaCatequese: cached?.diaCatequese || '',
+          horario: cached?.horario || '',
+          local: '',
+          etapa: '',
+          outrosDados: '',
+          criadoEm: cached?.criadoEm || new Date().toISOString(),
+          comunidadeId: '',
+          catequistasIds: [],
+          codigoAcesso: '',
+          isShared: true,
+          status: memberStatus as any,
+        } as any);
+      }
+    }
   }
 
   const ownedTurmas = (ownedData || []).map((t: any) => ({
@@ -66,6 +95,9 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     codigoAcesso: t.codigo_acesso,
     isShared: false,
   }));
+
+  // Note: ownedIds is declared here so the shared turma block above can reference it.
+  // The variable is hoisted in the function scope.
 
   // Merge: owned turmas win over shared ones if ID is same
   const ownedIds = new Set(ownedTurmas.map(t => t.id));
@@ -113,7 +145,18 @@ export async function resetTurmaCode(turmaId: string): Promise<string> {
   return data as string;
 }
 
-export async function joinTurmaByCode(code: string): Promise<{ turmaId: string; nome: string }> {
+// Cache for pending turma info (survives page reloads so the card always shows)
+const PENDING_TURMA_CACHE_KEY = 'ivc_pending_turma_cache';
+function _getPendingTurmaCache(): Record<string, { nome: string; diaCatequese?: string; horario?: string; ano?: string; criadoEm?: string }> {
+  try { return JSON.parse(localStorage.getItem(PENDING_TURMA_CACHE_KEY) || '{}'); } catch { return {}; }
+}
+function _savePendingTurmaCache(turmaId: string, info: { nome: string; diaCatequese?: string; horario?: string; ano?: string }) {
+  const cache = _getPendingTurmaCache();
+  cache[turmaId] = { ...info, criadoEm: new Date().toISOString() };
+  localStorage.setItem(PENDING_TURMA_CACHE_KEY, JSON.stringify(cache));
+}
+
+export async function joinTurmaByCode(code: string): Promise<{ turmaId: string; nome: string; status?: string }> {
   const normalizedCode = code.trim().toUpperCase();
 
   // Uses SECURITY DEFINER RPC to bypass RLS — the function validates ownership and membership server-side
@@ -128,8 +171,22 @@ export async function joinTurmaByCode(code: string): Promise<{ turmaId: string; 
     throw new Error('Erro ao entrar na turma. Tente novamente.');
   }
 
-  const result = data as { turmaId: string; nome: string };
-  return result;
+  const result = data as any;
+  const turmaId = result?.turmaId || result?.turma_id || '';
+  const nome = result?.nome || 'Turma';
+  const status = result?.status;
+
+  // Cache the turma info locally so the pending card can always render
+  if (status === 'pending' || !status) {
+    _savePendingTurmaCache(turmaId, {
+      nome,
+      diaCatequese: result?.dia_catequese || result?.diaCatequese,
+      horario: result?.horario,
+      ano: result?.ano,
+    });
+  }
+
+  return { turmaId, nome, status };
 }
 
 

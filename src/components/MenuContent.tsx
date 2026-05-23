@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { 
-  Church, Users, UserCheck, Image, BookOpen, FileText, Library, 
+  Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
   GraduationCap, ChevronLeft, Heart, BarChart2, X, Map
@@ -69,6 +69,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   });
 
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showMeusDadosDialog, setShowMeusDadosDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [showSuggestionDialog, setShowSuggestionDialog] = useState(false);
   const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
@@ -379,6 +380,11 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               <div className="p-3 bg-slate-50 dark:bg-zinc-900/50 rounded-2xl border border-black/5 dark:border-white/5 space-y-1">
                 <p className="px-3 pb-2 text-[9px] font-black uppercase text-muted-foreground tracking-widest border-b border-black/5 dark:border-white/5 mb-2">Meus Dados</p>
                 
+                <button onClick={() => setShowMeusDadosDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><User className="h-4 w-4" /></div>
+                  <span className="text-sm font-bold text-foreground/80 text-left">Meus Dados</span>
+                </button>
+
                 <button onClick={() => setShowPasswordDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                   <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:rotate-12 transition-transform"><KeyRound className="h-4 w-4" /></div>
                   <span className="text-sm font-bold text-foreground/80 text-left">Alterar Senha</span>
@@ -467,7 +473,64 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
       {/* DIALOGS */}
       
-      {/* 1. Alterar Senha */}
+      <Dialog open={showMeusDadosDialog} onOpenChange={setShowMeusDadosDialog}>
+        <DialogContent className="w-[90%] max-w-[400px] rounded-[32px] p-6 bg-white dark:bg-zinc-950 border-2 border-black/5 dark:border-white/5 shadow-2xl overflow-hidden gap-0">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center mb-6 mt-2 relative z-10">
+            <div className="w-16 h-16 rounded-2xl bg-sky-500/10 text-sky-500 flex items-center justify-center mb-4">
+              <User className="h-8 w-8" />
+            </div>
+            <h2 className="text-2xl font-black text-foreground mb-1 tracking-tight">Meus Dados</h2>
+            <p className="text-sm text-muted-foreground font-medium px-4">Informações do seu cadastro no iCatequese</p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                <span className="text-xs text-muted-foreground font-bold uppercase">Nome</span>
+                <span className="text-sm font-semibold">{user?.user_metadata?.full_name || user?.user_metadata?.nome || 'Não informado'}</span>
+              </div>
+              <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                <span className="text-xs text-muted-foreground font-bold uppercase">Email</span>
+                <span className="text-sm font-semibold">{user?.email || 'Não informado'}</span>
+              </div>
+              {user?.user_metadata?.cpf && (
+                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                  <span className="text-xs text-muted-foreground font-bold uppercase">CPF</span>
+                  <span className="text-sm font-semibold">{user.user_metadata.cpf}</span>
+                </div>
+              )}
+              {user?.user_metadata?.data_nascimento && (
+                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                  <span className="text-xs text-muted-foreground font-bold uppercase">Nascimento</span>
+                  <span className="text-sm font-semibold">{user.user_metadata.data_nascimento}</span>
+                </div>
+              )}
+              {user?.user_metadata?.cidade && user?.user_metadata?.estado && (
+                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                  <span className="text-xs text-muted-foreground font-bold uppercase">Local</span>
+                  <span className="text-sm font-semibold">{user.user_metadata.cidade} - {user.user_metadata.estado}</span>
+                </div>
+              )}
+              <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                <span className="text-xs text-muted-foreground font-bold uppercase">Membro Desde</span>
+                <span className="text-sm font-semibold">
+                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : 'Não informado'}
+                </span>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setShowMeusDadosDialog(false)}
+              className="w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-sky-500 hover:bg-sky-600 text-white transition-all shadow-lg shadow-sky-500/20"
+            >
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL MUDAR SENHA */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
         <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl overflow-hidden p-0">
           <div className="h-2 w-full bg-primary" />
