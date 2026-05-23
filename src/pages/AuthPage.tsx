@@ -75,7 +75,7 @@ const InputLine = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="w-full bg-transparent border-b border-zinc-700 text-white text-base py-2 px-0 focus:outline-none focus:border-teal-500 transition-colors placeholder:text-zinc-600"
+        className="w-full bg-transparent border-b-2 border-slate-200 text-slate-800 text-base py-2 px-0 focus:outline-none focus:border-[#f7931a] transition-colors placeholder:text-slate-400"
       />
       {valid && (
         <Check className="absolute right-0 top-1/2 -translate-y-1/2 text-green-500 h-5 w-5" />
@@ -106,11 +106,11 @@ const SelectLine = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full bg-transparent border-b border-zinc-700 text-white text-base py-2 px-0 focus:outline-none focus:border-teal-500 transition-colors appearance-none disabled:opacity-50"
+        className="w-full bg-transparent border-b-2 border-slate-200 text-slate-800 text-base py-2 px-0 focus:outline-none focus:border-[#f7931a] transition-colors appearance-none disabled:opacity-50"
       >
-        <option value="" className="bg-zinc-900 text-zinc-500">Selecione...</option>
+        <option value="" className="bg-white text-slate-400">Selecione...</option>
         {options.map(o => (
-          <option key={o.value} value={o.value} className="bg-zinc-900 text-white">
+          <option key={o.value} value={o.value} className="bg-white text-slate-800">
             {o.label}
           </option>
         ))}
@@ -417,19 +417,24 @@ export default function AuthPage() {
   ────────────────────────────────────────────── */
   if (view === "signup") {
     return (
-      <div className="min-h-screen bg-[#111111] text-white flex flex-col">
+      <div className="min-h-screen bg-white text-slate-800 flex flex-col relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-50/50 via-white to-white pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#f7931a]/5 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="relative z-10 flex-1 flex flex-col">
         {showVerificationNotice && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-[32px] p-8 max-w-md w-full text-center relative overflow-hidden animate-in zoom-in-95 duration-200">
-              <div className="w-20 h-20 rounded-full bg-emerald-950/50 border border-emerald-900 flex items-center justify-center mx-auto mb-6">
-                <Mail className="h-9 w-9 text-emerald-400 animate-bounce" />
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="bg-white border border-slate-100 shadow-2xl rounded-[32px] p-8 max-w-md w-full text-center relative overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-6">
+                <Mail className="h-9 w-9 text-emerald-500 animate-bounce" />
               </div>
-              <h3 className="text-2xl font-black text-white mb-3 tracking-tight">Verifique seu E-mail! ✉️</h3>
-              <p className="text-zinc-400 text-sm font-semibold mb-2">Enviamos um link de confirmação para:</p>
-              <div className="bg-zinc-950 border border-zinc-800 py-3 px-4 rounded-2xl font-mono text-xs text-teal-400 font-bold break-all mb-5">
+              <h3 className="text-2xl font-black text-slate-800 mb-3 tracking-tight">Verifique seu E-mail! ✉️</h3>
+              <p className="text-slate-500 text-sm font-semibold mb-2">Enviamos um link de confirmação para:</p>
+              <div className="bg-slate-50 border border-slate-100 py-3 px-4 rounded-2xl font-mono text-xs text-emerald-600 font-bold break-all mb-5">
                 {signupEmail}
               </div>
-              <p className="text-zinc-500 text-xs leading-relaxed mb-6">
+              <p className="text-slate-500 text-xs leading-relaxed mb-6">
                 Acesse sua caixa de entrada e clique no link para ativar sua conta e acessar o iCatequese.
               </p>
               <Button
@@ -437,7 +442,7 @@ export default function AuthPage() {
                   setShowVerificationNotice(false);
                   setView("login");
                 }}
-                className="w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-emerald-600 hover:bg-emerald-500 text-white transition-all"
+                className="w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-500/20"
               >
                 Entendido, ir para o Login
               </Button>
@@ -452,9 +457,9 @@ export default function AuthPage() {
               if (signupStep > 1) setSignupStep((prev) => (prev - 1) as 1 | 2 | 3);
               else setView("login");
             }}
-            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-zinc-800 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
           >
-            <ChevronLeft className="text-white h-6 w-6" />
+            <ChevronLeft className="text-slate-600 h-6 w-6" />
           </button>
 
           {/* Progress dots */}
@@ -467,7 +472,7 @@ export default function AuthPage() {
                     ? "w-6 bg-[#f7931a]"
                     : step < signupStep
                     ? "w-2 bg-teal-500"
-                    : "w-2 bg-zinc-700"
+                    : "w-2 bg-slate-200"
                 }`}
               />
             ))}
@@ -479,8 +484,8 @@ export default function AuthPage() {
         <div className="flex-1 overflow-y-auto px-6 pb-12">
           {signupStep === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h2 className="text-3xl font-black text-white mb-2">Seus dados</h2>
-              <p className="text-zinc-500 text-sm mb-8">Preencha com atenção. Os campos confirmados ficam com ✓ verde.</p>
+              <h2 className="text-3xl font-black text-slate-800 mb-2">Seus dados</h2>
+              <p className="text-slate-500 text-sm mb-8">Preencha com atenção. Os campos confirmados ficam com ✓ verde.</p>
 
               <InputLine
                 label="Nome completo"
@@ -552,7 +557,7 @@ export default function AuthPage() {
               />
 
               {signupState && cities.length === 0 && (
-                <p className="text-zinc-500 text-xs mb-4 -mt-4 animate-pulse">Carregando cidades...</p>
+                <p className="text-slate-500 text-xs mb-4 -mt-4 animate-pulse">Carregando cidades...</p>
               )}
 
               <button
@@ -567,8 +572,8 @@ export default function AuthPage() {
 
           {signupStep === 2 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h2 className="text-3xl font-black text-white mb-2">Sua senha</h2>
-              <p className="text-zinc-400 mb-8 text-sm">Crie uma senha forte para proteger sua conta. Mínimo de 6 caracteres.</p>
+              <h2 className="text-3xl font-black text-slate-800 mb-2">Sua senha</h2>
+              <p className="text-slate-500 mb-8 text-sm">Crie uma senha forte para proteger sua conta. Mínimo de 6 caracteres.</p>
 
               <InputLine
                 label="Senha"
@@ -592,7 +597,7 @@ export default function AuthPage() {
                               : strength <= 2 ? "bg-yellow-500"
                               : strength <= 3 ? "bg-blue-500"
                               : "bg-green-500"
-                            : "bg-zinc-700"
+                            : "bg-slate-200"
                         }`}
                       />
                     );
@@ -621,30 +626,30 @@ export default function AuthPage() {
 
           {signupStep === 3 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-              <h2 className="text-3xl font-black text-white mb-2">Confirmar dados</h2>
-              <p className="text-zinc-500 text-sm mb-6">Verifique suas informações antes de finalizar.</p>
+              <h2 className="text-3xl font-black text-slate-800 mb-2">Confirmar dados</h2>
+              <p className="text-slate-500 text-sm mb-6">Verifique suas informações antes de finalizar.</p>
 
-              <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6 space-y-3">
+              <div className="bg-white border-2 border-slate-100 shadow-sm rounded-2xl p-6 mb-6 space-y-3">
                 <h3 className="text-[#f7931a] font-bold uppercase text-xs tracking-widest mb-4">Resumo do Cadastro</h3>
-                <div className="space-y-2.5 text-sm text-zinc-300">
+                <div className="space-y-2.5 text-sm text-slate-700">
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Nome</span>
+                    <span className="text-slate-400">Nome</span>
                     <span className="font-semibold text-right">{signupName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">CPF</span>
+                    <span className="text-slate-400">CPF</span>
                     <span className="font-semibold">{signupCpf}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">E-mail</span>
+                    <span className="text-slate-400">E-mail</span>
                     <span className="font-semibold text-right break-all">{signupEmail}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Nascimento</span>
+                    <span className="text-slate-400">Nascimento</span>
                     <span className="font-semibold">{signupDob}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Localização</span>
+                    <span className="text-slate-400">Localização</span>
                     <span className="font-semibold">{signupCity} - {states.find(s => s.nome === signupState)?.sigla}</span>
                   </div>
                 </div>
@@ -656,11 +661,11 @@ export default function AuthPage() {
                     type="checkbox"
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="peer appearance-none w-6 h-6 border-2 border-zinc-600 rounded-md bg-transparent checked:bg-[#f7931a] checked:border-[#f7931a] transition-all cursor-pointer"
+                    className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-md bg-white checked:bg-[#f7931a] checked:border-[#f7931a] transition-all cursor-pointer"
                   />
-                  <Check className="absolute text-black w-4 h-4 opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" strokeWidth={3} />
+                  <Check className="absolute text-white w-4 h-4 opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" strokeWidth={3} />
                 </div>
-                <p className="text-sm text-zinc-400 leading-relaxed group-hover:text-zinc-300 transition-colors">
+                <p className="text-sm text-slate-500 leading-relaxed group-hover:text-slate-700 transition-colors">
                   Eu confirmo que os dados estão corretos e concordo com os{" "}
                   <a
                     href="#"
@@ -688,6 +693,7 @@ export default function AuthPage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     );
   }
