@@ -8,19 +8,13 @@ import { formatarDataVigente, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ObjectiveModal } from "@/components/ObjectiveModal";
-import { TurmaChoiceStep } from "@/components/Onboarding/TurmaChoiceStep";
-import { OnboardingIntroStep } from "@/components/Onboarding/OnboardingIntroStep";
-import { ConversationalOnboarding } from "@/components/Onboarding/ConversationalOnboarding";
-import WelcomeModal from "@/components/WelcomeModal";
-import { ParoquiaStep } from "@/components/Onboarding/ParoquiaStep";
-import { CatequistaStep } from "@/components/Onboarding/CatequistaStep";
-import { TurmaStep } from "@/components/Onboarding/TurmaStep";
-import { WelcomeStep } from "@/components/Onboarding/WelcomeStep";
-import { ConsentModal } from "@/components/Onboarding/ConsentModal";
+
+
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
+import { TurmaStep } from "@/components/Onboarding/TurmaStep";
 import { MapaTimeline } from "@/components/MapaTimeline";
 
 import confetti from "canvas-confetti";
@@ -77,7 +71,6 @@ export default function Dashboard() {
   const { data: comunidades = [], isLoading: comLoading } = useComunidades();
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState<"none" | "terms" | "turma-choice" | "intro" | "paroquia" | "catequista" | "turma" | "welcome" | "join-code">("none");
   const { user, isReady, signOut } = useAuth();
   const [showCreateTurma, setShowCreateTurma] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
@@ -202,34 +195,11 @@ export default function Dashboard() {
       const termsAcceptedLocal = localStorage.getItem("ivc_terms_accepted");
       
       if (!termsAcceptedMeta && !termsAcceptedLocal) {
-        setOnboardingStep("terms");
-        return;
-      }
-
-      // Se tiver Paróquia, Catequista e Turma, encerra o onboarding
-      if (paroquias.length > 0 && catequistas.length > 0 && turmas.length > 0) {
-        if (onboardingStep !== "none" && onboardingStep !== "welcome") {
-           setOnboardingStep("none");
-        }
-        return;
-      }
-
-      const onboardingCompleted = localStorage.getItem("ivc_onboarding_completed") === "true";
-
-      if (onboardingStep === "none" && !onboardingCompleted) {
-        if (paroquias.length === 0 && comunidades.length === 0) {
-          setOnboardingStep("paroquia");
-        } else if (catequistas.length === 0) {
-          setOnboardingStep("catequista");
-        } else {
-          // Se chegou aqui, tem paróquia e catequista, então não deveria bloquear.
-          // Mas por segurança, se o fluxo explicitamente pedir "turma", deixamos.
-          // Porém a regra acima já deve ter capturado os casos de dashboard.
-          setOnboardingStep("none");
-        }
+        // Redireciona ou abre o modal caso falte o termo. O ideal seria forçar logout se não aceitou, mas
+        // como os termos estarão na tela de cadastro (AuthPage), isso será mais raro.
       }
     }
-  }, [loading, tError, turmas.length, paroquias.length, comunidades.length, catequistas.length, user, isReady, onboardingStep]);
+  }, [loading, tError, user, isReady]);
 
   // Realtime subscriptions for notifications
   useEffect(() => {
@@ -471,7 +441,7 @@ export default function Dashboard() {
 
 
 
-  if (loading && onboardingStep === "none") {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
         <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
@@ -512,71 +482,11 @@ export default function Dashboard() {
     <div className="space-y-2.5">
       <PWAInstallChip />
 
-      {/* ONBOARDING FLOW */}
-
-      {/* 0. Termos de Uso (Gate Inicial) */}
-      <ConsentModal
-        open={onboardingStep === "terms"}
-        onAccept={async () => {
-          try {
-            // Salva no Supabase para persistir entre dispositivos
-            await supabase.auth.updateUser({
-              data: { terms_accepted: true }
-            });
-            localStorage.setItem("ivc_terms_accepted", "true");
-            
-            // Verifica se deve ir para o onboarding ou direto pro dash
-            const hasData = turmas.length > 0 || paroquias.length > 0 || catequistas.length > 0;
-            if (hasData) {
-              setOnboardingStep("none");
-            } else {
-              // Direciona para o passo correto
-              setOnboardingStep("paroquia");
-            }
-          } catch (err) {
-            console.error("Erro ao aceitar termos:", err);
-            localStorage.setItem("ivc_terms_accepted", "true"); // Fallback
-            setOnboardingStep("none");
-          }
-        }}
-        onCancel={() => signOut()}
-      />
-
-      <TurmaChoiceStep
-        open={onboardingStep === "turma-choice"}
-        onSelectCreate={() => setOnboardingStep("paroquia")}
-        onSelectJoin={() => {
-          setOnboardingStep("join-code");
-        }}
-        onExit={() => signOut()}
-      />
-
-      <OnboardingIntroStep
-        open={onboardingStep === "intro"}
-        onStart={() => setOnboardingStep("paroquia")}
-      />
-
-      <ConversationalOnboarding 
-        open={["paroquia", "catequista", "turma"].includes(onboardingStep)}
-        onComplete={async () => {
-          localStorage.setItem("ivc_onboarding_completed", "true");
-          setOnboardingStep("none");
-          tRefetch();
-        }}
-      />
 
       <TurmaStep 
         open={showCreateTurma}
         onSuccess={() => setShowCreateTurma(false)}
         onClose={() => setShowCreateTurma(false)}
-      />
-
-      <WelcomeModal
-        open={onboardingStep === "welcome"}
-        onClose={() => setOnboardingStep("none")}
-        hasParoquia={paroquias.length > 0 || comunidades.length > 0}
-        hasCatequista={catequistas.length > 0}
-        hasTurma={turmas.length > 0}
       />
 
 
@@ -700,7 +610,7 @@ export default function Dashboard() {
       )}
 
       {/* CARD DE CRIAR TURMA (QUANDO NÃO HÁ TURMAS) */}
-      {turmas.length === 0 && onboardingStep === "none" && (
+      {turmas.length === 0 && (
         <div className="animate-card-activate mb-4">
           <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 p-[1px] shadow-xl shadow-emerald-500/20">
             <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-[31px] p-6 relative overflow-hidden">
@@ -1233,14 +1143,13 @@ export default function Dashboard() {
       </Dialog>
 
       <JoinTurmaModal 
-        open={joinModalOpen || onboardingStep === "join-code"} 
+        open={joinModalOpen} 
         onClose={() => {
           setJoinModalOpen(false);
-          if (onboardingStep === "join-code") setOnboardingStep("turma-choice");
         }}
         onSuccess={(result) => {
           setSelectedTurmaId(result.id);
-          if (onboardingStep === "join-code") setOnboardingStep("none");
+          setJoinModalOpen(false);
         }}
       />
       {/* ── MODAL DE ANIVERSÁRIO LITÚRGICO ── */}
