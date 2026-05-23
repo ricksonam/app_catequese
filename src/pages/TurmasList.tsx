@@ -220,8 +220,8 @@ export default function TurmasList() {
 
                   {/* Animated Icon */}
                   <div className={cn(
-                    `w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shrink-0 transition-all duration-500`,
-                    isPending ? "bg-gradient-to-br from-amber-400 to-orange-500" : palette.accent,
+                    `w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shrink-0 transition-all duration-500 bg-white border border-black/5`,
+                    isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
                     !isPending && "group-hover:scale-110 group-hover:-rotate-6",
                     isClicking && "scale-90 rotate-12"
                   )}>

@@ -28,6 +28,17 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     .order("criado_em", { ascending: false });
   if (ownedError) throw ownedError;
 
+  const ownedTurmas = (ownedData || []).map((t: any) => ({
+    id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
+    horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
+    criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
+    comunidadeId: t.comunidade_id,
+    catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
+    codigoAcesso: t.codigo_acesso,
+    isShared: false,
+  }));
+  const ownedIds = new Set(ownedTurmas.map(t => t.id));
+
   // Fetch all turmas where user is a member
   const { data: memberData, error: memberError } = await (supabase.from as any)("turma_membros")
     .select("turma_id, status")
@@ -86,21 +97,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     }
   }
 
-  const ownedTurmas = (ownedData || []).map((t: any) => ({
-    id: t.id, nome: t.nome, ano: t.ano, diaCatequese: t.dia_catequese,
-    horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
-    criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
-    comunidadeId: t.comunidade_id,
-    catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
-    codigoAcesso: t.codigo_acesso,
-    isShared: false,
-  }));
-
-  // Note: ownedIds is declared here so the shared turma block above can reference it.
-  // The variable is hoisted in the function scope.
-
   // Merge: owned turmas win over shared ones if ID is same
-  const ownedIds = new Set(ownedTurmas.map(t => t.id));
   const finalShared = sharedTurmas.filter(t => !ownedIds.has(t.id));
 
   return [...ownedTurmas, ...finalShared];
