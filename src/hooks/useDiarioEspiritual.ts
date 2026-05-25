@@ -43,16 +43,59 @@ export function useDiarioEspiritual(turmaId: string) {
         throw error;
       }
 
-      return data as (DiarioEspiritual & { encontros: { id: string; tema: string } | null })[];
+      const parsedData = data.map(item => {
+        let parsed = { ...item };
+        try {
+          if (parsed.observacoes_catequizandos && parsed.observacoes_catequizandos.startsWith('{')) {
+            const obs = JSON.parse(parsed.observacoes_catequizandos);
+            if (obs.avaliacoes) {
+              parsed.observacoes_catequizandos = obs.text || "";
+              parsed.avaliacoes_catequizandos = obs.avaliacoes;
+            }
+          }
+        } catch(e) {}
+        
+        try {
+          if (parsed.evolucao_espiritual && parsed.evolucao_espiritual.startsWith('{')) {
+            const ev = JSON.parse(parsed.evolucao_espiritual);
+            if (ev.evolucoes) {
+              parsed.evolucao_espiritual = ev.text || "";
+              parsed.evolucao_catequizandos = ev.evolucoes;
+            }
+          }
+        } catch(e) {}
+        
+        return parsed;
+      });
+
+      return parsedData as (DiarioEspiritual & { encontros: { id: string; tema: string } | null })[];
     },
     enabled: !!turmaId && !!session,
   });
 
   const criarDiario = useMutation({
     mutationFn: async (novoDiario: Omit<DiarioEspiritual, "id" | "user_id" | "criado_em">) => {
+      const payload = { ...novoDiario, user_id: session?.user.id } as any;
+      
+      if (payload.avaliacoes_catequizandos !== undefined) {
+        payload.observacoes_catequizandos = JSON.stringify({
+          text: payload.observacoes_catequizandos || "",
+          avaliacoes: payload.avaliacoes_catequizandos
+        });
+        delete payload.avaliacoes_catequizandos;
+      }
+      
+      if (payload.evolucao_catequizandos !== undefined) {
+        payload.evolucao_espiritual = JSON.stringify({
+          text: payload.evolucao_espiritual || "",
+          evolucoes: payload.evolucao_catequizandos
+        });
+        delete payload.evolucao_catequizandos;
+      }
+
       const { data, error } = await supabase
         .from("diario_espiritual")
-        .insert([{ ...novoDiario, user_id: session?.user.id }])
+        .insert([payload])
         .select()
         .single();
 
@@ -71,9 +114,27 @@ export function useDiarioEspiritual(turmaId: string) {
 
   const atualizarDiario = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Omit<DiarioEspiritual, "id" | "user_id" | "criado_em">> }) => {
+      const payload = { ...updates } as any;
+      
+      if (payload.avaliacoes_catequizandos !== undefined) {
+        payload.observacoes_catequizandos = JSON.stringify({
+          text: payload.observacoes_catequizandos || "",
+          avaliacoes: payload.avaliacoes_catequizandos
+        });
+        delete payload.avaliacoes_catequizandos;
+      }
+      
+      if (payload.evolucao_catequizandos !== undefined) {
+        payload.evolucao_espiritual = JSON.stringify({
+          text: payload.evolucao_espiritual || "",
+          evolucoes: payload.evolucao_catequizandos
+        });
+        delete payload.evolucao_catequizandos;
+      }
+
       const { data, error } = await supabase
         .from("diario_espiritual")
-        .update(updates)
+        .update(payload)
         .eq("id", id)
         .select()
         .single();
