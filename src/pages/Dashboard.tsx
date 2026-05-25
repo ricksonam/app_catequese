@@ -895,7 +895,8 @@ export default function Dashboard() {
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/icone-plano da turma.png" alt="Plano da Turma" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/icone-plano da turma.png" alt="Plano da Turma" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
               <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
                 Plano
@@ -917,7 +918,8 @@ export default function Dashboard() {
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/icone-eventos.png" alt="Eventos" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/icone-eventos.png" alt="Eventos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
               <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
                 Eventos
@@ -939,7 +941,8 @@ export default function Dashboard() {
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/icone-reunioes.png" alt="Reuniões" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/icone-reunioes.png" alt="Reuniões" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
               <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
                 Reuniões
@@ -970,7 +973,8 @@ export default function Dashboard() {
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/acesso_jogos.jpg" alt="Jogos" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/acesso_jogos.jpg" alt="Jogos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
               <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
                 Jogos
@@ -992,7 +996,8 @@ export default function Dashboard() {
                 }}
                 className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
               >
-                <img src="/acesso_conecta.jpg" alt="Catequese em Família" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src="/acesso_conecta.jpg" alt="Catequese em Família" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
               <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
                 Família

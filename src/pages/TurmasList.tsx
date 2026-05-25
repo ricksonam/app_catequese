@@ -227,7 +227,7 @@ export default function TurmasList() {
                   )}>
                     {isPending
                       ? <Lock className="h-6 w-6 text-white" />
-                      : <img src="/turma_sem_fundo.png" alt="Turma" className="w-10 h-10 object-contain drop-shadow-sm" />
+                      : <img src="/turma_sem_fundo.png" alt="Turma" fetchPriority="high" loading="eager" className="w-10 h-10 object-contain drop-shadow-sm" />
                     }
                   </div>
 

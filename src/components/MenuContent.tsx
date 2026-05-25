@@ -363,6 +363,33 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               )}
             </AccordionContent>
           </AccordionItem>
+          {/* SEÇÃO: MÓDULOS GLOBAIS */}
+          <AccordionItem value="modulos-globais" className="border-none shadow-none">
+            <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
+               <div className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/25 dark:border-white/20 shadow-md hover:shadow-lg group-data-[state=open]:border-primary/60 group-data-[state=open]:shadow-lg group-hover:border-primary/50">
+                 <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
+                   <Library className="h-5 w-5" />
+                 </div>
+                 <span className="flex-1 text-[11px] font-black text-foreground text-left uppercase tracking-[0.2em]">Módulos Gerais</span>
+                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180 opacity-50" />
+               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-1 px-1 space-y-1">
+              {modulosGlobais.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => go(item.path)}
+                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
+                    <item.icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
+                </button>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
+
           {/* SEÇÃO: MINHA CONTA */}
           <AccordionItem value="minha-conta" className="border-none shadow-none">
             <AccordionTrigger className="hover:no-underline py-0 group [&>svg]:hidden rounded-2xl mb-1">
@@ -435,6 +462,20 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+
+        {/* Dar Sugestão */}
+        <div className="pt-3">
+          <button 
+             onClick={() => setShowSuggestionDialog(true)}
+             className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-emerald-500/20 hover:border-emerald-500/40 shadow-sm hover:shadow-md active:scale-[0.98] group"
+           >
+             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+               <MessageSquare className="w-5 h-5" />
+             </div>
+             <span className="flex-1 text-sm font-black text-left text-emerald-700 dark:text-emerald-400 tracking-wider">Dar Sugestão</span>
+             <ChevronRight className="h-4 w-4 text-emerald-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+           </button>
+        </div>
 
         {/* Sobre o Aplicativo */}
         <div className="pt-3">
