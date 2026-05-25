@@ -181,27 +181,31 @@ export default function DiarioEspiritualForm() {
             <label className="text-sm font-black text-foreground uppercase tracking-wider">Avaliação de Participação</label>
             <p className="text-xs text-muted-foreground">Avalie a participação individual de cada catequizando (opcional).</p>
             
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[600px] border-collapse">
-                <thead>
-                  <tr className="bg-muted/30">
-                    <th className="p-3 text-left text-xs font-bold text-muted-foreground uppercase rounded-tl-xl rounded-bl-xl">Catequizando</th>
-                    <th className="p-3 text-center text-xs font-bold text-muted-foreground uppercase">Pontualidade</th>
-                    <th className="p-3 text-center text-xs font-bold text-muted-foreground uppercase">Partic. Grupo</th>
-                    <th className="p-3 text-center text-xs font-bold text-muted-foreground uppercase rounded-tr-xl rounded-br-xl">Engajamento</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {avaliacoes.map((av) => (
-                    <tr key={av.catequizando_id} className="border-b border-border/50 last:border-0 hover:bg-muted/10 transition-colors">
-                      <td className="p-3 font-semibold text-sm">{av.nome}</td>
-                      <td className="p-3"><div className="flex justify-center"><StarRating size="sm" value={av.pontualidade} onChange={(v) => updateAvaliacao(av.catequizando_id, "pontualidade", v)} /></div></td>
-                      <td className="p-3"><div className="flex justify-center"><StarRating size="sm" value={av.participacao_grupo} onChange={(v) => updateAvaliacao(av.catequizando_id, "participacao_grupo", v)} /></div></td>
-                      <td className="p-3"><div className="flex justify-center"><StarRating size="sm" value={av.engajamento} onChange={(v) => updateAvaliacao(av.catequizando_id, "engajamento", v)} /></div></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              {avaliacoes.map((av) => (
+                <div key={av.catequizando_id} className="bg-white dark:bg-zinc-950 p-5 rounded-2xl border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md hover:border-indigo-500/30 transition-all flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-black text-base shrink-0 shadow-inner">
+                      {av.nome.charAt(0)}
+                    </div>
+                    <span className="font-bold text-sm text-foreground truncate">{av.nome}</span>
+                  </div>
+                  <div className="space-y-4 bg-muted/30 p-4 rounded-xl border border-black/5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Pontualidade</span>
+                      <StarRating size="sm" value={av.pontualidade} onChange={(v) => updateAvaliacao(av.catequizando_id, "pontualidade", v)} />
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Partic. Grupo</span>
+                      <StarRating size="sm" value={av.participacao_grupo} onChange={(v) => updateAvaliacao(av.catequizando_id, "participacao_grupo", v)} />
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Engajamento</span>
+                      <StarRating size="sm" value={av.engajamento} onChange={(v) => updateAvaliacao(av.catequizando_id, "engajamento", v)} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <textarea
@@ -219,25 +223,27 @@ export default function DiarioEspiritualForm() {
             <label className="text-sm font-black text-primary uppercase tracking-wider">Evolução Espiritual e Comportamental</label>
             <p className="text-xs text-muted-foreground">Avalie o crescimento espiritual e comportamental.</p>
             
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[500px] border-collapse">
-                <thead>
-                  <tr className="bg-primary/5">
-                    <th className="p-3 text-left text-xs font-bold text-primary uppercase rounded-tl-xl rounded-bl-xl">Catequizando</th>
-                    <th className="p-3 text-center text-xs font-bold text-primary uppercase">Espiritual</th>
-                    <th className="p-3 text-center text-xs font-bold text-primary uppercase rounded-tr-xl rounded-br-xl">Comportamental</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {evolucoes.map((ev) => (
-                    <tr key={ev.catequizando_id} className="border-b border-border/50 last:border-0 hover:bg-muted/10 transition-colors">
-                      <td className="p-3 font-semibold text-sm">{ev.nome}</td>
-                      <td className="p-3"><div className="flex justify-center"><StarRating color="text-indigo-500" size="sm" value={ev.evolucao_espiritual} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_espiritual", v)} /></div></td>
-                      <td className="p-3"><div className="flex justify-center"><StarRating color="text-indigo-500" size="sm" value={ev.evolucao_comportamental} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_comportamental", v)} /></div></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              {evolucoes.map((ev) => (
+                <div key={ev.catequizando_id} className="bg-primary/5 p-5 rounded-2xl border border-primary/10 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-black text-base shrink-0 shadow-inner">
+                      {ev.nome.charAt(0)}
+                    </div>
+                    <span className="font-bold text-sm text-primary truncate">{ev.nome}</span>
+                  </div>
+                  <div className="space-y-4 bg-white/60 dark:bg-black/20 p-4 rounded-xl border border-primary/10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Espiritual</span>
+                      <StarRating color="text-indigo-500" size="sm" value={ev.evolucao_espiritual} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_espiritual", v)} />
+                    </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Comportamental</span>
+                      <StarRating color="text-indigo-500" size="sm" value={ev.evolucao_comportamental} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_comportamental", v)} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <textarea
