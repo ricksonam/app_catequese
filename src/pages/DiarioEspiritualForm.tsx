@@ -247,6 +247,7 @@ export default function DiarioEspiritualForm() {
                   </div>
                 );
               })}
+            </div>
 
             <textarea
               placeholder="Observações gerais adicionais sobre a turma..."
