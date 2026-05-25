@@ -24,16 +24,6 @@ export default function DiarioEspiritualList() {
     setItemToDeleteId(null);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-lg animate-bounce-subtle">
-           <div className="w-6 h-6 border-[3px] border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-        </div>
-        <p className="text-xs font-black text-indigo-500/60 uppercase tracking-widest animate-pulse">Carregando...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-5 pb-10">
@@ -59,9 +49,22 @@ export default function DiarioEspiritualList() {
         </div>
       </div>
 
-      {diarios.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex items-stretch bg-card/50 rounded-2xl border border-black/5 p-4 gap-4 animate-pulse">
+               <div className="w-12 h-12 rounded-xl bg-muted shrink-0" />
+               <div className="flex-1 space-y-2 py-1 flex flex-col justify-center">
+                 <div className="h-2 w-20 bg-muted rounded" />
+                 <div className="h-4 w-40 bg-muted rounded" />
+                 <div className="h-3 w-32 bg-muted rounded" />
+               </div>
+            </div>
+          ))}
+        </div>
+      ) : diarios.length === 0 ? (
         <div className="empty-state animate-float-up">
-          <div className="icon-box bg-indigo-500/10 text-indigo-500 mx-auto mb-3"><BookHeart className="h-6 w-6" /></div>
+          <div className="mx-auto mb-3 w-16 h-16 rounded-2xl overflow-hidden shadow-sm border border-black/5"><img src="/icone_diario.png" alt="Diário" className="w-full h-full object-cover" /></div>
           <p className="text-sm font-medium text-muted-foreground">Nenhum registro no diário</p>
         </div>
       ) : (
@@ -74,8 +77,8 @@ export default function DiarioEspiritualList() {
               style={{ animationDelay: `${i * 55}ms` }}
             >
               <div className="flex items-stretch bg-card rounded-2xl border border-black shadow-sm group-hover:shadow-md group-hover:border-indigo-500/30 transition-all active:scale-[0.98] overflow-hidden relative p-4 gap-4">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-500 flex flex-col items-center justify-center shrink-0">
-                  <BookHeart className="w-5 h-5 mb-0.5" />
+                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 overflow-hidden shrink-0">
+                  <img src="/icone_diario.png" alt="Diário" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <div className="flex items-center gap-2 mb-1">
