@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
+import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -22,6 +23,7 @@ export default function RelatoriosTurma() {
   const { data: atividades = [], isLoading: loadingA } = useAtividades(id);
   const { data: paroquias = [], isLoading: loadingP } = useParoquias();
   const { data: comunidades = [], isLoading: loadingCom } = useComunidades();
+  const { diarios = [], isLoading: loadingD } = useDiarioEspiritual(id!);
 
   const turma = turmas.find(t => t.id === id);
 
@@ -31,7 +33,7 @@ export default function RelatoriosTurma() {
     return null;
   }
 
-  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom) {
+  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom || loadingD) {
     return <div className="flex justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
@@ -99,7 +101,7 @@ export default function RelatoriosTurma() {
       </div>
 
       {tab === "inteligente" ? (
-        <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} />
+        <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} diarios={diarios} />
       ) : (
         <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} />
       )}
@@ -111,7 +113,7 @@ export default function RelatoriosTurma() {
 // ==========================================
 // TAB 1: VISÃO INTELIGENTE (RECHARTS)
 // ==========================================
-function DashboardInteligente({ encontros, catequizandos, atividades, turma }: any) {
+function DashboardInteligente({ encontros, catequizandos, atividades, turma, diarios }: any) {
   // --- Cálculos ---
   const statusData = useMemo(() => {
     let ativos = 0, desistentes = 0, afastados = 0;
@@ -169,6 +171,65 @@ function DashboardInteligente({ encontros, catequizandos, atividades, turma }: a
 
   const encontrosRealizados = encontros.filter((e:any) => e.status === 'realizado').length;
   const planoCompleto = encontros.length > 0 ? Math.round((encontrosRealizados / encontros.length) * 100) : 0;
+
+  // --- Cálculos Caminhada Pastoral (Estrelas) ---
+  const pastoralStats = useMemo(() => {
+    if (!diarios || diarios.length === 0) return null;
+    
+    let totais = {
+      pontualidade: 0, part_grupo: 0, engajamento: 0,
+      ev_espiritual: 0, ev_comportamental: 0,
+      count_av: 0, count_ev: 0
+    };
+
+    let alunosMap: Record<string, { soma: number; count: number; nome: string }> = {};
+
+    diarios.forEach((d: any) => {
+      if (d.avaliacoes_catequizandos && Array.isArray(d.avaliacoes_catequizandos)) {
+        d.avaliacoes_catequizandos.forEach((av: any) => {
+          if (av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0) {
+            totais.pontualidade += av.pontualidade || 0;
+            totais.part_grupo += av.participacao_grupo || 0;
+            totais.engajamento += av.engajamento || 0;
+            totais.count_av++;
+
+            if (!alunosMap[av.catequizando_id]) alunosMap[av.catequizando_id] = { soma: 0, count: 0, nome: av.nome };
+            const m = ((av.pontualidade||0) + (av.participacao_grupo||0) + (av.engajamento||0)) / 3;
+            if (m > 0) {
+              alunosMap[av.catequizando_id].soma += m;
+              alunosMap[av.catequizando_id].count++;
+            }
+          }
+        });
+      }
+      if (d.evolucao_catequizandos && Array.isArray(d.evolucao_catequizandos)) {
+        d.evolucao_catequizandos.forEach((ev: any) => {
+          if (ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0) {
+            totais.ev_espiritual += ev.evolucao_espiritual || 0;
+            totais.ev_comportamental += ev.evolucao_comportamental || 0;
+            totais.count_ev++;
+          }
+        });
+      }
+    });
+
+    const ranking = Object.values(alunosMap)
+      .filter(a => a.count > 0)
+      .map(a => ({ nome: a.nome, media: a.soma / a.count }))
+      .sort((a, b) => b.media - a.media)
+      .slice(0, 5); // Top 5
+
+    return {
+      medias: [
+        { name: 'Pontualidade', value: totais.count_av > 0 ? (totais.pontualidade / totais.count_av).toFixed(1) : 0 },
+        { name: 'Participação', value: totais.count_av > 0 ? (totais.part_grupo / totais.count_av).toFixed(1) : 0 },
+        { name: 'Engajamento', value: totais.count_av > 0 ? (totais.engajamento / totais.count_av).toFixed(1) : 0 },
+        { name: 'Espiritual', value: totais.count_ev > 0 ? (totais.ev_espiritual / totais.count_ev).toFixed(1) : 0 },
+        { name: 'Comportamental', value: totais.count_ev > 0 ? (totais.ev_comportamental / totais.count_ev).toFixed(1) : 0 }
+      ],
+      ranking
+    };
+  }, [diarios]);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -291,6 +352,56 @@ function DashboardInteligente({ encontros, catequizandos, atividades, turma }: a
           </div>
         </div>
       </div>
+
+      {/* Seção: Caminhada Pastoral */}
+      {pastoralStats && pastoralStats.medias.some(m => Number(m.value) > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+          <div className="float-card p-5 flex flex-col h-[350px]">
+            <div className="mb-4">
+              <h3 className="font-bold text-sm text-indigo-600">Caminhada Pastoral — Médias da Turma</h3>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Desempenho com base no Diário (0 a 5)</p>
+            </div>
+            <div className="flex-1 min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={pastoralStats.medias} layout="vertical" margin={{ top: 10, right: 20, left: 20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
+                  <XAxis type="number" domain={[0, 5]} hide />
+                  <YAxis dataKey="name" type="category" width={90} tick={{fontSize: 10, fill: 'hsl(var(--foreground))'}} tickLine={false} axisLine={false} />
+                  <RechartsTooltip cursor={{fill: 'rgba(0,0,0,0.02)'}} formatter={(val) => [`${val} ⭐`, 'Média']} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={20}>
+                    {pastoralStats.medias.map((_, index) => <Cell key={`bar-${index}`} fill={S_COLORS[index % S_COLORS.length]} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          
+          <div className="float-card p-5 h-[350px] flex flex-col bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border-indigo-500/10">
+            <div className="mb-4">
+              <h3 className="font-bold text-sm text-indigo-700">Destaques da Turma</h3>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Top 5 Maior Engajamento Médio</p>
+            </div>
+            <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+              {pastoralStats.ranking.map((aluno, i) => (
+                <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-indigo-500/10 shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-xs shrink-0">
+                    {i+1}º
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-foreground truncate">{aluno.nome}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500" style={{width: `${(aluno.media/5)*100}%`}} />
+                      </div>
+                      <span className="text-[10px] font-black text-indigo-600 w-6 text-right">{aluno.media.toFixed(1)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

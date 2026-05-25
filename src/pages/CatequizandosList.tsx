@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
+import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2 } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ImagePicker } from "@/components/ImagePicker";
+import { StarRating } from "@/components/StarRating";
 import { mascaraTelefone, cn } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -238,6 +240,48 @@ export default function CatequizandosList() {
   });
 
   const { data: encontros = [] } = useEncontros(id);
+  const { diarios = [] } = useDiarioEspiritual(id!);
+
+  const catequizandoStats = useMemo(() => {
+    if (!viewItem || !diarios || diarios.length === 0) return null;
+    let soma = {
+      pontualidade: 0, part_grupo: 0, engajamento: 0,
+      ev_espiritual: 0, ev_comportamental: 0,
+      count_av: 0, count_ev: 0
+    };
+
+    diarios.forEach((d: any) => {
+      if (d.avaliacoes_catequizandos && Array.isArray(d.avaliacoes_catequizandos)) {
+        const av = d.avaliacoes_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
+        if (av && (av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0)) {
+          soma.pontualidade += av.pontualidade || 0;
+          soma.part_grupo += av.participacao_grupo || 0;
+          soma.engajamento += av.engajamento || 0;
+          soma.count_av++;
+        }
+      }
+      if (d.evolucao_catequizandos && Array.isArray(d.evolucao_catequizandos)) {
+        const ev = d.evolucao_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
+        if (ev && (ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0)) {
+          soma.ev_espiritual += ev.evolucao_espiritual || 0;
+          soma.ev_comportamental += ev.evolucao_comportamental || 0;
+          soma.count_ev++;
+        }
+      }
+    });
+
+    if (soma.count_av === 0 && soma.count_ev === 0) return null;
+
+    return {
+      pontualidade: soma.count_av > 0 ? soma.pontualidade / soma.count_av : 0,
+      part_grupo: soma.count_av > 0 ? soma.part_grupo / soma.count_av : 0,
+      engajamento: soma.count_av > 0 ? soma.engajamento / soma.count_av : 0,
+      ev_espiritual: soma.count_ev > 0 ? soma.ev_espiritual / soma.count_ev : 0,
+      ev_comportamental: soma.count_ev > 0 ? soma.ev_comportamental / soma.count_ev : 0,
+      count_av: soma.count_av,
+      count_ev: soma.count_ev,
+    };
+  }, [viewItem, diarios]);
 
   const pastEncontros = useMemo(() => {
     const limit = alertConfig.moduloCatequizandos?.faltas ?? 3;
@@ -1425,6 +1469,54 @@ export default function CatequizandosList() {
                            <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest block mb-1">Engajamento Comunitário</span>
                            <p className="text-sm font-bold text-zinc-800">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
                         </div>
+                      )}
+                      {/* Caminhada Pastoral (Estrelas) */}
+                      {catequizandoStats && (
+                        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-6 border-2 border-indigo-100 shadow-xl shadow-indigo-200/40 mt-6">
+                          <div className="flex items-center justify-center gap-2 mb-6">
+                             <h3 className="text-sm font-black text-indigo-900 uppercase tracking-widest text-center">Caminhada Pastoral (Diário)</h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {catequizandoStats.count_av > 0 && (
+                              <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm space-y-4">
+                                <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2 text-center">Avaliações ({catequizandoStats.count_av})</h4>
+                                
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-zinc-600">Pontualidade</span>
+                                    <StarRating size="sm" readOnly value={catequizandoStats.pontualidade} />
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-zinc-600">Participação no Grupo</span>
+                                    <StarRating size="sm" readOnly value={catequizandoStats.part_grupo} />
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-zinc-600">Engajamento</span>
+                                    <StarRating size="sm" readOnly value={catequizandoStats.engajamento} />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {catequizandoStats.count_ev > 0 && (
+                              <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm space-y-4">
+                                <h4 className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-2 text-center">Evolução ({catequizandoStats.count_ev})</h4>
+                                
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-zinc-600">Espiritual</span>
+                                    <StarRating color="text-indigo-500" size="sm" readOnly value={catequizandoStats.ev_espiritual} />
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold text-zinc-600">Comportamental</span>
+                                    <StarRating color="text-indigo-500" size="sm" readOnly value={catequizandoStats.ev_comportamental} />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </section>
                       )}
                    </section>
 

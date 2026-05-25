@@ -14,6 +14,8 @@ export type DiarioEspiritual = {
   pontos_negativos: string;
   observacoes_catequizandos: string;
   evolucao_espiritual: string;
+  avaliacoes_catequizandos?: any;
+  evolucao_catequizandos?: any;
   criado_em: string;
 };
 

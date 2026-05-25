@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { ArrowLeft, Plus, BookHeart, Calendar, Pencil, Trash2, X } from "lucide-react";
+import { ArrowLeft, Plus, BookHeart, Calendar, Pencil, Trash2, X, Star } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+import { StarRating } from "@/components/StarRating";
 
 export default function DiarioEspiritualList() {
   const { id } = useParams();
@@ -96,7 +97,7 @@ export default function DiarioEspiritualList() {
       )}
 
       <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent hideClose className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto max-w-lg">
+        <DialogContent hideClose className="rounded-2xl border-border/30 p-0 overflow-hidden max-h-[90vh] overflow-y-auto max-w-2xl w-[95vw]">
           {viewItem && (
             <div className="flex flex-col h-full bg-background rounded-2xl overflow-hidden relative">
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
@@ -144,6 +145,34 @@ export default function DiarioEspiritualList() {
                     )}
                   </div>
 
+                  {viewItem.avaliacoes_catequizandos && Array.isArray(viewItem.avaliacoes_catequizandos) && viewItem.avaliacoes_catequizandos.length > 0 && (
+                    <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm overflow-hidden">
+                      <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Avaliação de Participação (Estrelas)</h4>
+                      <div className="overflow-x-auto -mx-5 px-5">
+                        <table className="w-full min-w-[500px] border-collapse text-sm">
+                          <thead>
+                            <tr className="bg-muted/30">
+                              <th className="p-2 text-left text-[10px] font-bold text-muted-foreground uppercase rounded-tl-lg rounded-bl-lg">Catequizando</th>
+                              <th className="p-2 text-center text-[10px] font-bold text-muted-foreground uppercase">Pontualidade</th>
+                              <th className="p-2 text-center text-[10px] font-bold text-muted-foreground uppercase">Partic. Grupo</th>
+                              <th className="p-2 text-center text-[10px] font-bold text-muted-foreground uppercase rounded-tr-lg rounded-br-lg">Engajamento</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {viewItem.avaliacoes_catequizandos.map((av: any) => (
+                              <tr key={av.catequizando_id} className="border-b border-border/50 last:border-0 hover:bg-muted/10 transition-colors">
+                                <td className="p-2 font-semibold">{av.nome}</td>
+                                <td className="p-2"><div className="flex justify-center"><StarRating size="sm" readOnly value={av.pontualidade} /></div></td>
+                                <td className="p-2"><div className="flex justify-center"><StarRating size="sm" readOnly value={av.participacao_grupo} /></div></td>
+                                <td className="p-2"><div className="flex justify-center"><StarRating size="sm" readOnly value={av.engajamento} /></div></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
                   {viewItem.observacoes_catequizandos && (
                     <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm">
                       <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2">Observações dos Catequizandos</h4>
@@ -151,9 +180,35 @@ export default function DiarioEspiritualList() {
                     </div>
                   )}
 
+                  {viewItem.evolucao_catequizandos && Array.isArray(viewItem.evolucao_catequizandos) && viewItem.evolucao_catequizandos.length > 0 && (
+                    <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 overflow-hidden">
+                      <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-4">Evolução (Estrelas)</h4>
+                      <div className="overflow-x-auto -mx-5 px-5">
+                        <table className="w-full min-w-[400px] border-collapse text-sm">
+                          <thead>
+                            <tr className="bg-primary/10">
+                              <th className="p-2 text-left text-[10px] font-bold text-primary uppercase rounded-tl-lg rounded-bl-lg">Catequizando</th>
+                              <th className="p-2 text-center text-[10px] font-bold text-primary uppercase">Espiritual</th>
+                              <th className="p-2 text-center text-[10px] font-bold text-primary uppercase rounded-tr-lg rounded-br-lg">Comportamental</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {viewItem.evolucao_catequizandos.map((ev: any) => (
+                              <tr key={ev.catequizando_id} className="border-b border-primary/10 last:border-0 hover:bg-primary/5 transition-colors">
+                                <td className="p-2 font-semibold text-primary">{ev.nome}</td>
+                                <td className="p-2"><div className="flex justify-center"><StarRating color="text-indigo-500" size="sm" readOnly value={ev.evolucao_espiritual} /></div></td>
+                                <td className="p-2"><div className="flex justify-center"><StarRating color="text-indigo-500" size="sm" readOnly value={ev.evolucao_comportamental} /></div></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
                   {viewItem.evolucao_espiritual && (
                     <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10">
-                      <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-2">Evolução Espiritual / Comportamental</h4>
+                      <h4 className="text-[10px] font-black text-primary uppercase tracking-widest mb-2">Notas sobre Evolução</h4>
                       <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.evolucao_espiritual}</p>
                     </div>
                   )}
