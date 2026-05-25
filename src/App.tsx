@@ -25,6 +25,8 @@ import PlanoTurma from "@/pages/PlanoTurma";
 import RelatoriosTurma from "@/pages/RelatoriosTurma";
 import MissoesFamilia from "@/pages/MissoesFamilia";
 import PublicMissao from "@/pages/PublicMissao";
+import DiarioEspiritualList from "@/pages/DiarioEspiritualList";
+import DiarioEspiritualForm from "@/pages/DiarioEspiritualForm";
 import BibliotecaModelos from "@/pages/BibliotecaModelos";
 import ModulosGlobais from "@/pages/ModulosGlobais";
 import MuralFotos from "@/pages/MuralFotos";
@@ -152,6 +154,9 @@ const AppRoutes = () => (
       <Route path="/turmas/:id/reunioes/:reuniaoId/apresentacao" element={<ReuniaoPresentation />} />
       <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
       <Route path="/turmas/:id/familia" element={<MissoesFamilia />} />
+      <Route path="/turmas/:id/diario" element={<DiarioEspiritualList />} />
+      <Route path="/turmas/:id/diario/novo" element={<DiarioEspiritualForm />} />
+      <Route path="/turmas/:id/diario/:diarioId/editar" element={<DiarioEspiritualForm />} />
       <Route path="/turmas/:id/relatorios" element={<RelatoriosTurma />} />
       <Route path="/turmas/:id/biblioteca" element={<BibliotecaModelos />} />
       <Route path="/modulos" element={<ModulosGlobais />} />

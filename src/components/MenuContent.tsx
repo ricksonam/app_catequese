@@ -3,7 +3,7 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, Heart, BarChart2, X, Map
+  GraduationCap, ChevronLeft, Heart, BarChart2, X, Map, BookHeart
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
@@ -50,6 +50,7 @@ const classModules = [
   { label: "Reuniões", icon: Users, getPath: (id: string) => `/turmas/${id}/reunioes`, color: "bg-blue-500/10 text-blue-500" },
   { label: "Catequese em Família", icon: Heart, getPath: (id: string) => `/turmas/${id}/familia`, color: "bg-rose-500/10 text-rose-500" },
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
+  { label: "Diário Espiritual", icon: BookHeart, getPath: (id: string) => `/turmas/${id}/diario`, color: "bg-indigo-500/10 text-indigo-500" },
 ];
 
 const comunicacao = [

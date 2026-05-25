@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      diario_espiritual: {
+        Row: {
+          id: string
+          user_id: string
+          turma_id: string
+          encontro_id: string | null
+          data_registro: string
+          como_foi: string
+          pontos_positivos: string
+          pontos_negativos: string
+          observacoes_catequizandos: string
+          evolucao_espiritual: string
+          criado_em: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string
+          turma_id: string
+          encontro_id?: string | null
+          data_registro?: string
+          como_foi?: string
+          pontos_positivos?: string
+          pontos_negativos?: string
+          observacoes_catequizandos?: string
+          evolucao_espiritual?: string
+          criado_em?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          turma_id?: string
+          encontro_id?: string | null
+          data_registro?: string
+          como_foi?: string
+          pontos_positivos?: string
+          pontos_negativos?: string
+          observacoes_catequizandos?: string
+          evolucao_espiritual?: string
+          criado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diario_espiritual_encontro_id_fkey"
+            columns: ["encontro_id"]
+            isOneToOne: false
+            referencedRelation: "encontros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diario_espiritual_turma_id_fkey"
+            columns: ["turma_id"]
+            isOneToOne: false
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       atividades: {
         Row: {
           conducao: string | null
@@ -576,3 +633,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

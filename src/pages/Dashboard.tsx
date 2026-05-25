@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2 } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { upsertCatequista } from "@/lib/supabaseStore";
@@ -1001,6 +1001,28 @@ export default function Dashboard() {
               </button>
               <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
                 Família
+              </span>
+            </div>
+
+            {/* Card Diário Espiritual */}
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+              <button
+                onClick={() => {
+                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                    navigate(`/turmas/${selectedTurmaId}/diario`);
+                  } else if (selectedTurmaId === "all") {
+                    toast.info("Selecione uma turma para acessar este módulo.");
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Aguarde a aprovação do acesso.");
+                  }
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-indigo-500/20 bg-indigo-500/5 group-hover:border-indigo-500 flex items-center justify-center"
+              >
+                <BookHeart className="w-12 h-12 text-indigo-500" strokeWidth={1.5} />
+              </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-indigo-600 transition-colors truncate w-full">
+                Diário
               </span>
             </div>
           </div>
