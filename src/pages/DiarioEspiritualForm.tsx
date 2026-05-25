@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
-import { ArrowLeft, BookHeart, Save, Star } from "lucide-react";
+import { ArrowLeft, BookHeart, Save, Star, ChevronDown, ChevronUp } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
+import { cn } from "@/lib/utils";
 
 export default function DiarioEspiritualForm() {
   const { id, diarioId } = useParams();
@@ -23,6 +24,13 @@ export default function DiarioEspiritualForm() {
   // State for stars
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [evolucoes, setEvolucoes] = useState<any[]>([]);
+
+  // Accordion state
+  const [expandedAv, setExpandedAv] = useState<Record<string, boolean>>({});
+  const [expandedEv, setExpandedEv] = useState<Record<string, boolean>>({});
+
+  const toggleAv = (id: string) => setExpandedAv(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleEv = (id: string) => setExpandedEv(prev => ({ ...prev, [id]: !prev[id] }));
 
   const isEditing = !!diarioId;
 
@@ -182,31 +190,63 @@ export default function DiarioEspiritualForm() {
             <p className="text-xs text-muted-foreground">Avalie a participação individual de cada catequizando (opcional).</p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              {avaliacoes.map((av) => (
-                <div key={av.catequizando_id} className="bg-white dark:bg-zinc-950 p-5 rounded-2xl border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md hover:border-indigo-500/30 transition-all flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-black text-base shrink-0 shadow-inner">
-                      {av.nome.charAt(0)}
+              {avaliacoes.map((av) => {
+                const isExpanded = expandedAv[av.catequizando_id];
+                const hasRated = av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0;
+                
+                return (
+                  <div key={av.catequizando_id} className={cn("bg-white dark:bg-zinc-950 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-indigo-500/30 shadow-md ring-2 ring-indigo-500/10" : "border-black/5 dark:border-white/5 hover:border-black/15")}>
+                    
+                    {/* Header Clickable */}
+                    <button type="button" onClick={() => toggleAv(av.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-indigo-600 text-white" : "bg-indigo-500/10 text-indigo-600")}>
+                          {av.nome.charAt(0)}
+                        </div>
+                        <div className="flex flex-col items-start">
+                          <span className="font-bold text-base text-foreground truncate max-w-[180px]">{av.nome}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            {hasRated ? "Avaliado" : "Pendente"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-indigo-50 text-indigo-600" : "bg-muted text-muted-foreground")}>
+                        <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
+                      </div>
+                    </button>
+
+                    {/* Expandable Content */}
+                    <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                      <div className="overflow-hidden">
+                        <div className="p-4 pt-0 border-t border-black/5 mt-2 space-y-5 bg-gradient-to-b from-transparent to-muted/20">
+                          
+                          <div className="flex flex-col gap-2 pt-3">
+                            <span className="text-xs font-black uppercase text-foreground tracking-widest">Pontualidade</span>
+                            <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
+                               <StarRating size="lg" value={av.pontualidade} onChange={(v) => updateAvaliacao(av.catequizando_id, "pontualidade", v)} />
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col gap-2">
+                            <span className="text-xs font-black uppercase text-foreground tracking-widest">Participação no Grupo</span>
+                            <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
+                               <StarRating size="lg" value={av.participacao_grupo} onChange={(v) => updateAvaliacao(av.catequizando_id, "participacao_grupo", v)} />
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col gap-2 pb-2">
+                            <span className="text-xs font-black uppercase text-foreground tracking-widest">Engajamento</span>
+                            <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
+                               <StarRating size="lg" value={av.engajamento} onChange={(v) => updateAvaliacao(av.catequizando_id, "engajamento", v)} />
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
                     </div>
-                    <span className="font-bold text-sm text-foreground truncate">{av.nome}</span>
                   </div>
-                  <div className="space-y-4 bg-muted/30 p-4 rounded-xl border border-black/5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Pontualidade</span>
-                      <StarRating size="sm" value={av.pontualidade} onChange={(v) => updateAvaliacao(av.catequizando_id, "pontualidade", v)} />
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Partic. Grupo</span>
-                      <StarRating size="sm" value={av.participacao_grupo} onChange={(v) => updateAvaliacao(av.catequizando_id, "participacao_grupo", v)} />
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Engajamento</span>
-                      <StarRating size="sm" value={av.engajamento} onChange={(v) => updateAvaliacao(av.catequizando_id, "engajamento", v)} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                );
+              })}
 
             <textarea
               placeholder="Observações gerais adicionais sobre a turma..."
@@ -224,26 +264,56 @@ export default function DiarioEspiritualForm() {
             <p className="text-xs text-muted-foreground">Avalie o crescimento espiritual e comportamental.</p>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              {evolucoes.map((ev) => (
-                <div key={ev.catequizando_id} className="bg-primary/5 p-5 rounded-2xl border border-primary/10 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-black text-base shrink-0 shadow-inner">
-                      {ev.nome.charAt(0)}
+              {evolucoes.map((ev) => {
+                const isExpanded = expandedEv[ev.catequizando_id];
+                const hasRated = ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0;
+                
+                return (
+                  <div key={ev.catequizando_id} className={cn("bg-primary/5 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-primary/40 shadow-md ring-2 ring-primary/10 bg-primary/10" : "border-primary/10 hover:border-primary/20")}>
+                    
+                    {/* Header Clickable */}
+                    <button type="button" onClick={() => toggleEv(ev.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-primary/10 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-primary text-white" : "bg-primary/20 text-primary")}>
+                          {ev.nome.charAt(0)}
+                        </div>
+                        <div className="flex flex-col items-start">
+                          <span className="font-bold text-base text-primary truncate max-w-[180px]">{ev.nome}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70">
+                            {hasRated ? "Avaliado" : "Pendente"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-white text-primary shadow-sm" : "bg-primary/10 text-primary/70")}>
+                        <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
+                      </div>
+                    </button>
+
+                    {/* Expandable Content */}
+                    <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                      <div className="overflow-hidden">
+                        <div className="p-4 pt-0 border-t border-primary/10 mt-2 space-y-5">
+                          
+                          <div className="flex flex-col gap-2 pt-3">
+                            <span className="text-xs font-black uppercase text-primary tracking-widest">Evolução Espiritual</span>
+                            <div className="bg-white dark:bg-black/20 p-3 rounded-xl border border-primary/10 shadow-sm inline-block">
+                               <StarRating color="text-indigo-500" size="lg" value={ev.evolucao_espiritual} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_espiritual", v)} />
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col gap-2 pb-2">
+                            <span className="text-xs font-black uppercase text-primary tracking-widest">Evolução Comportamental</span>
+                            <div className="bg-white dark:bg-black/20 p-3 rounded-xl border border-primary/10 shadow-sm inline-block">
+                               <StarRating color="text-indigo-500" size="lg" value={ev.evolucao_comportamental} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_comportamental", v)} />
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
                     </div>
-                    <span className="font-bold text-sm text-primary truncate">{ev.nome}</span>
                   </div>
-                  <div className="space-y-4 bg-white/60 dark:bg-black/20 p-4 rounded-xl border border-primary/10">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Espiritual</span>
-                      <StarRating color="text-indigo-500" size="sm" value={ev.evolucao_espiritual} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_espiritual", v)} />
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <span className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Comportamental</span>
-                      <StarRating color="text-indigo-500" size="sm" value={ev.evolucao_comportamental} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_comportamental", v)} />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <textarea
