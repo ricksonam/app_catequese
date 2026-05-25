@@ -28,6 +28,8 @@ import PublicMissao from "@/pages/PublicMissao";
 import DiarioEspiritualList from "@/pages/DiarioEspiritualList";
 import DiarioEspiritualForm from "@/pages/DiarioEspiritualForm";
 import BibliotecaModelos from "@/pages/BibliotecaModelos";
+import OracoesList from "@/pages/OracoesList";
+import OracaoView from "@/pages/OracaoView";
 import ModulosGlobais from "@/pages/ModulosGlobais";
 import MuralFotos from "@/pages/MuralFotos";
 import JogosHub from "@/pages/JogosHub";
@@ -164,6 +166,8 @@ const AppRoutes = () => (
       <Route path="/modulos/biblia" element={<BibliaPage />} />
       <Route path="/modulos/material" element={<MaterialApoio />} />
       <Route path="/modulos/biblioteca" element={<BibliotecaModelos />} />
+      <Route path="/modulos/oracoes" element={<OracoesList />} />
+      <Route path="/modulos/oracoes/:id" element={<OracaoView />} />
       <Route path="/modulos/calendario" element={<CalendarioLiturgico />} />
       <Route path="/modulos/*" element={<PlaceholderPage />} />
       <Route path="/jogos" element={<JogosHub />} />

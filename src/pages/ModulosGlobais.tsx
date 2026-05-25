@@ -1,4 +1,4 @@
-import { Image, BookOpen, FileText, Library, Dices, CalendarDays } from "lucide-react";
+import { Image, BookOpen, FileText, Library, Dices, CalendarDays, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const modulos = [
@@ -8,6 +8,7 @@ const modulos = [
   { label: "Bíblia", desc: "Consulte passagens bíblicas", icon: BookOpen, color: "bg-primary/10 text-primary", path: "/modulos/biblia" },
   { label: "Material de Apoio", desc: "Recursos e documentos", icon: FileText, color: "bg-liturgical/10 text-liturgical", path: "/modulos/material" },
   { label: "Biblioteca de Encontros", desc: "Modelos de encontros prontos", icon: Library, color: "bg-success/10 text-success", path: "/modulos/biblioteca" },
+  { label: "Orações", desc: "Devocionário católico completo", icon: Heart, color: "bg-liturgical/10 text-liturgical", path: "/modulos/oracoes" },
 ];
 
 export default function ModulosGlobais() {
