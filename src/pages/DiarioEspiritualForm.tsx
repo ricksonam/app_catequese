@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
-import { ArrowLeft, BookHeart, Save, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
+import { ArrowLeft, BookHeart, Save, ChevronDown, BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
+
+type TipoRegistro = "encontro" | "evento" | "evolucao";
+
+const tiposRegistro: { value: TipoRegistro; label: string; icon: React.ElementType; cor: string; descricao: string }[] = [
+  { value: "encontro", label: "Encontro", icon: BookOpen, cor: "bg-indigo-600 text-white ring-indigo-600/30", descricao: "Registro de um encontro catequético" },
+  { value: "evento", label: "Evento", icon: Sparkles, cor: "bg-amber-500 text-white ring-amber-500/30", descricao: "Registro de um evento ou atividade especial" },
+  { value: "evolucao", label: "Evolução", icon: TrendingUp, cor: "bg-emerald-600 text-white ring-emerald-600/30", descricao: "Registro de evolução espiritual e comportamental" },
+];
 
 export default function DiarioEspiritualForm() {
   const { id, diarioId } = useParams();
@@ -12,42 +20,49 @@ export default function DiarioEspiritualForm() {
   const { diarios, criarDiario, atualizarDiario } = useDiarioEspiritual(id!);
   const { data: encontros = [] } = useEncontros(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
+  const { data: atividades = [] } = useAtividades(id);
 
+  const [tipoRegistro, setTipoRegistro] = useState<TipoRegistro>("encontro");
   const [dataRegistro, setDataRegistro] = useState(new Date().toISOString().split("T")[0]);
   const [encontroId, setEncontroId] = useState("");
+  const [eventoId, setEventoId] = useState("");
   const [comoFoi, setComoFoi] = useState("");
   const [pontosPositivos, setPontosPositivos] = useState("");
   const [pontosNegativos, setPontosNegativos] = useState("");
-  const [observacoes, setObservacoes] = useState(""); // General fallback
-  const [evolucao, setEvolucao] = useState(""); // General fallback
+  const [observacoes, setObservacoes] = useState("");
+  const [evolucao, setEvolucao] = useState("");
 
-  // State for stars
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [evolucoes, setEvolucoes] = useState<any[]>([]);
 
-  // Accordion state
   const [expandedAv, setExpandedAv] = useState<Record<string, boolean>>({});
   const [expandedEv, setExpandedEv] = useState<Record<string, boolean>>({});
 
-  const toggleAv = (id: string) => setExpandedAv(prev => ({ ...prev, [id]: !prev[id] }));
-  const toggleEv = (id: string) => setExpandedEv(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleAv = (cid: string) => setExpandedAv(prev => ({ ...prev, [cid]: !prev[cid] }));
+  const toggleEv = (cid: string) => setExpandedEv(prev => ({ ...prev, [cid]: !prev[cid] }));
 
   const isEditing = !!diarioId;
 
+  // Eventos filtrados (tipo atividade, não reunião)
+  const eventos = atividades.filter((a: any) =>
+    !a.tipo?.toLowerCase().includes("reunião") && !a.tipo?.toLowerCase().includes("reuniao")
+  );
+
   useEffect(() => {
-    // Initialize state when catequizandos load or when editing
     if (catequizandos.length > 0) {
       if (isEditing && diarios) {
         const diario = diarios.find((d) => d.id === diarioId);
         if (diario) {
+          setTipoRegistro((diario as any).tipo_registro || "encontro");
           setDataRegistro(diario.data_registro || "");
           setEncontroId(diario.encontro_id || "");
+          setEventoId((diario as any).evento_id || "");
           setComoFoi(diario.como_foi || "");
           setPontosPositivos(diario.pontos_positivos || "");
           setPontosNegativos(diario.pontos_negativos || "");
           setObservacoes(diario.observacoes_catequizandos || "");
           setEvolucao(diario.evolucao_espiritual || "");
-          
+
           if (diario.avaliacoes_catequizandos && Array.isArray(diario.avaliacoes_catequizandos) && diario.avaliacoes_catequizandos.length > 0) {
             setAvaliacoes(diario.avaliacoes_catequizandos);
           } else {
@@ -67,28 +82,30 @@ export default function DiarioEspiritualForm() {
     }
   }, [diarioId, diarios, isEditing, catequizandos]);
 
-  const updateAvaliacao = (id: string, field: string, value: number) => {
-    setAvaliacoes(prev => prev.map(a => a.catequizando_id === id ? { ...a, [field]: value } : a));
+  const updateAvaliacao = (cid: string, field: string, value: number) => {
+    setAvaliacoes(prev => prev.map(a => a.catequizando_id === cid ? { ...a, [field]: value } : a));
   };
 
-  const updateEvolucao = (id: string, field: string, value: number) => {
-    setEvolucoes(prev => prev.map(a => a.catequizando_id === id ? { ...a, [field]: value } : a));
+  const updateEvolucao = (cid: string, field: string, value: number) => {
+    setEvolucoes(prev => prev.map(a => a.catequizando_id === cid ? { ...a, [field]: value } : a));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const payload = {
+
+    const payload: any = {
       turma_id: id!,
+      tipo_registro: tipoRegistro,
       data_registro: dataRegistro,
-      encontro_id: encontroId || null,
-      como_foi: comoFoi,
-      pontos_positivos: pontosPositivos,
-      pontos_negativos: pontosNegativos,
-      observacoes_catequizandos: observacoes,
-      evolucao_espiritual: evolucao,
-      avaliacoes_catequizandos: avaliacoes,
-      evolucao_catequizandos: evolucoes,
+      encontro_id: tipoRegistro === "encontro" ? (encontroId || null) : null,
+      evento_id: tipoRegistro === "evento" ? (eventoId || null) : null,
+      como_foi: tipoRegistro !== "evolucao" ? comoFoi : "",
+      pontos_positivos: tipoRegistro !== "evolucao" ? pontosPositivos : "",
+      pontos_negativos: tipoRegistro !== "evolucao" ? pontosNegativos : "",
+      observacoes_catequizandos: tipoRegistro !== "evolucao" ? observacoes : "",
+      evolucao_espiritual: tipoRegistro === "evolucao" ? evolucao : "",
+      avaliacoes_catequizandos: tipoRegistro !== "evolucao" ? avaliacoes : [],
+      evolucao_catequizandos: tipoRegistro === "evolucao" ? evolucoes : [],
     };
 
     if (isEditing) {
@@ -100,6 +117,12 @@ export default function DiarioEspiritualForm() {
   };
 
   const isPending = criarDiario.isPending || atualizarDiario.isPending;
+
+  const corAtual = tipoRegistro === "encontro"
+    ? { ring: "ring-indigo-600/20", border: "border-indigo-600/30", header: "text-indigo-600", bg: "bg-indigo-600/5" }
+    : tipoRegistro === "evento"
+    ? { ring: "ring-amber-500/20", border: "border-amber-500/30", header: "text-amber-600", bg: "bg-amber-500/5" }
+    : { ring: "ring-emerald-600/20", border: "border-emerald-600/30", header: "text-emerald-600", bg: "bg-emerald-600/5" };
 
   return (
     <div className="space-y-6 pb-10">
@@ -117,218 +140,260 @@ export default function DiarioEspiritualForm() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto w-full">
-        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border border-black/5 space-y-6">
-          
-          {/* Seção Básica */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Data do Registro <span className="text-red-500">*</span></label>
-              <input
-                type="date"
-                required
-                value={dataRegistro}
-                onChange={(e) => setDataRegistro(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-input bg-background text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-              />
-            </div>
+      {/* Seletor de tipo */}
+      <div className="grid grid-cols-3 gap-3">
+        {tiposRegistro.map((tipo) => {
+          const Icon = tipo.icon;
+          const isActive = tipoRegistro === tipo.value;
+          return (
+            <button
+              key={tipo.value}
+              type="button"
+              onClick={() => setTipoRegistro(tipo.value)}
+              className={cn(
+                "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 font-bold text-center",
+                isActive
+                  ? `${tipo.cor} border-transparent shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/20" : tipo.value === "evento" ? "ring-amber-500/20" : "ring-emerald-600/20"} scale-[1.03]`
+                  : "bg-white dark:bg-zinc-900 border-black/5 text-muted-foreground hover:border-black/15 hover:text-foreground"
+              )}
+            >
+              <Icon className={cn("w-6 h-6", isActive ? "opacity-100" : "opacity-60")} />
+              <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto w-full">
+        <div className={cn("bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border-2 space-y-6 transition-all", corAtual.border)}>
+
+          {/* Data */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Data do Registro <span className="text-red-500">*</span></label>
+            <input
+              type="date"
+              required
+              value={dataRegistro}
+              onChange={(e) => setDataRegistro(e.target.value)}
+              className="w-full h-12 px-4 rounded-xl border border-input bg-background text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            />
+          </div>
+
+          {/* Referência: Encontro ou Evento */}
+          {tipoRegistro === "encontro" && (
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Encontro Referente</label>
+              <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-2">
+                <BookOpen className="w-4 h-4" /> Encontro Referente
+              </label>
               <select
                 value={encontroId}
                 onChange={(e) => setEncontroId(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-input bg-background text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                className="w-full h-12 px-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
               >
                 <option value="">Nenhum (Registro Geral)</option>
-                {encontros.map(e => (
-                  <option key={e.id} value={e.id}>{e.tema}</option>
+                {encontros.map(enc => (
+                  <option key={enc.id} value={enc.id}>{enc.tema}</option>
                 ))}
               </select>
             </div>
-          </div>
+          )}
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-              <BookHeart className="w-4 h-4" /> Como foi o encontro/momento?
-            </label>
-            <textarea
-              placeholder="Descreva de forma geral como foi o encontro, o clima da turma..."
-              value={comoFoi}
-              onChange={(e) => setComoFoi(e.target.value)}
-              className="w-full min-h-[80px] p-4 rounded-xl border border-input bg-background text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {tipoRegistro === "evento" && (
             <div className="space-y-2">
-              <label className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Pontos Positivos</label>
-              <textarea
-                placeholder="O que deu certo? O que surpreendeu?"
-                value={pontosPositivos}
-                onChange={(e) => setPontosPositivos(e.target.value)}
-                className="w-full min-h-[80px] p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all resize-none"
-              />
+              <label className="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4" /> Evento Referente
+              </label>
+              <select
+                value={eventoId}
+                onChange={(e) => setEventoId(e.target.value)}
+                className="w-full h-12 px-4 rounded-xl border border-amber-500/30 bg-amber-500/5 text-sm font-medium focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all"
+              >
+                <option value="">Nenhum (Registro Geral)</option>
+                {eventos.map((ev: any) => (
+                  <option key={ev.id} value={ev.id}>{ev.nome}</option>
+                ))}
+              </select>
             </div>
-            
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-destructive uppercase tracking-wider">Pontos a Melhorar</label>
-              <textarea
-                placeholder="O que não saiu como planejado? Dificuldades?"
-                value={pontosNegativos}
-                onChange={(e) => setPontosNegativos(e.target.value)}
-                className="w-full min-h-[80px] p-4 rounded-xl border border-destructive/20 bg-destructive/5 text-sm focus:ring-2 focus:ring-destructive/20 focus:border-destructive outline-none transition-all resize-none"
-              />
-            </div>
-          </div>
+          )}
 
-          <hr className="border-border" />
+          {/* Seção "Como foi" - só para Encontro e Evento */}
+          {tipoRegistro !== "evolucao" && (
+            <>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                  <BookHeart className="w-4 h-4" />
+                  {tipoRegistro === "evento" ? "Como foi o evento?" : "Como foi o encontro?"}
+                </label>
+                <textarea
+                  placeholder={tipoRegistro === "evento" ? "Descreva como foi o evento, o engajamento da turma..." : "Descreva como foi o encontro, o clima da turma..."}
+                  value={comoFoi}
+                  onChange={(e) => setComoFoi(e.target.value)}
+                  className="w-full min-h-[80px] p-4 rounded-xl border border-input bg-background text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
+                />
+              </div>
 
-          {/* Seção de Observações e Avaliações */}
-          <div className="space-y-4">
-            <label className="text-sm font-black text-foreground uppercase tracking-wider">Avaliação de Participação</label>
-            <p className="text-xs text-muted-foreground">Avalie a participação individual de cada catequizando (opcional).</p>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              {avaliacoes.map((av) => {
-                const isExpanded = expandedAv[av.catequizando_id];
-                const hasRated = av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0;
-                
-                return (
-                  <div key={av.catequizando_id} className={cn("bg-white dark:bg-zinc-950 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-indigo-500/30 shadow-md ring-2 ring-indigo-500/10" : "border-black/5 dark:border-white/5 hover:border-black/15")}>
-                    
-                    {/* Header Clickable */}
-                    <button type="button" onClick={() => toggleAv(av.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-indigo-600 text-white" : "bg-indigo-500/10 text-indigo-600")}>
-                          {av.nome.charAt(0)}
-                        </div>
-                        <div className="flex flex-col items-start">
-                          <span className="font-bold text-base text-foreground truncate max-w-[180px]">{av.nome}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                            {hasRated ? "Avaliado" : "Pendente"}
-                          </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Pontos Positivos</label>
+                  <textarea
+                    placeholder="O que deu certo? O que surpreendeu?"
+                    value={pontosPositivos}
+                    onChange={(e) => setPontosPositivos(e.target.value)}
+                    className="w-full min-h-[80px] p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all resize-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-destructive uppercase tracking-wider">Pontos a Melhorar</label>
+                  <textarea
+                    placeholder="O que não saiu como planejado? Dificuldades?"
+                    value={pontosNegativos}
+                    onChange={(e) => setPontosNegativos(e.target.value)}
+                    className="w-full min-h-[80px] p-4 rounded-xl border border-destructive/20 bg-destructive/5 text-sm focus:ring-2 focus:ring-destructive/20 focus:border-destructive outline-none transition-all resize-none"
+                  />
+                </div>
+              </div>
+
+              <hr className="border-border" />
+
+              {/* Avaliação de Participação */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-black text-foreground uppercase tracking-wider">Avaliação de Participação</label>
+                  <p className="text-xs text-muted-foreground mt-1">Avalie a participação individual de cada catequizando (opcional).</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  {avaliacoes.map((av) => {
+                    const isExpanded = expandedAv[av.catequizando_id];
+                    const hasRated = av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0;
+                    return (
+                      <div key={av.catequizando_id} className={cn("bg-white dark:bg-zinc-950 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-indigo-500/30 shadow-md ring-2 ring-indigo-500/10" : "border-black/5 dark:border-white/5 hover:border-black/15")}>
+                        <button type="button" onClick={() => toggleAv(av.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                          <div className="flex items-center gap-4">
+                            <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-indigo-600 text-white" : "bg-indigo-500/10 text-indigo-600")}>
+                              {av.nome.charAt(0)}
+                            </div>
+                            <div className="flex flex-col items-start">
+                              <span className="font-bold text-base text-foreground truncate max-w-[180px]">{av.nome}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{hasRated ? "Avaliado" : "Pendente"}</span>
+                            </div>
+                          </div>
+                          <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-indigo-50 text-indigo-600" : "bg-muted text-muted-foreground")}>
+                            <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
+                          </div>
+                        </button>
+
+                        <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                          <div className="overflow-hidden">
+                            <div className="p-4 pt-0 border-t border-black/5 mt-2 space-y-5 bg-gradient-to-b from-transparent to-muted/20">
+                              <div className="flex flex-col gap-2 pt-3">
+                                <span className="text-xs font-black uppercase text-foreground tracking-widest">Pontualidade</span>
+                                <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
+                                  <StarRating size="lg" value={av.pontualidade} onChange={(v) => updateAvaliacao(av.catequizando_id, "pontualidade", v)} />
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-2">
+                                <span className="text-xs font-black uppercase text-foreground tracking-widest">Participação no Grupo</span>
+                                <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
+                                  <StarRating size="lg" value={av.participacao_grupo} onChange={(v) => updateAvaliacao(av.catequizando_id, "participacao_grupo", v)} />
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-2 pb-2">
+                                <span className="text-xs font-black uppercase text-foreground tracking-widest">Engajamento</span>
+                                <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
+                                  <StarRating size="lg" value={av.engajamento} onChange={(v) => updateAvaliacao(av.catequizando_id, "engajamento", v)} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-indigo-50 text-indigo-600" : "bg-muted text-muted-foreground")}>
-                        <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
-                      </div>
-                    </button>
+                    );
+                  })}
+                </div>
 
-                    {/* Expandable Content */}
-                    <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
-                      <div className="overflow-hidden">
-                        <div className="p-4 pt-0 border-t border-black/5 mt-2 space-y-5 bg-gradient-to-b from-transparent to-muted/20">
-                          
-                          <div className="flex flex-col gap-2 pt-3">
-                            <span className="text-xs font-black uppercase text-foreground tracking-widest">Pontualidade</span>
-                            <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
-                               <StarRating size="lg" value={av.pontualidade} onChange={(v) => updateAvaliacao(av.catequizando_id, "pontualidade", v)} />
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-col gap-2">
-                            <span className="text-xs font-black uppercase text-foreground tracking-widest">Participação no Grupo</span>
-                            <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
-                               <StarRating size="lg" value={av.participacao_grupo} onChange={(v) => updateAvaliacao(av.catequizando_id, "participacao_grupo", v)} />
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-col gap-2 pb-2">
-                            <span className="text-xs font-black uppercase text-foreground tracking-widest">Engajamento</span>
-                            <div className="bg-white p-3 rounded-xl border border-black/5 shadow-sm inline-block">
-                               <StarRating size="lg" value={av.engajamento} onChange={(v) => updateAvaliacao(av.catequizando_id, "engajamento", v)} />
-                            </div>
-                          </div>
+                <textarea
+                  placeholder="Observações gerais adicionais sobre a turma..."
+                  value={observacoes}
+                  onChange={(e) => setObservacoes(e.target.value)}
+                  className="w-full min-h-[60px] p-4 rounded-xl border border-input bg-background text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none mt-2"
+                />
+              </div>
+            </>
+          )}
 
+          {/* Seção de Evolução - só para tipo "evolucao" */}
+          {tipoRegistro === "evolucao" && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-black text-emerald-600 uppercase tracking-wider flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" /> Evolução Espiritual e Comportamental
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">Avalie o crescimento espiritual e comportamental de cada catequizando.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                {evolucoes.map((ev) => {
+                  const isExpanded = expandedEv[ev.catequizando_id];
+                  const hasRated = ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0;
+                  return (
+                    <div key={ev.catequizando_id} className={cn("bg-emerald-600/5 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-emerald-600/40 shadow-md ring-2 ring-emerald-600/10 bg-emerald-600/10" : "border-emerald-600/10 hover:border-emerald-600/20")}>
+                      <button type="button" onClick={() => toggleEv(ev.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-emerald-600/10 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-emerald-600 text-white" : "bg-emerald-600/20 text-emerald-600")}>
+                            {ev.nome.charAt(0)}
+                          </div>
+                          <div className="flex flex-col items-start">
+                            <span className="font-bold text-base text-emerald-700 dark:text-emerald-400 truncate max-w-[180px]">{ev.nome}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70">{hasRated ? "Avaliado" : "Pendente"}</span>
+                          </div>
+                        </div>
+                        <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-white text-emerald-600 shadow-sm" : "bg-emerald-600/10 text-emerald-600/70")}>
+                          <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
+                        </div>
+                      </button>
+
+                      <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                        <div className="overflow-hidden">
+                          <div className="p-4 pt-0 border-t border-emerald-600/10 mt-2 space-y-5">
+                            <div className="flex flex-col gap-2 pt-3">
+                              <span className="text-xs font-black uppercase text-emerald-700 tracking-widest">Evolução Espiritual</span>
+                              <div className="bg-white dark:bg-black/20 p-3 rounded-xl border border-emerald-600/10 shadow-sm inline-block">
+                                <StarRating color="text-emerald-500" size="lg" value={ev.evolucao_espiritual} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_espiritual", v)} />
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-2 pb-2">
+                              <span className="text-xs font-black uppercase text-emerald-700 tracking-widest">Evolução Comportamental</span>
+                              <div className="bg-white dark:bg-black/20 p-3 rounded-xl border border-emerald-600/10 shadow-sm inline-block">
+                                <StarRating color="text-emerald-500" size="lg" value={ev.evolucao_comportamental} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_comportamental", v)} />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+
+              <textarea
+                placeholder="Notas gerais sobre a evolução da turma..."
+                value={evolucao}
+                onChange={(e) => setEvolucao(e.target.value)}
+                className="w-full min-h-[60px] p-4 rounded-xl border border-emerald-600/20 bg-emerald-600/5 text-sm focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all resize-none mt-2"
+              />
             </div>
-
-            <textarea
-              placeholder="Observações gerais adicionais sobre a turma..."
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
-              className="w-full min-h-[60px] p-4 rounded-xl border border-input bg-background text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none mt-2"
-            />
-          </div>
-
-          <hr className="border-border" />
-
-          {/* Seção de Evolução */}
-          <div className="space-y-4">
-            <label className="text-sm font-black text-primary uppercase tracking-wider">Evolução Espiritual e Comportamental</label>
-            <p className="text-xs text-muted-foreground">Avalie o crescimento espiritual e comportamental.</p>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              {evolucoes.map((ev) => {
-                const isExpanded = expandedEv[ev.catequizando_id];
-                const hasRated = ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0;
-                
-                return (
-                  <div key={ev.catequizando_id} className={cn("bg-primary/5 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-primary/40 shadow-md ring-2 ring-primary/10 bg-primary/10" : "border-primary/10 hover:border-primary/20")}>
-                    
-                    {/* Header Clickable */}
-                    <button type="button" onClick={() => toggleEv(ev.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-primary/10 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-primary text-white" : "bg-primary/20 text-primary")}>
-                          {ev.nome.charAt(0)}
-                        </div>
-                        <div className="flex flex-col items-start">
-                          <span className="font-bold text-base text-primary truncate max-w-[180px]">{ev.nome}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70">
-                            {hasRated ? "Avaliado" : "Pendente"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-white text-primary shadow-sm" : "bg-primary/10 text-primary/70")}>
-                        <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
-                      </div>
-                    </button>
-
-                    {/* Expandable Content */}
-                    <div className={cn("grid transition-all duration-300 ease-in-out", isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
-                      <div className="overflow-hidden">
-                        <div className="p-4 pt-0 border-t border-primary/10 mt-2 space-y-5">
-                          
-                          <div className="flex flex-col gap-2 pt-3">
-                            <span className="text-xs font-black uppercase text-primary tracking-widest">Evolução Espiritual</span>
-                            <div className="bg-white dark:bg-black/20 p-3 rounded-xl border border-primary/10 shadow-sm inline-block">
-                               <StarRating color="text-indigo-500" size="lg" value={ev.evolucao_espiritual} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_espiritual", v)} />
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-col gap-2 pb-2">
-                            <span className="text-xs font-black uppercase text-primary tracking-widest">Evolução Comportamental</span>
-                            <div className="bg-white dark:bg-black/20 p-3 rounded-xl border border-primary/10 shadow-sm inline-block">
-                               <StarRating color="text-indigo-500" size="lg" value={ev.evolucao_comportamental} onChange={(v) => updateEvolucao(ev.catequizando_id, "evolucao_comportamental", v)} />
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <textarea
-              placeholder="Notas gerais sobre a evolução da turma..."
-              value={evolucao}
-              onChange={(e) => setEvolucao(e.target.value)}
-              className="w-full min-h-[60px] p-4 rounded-xl border border-primary/20 bg-primary/5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none mt-2"
-            />
-          </div>
+          )}
 
           <button
             type="submit"
             disabled={isPending}
-            className="w-full h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20 transition-all"
+            className={cn(
+              "w-full h-14 rounded-2xl text-white font-black text-lg flex items-center justify-center gap-2 shadow-xl transition-all",
+              tipoRegistro === "encontro" ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20" :
+              tipoRegistro === "evento" ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" :
+              "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
+            )}
           >
             {isPending ? (
               <div className="w-6 h-6 border-[3px] border-white/30 border-t-white rounded-full animate-spin" />
@@ -343,4 +408,3 @@ export default function DiarioEspiritualForm() {
     </div>
   );
 }
-
