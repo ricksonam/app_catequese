@@ -34,6 +34,7 @@ const cadastros = [
 ];
 
 const modulosGlobais = [
+  { label: "Diário Espiritual", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500" },
   { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold" },
   { label: "Agenda catequética", icon: CalendarDays, path: "/modulos/calendario", color: "bg-destructive/10 text-destructive" },
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-success/10 text-success" },
@@ -151,7 +152,19 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   ];
 
   const go = (path: string) => {
-    navigate(path);
+    if (path === "__diario__") {
+      const activeTurma = localStorage.getItem("ivc_selected_turma");
+      if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
+        navigate(`/turmas/${activeTurma}/diario`);
+      } else if (turmas.length === 1) {
+        navigate(`/turmas/${turmas[0].id}/diario`);
+      } else {
+        toast({ title: "Atenção", description: "Selecione uma turma primeiro no menu 'Minha Turma'.", variant: "destructive" });
+        return; // don't close menu if error
+      }
+    } else {
+      navigate(path);
+    }
     onClose();
   };
 

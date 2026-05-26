@@ -14,6 +14,7 @@ import {
   BarChart2,
   ChevronRight,
   X,
+  BookHeart
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -33,7 +34,7 @@ import { getAppUrl } from "@/lib/utils";
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
-  { path: "/jogos", icon: Dices, label: "Jogos", color: "text-amber-600", dot: "bg-amber-600" },
+  { path: "__diario__", icon: BookHeart, label: "Diário", color: "text-indigo-600", dot: "bg-indigo-600" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
   { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-rose-600", dot: "bg-rose-600" },
   { path: "__mais__", icon: Menu, label: "Módulos", color: "text-emerald-600", dot: "bg-emerald-600" },
@@ -48,6 +49,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const [maisOpen, setMaisOpen] = useState(false);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [sugestaoOpen, setSugestaoOpen] = useState(false);
+  const [pickerDestination, setPickerDestination] = useState<"relatorios" | "diario">("relatorios");
   const [suggestionText, setSuggestionText] = useState("");
   const [isSavingSuggestion, setIsSavingSuggestion] = useState(false);
   const { user } = useAuth();
@@ -152,7 +154,23 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               return (
                 <button
                   key={tab.path}
-                  onClick={() => isMais ? setMaisOpen(true) : navigate(tab.path)}
+                  onClick={() => {
+                    if (isMais) setMaisOpen(true);
+                    else if (tab.path === "__diario__") {
+                      const activeTurma = localStorage.getItem("ivc_selected_turma");
+                      if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
+                        navigate(`/turmas/${activeTurma}/diario`);
+                      } else if (turmas.length === 1) {
+                        navigate(`/turmas/${turmas[0].id}/diario`);
+                      } else if (turmas.length > 1) {
+                        setPickerDestination("diario");
+                        setTurmaPickerOpen(true);
+                      } else {
+                        toast.error("Crie uma turma primeiro.");
+                      }
+                    }
+                    else navigate(tab.path);
+                  }}
                   className={`group relative flex flex-col items-center justify-end h-full px-3 pb-1 transition-all duration-300 active:scale-90 ${
                     isActive
                       ? tab.color
@@ -192,6 +210,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
+                  { label: "Diário Espiritual", path: "__diario__", icon: BookHeart, color: "bg-indigo-500/15 text-indigo-600" },
                   { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600" },
                   { label: "Agenda Catequética", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
                   { label: "Mural de Fotos", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
@@ -207,6 +226,18 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                       setMaisOpen(false);
                       if (item.onClick) {
                         item.onClick();
+                      } else if (item.path === "__diario__") {
+                        const activeTurma = localStorage.getItem("ivc_selected_turma");
+                        if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
+                          navigate(`/turmas/${activeTurma}/diario`);
+                        } else if (turmas.length === 1) {
+                          navigate(`/turmas/${turmas[0].id}/diario`);
+                        } else if (turmas.length > 1) {
+                          setPickerDestination("diario");
+                          setTurmaPickerOpen(true);
+                        } else {
+                          toast.error("Crie uma turma primeiro.");
+                        }
                       } else if (item.path) {
                         navigate(item.path);
                       }
@@ -265,6 +296,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   } else if (turmas.length === 1) {
                     navigate(`/turmas/${turmas[0].id}/relatorios`);
                   } else if (turmas.length > 1) {
+                    setPickerDestination("relatorios");
                     setTurmaPickerOpen(true);
                   } else {
                     toast.error("Crie uma turma primeiro.");
@@ -351,7 +383,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                 key={t.id}
                 onClick={() => {
                   setTurmaPickerOpen(false);
-                  navigate(`/turmas/${t.id}/relatorios`);
+                  navigate(`/turmas/${t.id}/${pickerDestination}`);
                 }}
                 className="w-full p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 flex items-center justify-between group hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-violet-500/30"
               >

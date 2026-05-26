@@ -4,7 +4,7 @@ import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
 import { ArrowLeft, BookHeart, Save, ChevronDown, BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
-import { cn } from "@/lib/utils";
+import { cn, formatarDataVigente } from "@/lib/utils";
 
 type TipoRegistro = "encontro" | "evento" | "evolucao";
 
@@ -23,6 +23,7 @@ export default function DiarioEspiritualForm() {
   const { data: atividades = [] } = useAtividades(id);
 
   const [tipoRegistro, setTipoRegistro] = useState<TipoRegistro>("encontro");
+  // Ocultamos o input de data no formulário, mas mantemos o estado para salvar automaticamente
   const [dataRegistro, setDataRegistro] = useState(new Date().toISOString().split("T")[0]);
   const [encontroId, setEncontroId] = useState("");
   const [eventoId, setEventoId] = useState("");
@@ -37,6 +38,9 @@ export default function DiarioEspiritualForm() {
 
   const [expandedAv, setExpandedAv] = useState<Record<string, boolean>>({});
   const [expandedEv, setExpandedEv] = useState<Record<string, boolean>>({});
+  
+  const [openEncontro, setOpenEncontro] = useState(false);
+  const [openEvento, setOpenEvento] = useState(false);
 
   const toggleAv = (cid: string) => setExpandedAv(prev => ({ ...prev, [cid]: !prev[cid] }));
   const toggleEv = (cid: string) => setExpandedEv(prev => ({ ...prev, [cid]: !prev[cid] }));
@@ -54,7 +58,7 @@ export default function DiarioEspiritualForm() {
         const diario = diarios.find((d) => d.id === diarioId);
         if (diario) {
           setTipoRegistro((diario as any).tipo_registro || "encontro");
-          setDataRegistro(diario.data_registro || "");
+          setDataRegistro(diario.data_registro || new Date().toISOString().split("T")[0]);
           setEncontroId(diario.encontro_id || "");
           setEventoId((diario as any).evento_id || "");
           setComoFoi(diario.como_foi || "");
@@ -167,52 +171,126 @@ export default function DiarioEspiritualForm() {
       <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto w-full">
         <div className={cn("bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border-2 space-y-6 transition-all", corAtual.border)}>
 
-          {/* Data */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Data do Registro <span className="text-red-500">*</span></label>
-            <input
-              type="date"
-              required
-              value={dataRegistro}
-              onChange={(e) => setDataRegistro(e.target.value)}
-              className="w-full h-12 px-4 rounded-xl border border-input bg-background text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-            />
-          </div>
+          {/* Ocultamos a seleção de data do usuário */}
 
           {/* Referência: Encontro ou Evento */}
           {tipoRegistro === "encontro" && (
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-2">
                 <BookOpen className="w-4 h-4" /> Encontro Referente
               </label>
-              <select
-                value={encontroId}
-                onChange={(e) => setEncontroId(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+              
+              <button
+                type="button"
+                onClick={() => { setOpenEncontro(!openEncontro); setOpenEvento(false); }}
+                className="w-full h-14 px-4 rounded-xl border-2 border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 hover:border-indigo-500/50 text-sm font-medium focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all flex items-center justify-between text-left"
               >
-                <option value="">Nenhum (Registro Geral)</option>
-                {encontros.map(enc => (
-                  <option key={enc.id} value={enc.id}>{enc.tema}</option>
-                ))}
-              </select>
+                <div className="flex flex-col truncate">
+                  <span className="truncate font-bold text-indigo-900 dark:text-indigo-100">
+                    {encontroId 
+                      ? encontros.find((e: any) => e.id === encontroId)?.tema 
+                      : "Nenhum (Registro Geral)"}
+                  </span>
+                  {encontroId && encontros.find((e: any) => e.id === encontroId)?.data && (
+                    <span className="text-[10px] text-indigo-600 font-black uppercase tracking-widest mt-0.5">
+                      {formatarDataVigente(encontros.find((e: any) => e.id === encontroId)!.data)}
+                    </span>
+                  )}
+                </div>
+                <ChevronDown className={cn("w-5 h-5 text-indigo-500 transition-transform duration-300", openEncontro && "rotate-180")} />
+              </button>
+              
+              {openEncontro && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border-2 border-indigo-500/30 rounded-2xl shadow-xl shadow-indigo-500/10 z-50 max-h-72 overflow-y-auto overflow-x-hidden p-2 space-y-1 animate-in fade-in slide-in-from-top-2">
+                  <button 
+                    type="button"
+                    onClick={() => { setEncontroId(""); setOpenEncontro(false); }}
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-sm font-bold text-indigo-900/70 transition-colors border border-transparent hover:border-indigo-500/20"
+                  >
+                    Nenhum (Registro Geral)
+                  </button>
+                  {encontros.map((enc: any) => (
+                    <button
+                      key={enc.id}
+                      type="button"
+                      onClick={() => { setEncontroId(enc.id); setOpenEncontro(false); }}
+                      className={cn(
+                        "w-full text-left px-4 py-3 rounded-xl transition-all border",
+                        encontroId === enc.id 
+                          ? "bg-indigo-500 text-white border-indigo-600 shadow-md" 
+                          : "bg-white dark:bg-zinc-900 border-black/5 hover:border-indigo-500/30 hover:bg-indigo-50"
+                      )}
+                    >
+                      <div className={cn("font-bold", encontroId === enc.id ? "text-white" : "text-indigo-900 dark:text-indigo-100")}>{enc.tema}</div>
+                      {enc.data && (
+                        <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", encontroId === enc.id ? "text-indigo-100" : "text-indigo-600/70")}>
+                          {formatarDataVigente(enc.data)}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {tipoRegistro === "evento" && (
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <label className="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-2">
                 <Sparkles className="w-4 h-4" /> Evento Referente
               </label>
-              <select
-                value={eventoId}
-                onChange={(e) => setEventoId(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-amber-500/30 bg-amber-500/5 text-sm font-medium focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all"
+              
+              <button
+                type="button"
+                onClick={() => { setOpenEvento(!openEvento); setOpenEncontro(false); }}
+                className="w-full h-14 px-4 rounded-xl border-2 border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/50 text-sm font-medium focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all flex items-center justify-between text-left"
               >
-                <option value="">Nenhum (Registro Geral)</option>
-                {eventos.map((ev: any) => (
-                  <option key={ev.id} value={ev.id}>{ev.nome}</option>
-                ))}
-              </select>
+                <div className="flex flex-col truncate">
+                  <span className="truncate font-bold text-amber-900 dark:text-amber-100">
+                    {eventoId 
+                      ? eventos.find((e: any) => e.id === eventoId)?.nome 
+                      : "Nenhum (Registro Geral)"}
+                  </span>
+                  {eventoId && eventos.find((e: any) => e.id === eventoId)?.data && (
+                    <span className="text-[10px] text-amber-600 font-black uppercase tracking-widest mt-0.5">
+                      {formatarDataVigente(eventos.find((e: any) => e.id === eventoId)!.data)}
+                    </span>
+                  )}
+                </div>
+                <ChevronDown className={cn("w-5 h-5 text-amber-500 transition-transform duration-300", openEvento && "rotate-180")} />
+              </button>
+              
+              {openEvento && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border-2 border-amber-500/30 rounded-2xl shadow-xl shadow-amber-500/10 z-50 max-h-72 overflow-y-auto overflow-x-hidden p-2 space-y-1 animate-in fade-in slide-in-from-top-2">
+                  <button 
+                    type="button"
+                    onClick={() => { setEventoId(""); setOpenEvento(false); }}
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-500/10 text-sm font-bold text-amber-900/70 transition-colors border border-transparent hover:border-amber-500/20"
+                  >
+                    Nenhum (Registro Geral)
+                  </button>
+                  {eventos.map((ev: any) => (
+                    <button
+                      key={ev.id}
+                      type="button"
+                      onClick={() => { setEventoId(ev.id); setOpenEvento(false); }}
+                      className={cn(
+                        "w-full text-left px-4 py-3 rounded-xl transition-all border",
+                        eventoId === ev.id 
+                          ? "bg-amber-500 text-white border-amber-600 shadow-md" 
+                          : "bg-white dark:bg-zinc-900 border-black/5 hover:border-amber-500/30 hover:bg-amber-50"
+                      )}
+                    >
+                      <div className={cn("font-bold", eventoId === ev.id ? "text-white" : "text-amber-900 dark:text-amber-100")}>{ev.nome}</div>
+                      {ev.data && (
+                        <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", eventoId === ev.id ? "text-amber-100" : "text-amber-600/70")}>
+                          {formatarDataVigente(ev.data)}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
