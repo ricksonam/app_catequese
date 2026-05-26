@@ -205,6 +205,8 @@ export default function CatequizandosList() {
   const [filterAniversarios, setFilterAniversarios] = useState(false);
   const [filterBatismos, setFilterBatismos] = useState(false);
   const [evolutionPeriod, setEvolutionPeriod] = useState<"mes" | "semestre" | "ano">("ano");
+  const [showEvolucao, setShowEvolucao] = useState(false);
+  const [evolucaoSelectedId, setEvolucaoSelectedId] = useState<string>("");
   
   // --- Frequência Modal States ---
   const [showFrequencia, setShowFrequencia] = useState(false);
@@ -244,7 +246,8 @@ export default function CatequizandosList() {
   const { diarios = [] } = useDiarioEspiritual(id!);
 
   const catequizandoStats = useMemo(() => {
-    if (!viewItem || !diarios || diarios.length === 0) return null;
+    if (!evolucaoSelectedId || !diarios || diarios.length === 0) return null;
+    
     let soma = {
       pontualidade: 0, part_grupo: 0, engajamento: 0,
       ev_espiritual: 0, ev_comportamental: 0,
@@ -267,7 +270,7 @@ export default function CatequizandosList() {
       const dataRegistro = d.data_registro ? new Date(d.data_registro + 'T12:00') : null;
       if (dataRegistro && dataRegistro >= startDate) {
         if (d.avaliacoes_catequizandos && Array.isArray(d.avaliacoes_catequizandos)) {
-          const av = d.avaliacoes_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
+          const av = d.avaliacoes_catequizandos.find((x: any) => x.catequizando_id === evolucaoSelectedId);
           if (av && (av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0)) {
             soma.pontualidade += av.pontualidade || 0;
             soma.part_grupo += av.participacao_grupo || 0;
@@ -276,7 +279,7 @@ export default function CatequizandosList() {
           }
         }
         if (d.evolucao_catequizandos && Array.isArray(d.evolucao_catequizandos)) {
-          const ev = d.evolucao_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
+          const ev = d.evolucao_catequizandos.find((x: any) => x.catequizando_id === evolucaoSelectedId);
           if (ev && (ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0)) {
             soma.ev_espiritual += ev.evolucao_espiritual || 0;
             soma.ev_comportamental += ev.evolucao_comportamental || 0;
@@ -297,7 +300,7 @@ export default function CatequizandosList() {
       count_av: soma.count_av,
       count_ev: soma.count_ev,
     };
-  }, [viewItem, diarios, evolutionPeriod]);
+  }, [evolucaoSelectedId, diarios, evolutionPeriod]);
 
   const pastEncontros = useMemo(() => {
     const limit = alertConfig.moduloCatequizandos?.faltas ?? 3;
@@ -835,6 +838,13 @@ export default function CatequizandosList() {
                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
                 )}
               </button>
+              <button 
+                onClick={() => setShowEvolucao(true)} 
+                className="w-full flex flex-col sm:flex-row items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all group active:scale-95 mt-2"
+              >
+                <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Painel de Evolução</span>
+              </button>
             </div>
             <button 
               onClick={() => setShowInscricaoModal(true)}
@@ -1289,6 +1299,140 @@ export default function CatequizandosList() {
         </DialogContent>
       </Dialog>
 
+      {/* MODAL DE EVOLUÇÃO */}
+      <Dialog open={showEvolucao} onOpenChange={setShowEvolucao}>
+        <DialogContent className="rounded-3xl border-emerald-500/20 max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden shadow-2xl flex flex-col bg-background">
+          <div className="flex flex-col h-full overflow-hidden bg-white dark:bg-zinc-950">
+            <div className="p-5 border-b border-black/5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-md shrink-0">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-black text-emerald-900 dark:text-emerald-100 leading-tight">Painel de Evolução</DialogTitle>
+                  <p className="text-[10px] font-bold text-emerald-700/70 dark:text-emerald-400/70 uppercase tracking-widest mt-0.5">Acompanhamento do Diário Espiritual</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 flex-1 overflow-y-auto space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Selecione o Catequizando</label>
+                <Select value={evolucaoSelectedId} onValueChange={setEvolucaoSelectedId}>
+                  <SelectTrigger className="h-14 rounded-2xl border-2 shadow-sm font-bold bg-white dark:bg-zinc-900">
+                    <SelectValue placeholder="Escolha um catequizando" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 rounded-2xl">
+                    {list.map(c => (
+                      <SelectItem key={c.id} value={c.id} className="font-bold cursor-pointer py-3">{c.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {evolucaoSelectedId && (
+                <section className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20 rounded-3xl p-6 border border-indigo-100 dark:border-indigo-500/10 shadow-sm mt-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                     <h3 className="text-sm font-black text-indigo-900 dark:text-indigo-100 uppercase tracking-widest text-center sm:text-left">Análise de Participação</h3>
+                     
+                     <div className="flex bg-white/50 dark:bg-black/20 p-1 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-500/10">
+                       {[
+                         { value: "mes", label: "Mês" },
+                         { value: "semestre", label: "Semestre" },
+                         { value: "ano", label: "Ano" }
+                       ].map((opt) => (
+                         <button
+                           key={opt.value}
+                           onClick={() => setEvolutionPeriod(opt.value as any)}
+                           className={cn(
+                             "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                             evolutionPeriod === opt.value
+                               ? "bg-indigo-600 text-white shadow-md"
+                               : "text-indigo-600/70 hover:bg-indigo-100 dark:text-indigo-400/70 dark:hover:bg-indigo-500/20"
+                           )}
+                         >
+                           {opt.label}
+                         </button>
+                       ))}
+                     </div>
+                  </div>
+                  
+                  {!catequizandoStats ? (
+                     <div className="text-center py-6 bg-white/50 dark:bg-black/20 rounded-2xl border border-indigo-50 dark:border-indigo-500/10">
+                       <p className="text-xs font-bold text-indigo-400 dark:text-indigo-500 uppercase tracking-widest">Nenhum registro no período</p>
+                     </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-6">
+                      {catequizandoStats.count_av > 0 && (
+                        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-5 border border-indigo-100 dark:border-indigo-500/20 shadow-sm space-y-5">
+                          <h4 className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2 flex items-center justify-between">
+                            <span>Avaliações em Encontros</span>
+                            <span className="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-md">{catequizandoStats.count_av} reg</span>
+                          </h4>
+                          
+                          <div className="space-y-4">
+                            {[
+                              { label: "Pontualidade", value: catequizandoStats.pontualidade, color: "bg-indigo-500" },
+                              { label: "Participação", value: catequizandoStats.part_grupo, color: "bg-indigo-500" },
+                              { label: "Engajamento", value: catequizandoStats.engajamento, color: "bg-indigo-500" }
+                            ].map((item, idx) => (
+                              <div key={idx} className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase">{item.label}</span>
+                                  <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400">{(item.value / 5 * 100).toFixed(0)}%</span>
+                                </div>
+                                <div className="h-2 w-full bg-indigo-50 dark:bg-indigo-500/10 rounded-full overflow-hidden">
+                                  <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${(item.value / 5 * 100)}%` }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {catequizandoStats.count_ev > 0 && (
+                        <div className="bg-white dark:bg-zinc-900 rounded-2xl p-5 border border-emerald-100 dark:border-emerald-500/20 shadow-sm space-y-5">
+                          <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 flex items-center justify-between">
+                            <span>Evolução</span>
+                            <span className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md">{catequizandoStats.count_ev} reg</span>
+                          </h4>
+                          
+                          <div className="space-y-4">
+                            {[
+                              { label: "Espiritual", value: catequizandoStats.ev_espiritual, color: "bg-emerald-500" },
+                              { label: "Comportamental", value: catequizandoStats.ev_comportamental, color: "bg-emerald-500" }
+                            ].map((item, idx) => (
+                              <div key={idx} className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase">{item.label}</span>
+                                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">{(item.value / 5 * 100).toFixed(0)}%</span>
+                                </div>
+                                <div className="h-2 w-full bg-emerald-50 dark:bg-emerald-500/10 rounded-full overflow-hidden">
+                                  <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${(item.value / 5 * 100)}%` }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+              )}
+            </div>
+            
+            <div className="p-4 border-t border-black/5 bg-background">
+              <button 
+                onClick={() => setShowEvolucao(false)} 
+                className="w-full action-btn bg-zinc-900 hover:bg-zinc-800 text-white"
+              >
+                FECHAR
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!viewItem} onOpenChange={(o) => { if (!o) { setViewItem(null); setEditMode(false); } }}>
         <DialogContent hideClose className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30 p-0 sm:p-0">
           {viewItem && !editMode && (
@@ -1486,95 +1630,6 @@ export default function CatequizandosList() {
                            <p className="text-sm font-bold text-zinc-800">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
                         </div>
                       )}
-                      {/* Caminhada Pastoral (Diário) e Evolução */}
-                      <section className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-6 border-2 border-indigo-100 shadow-xl shadow-indigo-200/40 mt-6">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                           <h3 className="text-sm font-black text-indigo-900 uppercase tracking-widest text-center sm:text-left">Evolução e Participação</h3>
-                           
-                           {/* Period Selector */}
-                           <div className="flex bg-white/50 p-1 rounded-xl shadow-sm border border-indigo-100">
-                             {[
-                               { value: "mes", label: "Mês" },
-                               { value: "semestre", label: "Semestre" },
-                               { value: "ano", label: "Ano" }
-                             ].map((opt) => (
-                               <button
-                                 key={opt.value}
-                                 onClick={() => setEvolutionPeriod(opt.value as any)}
-                                 className={cn(
-                                   "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                                   evolutionPeriod === opt.value
-                                     ? "bg-indigo-600 text-white shadow-md"
-                                     : "text-indigo-600/70 hover:bg-indigo-100"
-                                 )}
-                               >
-                                 {opt.label}
-                               </button>
-                             ))}
-                           </div>
-                        </div>
-                        
-                        {!catequizandoStats ? (
-                           <div className="text-center py-6">
-                             <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Nenhum registro no período</p>
-                           </div>
-                        ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {catequizandoStats.count_av > 0 && (
-                              <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-5">
-                                <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2 flex items-center justify-between">
-                                  <span>Avaliações Encontros</span>
-                                  <span className="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md">{catequizandoStats.count_av} reg</span>
-                                </h4>
-                                
-                                <div className="space-y-4">
-                                  {[
-                                    { label: "Pontualidade", value: catequizandoStats.pontualidade, color: "bg-indigo-500" },
-                                    { label: "Participação", value: catequizandoStats.part_grupo, color: "bg-indigo-500" },
-                                    { label: "Engajamento", value: catequizandoStats.engajamento, color: "bg-indigo-500" }
-                                  ].map((item, idx) => (
-                                    <div key={idx} className="space-y-1.5">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-zinc-600 uppercase">{item.label}</span>
-                                        <span className="text-[10px] font-black text-indigo-600">{(item.value / 5 * 100).toFixed(0)}%</span>
-                                      </div>
-                                      <div className="h-2 w-full bg-indigo-50 rounded-full overflow-hidden">
-                                        <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${(item.value / 5 * 100)}%` }} />
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {catequizandoStats.count_ev > 0 && (
-                              <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm space-y-5">
-                                <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 flex items-center justify-between">
-                                  <span>Evolução</span>
-                                  <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-md">{catequizandoStats.count_ev} reg</span>
-                                </h4>
-                                
-                                <div className="space-y-4">
-                                  {[
-                                    { label: "Espiritual", value: catequizandoStats.ev_espiritual, color: "bg-emerald-500" },
-                                    { label: "Comportamental", value: catequizandoStats.ev_comportamental, color: "bg-emerald-500" }
-                                  ].map((item, idx) => (
-                                    <div key={idx} className="space-y-1.5">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-zinc-600 uppercase">{item.label}</span>
-                                        <span className="text-[10px] font-black text-emerald-600">{(item.value / 5 * 100).toFixed(0)}%</span>
-                                      </div>
-                                      <div className="h-2 w-full bg-emerald-50 rounded-full overflow-hidden">
-                                        <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${(item.value / 5 * 100)}%` }} />
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </section>
                    </section>
 
                    {/* Memorial */}
