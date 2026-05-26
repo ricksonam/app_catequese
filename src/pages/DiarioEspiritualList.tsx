@@ -217,27 +217,26 @@ export default function DiarioEspiritualList() {
                     {tipo !== "evolucao" && viewItem.avaliacoes_catequizandos && Array.isArray(viewItem.avaliacoes_catequizandos) && viewItem.avaliacoes_catequizandos.length > 0 && (
                       <div className="bg-white rounded-2xl p-5 border border-black/5 shadow-sm overflow-hidden">
                         <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-4">Avaliação de Participação (Estrelas)</h4>
-                        <div className="overflow-x-auto -mx-5 px-5">
-                          <table className="w-full min-w-[500px] border-collapse text-sm">
-                            <thead>
-                              <tr className="bg-muted/30">
-                                <th className="p-2 text-left text-[10px] font-bold text-muted-foreground uppercase rounded-tl-lg rounded-bl-lg">Catequizando</th>
-                                <th className="p-2 text-center text-[10px] font-bold text-muted-foreground uppercase">Pontualidade</th>
-                                <th className="p-2 text-center text-[10px] font-bold text-muted-foreground uppercase">Partic. Grupo</th>
-                                <th className="p-2 text-center text-[10px] font-bold text-muted-foreground uppercase rounded-tr-lg rounded-br-lg">Engajamento</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {viewItem.avaliacoes_catequizandos.map((av: any) => (
-                                <tr key={av.catequizando_id} className="border-b border-border/50 last:border-0 hover:bg-muted/10 transition-colors">
-                                  <td className="p-2 font-semibold">{av.nome}</td>
-                                  <td className="p-2"><div className="flex justify-center"><StarRating size="sm" readOnly value={av.pontualidade} /></div></td>
-                                  <td className="p-2"><div className="flex justify-center"><StarRating size="sm" readOnly value={av.participacao_grupo} /></div></td>
-                                  <td className="p-2"><div className="flex justify-center"><StarRating size="sm" readOnly value={av.engajamento} /></div></td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                          {viewItem.avaliacoes_catequizandos.map((av: any) => (
+                            <div key={av.catequizando_id} className="bg-muted/30 hover:bg-muted/50 transition-colors rounded-xl p-3 border border-black/5 flex flex-col gap-3">
+                              <div className="font-bold text-sm text-foreground truncate">{av.nome}</div>
+                              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[10px] font-bold text-muted-foreground uppercase">
+                                <div className="flex flex-col gap-1.5">
+                                  <span>Pontualidade</span>
+                                  <StarRating size="sm" readOnly value={av.pontualidade} />
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                  <span>Participação</span>
+                                  <StarRating size="sm" readOnly value={av.participacao_grupo} />
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                  <span>Engajamento</span>
+                                  <StarRating size="sm" readOnly value={av.engajamento} />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -246,25 +245,22 @@ export default function DiarioEspiritualList() {
                     {tipo === "evolucao" && viewItem.evolucao_catequizandos && Array.isArray(viewItem.evolucao_catequizandos) && viewItem.evolucao_catequizandos.length > 0 && (
                       <div className="bg-emerald-600/5 rounded-2xl p-5 border border-emerald-600/10 overflow-hidden">
                         <h4 className="text-[10px] font-black text-emerald-700 uppercase tracking-widest mb-4">Evolução (Estrelas)</h4>
-                        <div className="overflow-x-auto -mx-5 px-5">
-                          <table className="w-full min-w-[400px] border-collapse text-sm">
-                            <thead>
-                              <tr className="bg-emerald-600/10">
-                                <th className="p-2 text-left text-[10px] font-bold text-emerald-700 uppercase rounded-tl-lg rounded-bl-lg">Catequizando</th>
-                                <th className="p-2 text-center text-[10px] font-bold text-emerald-700 uppercase">Espiritual</th>
-                                <th className="p-2 text-center text-[10px] font-bold text-emerald-700 uppercase rounded-tr-lg rounded-br-lg">Comportamental</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {viewItem.evolucao_catequizandos.map((ev: any) => (
-                                <tr key={ev.catequizando_id} className="border-b border-emerald-600/10 last:border-0 hover:bg-emerald-600/5 transition-colors">
-                                  <td className="p-2 font-semibold text-emerald-700">{ev.nome}</td>
-                                  <td className="p-2"><div className="flex justify-center"><StarRating color="text-emerald-500" size="sm" readOnly value={ev.evolucao_espiritual} /></div></td>
-                                  <td className="p-2"><div className="flex justify-center"><StarRating color="text-emerald-500" size="sm" readOnly value={ev.evolucao_comportamental} /></div></td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                          {viewItem.evolucao_catequizandos.map((ev: any) => (
+                            <div key={ev.catequizando_id} className="bg-white/50 hover:bg-white transition-colors rounded-xl p-3 border border-emerald-600/10 flex flex-col gap-3">
+                              <div className="font-bold text-sm text-emerald-800 truncate">{ev.nome}</div>
+                              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[10px] font-bold text-emerald-600/80 uppercase">
+                                <div className="flex flex-col gap-1.5">
+                                  <span>Espiritual</span>
+                                  <StarRating color="text-emerald-500" size="sm" readOnly value={ev.evolucao_espiritual} />
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                  <span>Comportamental</span>
+                                  <StarRating color="text-emerald-500" size="sm" readOnly value={ev.evolucao_comportamental} />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}

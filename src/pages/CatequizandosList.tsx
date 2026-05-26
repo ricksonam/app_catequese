@@ -204,6 +204,7 @@ export default function CatequizandosList() {
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
   const [filterAniversarios, setFilterAniversarios] = useState(false);
   const [filterBatismos, setFilterBatismos] = useState(false);
+  const [evolutionPeriod, setEvolutionPeriod] = useState<"mes" | "semestre" | "ano">("ano");
   
   // --- Frequência Modal States ---
   const [showFrequencia, setShowFrequencia] = useState(false);
@@ -250,22 +251,37 @@ export default function CatequizandosList() {
       count_av: 0, count_ev: 0
     };
 
+    const hoje = new Date();
+    const currentYear = hoje.getFullYear();
+    const currentMonth = hoje.getMonth();
+    const startOfSemester = currentMonth < 6 ? new Date(currentYear, 0, 1) : new Date(currentYear, 6, 1);
+    const startOfMonth = new Date(currentYear, currentMonth, 1);
+    const startOfYear = new Date(currentYear, 0, 1);
+    
+    let startDate: Date;
+    if (evolutionPeriod === "mes") startDate = startOfMonth;
+    else if (evolutionPeriod === "semestre") startDate = startOfSemester;
+    else startDate = startOfYear;
+
     diarios.forEach((d: any) => {
-      if (d.avaliacoes_catequizandos && Array.isArray(d.avaliacoes_catequizandos)) {
-        const av = d.avaliacoes_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
-        if (av && (av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0)) {
-          soma.pontualidade += av.pontualidade || 0;
-          soma.part_grupo += av.participacao_grupo || 0;
-          soma.engajamento += av.engajamento || 0;
-          soma.count_av++;
+      const dataRegistro = d.data_registro ? new Date(d.data_registro + 'T12:00') : null;
+      if (dataRegistro && dataRegistro >= startDate) {
+        if (d.avaliacoes_catequizandos && Array.isArray(d.avaliacoes_catequizandos)) {
+          const av = d.avaliacoes_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
+          if (av && (av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0)) {
+            soma.pontualidade += av.pontualidade || 0;
+            soma.part_grupo += av.participacao_grupo || 0;
+            soma.engajamento += av.engajamento || 0;
+            soma.count_av++;
+          }
         }
-      }
-      if (d.evolucao_catequizandos && Array.isArray(d.evolucao_catequizandos)) {
-        const ev = d.evolucao_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
-        if (ev && (ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0)) {
-          soma.ev_espiritual += ev.evolucao_espiritual || 0;
-          soma.ev_comportamental += ev.evolucao_comportamental || 0;
-          soma.count_ev++;
+        if (d.evolucao_catequizandos && Array.isArray(d.evolucao_catequizandos)) {
+          const ev = d.evolucao_catequizandos.find((x: any) => x.catequizando_id === viewItem.id);
+          if (ev && (ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0)) {
+            soma.ev_espiritual += ev.evolucao_espiritual || 0;
+            soma.ev_comportamental += ev.evolucao_comportamental || 0;
+            soma.count_ev++;
+          }
         }
       }
     });
@@ -281,7 +297,7 @@ export default function CatequizandosList() {
       count_av: soma.count_av,
       count_ev: soma.count_ev,
     };
-  }, [viewItem, diarios]);
+  }, [viewItem, diarios, evolutionPeriod]);
 
   const pastEncontros = useMemo(() => {
     const limit = alertConfig.moduloCatequizandos?.faltas ?? 3;
@@ -1470,54 +1486,95 @@ export default function CatequizandosList() {
                            <p className="text-sm font-bold text-zinc-800">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
                         </div>
                       )}
-                      {/* Caminhada Pastoral (Estrelas) */}
-                      {catequizandoStats && (
-                        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-6 border-2 border-indigo-100 shadow-xl shadow-indigo-200/40 mt-6">
-                          <div className="flex items-center justify-center gap-2 mb-6">
-                             <h3 className="text-sm font-black text-indigo-900 uppercase tracking-widest text-center">Caminhada Pastoral (Diário)</h3>
-                          </div>
-                          
+                      {/* Caminhada Pastoral (Diário) e Evolução */}
+                      <section className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-6 border-2 border-indigo-100 shadow-xl shadow-indigo-200/40 mt-6">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                           <h3 className="text-sm font-black text-indigo-900 uppercase tracking-widest text-center sm:text-left">Evolução e Participação</h3>
+                           
+                           {/* Period Selector */}
+                           <div className="flex bg-white/50 p-1 rounded-xl shadow-sm border border-indigo-100">
+                             {[
+                               { value: "mes", label: "Mês" },
+                               { value: "semestre", label: "Semestre" },
+                               { value: "ano", label: "Ano" }
+                             ].map((opt) => (
+                               <button
+                                 key={opt.value}
+                                 onClick={() => setEvolutionPeriod(opt.value as any)}
+                                 className={cn(
+                                   "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                   evolutionPeriod === opt.value
+                                     ? "bg-indigo-600 text-white shadow-md"
+                                     : "text-indigo-600/70 hover:bg-indigo-100"
+                                 )}
+                               >
+                                 {opt.label}
+                               </button>
+                             ))}
+                           </div>
+                        </div>
+                        
+                        {!catequizandoStats ? (
+                           <div className="text-center py-6">
+                             <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Nenhum registro no período</p>
+                           </div>
+                        ) : (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {catequizandoStats.count_av > 0 && (
-                              <div className="bg-white rounded-2xl p-4 border border-indigo-100 shadow-sm space-y-4">
-                                <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2 text-center">Avaliações ({catequizandoStats.count_av})</h4>
+                              <div className="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-5">
+                                <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2 flex items-center justify-between">
+                                  <span>Avaliações Encontros</span>
+                                  <span className="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md">{catequizandoStats.count_av} reg</span>
+                                </h4>
                                 
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-zinc-600">Pontualidade</span>
-                                    <StarRating size="sm" readOnly value={catequizandoStats.pontualidade} />
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-zinc-600">Participação no Grupo</span>
-                                    <StarRating size="sm" readOnly value={catequizandoStats.part_grupo} />
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-zinc-600">Engajamento</span>
-                                    <StarRating size="sm" readOnly value={catequizandoStats.engajamento} />
-                                  </div>
+                                <div className="space-y-4">
+                                  {[
+                                    { label: "Pontualidade", value: catequizandoStats.pontualidade, color: "bg-indigo-500" },
+                                    { label: "Participação", value: catequizandoStats.part_grupo, color: "bg-indigo-500" },
+                                    { label: "Engajamento", value: catequizandoStats.engajamento, color: "bg-indigo-500" }
+                                  ].map((item, idx) => (
+                                    <div key={idx} className="space-y-1.5">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-zinc-600 uppercase">{item.label}</span>
+                                        <span className="text-[10px] font-black text-indigo-600">{(item.value / 5 * 100).toFixed(0)}%</span>
+                                      </div>
+                                      <div className="h-2 w-full bg-indigo-50 rounded-full overflow-hidden">
+                                        <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${(item.value / 5 * 100)}%` }} />
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             )}
 
                             {catequizandoStats.count_ev > 0 && (
-                              <div className="bg-white rounded-2xl p-4 border border-purple-100 shadow-sm space-y-4">
-                                <h4 className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-2 text-center">Evolução ({catequizandoStats.count_ev})</h4>
+                              <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-sm space-y-5">
+                                <h4 className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 flex items-center justify-between">
+                                  <span>Evolução</span>
+                                  <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-md">{catequizandoStats.count_ev} reg</span>
+                                </h4>
                                 
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-zinc-600">Espiritual</span>
-                                    <StarRating color="text-indigo-500" size="sm" readOnly value={catequizandoStats.ev_espiritual} />
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-bold text-zinc-600">Comportamental</span>
-                                    <StarRating color="text-indigo-500" size="sm" readOnly value={catequizandoStats.ev_comportamental} />
-                                  </div>
+                                <div className="space-y-4">
+                                  {[
+                                    { label: "Espiritual", value: catequizandoStats.ev_espiritual, color: "bg-emerald-500" },
+                                    { label: "Comportamental", value: catequizandoStats.ev_comportamental, color: "bg-emerald-500" }
+                                  ].map((item, idx) => (
+                                    <div key={idx} className="space-y-1.5">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-zinc-600 uppercase">{item.label}</span>
+                                        <span className="text-[10px] font-black text-emerald-600">{(item.value / 5 * 100).toFixed(0)}%</span>
+                                      </div>
+                                      <div className="h-2 w-full bg-emerald-50 rounded-full overflow-hidden">
+                                        <div className={cn("h-full transition-all duration-1000", item.color)} style={{ width: `${(item.value / 5 * 100)}%` }} />
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             )}
                           </div>
-                        </section>
-                      )}
+                        )}
+                      </section>
                    </section>
 
                    {/* Memorial */}
@@ -1533,8 +1590,10 @@ export default function CatequizandosList() {
                 </div>
 
                 {/* Footer */}
-                <div className="pt-4 text-center">
-                   <p className="text-[8px] font-black text-zinc-400 uppercase tracking-[0.4em]">Registrado em {viewItem.criadoEm ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(viewItem.criadoEm)) : '—'}</p>
+                <div className="mt-8 mb-4 text-center bg-zinc-100 py-3 rounded-full mx-auto max-w-fit px-6 border border-zinc-200 shadow-sm">
+                   <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                     <CalendarDays className="w-3.5 h-3.5" /> Registrado em {viewItem.criadoEm ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(viewItem.criadoEm)) : '—'}
+                   </p>
                 </div>
               </div>
             </div>
