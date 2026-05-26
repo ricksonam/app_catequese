@@ -838,14 +838,14 @@ export default function CatequizandosList() {
                   <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
                 )}
               </button>
-              <button 
-                onClick={() => setShowEvolucao(true)} 
-                className="w-full flex flex-col sm:flex-row items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all group active:scale-95 mt-2"
-              >
-                <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
-                <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Painel de Evolução</span>
-              </button>
             </div>
+            <button 
+              onClick={() => setShowEvolucao(true)} 
+              className="w-full flex flex-row items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all group active:scale-95"
+            >
+              <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Painel de Evolução</span>
+            </button>
             <button 
               onClick={() => setShowInscricaoModal(true)}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/5 border-2 border-dashed border-primary/20 text-primary hover:bg-primary/10 transition-all group active:scale-95"
