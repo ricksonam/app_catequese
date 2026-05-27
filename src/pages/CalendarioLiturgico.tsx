@@ -453,7 +453,36 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [liturgiaDiaria, setLiturgiaDiaria] = useState<any>(null);
+  const [loadingLiturgia, setLoadingLiturgia] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (selectedDay !== null) {
+      const fetchLiturgia = async () => {
+        setLoadingLiturgia(true);
+        try {
+          const d = String(selectedDay).padStart(2, '0');
+          const m = String(currentMonth + 1).padStart(2, '0');
+          const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}`);
+          if (res.ok) {
+            const data = await res.json();
+            setLiturgiaDiaria(data);
+          } else {
+            setLiturgiaDiaria(null);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar liturgia", error);
+          setLiturgiaDiaria(null);
+        } finally {
+          setLoadingLiturgia(false);
+        }
+      };
+      fetchLiturgia();
+    } else {
+      setLiturgiaDiaria(null);
+    }
+  }, [selectedDay, currentMonth]);
   const [noteContent, setNoteContent] = useState("");
   const [noteId, setNoteId] = useState<string | null>(null);
   const [isEditingNote, setIsEditingNote] = useState(false);
@@ -749,34 +778,62 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
 
           <div className="space-y-3">
             {/* Liturgia Diária */}
-            {(() => {
-              const key = `${currentMonth + 1}-${selectedDay}`;
-              const liturgia = DAILY_LITURGY[key];
-              if (!liturgia) return null;
-              return (
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 dark:from-amber-950/30 dark:to-orange-950/20 dark:border-amber-800/40">
-                  {/* Faixa lateral */}
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-orange-500 rounded-l-2xl" />
-                  <div className="p-4 pl-5">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm">
-                        <Scroll className="h-3.5 w-3.5 text-white" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-[0.2em]">Liturgia Diária</span>
-                        {liturgia.tema && (
-                          <span className="block text-[9px] font-bold text-amber-600/70 dark:text-amber-500/70 uppercase tracking-wider">{liturgia.tema}</span>
-                        )}
-                      </div>
+            {/* Liturgia Diária */}
+            {(loadingLiturgia || liturgiaDiaria) && (
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 dark:from-amber-950/30 dark:to-orange-950/20 dark:border-amber-800/40">
+                {/* Faixa lateral */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-orange-500 rounded-l-2xl" />
+                <div className="p-4 pl-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm shrink-0">
+                      <Scroll className="h-3.5 w-3.5 text-white" />
                     </div>
-                    <blockquote className="font-serif italic text-sm text-amber-900 dark:text-amber-200 leading-relaxed mb-2">
-                      &ldquo;{liturgia.citacao}&rdquo;
-                    </blockquote>
-                    <p className="text-[11px] font-black text-amber-700 dark:text-amber-400 tracking-wider">{liturgia.referencia}</p>
+                    <div>
+                      <span className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-[0.2em]">Liturgia Diária</span>
+                      {liturgiaDiaria?.liturgia && (
+                        <span className="block text-[9px] font-bold text-amber-600/70 dark:text-amber-500/70 uppercase tracking-wider">{liturgiaDiaria.liturgia}</span>
+                      )}
+                    </div>
                   </div>
+                  
+                  {loadingLiturgia ? (
+                    <div className="animate-pulse space-y-3 py-2">
+                      <div className="h-3 bg-amber-200/50 dark:bg-amber-800/50 rounded w-3/4"></div>
+                      <div className="h-3 bg-amber-200/50 dark:bg-amber-800/50 rounded w-1/2"></div>
+                      <div className="h-3 bg-amber-200/50 dark:bg-amber-800/50 rounded w-2/3"></div>
+                    </div>
+                  ) : liturgiaDiaria ? (
+                    <div className="space-y-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar text-[13px] text-amber-950/90 dark:text-amber-100/90 leading-relaxed">
+                      {liturgiaDiaria.primeiraLeitura && typeof liturgiaDiaria.primeiraLeitura !== 'string' && (
+                        <div>
+                          <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Primeira Leitura ({liturgiaDiaria.primeiraLeitura.referencia})</p>
+                          <p className="whitespace-pre-wrap">{liturgiaDiaria.primeiraLeitura.texto}</p>
+                        </div>
+                      )}
+                      {liturgiaDiaria.salmo && typeof liturgiaDiaria.salmo !== 'string' && (
+                        <div>
+                          <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Salmo ({liturgiaDiaria.salmo.referencia})</p>
+                          <p className="italic mb-1 font-medium">{liturgiaDiaria.salmo.refrao}</p>
+                          <p className="whitespace-pre-wrap">{liturgiaDiaria.salmo.texto}</p>
+                        </div>
+                      )}
+                      {liturgiaDiaria.segundaLeitura && typeof liturgiaDiaria.segundaLeitura !== 'string' && (
+                        <div>
+                          <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Segunda Leitura ({liturgiaDiaria.segundaLeitura.referencia})</p>
+                          <p className="whitespace-pre-wrap">{liturgiaDiaria.segundaLeitura.texto}</p>
+                        </div>
+                      )}
+                      {liturgiaDiaria.evangelho && typeof liturgiaDiaria.evangelho !== 'string' && (
+                        <div>
+                          <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Evangelho ({liturgiaDiaria.evangelho.referencia})</p>
+                          <p className="whitespace-pre-wrap">{liturgiaDiaria.evangelho.texto}</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
-              );
-            })()}
+              </div>
+            )}
 
             {/* Liturgical Info */}
             {EVENTS.filter(e => e.month === currentMonth + 1 && e.day === selectedDay).map((e, idx) => (
