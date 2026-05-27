@@ -15,7 +15,7 @@ import {
   ChevronRight,
   X,
   BookHeart,
-  Hands
+  Heart
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -37,7 +37,7 @@ const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
   { path: "__diario__", icon: BookHeart, label: "Diário", color: "text-indigo-600", dot: "bg-indigo-600" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
-  { path: "/modulos/oracoes", icon: Hands, label: "Orações", color: "text-amber-600", dot: "bg-amber-600" },
+  { path: "/modulos/oracoes", icon: Heart, label: "Orações", color: "text-amber-600", dot: "bg-amber-600" },
   { path: "__mais__", icon: Menu, label: "Módulos", color: "text-emerald-600", dot: "bg-emerald-600" },
 ];
 
