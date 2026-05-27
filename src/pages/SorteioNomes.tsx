@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Shuffle, Trash2, Plus, Users, Save, X as XIcon, Maximize, Minimize } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,20 @@ export default function SorteioNomes() {
 
   const [historico, setHistorico] = useState<Sorteio[]>([]);
   const [showHistorico, setShowHistorico] = useState(false);
+
+  // Auto-importar nomes quando turma é selecionada
+  useEffect(() => {
+    if (selectedTurma && catequizandos && catequizandos.length > 0) {
+      const novosNomes = catequizandos.map((c) => c.nome);
+      setNomes(novosNomes);
+      setResultado([]);
+      setDisponiveis([]);
+      setSorteioAtual(null);
+      setMostrarResultado(false);
+    } else if (!selectedTurma) {
+      setNomes([]);
+    }
+  }, [selectedTurma, catequizandos]);
 
   useEffect(() => {
     loadHistorico();
@@ -229,45 +243,77 @@ export default function SorteioNomes() {
             <Input value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Ex: Sorteio da leitura" />
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-900 ml-1">Importar de uma turma</label>
-            <div className="grid grid-cols-2 gap-2">
-              {turmas?.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    setSelectedTurma(t.id);
-                    // We need a small timeout to let the state update or just use the t.id directly in a modified import function
-                  }}
-                  className={cn(
-                    "p-3 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-1.5 text-center group",
-                    selectedTurma === t.id 
-                      ? "border-primary bg-primary/5 shadow-md shadow-primary/10" 
-                      : "border-muted-foreground/10 hover:border-primary/30 bg-card"
-                  )}
-                >
-                  <div className={cn(
-                    "w-8 h-8 rounded-xl flex items-center justify-center transition-colors shadow-sm",
-                    selectedTurma === t.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:bg-primary/20 group-hover:text-primary"
-                  )}>
-                    <Users className="h-4 w-4" />
+          <div className="space-y-4">
+            {/* Card premium de seleção de turma */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-0.5 shadow-xl shadow-purple-500/30">
+              <div className="bg-gradient-to-br from-zinc-900/95 to-zinc-800/95 rounded-[22px] p-5 space-y-4">
+                {/* Header do card */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/40">
+                    <Users className="h-5 w-5 text-white" />
                   </div>
-                  <div className="space-y-0.5">
-                    <p className={cn("text-[11px] font-black leading-tight truncate px-1", selectedTurma === t.id ? "text-primary" : "text-foreground")}>{t.nome}</p>
-                    <p className="text-[8px] font-bold text-muted-foreground uppercase opacity-60 tracking-tighter">{t.ano}</p>
+                  <div>
+                    <label className="block text-xs font-black text-white uppercase tracking-[0.2em]">Selecionar Turma</label>
+                    <p className="text-[10px] text-purple-300 font-medium mt-0.5">Os nomes são carregados automaticamente</p>
                   </div>
-                </button>
-              ))}
+                </div>
+
+                {/* Grid de turmas */}
+                <div className={cn(
+                  "gap-2.5",
+                  turmas && turmas.length === 1 ? "flex justify-center" : "grid grid-cols-2"
+                )}>
+                  {turmas?.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setSelectedTurma(selectedTurma === t.id ? "" : t.id)}
+                      className={cn(
+                        "relative p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 text-center group overflow-hidden",
+                        selectedTurma === t.id
+                          ? "border-violet-400 bg-violet-500/20 shadow-md shadow-violet-500/20"
+                          : "border-white/10 hover:border-violet-400/40 bg-white/5 hover:bg-white/10"
+                      )}
+                    >
+                      {selectedTurma === t.id && (
+                        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/5 rounded-2xl" />
+                      )}
+                      <div className={cn(
+                        "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm relative z-10",
+                        selectedTurma === t.id
+                          ? "bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-violet-500/40"
+                          : "bg-white/10 text-purple-300 group-hover:bg-violet-500/30 group-hover:text-violet-200"
+                      )}>
+                        <Users className="h-4 w-4" />
+                      </div>
+                      <div className="space-y-0.5 relative z-10">
+                        <p className={cn(
+                          "text-[11px] font-black leading-tight truncate px-1 max-w-[90px]",
+                          selectedTurma === t.id ? "text-violet-200" : "text-white/80"
+                        )}>{t.nome}</p>
+                        {t.ano && (
+                          <p className="text-[9px] font-bold text-white/40 uppercase tracking-tighter">{t.ano}</p>
+                        )}
+                      </div>
+                      {selectedTurma === t.id && (
+                        <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-violet-400 flex items-center justify-center">
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Status de nomes carregados */}
+                {selectedTurma && nomes.length > 0 && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/30">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-[11px] font-black text-emerald-300 uppercase tracking-wider">
+                      {nomes.length} nomes carregados ✓
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-            {selectedTurma && (
-              <Button 
-                variant="default" 
-                className="w-full h-11 rounded-xl bg-primary text-primary-foreground font-black text-xs gap-2 shadow-lg shadow-primary/20 animate-in zoom-in-95 duration-300" 
-                onClick={importarCatequizandos}
-              >
-                <Users className="h-4 w-4" /> IMPORTAR NOMES DESTA TURMA
-              </Button>
-            )}
           </div>
 
           <div className="space-y-2">
