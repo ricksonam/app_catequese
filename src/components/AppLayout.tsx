@@ -15,7 +15,8 @@ import {
   ChevronRight,
   X,
   BookHeart,
-  Heart
+  Heart,
+  HandHeart
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -37,7 +38,7 @@ const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
   { path: "__diario__", icon: BookHeart, label: "Diário", color: "text-indigo-600", dot: "bg-indigo-600" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
-  { path: "/modulos/oracoes", icon: Heart, label: "Orações", color: "text-amber-600", dot: "bg-amber-600" },
+  { path: "/modulos/oracoes", icon: HandHeart, label: "Orações", color: "text-amber-600", dot: "bg-amber-600" },
   { path: "__mais__", icon: Menu, label: "Módulos", color: "text-emerald-600", dot: "bg-emerald-600" },
 ];
 
@@ -214,12 +215,13 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   { label: "Diário Espiritual", path: "__diario__", icon: BookHeart, color: "bg-indigo-500/15 text-indigo-600" },
                   { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600" },
                   { label: "Agenda Catequética", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
+                  { label: "Liturgia Diária", path: "/modulos/liturgia", icon: BookOpen, color: "bg-amber-500/15 text-amber-600" },
+                  { label: "Orações", path: "/modulos/oracoes", icon: HandHeart, color: "bg-liturgical/15 text-liturgical" },
                   { label: "Mural de Fotos", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
                   { label: "Bíblia Online", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
                   { label: "Material de Apoio", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
                   { label: "Biblioteca de Encontros", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
                   { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
-                  { label: "Dar Sugestão", onClick: () => setSugestaoOpen(true), icon: MessageSquare, color: "bg-teal-500/15 text-teal-600" },
                 ].map((item, i) => (
                   <button
                     key={i}

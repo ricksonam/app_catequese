@@ -3,7 +3,7 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, Heart, BarChart2, X, Map, BookHeart
+  GraduationCap, ChevronLeft, Heart, HandHeart, BarChart2, X, Map, BookHeart
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
@@ -42,7 +42,7 @@ const modulosGlobais = [
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
   { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
   { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
-  { label: "Orações", icon: Heart, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Orações", icon: HandHeart, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
   { label: "Mapa Panorâmico IVC", icon: Map, path: "/mapa-panoramico", color: "bg-rose-500/10 text-rose-500" },
 ];
 

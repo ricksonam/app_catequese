@@ -28,7 +28,7 @@ export default function OracoesList() {
         </button>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-xl font-black text-liturgical tracking-tight uppercase">
-            Devocionário
+            Orações
           </h1>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
             {oracoesFiltradas.length} orações
@@ -90,7 +90,7 @@ export default function OracoesList() {
             <button
               key={oracao.id}
               onClick={() => navigate(`/modulos/oracoes/${oracao.id}`)}
-              className="text-left group animate-float-up bg-white dark:bg-zinc-900 border border-black/5 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-liturgical/30 transition-all active:scale-[0.98]"
+              className="text-left group animate-float-up bg-white dark:bg-zinc-900 border-2 border-liturgical/30 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-liturgical transition-all active:scale-[0.98]"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex items-start gap-4">
