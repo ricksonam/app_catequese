@@ -245,16 +245,16 @@ export default function SorteioNomes() {
 
           <div className="space-y-4">
             {/* Card premium de seleção de turma */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-0.5 shadow-xl shadow-purple-500/30">
-              <div className="bg-gradient-to-br from-zinc-900/95 to-zinc-800/95 rounded-[22px] p-5 space-y-4">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-300 via-orange-200 to-rose-300 p-0.5 shadow-xl shadow-rose-400/30">
+              <div className="bg-gradient-to-br from-orange-50 to-rose-50 rounded-[22px] p-5 space-y-4">
                 {/* Header do card */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/40">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center shadow-lg shadow-rose-500/40">
                     <Users className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <label className="block text-xs font-black text-white uppercase tracking-[0.2em]">Selecionar Turma</label>
-                    <p className="text-[10px] text-purple-300 font-medium mt-0.5">Os nomes são carregados automaticamente</p>
+                    <label className="block text-xs font-black text-rose-950 uppercase tracking-[0.2em]">Selecionar Turma</label>
+                    <p className="text-[10px] text-rose-700/80 font-medium mt-0.5">Os nomes são carregados automaticamente</p>
                   </div>
                 </div>
 
@@ -270,32 +270,32 @@ export default function SorteioNomes() {
                       className={cn(
                         "relative p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 text-center group overflow-hidden",
                         selectedTurma === t.id
-                          ? "border-violet-400 bg-violet-500/20 shadow-md shadow-violet-500/20"
-                          : "border-white/10 hover:border-violet-400/40 bg-white/5 hover:bg-white/10"
+                          ? "border-rose-400 bg-rose-400/20 shadow-md shadow-rose-400/20"
+                          : "border-rose-950/10 hover:border-rose-400/40 bg-rose-950/5 hover:bg-rose-950/10"
                       )}
                     >
                       {selectedTurma === t.id && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/5 rounded-2xl" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-rose-400/10 to-orange-400/5 rounded-2xl" />
                       )}
                       <div className={cn(
                         "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm relative z-10",
                         selectedTurma === t.id
-                          ? "bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-violet-500/40"
-                          : "bg-white/10 text-purple-300 group-hover:bg-violet-500/30 group-hover:text-violet-200"
+                          ? "bg-gradient-to-br from-rose-400 to-orange-400 text-white shadow-rose-500/40"
+                          : "bg-white/10 text-rose-700/80 group-hover:bg-violet-500/30 group-hover:text-rose-900"
                       )}>
                         <Users className="h-4 w-4" />
                       </div>
                       <div className="space-y-0.5 relative z-10">
                         <p className={cn(
                           "text-[11px] font-black leading-tight truncate px-1 max-w-[90px]",
-                          selectedTurma === t.id ? "text-violet-200" : "text-white/80"
+                          selectedTurma === t.id ? "text-rose-900" : "text-rose-950/80"
                         )}>{t.nome}</p>
                         {t.ano && (
-                          <p className="text-[9px] font-bold text-white/40 uppercase tracking-tighter">{t.ano}</p>
+                          <p className="text-[9px] font-bold text-rose-950/50 uppercase tracking-tighter">{t.ano}</p>
                         )}
                       </div>
                       {selectedTurma === t.id && (
-                        <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-violet-400 flex items-center justify-center">
+                        <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-rose-400 flex items-center justify-center">
                           <div className="w-2 h-2 rounded-full bg-white" />
                         </div>
                       )}

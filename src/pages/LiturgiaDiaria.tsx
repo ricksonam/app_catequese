@@ -48,11 +48,11 @@ interface Aba {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const COR_CONFIG: Record<string, { bg: string; text: string; badge: string; accent: string; label: string }> = {
-  verde:    { bg: "from-emerald-950/40 to-zinc-950",   text: "text-emerald-400",  badge: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",  accent: "bg-emerald-500",  label: "Tempo Comum" },
-  branco:   { bg: "from-amber-950/30 to-zinc-950",     text: "text-amber-300",    badge: "bg-amber-400/15 text-amber-300 border-amber-400/30",          accent: "bg-amber-400",    label: "Tempo de Luz" },
-  vermelho: { bg: "from-red-950/40 to-zinc-950",       text: "text-red-400",      badge: "bg-red-500/15 text-red-400 border-red-500/30",                accent: "bg-red-500",      label: "Espírito e Mártires" },
-  roxo:     { bg: "from-purple-950/40 to-zinc-950",    text: "text-purple-400",   badge: "bg-purple-500/15 text-purple-400 border-purple-500/30",        accent: "bg-purple-500",   label: "Advento / Quaresma" },
-  rosa:     { bg: "from-pink-950/40 to-zinc-950",      text: "text-pink-400",     badge: "bg-pink-500/15 text-pink-400 border-pink-500/30",              accent: "bg-pink-500",     label: "Alegria no Caminho" },
+  verde:    { bg: "from-emerald-50 to-emerald-100/80",   text: "text-emerald-800",  badge: "bg-emerald-500/15 text-emerald-800 border-emerald-500/30",  accent: "bg-emerald-500",  label: "Tempo Comum" },
+  branco:   { bg: "from-amber-50 to-amber-100/80",     text: "text-amber-800",    badge: "bg-amber-400/15 text-amber-800 border-amber-400/30",          accent: "bg-amber-400",    label: "Tempo de Luz" },
+  vermelho: { bg: "from-red-50 to-red-100/80",       text: "text-red-800",      badge: "bg-red-500/15 text-red-800 border-red-500/30",                accent: "bg-red-500",      label: "Espírito e Mártires" },
+  roxo:     { bg: "from-purple-50 to-purple-100/80",    text: "text-purple-800",   badge: "bg-purple-500/15 text-purple-800 border-purple-500/30",        accent: "bg-purple-500",   label: "Advento / Quaresma" },
+  rosa:     { bg: "from-pink-50 to-pink-100/80",      text: "text-pink-800",     badge: "bg-pink-500/15 text-pink-800 border-pink-500/30",              accent: "bg-pink-500",     label: "Alegria no Caminho" },
 };
 
 const COR_DEFAULT = COR_CONFIG.verde;
@@ -87,15 +87,15 @@ function isSalmo(v: unknown): v is Salmo {
 function ReadingSkeleton() {
   return (
     <div className="animate-pulse space-y-4 pt-2">
-      <div className="h-5 bg-white/8 rounded-xl w-1/3" />
-      <div className="h-4 bg-white/6 rounded-xl w-full" />
-      <div className="h-4 bg-white/6 rounded-xl w-5/6" />
-      <div className="h-4 bg-white/6 rounded-xl w-full" />
-      <div className="h-4 bg-white/6 rounded-xl w-4/5" />
-      <div className="h-4 bg-white/6 rounded-xl w-full" />
-      <div className="h-4 bg-white/6 rounded-xl w-3/4" />
-      <div className="h-4 bg-white/6 rounded-xl w-full" />
-      <div className="h-4 bg-white/6 rounded-xl w-5/6" />
+      <div className="h-5 bg-black/10 rounded-xl w-1/3" />
+      <div className="h-4 bg-black/5 rounded-xl w-full" />
+      <div className="h-4 bg-black/5 rounded-xl w-5/6" />
+      <div className="h-4 bg-black/5 rounded-xl w-full" />
+      <div className="h-4 bg-black/5 rounded-xl w-4/5" />
+      <div className="h-4 bg-black/5 rounded-xl w-full" />
+      <div className="h-4 bg-black/5 rounded-xl w-3/4" />
+      <div className="h-4 bg-black/5 rounded-xl w-full" />
+      <div className="h-4 bg-black/5 rounded-xl w-5/6" />
     </div>
   );
 }
@@ -195,13 +195,13 @@ export default function LiturgiaDiaria() {
     if (loading) return <ReadingSkeleton />;
     if (error || !liturgia) return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
-          <Flame className="w-8 h-8 text-white/20" />
+        <div className="w-16 h-16 rounded-2xl bg-black/5 flex items-center justify-center">
+          <Flame className="w-8 h-8 text-zinc-400" />
         </div>
-        <p className="text-white/50 font-medium text-sm">Não foi possível carregar a liturgia deste dia.</p>
+        <p className="text-zinc-500 font-medium text-sm">Não foi possível carregar a liturgia deste dia.</p>
         <button
           onClick={() => setCurrentDate(new Date())}
-          className="px-4 py-2 rounded-xl bg-white/10 text-white/70 text-xs font-bold hover:bg-white/15 transition-all"
+          className="px-4 py-2 rounded-xl bg-black/10 text-zinc-700 text-xs font-bold hover:bg-white/90 transition-all"
         >
           Ir para hoje
         </button>
@@ -217,18 +217,18 @@ export default function LiturgiaDiaria() {
           <div className="flex items-center gap-3">
             <div className={`w-1 self-stretch rounded-full ${cor.accent} opacity-60`} />
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-0.5">Primeira Leitura</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Primeira Leitura</p>
               <p className={`text-lg font-bold ${cor.text}`}>{leitura.referencia}</p>
             </div>
           </div>
           <div
-            className="font-serif text-white/90 whitespace-pre-wrap leading-relaxed transition-all duration-200"
+            className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
             style={textStyle}
           >
             {leitura.texto}
           </div>
-          <div className="pt-4 border-t border-white/8">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-widest text-center">
+          <div className="pt-4 border-t border-black/5">
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
               Palavra do Senhor
             </p>
           </div>
@@ -243,7 +243,7 @@ export default function LiturgiaDiaria() {
           <div className="flex items-center gap-3">
             <div className={`w-1 self-stretch rounded-full ${cor.accent} opacity-60`} />
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-0.5">Salmo Responsorial</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Salmo Responsorial</p>
               <p className={`text-lg font-bold ${cor.text}`}>{salmo.referencia}</p>
             </div>
           </div>
@@ -259,13 +259,13 @@ export default function LiturgiaDiaria() {
             </div>
           )}
           <div
-            className="font-serif text-white/90 whitespace-pre-wrap leading-relaxed transition-all duration-200"
+            className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
             style={textStyle}
           >
             {salmo.texto}
           </div>
-          <div className="pt-4 border-t border-white/8">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-widest text-center">
+          <div className="pt-4 border-t border-black/5">
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
               — {salmo.refrao ? salmo.refrao.substring(0, 60) + (salmo.refrao.length > 60 ? "..." : "") : "Louvai o Senhor"}
             </p>
           </div>
@@ -280,18 +280,18 @@ export default function LiturgiaDiaria() {
           <div className="flex items-center gap-3">
             <div className={`w-1 self-stretch rounded-full ${cor.accent} opacity-60`} />
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-0.5">Segunda Leitura</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Segunda Leitura</p>
               <p className={`text-lg font-bold ${cor.text}`}>{leitura.referencia}</p>
             </div>
           </div>
           <div
-            className="font-serif text-white/90 whitespace-pre-wrap leading-relaxed transition-all duration-200"
+            className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
             style={textStyle}
           >
             {leitura.texto}
           </div>
-          <div className="pt-4 border-t border-white/8">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-widest text-center">
+          <div className="pt-4 border-t border-black/5">
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
               Palavra do Senhor
             </p>
           </div>
@@ -306,18 +306,18 @@ export default function LiturgiaDiaria() {
           <div className="flex items-center gap-3">
             <div className={`w-1 self-stretch rounded-full ${cor.accent} opacity-60`} />
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 mb-0.5">Santo Evangelho</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Santo Evangelho</p>
               <p className={`text-lg font-bold ${cor.text}`}>{evang.referencia}</p>
             </div>
           </div>
           <div
-            className="font-serif text-white/90 whitespace-pre-wrap leading-relaxed transition-all duration-200"
+            className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
             style={textStyle}
           >
             {evang.texto}
           </div>
-          <div className="pt-4 border-t border-white/8">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-widest text-center">
+          <div className="pt-4 border-t border-black/5">
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
               Palavra da Salvação
             </p>
           </div>
@@ -326,7 +326,7 @@ export default function LiturgiaDiaria() {
     }
 
     return (
-      <div className="flex items-center justify-center py-16 text-white/30 text-sm font-medium">
+      <div className="flex items-center justify-center py-16 text-zinc-400 text-sm font-medium">
         Leitura não disponível para este dia.
       </div>
     );
@@ -336,7 +336,7 @@ export default function LiturgiaDiaria() {
 
   return (
     <div
-      className={`min-h-screen bg-zinc-950 transition-all duration-500 ${
+      className={`min-h-screen bg-slate-50 transition-all duration-500 ${
         fullScreen ? "fixed inset-0 z-50 overflow-y-auto" : "pb-24"
       }`}
     >
@@ -352,12 +352,12 @@ export default function LiturgiaDiaria() {
           fullScreen ? "opacity-0 hover:opacity-100" : ""
         }`}
       >
-        <div className="bg-zinc-950/80 backdrop-blur-xl border-b border-white/5">
+        <div className="bg-white/90 backdrop-blur-xl border-b border-black/5">
           <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
             {/* Voltar */}
             <button
               onClick={() => (fullScreen ? toggleFullScreen() : navigate(-1))}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/8 border border-white/10 text-white/70 hover:bg-white/12 active:scale-90 transition-all shrink-0"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/10 border border-black/10 text-zinc-700 hover:bg-black/5 active:scale-90 transition-all shrink-0"
               aria-label="Voltar"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -365,11 +365,11 @@ export default function LiturgiaDiaria() {
 
             {/* Title center */}
             <div className="flex-1 flex flex-col items-center min-w-0">
-              <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.25em]">
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em]">
                 Liturgia Diária
               </span>
               {liturgia?.liturgia && (
-                <span className="text-xs font-bold text-white/60 truncate max-w-[200px]">
+                <span className="text-xs font-bold text-zinc-600 truncate max-w-[200px]">
                   {liturgia.liturgia}
                 </span>
               )}
@@ -379,25 +379,25 @@ export default function LiturgiaDiaria() {
             <div className="flex items-center gap-1.5 shrink-0">
               <button
                 onClick={() => setFontSize((p) => Math.max(14, p - 2))}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/8 border border-white/10 text-white/70 hover:bg-white/12 active:scale-90 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/10 border border-black/10 text-zinc-700 hover:bg-black/5 active:scale-90 transition-all"
                 aria-label="Diminuir fonte"
               >
                 <ZoomOut className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setFontSize((p) => Math.min(32, p + 2))}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/8 border border-white/10 text-white/70 hover:bg-white/12 active:scale-90 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-black/10 border border-black/10 text-zinc-700 hover:bg-black/5 active:scale-90 transition-all"
                 aria-label="Aumentar fonte"
               >
                 <ZoomIn className="h-4 w-4" />
               </button>
-              <div className="w-px h-5 bg-white/10 mx-0.5" />
+              <div className="w-px h-5 bg-black/10 mx-0.5" />
               <button
                 onClick={toggleFullScreen}
                 className={`w-9 h-9 flex items-center justify-center rounded-xl border active:scale-90 transition-all ${
                   fullScreen
                     ? `${cor.badge} border-current`
-                    : "bg-white/8 border-white/10 text-white/70 hover:bg-white/12"
+                    : "bg-black/10 border-black/10 text-zinc-700 hover:bg-black/5"
                 }`}
                 aria-label={fullScreen ? "Sair do fullscreen" : "Fullscreen"}
               >
@@ -412,10 +412,10 @@ export default function LiturgiaDiaria() {
       <div className="relative z-10 max-w-2xl mx-auto px-4 pt-6 space-y-5">
 
         {/* ── Date Selector ── */}
-        <div className="flex items-center gap-2 bg-white/5 border border-white/8 rounded-2xl p-2 backdrop-blur-sm">
+        <div className="flex items-center gap-2 bg-black/5 border border-black/5 rounded-2xl p-2 backdrop-blur-sm">
           <button
             onClick={() => changeDate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-90 transition-all text-white/60"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/10 active:scale-90 transition-all text-zinc-600"
             aria-label="Dia anterior"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -427,7 +427,7 @@ export default function LiturgiaDiaria() {
           </div>
           <button
             onClick={() => changeDate(1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:scale-90 transition-all text-white/60"
+            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/10 active:scale-90 transition-all text-zinc-600"
             aria-label="Próximo dia"
           >
             <ChevronRight className="w-5 h-5" />
@@ -446,7 +446,7 @@ export default function LiturgiaDiaria() {
               </span>
             )}
             {liturgia.liturgia && (
-              <span className="text-white/50 text-xs font-medium truncate">
+              <span className="text-zinc-500 text-xs font-medium truncate">
                 {liturgia.liturgia}
               </span>
             )}
@@ -454,7 +454,7 @@ export default function LiturgiaDiaria() {
         )}
 
         {/* ── Reading Tabs ── */}
-        <div className="flex gap-1 bg-white/5 border border-white/8 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-1 bg-black/5 border border-black/5 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide">
           {(loading ? ABAS_BASE : abasVisiveis).map((aba) => {
             const Icon = aba.icon;
             const isActive = abaAtiva === aba.id;
@@ -465,8 +465,8 @@ export default function LiturgiaDiaria() {
                 disabled={loading}
                 className={`flex-1 min-w-[70px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
                   isActive
-                    ? `bg-white/15 border border-white/20 ${cor.text} shadow-lg shadow-black/20`
-                    : "text-white/40 hover:text-white/60 hover:bg-white/5"
+                    ? `bg-white/90 border border-black/20 ${cor.text} shadow-lg shadow-black/5`
+                    : "text-zinc-500 hover:text-zinc-600 hover:bg-black/5"
                 }`}
               >
                 <Icon className="h-3.5 w-3.5 shrink-0" />
@@ -478,7 +478,7 @@ export default function LiturgiaDiaria() {
         </div>
 
         {/* ── Reading Content Card ── */}
-        <div className="bg-white/4 border border-white/8 rounded-3xl p-6 backdrop-blur-sm min-h-[300px] animate-fade-in">
+        <div className="bg-black/100 border border-black/5 rounded-3xl p-6 backdrop-blur-sm min-h-[300px] animate-fade-in">
           {renderContent()}
         </div>
 
@@ -486,7 +486,7 @@ export default function LiturgiaDiaria() {
         {!loading && !error && (
           <div className="flex items-center justify-center gap-3 py-4">
             <div className={`w-8 h-px ${cor.accent} opacity-40`} />
-            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">
               Palavra da Salvação
             </span>
             <div className={`w-8 h-px ${cor.accent} opacity-40`} />
