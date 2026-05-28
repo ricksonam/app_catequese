@@ -58,7 +58,7 @@ export default function Dashboard() {
       }
     });
     
-    if (closestIndex >= 0 && closestIndex < 8) {
+    if (closestIndex >= 0 && closestIndex < 10) {
       setActiveModuleIndex(closestIndex);
     }
   };
@@ -965,6 +965,22 @@ export default function Dashboard() {
               </span>
             </div>
 
+            {/* Card Liturgia Diária */}
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+              <button
+                onClick={() => {
+                  navigate("/modulos/liturgia");
+                }}
+                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50 bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center"
+              >
+                <BookOpen className="w-12 h-12 text-white/90 transition-transform duration-300 group-hover:scale-110 drop-shadow-md" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+              </button>
+              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-amber-500 transition-colors truncate w-full">
+                Liturgia
+              </span>
+            </div>
+
             {/* Card Jogos */}
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
               <button
@@ -1030,7 +1046,7 @@ export default function Dashboard() {
 
           {/* Indicador de Bolinhas (Pagination Dots) */}
           <div className="flex justify-center items-center gap-1.5 mt-4 mb-10">
-            {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => (
+            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((idx) => (
               <button
                 key={idx}
                 onClick={() => {
