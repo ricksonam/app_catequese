@@ -37,6 +37,7 @@ const modulosGlobais = [
   { label: "Diário Espiritual", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500" },
   { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold" },
   { label: "Agenda catequética", icon: CalendarDays, path: "/modulos/calendario", color: "bg-destructive/10 text-destructive" },
+  { label: "Liturgia Diária", icon: BookOpen, path: "/modulos/liturgia", color: "bg-amber-500/10 text-amber-500" },
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-success/10 text-success" },
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
   { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },

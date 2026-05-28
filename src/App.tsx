@@ -47,6 +47,7 @@ import MaterialApoio from "@/pages/MaterialApoio";
 import ParoquiaComunidadeCadastro from "@/pages/ParoquiaComunidadeCadastro";
 import CatequistasCadastro from "@/pages/CatequistasCadastro";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
+import LiturgiaDiaria from "@/pages/LiturgiaDiaria";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminLogin from "@/pages/AdminLogin";
 import PlaceholderPage from "@/pages/PlaceholderPage";
@@ -169,6 +170,7 @@ const AppRoutes = () => (
       <Route path="/modulos/oracoes" element={<OracoesList />} />
       <Route path="/modulos/oracoes/:id" element={<OracaoView />} />
       <Route path="/modulos/calendario" element={<CalendarioLiturgico />} />
+      <Route path="/modulos/liturgia" element={<LiturgiaDiaria />} />
       <Route path="/modulos/*" element={<PlaceholderPage />} />
       <Route path="/jogos" element={<JogosHub />} />
       <Route path="/jogos/sorteio" element={<SorteioNomes />} />

@@ -807,26 +807,21 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
                       {liturgiaDiaria.primeiraLeitura && typeof liturgiaDiaria.primeiraLeitura !== 'string' && (
                         <div>
                           <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Primeira Leitura ({liturgiaDiaria.primeiraLeitura.referencia})</p>
-                          <p className="whitespace-pre-wrap">{liturgiaDiaria.primeiraLeitura.texto}</p>
                         </div>
                       )}
                       {liturgiaDiaria.salmo && typeof liturgiaDiaria.salmo !== 'string' && (
                         <div>
                           <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Salmo ({liturgiaDiaria.salmo.referencia})</p>
-                          <p className="italic mb-1 font-medium">{liturgiaDiaria.salmo.refrao}</p>
-                          <p className="whitespace-pre-wrap">{liturgiaDiaria.salmo.texto}</p>
                         </div>
                       )}
                       {liturgiaDiaria.segundaLeitura && typeof liturgiaDiaria.segundaLeitura !== 'string' && (
                         <div>
                           <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Segunda Leitura ({liturgiaDiaria.segundaLeitura.referencia})</p>
-                          <p className="whitespace-pre-wrap">{liturgiaDiaria.segundaLeitura.texto}</p>
                         </div>
                       )}
                       {liturgiaDiaria.evangelho && typeof liturgiaDiaria.evangelho !== 'string' && (
                         <div>
                           <p className="font-bold text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1">Evangelho ({liturgiaDiaria.evangelho.referencia})</p>
-                          <p className="whitespace-pre-wrap">{liturgiaDiaria.evangelho.texto}</p>
                         </div>
                       )}
                     </div>

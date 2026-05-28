@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const modulos = [
   { label: "Agenda catequética", desc: "Acompanhe e anote nas datas", icon: CalendarDays, color: "bg-destructive/10 text-destructive", path: "/modulos/calendario" },
+  { label: "Liturgia Diária", desc: "Leituras diárias completas", icon: BookOpen, color: "bg-amber-500/10 text-amber-500", path: "/modulos/liturgia" },
   { label: "Jogos", desc: "Sorteios, quiz e jogos bíblicos", icon: Dices, color: "bg-gold/15 text-gold", path: "/jogos" },
   { label: "Mural de Fotos", desc: "Compartilhe momentos da catequese", icon: Image, color: "bg-primary/10 text-primary", path: "/modulos/mural" },
   { label: "Bíblia", desc: "Consulte passagens bíblicas", icon: BookOpen, color: "bg-primary/10 text-primary", path: "/modulos/biblia" },
