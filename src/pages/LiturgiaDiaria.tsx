@@ -363,17 +363,8 @@ export default function LiturgiaDiaria() {
               <ArrowLeft className="h-5 w-5" />
             </button>
 
-            {/* Title center */}
-            <div className="flex-1 flex flex-col items-center min-w-0">
-              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em]">
-                Liturgia Diária
-              </span>
-              {liturgia?.liturgia && (
-                <span className="text-xs font-bold text-zinc-600 truncate max-w-[200px]">
-                  {liturgia.liturgia}
-                </span>
-              )}
-            </div>
+            {/* Espaço vazio onde ficava o título */}
+            <div className="flex-1" />
 
             {/* Controls */}
             <div className="flex items-center gap-1.5 shrink-0">
@@ -411,50 +402,54 @@ export default function LiturgiaDiaria() {
       {/* ── Main Content ── */}
       <div className="relative z-10 max-w-2xl mx-auto px-4 pt-6 space-y-5">
 
-        {/* ── Date Selector ── */}
-        <div className="flex items-center gap-2 bg-black/5 border border-black/5 rounded-2xl p-2 backdrop-blur-sm">
-          <button
-            onClick={() => changeDate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/10 active:scale-90 transition-all text-zinc-600"
-            aria-label="Dia anterior"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <div className="flex-1 text-center">
-            <p className={`text-sm font-bold capitalize ${cor.text}`}>
-              {formatDateLabel(currentDate)}
-            </p>
+        {/* ── Novo Card de Informações ── */}
+        <div className="bg-white/80 border border-black/5 rounded-3xl p-5 backdrop-blur-sm flex flex-col items-center text-center shadow-sm">
+          <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] mb-4">
+            Liturgia Diária
+          </span>
+          <div className="flex items-center justify-between w-full">
+            <button
+              onClick={() => changeDate(-1)}
+              className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 active:scale-90 transition-all text-zinc-600 shrink-0"
+              aria-label="Dia anterior"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex-1 px-2">
+              <p className={`text-base font-bold capitalize ${cor.text}`}>
+                {formatDateLabel(currentDate)}
+              </p>
+            </div>
+            <button
+              onClick={() => changeDate(1)}
+              className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/5 active:scale-90 transition-all text-zinc-600 shrink-0"
+              aria-label="Próximo dia"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            onClick={() => changeDate(1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-black/10 active:scale-90 transition-all text-zinc-600"
-            aria-label="Próximo dia"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+          
+          {!loading && liturgia && (
+            <div className="flex flex-col items-center gap-3 mt-4 animate-fade-in">
+              {liturgia.liturgia && (
+                <span className="text-zinc-600 text-sm font-medium">
+                  {liturgia.liturgia}
+                </span>
+              )}
+              {liturgia.cor && (
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] ${cor.badge}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${cor.accent}`} />
+                  {cor.label}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* ── Liturgy Header ── */}
-        {!loading && liturgia && (
-          <div className="flex items-center gap-3 animate-fade-in">
-            {liturgia.cor && (
-              <span
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] ${cor.badge}`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${cor.accent}`} />
-                {cor.label}
-              </span>
-            )}
-            {liturgia.liturgia && (
-              <span className="text-zinc-500 text-xs font-medium truncate">
-                {liturgia.liturgia}
-              </span>
-            )}
-          </div>
-        )}
-
         {/* ── Reading Tabs ── */}
-        <div className="flex gap-1 bg-black/5 border border-black/5 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-1 bg-white/60 border border-black/5 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide shadow-sm">
           {(loading ? ABAS_BASE : abasVisiveis).map((aba) => {
             const Icon = aba.icon;
             const isActive = abaAtiva === aba.id;
@@ -478,7 +473,7 @@ export default function LiturgiaDiaria() {
         </div>
 
         {/* ── Reading Content Card ── */}
-        <div className="bg-black/100 border border-black/5 rounded-3xl p-6 backdrop-blur-sm min-h-[300px] animate-fade-in">
+        <div className="bg-white/80 border border-black/5 rounded-3xl p-6 backdrop-blur-sm min-h-[300px] animate-fade-in shadow-sm">
           {renderContent()}
         </div>
 
