@@ -12,7 +12,7 @@ export default function MapaPanoramico() {
       <div className="space-y-4 animate-fade-in flex flex-col pt-4">
         <div className="flex items-center justify-center min-h-[44px] relative">
           <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
+            <ArrowLeft className="h-5 w-5 text-white" />
           </button>
           
           <div className="flex flex-col items-center gap-1 text-center px-12">

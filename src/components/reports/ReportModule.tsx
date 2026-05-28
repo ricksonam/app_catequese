@@ -375,8 +375,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
           <div className={cn("p-6 text-white bg-gradient-to-br transition-all duration-500", config.color)}>
             <div className="flex items-center gap-3">
               {step === 'select' ? (
-                <button onClick={() => setStep('list')} className="w-10 h-10 rounded-2xl bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
-                  <ArrowLeft className="h-5 w-5" />
+                <button onClick={() => setStep('list')} className="w-10 h-10 rounded-2xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 flex items-center justify-center transition-all">
+                  <ArrowLeft className="h-5 w-5 text-white" />
                 </button>
               ) : (
                 <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -424,8 +424,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       {isPreviewOpen && (
         <div className="preview-overlay print:hidden">
           <div className="preview-actions">
-            <button onClick={resetFlow} className="p-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-all">
-              <ArrowLeft className="h-5 w-5" />
+            <button onClick={resetFlow} className="p-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 text-white transition-all">
+              <ArrowLeft className="h-5 w-5 text-white" />
             </button>
             <div className="h-6 w-px bg-white/20 mx-2" />
             <button 

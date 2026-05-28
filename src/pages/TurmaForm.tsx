@@ -199,7 +199,7 @@ export default function TurmaForm() {
   return (
     <div className="space-y-6 pb-10">
       <div className="page-header animate-fade-in">
-        <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+        <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-white" /></button>
         <h1 className="text-xl font-bold text-foreground inline-flex items-center gap-2">
           {isEditing ? <><Pencil className="h-5 w-5" /> Editar Turma</> : "Nova Turma"}
         </h1>

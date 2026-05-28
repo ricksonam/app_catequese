@@ -31,8 +31,8 @@ export function GameHeader({
     <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md p-4 sm:p-6 border-b border-border shadow-sm">
       <div className="flex items-center justify-between">
         {!isFullscreen && (
-          <button onClick={onBack || (() => navigate("/jogos"))} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors shrink-0">
-            <ArrowLeft className="h-5 w-5" />
+          <button onClick={onBack || (() => navigate("/jogos"))} className="back-btn shrink-0">
+            <ArrowLeft className="h-5 w-5 text-white" />
           </button>
         )}
         

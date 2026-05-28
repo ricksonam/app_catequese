@@ -170,7 +170,7 @@ export default function MissoesFamilia() {
           {/* Row 1: Back Button + Título (Centralizado) */}
           <div className="flex items-center justify-center min-h-[44px] relative">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
-              <ArrowLeft className="h-5 w-5 text-foreground" />
+              <ArrowLeft className="h-5 w-5 text-white" />
             </Button>
             
             <div className="flex flex-col items-center gap-1 text-center">

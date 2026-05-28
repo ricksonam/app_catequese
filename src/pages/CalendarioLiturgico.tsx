@@ -609,9 +609,9 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
               else if (onClose) onClose();
               else navigate("/");
             }}
-            className="back-btn bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700 border-2 border-white dark:border-zinc-700 shadow-md"
+            className="back-btn"
           >
-            <X className="h-5 w-5 text-foreground" />
+            <X className="h-5 w-5 text-white" />
           </button>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
@@ -635,7 +635,7 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
       <div className={`float-card overflow-hidden animate-float-up flex flex-col ${isFullscreen ? 'flex-1 shadow-2xl border-2 border-primary/10' : ''}`}>
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-4 border-b border-border/30 flex items-center justify-between">
           <button onClick={prevMonth} className="w-10 h-10 rounded-xl bg-background/80 hover:bg-background flex items-center justify-center transition-all active:scale-90 shadow-sm border border-border/20">
-            <ChevronLeft className="h-5 w-5 text-foreground" />
+            <ChevronLeft className="h-5 w-5 text-white" />
           </button>
           <h2 className="text-2xl font-black text-foreground tracking-tight px-4">
             {MONTH_NAMES[currentMonth]}

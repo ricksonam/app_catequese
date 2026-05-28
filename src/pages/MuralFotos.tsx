@@ -272,7 +272,7 @@ export default function MuralFotos() {
     <div className="space-y-4 pb-32">
       <div className="page-header animate-fade-in flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-white" /></button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Mural de fotos</h1>
             <p className="text-xs text-muted-foreground">{fotosTurma.length + fotosCriatividades.length} memórias</p>

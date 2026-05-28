@@ -359,10 +359,10 @@ export default function LiturgiaDiaria() {
             {/* Voltar */}
             <button
               onClick={() => (fullScreen ? toggleFullScreen() : navigate(-1))}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/10 border border-black/10 text-zinc-700 hover:bg-black/5 active:scale-90 transition-all shrink-0"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 active:scale-90 transition-all shrink-0"
               aria-label="Voltar"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5 text-white" />
             </button>
 
             {/* Espaço vazio onde ficava o título */}

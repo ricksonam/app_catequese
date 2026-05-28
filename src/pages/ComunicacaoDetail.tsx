@@ -113,7 +113,7 @@ export default function ComunicacaoDetail() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between sticky top-0 z-10 bg-slate-100/80 dark:bg-zinc-950/80 backdrop-blur-md py-4 -mx-4 px-4 sm:mx-0 sm:px-0 print:hidden gap-4">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/comunicacao')} className="back-btn">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
+            <ArrowLeft className="h-5 w-5 text-white" />
           </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">

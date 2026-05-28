@@ -129,7 +129,7 @@
   }
 
   .back-btn {
-    @apply p-2 rounded-xl bg-card/60 backdrop-blur-md border border-border/30 hover:bg-muted transition-all active:scale-95;
+    @apply p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white border border-orange-600/30 shadow-md shadow-orange-500/20 transition-all active:scale-95;
   }
 
   /* Action button style */

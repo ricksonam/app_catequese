@@ -24,7 +24,7 @@ export default function OracoesList() {
     <div className="space-y-6 pb-20">
       <div className="flex items-center justify-center min-h-[44px] relative pt-4">
         <button onClick={() => navigate(-1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
-          <ArrowLeft className="h-5 w-5 text-foreground" />
+          <ArrowLeft className="h-5 w-5 text-white" />
         </button>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-xl font-black text-liturgical tracking-tight uppercase">
