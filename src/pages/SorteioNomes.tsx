@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTurmas, useCatequizandos } from "@/hooks/useSupabaseData";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { GameHeader } from "@/components/GameHeader";
 
 interface Sorteio {
   id: string;
@@ -211,32 +212,18 @@ export default function SorteioNomes() {
   const started = resultado.length > 0 || disponiveis.length > 0;
 
   return (
-    <div ref={containerRef} className={cn("space-y-5 flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background p-6" : "")}>
-      <div className={cn("flex items-center gap-3 animate-fade-in", isFullscreen ? "hidden" : "flex")}>
-        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-        <h1 className="text-lg font-bold text-foreground flex-1">Sorteio de Nomes</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={toggleFullscreen}>
-            <Maximize className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => { setShowHistorico(true); loadHistorico(); }}>
-            Histórico
-          </Button>
-        </div>
-      </div>
-
-      {isFullscreen && (
-        <div className="absolute top-6 right-6 z-50">
-          <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="bg-background/50 backdrop-blur-sm rounded-full">
-            <Minimize className="h-5 w-5" />
-          </Button>
-        </div>
-      )}
+    <div ref={containerRef} className={cn("flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background" : "")}>
+      <GameHeader 
+        title="Sorteio de Nomes" 
+        subtitle="Aleatório & Justo" 
+        isFullscreen={isFullscreen} 
+        onToggleFullscreen={toggleFullscreen} 
+        showHistoryBtn={true} 
+        onShowHistory={() => { setShowHistorico(true); loadHistorico(); }} 
+      />
 
       {/* Config Sections */}
-      <div className={cn("space-y-5", isFullscreen && started ? "hidden" : "block")}>
+      <div className={cn("space-y-5 p-4 sm:p-6 pb-24 flex-1 max-w-3xl mx-auto w-full", isFullscreen && started ? "hidden" : "block")}>
         <div className="float-card p-4 space-y-4 animate-float-up">
           <div className="space-y-2">
             <Label>Título do Sorteio</Label>

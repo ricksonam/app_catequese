@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Users, Plus, X as XIcon, Shuffle, RefreshCw, Maximize, Minimize, Save } from "lucide-react";
+import { Users, Plus, X as XIcon, Shuffle, RefreshCw, Save, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { GameHeader } from "@/components/GameHeader";
 
 interface Participante {
   nome: string;
@@ -58,6 +59,7 @@ export default function SorteioGrupos() {
   const [novoNome, setNovoNome] = useState("");
 
   const [quantidadeGrupos, setQuantidadeGrupos] = useState<number>(3);
+  const [customQtde, setCustomQtde] = useState<string>("");
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [sorteado, setSorteado] = useState(false);
   const [sortearLider, setSortearLider] = useState(false);
@@ -211,39 +213,22 @@ export default function SorteioGrupos() {
 
   return (
     <div ref={containerRef} className="min-h-full flex flex-col transition-all duration-500 bg-background">
-      {/* Header Fixo */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md p-4 sm:p-6 border-b border-border flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          {!isFullscreen && (
-            <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors">
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-          )}
-          <div>
-            <h1 className="text-xl font-black text-foreground uppercase tracking-tight">Sorteio de Grupos</h1>
-            {!isFullscreen && <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold">Divisão de Equipas</p>}
-          </div>
-        </div>
-        
-        <div className="flex gap-2">
-          {!sorteado && (
-            <Button onClick={() => setShowHistorico(true)} variant="outline" className="hidden sm:flex rounded-xl font-bold gap-2">
-              <Save className="h-4 w-4" /> Histórico
-            </Button>
-          )}
-          <Button onClick={toggleFullscreen} variant="outline" size="icon" className="rounded-xl shrink-0">
-            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-          </Button>
-        </div>
-      </div>
+      <GameHeader
+        title="Sorteio de Grupos"
+        subtitle="Divisão de Equipes"
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        showHistoryBtn={true}
+        onShowHistory={() => setShowHistorico(true)}
+      />
 
       <div className={cn("flex-1 p-4 sm:p-6 pb-24", isFullscreen ? "max-w-4xl mx-auto w-full pt-8" : "max-w-3xl mx-auto w-full")}>
         {!sorteado ? (
           <div className="space-y-6">
-            {/* Bloco Escuro Premium para Seleção */}
-            <div className="bg-indigo-950 rounded-3xl p-5 shadow-2xl relative overflow-hidden group">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/30 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
+            {/* Bloco Premium para Seleção Mais Suave */}
+            <div className="bg-indigo-50 dark:bg-indigo-950/20 rounded-3xl p-5 shadow-inner border border-indigo-100 dark:border-indigo-900/50 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+              <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-200/50 dark:bg-indigo-500/10 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
               
               <div className="relative z-10 space-y-4">
                 <div className="flex items-center gap-3">
@@ -251,8 +236,8 @@ export default function SorteioGrupos() {
                     <Users className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <label className="block text-xs font-black text-indigo-100 uppercase tracking-[0.2em]">Selecionar Turma</label>
-                    <p className="text-[10px] text-indigo-300 font-medium mt-0.5">Participantes carregados automaticamente</p>
+                    <label className="block text-xs font-black text-indigo-900 dark:text-indigo-100 uppercase tracking-[0.2em]">Selecionar Turma</label>
+                    <p className="text-[10px] text-indigo-700/80 dark:text-indigo-300 font-medium mt-0.5">Participantes carregados automaticamente</p>
                   </div>
                 </div>
 
@@ -265,8 +250,8 @@ export default function SorteioGrupos() {
                       className={cn(
                         "relative p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 text-center overflow-hidden",
                         selectedTurma === t.id
-                          ? "border-indigo-400 bg-indigo-400/20 shadow-md shadow-indigo-400/20"
-                          : "border-indigo-950/10 border-white/5 bg-white/5 hover:bg-white/10"
+                          ? "border-indigo-400 bg-white dark:bg-indigo-400/20 shadow-md shadow-indigo-400/20"
+                          : "border-indigo-200/50 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10"
                       )}
                     >
                       {selectedTurma === t.id && (
@@ -276,13 +261,13 @@ export default function SorteioGrupos() {
                         "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm relative z-10",
                         selectedTurma === t.id
                           ? "bg-gradient-to-br from-indigo-400 to-blue-400 text-white shadow-indigo-500/40"
-                          : "bg-white/10 text-indigo-200"
+                          : "bg-indigo-100 dark:bg-white/10 text-indigo-500 dark:text-indigo-200"
                       )}>
                         <Users className="h-4 w-4" />
                       </div>
                       <div className="space-y-0.5 relative z-10">
-                        <p className={cn("text-[11px] font-black leading-tight truncate px-1 max-w-[100px]", selectedTurma === t.id ? "text-indigo-100" : "text-indigo-200/80")}>{t.nome}</p>
-                        {t.ano && <p className="text-[9px] font-bold text-indigo-300/50 uppercase tracking-tighter">{t.ano}</p>}
+                        <p className={cn("text-[11px] font-black leading-tight truncate px-1 max-w-[100px]", selectedTurma === t.id ? "text-indigo-900 dark:text-indigo-100" : "text-indigo-700/80 dark:text-indigo-200/80")}>{t.nome}</p>
+                        {t.ano && <p className="text-[9px] font-bold text-indigo-400 dark:text-indigo-300/50 uppercase tracking-tighter">{t.ano}</p>}
                       </div>
                       {selectedTurma === t.id && (
                         <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-indigo-400 flex items-center justify-center">
@@ -351,22 +336,46 @@ export default function SorteioGrupos() {
             {/* Quantidade de Grupos - Glass Cards */}
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Quantidade de Grupos</Label>
-              <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+              <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar items-center">
                 {quantidadeOpcoes.map(n => (
                   <button
                     key={n}
-                    onClick={() => setQuantidadeGrupos(n)}
+                    onClick={() => {
+                      setQuantidadeGrupos(n);
+                      setCustomQtde("");
+                    }}
                     className={cn(
                       "w-16 h-16 rounded-2xl border-2 font-black text-xl transition-all shrink-0 flex flex-col items-center justify-center relative overflow-hidden",
-                      quantidadeGrupos === n 
+                      quantidadeGrupos === n && !customQtde
                         ? "border-indigo-500 text-indigo-700 shadow-md shadow-indigo-500/20 bg-indigo-50" 
                         : "bg-card border-border hover:border-indigo-500/40 text-foreground"
                     )}
                   >
-                    {quantidadeGrupos === n && <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-blue-500/10" />}
+                    {quantidadeGrupos === n && !customQtde && <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-blue-500/10" />}
                     <span className="relative z-10">{n}</span>
                   </button>
                 ))}
+                
+                <div className="flex items-center gap-2 pl-2 border-l border-border ml-1 h-16">
+                  <Input 
+                    type="number" 
+                    min="2"
+                    className={cn(
+                      "w-20 h-16 rounded-2xl border-2 font-black text-xl text-center focus-visible:ring-indigo-500 transition-all",
+                      customQtde ? "border-indigo-500 text-indigo-700 bg-indigo-50/50" : "bg-card"
+                    )}
+                    placeholder="Outro"
+                    value={customQtde}
+                    onChange={e => {
+                      const valStr = e.target.value;
+                      setCustomQtde(valStr);
+                      const val = parseInt(valStr);
+                      if (!isNaN(val) && val > 0) {
+                        setQuantidadeGrupos(val);
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </div>
 

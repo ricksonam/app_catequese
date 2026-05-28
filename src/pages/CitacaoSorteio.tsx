@@ -8,6 +8,7 @@ import { useTurmas, useCatequizandos, useCitacoes, useSaveHistoricoCitacao, useH
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CitacaoBiblica } from "@/lib/store";
+import { GameHeader } from "@/components/GameHeader";
 
 const LIVROS_ANTIGO = [
   "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio",
@@ -260,38 +261,21 @@ export default function CitacaoSorteio() {
   return (
     <div ref={containerRef} className={cn(
       "min-h-full flex flex-col transition-all duration-500",
-      isFullscreen ? "bg-[#fdf8f0] p-6 lg:p-12" : "space-y-5"
+      isFullscreen ? "bg-[#fdf8f0]" : "bg-background"
     )}>
-      {/* Header */}
-      <div className={cn("flex items-center gap-3 animate-fade-in", isFullscreen ? "hidden" : "flex")}>
-        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-xl font-black text-amber-950/80">Sorteio Bíblico</h1>
-          <p className="text-[10px] text-amber-900/60 uppercase tracking-widest font-black">Palavra de Vida</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={toggleFullscreen} className="rounded-xl border-amber-200 text-amber-900 border-2 bg-amber-50">
-            <Maximize className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowHistorico(true)} className="rounded-xl font-bold border-amber-200 text-amber-900 border-2 bg-amber-50">
-            Histórico
-          </Button>
-        </div>
-      </div>
-
-      {isFullscreen && (
-        <div className="absolute top-6 right-6 z-50">
-          <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="bg-amber-100/80 border-2 border-amber-200/50 text-amber-900 backdrop-blur-sm rounded-full shadow-lg">
-            <Minimize className="h-5 w-5" />
-          </Button>
-        </div>
-      )}
+      <GameHeader 
+        title="Sorteio Bíblico" 
+        subtitle="Palavra de Vida" 
+        isFullscreen={isFullscreen} 
+        onToggleFullscreen={toggleFullscreen} 
+        showHistoryBtn={true} 
+        onShowHistory={() => setShowHistorico(true)} 
+      />
 
       {/* Config Panel */}
       {isConfigMode && (
-         <div className="float-card p-6 md:p-8 space-y-8 border-t-8 border-t-amber-600 bg-white/60 backdrop-blur-sm animate-float-up shadow-xl shadow-amber-900/10">
+         <div className="flex-1 p-4 sm:p-6 pb-24 max-w-3xl mx-auto w-full">
+           <div className="float-card p-6 md:p-8 space-y-8 border-t-8 border-t-amber-600 bg-white/60 backdrop-blur-sm animate-float-up shadow-xl shadow-amber-900/10">
            
            {/* Categoria Selection Chips */}
            <div className="space-y-3">
@@ -422,10 +406,11 @@ export default function CitacaoSorteio() {
              </div>
            </div>
 
-           <Button onClick={iniciarSorteio} className="w-full h-14 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-lg gap-2 shadow-xl shadow-amber-900/20 active:scale-95 transition-all">
-             <Scroll className="h-6 w-6" /> PREPARAR SORTEIO
-           </Button>
-         </div>
+            <Button onClick={iniciarSorteio} className="w-full h-14 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-black text-lg gap-2 shadow-xl shadow-amber-900/20 active:scale-95 transition-all">
+              <Scroll className="h-6 w-6" /> PREPARAR SORTEIO
+            </Button>
+          </div>
+        </div>
       )}
 
       {/* Draw Stage */}

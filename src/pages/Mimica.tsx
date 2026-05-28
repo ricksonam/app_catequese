@@ -1,8 +1,9 @@
-﻿import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ArrowLeft, Play, RotateCcw, Maximize, Minimize, ChevronRight, Timer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { GameHeader } from "@/components/GameHeader";
 
 interface CartaMimica {
   titulo: string;
@@ -212,33 +213,23 @@ export default function Mimica() {
 
   return (
     <div ref={containerRef} className={cn(
-      "min-h-full flex flex-col transition-all duration-500",
-      isFullscreen ? "bg-gradient-to-br from-indigo-950 via-purple-950 to-violet-950 min-h-screen p-6" : "space-y-5"
+      "flex flex-col min-h-full transition-all duration-500",
+      isFullscreen ? "bg-gradient-to-br from-indigo-950 via-purple-950 to-violet-950" : "bg-background"
     )}>
-      {/* Header */}
-      <div className={cn("flex items-center gap-3 animate-fade-in", isFullscreen ? "hidden" : "flex")}>
-        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-xl font-black text-foreground">Mímica Bíblica</h1>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Teatro e Expressão</p>
-        </div>
-        {!isSetup && (
-          <Button variant="outline" size="icon" onClick={() => !document.fullscreenElement ? containerRef.current?.requestFullscreen().catch(() => {}) : document.exitFullscreen()} className="rounded-xl border-2">
-            <Maximize className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
+      <GameHeader 
+        title="Mímica Bíblica" 
+        subtitle="Teatro e Expressão" 
+        isFullscreen={isFullscreen} 
+        onToggleFullscreen={() => {
+          if (!document.fullscreenElement) {
+            containerRef.current?.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen();
+          }
+        }} 
+      />
 
-      {isFullscreen && (
-        <div className="absolute top-6 right-6 z-50">
-          <Button variant="ghost" size="icon" onClick={() => document.exitFullscreen()} className="bg-white/10 text-white border border-white/20 rounded-full">
-            <Minimize className="h-5 w-5" />
-          </Button>
-        </div>
-      )}
-
+      <div className="flex-1 p-4 sm:p-6 pb-24 max-w-3xl mx-auto w-full">
       {/* SETUP */}
       {isSetup && (
         <div className="float-card p-6 space-y-6 animate-float-up border-t-4 border-t-purple-500">
@@ -469,6 +460,7 @@ export default function Mimica() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

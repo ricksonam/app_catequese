@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import confetti from 'canvas-confetti';
+import { GameHeader } from "@/components/GameHeader";
 
 // --- Types ---
 type Category = 'missa' | 'santos' | 'sacramentos' | 'oracoes';
@@ -482,29 +483,23 @@ export default function PacienciaBiblica() {
   return (
     <div className="min-h-screen bg-[#1a472a] flex flex-col overflow-hidden touch-none" ref={containerRef}>
       
-      {/* Header Bar */}
-      <div className="flex items-center justify-between p-2 sm:p-4 text-white bg-black/20 backdrop-blur-md z-10">
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate("/jogos")} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <div>
-            <h1 className="text-sm sm:text-base font-bold leading-none">Cartas da Fé</h1>
-            <p className="text-[10px] sm:text-xs text-white/70">Nível {level} • {formatTime(timer)}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Button variant="ghost" size="icon" onClick={undo} disabled={history.length === 0} className="text-white hover:bg-white/10 h-8 w-8 rounded-full disabled:opacity-30">
-            <Undo2 className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => initLevel(level)} className="text-white hover:bg-white/10 h-8 w-8 rounded-full">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => setShowLevelSelect(true)} className="text-white hover:bg-white/10 h-8 w-8 rounded-full bg-white/5">
-            <Settings className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <GameHeader 
+        title="Cartas da Fé" 
+        subtitle={`Nível ${level} • ${formatTime(timer)}`} 
+        actionButtons={
+          <>
+            <Button variant="outline" size="icon" onClick={undo} disabled={history.length === 0} className="h-9 w-9 rounded-xl disabled:opacity-30">
+              <Undo2 className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => initLevel(level)} className="h-9 w-9 rounded-xl">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => setShowLevelSelect(true)} className="h-9 w-9 rounded-xl bg-muted/50">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </>
+        }
+      />
 
       {/* Main Play Area */}
       <div className="flex-1 flex flex-col p-2 sm:p-4 gap-4 sm:gap-6 overflow-hidden relative">

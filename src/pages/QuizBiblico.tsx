@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { GameTimerButton } from "@/components/GameTimerButton";
+import { GameHeader } from "@/components/GameHeader";
 
 interface Pergunta {
   pergunta: string;
@@ -128,26 +129,27 @@ export default function QuizBiblico() {
   };
 
   return (
-    <div ref={containerRef} className={cn("space-y-5 flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background p-6" : "")}>
-      <div className={cn("flex items-center gap-3 animate-fade-in", isFullscreen ? "hidden" : "flex")}>
-        <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-        <h1 className="text-lg font-bold text-foreground flex-1">Quiz Bíblico</h1>
-        {!isSetup && (
-          <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
-            {perguntaIdx + 1}/{shuffled.length}
-          </span>
-        )}
-      </div>
-
-      {isFullscreen && (
-        <div className="absolute top-6 right-6 z-50">
-          <Button variant="ghost" size="icon" onClick={() => document.exitFullscreen()} className="bg-background/50 backdrop-blur-sm rounded-full">
-            <Minimize className="h-5 w-5" />
-          </Button>
-        </div>
-      )}
+    <div ref={containerRef} className={cn("flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background" : "")}>
+      <GameHeader 
+        title="Quiz Bíblico" 
+        subtitle="Teste seus conhecimentos" 
+        isFullscreen={isFullscreen} 
+        onToggleFullscreen={() => {
+          if (!document.fullscreenElement) {
+            containerRef.current?.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen();
+          }
+        }} 
+        actionButtons={
+          !isSetup && (
+            <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-full hidden sm:inline-flex">
+              {perguntaIdx + 1}/{shuffled.length}
+            </span>
+          )
+        }
+      />
+      <div className="flex-1 p-4 sm:p-6 pb-24">
 
       {isSetup ? (
         <div className="float-card p-6 space-y-6 animate-float-up max-w-sm mx-auto w-full mt-10">
@@ -295,6 +297,7 @@ export default function QuizBiblico() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

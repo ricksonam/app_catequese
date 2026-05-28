@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { 
-  ArrowLeft, Shuffle, Printer, RotateCcw, Play, Maximize, Minimize, 
+  Shuffle, Printer, RotateCcw, Play, 
   Trophy, BookOpen, User, Hash, Cross, Ship, Waves, Crown, Heart, 
   Key, Sword, Stars, Baby, Dumbbell, Scissors, Anchor, Sprout, 
   Sparkles, Bell, TreeDeciduous, Gift, Droplets, Hammer, Music, 
@@ -15,6 +15,7 @@ import { useBingoModelos } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { BingoModelo, BingoItem } from "@/lib/store";
+import { GameHeader } from "@/components/GameHeader";
 
 // Mapping string names to Lucide icons
 const IconMap: Record<string, any> = {
@@ -113,18 +114,13 @@ export default function BingoBiblico() {
     window.print();
   };
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   if (etapa === "selecao") {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/jogos")} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-          <div>
-            <h1 className="text-lg font-bold">Bingo Bíblico</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Sorteio e Diversão</p>
-          </div>
-        </div>
+      <div className="flex flex-col min-h-full">
+        <GameHeader title="Bingo Bíblico" subtitle="Sorteio e Diversão" />
+        <div className="flex-1 p-4 sm:p-6 pb-24 space-y-6">
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {modelos.map(m => (
@@ -164,25 +160,25 @@ export default function BingoBiblico() {
             </Button>
           </div>
         )}
+        </div>
       </div>
     );
   }
 
   if (etapa === "preparacao") {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-3 print:hidden">
-          <Button variant="outline" onClick={() => setEtapa("selecao")} className="rounded-xl">
-             Voltar
-          </Button>
-          <div className="flex-1 text-center">
-            <h1 className="text-lg font-bold">Imprimir Cartelas</h1>
-            <p className="text-xs text-muted-foreground">{selectedModelo?.nome} • 3x3</p>
-          </div>
-          <Button onClick={imprimir} className="bg-emerald-600 hover:bg-emerald-700 rounded-xl gap-2">
-            <Printer className="h-4 w-4" /> IMPRIMIR AGORA
-          </Button>
-        </div>
+      <div className="flex flex-col min-h-full">
+        <GameHeader
+          title="Imprimir Cartelas"
+          subtitle={`${selectedModelo?.nome} • 3x3`}
+          onBack={() => setEtapa("selecao")}
+          actionButtons={
+            <Button onClick={imprimir} className="bg-emerald-600 hover:bg-emerald-700 rounded-xl gap-2 h-9">
+              <Printer className="h-4 w-4" /> Imprimir
+            </Button>
+          }
+        />
+        <div className="flex-1 p-4 sm:p-6 pb-24">
 
         {/* Print Layout */}
         <div className={cn(
@@ -222,43 +218,32 @@ export default function BingoBiblico() {
             <Play className="h-6 w-6" /> TUDO PRONTO! COMEÇAR SORTEIO
           </Button>
         </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={cn(
+    <div ref={containerRef} className={cn(
       "min-h-full flex flex-col transition-all duration-500",
-      isFullscreen ? "bg-slate-900 p-8 text-white" : "space-y-6"
+      isFullscreen ? "bg-slate-900 text-white" : ""
     )}>
-      {/* Game Header */}
-      <div className={cn("flex items-center justify-between", isFullscreen ? "mb-12" : "mb-0")}>
-        <div className="flex items-center gap-3">
-          {!isFullscreen && (
-            <button onClick={() => setEtapa("preparacao")} className="p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-          )}
-          <div>
-            <h1 className={cn("font-black", isFullscreen ? "text-3xl" : "text-lg")}>Sorteio Eletrônico</h1>
-            <p className={cn("text-[10px] uppercase font-black tracking-widest", isFullscreen ? "text-primary" : "text-muted-foreground")}>
-              {selectedModelo?.nome}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button variant={isFullscreen ? "secondary" : "outline"} size="icon" onClick={() => {
-            if (!document.fullscreenElement) containerRef.current?.requestFullscreen();
-            else document.exitFullscreen();
-          }} className="rounded-xl">
-            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-          </Button>
-          <Button onClick={() => setSorteados([])} variant="destructive" size="icon" className="rounded-xl">
+      <GameHeader
+        title="Sorteio Eletrônico"
+        subtitle={selectedModelo?.nome || "Bingo Bíblico"}
+        isFullscreen={isFullscreen}
+        onBack={() => setEtapa("preparacao")}
+        onToggleFullscreen={() => {
+          if (!document.fullscreenElement) containerRef.current?.requestFullscreen().catch(() => {});
+          else document.exitFullscreen();
+        }}
+        actionButtons={
+          <Button onClick={() => setSorteados([])} variant="destructive" size="icon" className="rounded-xl h-9 w-9">
             <RotateCcw className="h-4 w-4" />
           </Button>
-        </div>
-      </div>
+        }
+      />
+      <div className={cn("flex-1 p-4 sm:p-6 pb-24", isFullscreen && "p-8")}>
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Draw Area */}
@@ -330,6 +315,7 @@ export default function BingoBiblico() {
             ))}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
