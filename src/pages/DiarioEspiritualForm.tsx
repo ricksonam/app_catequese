@@ -139,7 +139,7 @@ export default function DiarioEspiritualForm() {
             {isEditing ? "Editar Registro" : "Novo Registro"}
           </h1>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
-            Diário Espiritual
+            Diário do Catequista
           </p>
         </div>
       </div>

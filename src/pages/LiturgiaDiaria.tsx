@@ -58,7 +58,9 @@ const COR_CONFIG: Record<string, { bg: string; text: string; badge: string; acce
 const COR_DEFAULT = COR_CONFIG.verde;
 
 function getCor(cor?: string) {
-  return (cor && COR_CONFIG[cor]) || COR_DEFAULT;
+  if (!cor) return COR_DEFAULT;
+  const normalized = cor.toLowerCase().trim();
+  return COR_CONFIG[normalized] || COR_DEFAULT;
 }
 
 function padDate(n: number) {

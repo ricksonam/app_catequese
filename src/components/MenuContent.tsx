@@ -5,6 +5,7 @@ import {
   Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
   GraduationCap, ChevronLeft, Heart, HandHeart, BarChart2, X, Map, BookHeart
 } from "lucide-react";
+import { PrayingHands } from "./icons/PrayingHands";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -34,7 +35,7 @@ const cadastros = [
 ];
 
 const modulosGlobais = [
-  { label: "Diário Espiritual", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500" },
+  { label: "Diário do Catequista", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500" },
   { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold" },
   { label: "Agenda catequética", icon: CalendarDays, path: "/modulos/calendario", color: "bg-destructive/10 text-destructive" },
   { label: "Liturgia Diária", icon: BookOpen, path: "/modulos/liturgia", color: "bg-amber-500/10 text-amber-500" },
@@ -42,7 +43,7 @@ const modulosGlobais = [
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
   { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
   { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
-  { label: "Orações", icon: HandHeart, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Orações", icon: PrayingHands, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
   { label: "Mapa Panorâmico IVC", icon: Map, path: "/mapa-panoramico", color: "bg-rose-500/10 text-rose-500" },
 ];
 
@@ -55,7 +56,6 @@ const classModules = [
   { label: "Reuniões", icon: Users, getPath: (id: string) => `/turmas/${id}/reunioes`, color: "bg-blue-500/10 text-blue-500" },
   { label: "Catequese em Família", icon: Heart, getPath: (id: string) => `/turmas/${id}/familia`, color: "bg-rose-500/10 text-rose-500" },
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
-  { label: "Diário Espiritual", icon: DiarioIcon, getPath: (id: string) => `/turmas/${id}/diario`, color: "bg-indigo-500/10 text-indigo-500 overflow-hidden" },
 ];
 
 const comunicacao = [
