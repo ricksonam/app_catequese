@@ -48,7 +48,7 @@ interface Aba {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const COR_CONFIG: Record<string, { bg: string; text: string; badge: string; accent: string; label: string }> = {
-  verde:    { bg: "from-emerald-50 to-emerald-100/80",   text: "text-emerald-800",  badge: "bg-emerald-500/15 text-emerald-800 border-emerald-500/30",  accent: "bg-emerald-500",  label: "Tempo Comum" },
+  verde:    { bg: "from-blue-50 to-blue-200/80",   text: "text-blue-800",  badge: "bg-blue-500/15 text-blue-800 border-blue-500/30",  accent: "bg-blue-600",  label: "Tempo Comum" },
   branco:   { bg: "from-amber-50 to-amber-100/80",     text: "text-amber-800",    badge: "bg-amber-400/15 text-amber-800 border-amber-400/30",          accent: "bg-amber-400",    label: "Tempo de Luz" },
   vermelho: { bg: "from-red-50 to-red-100/80",       text: "text-red-800",      badge: "bg-red-500/15 text-red-800 border-red-500/30",                accent: "bg-red-500",      label: "Espírito e Mártires" },
   roxo:     { bg: "from-purple-50 to-purple-100/80",    text: "text-purple-800",   badge: "bg-purple-500/15 text-purple-800 border-purple-500/30",        accent: "bg-purple-500",   label: "Advento / Quaresma" },
@@ -415,8 +415,25 @@ export default function LiturgiaDiaria() {
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex-1 px-2">
-              <p className={`text-base font-bold capitalize ${cor.text}`}>
+            <div className="flex-1 px-2 relative">
+              <input
+                type="date"
+                value={
+                  currentDate.getFullYear() +
+                  "-" +
+                  padDate(currentDate.getMonth() + 1) +
+                  "-" +
+                  padDate(currentDate.getDate())
+                }
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const [y, m, d] = e.target.value.split("-");
+                    setCurrentDate(new Date(Number(y), Number(m) - 1, Number(d)));
+                  }
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              <p className={`text-base font-bold capitalize ${cor.text} pointer-events-none`}>
                 {formatDateLabel(currentDate)}
               </p>
             </div>
