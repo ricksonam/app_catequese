@@ -23,6 +23,8 @@ const TIPO_CONFIG: Record<TipoKey, {
   accentColor: string;
   badgeBg: string;
   chipBg: string;
+  shadowColor: string;
+  ringColor: string;
 }> = {
   encontro: {
     label: "Encontro",
@@ -35,6 +37,8 @@ const TIPO_CONFIG: Record<TipoKey, {
     accentColor: "bg-indigo-600",
     badgeBg: "bg-indigo-600",
     chipBg: "bg-indigo-500/10 text-indigo-700 border-indigo-500/20",
+    shadowColor: "shadow-indigo-500/30",
+    ringColor: "ring-indigo-500",
   },
   evento: {
     label: "Evento",
@@ -47,6 +51,8 @@ const TIPO_CONFIG: Record<TipoKey, {
     accentColor: "bg-amber-500",
     badgeBg: "bg-amber-500",
     chipBg: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+    shadowColor: "shadow-amber-500/30",
+    ringColor: "ring-amber-500",
   },
   evolucao: {
     label: "Evolução",
@@ -59,6 +65,8 @@ const TIPO_CONFIG: Record<TipoKey, {
     accentColor: "bg-emerald-600",
     badgeBg: "bg-emerald-600",
     chipBg: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
+    shadowColor: "shadow-emerald-500/30",
+    ringColor: "ring-emerald-500",
   },
 };
 
@@ -166,12 +174,12 @@ function MonthBlock({ monthKey, items, onView }: { monthKey: string; items: any[
               disabled={count === 0}
               onClick={() => count > 0 && toggle(tipo)}
               className={cn(
-                "relative overflow-hidden rounded-2xl border p-3.5 text-center transition-all duration-200 flex flex-col items-center gap-1.5",
+                "relative overflow-hidden rounded-2xl p-4 text-center transition-all duration-300 flex flex-col items-center gap-2",
                 count === 0
-                  ? "opacity-40 cursor-default border-zinc-100 bg-zinc-50"
+                  ? "opacity-40 cursor-default border border-zinc-100 bg-zinc-50"
                   : isOpen
-                  ? cn("border-transparent shadow-lg scale-[1.02]", `bg-gradient-to-br ${cfg.gradient}`)
-                  : "bg-white border-zinc-100 hover:border-zinc-200 hover:shadow-md active:scale-95 shadow-sm"
+                  ? cn("border-transparent shadow-xl scale-[1.02] ring-2 ring-offset-2", cfg.shadowColor, cfg.ringColor, `bg-gradient-to-br ${cfg.gradient}`)
+                  : cn("bg-white border-transparent ring-1 ring-inset ring-black/5 hover:ring-black/15 shadow-sm hover:shadow-lg hover:-translate-y-0.5 active:scale-95", cfg.shadowColor)
               )}
             >
               {/* Glow when open */}
