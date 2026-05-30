@@ -620,7 +620,7 @@ export default function Dashboard() {
                   >
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
                     <div className={cn(
-                      "bg-white p-1.5 shadow-md border-2 relative overflow-hidden transition-colors rounded-sm",
+                      "bg-white p-1.5 shadow-md border-2 relative overflow-hidden transition-colors rounded-sm w-[64px]",
                       isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-blue-400"
                     )}>
                       <div className="w-9 h-9 overflow-hidden bg-muted relative mx-auto">
@@ -646,7 +646,7 @@ export default function Dashboard() {
                           {isHoje ? (
                             <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-0.5 uppercase">HOJE</span>
                           ) : (
-                            <p className={cn("text-[7px] font-black uppercase tracking-tighter mt-0.5", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
+                            <p className={cn("text-[7px] font-black uppercase tracking-tighter mt-0.5 truncate w-full text-center", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
                               {c.hasBoth ? "🎉 Nasc. & Bat." : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo")}
                             </p>
                           )}
