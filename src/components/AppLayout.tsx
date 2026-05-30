@@ -125,7 +125,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
       {/* Tab Bar */}
       {!isPresentationMode && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border-t border-black/10 dark:border-white/10 print:hidden transition-all duration-200 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          <div className="mx-auto w-full sm:max-w-md flex items-end justify-around h-[68px] px-2 pb-1.5 relative">
+          <div className="mx-auto w-full sm:max-w-md grid grid-cols-5 items-end h-[68px] px-2 pb-1.5 relative">
             {tabs.map((tab) => {
               const isMais = tab.path === "__mais__";
               const isTurmas = tab.path === "/turmas";
@@ -137,7 +137,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
 
               if (isTurmas) {
                 return (
-                  <div key={tab.path} className="relative flex flex-col items-center justify-end h-full flex-1">
+                  <div key={tab.path} className="relative flex flex-col items-center justify-end h-full w-full">
                     <button
                       onClick={() => navigate(tab.path)}
                       className="absolute -top-6 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 border-4 border-white dark:border-zinc-900 transition-transform active:scale-90 hover:scale-105"
@@ -171,7 +171,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                     }
                     else navigate(tab.path);
                   }}
-                  className={`group relative flex flex-col items-center justify-end h-full px-2 pb-1.5 transition-all duration-300 active:scale-90 ${
+                  className={`group relative flex flex-col items-center justify-end h-full w-full px-1 pb-1.5 transition-all duration-300 active:scale-90 ${
                     isActive
                       ? tab.color
                       : "text-slate-500 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-400"
