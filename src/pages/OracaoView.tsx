@@ -94,18 +94,55 @@ export default function OracaoView() {
         )}
 
         <div 
-          className="font-serif text-foreground/90 w-full text-center sm:text-left transition-all duration-300"
+          className="font-serif text-foreground/90 w-full text-left transition-all duration-300"
           style={{ 
             fontSize: `${fontSize}px`,
-            lineHeight: '1.8',
+            lineHeight: '1.6',
             marginTop: oracao.descricao ? '0' : '2rem'
           }}
         >
-          {oracao.texto.split('\n').map((paragraph, index) => (
-            <p key={index} className="mb-6 whitespace-pre-wrap">
-              {paragraph}
-            </p>
-          ))}
+          {oracao.texto.split('\n').map((paragraph, index) => {
+            const trimmed = paragraph.trim();
+            if (!trimmed) return <div key={index} className="h-4"></div>;
+
+            // Headers like "ABERTURA", "HINO"
+            if (trimmed === trimmed.toUpperCase() && trimmed.length > 2 && !trimmed.includes(':') && !trimmed.startsWith('(')) {
+              return (
+                <h3 key={index} className="font-bold text-liturgical mt-10 mb-3 border-b border-liturgical/20 pb-2 tracking-widest font-sans" style={{ fontSize: `${fontSize * 1.1}px` }}>
+                  {trimmed}
+                </h3>
+              );
+            }
+
+            // Rubrics/Instructions like "(Todos de pé)"
+            if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+              return (
+                <p key={index} className="italic text-muted-foreground mb-4" style={{ fontSize: `${fontSize * 0.85}px` }}>
+                  {trimmed}
+                </p>
+              );
+            }
+
+            // Dialogues like "Dirigente: Vem..."
+            const colonIndex = trimmed.indexOf(':');
+            if (colonIndex > 0 && colonIndex < 20) {
+              const speaker = trimmed.substring(0, colonIndex);
+              const text = trimmed.substring(colonIndex + 1);
+              return (
+                <p key={index} className="mb-3 whitespace-pre-wrap pl-4 -ml-4 border-l-2 border-transparent hover:border-liturgical/30 transition-colors">
+                  <span className="font-bold text-foreground font-sans text-[0.9em] uppercase tracking-wide mr-1">{speaker}:</span>
+                  {text}
+                </p>
+              );
+            }
+
+            // Default paragraph
+            return (
+              <p key={index} className="mb-4 whitespace-pre-wrap">
+                {trimmed}
+              </p>
+            );
+          })}
         </div>
         
         <div className="w-16 h-px bg-liturgical/30 mt-12 mb-8"></div>
