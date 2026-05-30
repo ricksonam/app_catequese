@@ -34,7 +34,7 @@ import { getAppUrl } from "@/lib/utils";
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
-  { path: "__diario__", icon: BookHeart, label: "Diário", color: "text-indigo-600", dot: "bg-indigo-600" },
+  { path: "/modulos/mural", icon: Image, label: "Mural", color: "text-indigo-600", dot: "bg-indigo-600" },
   { path: "/turmas", icon: BookOpen, label: "Turmas", color: "text-purple-600", dot: "bg-purple-600" },
   { path: "/modulos/oracoes", icon: PrayingHands, label: "Orações", color: "text-amber-600", dot: "bg-amber-600" },
   { path: "__mais__", icon: Menu, label: "Módulos", color: "text-emerald-600", dot: "bg-emerald-600" },
@@ -156,19 +156,6 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   key={tab.path}
                   onClick={() => {
                     if (isMais) setMaisOpen(true);
-                    else if (tab.path === "__diario__") {
-                      const activeTurma = localStorage.getItem("ivc_selected_turma");
-                      if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
-                        navigate(`/turmas/${activeTurma}/diario`);
-                      } else if (turmas.length === 1) {
-                        navigate(`/turmas/${turmas[0].id}/diario`);
-                      } else if (turmas.length > 1) {
-                        setPickerDestination("diario");
-                        setTurmaPickerOpen(true);
-                      } else {
-                        toast.error("Crie uma turma primeiro.");
-                      }
-                    }
                     else navigate(tab.path);
                   }}
                   className={`group relative flex flex-col items-center justify-end h-full w-full px-1 pb-1.5 transition-all duration-300 active:scale-90 ${

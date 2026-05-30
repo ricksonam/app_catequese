@@ -620,8 +620,8 @@ export default function Dashboard() {
                   >
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
                     <div className={cn(
-                      "bg-white p-1.5 shadow-md border relative overflow-hidden transition-colors",
-                      isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-black/10"
+                      "bg-white p-1.5 shadow-md border-2 relative overflow-hidden transition-colors rounded-sm",
+                      isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-blue-400"
                     )}>
                       <div className="w-9 h-9 overflow-hidden bg-muted relative">
                         {c.foto ? (
