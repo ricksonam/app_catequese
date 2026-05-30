@@ -8,14 +8,11 @@ import {
   CalendarDays,
   Book,
   Map,
-  MessageSquare,
   FileText,
   Library,
   BarChart2,
   ChevronRight,
   X,
-  Heart,
-  HandHeart,
   BookHeart
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
@@ -128,7 +125,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
       {/* Tab Bar */}
       {!isPresentationMode && (
         <nav id="bottom-nav-bar" className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border-t border-black/10 dark:border-white/10 print:hidden transition-all duration-200 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-          <div className="mx-auto w-full sm:max-w-md flex items-end justify-between h-[68px] px-4 pb-1.5 relative">
+          <div className="mx-auto w-full sm:max-w-md flex items-end justify-around h-[68px] px-2 pb-1.5 relative">
             {tabs.map((tab) => {
               const isMais = tab.path === "__mais__";
               const isTurmas = tab.path === "/turmas";
@@ -140,14 +137,14 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
 
               if (isTurmas) {
                 return (
-                  <div key={tab.path} className="relative flex flex-col items-center justify-end h-full px-2">
+                  <div key={tab.path} className="relative flex flex-col items-center justify-end h-full flex-1">
                     <button
                       onClick={() => navigate(tab.path)}
                       className="absolute -top-6 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 border-4 border-white dark:border-zinc-900 transition-transform active:scale-90 hover:scale-105"
                     >
                       <Icon className="w-7 h-7" strokeWidth={2.5} />
                     </button>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-700 dark:text-purple-400 mt-auto pb-0.5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-700 dark:text-purple-400 mt-auto pb-0.5 text-center">
                       Turmas
                     </span>
                   </div>
@@ -259,31 +256,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               </div>
             </div>
 
-            {/* SEÇÃO: CONECTA FAMÍLIAS — card único igual ao de Relatórios */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 px-1">
-                <div className="w-1.5 h-4 rounded-full bg-purple-500" />
-                <h3 className="text-xs font-black uppercase text-foreground/75 tracking-wider">Conecta Famílias</h3>
-              </div>
-              <button
-                onClick={() => {
-                  setMaisOpen(false);
-                  navigate("/comunicacao");
-                }}
-                className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-purple-500/40 dark:border-purple-400/20 shadow-md hover:shadow-lg hover:border-purple-500 active:scale-[0.98] text-left"
-              >
-                <div className="w-12 h-12 rounded-xl bg-purple-500/15 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                  <MessageSquare className="h-6 w-6" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="block text-xs font-black text-foreground uppercase tracking-wider">Conecta Famílias</span>
-                  <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
-                    Comunicados e questionários para as famílias
-                  </span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-purple-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-              </button>
-            </div>
+
 
             {/* SEÇÃO: CENTRAL DE RELATÓRIOS */}
             <div>
