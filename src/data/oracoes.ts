@@ -291,7 +291,20 @@ export const oracoesBase: Oracao[] = [
     id: "comunhao-espiritual",
     titulo: "Comunhão Espiritual",
     categoria: "Eucarísticas",
-    texto: "Meu Jesus, eu creio que estais presente no Santíssimo Sacramento do Altar.\nAmo-Vos sobre todas as coisas e minha alma suspira por Vós.\nMas, como não posso receber-Vos agora no Santíssimo Sacramento,\nvinde, ao menos espiritualmente, ao meu coração.\nAbraço-me convosco como se já estivésseis comigo:\nuno-me Convosco inteiramente.\nAh! não   // ── TEMPOS LITÚRGICOS ─────────────────────────────────────────────────
+    texto: "Meu Jesus, eu creio que estais presente no Santíssimo Sacramento do Altar.\nAmo-Vos sobre todas as coisas e minha alma suspira por Vós.\nMas, como não posso receber-Vos agora no Santíssimo Sacramento,\nvinde, ao menos espiritualmente, ao meu coração.\nAbraço-me convosco como se já estivésseis comigo:\nuno-me Convosco inteiramente.\nAh! não permitais que eu torne a separar-me de Vós! Amém.",
+    tags: ["comunhao", "espiritual", "eucaristia", "missa"]
+  },
+
+  // ── DIVERSAS CIRCUNSTÂNCIAS ───────────────────────────────────────────
+  {
+    id: "sao-miguel",
+    titulo: "Oração a São Miguel Arcanjo",
+    categoria: "Diversas Circunstâncias",
+    texto: "São Miguel Arcanjo, defendei-nos no combate;\nSede o nosso refúgio contra as maldades e ciladas do demônio.\nOrdene-lhe Deus, instantemente o pedimos;\ne vós, príncipe da milícia celeste, pelo poder divino,\nprecipitai no inferno a Satanás e a todos os espíritos malignos\nque andam pelo mundo para perder as almas. Amém.",
+    tags: ["miguel", "arcanjo", "protecao", "combate"]
+  },
+
+  // ── TEMPOS LITÚRGICOS ─────────────────────────────────────────────────
   {
     id: "regina-caeli",
     titulo: "Regina Caeli",
