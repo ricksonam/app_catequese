@@ -105,42 +105,53 @@ export default function OracaoView() {
             const trimmed = paragraph.trim();
             if (!trimmed) return <div key={index} className="h-4"></div>;
 
-            // Headers like "ABERTURA", "HINO"
-            if (trimmed === trimmed.toUpperCase() && trimmed.length > 2 && !trimmed.includes(':') && !trimmed.startsWith('(')) {
+            // Simple inline parser for **bold** and _italic_
+            const parseText = (t: string) => {
+              const parts = t.split(/(\*\*.*?\*\*|_.*?_)/g);
+              return parts.map((part, i) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                  return <strong key={i} className="font-bold">{part.slice(2, -2)}</strong>;
+                }
+                if (part.startsWith('_') && part.endsWith('_')) {
+                  return <em key={i} className="text-muted-foreground italic">{part.slice(1, -1)}</em>;
+                }
+                return part;
+              });
+            };
+
+            // 1. Numbered Headings (e.g., "1. Silêncio...", "2. Abertura")
+            if (/^\d+\.\s/.test(trimmed)) {
               return (
-                <h3 key={index} className="font-bold text-liturgical mt-10 mb-3 border-b border-liturgical/20 pb-2 tracking-widest font-sans" style={{ fontSize: `${fontSize * 1.1}px` }}>
+                <h3 key={index} className="font-bold text-foreground mt-8 mb-4 font-sans tracking-tight" style={{ fontSize: `${fontSize * 1.1}px` }}>
                   {trimmed}
                 </h3>
               );
             }
 
-            // Rubrics/Instructions like "(Todos de pé)"
-            if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+            // 2. Pure Italic lines (Rubrics/Instructions)
+            if (trimmed.startsWith('_') && trimmed.endsWith('_') && trimmed.indexOf('_', 1) === trimmed.length - 1) {
               return (
-                <p key={index} className="italic text-muted-foreground mb-4" style={{ fontSize: `${fontSize * 0.85}px` }}>
-                  {trimmed}
+                <p key={index} className="italic text-muted-foreground mb-4" style={{ fontSize: `${fontSize * 0.9}px` }}>
+                  {trimmed.slice(1, -1)}
                 </p>
               );
             }
 
-            // Dialogues like "Dirigente: Vem..."
-            const colonIndex = trimmed.indexOf(':');
-            if (colonIndex > 0 && colonIndex < 20) {
-              const speaker = trimmed.substring(0, colonIndex);
-              const text = trimmed.substring(colonIndex + 1);
+            // 3. Em-dash lines (Leader/Dirigente)
+            if (trimmed.startsWith('—')) {
               return (
-                <p key={index} className="mb-3 whitespace-pre-wrap pl-4 -ml-4 border-l-2 border-transparent hover:border-liturgical/30 transition-colors">
-                  <span className="font-bold text-foreground font-sans text-[0.9em] uppercase tracking-wide mr-1">{speaker}:</span>
-                  {text}
-                </p>
+                <div key={index} className="flex mb-1.5 mt-2">
+                  <span className="w-6 shrink-0 text-foreground font-light">—</span>
+                  <p>{parseText(trimmed.substring(1).trim())}</p>
+                </div>
               );
             }
 
-            // Default paragraph
+            // 4. Regular lines (Response or continuation)
             return (
-              <p key={index} className="mb-4 whitespace-pre-wrap">
-                {trimmed}
-              </p>
+              <div key={index} className="flex mb-1.5 pl-6">
+                <p>{parseText(trimmed)}</p>
+              </div>
             );
           })}
         </div>
