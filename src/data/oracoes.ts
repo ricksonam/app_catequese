@@ -314,43 +314,358 @@ export const oracoesBase: Oracao[] = [
     tags: ["pascoa", "tempo pascal", "regina", "caeli", "rainha do ceu"]
   },
   {
-    id: "odc-abertura",
-    titulo: "Abertura do Ofício Divino",
+    id: "odc-advento-completo",
+    titulo: "Ofício Divino - Advento",
     categoria: "Tempos Litúrgicos",
-    descricao: "Invocação inicial do Ofício Divino das Comunidades",
-    texto: "Vem, ó Deus da vida, vem nos ajudar!\nVem, não demores mais, vem nos libertar!\n\nGlória ao Pai e ao Filho e ao Santo Espírito.\nGlória à Trindade Santa, glória ao Deus bendito.\n\nAleluia, irmãs, aleluia, irmãos!\nCom o povo em romaria, a Deus louvação!\n(No tempo da Quaresma omite-se o Aleluia)",
-    tags: ["oficio divino", "odc", "abertura", "comunidades", "invocacao"]
+    descricao: "Ofício completo para o tempo de preparação e espera",
+    texto: `ABERTURA
+(Todos de pé e, se possível, acendendo uma vela)
+
+Dirigente: Vem, ó Deus da vida, vem nos ajudar!
+Todos: Vem, não demores mais, vem nos libertar!
+
+Dirigente: Glória ao Pai e ao Filho e ao Santo Espírito.
+Todos: Glória à Trindade Santa, glória ao Deus bendito.
+Aleluia, irmãs, aleluia, irmãos! Com o povo em romaria, a Deus louvação!
+
+LUCERNÁRIO
+Dirigente: A luz de Cristo que vem ao mundo, dissipe as trevas do nosso coração!
+Todos: A luz de Cristo brilhe entre nós! Vem, Senhor Jesus!
+
+HINO (Cantar ou recitar)
+Vem, vem, Senhor Jesus,
+Vem, vem, ó Salvador!
+Do céu desce a tua luz,
+Trazendo amor e calor.
+
+SALMODIA (Salmo 84/85)
+Lado 1: Mostrai-nos, ó Senhor, vossa bondade,
+e a vossa salvação nos concedei!
+Lado 2: Quero ouvir o que o Senhor irá falar:
+é a paz que Ele vai anunciar.
+
+Lado 1: A verdade brotará da nossa terra,
+e a justiça olhará lá dos altos céus.
+Lado 2: O Senhor nos dará tudo o que é bom,
+e a nossa terra nos dará as suas colheitas.
+
+Todos: Glória ao Pai, ao Filho e ao Espírito Santo,
+como era no princípio, agora e sempre. Amém.
+
+LEITURA BÍBLICA (Sentados)
+Leitor: "O povo que andava na escuridão viu uma grande luz; para os que habitavam nas sombras da morte, uma luz resplandeceu." (Is 9,1)
+(Breve silêncio para meditação)
+
+CÂNTICO DE MARIA / MAGNIFICAT (De pé)
+Todos: A minha alma engrandece ao Senhor,
+e o meu espírito se alegra em Deus, meu Salvador,
+porque olhou para a humildade de sua serva.
+Desde agora, todas as gerações me chamarão bem-aventurada.
+
+PRECES
+Dirigente: Ao Cristo que vem nos salvar, peçamos confiantes:
+Todos: Vem, Senhor Jesus!
+
+- Pela Igreja, para que seja farol de esperança na espera do Senhor.
+- Pelos que sofrem e choram, para que encontrem a alegria da salvação.
+- Por nossa comunidade, para que prepare caminhos de paz e justiça.
+
+PAI NOSSO
+Dirigente: Obedientes à palavra do Salvador e formados por seu ensinamento, ousamos dizer:
+Todos: Pai Nosso...
+
+ORAÇÃO FINAL
+Dirigente: Oremos. Despertai, Senhor, os nossos corações para prepararmos os caminhos do vosso Filho, a fim de que, por seu mistério, possamos servir-vos com o coração purificado. Por Cristo, nosso Senhor.
+Todos: Amém!
+
+BÊNÇÃO
+Dirigente: O Senhor nos abençoe, nos livre de todo o mal e nos conduza à vida eterna.
+Todos: Amém!
+Dirigente: Louvemos ao Senhor!
+Todos: Demos graças a Deus!`,
+    tags: ["oficio divino", "odc", "advento", "completo"]
   },
   {
-    id: "odc-advento",
-    titulo: "Ofício Divino - Tempo do Advento",
+    id: "odc-natal-completo",
+    titulo: "Ofício Divino - Natal",
     categoria: "Tempos Litúrgicos",
-    descricao: "Oração e louvor para o tempo de preparação e espera",
-    texto: "Ó luz do Senhor, que vens sobre a terra,\ninunda meu ser, permanece em nós!\n\nDeus, nosso Pai, que nos prometeste o Salvador,\ndesperta nossos corações para que possamos preparar os caminhos.\n\nVem, Senhor Jesus, vem nos salvar!\nQue a tua luz brilhe na escuridão e nos guie ao encontro da paz.\nAmém.",
-    tags: ["oficio divino", "odc", "advento", "espera", "luz"]
+    descricao: "Ofício completo para celebrar o nascimento do Senhor",
+    texto: `ABERTURA
+(Todos de pé junto ao presépio)
+
+Dirigente: Vem, ó Deus da vida, vem nos ajudar!
+Todos: Vem, não demores mais, vem nos libertar!
+
+Dirigente: Glória ao Pai e ao Filho e ao Santo Espírito.
+Todos: Glória à Trindade Santa, glória ao Deus bendito.
+Aleluia, irmãs, aleluia, irmãos! Com o povo em romaria, a Deus louvação!
+
+LUCERNÁRIO
+Dirigente: O Verbo se fez carne e habitou entre nós!
+Todos: E nós vimos a sua glória! Aleluia!
+
+HINO
+Nasceu-nos hoje um menino,
+um filho nos foi doado.
+É grande e maravilhoso,
+Príncipe da Paz chamado!
+
+SALMODIA (Salmo 95/96)
+Lado 1: Cantai ao Senhor Deus um canto novo,
+cantai ao Senhor Deus, ó terra inteira!
+Lado 2: Cantai e bendizei seu santo nome!
+Dia após dia anunciai sua salvação.
+
+Lado 1: Alegrem-se os céus e a terra exulte,
+rejubile o mar e o que ele contém.
+Lado 2: Pois o Senhor vem julgar a terra,
+vem julgar o mundo com justiça.
+
+Todos: Glória ao Pai, ao Filho e ao Espírito Santo,
+como era no princípio, agora e sempre. Amém.
+
+LEITURA BÍBLICA (Sentados)
+Leitor: "A graça de Deus se manifestou trazendo a salvação para todos os homens." (Tito 2,11)
+(Silêncio)
+
+CÂNTICO DE ZACARIAS / BENEDICTUS (De pé)
+Todos: Bendito seja o Senhor, Deus de Israel,
+porque a seu povo visitou e libertou!
+E fez surgir um poderoso Salvador
+na casa de Davi, seu servidor.
+
+PRECES
+Dirigente: Ao Menino Deus, nascido para nossa salvação, peçamos:
+Todos: Ouvi-nos, Senhor!
+
+- Para que a paz do Natal alcance todas as famílias.
+- Para que os pobres e pequenos sejam acolhidos com amor.
+- Para que nossa comunidade seja manjedoura da Vossa Palavra.
+
+PAI NOSSO
+Dirigente: Rezemos juntos a oração dos filhos de Deus:
+Todos: Pai Nosso...
+
+ORAÇÃO FINAL
+Dirigente: Oremos. Ó Deus, que admiravelmente criastes a dignidade da natureza humana e mais admiravelmente ainda a restaurastes, concedei-nos participar da divindade do vosso Filho, que se dignou assumir a nossa humanidade. Por Cristo, nosso Senhor.
+Todos: Amém!
+
+BÊNÇÃO
+Dirigente: Que o Deus menino nos abençoe e nos dê a sua paz.
+Todos: Amém!
+Dirigente: Louvemos ao Senhor!
+Todos: Demos graças a Deus!`,
+    tags: ["oficio divino", "odc", "natal", "completo"]
   },
   {
-    id: "odc-natal",
-    titulo: "Ofício Divino - Tempo do Natal",
+    id: "odc-quaresma-completa",
+    titulo: "Ofício Divino - Quaresma",
     categoria: "Tempos Litúrgicos",
-    descricao: "Celebração da encarnação do Verbo",
-    texto: "Glória a Deus nos altos céus!\nPaz na terra a seus amados!\n\nNós te louvamos, Deus da vida,\nporque a tua Palavra se fez carne e habitou entre nós.\n\nQue a luz do menino Jesus dissipe as trevas do nosso coração,\ne nos torne construtores da paz e da fraternidade.\nAmém.",
-    tags: ["oficio divino", "odc", "natal", "encarnacao", "gloria"]
+    descricao: "Ofício completo de oração e penitência",
+    texto: `ABERTURA
+(Todos de pé, sem flores no altar)
+
+Dirigente: Vem, ó Deus da vida, vem nos ajudar!
+Todos: Vem, não demores mais, vem nos libertar!
+
+Dirigente: Glória ao Pai e ao Filho e ao Santo Espírito.
+Todos: Glória à Trindade Santa, glória ao Deus bendito.
+(Pausa - na Quaresma não se canta o Aleluia)
+
+RECORDAÇÃO DA VIDA
+Dirigente: Lembremos dos nossos pecados e dos sofrimentos do mundo, pedindo a misericórdia de Deus.
+Todos: Tende piedade de nós, Senhor!
+
+HINO
+Volta, meu povo, ao Senhor,
+e teu coração lhe entrega.
+Ele é Deus de amor,
+e a ninguém sua graça nega.
+
+SALMODIA (Salmo 50/51)
+Lado 1: Tende piedade, ó meu Deus, misericórdia!
+Na imensidão de vosso amor, purificai-me!
+Lado 2: Lavai-me todo inteiro do pecado,
+e apagai completamente a minha culpa!
+
+Lado 1: Criai em mim um coração que seja puro,
+dai-me de novo um espírito decidido.
+Lado 2: Ó Senhor, abri os meus lábios,
+e minha boca anunciará vosso louvor!
+
+Todos: Glória ao Pai, ao Filho e ao Espírito Santo. Amém.
+
+LEITURA BÍBLICA (Sentados)
+Leitor: "Rasgai o coração, e não as vestes; e voltai para o Senhor, vosso Deus; ele é benigno e compassivo." (Joel 2,13)
+(Momento de silêncio para exame de consciência)
+
+CÂNTICO DE MARIA / MAGNIFICAT (De pé)
+Todos: A minha alma engrandece ao Senhor,
+porque olhou para a humildade de sua serva.
+Derrubou os poderosos de seus tronos
+e elevou os humildes.
+
+PRECES
+Dirigente: Ao nosso Deus, lento para a cólera e rico em misericórdia, supliquemos:
+Todos: Senhor, tende piedade de nós!
+
+- Pelos que estão afastados, para que encontrem o caminho de volta ao Pai.
+- Pelos doentes e injustiçados, para que não percam a esperança.
+- Por nós, para que vivamos uma verdadeira conversão.
+
+PAI NOSSO
+Dirigente: Como pecadores perdoados, rezamos:
+Todos: Pai Nosso...
+
+ORAÇÃO FINAL
+Dirigente: Oremos. Ó Deus, autor de toda misericórdia e bondade, que nos destes o jejum, a oração e a esmola como remédio contra o pecado, olhai propício para a nossa confissão de fraqueza, para que, abatidos pela consciência de nossa culpa, sejamos reconfortados pela vossa misericórdia. Por Cristo, nosso Senhor.
+Todos: Amém!
+
+BÊNÇÃO
+Dirigente: O Senhor nos abençoe, perdoe os nossos pecados e nos conduza à vida eterna.
+Todos: Amém!
+Dirigente: Bendigamos ao Senhor!
+Todos: Demos graças a Deus!`,
+    tags: ["oficio divino", "odc", "quaresma", "completo"]
   },
   {
-    id: "odc-quaresma",
-    titulo: "Ofício Divino - Tempo da Quaresma",
+    id: "odc-pascoa-completa",
+    titulo: "Ofício Divino - Páscoa",
     categoria: "Tempos Litúrgicos",
-    descricao: "Súplica e conversão no caminho para a Páscoa",
-    texto: "As nossas mãos se elevam para vós, ó Senhor!\n\nConcedei-nos, Deus de misericórdia,\na graça da conversão sincera e da mudança de vida.\n\nQue o jejum, a oração e a caridade\nnos preparem para celebrar com um coração novo\na Páscoa do vosso Filho Jesus.\nAmém.",
-    tags: ["oficio divino", "odc", "quaresma", "conversao", "misericordia"]
+    descricao: "Ofício completo de exultação pela Ressurreição",
+    texto: `ABERTURA
+(Todos de pé e com o Círio Pascal aceso, se houver)
+
+Dirigente: Vem, ó Deus da vida, vem nos ajudar!
+Todos: Vem, não demores mais, vem nos libertar!
+
+Dirigente: Glória ao Pai e ao Filho e ao Santo Espírito.
+Todos: Glória à Trindade Santa, glória ao Deus bendito.
+Aleluia, irmãs, aleluia, irmãos! Com o povo em romaria, a Deus louvação!
+
+LUCERNÁRIO
+Dirigente: Cristo luz do mundo, aleluia!
+Todos: Demos graças a Deus, aleluia, aleluia!
+
+HINO
+Ressuscitou de verdade!
+Aleluia, aleluia!
+Cristo Jesus, nossa vida,
+Aleluia, aleluia!
+
+SALMODIA (Salmo 117/118)
+Lado 1: Dai graças ao Senhor, porque Ele é bom!
+"Eterna é a sua misericórdia!"
+Lado 2: A pedra que os pedreiros rejeitaram,
+tornou-se agora a pedra angular.
+
+Lado 1: Pelo Senhor é que foi feito tudo isso:
+Que maravilhas ele fez a nossos olhos!
+Lado 2: Este é o dia que o Senhor fez para nós:
+alegremo-nos e nela exultemos!
+
+Todos: Glória ao Pai, ao Filho e ao Espírito Santo. Amém.
+
+LEITURA BÍBLICA (Sentados)
+Leitor: "Se ressuscitastes com Cristo, buscai as coisas do alto, onde Cristo está sentado à direita de Deus." (Colossenses 3,1)
+(Breve partilha ou silêncio)
+
+CÂNTICO DE MARIA / MAGNIFICAT (De pé)
+Todos: A minha alma engrandece ao Senhor!
+Aleluia, aleluia! O Senhor fez em mim maravilhas, santo é o seu nome!
+
+PRECES
+Dirigente: Ao Cristo ressuscitado, vencedor da morte, oremos com alegria:
+Todos: Jesus, nossa vida, ouvi-nos!
+
+- Para que a Igreja anuncie com coragem a vitória do Cristo.
+- Para que o mundo seja renovado pela luz da Ressurreição.
+- Para que nossa comunidade viva como povo de testemunhas.
+
+PAI NOSSO
+Dirigente: Iluminados pela glória do Cristo ressuscitado, rezamos:
+Todos: Pai Nosso...
+
+ORAÇÃO FINAL
+Dirigente: Oremos. Ó Deus, que no dia de hoje, pelo vosso Filho Unigênito, vencestes a morte e nos abristes as portas da eternidade, concedei que, celebrando a ressurreição do Senhor, renovados pelo vosso Espírito, ressuscitemos na luz da vida. Por Cristo, nosso Senhor.
+Todos: Amém!
+
+BÊNÇÃO
+Dirigente: O Deus que nos salvou pela cruz e ressurreição do seu Filho, nos abençoe e nos dê a sua paz, aleluia, aleluia!
+Todos: Amém, aleluia, aleluia!
+Dirigente: Vamos em paz, e que o Senhor nos acompanhe!
+Todos: Demos graças a Deus, aleluia, aleluia!`,
+    tags: ["oficio divino", "odc", "pascoa", "completo"]
   },
   {
-    id: "odc-pascoa",
-    titulo: "Ofício Divino - Tempo Pascal",
+    id: "odc-tempo-comum",
+    titulo: "Ofício Divino - Tempo Comum",
     categoria: "Tempos Litúrgicos",
-    descricao: "Alegria e exultação pela Ressurreição",
-    texto: "Ressuscitou de verdade, aleluia, aleluia!\nCristo Jesus, nossa vida, aleluia, aleluia!\n\nNós vos damos graças, Deus da vida,\nporque vencestes a morte e nos abristes as portas da eternidade.\n\nPermanece conosco, Senhor ressuscitado,\ne faz de nós testemunhas da tua luz e da tua paz.\nAmém, aleluia!",
-    tags: ["oficio divino", "odc", "pascoa", "ressurreicao", "aleluia", "alegria"]
-  },
+    descricao: "Ofício completo para o dia a dia da comunidade",
+    texto: `ABERTURA
+(Todos de pé)
+
+Dirigente: Vem, ó Deus da vida, vem nos ajudar!
+Todos: Vem, não demores mais, vem nos libertar!
+
+Dirigente: Glória ao Pai e ao Filho e ao Santo Espírito.
+Todos: Glória à Trindade Santa, glória ao Deus bendito.
+Aleluia, irmãs, aleluia, irmãos! Com o povo em romaria, a Deus louvação!
+
+RECORDAÇÃO DA VIDA
+Dirigente: Lembremos os acontecimentos desta semana, as lutas, as alegrias e esperanças do nosso povo.
+(Espaço aberto para falas curtas)
+
+HINO
+Ó Luz do Senhor, que vem sobre a terra,
+inunda meu ser, permanece em nós!
+
+SALMODIA (Salmo 22/23)
+Lado 1: O Senhor é o pastor que me conduz,
+não me falta coisa alguma.
+Lado 2: Pelos prados e campinas verdejantes
+Ele me leva a descansar.
+
+Lado 1: Preparais à minha frente uma mesa,
+bem à vista do inimigo.
+Lado 2: Felicidade e todo bem hão de seguir-me
+por toda a minha vida.
+
+Todos: Glória ao Pai, ao Filho e ao Espírito Santo. Amém.
+
+LEITURA BÍBLICA (Sentados)
+Leitor: Leitura do dia ou evangelho do domingo.
+(Momento de partilha da Palavra)
+
+CÂNTICO DE MARIA / MAGNIFICAT (De pé)
+Todos: A minha alma engrandece ao Senhor,
+e o meu espírito se alegra em Deus, meu Salvador!
+Derrubou os poderosos de seus tronos,
+e elevou os humildes.
+
+PRECES
+Dirigente: Ao Deus que caminha conosco na história, peçamos:
+Todos: Senhor, escutai a nossa prece!
+
+- Pelas necessidades da nossa comunidade e da nossa vizinhança.
+- Pelos trabalhadores, desempregados e todos que lutam pelo pão de cada dia.
+- Por nossas intenções particulares (aberto à comunidade).
+
+PAI NOSSO
+Dirigente: Unidos na mesma fé e no mesmo amor, rezemos a oração do Senhor:
+Todos: Pai Nosso...
+
+ORAÇÃO FINAL
+Dirigente: Oremos. Ó Deus, providência que nunca falha, humildemente vos pedimos: afastai de nós tudo o que é nocivo, e concedei-nos o que for útil para a nossa salvação. Por Cristo, nosso Senhor.
+Todos: Amém!
+
+BÊNÇÃO
+Dirigente: O Senhor esteja conosco. Ele é o nosso escudo e a nossa paz.
+Todos: Amém!
+Dirigente: Em nome do Pai, do Filho e do Espírito Santo.
+Todos: Amém!
+Dirigente: Vamos em paz, e que o Senhor nos acompanhe!
+Todos: Demos graças a Deus!`,
+    tags: ["oficio divino", "odc", "tempo comum", "completo"]
+  }
 ];
