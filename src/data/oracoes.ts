@@ -313,4 +313,44 @@ export const oracoesBase: Oracao[] = [
     texto: "Rainha do céu, alegrai-vos, aleluia.\nPorque aquele que merecestes trazer em vosso seio, aleluia.\nRessuscitou como disse, aleluia.\nRogai a Deus por nós, aleluia.\n\nV. Exultai e alegrai-vos, ó Virgem Maria, aleluia.\nR. Porque o Senhor ressuscitou verdadeiramente, aleluia.\n\nOremos: Ó Deus, que vos dignastes alegrar o mundo com a ressurreição do vosso Filho Jesus Cristo, Senhor Nosso, concedei-nos, vos suplicamos, que por sua Mãe, a Virgem Maria, alcancemos as alegrias da vida eterna. Por Cristo, Senhor Nosso. Amém.",
     tags: ["pascoa", "tempo pascal", "regina", "caeli", "rainha do ceu"]
   },
+  {
+    id: "odc-abertura",
+    titulo: "Abertura do Ofício Divino",
+    categoria: "Tempos Litúrgicos",
+    descricao: "Invocação inicial do Ofício Divino das Comunidades",
+    texto: "Vem, ó Deus da vida, vem nos ajudar!\nVem, não demores mais, vem nos libertar!\n\nGlória ao Pai e ao Filho e ao Santo Espírito.\nGlória à Trindade Santa, glória ao Deus bendito.\n\nAleluia, irmãs, aleluia, irmãos!\nCom o povo em romaria, a Deus louvação!\n(No tempo da Quaresma omite-se o Aleluia)",
+    tags: ["oficio divino", "odc", "abertura", "comunidades", "invocacao"]
+  },
+  {
+    id: "odc-advento",
+    titulo: "Ofício Divino - Tempo do Advento",
+    categoria: "Tempos Litúrgicos",
+    descricao: "Oração e louvor para o tempo de preparação e espera",
+    texto: "Ó luz do Senhor, que vens sobre a terra,\ninunda meu ser, permanece em nós!\n\nDeus, nosso Pai, que nos prometeste o Salvador,\ndesperta nossos corações para que possamos preparar os caminhos.\n\nVem, Senhor Jesus, vem nos salvar!\nQue a tua luz brilhe na escuridão e nos guie ao encontro da paz.\nAmém.",
+    tags: ["oficio divino", "odc", "advento", "espera", "luz"]
+  },
+  {
+    id: "odc-natal",
+    titulo: "Ofício Divino - Tempo do Natal",
+    categoria: "Tempos Litúrgicos",
+    descricao: "Celebração da encarnação do Verbo",
+    texto: "Glória a Deus nos altos céus!\nPaz na terra a seus amados!\n\nNós te louvamos, Deus da vida,\nporque a tua Palavra se fez carne e habitou entre nós.\n\nQue a luz do menino Jesus dissipe as trevas do nosso coração,\ne nos torne construtores da paz e da fraternidade.\nAmém.",
+    tags: ["oficio divino", "odc", "natal", "encarnacao", "gloria"]
+  },
+  {
+    id: "odc-quaresma",
+    titulo: "Ofício Divino - Tempo da Quaresma",
+    categoria: "Tempos Litúrgicos",
+    descricao: "Súplica e conversão no caminho para a Páscoa",
+    texto: "As nossas mãos se elevam para vós, ó Senhor!\n\nConcedei-nos, Deus de misericórdia,\na graça da conversão sincera e da mudança de vida.\n\nQue o jejum, a oração e a caridade\nnos preparem para celebrar com um coração novo\na Páscoa do vosso Filho Jesus.\nAmém.",
+    tags: ["oficio divino", "odc", "quaresma", "conversao", "misericordia"]
+  },
+  {
+    id: "odc-pascoa",
+    titulo: "Ofício Divino - Tempo Pascal",
+    categoria: "Tempos Litúrgicos",
+    descricao: "Alegria e exultação pela Ressurreição",
+    texto: "Ressuscitou de verdade, aleluia, aleluia!\nCristo Jesus, nossa vida, aleluia, aleluia!\n\nNós vos damos graças, Deus da vida,\nporque vencestes a morte e nos abristes as portas da eternidade.\n\nPermanece conosco, Senhor ressuscitado,\ne faz de nós testemunhas da tua luz e da tua paz.\nAmém, aleluia!",
+    tags: ["oficio divino", "odc", "pascoa", "ressurreicao", "aleluia", "alegria"]
+  },
 ];
