@@ -623,7 +623,7 @@ export default function Dashboard() {
                       "bg-white p-1.5 shadow-md border-2 relative overflow-hidden transition-colors rounded-sm",
                       isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-blue-400"
                     )}>
-                      <div className="w-9 h-9 overflow-hidden bg-muted relative">
+                      <div className="w-9 h-9 overflow-hidden bg-muted relative mx-auto">
                         {c.foto ? (
                           <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                         ) : (
