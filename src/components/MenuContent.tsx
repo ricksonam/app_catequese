@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { 
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
-  Bell, Mail, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, Heart, HandHeart, BarChart2, X, Map, BookHeart
+  Bell, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
+  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,14 +54,9 @@ const classModules = [
   { label: "Catequizandos", icon: Users, getPath: (id: string) => `/turmas/${id}/catequizandos`, color: "bg-success/10 text-success" },
   { label: "Eventos", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/eventos`, color: "bg-amber-500/10 text-amber-500" },
   { label: "Reuniões", icon: Users, getPath: (id: string) => `/turmas/${id}/reunioes`, color: "bg-blue-500/10 text-blue-500" },
-  { label: "Catequese em Família", icon: Heart, getPath: (id: string) => `/turmas/${id}/familia`, color: "bg-rose-500/10 text-rose-500" },
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
 ];
 
-const comunicacao = [
-  { label: "Painel", icon: MessageSquare, path: "/comunicacao", color: "bg-purple-500/10 text-purple-500" },
-  { label: "Criar Novo", icon: FileText, path: "/comunicacao/novo", color: "bg-liturgical/10 text-liturgical" },
-];
 
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();

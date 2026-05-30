@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useMissoesFamilia, useApproveTurmaMembro, useComunidades } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, Heart, QrCode, Shield, CheckCircle2, BellRing, X } from "lucide-react";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useApproveTurmaMembro, useComunidades } from "@/hooks/useSupabaseData";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, QrCode, Shield, CheckCircle2, BellRing, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
 import {
@@ -31,7 +31,6 @@ export default function TurmaDetail() {
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
   const { data: reunioes = [] } = useReunioes(id);
-  const { data: missoes = [] } = useMissoesFamilia(id);
   const { data: comunidades = [] } = useComunidades();
   const deleteMutation = useDeleteTurma();
   const leaveMutation = useLeaveTurma();
@@ -229,7 +228,6 @@ export default function TurmaDetail() {
     { label: "Eventos", desc: "Calendário e freq.", icon: ListChecks, count: atividades.length, unit: "evento", path: `/turmas/${id}/eventos`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false },
     { label: "Reuniões", desc: "Atas e pautas", icon: Users, count: reunioes.length, unit: "reunião", path: `/turmas/${id}/reunioes`, color: "bg-blue-600 text-white", bgGradient: "from-blue-500/60 via-blue-500/30 to-white", gradient: "from-blue-500/15 to-white", textColor: "text-blue-700", hasAlert: false },
     { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700", hasAlert: false },
-    { label: "Catequese em Família", desc: "Missões e integração", icon: Heart, count: missoes.length, unit: "missão", path: `/turmas/${id}/familia`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700", hasAlert: false },
   ];
 
   const relatorioModulo = { label: "Relatórios", icon: PieChart, path: `/turmas/${id}/relatorios` };

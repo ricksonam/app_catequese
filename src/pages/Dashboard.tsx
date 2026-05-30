@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useMissoesFamilia, useComunicacaoForms, useAllRespostas, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
+import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { upsertCatequista } from "@/lib/supabaseStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -77,57 +77,23 @@ export default function Dashboard() {
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
 
 
-  const { data: globalMissoes = [] } = useMissoesFamilia();
-  const { data: comunicacaoForms = [] } = useComunicacaoForms();
-  const formIds = useMemo(() => comunicacaoForms.map(f => f.id), [comunicacaoForms]);
-  const { data: todasRespostas = [] } = useAllRespostas(formIds);
-  const respostasCount = todasRespostas.length;
-
-  const totalMissoesConcluidas = useMemo(() => globalMissoes.reduce((acc, m) => acc + (m.concluidas || 0), 0), [globalMissoes]);
   const pendentesInscricao = useMemo(() => catequizandos.filter(c => c.status === 'pending'), [catequizandos]);
-  const totalMensagens = totalMissoesConcluidas + respostasCount + pendentesInscricao.length;
+  const totalMensagens = pendentesInscricao.length;
 
   const feedMensagens = useMemo(() => {
-    const feed: { id: string; tipo: 'iavalia' | 'missao'; titulo: string; remetente: string; data: Date; rawDate: string; }[] = [];
-    
-    todasRespostas.forEach(r => {
-      const form = comunicacaoForms.find(f => f.id === r.form_id);
-      feed.push({
-        id: `resp_${r.id}`,
-        tipo: 'iavalia',
-        titulo: form?.titulo || 'Questionário',
-        remetente: r.nome_respondente || 'Anônimo',
-        data: new Date(r.criado_em || Date.now()),
-        rawDate: r.criado_em || ''
-      });
-    });
-
-    globalMissoes.forEach(m => {
-      if (m.concluidas > 0) {
-        feed.push({
-          id: `missao_${m.id}`,
-          tipo: 'missao',
-          titulo: m.titulo,
-          remetente: `${m.concluidas} família(s) concluíram`,
-          data: new Date(m.criadoEm || Date.now()),
-          rawDate: m.criadoEm || ''
-        });
-      }
-    });
-
+    const feed: { id: string; tipo: any; titulo: string; remetente: string; data: Date; rawDate: string; }[] = [];
     pendentesInscricao.forEach(c => {
       feed.push({
         id: `inscricao_${c.id}`,
-        tipo: 'inscricao' as any,
+        tipo: 'inscricao',
         titulo: 'Nova Inscrição Online',
         remetente: c.nome,
         data: new Date(c.criado_em || Date.now()),
         rawDate: c.criado_em || ''
       });
     });
-
     return feed.sort((a, b) => b.data.getTime() - a.data.getTime());
-  }, [todasRespostas, comunicacaoForms, globalMissoes]);
+  }, [pendentesInscricao]);
 
   const [lastSeenMensagens, setLastSeenMensagens] = useState(() => {
     return parseInt(localStorage.getItem('ivc_last_seen_mensagens') || '0', 10);
@@ -235,26 +201,10 @@ export default function Dashboard() {
       .channel('schema-db-changes')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'comunicacao_respostas' },
-        () => {
-          tRefetch();
-          toast.info("Nova resposta do Conecta Família recebida!");
-        }
-      )
-      .on(
-        'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'catequizandos' },
         () => {
           tRefetch();
           toast.info("Nova inscrição online recebida!");
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'missoes_familia' },
-        () => {
-          tRefetch();
-          toast.info("Uma família concluiu uma missão!");
         }
       )
       .subscribe();

@@ -23,8 +23,7 @@ import ReunioesList from "@/pages/ReunioesList";
 import ReuniaoPresentation from "@/pages/ReuniaoPresentation";
 import PlanoTurma from "@/pages/PlanoTurma";
 import RelatoriosTurma from "@/pages/RelatoriosTurma";
-import MissoesFamilia from "@/pages/MissoesFamilia";
-import PublicMissao from "@/pages/PublicMissao";
+
 import DiarioEspiritualList from "@/pages/DiarioEspiritualList";
 import DiarioEspiritualForm from "@/pages/DiarioEspiritualForm";
 import BibliotecaModelos from "@/pages/BibliotecaModelos";
@@ -52,10 +51,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import AdminLogin from "@/pages/AdminLogin";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import PublicPlano from "@/pages/PublicPlano";
-import ComunicacaoHub from "@/pages/ComunicacaoHub";
-import ComunicacaoBuilder from "@/pages/ComunicacaoBuilder";
-import ComunicacaoDetail from "@/pages/ComunicacaoDetail";
-import PublicFormResponder from "@/pages/PublicFormResponder";
+
 import PublicInscricao from "@/pages/PublicInscricao";
 import MapaPanoramico from "@/pages/MapaPanoramico";
 import NotFound from "@/pages/NotFound";
@@ -131,8 +127,7 @@ const AppRoutes = () => (
     <Route path="/reset-password" element={<ResetPasswordPage />} />
     <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
     <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
-    <Route path="/missao/:codigo" element={<PublicMissao />} />
-    <Route path="/f/:codigo" element={<PublicFormResponder />} />
+
     <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
 
     <Route
@@ -156,7 +151,7 @@ const AppRoutes = () => (
       <Route path="/turmas/:id/reunioes" element={<ReunioesList />} />
       <Route path="/turmas/:id/reunioes/:reuniaoId/apresentacao" element={<ReuniaoPresentation />} />
       <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
-      <Route path="/turmas/:id/familia" element={<MissoesFamilia />} />
+
       <Route path="/turmas/:id/diario" element={<DiarioEspiritualList />} />
       <Route path="/turmas/:id/diario/novo" element={<DiarioEspiritualForm />} />
       <Route path="/turmas/:id/diario/:diarioId/editar" element={<DiarioEspiritualForm />} />
@@ -184,10 +179,7 @@ const AppRoutes = () => (
       <Route path="/jogos/paciencia" element={<PacienciaBiblica />} />
       <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
       <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
-      <Route path="/comunicacao" element={<ComunicacaoHub />} />
-      <Route path="/comunicacao/novo" element={<ComunicacaoBuilder />} />
-      <Route path="/comunicacao/:id/editar" element={<ComunicacaoBuilder />} />
-      <Route path="/comunicacao/:id" element={<ComunicacaoDetail />} />
+
       <Route path="/mapa-panoramico" element={<MapaPanoramico />} />
     </Route>
     <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
