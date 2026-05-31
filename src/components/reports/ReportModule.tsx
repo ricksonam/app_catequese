@@ -171,29 +171,47 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
-      // No celular: abre o painel de compartilhamento nativo do sistema que inclui WhatsApp
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        toast.dismiss(toastId);
-        await navigator.share({
-          files: [file],
-          title: `Relatório: ${reportName} — ${turma.nome}`,
-          text: `📋 *${reportName}*\n📚 Turma: ${turma.nome}\n\nSeguem os dados do relatório em anexo.`,
-        });
-        toast.success("Compartilhado com sucesso!");
-        setTimeout(() => { resetFlow(); }, 500);
-      } else {
-        // Desktop: baixa o PDF e abre link do WhatsApp Web com mensagem
+      let sharedNatively = false;
+      if (navigator.share) {
+        try {
+          toast.dismiss(toastId);
+          await navigator.share({
+            files: [file],
+            title: `Relatório: ${reportName} — ${turma.nome}`,
+            text: `Confira o ${reportName} da turma ${turma.nome}.`,
+          });
+          sharedNatively = true;
+          toast.success("Enviado com sucesso!", { id: toastId });
+          setTimeout(() => { resetFlow(); }, 500);
+        } catch (shareErr: any) {
+          console.warn("Native share aborted or failed", shareErr);
+          if (shareErr.name === 'AbortError') {
+            toast.dismiss(toastId);
+            return;
+          }
+        }
+      }
+      
+      if (!sharedNatively) {
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement("a");
         link.href = url;
         link.download = fileName;
         link.click();
         URL.revokeObjectURL(url);
-
-        // Abre WhatsApp Web com mensagem pré-preenchida
-        const msg = encodeURIComponent(`📋 *${reportName}*\n📚 Turma: ${turma.nome}\n\nSegue o relatório em PDF (arquivo baixado no dispositivo).`);
-        window.open(`https://wa.me/?text=${msg}`, "_blank");
-        toast.success("PDF salvo! WhatsApp aberto para envio.", { id: toastId });
+        toast.success("PDF baixado no seu dispositivo!", { id: toastId });
+        
+        const msg = encodeURIComponent(`📋 *${reportName}*\n📚 Turma: ${turma.nome}\n\nO relatório em PDF foi baixado no meu dispositivo, segue em anexo.`);
+        
+        setTimeout(() => {
+          if (isMobile) {
+            window.location.href = `whatsapp://send?text=${msg}`;
+          } else {
+            window.open(`https://wa.me/?text=${msg}`, "_blank");
+          }
+        }, 300);
+        
+        toast.success("PDF salvo! Anexe o arquivo no WhatsApp.", { id: toastId });
       }
     } catch (err: any) {
       if (err?.name !== "AbortError") {
