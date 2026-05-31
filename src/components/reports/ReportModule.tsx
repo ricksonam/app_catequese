@@ -82,6 +82,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [readyToShareParams, setReadyToShareParams] = useState<{file: File, reportName: string} | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const { data: turmas = [] } = useTurmas();
@@ -171,13 +172,20 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
+      if (navigator.share && isMobile) {
+        toast.dismiss(toastId);
+        setReadyToShareParams({ file, reportName });
+        toast.success("Documento gerado! Clique em 'Enviar Agora' na barra inferior.");
+        return;
+      }
+
       let sharedNatively = false;
       if (navigator.share) {
         try {
           toast.dismiss(toastId);
           await navigator.share({
             files: [file],
-            title: `Relatório: ${reportName} — ${turma.nome}`,
+            title: `Relatório: ${reportName}`,
             text: `Confira o ${reportName} da turma ${turma.nome}.`,
           });
           sharedNatively = true;
@@ -225,6 +233,24 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     }
   };
 
+  const executeNativeShare = async () => {
+    if (!readyToShareParams) return;
+    try {
+      await navigator.share({
+        files: [readyToShareParams.file],
+        title: `Relatório: ${readyToShareParams.reportName}`,
+        text: `📋 *${readyToShareParams.reportName}*\n📚 Turma: ${turma.nome}\n\nSeguem os dados do relatório em anexo.`,
+      });
+      toast.success("Compartilhado com sucesso!");
+      setTimeout(() => { resetFlow(); }, 500);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error(err);
+        toast.error("Erro ao abrir compartilhamento nativo.");
+      }
+    }
+  };
+
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const handlePrint = () => {
@@ -241,6 +267,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     setSelectedRecordId(initialDocId || null);
     setIsModalOpen(false);
     setIsPreviewOpen(false);
+    setReadyToShareParams(null);
   };
 
   const renderSelectionList = () => {
@@ -470,17 +497,27 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
                 Imprimir
               </button>
             )}
-            <button 
-              onClick={handleWhatsApp}
-              disabled={isGenerating}
-              className={cn(
-                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
-                isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
-              )}
-            >
-              <MessageCircle className={cn("h-4 w-4", isGenerating && "animate-spin")} />
-              {isGenerating ? "Gerando..." : isMobile ? "Compartilhar" : "WhatsApp"}
-            </button>
+            {readyToShareParams ? (
+              <button 
+                onClick={executeNativeShare}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white font-black uppercase text-xs shadow-lg shadow-[#25D366]/30 hover:scale-105 active:scale-95 transition-all animate-[pulse_2s_ease-in-out_infinite]"
+              >
+                <Share2 className="h-4 w-4" />
+                Enviar Agora!
+              </button>
+            ) : (
+              <button 
+                onClick={handleWhatsApp}
+                disabled={isGenerating}
+                className={cn(
+                  "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
+                  isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
+                )}
+              >
+                <MessageCircle className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+                {isGenerating ? "Gerando..." : isMobile ? "Compartilhar" : "WhatsApp"}
+              </button>
+            )}
             <button 
               onClick={handleShare}
               disabled={isGenerating}
