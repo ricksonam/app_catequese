@@ -97,8 +97,9 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [savingSuggestion, setSavingSuggestion] = useState(false);
 
   // Notificações
-  const [birthdaysEnabled, setBirthdaysEnabled] = useState(true);
-  const [meetingsEnabled, setMeetingsEnabled] = useState(true);
+  const [birthdaysEnabled, setBirthdaysEnabled] = useState(() => localStorage.getItem('ivc_birthdays_enabled') !== 'false');
+  const [meetingsEnabled, setMeetingsEnabled] = useState(() => localStorage.getItem('ivc_meetings_enabled') !== 'false');
+  const [reunioesEnabled, setReunioesEnabled] = useState(() => localStorage.getItem('ivc_reunioes_enabled') !== 'false');
 
   // Alertas Inteligentes
   const [showAlertsDialog, setShowAlertsDialog] = useState(false);
@@ -611,46 +612,103 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
       {/* 2. Notificações */}
       <Dialog open={showNotificationDialog} onOpenChange={setShowNotificationDialog}>
-        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
-          <DialogHeader><DialogTitle className="text-xl font-black mb-4">Central de Notificações</DialogTitle></DialogHeader>
-          <div className="space-y-6">
-             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
-               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center"><Bell className="w-5 h-5"/></div>
-                 <div><p className="text-sm font-bold leading-none">Aviso de Aniversariantes</p><p className="text-[10px] text-muted-foreground mt-1">Lembretes no Celular</p></div>
-               </div>
-               <Switch 
-                 checked={birthdaysEnabled} 
-                 onCheckedChange={(c) => {
-                   setBirthdaysEnabled(c);
-                   if (c && "Notification" in window && Notification.permission !== "granted") {
-                     Notification.requestPermission().then(p => {
-                       if (p === "granted") toast({ title: "Notificações Ativadas!" });
-                       else toast({ title: "Bloqueado pelo Navegador", description: "Desbloqueie nas configurações", variant: "destructive" });
-                     });
-                   }
-                 }} 
-               />
+        <DialogContent className="max-w-[400px] rounded-[32px] border-none shadow-2xl p-6 bg-white dark:bg-zinc-950">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black flex items-center gap-2">
+              <Bell className="text-orange-500 w-6 h-6" /> Notificações no Dispositivo
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+             <p className="text-sm text-muted-foreground leading-relaxed px-1">
+               Os avisos aparecerão <b>no seu celular ou computador</b> sempre que você acessar o aplicativo a partir das <b>07:00 da manhã</b> no dia do evento ou na véspera.
+             </p>
+             
+             {/* Aviso iOS */}
+             <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl flex items-start gap-3">
+               <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-600 flex items-center justify-center shrink-0 mt-0.5"><BookOpen className="w-4 h-4"/></div>
+               <p className="text-[11px] text-blue-800 dark:text-blue-300 font-medium leading-tight">
+                 <b>Atenção iPhone (iOS):</b> Para receber notificações, você precisa adicionar o iCatequese à sua <b>Tela de Início</b> e abrir o app por lá.
+               </p>
              </div>
-             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted">
-               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><CalendarDays className="w-5 h-5"/></div>
-                 <div><p className="text-sm font-bold leading-none">Aviso de Encontros</p><p className="text-[10px] text-muted-foreground mt-1">Lembretes no Celular</p></div>
+
+             <div className="space-y-3 pt-2">
+               {/* Aniversariantes */}
+               <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted/50 hover:bg-muted/50 transition-colors">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center"><Bell className="w-5 h-5"/></div>
+                   <div>
+                     <p className="text-sm font-bold leading-none text-foreground">Aniversariantes</p>
+                     <p className="text-[10px] text-muted-foreground mt-1">Avisa véspera e no dia</p>
+                   </div>
+                 </div>
+                 <Switch 
+                   checked={birthdaysEnabled} 
+                   onCheckedChange={(c) => {
+                     setBirthdaysEnabled(c);
+                     localStorage.setItem('ivc_birthdays_enabled', String(c));
+                     if (c && "Notification" in window && Notification.permission !== "granted") {
+                       Notification.requestPermission();
+                     }
+                   }} 
+                 />
                </div>
-               <Switch 
-                 checked={meetingsEnabled} 
-                 onCheckedChange={(c) => {
-                   setMeetingsEnabled(c);
-                   if (c && "Notification" in window && Notification.permission !== "granted") {
-                     Notification.requestPermission().then(p => {
-                       if (p === "granted") toast({ title: "Notificações Ativadas!" });
-                       else toast({ title: "Bloqueado pelo Navegador", description: "Desbloqueie nas configurações", variant: "destructive" });
-                     });
-                   }
-                 }} 
-               />
+
+               {/* Encontros */}
+               <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted/50 hover:bg-muted/50 transition-colors">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><CalendarDays className="w-5 h-5"/></div>
+                   <div>
+                     <p className="text-sm font-bold leading-none text-foreground">Encontros</p>
+                     <p className="text-[10px] text-muted-foreground mt-1">Avisa véspera e no dia</p>
+                   </div>
+                 </div>
+                 <Switch 
+                   checked={meetingsEnabled} 
+                   onCheckedChange={(c) => {
+                     setMeetingsEnabled(c);
+                     localStorage.setItem('ivc_meetings_enabled', String(c));
+                     if (c && "Notification" in window && Notification.permission !== "granted") {
+                       Notification.requestPermission();
+                     }
+                   }} 
+                 />
+               </div>
+
+               {/* Reuniões */}
+               <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-muted/50 hover:bg-muted/50 transition-colors">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center"><Users className="w-5 h-5"/></div>
+                   <div>
+                     <p className="text-sm font-bold leading-none text-foreground">Reuniões</p>
+                     <p className="text-[10px] text-muted-foreground mt-1">Avisa véspera e no dia</p>
+                   </div>
+                 </div>
+                 <Switch 
+                   checked={reunioesEnabled} 
+                   onCheckedChange={(c) => {
+                     setReunioesEnabled(c);
+                     localStorage.setItem('ivc_reunioes_enabled', String(c));
+                     if (c && "Notification" in window && Notification.permission !== "granted") {
+                       Notification.requestPermission();
+                     }
+                   }} 
+                 />
+               </div>
              </div>
-             <Button onClick={() => { toast({title: "Preferências Salvas!"}); setShowNotificationDialog(false); }} className="w-full h-14 rounded-2xl font-black bg-orange-500 hover:bg-orange-600 text-white">Salvar Preferências</Button>
+
+             <Button onClick={() => { 
+                if ("Notification" in window && Notification.permission !== "granted" && (birthdaysEnabled || meetingsEnabled || reunioesEnabled)) {
+                  Notification.requestPermission().then(p => {
+                    if (p === "granted") toast.success("Notificações permitidas pelo dispositivo!");
+                    else toast.error("Permissão de notificação negada no navegador.");
+                  });
+                } else {
+                  toast.success("Preferências salvas com sucesso!"); 
+                }
+                setShowNotificationDialog(false); 
+             }} className="w-full h-14 mt-4 rounded-2xl font-black bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/20">
+               Salvar Preferências
+             </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -22,6 +22,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MenuContent } from "./MenuContent";
 import { ObjectiveModal } from "./ObjectiveModal";
 import { useTurmas } from "@/hooks/useSupabaseData";
+import { useAppNotifications } from "@/hooks/useAppNotifications";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,6 +55,9 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const [isSavingSuggestion, setIsSavingSuggestion] = useState(false);
   const { user } = useAuth();
   const { data: turmas = [] } = useTurmas();
+
+  // Executa a checagem de notificações locais no start do app logado
+  useAppNotifications();
 
   const currentPath = location.pathname;
 
