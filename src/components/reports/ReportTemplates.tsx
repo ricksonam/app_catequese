@@ -745,11 +745,15 @@ export const MateriaisApoioSheet = ({ org, turma, encontros, filtroInfo }: any) 
 // RELATÓRIO DE FREQUÊNCIA POR ENCONTRO
 // ==========================================
 
-export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros }: any) => {
+export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros, encontroId }: any) => {
   // Apenas encontros realizados para o relatório de frequência
-  const encsRealizados = (encontros || [])
+  let encsRealizados = (encontros || [])
     .filter((e: any) => e.status === 'realizado')
     .sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime());
+
+  if (encontroId && encontroId !== 'todos') {
+    encsRealizados = encsRealizados.filter((e: any) => e.id === encontroId);
+  }
 
   const cats = (catequizandos || [])
     .filter((c: any) => c.status === 'ativo')

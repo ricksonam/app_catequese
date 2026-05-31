@@ -435,6 +435,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   const [mesSelecionado, setMesSelecionado] = useState<number>(new Date().getMonth());
   const [dataInicio, setDataInicio] = useState<string>("");
   const [dataFim, setDataFim] = useState<string>("");
+  const [freqEncontroId, setFreqEncontroId] = useState<string>("todos");
 
   const meses = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -487,7 +488,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
         {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
-        {docTipo === "freq_encontros" && <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+        {docTipo === "freq_encontros" && <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} encontroId={printTarget?.freqEncontroId || "todos"} />}
         {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
         {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
       </>
@@ -638,25 +639,27 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
               )}
 
               {docTipo === "freq_encontros" && (
-                <button
-                  onClick={() => handlePrint(turma)}
-                  className="w-full flex items-center justify-between px-5 py-5 hover:bg-rose-500/5 active:bg-rose-500/10 transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0">
-                      <Users className="h-4 w-4 text-rose-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-bold text-foreground">Frequência por Encontro — {turma.nome}</p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {encontros.filter((e: any) => e.status === 'realizado').length} encontros realizados • Presenças e faltas
-                      </p>
-                    </div>
+                <div className="p-5 space-y-5 bg-card">
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Selecionar Encontro</p>
+                    <select
+                      className="w-full h-11 px-3 text-sm font-semibold rounded-xl border-2 border-black/10 bg-white focus:outline-none focus:border-rose-500"
+                      value={freqEncontroId}
+                      onChange={(e) => setFreqEncontroId(e.target.value)}
+                    >
+                      <option value="todos">Todos os Encontros</option>
+                      {encontros.filter((e: any) => e.status === 'realizado').sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime()).map((e: any) => (
+                        <option key={e.id} value={e.id}>{new Date(e.data + 'T12:00:00').toLocaleDateString('pt-BR')} - {e.tema}</option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-rose-600 bg-rose-500/10 px-2.5 py-1.5 rounded-xl border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors shrink-0">
-                    <Printer className="h-3 w-3" /> Imprimir
-                  </div>
-                </button>
+                  <button
+                    onClick={() => handlePrint({ freqEncontroId })}
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-rose-600/20"
+                  >
+                    <Printer className="h-4 w-4" /> Imprimir Relatório
+                  </button>
+                </div>
               )}
 
               {docTipo === "boletim_turma" && (

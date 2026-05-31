@@ -43,7 +43,7 @@ const MODULE_CONFIG: any = {
       { id: "lista_turma", label: "Relação Geral da Turma", icon: Users, desc: "Nomes e status dos alunos", needsSelect: false },
       { id: "lista_resp", label: "Relação de Responsáveis", icon: BookOpen, desc: "Nomes e contatos de emergência", needsSelect: false },
       { id: "cal_anual", label: "Calendário Anual de Celebrações", icon: Calendar, desc: "Aniversários de nascimento e batismo", needsSelect: false },
-      { id: "freq_encontros", label: "Relatório de Frequência", icon: CheckCircle2, desc: "Presenças e faltas por encontro realizado", needsSelect: false },
+      { id: "freq_encontros", label: "Relatório de Frequência", icon: CheckCircle2, desc: "Presenças e faltas por encontro realizado", needsSelect: true },
     ]
   },
   atividades: {
@@ -233,8 +233,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     let items: any[] = [];
     let labelKey = "nome";
 
-    if (context === "encontros") {
-      items = encontros;
+    if (context === "encontros" || selectedReportId === "freq_encontros") {
+      items = encontros.filter((e: any) => e.status === 'realizado').sort((a: any, b: any) => new Date(b.data).getTime() - new Date(a.data).getTime());
       labelKey = "tema";
     } else if (context === "catequizandos") {
       items = catequizandos;
@@ -260,6 +260,22 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
           />
         </div>
         <div className="max-h-[300px] overflow-y-auto px-4 space-y-1">
+          {selectedReportId === "freq_encontros" && !searchTerm && (
+            <button
+              type="button"
+              onClick={() => handleRecordSelect('todos')}
+              className="w-full flex items-center gap-3 p-3 text-left rounded-xl hover:bg-black/5 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-full bg-black/5 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="h-4 w-4 text-foreground/70" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-foreground">Todos os Encontros</p>
+                <p className="text-[11px] text-muted-foreground truncate">Gerar relatório completo</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          )}
           {filtered.map((item) => (
             <button
               key={item.id}
@@ -313,7 +329,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       case "cal_anual":
         return <Templates.AnnualCelebrationsCalendar org={org} turma={turma} catequizandos={catequizandos} />;
       case "freq_encontros":
-        return <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />;
+        return <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} encontroId={selectedRecordId} />;
       case "ativ_complet":
         if (selectedRecordId) {
           const atv = atividades.find(a => a.id === selectedRecordId);

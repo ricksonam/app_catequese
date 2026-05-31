@@ -4,6 +4,8 @@ import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
+import * as Templates from "@/components/reports/ReportTemplates";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ImagePicker } from "@/components/ImagePicker";
 import { StarRating } from "@/components/StarRating";
@@ -166,6 +168,8 @@ export default function CatequizandosList() {
   const navigate = useNavigate();
   const { data: turmas = [], isLoading: tLoading } = useTurmas();
   const { data: list = [], isLoading } = useCatequizandos(id);
+  const { data: paroquias = [] } = useParoquias();
+  const { data: comunidades = [] } = useComunidades();
   const mutation = useCatequizandoMutation();
   const deleteMut = useDeleteCatequizando();
   const turma = turmas.find((t) => t.id === id);
@@ -213,6 +217,13 @@ export default function CatequizandosList() {
   const [freqTab, setFreqTab] = useState<'encontro' | 'resumo'>('encontro');
   const [freqEncontroId, setFreqEncontroId] = useState<string>('');
   const [freqMes, setFreqMes] = useState<string>('');
+  const [printEncontroId, setPrintEncontroId] = useState<string | null>(null);
+
+  const orgNomes = useMemo(() =\u003e {
+    const p = paroquias.find(x =\u003e x.id === turma?.paroquia_id)?.nome || "Paróquia não informada";
+    const c = comunidades.find(x =\u003e x.id === turma?.comunidade_id)?.nome || "Comunidade não informada";
+    return { paroquia: p, comunidade: c };
+  }, [paroquias, comunidades, turma]);
   
   // --- Celebrações Modal States ---
   const [showCelebracoes, setShowCelebracoes] = useState(false);
@@ -1165,9 +1176,22 @@ export default function CatequizandosList() {
           </div>
           
           <div className="p-4 bg-white border-t border-black/5 shrink-0 flex justify-end">
-            <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
-              Fechar
-            </button>
+            {freqTab === 'encontro' ? (
+              <button 
+                onClick={() => {
+                  setPrintEncontroId(freqEncontroId);
+                  setTimeout(() => window.print(), 100);
+                }} 
+                disabled={!freqEncontroId}
+                className="action-btn-sm bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white w-full sm:w-auto font-bold px-4 py-2 rounded-xl flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" /> Gerar Relatório
+              </button>
+            ) : (
+              <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
+                Fechar
+              </button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -1851,13 +1875,24 @@ export default function CatequizandosList() {
         </DialogContent>
       </Dialog>
 
-      <DeleteConfirmationDialog
-        open={deleteConfirmOpen}
-        onOpenChange={setDeleteConfirmOpen}
+      <DeleteConfirmationDialog 
+        open={deleteConfirmOpen} 
+        onOpenChange={setDeleteConfirmOpen} 
         onConfirm={confirmDelete}
-        itemName={viewItem?.nome}
-        isLoading={deleteMut.isPending}
+        title="Excluir Catequizando"
+        description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
       />
+
+      {/* --- Print Portal Oculto --- */}
+      {printEncontroId && createPortal(
+        <div className="print-wrapper" style={{ display: 'none', position: 'fixed', top: 0, left: 0, width: '100%', backgroundColor: 'white', zIndex: 999999 }}>
+          <div className="bg-white text-black">
+            <Templates.FrequenciaEncontrosSheet org={orgNomes} turma={turma} catequizandos={list} encontros={encontrosRealizados} encontroId={printEncontroId} />
+          </div>
+        </div>,
+        document.body
+      )}
+
     </div>
   );
 }
