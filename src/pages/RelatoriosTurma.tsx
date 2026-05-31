@@ -1,7 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2 } from "lucide-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { toast } from "sonner";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
@@ -430,6 +433,11 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   const [docTipo, setDocTipo] = useState<string>("ficha_cat");
   const [printTarget, setPrintTarget] = useState<any>(null);
 
+  const hiddenCaptureRef = useRef<HTMLDivElement>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [readyToShareParams, setReadyToShareParams] = useState<any>(null);
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   // Filtros para Relatório de Materiais de Apoio
   const [filtroTipo, setFiltroTipo] = useState<"todos" | "mes" | "periodo">("todos");
   const [mesSelecionado, setMesSelecionado] = useState<number>(new Date().getMonth());
@@ -479,25 +487,110 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
     setTimeout(() => window.print(), 100);
   };
 
+  const handleCompartilhar = async (target: any) => {
+    setPrintTarget(target);
+    setIsGenerating(true);
+    setReadyToShareParams(null);
+    const toastId = toast.loading("Gerando relatório...");
+
+    setTimeout(async () => {
+      try {
+        if (!hiddenCaptureRef.current) throw new Error("Elemento não encontrado");
+        const element = hiddenCaptureRef.current;
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        
+        const ratio = canvasWidth / pageWidth;
+        const scaledHeight = canvasHeight / ratio;
+
+        let heightLeft = scaledHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, "PNG", 0, position, pageWidth, scaledHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - scaledHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, pageWidth, scaledHeight);
+          heightLeft -= pageHeight;
+        }
+
+        const pdfBlob = pdf.output("blob");
+        const reportName = DOC_TYPES.find(d => d.id === docTipo)?.label || "Relatório";
+        const fileName = `${reportName}_${target.nome || target.id || 'Turma'}.pdf`;
+        const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+        toast.dismiss(toastId);
+
+        if (isMobile && navigator.share) {
+          setReadyToShareParams({ file, reportName, id: target.id || "unico" });
+          toast.success("✅ Pronto! Toque em 'Enviar!' abaixo.");
+        } else {
+          const url = URL.createObjectURL(file);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(url);
+          toast.success("PDF baixado com sucesso!");
+        }
+      } catch (err) {
+        console.error("Erro ao gerar PDF", err);
+        toast.error("Falha ao gerar o PDF", { id: toastId });
+      } finally {
+        setIsGenerating(false);
+      }
+    }, 500); // 500ms para o React renderizar o printTarget no ref
+  };
+
+  const handleEnviarAgora = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!readyToShareParams) return;
+    try {
+      await navigator.share({
+        title: readyToShareParams.reportName,
+        text: `Confira o ${readyToShareParams.reportName}`,
+        files: [readyToShareParams.file]
+      });
+      setReadyToShareParams(null);
+    } catch (err) {
+      console.error("Erro ao compartilhar", err);
+    }
+  };
+
+  const printContent = printTarget ? (
+    <>
+      {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
+      {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
+      {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+      {docTipo === "freq_encontros" && <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} encontroId={printTarget?.freqEncontroId || "todos"} />}
+      {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+      {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
+    </>
+  ) : null;
+
   // ---- Renderiza área de impressão via portal no body ----
   const PrintPortal = () => {
     if (!printTarget) return null;
-
-    const content = (
-      <>
-        {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
-        {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
-        {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
-        {docTipo === "freq_encontros" && <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} encontroId={printTarget?.freqEncontroId || "todos"} />}
-        {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
-        {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
-      </>
-    );
-
     return createPortal(
       <div className="print-wrapper" style={{ display: 'none', position: 'fixed', top: 0, left: 0, width: '100%', backgroundColor: 'white', zIndex: 999999 }}>
         <div className="bg-white text-black">
-          {content}
+          {printContent}
         </div>
       </div>,
       document.body
@@ -505,7 +598,15 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   };
 
   return (
-    <div className="space-y-5 print:m-0 print:p-0 print:space-y-0 animate-fade-in">
+    <div className="space-y-5 print:m-0 print:p-0 print:space-y-0 animate-fade-in relative">
+      
+      {/* Hidden container for html2canvas generation */}
+      <div className="absolute left-[-9999px] top-0 w-[210mm] pointer-events-none print:hidden">
+        <div ref={hiddenCaptureRef} className="bg-white text-black p-0 m-0">
+          {printContent}
+        </div>
+      </div>
+      
       {/* Cabeçalho */}
       <div className="relative p-[2px] rounded-2xl bg-gradient-to-br from-primary/40 via-primary/20 to-primary/10 print:hidden">
         <div className="flex items-center gap-4 p-5 rounded-[14px] bg-card">
@@ -569,10 +670,9 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                   <div className="py-10 text-center text-sm text-muted-foreground">Nenhum catequizando cadastrado</div>
                 ) : (
                   catequizandos.map((cat: any) => (
-                    <button
+                    <div
                       key={cat.id}
-                      onClick={() => handlePrint(cat)}
-                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-violet-500/5 active:bg-violet-500/10 transition-colors text-left group"
+                      className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-4 hover:bg-violet-500/5 transition-colors gap-3 border-b border-black/5 last:border-0"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-violet-500/10 flex items-center justify-center text-sm font-black text-violet-600 shrink-0">
@@ -583,10 +683,22 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                           <p className="text-[11px] text-muted-foreground">{cat.status || 'ativo'}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-violet-600 bg-violet-500/10 px-2.5 py-1.5 rounded-xl border border-violet-500/20 group-hover:bg-violet-500/20 transition-colors">
-                        <Printer className="h-3 w-3" /> Imprimir
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <button onClick={() => handlePrint(cat)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-violet-600 bg-violet-500/10 px-3 py-2 rounded-xl border border-violet-500/20 hover:bg-violet-500/20 transition-colors active:scale-95">
+                          <Printer className="h-3 w-3 shrink-0" /> Imprimir
+                        </button>
+                        {readyToShareParams?.id === cat.id ? (
+                          <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                            <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                          </button>
+                        ) : (
+                          <button disabled={isGenerating} onClick={() => handleCompartilhar(cat)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                            <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === cat.id && "animate-spin")} /> 
+                            {isGenerating && printTarget?.id === cat.id ? "Aguarde" : "Compartilhar"}
+                          </button>
+                        )}
                       </div>
-                    </button>
+                    </div>
                   ))
                 )
               )}
@@ -596,10 +708,9 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                   <div className="py-10 text-center text-sm text-muted-foreground">Nenhum encontro cadastrado</div>
                 ) : (
                   [...encontros].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()).map((enc: any) => (
-                    <button
+                    <div
                       key={enc.id}
-                      onClick={() => handlePrint(enc)}
-                      className="w-full flex items-center justify-between px-5 py-4 hover:bg-sky-500/5 active:bg-sky-500/10 transition-colors text-left group"
+                      className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-4 hover:bg-sky-500/5 transition-colors gap-3 border-b border-black/5 last:border-0"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
@@ -610,19 +721,28 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                           <p className="text-[11px] text-muted-foreground">{formatarDataVigente(enc.data)} • {enc.status}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-500/10 px-2.5 py-1.5 rounded-xl border border-sky-500/20 group-hover:bg-sky-500/20 transition-colors shrink-0">
-                        <Printer className="h-3 w-3" /> Imprimir
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <button onClick={() => handlePrint(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-500/10 px-3 py-2 rounded-xl border border-sky-500/20 hover:bg-sky-500/20 transition-colors active:scale-95">
+                          <Printer className="h-3 w-3 shrink-0" /> Imprimir
+                        </button>
+                        {readyToShareParams?.id === enc.id ? (
+                          <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                            <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                          </button>
+                        ) : (
+                          <button disabled={isGenerating} onClick={() => handleCompartilhar(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                            <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === enc.id && "animate-spin")} /> 
+                            {isGenerating && printTarget?.id === enc.id ? "Aguarde" : "Compartilhar"}
+                          </button>
+                        )}
                       </div>
-                    </button>
+                    </div>
                   ))
                 )
               )}
 
               {docTipo === "lista_chamada" && (
-                <button
-                  onClick={() => handlePrint(turma)}
-                  className="w-full flex items-center justify-between px-5 py-5 hover:bg-emerald-500/5 active:bg-emerald-500/10 transition-colors group"
-                >
+                <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-5 hover:bg-emerald-500/5 transition-colors group">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -632,10 +752,22 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                       <p className="text-[11px] text-muted-foreground">{catequizandos.filter((c: any) => c.status === 'ativo').length} catequizandos ativos • 15 colunas</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors shrink-0">
-                    <Printer className="h-3 w-3" /> Imprimir
+                  <div className="flex items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+                    <button onClick={() => handlePrint(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-3 py-2.5 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors active:scale-95">
+                      <Printer className="h-3 w-3 shrink-0" /> Imprimir
+                    </button>
+                    {readyToShareParams?.id === turma.id ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                        <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                        <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === turma.id && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === turma.id ? "Aguarde" : "Compartilhar"}
+                      </button>
+                    )}
                   </div>
-                </button>
+                </div>
               )}
 
               {docTipo === "freq_encontros" && (
@@ -653,20 +785,29 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                       ))}
                     </select>
                   </div>
-                  <button
-                    onClick={() => handlePrint({ freqEncontroId })}
-                    className="w-full flex items-center justify-center gap-2 px-5 py-3.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-rose-600/20"
-                  >
-                    <Printer className="h-4 w-4" /> Imprimir Relatório
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => handlePrint({ freqEncontroId, id: `freq-${freqEncontroId}` })}
+                      className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-rose-600/20"
+                    >
+                      <Printer className="h-4 w-4" /> Imprimir Relatório
+                    </button>
+                    {readyToShareParams?.id === `freq-${freqEncontroId}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] hover:bg-[#1EBE5A] active:bg-[#19A64D] text-white rounded-xl transition-colors font-bold shadow-sm shadow-[#25D366]/20 animate-pulse">
+                        <Share2 className="h-4 w-4 shrink-0" /> Enviar Agora!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ freqEncontroId, id: `freq-${freqEncontroId}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-emerald-600/20 disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === `freq-${freqEncontroId}` && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === `freq-${freqEncontroId}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
 
               {docTipo === "boletim_turma" && (
-                <button
-                  onClick={() => handlePrint(turma)}
-                  className="w-full flex items-center justify-between px-5 py-5 hover:bg-amber-500/5 active:bg-amber-500/10 transition-colors group"
-                >
+                <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-5 hover:bg-amber-500/5 transition-colors group">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
                       <FileText className="h-4 w-4 text-amber-600" />
@@ -676,10 +817,22 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                       <p className="text-[11px] text-muted-foreground">Visão geral da turma formatada para A4</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-500/10 px-2.5 py-1.5 rounded-xl border border-amber-500/20 group-hover:bg-amber-500/20 transition-colors shrink-0">
-                    <Printer className="h-3 w-3" /> Imprimir
+                  <div className="flex items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+                    <button onClick={() => handlePrint(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-500/10 px-3 py-2.5 rounded-xl border border-amber-500/20 hover:bg-amber-500/20 transition-colors active:scale-95">
+                      <Printer className="h-3 w-3 shrink-0" /> Imprimir
+                    </button>
+                    {readyToShareParams?.id === turma.id ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                        <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                        <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === turma.id && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === turma.id ? "Aguarde" : "Compartilhar"}
+                      </button>
+                    )}
                   </div>
-                </button>
+                </div>
               )}
 
               {docTipo === "materiais_apoio" && (
@@ -744,13 +897,25 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     )}
                   </div>
 
-                  {/* Botão de Imprimir */}
-                  <button
-                    onClick={() => handlePrint({ encontros: filteredEncontros, filtroInfo: getFiltroInfo() })}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-indigo-600/10 active:scale-[0.98]"
-                  >
-                    <Printer className="h-4 w-4" /> Imprimir Relatório ({filteredEncontros.length})
-                  </button>
+                  {/* Botão de Imprimir e Compartilhar */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => handlePrint({ encontros: filteredEncontros, filtroInfo: getFiltroInfo() })}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-indigo-600/10"
+                    >
+                      <Printer className="h-4 w-4 shrink-0" /> Imprimir Relatório ({filteredEncontros.length})
+                    </button>
+                    {readyToShareParams?.id === "materiais_apoio" ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-[#25D366] hover:bg-[#1EBE5A] active:bg-[#19A64D] text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-[#25D366]/20 animate-pulse">
+                        <Share2 className="h-4 w-4 shrink-0" /> Enviar Agora!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ encontros: filteredEncontros, filtroInfo: getFiltroInfo(), id: "materiais_apoio" })} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-green-600/10 disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === "materiais_apoio" && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === "materiais_apoio" ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
 
                   {/* Pré-visualização dos itens */}
                   <div className="pt-4 border-t border-black/5 space-y-3">
