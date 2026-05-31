@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users } from "lucide-react";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
@@ -421,6 +421,7 @@ const DOC_TYPES = [
   { id: "ficha_cat", label: "Fichas Individuais", icon: User, color: "from-violet-500 to-purple-600", bg: "bg-violet-500/10", border: "border-violet-500/30", text: "text-violet-600" },
   { id: "ficha_enc", label: "Fichas de Encontros", icon: CalendarDays, color: "from-sky-500 to-blue-600", bg: "bg-sky-500/10", border: "border-sky-500/30", text: "text-sky-600" },
   { id: "lista_chamada", label: "Grade de Frequência", icon: CheckCircle2, color: "from-emerald-500 to-teal-600", bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-600" },
+  { id: "freq_encontros", label: "Frequência por Encontro", icon: Users, color: "from-rose-500 to-pink-600", bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-600" },
   { id: "boletim_turma", label: "Relatório da Turma", icon: FileText, color: "from-amber-500 to-orange-600", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-600" },
   { id: "materiais_apoio", label: "Materiais de Apoio", icon: BookOpen, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-600" },
 ];
@@ -486,6 +487,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
         {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
         {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+        {docTipo === "freq_encontros" && <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
         {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
         {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
       </>
@@ -630,6 +632,28 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors shrink-0">
+                    <Printer className="h-3 w-3" /> Imprimir
+                  </div>
+                </button>
+              )}
+
+              {docTipo === "freq_encontros" && (
+                <button
+                  onClick={() => handlePrint(turma)}
+                  className="w-full flex items-center justify-between px-5 py-5 hover:bg-rose-500/5 active:bg-rose-500/10 transition-colors group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-rose-500/10 flex items-center justify-center shrink-0">
+                      <Users className="h-4 w-4 text-rose-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-foreground">Frequência por Encontro — {turma.nome}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {encontros.filter((e: any) => e.status === 'realizado').length} encontros realizados • Presenças e faltas
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-rose-600 bg-rose-500/10 px-2.5 py-1.5 rounded-xl border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors shrink-0">
                     <Printer className="h-3 w-3" /> Imprimir
                   </div>
                 </button>

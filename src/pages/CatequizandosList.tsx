@@ -328,8 +328,12 @@ export default function CatequizandosList() {
   }, [list, pastEncontros, alertConfig.moduloCatequizandos]);
 
   // --- Lógica de Frequência ---
+  // Exibe todos os encontros (realizados e pendentes) no card de frequência
+  // O status "pendente" não deve ser uma trava para visualização de dados
   const encontrosRealizados = useMemo(() => 
-    encontros.filter(e => e.status === 'realizado').sort((a,b) => new Date(b.data).getTime() - new Date(a.data).getTime()),
+    encontros
+      .filter(e => e.status !== 'cancelado')
+      .sort((a,b) => new Date(b.data).getTime() - new Date(a.data).getTime()),
   [encontros]);
   
   const mesesDisponiveis = useMemo(() => {

@@ -740,3 +740,159 @@ export const MateriaisApoioSheet = ({ org, turma, encontros, filtroInfo }: any) 
     </div>
   );
 };
+
+// ==========================================
+// RELATÓRIO DE FREQUÊNCIA POR ENCONTRO
+// ==========================================
+
+export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros }: any) => {
+  // Apenas encontros realizados para o relatório de frequência
+  const encsRealizados = (encontros || [])
+    .filter((e: any) => e.status === 'realizado')
+    .sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime());
+
+  const cats = (catequizandos || [])
+    .filter((c: any) => c.status === 'ativo')
+    .sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+
+  return (
+    <div className="p-6 text-black bg-white font-sans">
+      <PrintHeader 
+        titulo="Relatório de Frequência e Faltas" 
+        subtitulo="Presenças e ausências nos encontros realizados"
+        paroquia={org.paroquia} 
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      {encsRealizados.length === 0 ? (
+        <p className="text-center py-10 text-sm text-gray-500 italic">Nenhum encontro realizado cadastrado.</p>
+      ) : (
+        <div className="space-y-8">
+          {/* Tabela de frequência por encontro */}
+          {encsRealizados.map((enc: any, idx: number) => {
+            const presentes = cats.filter((c: any) => enc.presencas?.includes(c.id));
+            const justificados = cats.filter((c: any) => !enc.presencas?.includes(c.id) && enc.justificativas?.[c.id]);
+            const ausentes = cats.filter((c: any) => !enc.presencas?.includes(c.id) && !enc.justificativas?.[c.id]);
+            const taxaPresenca = cats.length > 0 ? Math.round((presentes.length / cats.length) * 100) : 0;
+
+            return (
+              <div key={enc.id} className="break-inside-avoid">
+                {/* Cabeçalho do encontro */}
+                <div className="flex items-start justify-between bg-[#2c1810] text-white px-4 py-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-black uppercase text-sm tracking-wide truncate">
+                      Encontro {idx + 1} — {enc.tema}
+                    </p>
+                    <p className="text-[10px] font-bold opacity-80 mt-0.5">
+                      {formatarDataVigente(enc.data)}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 text-center shrink-0 ml-4">
+                    <div className="bg-white/10 px-3 py-1 rounded">
+                      <p className="text-[9px] font-black uppercase opacity-70">Presentes</p>
+                      <p className="text-lg font-black">{presentes.length}</p>
+                    </div>
+                    <div className="bg-white/10 px-3 py-1 rounded">
+                      <p className="text-[9px] font-black uppercase opacity-70">Faltas</p>
+                      <p className="text-lg font-black">{ausentes.length}</p>
+                    </div>
+                    <div className="bg-white/10 px-3 py-1 rounded">
+                      <p className="text-[9px] font-black uppercase opacity-70">Justif.</p>
+                      <p className="text-lg font-black">{justificados.length}</p>
+                    </div>
+                    <div className="bg-white/10 px-3 py-1 rounded">
+                      <p className="text-[9px] font-black uppercase opacity-70">Taxa</p>
+                      <p className="text-lg font-black">{taxaPresenca}%</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabela de catequizandos */}
+                <table className="w-full border-collapse border border-[#2c1810] text-[10px]">
+                  <thead>
+                    <tr className="bg-gray-100 border-b border-[#2c1810]">
+                      <th className="border-r border-[#2c1810] p-1.5 w-8 text-center">Nº</th>
+                      <th className="border-r border-[#2c1810] p-1.5 text-left uppercase font-black">Nome do Catequizando</th>
+                      <th className="border-r border-[#2c1810] p-1.5 w-20 text-center font-black uppercase">Situação</th>
+                      <th className="p-1.5 text-left font-black uppercase w-48">Justificativa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cats.map((c: any, i: number) => {
+                      const presente = enc.presencas?.includes(c.id);
+                      const justificativa = enc.justificativas?.[c.id];
+                      const falta = !presente && !justificativa;
+
+                      return (
+                        <tr
+                          key={c.id}
+                          className={cn(
+                            "border-b border-gray-200",
+                            presente ? "" : falta ? "bg-red-50/50" : "bg-amber-50/50"
+                          )}
+                        >
+                          <td className="border-r border-[#2c1810] p-1.5 text-center font-bold">{i + 1}</td>
+                          <td className="border-r border-[#2c1810] p-1.5 font-bold uppercase">{c.nome}</td>
+                          <td className="border-r border-[#2c1810] p-1.5 text-center font-black">
+                            {presente && <span className="text-emerald-800">P</span>}
+                            {justificativa && <span className="text-amber-700">J</span>}
+                            {falta && <span className="text-red-700">F</span>}
+                          </td>
+                          <td className="p-1.5 text-gray-600 font-serif text-[9px] italic">
+                            {justificativa || ""}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+
+          {/* Quadro Resumo Geral */}
+          <div className="mt-6 break-inside-avoid">
+            <h3 className="font-serif font-black uppercase text-[#2c1810] border-b-2 border-[#2c1810] pb-2 mb-4 text-sm tracking-widest">Resumo Geral de Frequência</h3>
+            <table className="w-full border-collapse border-2 border-[#2c1810] text-xs">
+              <thead>
+                <tr className="bg-gray-100 border-b-2 border-[#2c1810]">
+                  <th className="border-r border-[#2c1810] p-2 w-8 text-center">Nº</th>
+                  <th className="border-r border-[#2c1810] p-2 text-left uppercase font-black">Catequizando</th>
+                  <th className="border-r border-[#2c1810] p-2 w-20 text-center font-black uppercase">Presentes</th>
+                  <th className="border-r border-[#2c1810] p-2 w-16 text-center font-black uppercase">Faltas</th>
+                  <th className="border-r border-[#2c1810] p-2 w-16 text-center font-black uppercase">Justif.</th>
+                  <th className="p-2 w-16 text-center font-black uppercase">% Pres.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cats.map((c: any, i: number) => {
+                  const pres = encsRealizados.filter((e: any) => e.presencas?.includes(c.id)).length;
+                  const just = encsRealizados.filter((e: any) => !e.presencas?.includes(c.id) && e.justificativas?.[c.id]).length;
+                  const faltas = encsRealizados.length - pres - just;
+                  const perc = encsRealizados.length > 0 ? Math.round((pres / encsRealizados.length) * 100) : 0;
+                  return (
+                    <tr key={c.id} className="border-b border-gray-300">
+                      <td className="border-r border-[#2c1810] p-2 text-center font-bold">{i + 1}</td>
+                      <td className="border-r border-[#2c1810] p-2 font-bold uppercase">{c.nome}</td>
+                      <td className="border-r border-[#2c1810] p-2 text-center font-black text-emerald-800">{pres}</td>
+                      <td className="border-r border-[#2c1810] p-2 text-center font-black text-red-800">{faltas}</td>
+                      <td className="border-r border-[#2c1810] p-2 text-center font-black text-amber-800">{just}</td>
+                      <td className={cn("p-2 text-center font-black", perc < 75 ? "text-red-700" : "text-emerald-700")}>{perc}%</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-6 flex justify-between text-[10px] font-bold uppercase tracking-widest text-gray-500">
+            <p>P = Presente • F = Falta • J = Justificada</p>
+            <p>Gerado em: {new Date().toLocaleDateString('pt-BR')}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

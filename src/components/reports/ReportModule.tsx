@@ -43,6 +43,7 @@ const MODULE_CONFIG: any = {
       { id: "lista_turma", label: "Relação Geral da Turma", icon: Users, desc: "Nomes e status dos alunos", needsSelect: false },
       { id: "lista_resp", label: "Relação de Responsáveis", icon: BookOpen, desc: "Nomes e contatos de emergência", needsSelect: false },
       { id: "cal_anual", label: "Calendário Anual de Celebrações", icon: Calendar, desc: "Aniversários de nascimento e batismo", needsSelect: false },
+      { id: "freq_encontros", label: "Relatório de Frequência", icon: CheckCircle2, desc: "Presenças e faltas por encontro realizado", needsSelect: false },
     ]
   },
   atividades: {
@@ -311,6 +312,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
         return <Templates.ParentsContactList org={org} turma={turma} catequizandos={catequizandos} />;
       case "cal_anual":
         return <Templates.AnnualCelebrationsCalendar org={org} turma={turma} catequizandos={catequizandos} />;
+      case "freq_encontros":
+        return <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />;
       case "ativ_complet":
         if (selectedRecordId) {
           const atv = atividades.find(a => a.id === selectedRecordId);
