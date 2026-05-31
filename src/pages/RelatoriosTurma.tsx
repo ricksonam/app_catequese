@@ -435,6 +435,7 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
 
   const hiddenCaptureRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [readyToShareParams, setReadyToShareParams] = useState<any>(null);
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   // Filtros para Relatório de Materiais de Apoio
@@ -489,7 +490,8 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   const handleCompartilhar = async (target: any) => {
     setPrintTarget(target);
     setIsGenerating(true);
-    const toastId = toast.loading("Preparando documento...");
+    setReadyToShareParams(null);
+    const toastId = toast.loading("Gerando relatório...");
 
     setTimeout(async () => {
       try {
@@ -536,30 +538,8 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
         toast.dismiss(toastId);
 
         if (isMobile && navigator.share) {
-          try {
-            await navigator.share({
-              title: reportName,
-              text: `Confira o ${reportName}`,
-              files: [file]
-            });
-            toast.success("Compartilhado com sucesso!");
-          } catch (shareErr: any) {
-            console.error("Erro ao compartilhar", shareErr);
-            if (shareErr.name === 'NotAllowedError' || shareErr.name === 'AbortError') {
-              // Fallback para download se o navegador bloquear o share assíncrono ou o usuário cancelar
-              if (shareErr.name === 'NotAllowedError') {
-                toast.error("Compartilhamento direto bloqueado. Baixando PDF...");
-                const url = URL.createObjectURL(file);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = fileName;
-                link.click();
-                URL.revokeObjectURL(url);
-              }
-            } else {
-              toast.error("Erro ao abrir compartilhamento", { duration: 3000 });
-            }
-          }
+          setReadyToShareParams({ file, reportName, id: target.id || "unico" });
+          toast.success("Pronto! Toque em 'Enviar!'", { duration: 2000 });
         } else {
           const url = URL.createObjectURL(file);
           const link = document.createElement("a");
@@ -576,6 +556,21 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
         setIsGenerating(false);
       }
     }, 500); // 500ms para o React renderizar o printTarget no ref
+  };
+
+  const handleEnviarAgora = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!readyToShareParams) return;
+    try {
+      await navigator.share({
+        title: readyToShareParams.reportName,
+        text: `Confira o ${readyToShareParams.reportName}`,
+        files: [readyToShareParams.file]
+      });
+      setReadyToShareParams(null);
+    } catch (err) {
+      console.error("Erro ao compartilhar", err);
+    }
   };
 
   const printContent = printTarget ? (
@@ -692,10 +687,16 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                         <button onClick={() => handlePrint(cat)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-violet-600 bg-violet-500/10 px-3 py-2 rounded-xl border border-violet-500/20 hover:bg-violet-500/20 transition-colors active:scale-95">
                           <Printer className="h-3 w-3 shrink-0" /> Imprimir
                         </button>
-                        <button disabled={isGenerating} onClick={() => handleCompartilhar(cat)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
-                          <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === cat.id && "animate-spin")} /> 
-                          {isGenerating && printTarget?.id === cat.id ? "Aguarde..." : "Compartilhar"}
-                        </button>
+                        {readyToShareParams?.id === cat.id ? (
+                          <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                            <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                          </button>
+                        ) : (
+                          <button disabled={isGenerating} onClick={() => handleCompartilhar(cat)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                            <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === cat.id && "animate-spin")} /> 
+                            {isGenerating && printTarget?.id === cat.id ? "Aguarde" : "Compartilhar"}
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))
@@ -724,10 +725,16 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                         <button onClick={() => handlePrint(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-500/10 px-3 py-2 rounded-xl border border-sky-500/20 hover:bg-sky-500/20 transition-colors active:scale-95">
                           <Printer className="h-3 w-3 shrink-0" /> Imprimir
                         </button>
-                        <button disabled={isGenerating} onClick={() => handleCompartilhar(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
-                          <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === enc.id && "animate-spin")} /> 
-                          {isGenerating && printTarget?.id === enc.id ? "Aguarde..." : "Compartilhar"}
-                        </button>
+                        {readyToShareParams?.id === enc.id ? (
+                          <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                            <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                          </button>
+                        ) : (
+                          <button disabled={isGenerating} onClick={() => handleCompartilhar(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                            <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === enc.id && "animate-spin")} /> 
+                            {isGenerating && printTarget?.id === enc.id ? "Aguarde" : "Compartilhar"}
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))
@@ -749,10 +756,16 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     <button onClick={() => handlePrint(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-3 py-2.5 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors active:scale-95">
                       <Printer className="h-3 w-3 shrink-0" /> Imprimir
                     </button>
-                    <button disabled={isGenerating} onClick={() => handleCompartilhar(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
-                      <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === turma.id && "animate-spin")} /> 
-                      {isGenerating && printTarget?.id === turma.id ? "Aguarde..." : "Compartilhar"}
-                    </button>
+                    {readyToShareParams?.id === turma.id ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                        <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                        <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === turma.id && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === turma.id ? "Aguarde" : "Compartilhar"}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -779,10 +792,16 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     >
                       <Printer className="h-4 w-4" /> Imprimir Relatório
                     </button>
-                    <button disabled={isGenerating} onClick={() => handleCompartilhar({ freqEncontroId, id: `freq-${freqEncontroId}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-emerald-600/20 disabled:opacity-50">
-                      <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === `freq-${freqEncontroId}` && "animate-spin")} /> 
-                      {isGenerating && printTarget?.id === `freq-${freqEncontroId}` ? "Aguarde..." : "Compartilhar"}
-                    </button>
+                    {readyToShareParams?.id === `freq-${freqEncontroId}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] hover:bg-[#1EBE5A] active:bg-[#19A64D] text-white rounded-xl transition-colors font-bold shadow-sm shadow-[#25D366]/20 animate-pulse">
+                        <Share2 className="h-4 w-4 shrink-0" /> Enviar Agora!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ freqEncontroId, id: `freq-${freqEncontroId}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-emerald-600/20 disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === `freq-${freqEncontroId}` && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === `freq-${freqEncontroId}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -802,10 +821,16 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     <button onClick={() => handlePrint(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-amber-600 bg-amber-500/10 px-3 py-2.5 rounded-xl border border-amber-500/20 hover:bg-amber-500/20 transition-colors active:scale-95">
                       <Printer className="h-3 w-3 shrink-0" /> Imprimir
                     </button>
-                    <button disabled={isGenerating} onClick={() => handleCompartilhar(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
-                      <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === turma.id && "animate-spin")} /> 
-                      {isGenerating && printTarget?.id === turma.id ? "Aguarde..." : "Compartilhar"}
-                    </button>
+                    {readyToShareParams?.id === turma.id ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                        <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar(turma)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                        <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === turma.id && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === turma.id ? "Aguarde" : "Compartilhar"}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -880,10 +905,16 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                     >
                       <Printer className="h-4 w-4 shrink-0" /> Imprimir Relatório ({filteredEncontros.length})
                     </button>
-                    <button disabled={isGenerating} onClick={() => handleCompartilhar({ encontros: filteredEncontros, filtroInfo: getFiltroInfo(), id: "materiais_apoio" })} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-green-600/10 disabled:opacity-50">
-                      <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === "materiais_apoio" && "animate-spin")} /> 
-                      {isGenerating && printTarget?.id === "materiais_apoio" ? "Aguarde..." : "Compartilhar"}
-                    </button>
+                    {readyToShareParams?.id === "materiais_apoio" ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-[#25D366] hover:bg-[#1EBE5A] active:bg-[#19A64D] text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-[#25D366]/20 animate-pulse">
+                        <Share2 className="h-4 w-4 shrink-0" /> Enviar Agora!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ encontros: filteredEncontros, filtroInfo: getFiltroInfo(), id: "materiais_apoio" })} className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-xl font-black uppercase text-xs tracking-widest transition-all shadow-md shadow-green-600/10 disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === "materiais_apoio" && "animate-spin")} /> 
+                        {isGenerating && printTarget?.id === "materiais_apoio" ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
                   </div>
 
                   {/* Pré-visualização dos itens */}
