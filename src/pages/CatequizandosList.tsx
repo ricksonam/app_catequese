@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros } from "@/hooks/useSupabaseData";
+import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp } from "lucide-react";
