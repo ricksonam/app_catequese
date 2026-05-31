@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { 
   Printer, FileText, Users, Calendar, ClipboardList, BookOpen, 
   Clock, CheckCircle2, LayoutGrid, UserCircle, Share2, 
-  ArrowLeft, Search, X, ChevronRight, Eye
+  ArrowLeft, Search, X, ChevronRight, Eye, MessageCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
@@ -140,48 +140,36 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
       const element = previewRef.current;
       
-      // Para garantir que o PDF saia em A4, precisamos que o elemento capturado 
-      // não esteja escalonado pela visualização mobile (scale-0.6).
-      // Vamos clonar o conteúdo para um container temporário fora da tela com largura fixa de A4.
       const printContainer = document.createElement("div");
       printContainer.style.position = "absolute";
       printContainer.style.left = "-9999px";
       printContainer.style.top = "0";
-      printContainer.style.width = "210mm"; // Largura exata A4
+      printContainer.style.width = "210mm";
       printContainer.style.backgroundColor = "white";
       printContainer.className = "pdf-capture-container";
-      
-      // Clona o conteúdo da prévia
       printContainer.innerHTML = element.innerHTML;
       document.body.appendChild(printContainer);
 
       const canvas = await html2canvas(printContainer, {
-        scale: 2, // Aumenta resolução
+        scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
-        windowWidth: 1024, // Força largura de desktop para o renderizador
+        windowWidth: 1024,
       });
 
-      // Remove o container temporário
       document.body.removeChild(printContainer);
 
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF("p", "mm", "a4");
-      
       const pdfWidth = 210;
       const pdfHeight = 297;
       const imgWidth = pdfWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
       let heightLeft = imgHeight;
       let position = 0;
-
-      // Primeira página
       pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
       heightLeft -= pdfHeight;
-
-      // Páginas subsequentes (caso o relatório seja longo)
       while (heightLeft > 0) {
         position = heightLeft - imgHeight;
         pdf.addPage();
@@ -193,6 +181,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
       const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
+      // Tenta compartilhamento nativo (funciona no celular: WhatsApp, Telegram, Drive, etc)
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
@@ -200,22 +189,107 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
           text: `Confira o ${reportName} da turma ${turma.nome}.`,
         });
         toast.success("Enviado com sucesso!", { id: toastId });
-        
-        // Dá um pequeno delay para que o menu de compartilhamento feche suavemente antes de voltar
-        setTimeout(() => {
-          resetFlow();
-        }, 500);
+        setTimeout(() => { resetFlow(); }, 500);
       } else {
+        // Fallback desktop: baixa o PDF
         const url = URL.createObjectURL(pdfBlob);
         const link = document.createElement("a");
         link.href = url;
         link.download = fileName;
         link.click();
-        toast.success("PDF gerado e baixado!", { id: toastId });
+        URL.revokeObjectURL(url);
+        toast.success("PDF baixado! Agora envie pelo WhatsApp.", { id: toastId });
       }
-    } catch (err) {
-      console.error("PDF generation failed", err);
-      toast.error("Erro ao gerar PDF profissional. Tente Imprimir.", { id: toastId });
+    } catch (err: any) {
+      if (err?.name !== "AbortError") {
+        console.error("PDF generation failed", err);
+        toast.error("Erro ao gerar PDF. Tente Imprimir.", { id: toastId });
+      } else {
+        toast.dismiss(toastId);
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleWhatsApp = async () => {
+    if (!previewRef.current) return;
+
+    setIsGenerating(true);
+    const toastId = toast.loading("Preparando para enviar...");
+
+    try {
+      const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
+      const element = previewRef.current;
+
+      const printContainer = document.createElement("div");
+      printContainer.style.position = "absolute";
+      printContainer.style.left = "-9999px";
+      printContainer.style.top = "0";
+      printContainer.style.width = "210mm";
+      printContainer.style.backgroundColor = "white";
+      printContainer.innerHTML = element.innerHTML;
+      document.body.appendChild(printContainer);
+
+      const canvas = await html2canvas(printContainer, {
+        scale: 2, useCORS: true, logging: false,
+        backgroundColor: "#ffffff", windowWidth: 1024,
+      });
+
+      document.body.removeChild(printContainer);
+
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
+      const pdfBlob = pdf.output("blob");
+      const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
+      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+      // No celular: abre o painel de compartilhamento nativo do sistema que inclui WhatsApp
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        toast.dismiss(toastId);
+        await navigator.share({
+          files: [file],
+          title: `Relatório: ${reportName} — ${turma.nome}`,
+          text: `📋 *${reportName}*\n📚 Turma: ${turma.nome}\n\nSeguem os dados do relatório em anexo.`,
+        });
+        toast.success("Compartilhado com sucesso!");
+        setTimeout(() => { resetFlow(); }, 500);
+      } else {
+        // Desktop: baixa o PDF e abre link do WhatsApp Web com mensagem
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        // Abre WhatsApp Web com mensagem pré-preenchida
+        const msg = encodeURIComponent(`📋 *${reportName}*\n📚 Turma: ${turma.nome}\n\nSegue o relatório em PDF (arquivo baixado no dispositivo).`);
+        window.open(`https://wa.me/?text=${msg}`, "_blank");
+        toast.success("PDF salvo! WhatsApp aberto para envio.", { id: toastId });
+      }
+    } catch (err: any) {
+      if (err?.name !== "AbortError") {
+        console.error("WhatsApp share failed", err);
+        toast.error("Erro ao compartilhar. Tente Imprimir.", { id: toastId });
+      } else {
+        toast.dismiss(toastId);
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -449,21 +523,32 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             <div className="h-6 w-px bg-white/20 mx-2" />
             <button 
               onClick={handlePrint}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white text-primary font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
             >
               <Printer className="h-4 w-4" />
               Imprimir
             </button>
             <button 
+              onClick={handleWhatsApp}
+              disabled={isGenerating}
+              className={cn(
+                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
+                isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
+              )}
+            >
+              <MessageCircle className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+              {isGenerating ? "Gerando..." : "WhatsApp"}
+            </button>
+            <button 
               onClick={handleShare}
               disabled={isGenerating}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
+                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
                 isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#d4a574]"
               )}
             >
               <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
-              {isGenerating ? "Gerando..." : "Compartilhar"}
+              {isGenerating ? "Gerando..." : "PDF"}
             </button>
             <div className="h-6 w-px bg-white/20 mx-2" />
             <button onClick={resetFlow} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground active:scale-90 transition-all">
