@@ -82,7 +82,6 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [readyToShareParams, setReadyToShareParams] = useState<{file: File, reportName: string} | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const { data: turmas = [] } = useTurmas();
@@ -167,21 +166,41 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     return { file, reportName };
   };
 
-  // PASSO 1: Gera o PDF e (no mobile) guarda prontos para o PASSO 2
   const handleCompartilhar = async () => {
     setIsGenerating(true);
-    const toastId = toast.loading("Gerando relatório...");
+    const toastId = toast.loading("Preparando documento...");
     try {
       const result = await gerarPDF();
       if (!result) return;
       const { file, reportName } = result;
       toast.dismiss(toastId);
+      
       if (isMobile && navigator.share) {
-        // No celular: guarda o arquivo pronto e exibe o botão "Enviar Agora!"
-        setReadyToShareParams({ file, reportName });
-        toast.success("✅ Pronto! Toque em 'Enviar Agora!' para compartilhar.");
+        try {
+          await navigator.share({
+            files: [file],
+            title: `Relatório: ${reportName}`,
+            text: `📋 ${reportName} - Turma: ${turma.nome}`,
+          });
+          toast.success("Compartilhado com sucesso!");
+          setTimeout(() => resetFlow(), 500);
+        } catch (shareErr: any) {
+          console.error("Erro ao compartilhar nativamente", shareErr);
+          if (shareErr.name === 'NotAllowedError' || shareErr.name === 'AbortError') {
+            if (shareErr.name === 'NotAllowedError') {
+              toast.error("Compartilhamento bloqueado. Baixando PDF...");
+              const url = URL.createObjectURL(file);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = file.name;
+              link.click();
+              URL.revokeObjectURL(url);
+            }
+          } else {
+            toast.error("Não foi possível abrir o compartilhamento.");
+          }
+        }
       } else {
-        // No desktop: baixa diretamente
         const url = URL.createObjectURL(file);
         const link = document.createElement("a");
         link.href = url;
@@ -198,25 +217,6 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     }
   };
 
-  // PASSO 2 (mobile): Abre o painel de compartilhamento nativo imediatamente
-  const handleEnviarAgora = async () => {
-    if (!readyToShareParams) return;
-    try {
-      await navigator.share({
-        files: [readyToShareParams.file],
-        title: `Relatório: ${readyToShareParams.reportName}`,
-        text: `📋 ${readyToShareParams.reportName} - Turma: ${turma.nome}`,
-      });
-      toast.success("Compartilhado com sucesso!");
-      setTimeout(() => resetFlow(), 500);
-    } catch (err: any) {
-      if (err?.name !== "AbortError") {
-        console.error(err);
-        toast.error("Não foi possível abrir o compartilhamento.");
-      }
-    }
-  };
-
   const handlePrint = () => {
     setTimeout(() => window.print(), 50);
   };
@@ -227,7 +227,6 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     setSelectedRecordId(initialDocId || null);
     setIsModalOpen(false);
     setIsPreviewOpen(false);
-    setReadyToShareParams(null);
   };
 
   const renderSelectionList = () => {
@@ -460,28 +459,17 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             )}
 
             {/* Botão Compartilhar — sempre visível */}
-            {readyToShareParams ? (
-              <button
-                onClick={handleEnviarAgora}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366] text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
-                style={{animation: 'pulse 1.5s infinite'}}
-              >
-                <Share2 className="h-4 w-4 shrink-0" />
-                <span>Enviar!</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleCompartilhar}
-                disabled={isGenerating}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-2 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap",
-                  isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
-                )}
-              >
-                <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && "animate-spin")} />
-                <span>{isGenerating ? "Aguarde..." : "Compartilhar"}</span>
-              </button>
-            )}
+            <button
+              onClick={handleCompartilhar}
+              disabled={isGenerating}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap",
+                isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
+              )}
+            >
+              <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && "animate-spin")} />
+              <span>{isGenerating ? "Aguarde..." : "Compartilhar"}</span>
+            </button>
 
             <div className="h-6 w-px bg-white/20 shrink-0" />
             <button onClick={resetFlow} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground active:scale-90 transition-all shrink-0">
