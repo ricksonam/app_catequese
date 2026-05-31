@@ -125,140 +125,100 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
     setIsPreviewOpen(true);
   };
 
-  const handleWhatsApp = async () => {
-    if (!previewRef.current) return;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    setIsGenerating(true);
-    const toastId = toast.loading("Preparando para enviar...");
-
-    try {
-      const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
-      const element = previewRef.current;
-
-      const printContainer = document.createElement("div");
-      printContainer.style.position = "absolute";
-      printContainer.style.left = "-9999px";
-      printContainer.style.top = "0";
-      printContainer.style.width = "210mm";
-      printContainer.style.backgroundColor = "white";
-      printContainer.innerHTML = element.innerHTML;
-      document.body.appendChild(printContainer);
-
-      const canvas = await html2canvas(printContainer, {
-        scale: 2, useCORS: true, logging: false,
-        backgroundColor: "#ffffff", windowWidth: 1024,
-      });
-
-      document.body.removeChild(printContainer);
-
-      const imgData = canvas.toDataURL("image/jpeg", 1.0);
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+  // Gera o PDF do relatório atual e retorna o File
+  const gerarPDF = async (): Promise<{file: File; reportName: string} | null> => {
+    if (!previewRef.current) return null;
+    const reportName = config.reports.find((r: any) => r.id === selectedReportId)?.label || "Relatório";
+    const element = previewRef.current;
+    const printContainer = document.createElement("div");
+    printContainer.style.position = "absolute";
+    printContainer.style.left = "-9999px";
+    printContainer.style.top = "0";
+    printContainer.style.width = "210mm";
+    printContainer.style.backgroundColor = "white";
+    printContainer.innerHTML = element.innerHTML;
+    document.body.appendChild(printContainer);
+    const canvas = await html2canvas(printContainer, {
+      scale: 2, useCORS: true, logging: false,
+      backgroundColor: "#ffffff", windowWidth: 1024,
+    });
+    document.body.removeChild(printContainer);
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
       pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
       heightLeft -= pdfHeight;
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
-      }
+    }
+    const pdfBlob = pdf.output("blob");
+    const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
+    const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+    return { file, reportName };
+  };
 
-      const pdfBlob = pdf.output("blob");
-      const fileName = `${reportName.replace(/\s+/g, "_")}_${turma.nome.replace(/\s+/g, "_")}.pdf`;
-      const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-
-      if (navigator.share && isMobile) {
-        toast.dismiss(toastId);
+  // PASSO 1: Gera o PDF e (no mobile) guarda prontos para o PASSO 2
+  const handleCompartilhar = async () => {
+    setIsGenerating(true);
+    const toastId = toast.loading("Gerando relatório...");
+    try {
+      const result = await gerarPDF();
+      if (!result) return;
+      const { file, reportName } = result;
+      toast.dismiss(toastId);
+      if (isMobile && navigator.share) {
+        // No celular: guarda o arquivo pronto e exibe o botão "Enviar Agora!"
         setReadyToShareParams({ file, reportName });
-        toast.success("Documento gerado! Clique em 'Enviar Agora' na barra inferior.");
-        return;
-      }
-
-      let sharedNatively = false;
-      if (navigator.share) {
-        try {
-          toast.dismiss(toastId);
-          await navigator.share({
-            files: [file],
-            title: `Relatório: ${reportName}`,
-            text: `Confira o ${reportName} da turma ${turma.nome}.`,
-          });
-          sharedNatively = true;
-          toast.success("Enviado com sucesso!", { id: toastId });
-          setTimeout(() => { resetFlow(); }, 500);
-        } catch (shareErr: any) {
-          console.warn("Native share aborted or failed", shareErr);
-          if (shareErr.name === 'AbortError') {
-            toast.dismiss(toastId);
-            return;
-          }
-        }
-      }
-      
-      if (!sharedNatively) {
-        const url = URL.createObjectURL(pdfBlob);
+        toast.success("✅ Pronto! Toque em 'Enviar Agora!' para compartilhar.");
+      } else {
+        // No desktop: baixa diretamente
+        const url = URL.createObjectURL(file);
         const link = document.createElement("a");
         link.href = url;
-        link.download = fileName;
+        link.download = file.name;
         link.click();
         URL.revokeObjectURL(url);
-        toast.success("PDF baixado no seu dispositivo!", { id: toastId });
-        
-        const msg = encodeURIComponent(`📋 *${reportName}*\n📚 Turma: ${turma.nome}\n\nO relatório em PDF foi baixado no meu dispositivo, segue em anexo.`);
-        
-        setTimeout(() => {
-          if (isMobile) {
-            window.location.href = `whatsapp://send?text=${msg}`;
-          } else {
-            window.open(`https://wa.me/?text=${msg}`, "_blank");
-          }
-        }, 300);
-        
-        toast.success("PDF salvo! Anexe o arquivo no WhatsApp.", { id: toastId });
+        toast.success("PDF baixado com sucesso!");
       }
-    } catch (err: any) {
-      if (err?.name !== "AbortError") {
-        console.error("WhatsApp share failed", err);
-        toast.error("Erro ao compartilhar. Tente Imprimir.", { id: toastId });
-      } else {
-        toast.dismiss(toastId);
-      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao gerar PDF.", { id: toastId });
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const executeNativeShare = async () => {
+  // PASSO 2 (mobile): Abre o painel de compartilhamento nativo imediatamente
+  const handleEnviarAgora = async () => {
     if (!readyToShareParams) return;
     try {
       await navigator.share({
         files: [readyToShareParams.file],
         title: `Relatório: ${readyToShareParams.reportName}`,
-        text: `📋 *${readyToShareParams.reportName}*\n📚 Turma: ${turma.nome}\n\nSeguem os dados do relatório em anexo.`,
+        text: `📋 ${readyToShareParams.reportName} - Turma: ${turma.nome}`,
       });
       toast.success("Compartilhado com sucesso!");
-      setTimeout(() => { resetFlow(); }, 500);
+      setTimeout(() => resetFlow(), 500);
     } catch (err: any) {
-      if (err.name !== "AbortError") {
+      if (err?.name !== "AbortError") {
         console.error(err);
-        toast.error("Erro ao abrir compartilhamento nativo.");
+        toast.error("Não foi possível abrir o compartilhamento.");
       }
     }
   };
 
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
   const handlePrint = () => {
-    if (isMobile) {
-      handleWhatsApp();
-    } else {
-      setTimeout(() => window.print(), 50);
-    }
+    setTimeout(() => window.print(), 50);
   };
 
   const resetFlow = () => {
@@ -488,47 +448,43 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
               <ArrowLeft className="h-5 w-5 text-white" />
             </button>
             <div className="h-6 w-px bg-white/20 mx-2" />
+            {/* Botão Imprimir — apenas desktop */}
             {!isMobile && (
-              <button 
+              <button
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-primary font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-primary font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
               >
                 <Printer className="h-4 w-4" />
                 Imprimir
               </button>
             )}
+
+            {/* Botão Compartilhar — sempre visível */}
             {readyToShareParams ? (
-              <button 
-                onClick={executeNativeShare}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white font-black uppercase text-xs shadow-lg shadow-[#25D366]/30 hover:scale-105 active:scale-95 transition-all animate-[pulse_2s_ease-in-out_infinite]"
+              // PASSO 2: PDF já pronto, dispara o share nativo imediatamente
+              <button
+                onClick={handleEnviarAgora}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
+                style={{animation: 'pulse 1.5s infinite'}}
               >
                 <Share2 className="h-4 w-4" />
                 Enviar Agora!
               </button>
             ) : (
-              <button 
-                onClick={handleWhatsApp}
+              // PASSO 1: Gera o PDF
+              <button
+                onClick={handleCompartilhar}
                 disabled={isGenerating}
                 className={cn(
                   "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
                   isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
                 )}
               >
-                <MessageCircle className={cn("h-4 w-4", isGenerating && "animate-spin")} />
-                {isGenerating ? "Gerando..." : isMobile ? "Compartilhar" : "WhatsApp"}
+                <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+                {isGenerating ? "Gerando..." : "Compartilhar"}
               </button>
             )}
-            <button 
-              onClick={handleShare}
-              disabled={isGenerating}
-              className={cn(
-                "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
-                isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#d4a574]"
-              )}
-            >
-              <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
-              {isGenerating ? "Gerando..." : "PDF"}
-            </button>
+
             <div className="h-6 w-px bg-white/20 mx-2" />
             <button onClick={resetFlow} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground active:scale-90 transition-all">
               <X className="h-5 w-5" />
