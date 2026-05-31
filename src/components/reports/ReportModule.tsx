@@ -452,42 +452,40 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             {!isMobile && (
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-primary font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white text-primary font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
               >
-                <Printer className="h-4 w-4" />
-                Imprimir
+                <Printer className="h-4 w-4 shrink-0" />
+                <span>Imprimir</span>
               </button>
             )}
 
             {/* Botão Compartilhar — sempre visível */}
             {readyToShareParams ? (
-              // PASSO 2: PDF já pronto, dispara o share nativo imediatamente
               <button
                 onClick={handleEnviarAgora}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25D366] text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366] text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
                 style={{animation: 'pulse 1.5s infinite'}}
               >
-                <Share2 className="h-4 w-4" />
-                Enviar Agora!
+                <Share2 className="h-4 w-4 shrink-0" />
+                <span>Enviar!</span>
               </button>
             ) : (
-              // PASSO 1: Gera o PDF
               <button
                 onClick={handleCompartilhar}
                 disabled={isGenerating}
                 className={cn(
-                  "flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all",
+                  "flex items-center gap-1.5 px-3 py-2 rounded-xl text-white font-black uppercase text-xs shadow-lg hover:scale-105 active:scale-95 transition-all whitespace-nowrap",
                   isGenerating ? "bg-gray-400 cursor-not-allowed" : "bg-[#25D366]"
                 )}
               >
-                <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
-                {isGenerating ? "Gerando..." : "Compartilhar"}
+                <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && "animate-spin")} />
+                <span>{isGenerating ? "Aguarde..." : "Compartilhar"}</span>
               </button>
             )}
 
-            <div className="h-6 w-px bg-white/20 mx-2" />
-            <button onClick={resetFlow} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground active:scale-90 transition-all">
-              <X className="h-5 w-5" />
+            <div className="h-6 w-px bg-white/20 shrink-0" />
+            <button onClick={resetFlow} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground active:scale-90 transition-all shrink-0">
+              <X className="h-4 w-4" />
             </button>
 
           </div>

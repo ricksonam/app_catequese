@@ -247,6 +247,13 @@
 
 .preview-actions {
   @apply sticky top-4 z-[110] flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-xl;
+  overflow-x: auto;
+  max-width: calc(100vw - 2rem);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.preview-actions::-webkit-scrollbar {
+  display: none;
 }
 
 /* Custom Animations */
