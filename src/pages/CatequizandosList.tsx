@@ -219,9 +219,9 @@ export default function CatequizandosList() {
   const [freqMes, setFreqMes] = useState<string>('');
   const [printEncontroId, setPrintEncontroId] = useState<string | null>(null);
 
-  const orgNomes = useMemo(() =\u003e {
-    const p = paroquias.find(x =\u003e x.id === turma?.paroquia_id)?.nome || "Paróquia não informada";
-    const c = comunidades.find(x =\u003e x.id === turma?.comunidade_id)?.nome || "Comunidade não informada";
+  const orgNomes = useMemo(() => {
+    const p = paroquias.find(x => x.id === turma?.paroquia_id)?.nome || "Paróquia não informada";
+    const c = comunidades.find(x => x.id === turma?.comunidade_id)?.nome || "Comunidade não informada";
     return { paroquia: p, comunidade: c };
   }, [paroquias, comunidades, turma]);
   
