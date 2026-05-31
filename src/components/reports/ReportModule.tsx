@@ -99,8 +99,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
   if (!turma) return null;
 
-  const comunidade = comunidades.find(c => c.id === turma.comunidadeId);
-  const paroquia = paroquias.find(p => p.id === comunidade?.paroquiaId);
+  const comunidade = comunidades.find(c => c.id === turma.comunidade_id);
+  const paroquia = paroquias.find(p => p.id === turma.paroquia_id);
   const org = { 
     paroquia: paroquia?.nome || "Paróquia não informada", 
     comunidade: comunidade?.nome || "Comunidade não informada" 

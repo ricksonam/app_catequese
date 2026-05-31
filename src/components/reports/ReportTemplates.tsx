@@ -787,7 +787,7 @@ export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros,
                 <div className="flex items-start justify-between bg-[#2c1810] text-white px-4 py-2">
                   <div className="flex-1 min-w-0">
                     <p className="font-black uppercase text-sm tracking-wide truncate">
-                      Encontro {idx + 1} — {enc.tema}
+                      Encontro {encontros.findIndex((e: any) => e.id === enc.id) + 1} — {enc.tema}
                     </p>
                     <p className="text-[10px] font-bold opacity-80 mt-0.5">
                       {formatarDataVigente(enc.data)}
@@ -855,41 +855,6 @@ export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros,
               </div>
             );
           })}
-
-          {/* Quadro Resumo Geral */}
-          <div className="mt-6 break-inside-avoid">
-            <h3 className="font-serif font-black uppercase text-[#2c1810] border-b-2 border-[#2c1810] pb-2 mb-4 text-sm tracking-widest">Resumo Geral de Frequência</h3>
-            <table className="w-full border-collapse border-2 border-[#2c1810] text-xs">
-              <thead>
-                <tr className="bg-gray-100 border-b-2 border-[#2c1810]">
-                  <th className="border-r border-[#2c1810] p-2 w-8 text-center">Nº</th>
-                  <th className="border-r border-[#2c1810] p-2 text-left uppercase font-black">Catequizando</th>
-                  <th className="border-r border-[#2c1810] p-2 w-20 text-center font-black uppercase">Presentes</th>
-                  <th className="border-r border-[#2c1810] p-2 w-16 text-center font-black uppercase">Faltas</th>
-                  <th className="border-r border-[#2c1810] p-2 w-16 text-center font-black uppercase">Justif.</th>
-                  <th className="p-2 w-16 text-center font-black uppercase">% Pres.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cats.map((c: any, i: number) => {
-                  const pres = encsRealizados.filter((e: any) => e.presencas?.includes(c.id)).length;
-                  const just = encsRealizados.filter((e: any) => !e.presencas?.includes(c.id) && e.justificativas?.[c.id]).length;
-                  const faltas = encsRealizados.length - pres - just;
-                  const perc = encsRealizados.length > 0 ? Math.round((pres / encsRealizados.length) * 100) : 0;
-                  return (
-                    <tr key={c.id} className="border-b border-gray-300">
-                      <td className="border-r border-[#2c1810] p-2 text-center font-bold">{i + 1}</td>
-                      <td className="border-r border-[#2c1810] p-2 font-bold uppercase">{c.nome}</td>
-                      <td className="border-r border-[#2c1810] p-2 text-center font-black text-emerald-800">{pres}</td>
-                      <td className="border-r border-[#2c1810] p-2 text-center font-black text-red-800">{faltas}</td>
-                      <td className="border-r border-[#2c1810] p-2 text-center font-black text-amber-800">{just}</td>
-                      <td className={cn("p-2 text-center font-black", perc < 75 ? "text-red-700" : "text-emerald-700")}>{perc}%</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
 
           <div className="mt-6 flex justify-between text-[10px] font-bold uppercase tracking-widest text-gray-500">
             <p>P = Presente • F = Falta • J = Justificada</p>
