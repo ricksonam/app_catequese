@@ -620,7 +620,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
           </DialogHeader>
           <div className="space-y-4">
              <p className="text-sm text-muted-foreground leading-relaxed px-1">
-               Os avisos aparecerão <b>no seu celular ou computador</b> sempre que você acessar o aplicativo a partir das <b>07:00 da manhã</b> no dia do evento ou na véspera.
+               Os avisos aparecerão <b>no seu celular ou computador</b> a partir das <b>07:00 da manhã</b> no dia do evento ou na véspera.
              </p>
              
              {/* Aviso iOS */}
@@ -721,10 +721,16 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             
              {/* MÓDULO ENCONTROS */}
              <div className="flex flex-col gap-4 p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
-               <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center"><CalendarDays className="w-5 h-5"/></div>
-                   <div><p className="text-sm font-bold leading-none text-blue-900 dark:text-blue-200">Alertas Módulo Encontros</p><p className="text-[10px] text-blue-600/70 dark:text-blue-400 mt-1 uppercase tracking-wider font-black">Ligar/Desligar Painel</p></div>
+               <div className="flex items-start justify-between">
+                 <div className="flex gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0"><CalendarDays className="w-5 h-5"/></div>
+                   <div>
+                     <p className="text-sm font-bold leading-none text-blue-900 dark:text-blue-200">Encontros</p>
+                     <p className="text-[10px] text-blue-600/70 dark:text-blue-400 mt-1 uppercase tracking-wider font-black">Ligar/Desligar Painel</p>
+                     <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight pr-2">
+                       Estes avisos ajudam a lembrar você de registrar a presença e fechar os encontros na plataforma.
+                     </p>
+                   </div>
                  </div>
                  <Switch 
                    checked={alertConfig.moduloEncontros?.ativo ?? true} 
@@ -737,15 +743,24 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                    <div className="h-px bg-blue-500/10 w-full" />
                    <div className="space-y-4 px-1">
                      <div className="flex items-center justify-between">
-                       <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de Presença</p>
+                       <div>
+                         <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Presença Pendente</p>
+                         <p className="text-[9px] text-muted-foreground/70 mt-1 ml-5">Avisa se a chamada não foi feita.</p>
+                       </div>
                        <Switch checked={alertConfig.moduloEncontros?.presenca ?? true} onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, presenca: c } })} />
                      </div>
                      <div className="flex items-center justify-between">
-                       <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><Sparkles className="w-3.5 h-3.5"/> Alerta de Avaliação</p>
+                       <div>
+                         <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><Sparkles className="w-3.5 h-3.5"/> Sem Avaliação</p>
+                         <p className="text-[9px] text-muted-foreground/70 mt-1 ml-5">Avisa se faltar dar as "estrelinhas".</p>
+                       </div>
                        <Switch checked={alertConfig.moduloEncontros?.avaliacao ?? true} onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, avaliacao: c } })} />
                      </div>
                      <div className="flex items-center justify-between">
-                       <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><AlertTriangle className="w-3.5 h-3.5"/> Alerta de Status</p>
+                       <div>
+                         <p className="text-xs font-bold text-muted-foreground flex items-center gap-2"><AlertTriangle className="w-3.5 h-3.5"/> Encontro não Concluído</p>
+                         <p className="text-[9px] text-muted-foreground/70 mt-1 ml-5">Avisa se o encontro não foi fechado.</p>
+                       </div>
                        <Switch checked={alertConfig.moduloEncontros?.status ?? true} onCheckedChange={(c) => saveAlertConfig({ ...alertConfig, moduloEncontros: { ...alertConfig.moduloEncontros, status: c } })} />
                      </div>
                    </div>
@@ -755,10 +770,16 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
              {/* MÓDULO CATEQUIZANDOS */}
              <div className="flex flex-col gap-4 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10">
-               <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center"><Users className="w-5 h-5"/></div>
-                   <div><p className="text-sm font-bold leading-none text-emerald-900 dark:text-emerald-200">Alertas Mod. Catequizandos</p><p className="text-[10px] text-emerald-600/70 dark:text-emerald-400 mt-1 uppercase tracking-wider font-black">Ligar/Desligar Painel</p></div>
+               <div className="flex items-start justify-between">
+                 <div className="flex gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0"><Users className="w-5 h-5"/></div>
+                   <div>
+                     <p className="text-sm font-bold leading-none text-emerald-900 dark:text-emerald-200">Catequizandos</p>
+                     <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400 mt-1 uppercase tracking-wider font-black">Ligar/Desligar Painel</p>
+                     <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight pr-2">
+                       Receba alertas sobre faltas para ajudar a combater a evasão na catequese.
+                     </p>
+                   </div>
                  </div>
                  <Switch 
                    checked={alertConfig.moduloCatequizandos?.ativo ?? true} 
@@ -770,7 +791,8 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                  <>
                    <div className="h-px bg-emerald-500/10 w-full" />
                    <div className="px-1">
-                     <Label className="text-[11px] font-bold text-zinc-900 mb-3 flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de faltas consecutivas</Label>
+                     <Label className="text-[11px] font-bold text-zinc-900 flex items-center gap-2"><Bell className="w-3.5 h-3.5"/> Alerta de Faltas Consecutivas</Label>
+                     <p className="text-[9px] text-muted-foreground/70 mt-1 ml-5 mb-3">Avisar quando o catequizando faltar seguidamente:</p>
                      <div className="flex items-center justify-between gap-1 mt-2">
                        {[1, 2, 3, 4, 5].map(num => (
                          <button
