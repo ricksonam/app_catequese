@@ -111,7 +111,7 @@ export default function EncontroForm() {
     <>
       <div className="space-y-5 pb-28">
         <div className="page-header animate-fade-in">
-          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-white" /></button>
+          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-black" /></button>
           <div>
             <h1 className="text-xl font-bold text-foreground">{existing ? "Editar Encontro" : "Novo Encontro"}</h1>
             <p className="text-xs text-muted-foreground">{turma?.nome}</p>

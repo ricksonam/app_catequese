@@ -163,7 +163,7 @@ export default function ComunicacaoBuilder() {
       <div className="flex items-center justify-between sticky top-0 z-10 bg-slate-100/80 dark:bg-zinc-950/80 backdrop-blur-md py-4 -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="back-btn">
-            <ArrowLeft className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
           <div>
             <h1 className="text-xl font-black text-foreground">{isEditing ? "Editar Formulário" : "Novo Formulário"}</h1>

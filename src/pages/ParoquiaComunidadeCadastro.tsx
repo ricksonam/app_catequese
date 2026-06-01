@@ -195,7 +195,7 @@ export default function ParoquiaComunidadeCadastro() {
       <div className="flex items-center justify-between animate-fade-in">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="back-btn">
-            <ArrowLeft className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
           <div>
             <h1 className="text-xl font-bold text-foreground">Paróquia e Comunidade</h1>

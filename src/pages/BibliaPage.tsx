@@ -543,7 +543,7 @@ export default function BibliaPage() {
           else if (selectedBook) setSelectedBook(null);
           else navigate(-1);
         }} className="back-btn">
-          <ArrowLeft className="h-5 w-5 text-white" />
+          <ArrowLeft className="h-5 w-5 text-black" />
         </button>
         <div>
           <h1 className="text-xl font-bold text-foreground font-liturgical">Bíblia Online</h1>

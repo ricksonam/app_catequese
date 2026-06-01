@@ -32,7 +32,7 @@ export function GameHeader({
       <div className="flex items-center justify-between">
         {!isFullscreen && (
           <button onClick={onBack || (() => navigate("/jogos"))} className="back-btn shrink-0">
-            <ArrowLeft className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
         )}
         

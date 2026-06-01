@@ -38,7 +38,7 @@ export default function BibliotecaModelos() {
   return (
     <div className="space-y-5">
       <div className="page-header animate-fade-in">
-        <button onClick={() => navigate(backPath)} className="back-btn"><ArrowLeft className="h-5 w-5 text-white" /></button>
+        <button onClick={() => navigate(backPath)} className="back-btn"><ArrowLeft className="h-5 w-5 text-black" /></button>
         <div>
           <h1 className="text-xl font-bold text-foreground">Biblioteca de Encontros</h1>
           <p className="text-xs text-muted-foreground">{MODELOS_ENCONTROS.length} modelos disponíveis</p>

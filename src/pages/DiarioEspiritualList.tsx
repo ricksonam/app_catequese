@@ -269,7 +269,7 @@ export default function DiarioEspiritualList() {
             onClick={() => navigate(`/turmas/${id}`)}
             className="w-10 h-10 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 active:scale-90 transition-all absolute left-0"
           >
-            <ArrowLeft className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Diário do Catequista</h1>

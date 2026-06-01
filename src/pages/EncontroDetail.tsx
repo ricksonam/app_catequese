@@ -192,7 +192,7 @@ export default function EncontroDetail() {
         {/* Top actions bar */}
         <div className="w-full flex items-center justify-between px-4 mb-1">
           <button onClick={() => navigate(`/turmas/${id}/encontros`)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 active:scale-90 transition-all">
-            <ArrowLeft className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
         </div>
         

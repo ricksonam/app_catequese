@@ -234,7 +234,7 @@ export default function MaterialApoio() {
         {/* Header */}
         <div className="flex items-center gap-3 animate-fade-in">
           <button onClick={() => navigate(-1)} className="back-btn">
-            <ArrowLeft className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
