@@ -20,7 +20,7 @@ export default function PlaceholderPage() {
   return (
     <div className="space-y-4 animate-fade-in">
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-muted">
+        <button onClick={() => navigate(-1)} className="back-btn">
           <ArrowLeft className="h-5 w-5 text-black" />
         </button>
         <h1 className="text-xl font-bold text-foreground">{title}</h1>

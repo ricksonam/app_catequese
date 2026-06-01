@@ -329,9 +329,9 @@ export default function AuthPage() {
           <div className="w-full max-w-sm">
             <button
               onClick={() => navigate("/")}
-              className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
+              className="back-btn mb-8"
             >
-              <ArrowLeft className="h-4 w-4" /> Voltar à Home
+              <ArrowLeft className="h-5 w-5 text-black" />
             </button>
 
             <div className="text-center mb-8">
@@ -707,9 +707,9 @@ export default function AuthPage() {
         <div className="w-full max-w-sm">
           <button
             onClick={() => setView("login")}
-            className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-bold mb-8 transition-colors uppercase tracking-wider"
+            className="back-btn mb-8"
           >
-            <ArrowLeft className="h-4 w-4" /> Voltar ao login
+            <ArrowLeft className="h-5 w-5 text-black" />
           </button>
 
           <div className="text-center mb-8">

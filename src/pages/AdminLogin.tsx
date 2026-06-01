@@ -79,15 +79,12 @@ export default function AdminLogin() {
 
       <div className="w-full max-w-md z-10">
         {/* Back Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-slate-400 hover:text-white mb-6 gap-2 hover:bg-slate-800/40"
+        <button
+          className="back-btn mb-6"
           onClick={() => navigate("/")}
         >
-          <ArrowLeft className="w-4 h-4" />
-          Voltar ao início
-        </Button>
+          <ArrowLeft className="h-5 w-5 text-black" />
+        </button>
 
         <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-xl shadow-2xl relative overflow-hidden">
           {/* Top accent bar */}

@@ -357,10 +357,9 @@ export default function LiturgiaDiaria() {
         <div className="bg-white/90 backdrop-blur-xl border-b border-black/5">
           <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
             {/* Voltar */}
-            <button
-              onClick={() => (fullScreen ? toggleFullScreen() : navigate(-1))}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 active:scale-90 transition-all shrink-0"
-              aria-label="Voltar"
+            <button 
+              onClick={() => navigate(-1)} 
+              className="back-btn absolute left-0"
             >
               <ArrowLeft className="h-5 w-5 text-black" />
             </button>

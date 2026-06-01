@@ -410,9 +410,9 @@ export default function AdminDashboard() {
                 <span className="text-[10px] text-muted-foreground">{currentAdminProfile.email}</span>
               </div>
             )}
-            <Button variant="outline" size="sm" onClick={() => navigate("/")} className="rounded-xl border-2 font-bold text-xs">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Voltar ao App
-            </Button>
+            <button onClick={() => navigate("/")} className="back-btn">
+              <ArrowLeft className="h-5 w-5 text-black" />
+            </button>
             <Button variant="ghost" size="sm" onClick={() => {
               signOut();
               navigate("/auth");
