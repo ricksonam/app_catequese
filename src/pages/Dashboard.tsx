@@ -490,9 +490,7 @@ export default function Dashboard() {
   };
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
-
-
-
+  const [showCalendario, setShowCalendario] = useState(false);
 
 
   if (loading) {
