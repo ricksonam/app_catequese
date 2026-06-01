@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -212,6 +212,55 @@ export default function CatequizandosList() {
   const [showEvolucao, setShowEvolucao] = useState(false);
   const [evolucaoSelectedId, setEvolucaoSelectedId] = useState<string>("");
   
+  // --- Alerta Faltas Mute States ---
+  const [showMuteAlertDropdown, setShowMuteAlertDropdown] = useState(false);
+
+  const MUTE_OPTIONS = [
+    { value: 'resolvido', label: '✅ Já resolvido' },
+    { value: 'verificar', label: '🔍 Vou verificar' },
+    { value: 'desistente', label: '🚪 Catequizando desistente' },
+    { value: 'outros', label: '📝 Outros' },
+  ] as const;
+  type MuteOption = typeof MUTE_OPTIONS[number]['value'];
+
+  const handleMuteAlert = async (catequizando: Catequizando, opcao: MuteOption) => {
+    const updated: Catequizando = {
+      ...catequizando,
+      dadosPastorais: {
+        ...(catequizando.dadosPastorais as any),
+        alertaFaltasConfig: {
+          mutado: true,
+          opcao,
+          dataRegistro: new Date().toISOString(),
+        },
+      } as any,
+    };
+    try {
+      await mutation.mutateAsync(updated);
+      setViewItem(updated);
+      setShowMuteAlertDropdown(false);
+      toast.success('Aviso de faltas desativado!');
+    } catch (err: any) {
+      toast.error('Erro: ' + err.message);
+    }
+  };
+
+  const handleUnmuteAlert = async (catequizando: Catequizando) => {
+    const dadosPastoraisAtual = catequizando.dadosPastorais as any;
+    const { alertaFaltasConfig, ...restDadosPastorais } = dadosPastoraisAtual || {};
+    const updated: Catequizando = {
+      ...catequizando,
+      dadosPastorais: restDadosPastorais as any,
+    };
+    try {
+      await mutation.mutateAsync(updated);
+      setViewItem(updated);
+      toast.success('Aviso de faltas reativado!');
+    } catch (err: any) {
+      toast.error('Erro: ' + err.message);
+    }
+  };
+
   // --- Frequência Modal States ---
   const [showFrequencia, setShowFrequencia] = useState(false);
   const [freqTab, setFreqTab] = useState<'encontro' | 'resumo'>('encontro');
@@ -328,6 +377,10 @@ export default function CatequizandosList() {
 
     const limit = cfg.faltas ?? 3;
     list.forEach(c => {
+      // Check if alert is muted for this catequizando
+      const isMuted = (c.dadosPastorais as any)?.alertaFaltasConfig?.mutado === true;
+      if (isMuted) return;
+
       if (pastEncontros.length >= limit && limit > 0) {
         const wasPresentOrJustifiedInAny = pastEncontros.some(e => 
             e.presencas.includes(c.id) || (e.justificativas && e.justificativas[c.id])
@@ -1447,6 +1500,34 @@ export default function CatequizandosList() {
                   )}
                 </section>
               )}
+
+              {/* Alerta de Faltas Muted Status */}
+              {evolucaoSelectedId && (() => {
+                const selectedCat = list.find(c => c.id === evolucaoSelectedId);
+                if (!selectedCat) return null;
+                const alertaConfig = (selectedCat.dadosPastorais as any)?.alertaFaltasConfig;
+                const isMuted = alertaConfig?.mutado === true;
+                const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label;
+                const dataRegistro = alertaConfig?.dataRegistro ? new Date(alertaConfig.dataRegistro).toLocaleDateString('pt-BR') : null;
+
+                if (isMuted) {
+                  return (
+                    <section className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20 rounded-3xl p-5 border border-emerald-100 dark:border-emerald-500/10 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+                          <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Aviso de Faltas Desativado</p>
+                          {muteLabel && <p className="text-sm font-bold text-emerald-900 dark:text-emerald-200 mt-0.5">{muteLabel}</p>}
+                          {dataRegistro && <p className="text-[9px] font-bold text-emerald-600/70 dark:text-emerald-500/70 mt-0.5 uppercase tracking-widest">Registrado em {dataRegistro}</p>}
+                        </div>
+                      </div>
+                    </section>
+                  );
+                }
+                return null;
+              })()}
             </div>
             
             <div className="p-4 border-t border-black/5 bg-background">
@@ -1548,6 +1629,77 @@ export default function CatequizandosList() {
                          })}
                       </DropdownMenuContent>
                    </DropdownMenu>
+
+                   <div className="h-8 w-px bg-zinc-100 mx-1" />
+
+                   {/* Mute Alert Chip */}
+                   {(() => {
+                     const alertaConfig = (viewItem.dadosPastorais as any)?.alertaFaltasConfig;
+                     const isMuted = alertaConfig?.mutado === true;
+                     const isMutedByAlerta = catequizandosEmAlerta.has(viewItem.id) || isMuted;
+
+                     if (isMuted) {
+                       // Show unmute chip
+                       const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label || '—';
+                       return (
+                         <div className="flex flex-col items-center gap-1">
+                           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200 shadow-sm">
+                             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                             <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">
+                               Aviso Desativado
+                             </span>
+                           </div>
+                           <span className="text-[8px] font-bold text-muted-foreground text-center max-w-[120px] leading-tight">{muteLabel}</span>
+                           <button
+                             onClick={() => handleUnmuteAlert(viewItem)}
+                             className="text-[8px] font-black uppercase text-red-400 hover:text-red-600 transition-colors"
+                           >
+                             Reativar aviso
+                           </button>
+                         </div>
+                       );
+                     }
+
+                     // If in alert but not muted — show mute button with dropdown
+                     if (catequizandosEmAlerta.has(viewItem.id)) {
+                       return (
+                         <div className="relative flex flex-col items-center gap-1">
+                           <button
+                             onClick={() => setShowMuteAlertDropdown(v => !v)}
+                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 shadow-sm hover:bg-red-100 transition-all active:scale-95 group"
+                           >
+                             <BellOff className="w-3.5 h-3.5 text-red-500" />
+                             <span className="text-[9px] font-black uppercase tracking-widest text-red-600">
+                               Desativar Aviso
+                             </span>
+                             <ChevronDown className="w-3 h-3 text-red-400 group-hover:translate-y-0.5 transition-transform" />
+                           </button>
+                           {showMuteAlertDropdown && (
+                             <>
+                               <div
+                                 className="fixed inset-0 z-[199]"
+                                 onClick={() => setShowMuteAlertDropdown(false)}
+                               />
+                               <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[200] bg-white rounded-2xl border-2 border-zinc-100 shadow-xl min-w-[200px] py-2 animate-in zoom-in-95">
+                                 <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground px-3 py-1">Motivo da desativação</p>
+                                 {MUTE_OPTIONS.map(opt => (
+                                   <button
+                                     key={opt.value}
+                                     onClick={() => handleMuteAlert(viewItem, opt.value)}
+                                     className="w-full text-left px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors"
+                                   >
+                                     {opt.label}
+                                   </button>
+                                 ))}
+                               </div>
+                             </>
+                           )}
+                         </div>
+                       );
+                     }
+
+                     return null;
+                   })()}
 
                    <div className="h-8 w-px bg-zinc-100 mx-1" />
 
