@@ -78,29 +78,7 @@ export default function Dashboard() {
 
 
   const pendentesInscricao = useMemo(() => catequizandos.filter(c => c.status === 'pending'), [catequizandos]);
-  const totalMensagens = pendentesInscricao.length;
 
-  const feedMensagens = useMemo(() => {
-    const feed: { id: string; tipo: any; titulo: string; remetente: string; data: Date; rawDate: string; }[] = [];
-    pendentesInscricao.forEach(c => {
-      feed.push({
-        id: `inscricao_${c.id}`,
-        tipo: 'inscricao',
-        titulo: 'Nova Inscrição Online',
-        remetente: c.nome,
-        data: new Date(c.criado_em || Date.now()),
-        rawDate: c.criado_em || ''
-      });
-    });
-    return feed.sort((a, b) => b.data.getTime() - a.data.getTime());
-  }, [pendentesInscricao]);
-
-  const [lastSeenMensagens, setLastSeenMensagens] = useState(() => {
-    return parseInt(localStorage.getItem('ivc_last_seen_mensagens') || '0', 10);
-  });
-  const [showNovaMensagem, setShowNovaMensagem] = useState(false);
-  const [messagesModalOpen, setMessagesModalOpen] = useState(false);
-  const [showCalendario, setShowCalendario] = useState(false);
 
   // New materials notification
   const [novosMateriaisCount, setNovosMateriaisCount] = useState(0);
@@ -134,21 +112,7 @@ export default function Dashboard() {
     fetchNovosMateriaisCount();
   }, [user]);
 
-  useEffect(() => {
-    if (totalMensagens > lastSeenMensagens) {
-      setShowNovaMensagem(true);
-      const timer = setTimeout(() => {
-        setShowNovaMensagem(false);
-      }, 6000);
-      return () => clearTimeout(timer);
-    }
-  }, [totalMensagens, lastSeenMensagens]);
 
-  const handleMessagesClick = () => {
-    setLastSeenMensagens(totalMensagens);
-    localStorage.setItem('ivc_last_seen_mensagens', totalMensagens.toString());
-    setMessagesModalOpen(true);
-  };
 
 
 
@@ -410,6 +374,120 @@ export default function Dashboard() {
     return result;
   }, [filteredCatequizandos, catequistas, hoje]);
 
+  const feedMensagens = useMemo(() => {
+    const feed: { id: string; tipo: any; titulo: string; remetente: string; data: Date; rawDate: string; }[] = [];
+    
+    // Inscrições Pendentes
+    pendentesInscricao.forEach(c => {
+      feed.push({
+        id: `inscricao_${c.id}`,
+        tipo: 'inscricao',
+        titulo: 'Nova Inscrição Online',
+        remetente: c.nome,
+        data: new Date(c.criado_em || Date.now()),
+        rawDate: c.criado_em || ''
+      });
+    });
+
+    const isTodayOrTomorrow = (dateStr: string) => {
+      if (!dateStr) return false;
+      const d = parseDataLocal(dateStr);
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return (d.getTime() === today.getTime() || d.getTime() === tomorrow.getTime());
+    };
+
+    // Alertas de Encontros
+    if (localStorage.getItem('ivc_meetings_enabled') !== 'false') {
+      const checkTurma = (item: any) => selectedTurmaId === "all" ? true : item.turmaId === selectedTurmaId;
+      encontros.filter(e => checkTurma(e) && isTodayOrTomorrow(e.data)).forEach(e => {
+        const isHoje = parseDataLocal(e.data).getDate() === new Date().getDate();
+        feed.push({
+          id: `encontro_${e.id}`,
+          tipo: 'encontro',
+          titulo: isHoje ? 'Encontro Hoje!' : 'Encontro Amanhã!',
+          remetente: e.tema || 'Encontro Marcado',
+          data: new Date(),
+          rawDate: new Date().toISOString()
+        });
+      });
+    }
+
+    // Alertas de Reuniões
+    if (localStorage.getItem('ivc_reunioes_enabled') !== 'false') {
+      const checkTurma = (item: any) => selectedTurmaId === "all" ? true : item.turmaId === selectedTurmaId;
+      reunioes.filter(r => checkTurma(r) && isTodayOrTomorrow(r.data)).forEach(r => {
+        const isHoje = parseDataLocal(r.data).getDate() === new Date().getDate();
+        feed.push({
+          id: `reuniao_${r.id}`,
+          tipo: 'reuniao',
+          titulo: isHoje ? 'Reunião Hoje!' : 'Reunião Amanhã!',
+          remetente: r.tema || 'Reunião Marcada',
+          data: new Date(),
+          rawDate: new Date().toISOString()
+        });
+      });
+    }
+
+    // Alertas de Aniversários
+    if (localStorage.getItem('ivc_birthdays_enabled') !== 'false') {
+       const validTurmaIds = new Set(turmas.map(t => t.id));
+       const base = catequizandos.filter(c => validTurmaIds.has(c.turmaId));
+       const cats = selectedTurmaId === "all" ? base : base.filter(c => c.turmaId === selectedTurmaId);
+       
+       const allPeople = [...cats, ...catequistas];
+       allPeople.forEach(p => {
+         const dataStr = p.dataNascimento;
+         if (dataStr) {
+           const bday = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
+           const today = new Date();
+           const tomorrow = new Date();
+           tomorrow.setDate(tomorrow.getDate() + 1);
+           
+           if ((bday.getDate() === today.getDate() && bday.getMonth() === today.getMonth()) ||
+               (bday.getDate() === tomorrow.getDate() && bday.getMonth() === tomorrow.getMonth())) {
+               
+               const isHoje = bday.getDate() === today.getDate();
+               feed.push({
+                 id: `niver_${p.id}`,
+                 tipo: 'nascimento',
+                 titulo: isHoje ? 'Aniversário Hoje! 🎉' : 'Aniversário Amanhã! 🎉',
+                 remetente: p.nome,
+                 data: new Date(),
+                 rawDate: new Date().toISOString()
+               });
+           }
+         }
+       });
+    }
+
+    return feed.sort((a, b) => b.data.getTime() - a.data.getTime());
+  }, [pendentesInscricao, encontros, reunioes, catequizandos, catequistas, selectedTurmaId, turmas]);
+
+  const totalMensagens = feedMensagens.length;
+  const [lastSeenMensagens, setLastSeenMensagens] = useState(() => {
+    return parseInt(localStorage.getItem('ivc_last_seen_mensagens') || '0', 10);
+  });
+  const [showNovaMensagem, setShowNovaMensagem] = useState(false);
+  const [messagesModalOpen, setMessagesModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (totalMensagens > lastSeenMensagens) {
+      setShowNovaMensagem(true);
+      const timer = setTimeout(() => {
+        setShowNovaMensagem(false);
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [totalMensagens, lastSeenMensagens]);
+
+  const handleMessagesClick = () => {
+    setLastSeenMensagens(totalMensagens);
+    localStorage.setItem('ivc_last_seen_mensagens', totalMensagens.toString());
+    setMessagesModalOpen(true);
+  };
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
 
@@ -1172,20 +1250,32 @@ export default function Dashboard() {
                   <div className={cn("w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-[0.5px]", 
                     msg.tipo === 'iavalia' ? "bg-emerald-50 text-emerald-600 border-emerald-200" : 
                     msg.tipo === 'missao' ? "bg-orange-50 text-orange-600 border-orange-200" :
+                    msg.tipo === 'encontro' ? "bg-blue-50 text-blue-600 border-blue-200" :
+                    msg.tipo === 'reuniao' ? "bg-purple-50 text-purple-600 border-purple-200" :
+                    msg.tipo === 'nascimento' ? "bg-amber-50 text-amber-600 border-amber-200" :
                     "bg-blue-50 text-blue-600 border-blue-200"
                   )}>
                     {msg.tipo === 'iavalia' ? <BookOpen className="h-5 w-5" /> : 
                      msg.tipo === 'missao' ? <Heart className="h-5 w-5" /> :
+                     msg.tipo === 'encontro' ? <CalendarDays className="h-5 w-5" /> :
+                     msg.tipo === 'reuniao' ? <Users className="h-5 w-5" /> :
+                     msg.tipo === 'nascimento' ? <Cake className="h-5 w-5" /> :
                      <Users className="h-5 w-5" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={cn("text-[9px] font-black uppercase tracking-wider mb-1", 
                       msg.tipo === 'iavalia' ? "text-emerald-600" : 
                       msg.tipo === 'missao' ? "text-orange-600" :
+                      msg.tipo === 'encontro' ? "text-blue-600" :
+                      msg.tipo === 'reuniao' ? "text-purple-600" :
+                      msg.tipo === 'nascimento' ? "text-amber-600" :
                       "text-blue-600"
                     )}>
                       {msg.tipo === 'iavalia' ? 'Conecta famílias - Resposta' : 
                        msg.tipo === 'missao' ? 'Catequese em Família' :
+                       msg.tipo === 'encontro' ? 'Lembrete de Encontro' :
+                       msg.tipo === 'reuniao' ? 'Lembrete de Reunião' :
+                       msg.tipo === 'nascimento' ? 'Aniversariante' :
                        'Nova Inscrição Online'}
                     </p>
                     <h4 className="text-sm font-bold text-foreground truncate">{msg.titulo}</h4>
@@ -1194,6 +1284,10 @@ export default function Dashboard() {
                         <>Respondido por: <strong className="text-foreground">{msg.remetente}</strong></>
                       ) : msg.tipo === 'missao' ? (
                         <>{msg.remetente}</>
+                      ) : msg.tipo === 'nascimento' ? (
+                        <>{msg.remetente}</>
+                      ) : msg.tipo === 'encontro' || msg.tipo === 'reuniao' ? (
+                        <>Tema: <strong className="text-foreground">{msg.remetente}</strong></>
                       ) : (
                         <>Inscrito: <strong className="text-foreground">{msg.remetente}</strong></>
                       )}
