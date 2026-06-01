@@ -239,7 +239,7 @@ export default function TurmaDetail() {
       <div className="space-y-4 animate-fade-in flex flex-col pt-4">
         {/* Row 1: Back Button + Nome/Ano (Centralizado) */}
         <div className="flex items-center justify-center min-h-[44px] relative">
-          <button onClick={() => navigate("/turmas")} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+          <button onClick={() => navigate("/turmas")} className="w-10 h-10 flex items-center justify-center rounded-xl bg-orange-500 hover:bg-orange-600 border border-orange-600/30 shadow-md shadow-orange-500/20 active:scale-90 transition-all absolute left-0">
             <ArrowLeft className="h-5 w-5 text-white" />
           </button>
           
