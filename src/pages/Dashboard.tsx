@@ -779,7 +779,7 @@ export default function Dashboard() {
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[260px] relative mb-1 mt-2" style={{ zIndex: 10 }}>
+              <div className="w-full max-w-[260px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
                   className="w-full text-left relative rounded-[20px] overflow-hidden shadow-lg border-2 border-blue-200/80 ring-4 ring-blue-50 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-white/95 backdrop-blur-md"
@@ -789,7 +789,7 @@ export default function Dashboard() {
                     style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.15), transparent 70%)` }} />
 
                   {/* Conteúdo */}
-                  <div className="relative z-10 px-3 py-3 flex flex-col items-center text-center">
+                  <div className="relative z-10 px-3 py-2 flex flex-col items-center text-center">
                     
                     {/* Botão Trocar (Visual) */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
@@ -802,7 +802,7 @@ export default function Dashboard() {
                     )}
 
                     {/* Nome da turma */}
-                    <div className="mb-3 mt-1">
+                    <div className="mb-2 mt-1">
                       <p className="text-[8px] font-bold uppercase tracking-[0.3em] mb-1 text-slate-400">
                         Turma Selecionada
                       </p>
@@ -819,7 +819,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Stats dinâmicos */}
-                    <div className="flex items-center justify-center gap-2 w-full mt-1">
+                    <div className="flex items-center justify-center gap-2 w-full mt-0.5">
                       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md border border-indigo-400/50 text-white">
                         <Users className="h-3.5 w-3.5" />
                         <span className="text-[11px] font-black">
@@ -840,7 +840,7 @@ export default function Dashboard() {
           })()}
 
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mt-6 mb-5 relative z-10">
+          <div className="flex items-center gap-2 w-full justify-center mt-5 mb-8 relative z-10">
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
@@ -858,10 +858,13 @@ export default function Dashboard() {
           <div 
             ref={carouselRef}
             onScroll={handleCarouselScroll}
-            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-3 mt-2"
+            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-3 mt-0"
           >
             {/* Card Catequizandos */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '0ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 0 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '0ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -873,18 +876,27 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 0
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/card_catequizandos.jpg" alt="Catequizandos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 0 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`}>
                 Catequizandos
               </span>
             </div>
 
             {/* Card Encontros */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '80ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 1 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '80ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -896,20 +908,27 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 1
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/card_encontros.jpg" alt="Encontros" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 1 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`}>
                 Encontros
               </span>
             </div>
 
-
-
             {/* Card Eventos */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '160ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 2 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '160ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -921,18 +940,27 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 2
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/icone-eventos.png" alt="Eventos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 2 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`}>
                 Eventos
               </span>
             </div>
 
             {/* Card Reuniões */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '240ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 3 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '240ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -944,54 +972,77 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 3
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/icone-reunioes.png" alt="Reuniões" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 3 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`}>
                 Reuniões
               </span>
             </div>
 
             {/* Card Biblia Online */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '320ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 4 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '320ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   navigate("/modulos/biblia");
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 4
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/card_biblia.jpg" alt="Bíblia Online" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 4 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`}>
                 Bíblia
               </span>
             </div>
 
-
-
             {/* Card Jogos */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 5 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '400ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   navigate("/jogos");
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 5
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/acesso_jogos.jpg" alt="Jogos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 5 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`}>
                 Jogos
               </span>
             </div>
 
-
-
             {/* Card Diário Espiritual */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '480ms', animationFillMode: 'both' }}>
+            <div
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 6 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              style={{ animationDelay: '480ms', animationFillMode: 'both' }}
+            >
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1003,12 +1054,18 @@ export default function Dashboard() {
                     toast.info("Aguarde a aprovação do acesso.");
                   }
                 }}
-                className="relative aspect-square w-full rounded-[24px] overflow-hidden hover:scale-[1.04] active:scale-95 transition-all duration-300 shadow-lg border-2 border-white/50"
+                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                  activeModuleIndex === 6
+                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                    : 'border-2 border-white/50 hover:scale-[1.04]'
+                }`}
               >
                 <img src="/icone_diario.png" alt="Diário Espiritual" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
               </button>
-              <span className="text-[10px] font-black text-center mt-1.5 uppercase tracking-wider text-muted-foreground group-hover:text-indigo-600 transition-colors truncate w-full">
+              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                activeModuleIndex === 6 ? 'text-primary' : 'text-muted-foreground group-hover:text-indigo-600'
+              }`}>
                 Diário
               </span>
             </div>
