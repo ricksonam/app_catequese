@@ -704,9 +704,9 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
                         </div>
                       ))}
                       {dayBirthdays.map((b, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 bg-pink-500/10 rounded-lg px-2 py-1 border border-pink-200/20 text-pink-700 dark:text-pink-400">
-                          <Cake className="h-2.5 w-2.5 shrink-0" />
-                          <span className="text-[9px] font-bold truncate leading-none">{b.name}</span>
+                        <div key={idx} className="flex items-start gap-1.5 bg-pink-500/10 rounded-lg px-2 py-1.5 border border-pink-200/20 text-pink-700 dark:text-pink-400">
+                          <Cake className="h-2.5 w-2.5 shrink-0 mt-0.5" />
+                          <span className="text-[9px] font-bold leading-[1.1] whitespace-normal break-words">{b.name}</span>
                         </div>
                       ))}
                       {currentMonthEvents.encontros.filter(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)).map((e, idx) => (

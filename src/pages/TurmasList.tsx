@@ -227,7 +227,7 @@ export default function TurmasList() {
                   )}>
                     {isPending
                       ? <Lock className="h-6 w-6 text-white" />
-                      : <img src="/turma_sem_fundo.png" alt="Turma" fetchPriority="high" loading="eager" className="w-10 h-10 object-contain drop-shadow-sm" />
+                      : <UsersRound className={cn("h-7 w-7", palette.text)} />
                     }
                   </div>
 
@@ -299,12 +299,15 @@ export default function TurmasList() {
                         </span>
                       )}
 
-                      <div className={cn(
-                        "w-7 h-7 rounded-full bg-white/40 flex items-center justify-center border border-white/60 transition-all duration-300 mt-1 shadow-sm",
-                        "group-hover:bg-white/60 group-hover:translate-x-1"
-                      )}>
-                        <ArrowRight className={`h-3.5 w-3.5 ${palette.text}`} />
-                      </div>
+                    </div>
+                  )}
+
+                  {!isPending && (
+                    <div className={cn(
+                      "absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md transition-all duration-300",
+                      "group-hover:translate-x-1 group-hover:shadow-lg"
+                    )}>
+                      <ArrowRight className={`h-4 w-4 ${palette.text}`} />
                     </div>
                   )}
                 </div>

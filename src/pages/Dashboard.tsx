@@ -858,7 +858,7 @@ export default function Dashboard() {
           <div 
             ref={carouselRef}
             onScroll={handleCarouselScroll}
-            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-2 mt-4"
+            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-2 mt-8"
           >
             {/* Card Catequizandos */}
             <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
