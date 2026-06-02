@@ -95,50 +95,78 @@ function isSalmo(v: unknown): v is Salmo {
  *  - Numbers enclosed in brackets: [1] or (1)
  */
 function renderVerseText(text: string, style: React.CSSProperties): React.ReactNode {
-  // Split text into segments: normal text vs verse numbers
-  // We match patterns like:
-  //   ^\d+ at line start, or a number following whitespace/newline (common format from API)
-  const parts: Array<{ type: "text" | "verse"; content: string }> = [];
+  // The liturgy API typically returns text with verse numbers embedded inline.
+  // Patterns we handle:
+  //   - Number at start of line:  "1 No princípio..."
+  //   - Number after punctuation+space: "...fim. 5 Então..."
+  //   - Number after newline: "\n5 Então..."
+  // Strategy: split the whole text by the pattern (number that appears at start
+  // of line OR after whitespace that follows non-digit), preserving the numbers.
+  //
+  // Regex: match a sequence of digits that is either:
+  //   - at the very start of the string
+  //   - preceded by a newline (\n)
+  //   - preceded by whitespace after a non-digit char (e.g. ". 5" or ", 5")
+  const TOKEN_RE = /((?:^|(?<=\n)|(?<=[^\d\n]\s))\d+)(?=\s)/gm;
 
-  // Split by newlines first, then process each line
-  const lines = text.split("\n");
-  lines.forEach((line, lineIdx) => {
-    // Match verse numbers: digits at start of line, possibly followed by a space
-    const versePattern = /^(\d+)\s*/;
-    const match = line.match(versePattern);
-    if (match) {
-      parts.push({ type: "verse", content: match[1] });
-      parts.push({ type: "text", content: line.slice(match[0].length) });
-    } else {
-      parts.push({ type: "text", content: line });
+  const segments: Array<{ type: "text" | "verse"; content: string }> = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  // Fallback to a simpler approach if lookbehind not supported
+  let useSimple = false;
+  try {
+    new RegExp(TOKEN_RE.source, TOKEN_RE.flags);
+  } catch {
+    useSimple = true;
+  }
+
+  if (!useSimple) {
+    TOKEN_RE.lastIndex = 0;
+    while ((match = TOKEN_RE.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        segments.push({ type: "text", content: text.slice(lastIndex, match.index) });
+      }
+      segments.push({ type: "verse", content: match[1].trim() });
+      lastIndex = match.index + match[0].length;
     }
-    // Re-add newline between lines (except last)
-    if (lineIdx < lines.length - 1) {
-      parts.push({ type: "text", content: "\n" });
+    if (lastIndex < text.length) {
+      segments.push({ type: "text", content: text.slice(lastIndex) });
     }
-  });
+  } else {
+    // Simple fallback: split by newlines, detect verse number at line start
+    const lines = text.split("\n");
+    lines.forEach((line, li) => {
+      const m = line.match(/^(\d{1,3})\s+/);
+      if (m) {
+        segments.push({ type: "verse", content: m[1] });
+        segments.push({ type: "text", content: line.slice(m[0].length) });
+      } else {
+        segments.push({ type: "text", content: line });
+      }
+      if (li < lines.length - 1) segments.push({ type: "text", content: "\n" });
+    });
+  }
+
+  const supStyle: React.CSSProperties = {
+    fontSize: "0.5em",
+    fontWeight: 800,
+    lineHeight: 0,
+    verticalAlign: "super",
+    color: "#94a3b8",
+    marginRight: "0.12em",
+    marginLeft: "0.05em",
+    letterSpacing: "0.01em",
+    fontFamily: "system-ui, sans-serif",
+  };
 
   return (
     <span style={style}>
-      {parts.map((part, i) =>
-        part.type === "verse" ? (
-          <sup
-            key={i}
-            style={{
-              fontSize: "0.55em",
-              fontWeight: 700,
-              lineHeight: 0,
-              verticalAlign: "super",
-              color: "#9ca3af",
-              marginRight: "0.15em",
-              letterSpacing: "0.02em",
-              fontFamily: "sans-serif",
-            }}
-          >
-            {part.content}
-          </sup>
+      {segments.map((seg, i) =>
+        seg.type === "verse" ? (
+          <sup key={i} style={supStyle}>{seg.content}</sup>
         ) : (
-          <span key={i}>{part.content}</span>
+          <span key={i}>{seg.content}</span>
         )
       )}
     </span>
@@ -398,11 +426,11 @@ export default function LiturgiaDiaria() {
       className={`min-h-screen transition-all duration-500 ${
         fullScreen ? "fixed inset-0 z-50 overflow-y-auto" : "pb-24"
       }`}
-      style={{ backgroundColor: "#c0c0c0" }}
+      style={{ backgroundColor: "#b8bec7" }}
     >
       {/* ── Ambient gradient ── */}
       <div
-        className={`fixed inset-0 pointer-events-none transition-all duration-700 bg-gradient-to-b ${cor.bg} opacity-80`}
+        className={`fixed inset-0 pointer-events-none transition-all duration-700 bg-gradient-to-b ${cor.bg} opacity-30`}
         aria-hidden
       />
 
