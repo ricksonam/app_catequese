@@ -611,7 +611,7 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
             }}
             className="back-btn"
           >
-            <X className="h-5 w-5 text-white" />
+            <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
@@ -623,19 +623,13 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
             </div>
           </div>
         </div>
-        <button
-          onClick={toggleFullscreen}
-          className="p-2.5 rounded-xl bg-muted/50 hover:bg-muted transition-colors active:scale-95"
-        >
-          {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
-        </button>
       </div>
 
       {/* Calendar Card */}
       <div className={`float-card overflow-hidden animate-float-up flex flex-col ${isFullscreen ? 'flex-1 shadow-2xl border-2 border-primary/10' : ''}`}>
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-6 py-4 border-b border-border/30 flex items-center justify-between">
+        <div className="bg-primary/10 px-6 py-4 border-b border-border/30 flex items-center justify-between">
           <button onClick={prevMonth} className="w-10 h-10 rounded-xl bg-background/80 hover:bg-background flex items-center justify-center transition-all active:scale-90 shadow-sm border border-border/20">
-            <ChevronLeft className="h-5 w-5 text-white" />
+            <ChevronLeft className="h-5 w-5 text-foreground" />
           </button>
           <h2 className="text-2xl font-black text-foreground tracking-tight px-4">
             {MONTH_NAMES[currentMonth]}
