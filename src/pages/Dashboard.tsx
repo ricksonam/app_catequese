@@ -714,7 +714,7 @@ export default function Dashboard() {
                         )}
                       </div>
                       <div className="mt-1 text-center px-0.5">
-                        <p className="text-[10px] font-black text-black leading-[1.1] uppercase tracking-tighter whitespace-normal break-words w-full px-1">
+                        <p className="text-[9px] font-black text-black leading-tight uppercase tracking-tighter whitespace-nowrap overflow-hidden text-clip w-full px-1">
                           {c.nome.split(' ')[0]}
                         </p>
                         <div className="flex flex-col items-center mt-0.5">
@@ -779,7 +779,7 @@ export default function Dashboard() {
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[280px] relative mb-4" style={{ zIndex: 10 }}>
+              <div className="w-full max-w-[260px] relative mb-1 mt-2" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
                   className="w-full text-left relative rounded-[20px] overflow-hidden shadow-lg border-2 border-blue-200/80 ring-4 ring-blue-50 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-white/95 backdrop-blur-md"
@@ -840,7 +840,7 @@ export default function Dashboard() {
           })()}
 
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mb-6 relative z-10 -mt-1 mt-6">
+          <div className="flex items-center gap-2 w-full justify-center mb-6 mt-2 relative z-10">
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
