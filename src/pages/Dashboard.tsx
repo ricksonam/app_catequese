@@ -840,7 +840,7 @@ export default function Dashboard() {
           })()}
 
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mb-6 mt-2 relative z-10">
+          <div className="flex items-center gap-2 w-full justify-center mt-6 mb-5 relative z-10">
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
@@ -858,10 +858,10 @@ export default function Dashboard() {
           <div 
             ref={carouselRef}
             onScroll={handleCarouselScroll}
-            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-2 mt-8"
+            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-3 mt-2"
           >
             {/* Card Catequizandos */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '0ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -884,7 +884,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Encontros */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '80ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -909,7 +909,7 @@ export default function Dashboard() {
 
 
             {/* Card Eventos */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '160ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -932,7 +932,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Reuniões */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '240ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -955,7 +955,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card Biblia Online */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '320ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   navigate("/modulos/biblia");
@@ -973,7 +973,7 @@ export default function Dashboard() {
 
 
             {/* Card Jogos */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '400ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   navigate("/jogos");
@@ -991,7 +991,7 @@ export default function Dashboard() {
 
 
             {/* Card Diário Espiritual */}
-            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center">
+            <div className="w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in" style={{ animationDelay: '480ms', animationFillMode: 'both' }}>
               <button
                 onClick={() => {
                   if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
