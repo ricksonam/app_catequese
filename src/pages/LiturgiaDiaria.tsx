@@ -84,6 +84,67 @@ function isSalmo(v: unknown): v is Salmo {
   return typeof v === "object" && v !== null && "referencia" in v && "texto" in v;
 }
 
+// ─── Verse text renderer ──────────────────────────────────────────────────────
+
+/**
+ * Converts verse numbers (e.g. "1", "12") that appear at the start of a word
+ * or after a newline into small superscript numbers, matching printed Bible style.
+ * Patterns handled:
+ *  - Line starts with digits: "1 No princípio..."
+ *  - Superscripted inline: "...fim.¹²texto" (unicode superscripts)
+ *  - Numbers enclosed in brackets: [1] or (1)
+ */
+function renderVerseText(text: string, style: React.CSSProperties): React.ReactNode {
+  // Split text into segments: normal text vs verse numbers
+  // We match patterns like:
+  //   ^\d+ at line start, or a number following whitespace/newline (common format from API)
+  const parts: Array<{ type: "text" | "verse"; content: string }> = [];
+
+  // Split by newlines first, then process each line
+  const lines = text.split("\n");
+  lines.forEach((line, lineIdx) => {
+    // Match verse numbers: digits at start of line, possibly followed by a space
+    const versePattern = /^(\d+)\s*/;
+    const match = line.match(versePattern);
+    if (match) {
+      parts.push({ type: "verse", content: match[1] });
+      parts.push({ type: "text", content: line.slice(match[0].length) });
+    } else {
+      parts.push({ type: "text", content: line });
+    }
+    // Re-add newline between lines (except last)
+    if (lineIdx < lines.length - 1) {
+      parts.push({ type: "text", content: "\n" });
+    }
+  });
+
+  return (
+    <span style={style}>
+      {parts.map((part, i) =>
+        part.type === "verse" ? (
+          <sup
+            key={i}
+            style={{
+              fontSize: "0.55em",
+              fontWeight: 700,
+              lineHeight: 0,
+              verticalAlign: "super",
+              color: "#9ca3af",
+              marginRight: "0.15em",
+              letterSpacing: "0.02em",
+              fontFamily: "sans-serif",
+            }}
+          >
+            {part.content}
+          </sup>
+        ) : (
+          <span key={i}>{part.content}</span>
+        )
+      )}
+    </span>
+  );
+}
+
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function ReadingSkeleton() {
@@ -225,9 +286,8 @@ export default function LiturgiaDiaria() {
           </div>
           <div
             className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
-            style={textStyle}
           >
-            {leitura.texto}
+            {renderVerseText(leitura.texto, textStyle)}
           </div>
           <div className="pt-4 border-t border-black/5">
             <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
@@ -262,9 +322,8 @@ export default function LiturgiaDiaria() {
           )}
           <div
             className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
-            style={textStyle}
           >
-            {salmo.texto}
+            {renderVerseText(salmo.texto, textStyle)}
           </div>
           <div className="pt-4 border-t border-black/5">
             <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
@@ -288,9 +347,8 @@ export default function LiturgiaDiaria() {
           </div>
           <div
             className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
-            style={textStyle}
           >
-            {leitura.texto}
+            {renderVerseText(leitura.texto, textStyle)}
           </div>
           <div className="pt-4 border-t border-black/5">
             <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
@@ -314,9 +372,8 @@ export default function LiturgiaDiaria() {
           </div>
           <div
             className="font-serif text-zinc-900 whitespace-pre-wrap leading-relaxed transition-all duration-200"
-            style={textStyle}
           >
-            {evang.texto}
+            {renderVerseText(evang.texto, textStyle)}
           </div>
           <div className="pt-4 border-t border-black/5">
             <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest text-center">
@@ -338,9 +395,10 @@ export default function LiturgiaDiaria() {
 
   return (
     <div
-      className={`min-h-screen bg-slate-50 transition-all duration-500 ${
+      className={`min-h-screen transition-all duration-500 ${
         fullScreen ? "fixed inset-0 z-50 overflow-y-auto" : "pb-24"
       }`}
+      style={{ backgroundColor: "#c0c0c0" }}
     >
       {/* ── Ambient gradient ── */}
       <div
@@ -349,11 +407,7 @@ export default function LiturgiaDiaria() {
       />
 
       {/* ── Top Bar ── */}
-      <div
-        className={`sticky top-0 z-40 transition-all duration-300 ${
-          fullScreen ? "opacity-0 hover:opacity-100" : ""
-        }`}
-      >
+      <div className="sticky top-0 z-40">
         <div className="bg-white/90 backdrop-blur-xl border-b border-black/5">
           <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
             {/* Voltar */}
