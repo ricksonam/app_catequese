@@ -714,7 +714,7 @@ export default function Dashboard() {
                         )}
                       </div>
                       <div className="mt-1 text-center px-0.5">
-                        <p className="text-[10px] font-black text-black leading-tight uppercase tracking-tighter truncate w-full px-1">
+                        <p className="text-[10px] font-black text-black leading-[1.1] uppercase tracking-tighter whitespace-normal break-words w-full px-1">
                           {c.nome.split(' ')[0]}
                         </p>
                         <div className="flex flex-col items-center mt-0.5">
@@ -840,7 +840,7 @@ export default function Dashboard() {
           })()}
 
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mb-0 relative z-10 -mt-1">
+          <div className="flex items-center gap-2 w-full justify-center mb-6 relative z-10 -mt-1 mt-6">
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
