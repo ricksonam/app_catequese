@@ -87,65 +87,46 @@ function isSalmo(v: unknown): v is Salmo {
 // ─── Verse text renderer ──────────────────────────────────────────────────────
 
 /**
- * Converts verse numbers (e.g. "1", "12") that appear at the start of a word
- * or after a newline into small superscript numbers, matching printed Bible style.
- * Patterns handled:
- *  - Line starts with digits: "1 No princípio..."
- *  - Superscripted inline: "...fim.¹²texto" (unicode superscripts)
- *  - Numbers enclosed in brackets: [1] or (1)
+ * Converte números de versículos em superscript pequeno, estilo Bíblia impressa.
+ *
+ * A API da liturgia retorna os versículos colados à próxima palavra sem espaço:
+ *   "Caríssimos, 2graça e paz..."  →  verso 2 antes de "graça"
+ *   "...nosso Senhor. 3O seu..."   →  verso 3 antes de "O"
+ *
+ * Padrão detectado: espaço (ou início/newline) + dígitos + letra (sem espaço).
  */
 function renderVerseText(text: string, style: React.CSSProperties): React.ReactNode {
-  // The liturgy API typically returns text with verse numbers embedded inline.
-  // Patterns we handle:
-  //   - Number at start of line:  "1 No princípio..."
-  //   - Number after punctuation+space: "...fim. 5 Então..."
-  //   - Number after newline: "\n5 Então..."
-  // Strategy: split the whole text by the pattern (number that appears at start
-  // of line OR after whitespace that follows non-digit), preserving the numbers.
-  //
-  // Regex: match a sequence of digits that is either:
-  //   - at the very start of the string
-  //   - preceded by a newline (\n)
-  //   - preceded by whitespace after a non-digit char (e.g. ". 5" or ", 5")
-  const TOKEN_RE = /((?:^|(?<=\n)|(?<=[^\d\n]\s))\d+)(?=\s)/gm;
-
   const segments: Array<{ type: "text" | "verse"; content: string }> = [];
+
+  // Regex: encontra sequência de dígitos onde:
+  //   - o caractere anterior é espaço, newline, ou início da string
+  //   - o caractere seguinte é uma letra (a-z, A-Z, letras acentuadas)
+  // Isso captura "2graça", "3O", "4Por", "5Por", "6ao" etc.
+  const re = /\d+/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
-  // Fallback to a simpler approach if lookbehind not supported
-  let useSimple = false;
-  try {
-    new RegExp(TOKEN_RE.source, TOKEN_RE.flags);
-  } catch {
-    useSimple = true;
+  while ((match = re.exec(text)) !== null) {
+    const idx = match.index;
+    const num = match[0];
+    const charBefore = idx > 0 ? text[idx - 1] : " ";
+    const charAfter = idx + num.length < text.length ? text[idx + num.length] : "";
+
+    // É número de versículo se precedido por espaço/newline E seguido de letra
+    const beforeOk = charBefore === " " || charBefore === "\n" || idx === 0;
+    const afterOk = /[A-Za-z\u00C0-\u024F]/.test(charAfter);
+
+    if (beforeOk && afterOk) {
+      if (idx > lastIndex) {
+        segments.push({ type: "text", content: text.slice(lastIndex, idx) });
+      }
+      segments.push({ type: "verse", content: num });
+      lastIndex = idx + num.length;
+    }
   }
 
-  if (!useSimple) {
-    TOKEN_RE.lastIndex = 0;
-    while ((match = TOKEN_RE.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        segments.push({ type: "text", content: text.slice(lastIndex, match.index) });
-      }
-      segments.push({ type: "verse", content: match[1].trim() });
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < text.length) {
-      segments.push({ type: "text", content: text.slice(lastIndex) });
-    }
-  } else {
-    // Simple fallback: split by newlines, detect verse number at line start
-    const lines = text.split("\n");
-    lines.forEach((line, li) => {
-      const m = line.match(/^(\d{1,3})\s+/);
-      if (m) {
-        segments.push({ type: "verse", content: m[1] });
-        segments.push({ type: "text", content: line.slice(m[0].length) });
-      } else {
-        segments.push({ type: "text", content: line });
-      }
-      if (li < lines.length - 1) segments.push({ type: "text", content: "\n" });
-    });
+  if (lastIndex < text.length) {
+    segments.push({ type: "text", content: text.slice(lastIndex) });
   }
 
   const supStyle: React.CSSProperties = {
@@ -154,9 +135,7 @@ function renderVerseText(text: string, style: React.CSSProperties): React.ReactN
     lineHeight: 0,
     verticalAlign: "super",
     color: "#94a3b8",
-    marginRight: "0.12em",
-    marginLeft: "0.05em",
-    letterSpacing: "0.01em",
+    marginRight: "0.1em",
     fontFamily: "system-ui, sans-serif",
   };
 
