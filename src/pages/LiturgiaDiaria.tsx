@@ -134,10 +134,11 @@ function renderVerseText(text: string, style: React.CSSProperties): React.ReactN
     fontWeight: 800,
     lineHeight: 0,
     verticalAlign: "super",
-    color: "#94a3b8",
+    color: "#ef4444", // Cor vermelha para os versículos
     marginRight: "0.1em",
     fontFamily: "system-ui, sans-serif",
   };
+
 
   return (
     <span style={style}>
