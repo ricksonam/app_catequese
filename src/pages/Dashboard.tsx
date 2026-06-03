@@ -42,13 +42,15 @@ export default function Dashboard() {
   const handleCarouselScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
     const children = Array.from(container.children) as HTMLElement[];
-    if (children.length === 0) return;
+    // Filtra apenas os cards (ignora elementos de espaçamento)
+    const cards = children.filter(child => !child.classList.contains('snap-spacer'));
+    if (cards.length === 0) return;
     
     let closestIndex = 0;
     let minDiff = Infinity;
     const containerCenter = container.getBoundingClientRect().left + container.clientWidth / 2;
     
-    children.forEach((child, index) => {
+    cards.forEach((child, index) => {
       const childRect = child.getBoundingClientRect();
       const childCenter = childRect.left + childRect.width / 2;
       const diff = Math.abs(childCenter - containerCenter);
@@ -58,9 +60,7 @@ export default function Dashboard() {
       }
     });
     
-    if (closestIndex >= 0 && closestIndex < 10) {
-      setActiveModuleIndex(closestIndex);
-    }
+    setActiveModuleIndex(closestIndex);
   };
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch, isFetching: tFetching } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
@@ -770,7 +770,7 @@ export default function Dashboard() {
 
       {/* ── TURMA E MÓDULOS DE ACESSO RÁPIDO ── */}
       {turmas.length > 0 && (
-        <div className="space-y-0 px-4 mt-2 animate-fade-in flex flex-col items-center">
+        <div className="px-4 mt-2 animate-fade-in flex flex-col items-center">
           
           {/* Card Turma Selecionada — Azul Suave Centralizado */}
           {(() => {
@@ -840,7 +840,7 @@ export default function Dashboard() {
           })()}
 
           {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center mt-5 mb-8 relative z-10">
+          <div className="flex items-center gap-2 w-full justify-center relative z-10" style={{ paddingTop: '28px', paddingBottom: '28px' }}>
             <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
             <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
               <rect x="26" y="4" width="8" height="52" rx="2" />
@@ -858,11 +858,14 @@ export default function Dashboard() {
           <div 
             ref={carouselRef}
             onScroll={handleCarouselScroll}
-            className="-mx-8 w-[calc(100%+4rem)] px-8 relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory flex gap-3 pb-3 mt-0"
+            className="-mx-8 w-[calc(100%+4rem)] relative z-10 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-proximity flex gap-3 pb-4 mt-0"
+            style={{ scrollBehavior: 'smooth' }}
           >
+            {/* Spacer esquerdo para centralizar o primeiro card */}
+            <div className="snap-spacer shrink-0" style={{ width: 'calc(50vw - 65px - 12px)' }} aria-hidden />
             {/* Card Catequizandos */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 0 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 0 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '0ms', animationFillMode: 'both' }}
             >
               <button
@@ -894,7 +897,7 @@ export default function Dashboard() {
 
             {/* Card Encontros */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 1 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 1 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '80ms', animationFillMode: 'both' }}
             >
               <button
@@ -926,7 +929,7 @@ export default function Dashboard() {
 
             {/* Card Eventos */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 2 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 2 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '160ms', animationFillMode: 'both' }}
             >
               <button
@@ -958,7 +961,7 @@ export default function Dashboard() {
 
             {/* Card Reuniões */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 3 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 3 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '240ms', animationFillMode: 'both' }}
             >
               <button
@@ -990,7 +993,7 @@ export default function Dashboard() {
 
             {/* Card Biblia Online */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 4 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 4 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '320ms', animationFillMode: 'both' }}
             >
               <button
@@ -1015,7 +1018,7 @@ export default function Dashboard() {
 
             {/* Card Jogos */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 5 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 5 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '400ms', animationFillMode: 'both' }}
             >
               <button
@@ -1040,7 +1043,7 @@ export default function Dashboard() {
 
             {/* Card Diário Espiritual */}
             <div
-              className={`w-[130px] sm:w-[145px] shrink-0 snap-start relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 6 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+              className={`w-[130px] sm:w-[145px] shrink-0 snap-center relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 6 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
               style={{ animationDelay: '480ms', animationFillMode: 'both' }}
             >
               <button
@@ -1069,18 +1072,22 @@ export default function Dashboard() {
                 Diário
               </span>
             </div>
+            {/* Spacer direito para centralizar o último card */}
+            <div className="snap-spacer shrink-0" style={{ width: 'calc(50vw - 65px - 12px)' }} aria-hidden />
           </div>
 
           {/* Indicador de Bolinhas (Pagination Dots) */}
           <div className="flex justify-center items-center gap-1.5 mt-4 mb-10">
-            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((idx) => (
+            {[0, 1, 2, 3, 4, 5, 6].map((idx) => (
               <button
                 key={idx}
                 onClick={() => {
                   if (carouselRef.current) {
+                    // children[0] é o spacer esquerdo, cards começam em children[1]
                     const children = Array.from(carouselRef.current.children) as HTMLElement[];
-                    if (children[idx]) {
-                      children[idx].scrollIntoView({
+                    const cardEl = children[idx + 1];
+                    if (cardEl) {
+                      cardEl.scrollIntoView({
                         behavior: "smooth",
                         block: "nearest",
                         inline: "center",
