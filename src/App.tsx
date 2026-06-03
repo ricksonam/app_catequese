@@ -87,7 +87,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="w-32 h-32 rounded-3xl bg-white shadow-lg overflow-hidden animate-float transform-gpu p-3 flex items-center justify-center">
-            <img src="/logo_sem_fundo.png" alt="Logo" className="w-[85%] h-[85%] object-contain" />
+            <img src="/Logo_sem_fundo.png" alt="Logo" className="w-[85%] h-[85%] object-contain" />
           </div>
           <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Conectando...</p>
         </div>
