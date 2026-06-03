@@ -29,6 +29,11 @@ export function PWAInstallChip() {
     // Show chip after a short delay regardless of event (fallback logic)
     const timer = setTimeout(() => setShowChip(true), 1000);
 
+    // Initial check for global deferred prompt
+    if ((window as any).deferredPrompt) {
+      setDeferredPrompt((window as any).deferredPrompt);
+    }
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);

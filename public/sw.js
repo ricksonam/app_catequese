@@ -38,3 +38,9 @@ self.addEventListener('notificationclick', function(event) {
     })
   );
 });
+
+// The fetch handler is REQUIRED by Chrome/Android to trigger the beforeinstallprompt event (PWA installation)
+self.addEventListener('fetch', function(event) {
+  // Simple network-first fetch handler just to satisfy PWA requirements
+  event.respondWith(fetch(event.request));
+});

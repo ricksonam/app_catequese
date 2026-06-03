@@ -16,3 +16,9 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+// Global capture for beforeinstallprompt since it can fire before React mounts
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  (window as any).deferredPrompt = e;
+});
