@@ -525,6 +525,93 @@ export default function Dashboard() {
 
 
 
+  const carouselItems = useMemo(() => [
+    {
+      title: "Catequizandos",
+      image: "/card_catequizandos.jpg",
+      onClick: () => {
+        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+          navigate(`/turmas/${selectedTurmaId}/catequizandos`);
+        } else if (selectedTurmaId === "all") {
+          toast.info("Selecione uma turma para acessar este módulo.");
+          setTurmaPickerOpen(true);
+        } else {
+          toast.info("Aguarde a aprovação do acesso.");
+        }
+      }
+    },
+    {
+      title: "Encontros",
+      image: "/card_encontros.jpg",
+      onClick: () => {
+        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+          navigate(`/turmas/${selectedTurmaId}/encontros`);
+        } else if (selectedTurmaId === "all") {
+          toast.info("Selecione uma turma para acessar este módulo.");
+          setTurmaPickerOpen(true);
+        } else {
+          toast.info("Aguarde a aprovação do acesso.");
+        }
+      }
+    },
+    {
+      title: "Eventos",
+      image: "/icone-eventos.png",
+      onClick: () => {
+        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+          navigate(`/turmas/${selectedTurmaId}/eventos`);
+        } else if (selectedTurmaId === "all") {
+          toast.info("Selecione uma turma para acessar este módulo.");
+          setTurmaPickerOpen(true);
+        } else {
+          toast.info("Aguarde a aprovação do acesso.");
+        }
+      }
+    },
+    {
+      title: "Reuniões",
+      image: "/icone-reunioes.png",
+      onClick: () => {
+        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+          navigate(`/turmas/${selectedTurmaId}/reunioes`);
+        } else if (selectedTurmaId === "all") {
+          toast.info("Selecione uma turma para acessar este módulo.");
+          setTurmaPickerOpen(true);
+        } else {
+          toast.info("Aguarde a aprovação do acesso.");
+        }
+      }
+    },
+    {
+      title: "Bíblia",
+      image: "/card_biblia.jpg",
+      onClick: () => {
+        navigate("/modulos/biblia");
+      }
+    },
+    {
+      title: "Jogos",
+      image: "/acesso_jogos.jpg",
+      onClick: () => {
+        navigate("/jogos");
+      }
+    },
+    {
+      title: "Diário",
+      image: "/icone_diario.png",
+      onClick: () => {
+        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+          navigate(`/turmas/${selectedTurmaId}/diario`);
+        } else if (selectedTurmaId === "all") {
+          toast.info("Selecione uma turma para acessar este módulo.");
+          setTurmaPickerOpen(true);
+        } else {
+          toast.info("Aguarde a aprovação do acesso.");
+        }
+      }
+    }
+  ], [navigate, selectedTurmaId, selectedTurma, setTurmaPickerOpen]);
+
   return (
     <div className="space-y-2.5">
       <PWAInstallChip />
@@ -852,215 +939,34 @@ export default function Dashboard() {
           {/* Carrossel de Módulos (Rolagem Horizontal com Embla) */}
           <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 pb-4 mt-0" ref={emblaRef}>
             <div className="flex gap-3 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
-            {/* Card Catequizandos */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 0 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '0ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/catequizandos`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 0
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/card_catequizandos.jpg" alt="Catequizandos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 0 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
-              }`}>
-                Catequizandos
-              </span>
-            </div>
-
-            {/* Card Encontros */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 1 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '80ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/encontros`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 1
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/card_encontros.jpg" alt="Encontros" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 1 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
-              }`}>
-                Encontros
-              </span>
-            </div>
-
-            {/* Card Eventos */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 2 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '160ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/eventos`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 2
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/icone-eventos.png" alt="Eventos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 2 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
-              }`}>
-                Eventos
-              </span>
-            </div>
-
-            {/* Card Reuniões */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 3 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '240ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/reunioes`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 3
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/icone-reunioes.png" alt="Reuniões" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 3 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
-              }`}>
-                Reuniões
-              </span>
-            </div>
-
-            {/* Card Biblia Online */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 4 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '320ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  navigate("/modulos/biblia");
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 4
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/card_biblia.jpg" alt="Bíblia Online" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 4 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
-              }`}>
-                Bíblia
-              </span>
-            </div>
-
-            {/* Card Jogos */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 5 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '400ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  navigate("/jogos");
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 5
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/acesso_jogos.jpg" alt="Jogos" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 5 ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
-              }`}>
-                Jogos
-              </span>
-            </div>
-
-            {/* Card Diário Espiritual */}
-            <div
-              className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex === 6 ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
-              style={{ animationDelay: '480ms', animationFillMode: 'both' }}
-            >
-              <button
-                onClick={() => {
-                  if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                    navigate(`/turmas/${selectedTurmaId}/diario`);
-                  } else if (selectedTurmaId === "all") {
-                    toast.info("Selecione uma turma para acessar este módulo.");
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Aguarde a aprovação do acesso.");
-                  }
-                }}
-                className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                  activeModuleIndex === 6
-                    ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                    : 'border-2 border-white/50 hover:scale-[1.04]'
-                }`}
-              >
-                <img src="/icone_diario.png" alt="Diário Espiritual" fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-              </button>
-              <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                activeModuleIndex === 6 ? 'text-primary' : 'text-muted-foreground group-hover:text-indigo-600'
-              }`}>
-                Diário
-              </span>
-            </div>
+              {/* Duplicamos os itens 3 vezes para garantir conteúdo suficiente para o loop infinito em qualquer tela */}
+              {[...carouselItems, ...carouselItems, ...carouselItems].map((item, index) => {
+                const originalIndex = index % 7;
+                return (
+                  <div
+                    key={index}
+                    className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex % 7 === originalIndex ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+                    style={{ animationDelay: `${originalIndex * 80}ms`, animationFillMode: 'both' }}
+                  >
+                    <button
+                      onClick={item.onClick}
+                      className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                        activeModuleIndex % 7 === originalIndex
+                          ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                          : 'border-2 border-white/50 hover:scale-[1.04]'
+                      }`}
+                    >
+                      <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+                    </button>
+                    <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                      activeModuleIndex % 7 === originalIndex ? 'text-primary' : (originalIndex === 6 ? 'text-muted-foreground group-hover:text-indigo-600' : 'text-muted-foreground group-hover:text-primary')
+                    }`}>
+                      {item.title}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -1071,11 +977,14 @@ export default function Dashboard() {
                 key={idx}
                 onClick={() => {
                   if (emblaApi) {
-                    emblaApi.scrollTo(idx);
+                    const currentSnap = emblaApi.selectedScrollSnap();
+                    const currentMod = currentSnap % 7;
+                    const diff = idx - currentMod;
+                    emblaApi.scrollTo(currentSnap + diff);
                   }
                 }}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeModuleIndex === idx
+                  (activeModuleIndex % 7) === idx
                     ? "w-4 bg-primary"
                     : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 }`}
