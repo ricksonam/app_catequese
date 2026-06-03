@@ -917,23 +917,9 @@ export default function Dashboard() {
             );
           })()}
 
-          {/* Separador ornamental litúrgico */}
-          <div className="flex items-center gap-2 w-full justify-center relative z-10" style={{ paddingTop: '28px', paddingBottom: '28px' }}>
-            <div className="h-px flex-1" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
-            <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
-              <rect x="26" y="4" width="8" height="52" rx="2" />
-              <rect x="4" y="20" width="52" height="8" rx="2" />
-            </svg>
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] shrink-0" style={{ color: '#B8860B' }}>Módulos Rápidos</span>
-            <svg viewBox="0 0 60 60" className="w-4 h-4 opacity-40 shrink-0" fill="currentColor" style={{ color: '#D4AF37' }}>
-              <rect x="26" y="4" width="8" height="52" rx="2" />
-              <rect x="4" y="20" width="52" height="8" rx="2" />
-            </svg>
-            <div className="h-px flex-1" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
-          </div>
 
           {/* Carrossel de Módulos (Rolagem Horizontal com Embla) */}
-          <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 pb-4 mt-0" ref={emblaRef}>
+          <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 py-6 mt-0" ref={emblaRef}>
             <div className="flex gap-3 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
               {/* Duplicamos os itens 3 vezes para garantir conteúdo suficiente para o loop infinito em qualquer tela */}
               {[...carouselItems, ...carouselItems, ...carouselItems].map((item, index) => {
