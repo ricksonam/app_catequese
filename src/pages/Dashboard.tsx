@@ -941,25 +941,27 @@ export default function Dashboard() {
                 return (
                   <div
                     key={index}
-                    className={`flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group flex flex-col items-center animate-fade-in transition-all duration-500 ${activeModuleIndex % 7 === originalIndex ? 'scale-[1.08] z-20' : 'scale-100 opacity-70'}`}
+                    className="flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group animate-fade-in"
                     style={{ animationDelay: `${originalIndex * 80}ms`, animationFillMode: 'both' }}
                   >
-                    <button
-                      onClick={item.onClick}
-                      className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                        activeModuleIndex % 7 === originalIndex
-                          ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                          : 'border-2 border-white/50 hover:scale-[1.04]'
-                      }`}
-                    >
-                      <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-                    </button>
-                    <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                      activeModuleIndex % 7 === originalIndex ? 'text-primary' : (originalIndex === 6 ? 'text-muted-foreground group-hover:text-indigo-600' : 'text-muted-foreground group-hover:text-primary')
-                    }`}>
-                      {item.title}
-                    </span>
+                    <div className={`w-full flex flex-col items-center transition-all duration-500 ${activeModuleIndex % 7 === originalIndex ? 'scale-[1.08] z-20 opacity-100' : 'scale-100 opacity-70'}`}>
+                      <button
+                        onClick={item.onClick}
+                        className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
+                          activeModuleIndex % 7 === originalIndex
+                            ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
+                            : 'border-2 border-white/50 hover:scale-[1.04]'
+                        }`}
+                      >
+                        <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
+                      </button>
+                      <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
+                        activeModuleIndex % 7 === originalIndex ? 'text-primary' : (originalIndex === 6 ? 'text-muted-foreground group-hover:text-indigo-600' : 'text-muted-foreground group-hover:text-primary')
+                      }`}>
+                        {item.title}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
