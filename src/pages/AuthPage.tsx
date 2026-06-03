@@ -335,8 +335,8 @@ export default function AuthPage() {
             </button>
 
             <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-primary/10 border border-primary/20">
-                <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain p-1" />
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white mx-auto mb-4 shadow-xl shadow-primary/10 border border-primary/20 flex items-center justify-center p-2">
+                <img src="/logo_sem_fundo.png" alt="Logo" className="w-[85%] h-[85%] object-contain" />
               </div>
               <h2 className="text-2xl font-black text-slate-800 mb-1">Bem-vindo de volta!</h2>
               <p className="text-slate-500 text-sm font-medium">Entre com sua conta para continuar</p>

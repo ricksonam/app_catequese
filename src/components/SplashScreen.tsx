@@ -10,8 +10,8 @@ export default function SplashScreen() {
         {/* Glowing ring around the icon - enlarged and better contrast */}
         <div className="absolute -inset-10 bg-primary/25 rounded-full blur-3xl animate-pulse scale-125 opacity-40 transform-gpu" />
         
-        <div className="relative w-56 h-56 rounded-[56px] overflow-hidden flex items-center justify-center animate-float-float transform-gpu will-change-transform">
-          <img src="/Avatar.png" className="w-full h-full object-cover" style={{ imageRendering: 'high-quality' }} alt="iCatequese" />
+        <div className="relative w-56 h-56 rounded-[56px] bg-white shadow-xl overflow-hidden flex items-center justify-center animate-float-float transform-gpu will-change-transform p-4">
+          <img src="/logo_sem_fundo.png" className="w-[85%] h-[85%] object-contain" style={{ imageRendering: 'high-quality' }} alt="iCatequese" />
         </div>
       </div>
 
