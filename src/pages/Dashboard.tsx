@@ -487,44 +487,6 @@ export default function Dashboard() {
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
   const [showCalendario, setShowCalendario] = useState(false);
 
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
-           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
-        </div>
-        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando...</p>
-      </div>
-    );
-  }
-
-  if (tError) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-6 text-center animate-fade-in">
-        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-500 mb-2 shadow-lg shadow-red-500/10">
-          <AlertTriangle className="h-8 w-8" />
-        </div>
-        <div className="space-y-1">
-          <h3 className="text-lg font-black text-foreground">Erro ao carregar dados</h3>
-          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            Não conseguimos conectar com o servidor para buscar suas turmas. Verifique sua conexão.
-          </p>
-        </div>
-        <Button 
-          onClick={() => tRefetch()} 
-          className="rounded-2xl px-8 h-12 font-black uppercase tracking-widest bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-95"
-        >
-          Tentar Novamente
-        </Button>
-      </div>
-    );
-  }
-
-
-
-
-
   const carouselItems = useMemo(() => [
     {
       title: "Catequizandos",
@@ -611,6 +573,40 @@ export default function Dashboard() {
       }
     }
   ], [navigate, selectedTurmaId, selectedTurma, setTurmaPickerOpen]);
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shadow-lg shadow-primary/5 animate-bounce-subtle">
+           <div className="w-6 h-6 border-[3px] border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+        <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Carregando...</p>
+      </div>
+    );
+  }
+
+  if (tError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-6 text-center animate-fade-in">
+        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center text-red-500 mb-2 shadow-lg shadow-red-500/10">
+          <AlertTriangle className="h-8 w-8" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-lg font-black text-foreground">Erro ao carregar dados</h3>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            Não conseguimos conectar com o servidor para buscar suas turmas. Verifique sua conexão.
+          </p>
+        </div>
+        <Button 
+          onClick={() => tRefetch()} 
+          className="rounded-2xl px-8 h-12 font-black uppercase tracking-widest bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-95"
+        >
+          Tentar Novamente
+        </Button>
+      </div>
+    );
+  }
+
+
 
   return (
     <div className="space-y-2.5">
