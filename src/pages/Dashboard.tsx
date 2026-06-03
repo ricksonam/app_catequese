@@ -36,14 +36,15 @@ export default function Dashboard() {
     else localStorage.setItem("ivc_selected_turma", id);
   };
 
-  const [activeModuleIndex, setActiveModuleIndex] = useState(0);
+  const [activeModuleIndex, setActiveModuleIndex] = useState(1);
   const [moduleInfo, setModuleInfo] = useState<{title: string; desc: string; icon: string; onAccess: () => void} | null>(null);
   
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: true, 
     align: 'center', 
     skipSnaps: false,
-    dragFree: false
+    dragFree: false,
+    startIndex: 1
   });
 
   const onSelect = useCallback(() => {
@@ -921,25 +922,22 @@ export default function Dashboard() {
           {/* Carrossel de Módulos (Rolagem Horizontal com Embla) */}
           <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 py-6 mt-0" ref={emblaRef}>
             <div className="flex gap-8 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
-              {/* Duplicamos os itens 3 vezes para garantir conteúdo suficiente para o loop infinito em qualquer tela */}
-              {[...carouselItems, ...carouselItems, ...carouselItems].map((item, index) => {
-                const originalIndex = index % 7;
-                return (
+              {carouselItems.map((item, index) => (
                   <div
                     key={index}
                     className="flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group animate-fade-in"
-                    style={{ animationDelay: `${originalIndex * 80}ms`, animationFillMode: 'both' }}
+                    style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'both' }}
                   >
                     {/* Estrela decorativa no centro do espaçamento (gap-8 = 32px -> centro é 16px ou 1rem) */}
                     <div className="absolute top-[40%] left-[calc(100%+1rem)] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none text-amber-400/80">
                       <Star className="w-5 h-5 fill-amber-400 drop-shadow-sm opacity-60 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-110" />
                     </div>
 
-                    <div className={`w-full flex flex-col items-center transition-all duration-500 ${activeModuleIndex % 7 === originalIndex ? 'scale-[1.08] z-20 opacity-100' : 'scale-100 opacity-70'}`}>
+                    <div className={`w-full flex flex-col items-center transition-all duration-500 ${activeModuleIndex === index ? 'scale-[1.08] z-20 opacity-100' : 'scale-100 opacity-70'}`}>
                       <button
                         onClick={item.onClick}
                         className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                          activeModuleIndex % 7 === originalIndex
+                          activeModuleIndex === index
                             ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
                             : 'border-2 border-white/50 hover:scale-[1.04]'
                         }`}
@@ -948,32 +946,28 @@ export default function Dashboard() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
                       </button>
                       <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                        activeModuleIndex % 7 === originalIndex ? 'text-primary' : (originalIndex === 6 ? 'text-muted-foreground group-hover:text-indigo-600' : 'text-muted-foreground group-hover:text-primary')
+                        activeModuleIndex === index ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
                       }`}>
                         {item.title}
                       </span>
                     </div>
                   </div>
-                );
-              })}
+              ))}
             </div>
           </div>
 
           {/* Indicador de Bolinhas (Pagination Dots) */}
           <div className="flex justify-center items-center gap-1.5 mt-4 mb-10">
-            {[0, 1, 2, 3, 4, 5, 6].map((idx) => (
+            {carouselItems.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => {
                   if (emblaApi) {
-                    const currentSnap = emblaApi.selectedScrollSnap();
-                    const currentMod = currentSnap % 7;
-                    const diff = idx - currentMod;
-                    emblaApi.scrollTo(currentSnap + diff);
+                    emblaApi.scrollTo(idx);
                   }
                 }}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  (activeModuleIndex % 7) === idx
+                  activeModuleIndex === idx
                     ? "w-4 bg-primary"
                     : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 }`}
