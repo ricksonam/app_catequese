@@ -920,7 +920,7 @@ export default function Dashboard() {
 
           {/* Carrossel de Módulos (Rolagem Horizontal com Embla) */}
           <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 py-6 mt-0" ref={emblaRef}>
-            <div className="flex gap-3 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
+            <div className="flex gap-8 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
               {/* Duplicamos os itens 3 vezes para garantir conteúdo suficiente para o loop infinito em qualquer tela */}
               {[...carouselItems, ...carouselItems, ...carouselItems].map((item, index) => {
                 const originalIndex = index % 7;
@@ -930,6 +930,11 @@ export default function Dashboard() {
                     className="flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group animate-fade-in"
                     style={{ animationDelay: `${originalIndex * 80}ms`, animationFillMode: 'both' }}
                   >
+                    {/* Estrela decorativa no centro do espaçamento (gap-8 = 32px -> centro é 16px ou 1rem) */}
+                    <div className="absolute top-[40%] left-[calc(100%+1rem)] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none text-amber-400/80">
+                      <Star className="w-5 h-5 fill-amber-400 drop-shadow-sm opacity-60 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-110" />
+                    </div>
+
                     <div className={`w-full flex flex-col items-center transition-all duration-500 ${activeModuleIndex % 7 === originalIndex ? 'scale-[1.08] z-20 opacity-100' : 'scale-100 opacity-70'}`}>
                       <button
                         onClick={item.onClick}
