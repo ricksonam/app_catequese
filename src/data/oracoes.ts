@@ -302,4 +302,4 @@ export const oracoesBase: Oracao[] = [
     tags: ["miguel", "arcanjo", "protecao", "combate"]
   },
 
-];\n
+];
