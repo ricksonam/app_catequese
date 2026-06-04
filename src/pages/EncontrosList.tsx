@@ -109,7 +109,7 @@ export default function EncontrosList() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{encontros.length} encontros</p>
           </div>
         </div>
-        <div className="flex items-center justify-between gap-4 pt-2 border-t border-black/5">
+        <div className="flex items-center justify-end gap-4 pt-2 border-t border-black/5">
 
           <button 
             onClick={() => navigate(`/turmas/${id}/encontros/novo`)} 
