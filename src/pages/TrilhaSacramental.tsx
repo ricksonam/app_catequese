@@ -246,7 +246,7 @@ function CatequizandoRow({
             <div className="flex flex-col items-center justify-center gap-3 py-6 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 text-center">
               <PartyPopper className="h-10 w-10 text-emerald-500" />
               <div>
-                <p className="text-base font-black text-emerald-700 uppercase tracking-wide">
+                <p className="text-base font-black text-black uppercase tracking-wide">
                   Sacramento já recebido!
                 </p>
                 <p className="text-sm text-emerald-600 mt-1">
@@ -255,8 +255,8 @@ function CatequizandoRow({
                   {sacInfo?.paroquia ? ` · ${sacInfo.paroquia}` : ""}
                 </p>
               </div>
-              <p className="text-xs text-emerald-500 italic">
-                Para exibir os requisitos, remova o sacramento do cadastro do catequizando.
+              <p className="text-xs text-emerald-600 italic">
+                Caso o catequizando não tenha recebido o sacramento, remova o sacramento do cadastro do catequizando.
               </p>
             </div>
           ) : (
