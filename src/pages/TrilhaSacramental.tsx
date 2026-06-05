@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { PartyPopper } from "lucide-react";
 import { useCatequizandos, useEncontros, useTurmas } from "@/hooks/useSupabaseData";
 import { upsertCatequizando, upsertTurma } from "@/lib/supabaseStore";
 import { useState, useMemo, useEffect } from "react";
@@ -146,6 +147,8 @@ function CatequizandoRow({
   }, [cat, selectedSacramento]);
 
   const sacramentos = cat.dadosPastorais?.sacramentos ?? cat.sacramentos;
+  const sacInfo = sacramentos?.[selectedSacramento];
+  const sacramentoJaRecebido = sacInfo?.recebido === true;
 
   const totalEtapas = ETAPAS_PARTICIPACAO.length;
   const concluidas = ETAPAS_PARTICIPACAO.filter(e => localTrilha[e.key as keyof TrilhaSacramentalType]).length;
@@ -212,22 +215,52 @@ function CatequizandoRow({
         <div className="flex-1 min-w-0">
           <p className="text-sm font-black text-foreground leading-tight truncate">{cat.nome}</p>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-              {concluidas}/{totalEtapas} etapas · {docsConcluidos}/{totalDocs} docs
-            </span>
-            {freqAlert && (
-              <span className="flex items-center gap-0.5 text-[9px] font-black text-red-600 uppercase tracking-wide">
-                <AlertTriangle className="h-2.5 w-2.5" /> Freq. baixa
+            {sacramentoJaRecebido ? (
+              <span className="flex items-center gap-1 text-[9px] font-black text-emerald-600 uppercase tracking-wide">
+                <CheckCircle2 className="h-2.5 w-2.5" /> Sacramento já recebido
               </span>
+            ) : (
+              <>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {concluidas}/{totalEtapas} etapas · {docsConcluidos}/{totalDocs} docs
+                </span>
+                {freqAlert && (
+                  <span className="flex items-center gap-0.5 text-[9px] font-black text-red-600 uppercase tracking-wide">
+                    <AlertTriangle className="h-2.5 w-2.5" /> Freq. baixa
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>
-        <ProgressRing value={concluidas} max={totalEtapas} />
+        {sacramentoJaRecebido
+          ? <CheckCircle2 className="h-9 w-9 text-emerald-500 shrink-0" />
+          : <ProgressRing value={concluidas} max={totalEtapas} />}
         {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
       </button>
 
       {isOpen && (
         <div className="px-4 pb-4 pt-2 space-y-5 bg-white dark:bg-card border-t border-border/30">
+          {/* Banner de Sacramento Já Recebido */}
+          {sacramentoJaRecebido ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-6 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 text-center">
+              <PartyPopper className="h-10 w-10 text-emerald-500" />
+              <div>
+                <p className="text-base font-black text-emerald-700 uppercase tracking-wide">
+                  Sacramento já recebido!
+                </p>
+                <p className="text-sm text-emerald-600 mt-1">
+                  {selectedSacramento.charAt(0).toUpperCase() + selectedSacramento.slice(1)} registrado
+                  {sacInfo?.data ? ` em ${new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}` : " no cadastro"}
+                  {sacInfo?.paroquia ? ` · ${sacInfo.paroquia}` : ""}
+                </p>
+              </div>
+              <p className="text-xs text-emerald-500 italic">
+                Para exibir os requisitos, remova o sacramento do cadastro do catequizando.
+              </p>
+            </div>
+          ) : (
+            <>
           <section>
             <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-primary mb-3 flex items-center gap-1.5">
               <Cross className="h-4 w-4" /> Situação Sacramental (Cadastro)
@@ -238,8 +271,8 @@ function CatequizandoRow({
                 { key: "eucaristia", label: "Eucaristia" },
                 { key: "crisma", label: "Crisma" },
               ].map(s => {
-                const sacInfo = sacramentos?.[s.key as "batismo" | "eucaristia" | "crisma"];
-                const recebido = sacInfo?.recebido ?? false;
+                const sacInfoGrid = sacramentos?.[s.key as "batismo" | "eucaristia" | "crisma"];
+                const recebido = sacInfoGrid?.recebido ?? false;
                 return (
                   <div key={s.key} className={cn(
                     "rounded-xl border p-2 text-center",
@@ -249,8 +282,8 @@ function CatequizandoRow({
                       ? <CheckCircle2 className="h-5 w-5 text-emerald-600 mx-auto mb-1.5" />
                       : <Circle className="h-5 w-5 text-muted-foreground mx-auto mb-1.5" />}
                     <p className="text-xs font-black uppercase text-foreground">{s.label}</p>
-                    {recebido && sacInfo?.data && (
-                      <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
+                    {recebido && sacInfoGrid?.data && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(sacInfoGrid.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
                     )}
                   </div>
                 );
@@ -365,6 +398,8 @@ function CatequizandoRow({
             <Save className="h-5 w-5" />
             {saving ? "Salvando..." : "Salvar Trilha"}
           </button>
+            </>
+          )}
         </div>
       )}
     </div>
