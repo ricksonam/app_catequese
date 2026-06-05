@@ -44,7 +44,7 @@ export default function Dashboard() {
     align: 'center', 
     skipSnaps: false,
     dragFree: false,
-    startIndex: 50
+    startIndex: 57
   });
 
   const onSelect = useCallback(() => {
@@ -937,7 +937,7 @@ export default function Dashboard() {
           <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 py-6 mt-0" ref={emblaRef}>
             <div className="flex gap-12 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
               {Array.from({ length: 15 }).flatMap(() => carouselItems).map((item, index) => {
-                const originalIndex = index % 7;
+                const originalIndex = index % 8;
                 return (
                   <div
                     key={index}
@@ -982,12 +982,12 @@ export default function Dashboard() {
                 key={idx}
                 onClick={() => {
                   if (emblaApi) {
-                    const currentSetStart = Math.floor(activeModuleIndex / 7) * 7;
+                    const currentSetStart = Math.floor(activeModuleIndex / 8) * 8;
                     emblaApi.scrollTo(currentSetStart + idx);
                   }
                 }}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  (activeModuleIndex % 7) === idx
+                  (activeModuleIndex % 8) === idx
                     ? "w-4 bg-primary"
                     : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
                 }`}
