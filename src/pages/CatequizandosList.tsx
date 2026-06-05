@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
@@ -528,6 +529,7 @@ export default function CatequizandosList() {
       observacao: editForm.observacao, foto: editForm.foto || undefined,
       responsaveis: editForm.responsaveis as any[],
       dadosPastorais: {
+        ...(viewItem.dadosPastorais || {}),
         sacramentos: { batismo: editForm.batismo as any, eucaristia: editForm.eucaristia as any, crisma: editForm.crisma as any },
         participacaoPastoral: editForm.participacaoPastoral
       } as any,
