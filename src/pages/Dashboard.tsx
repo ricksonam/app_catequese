@@ -546,6 +546,20 @@ export default function Dashboard() {
       }
     },
     {
+      title: "Trilha Sacramental",
+      image: "/icone_trilha.png",
+      onClick: () => {
+        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+          navigate(`/turmas/${selectedTurmaId}/trilha-sacramental`);
+        } else if (selectedTurmaId === "all") {
+          toast.info("Selecione uma turma para acessar este módulo.");
+          setTurmaPickerOpen(true);
+        } else {
+          toast.info("Aguarde a aprovação do acesso.");
+        }
+      }
+    },
+    {
       title: "Bíblia",
       image: "/card_biblia.jpg",
       onClick: () => {

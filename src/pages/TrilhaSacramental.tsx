@@ -562,10 +562,10 @@ export default function TrilhaSacramental() {
   return (
     <div className="space-y-5 pb-10 animate-fade-in">
       <div className="flex items-center gap-3 pt-4">
-        <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn">
+        <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0">
           <ArrowLeft className="h-5 w-5 text-black" />
         </button>
-        <div>
+        <div className="flex-1 text-center pr-10">
           <h1 className="text-lg font-black text-foreground tracking-tight uppercase leading-tight">
             Trilha Sacramental
           </h1>
