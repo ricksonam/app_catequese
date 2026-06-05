@@ -31,6 +31,11 @@ export interface TrilhaSacramental {
   observacoes?: string;
 }
 
+export interface TurmaTrilhaConfig {
+  dataCelebracao?: string;
+  etapasRito?: Record<string, string>;
+}
+
 export interface Turma {
   id: string;
   nome: string;
@@ -51,7 +56,8 @@ export interface Turma {
   proposito?: string;
   objetivo?: string;
   metas?: string;
-  etapasRito?: Record<string, string>;
+  etapasRito?: Record<string, string>; // Legado (mantido para compatibilidade, migrar para trilhasConfig)
+  trilhasConfig?: Record<string, TurmaTrilhaConfig>; // Novo: batismo, eucaristia, crisma
 }
 
 export interface ResponsavelInfo {
@@ -95,7 +101,8 @@ export interface Catequizando {
   dadosPastorais?: DadosPastoraisInfo;
   criadoEm?: string;
   origem?: 'manual' | 'online';
-  trilhaSacramental?: TrilhaSacramental;
+  trilhaSacramental?: TrilhaSacramental; // Legado (mantido para compatibilidade)
+  trilhasPorSacramento?: Record<string, TrilhaSacramental>; // Novo: batismo, eucaristia, crisma
 }
 
 

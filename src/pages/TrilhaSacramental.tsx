@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCatequizandos, useEncontros, useTurmas } from "@/hooks/useSupabaseData";
 import { upsertCatequizando, upsertTurma } from "@/lib/supabaseStore";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -9,8 +9,10 @@ import {
   AlertTriangle, Calendar, Users, FileText, BookOpen, Music,
   Heart, Baby, Star, Church, Plus, Trash2, Save, Info
 } from "lucide-react";
-import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, DocumentoCustom, Turma } from "@/lib/store";
+import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma } from "@/lib/store";
 import { cn } from "@/lib/utils";
+
+type SacramentoType = 'batismo' | 'eucaristia' | 'crisma';
 
 const ETAPAS_PARTICIPACAO = [
   { key: "participacao_encontros", label: "Participação nos Encontros", icon: Users },
@@ -113,20 +115,35 @@ function ProgressRing({ value, max }: { value: number; max: number }) {
   );
 }
 
+function getTrilhaState(cat: Catequizando, sacramento: SacramentoType): TrilhaSacramentalType {
+  if (cat.trilhasPorSacramento && cat.trilhasPorSacramento[sacramento]) {
+    return cat.trilhasPorSacramento[sacramento];
+  }
+  if (sacramento === 'eucaristia' && cat.trilhaSacramental) {
+    return cat.trilhaSacramental;
+  }
+  return defaultTrilha();
+}
+
 function CatequizandoRow({
-  cat, encontros, isOpen, onToggle, onSave, saving
+  cat, encontros, selectedSacramento, isOpen, onToggle, onSave, saving
 }: {
   cat: Catequizando;
   encontros: any[];
+  selectedSacramento: SacramentoType;
   isOpen: boolean;
   onToggle: () => void;
   onSave: (updated: Catequizando) => void;
   saving: boolean;
 }) {
-  const trilha: TrilhaSacramentalType = cat.trilhaSacramental ?? defaultTrilha();
-  const [localTrilha, setLocalTrilha] = useState<TrilhaSacramentalType>(trilha);
+  const [localTrilha, setLocalTrilha] = useState<TrilhaSacramentalType>(getTrilhaState(cat, selectedSacramento));
   const [newDocNome, setNewDocNome] = useState("");
   const freq = calcFrequencia(cat, encontros);
+
+  useEffect(() => {
+    setLocalTrilha(getTrilhaState(cat, selectedSacramento));
+    setNewDocNome("");
+  }, [cat, selectedSacramento]);
 
   const sacramentos = cat.dadosPastorais?.sacramentos ?? cat.sacramentos;
 
@@ -165,14 +182,19 @@ function CatequizandoRow({
   };
 
   const handleSave = () => {
-    onSave({ ...cat, trilhaSacramental: localTrilha });
+    onSave({
+      ...cat,
+      trilhasPorSacramento: {
+        ...(cat.trilhasPorSacramento || {}),
+        [selectedSacramento]: localTrilha
+      }
+    });
   };
 
   const freqAlert = freq.total > 0 && freq.percent < 75;
 
   return (
     <div className={cn("rounded-2xl border transition-all duration-300 overflow-hidden", isOpen ? "shadow-md" : "shadow-sm")}>
-      {/* Header row */}
       <button
         className={cn(
           "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors",
@@ -204,14 +226,11 @@ function CatequizandoRow({
         {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
       </button>
 
-      {/* Expanded */}
       {isOpen && (
         <div className="px-4 pb-4 pt-2 space-y-5 bg-white dark:bg-card border-t border-border/30">
-
-          {/* 1. Situação Sacramental */}
           <section>
             <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-primary mb-3 flex items-center gap-1.5">
-              <Cross className="h-4 w-4" /> Situação Sacramental
+              <Cross className="h-4 w-4" /> Situação Sacramental (Cadastro)
             </h4>
             <div className="grid grid-cols-3 gap-2">
               {[
@@ -237,12 +256,8 @@ function CatequizandoRow({
                 );
               })}
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1">
-              <Info className="h-3 w-3" /> Dados vindos do cadastro do catequizando (somente leitura)
-            </p>
           </section>
 
-          {/* 2. Controle de Frequência */}
           <section>
             <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-blue-600 mb-3 flex items-center gap-1.5">
               <Calendar className="h-4 w-4" /> Controle de Frequência
@@ -267,10 +282,9 @@ function CatequizandoRow({
             )}
           </section>
 
-          {/* 3. Etapas de Participação */}
           <section>
             <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-amber-600 mb-3 flex items-center gap-1.5">
-              <Star className="h-4 w-4" /> Etapas de Participação
+              <Star className="h-4 w-4" /> Etapas de Participação ({selectedSacramento})
             </h4>
             <div className="space-y-2">
               {ETAPAS_PARTICIPACAO.map(etapa => (
@@ -284,10 +298,9 @@ function CatequizandoRow({
             </div>
           </section>
 
-          {/* 4. Documentos */}
           <section>
             <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-violet-600 mb-3 flex items-center gap-1.5">
-              <FileText className="h-4 w-4" /> Documentos Necessários
+              <FileText className="h-4 w-4" /> Documentos Necessários ({selectedSacramento})
             </h4>
             <div className="space-y-2">
               {DOCS_PADRAO.map(doc => (
@@ -315,7 +328,6 @@ function CatequizandoRow({
                   </button>
                 </div>
               ))}
-              {/* Adicionar documento customizado */}
               <div className="flex gap-2 mt-1">
                   <input
                     type="text"
@@ -335,18 +347,16 @@ function CatequizandoRow({
             </div>
           </section>
 
-          {/* Observações */}
           <section>
-            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-muted-foreground mb-2">Observações</h4>
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-muted-foreground mb-2">Observações ({selectedSacramento})</h4>
             <textarea
               value={localTrilha.observacoes ?? ""}
               onChange={e => setLocalTrilha(prev => ({ ...prev, observacoes: e.target.value }))}
-              placeholder="Anotações adicionais sobre este catequizando..."
+              placeholder="Anotações adicionais sobre este catequizando nesta trilha..."
               className="w-full h-20 px-3 py-3 rounded-xl text-sm border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
           </section>
 
-          {/* Salvar */}
           <button
             onClick={handleSave}
             disabled={saving}
@@ -373,11 +383,55 @@ export default function TrilhaSacramental() {
   const turma = turmas.find(t => t.id === id);
   const [openId, setOpenId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
+  
+  const [selectedSacramento, setSelectedSacramento] = useState<SacramentoType>('eucaristia');
+  const [initializedSelection, setInitializedSelection] = useState(false);
+
+  const configAba = turma?.trilhasConfig?.[selectedSacramento] || {
+    dataCelebracao: (selectedSacramento === 'eucaristia' && turma?.dataCelebracaoSacramento) ? turma.dataCelebracaoSacramento : undefined,
+    etapasRito: (selectedSacramento === 'eucaristia' && turma?.etapasRito) ? turma.etapasRito : undefined
+  };
+
   const [editandoData, setEditandoData] = useState(false);
-  const [dataValue, setDataValue] = useState(turma?.dataCelebracaoSacramento ?? "");
+  const [dataValue, setDataValue] = useState(configAba.dataCelebracao ?? "");
   const [savingData, setSavingData] = useState(false);
   const [busca, setBusca] = useState("");
   const [ritoOpen, setRitoOpen] = useState(false);
+
+  useEffect(() => {
+    if (turma && !initializedSelection) {
+      let nearest: SacramentoType = 'eucaristia';
+      let nearestDiff = Infinity;
+      const today = new Date().getTime();
+
+      const options: SacramentoType[] = ['batismo', 'eucaristia', 'crisma'];
+
+      for (const sac of options) {
+        let dateStr = turma.trilhasConfig?.[sac]?.dataCelebracao;
+        if (sac === 'eucaristia' && !dateStr && turma.dataCelebracaoSacramento) {
+            dateStr = turma.dataCelebracaoSacramento;
+        }
+
+        if (dateStr) {
+          const time = new Date(dateStr + "T00:00:00").getTime();
+          const diff = time - today;
+          if (diff >= 0 && diff < nearestDiff) {
+            nearestDiff = diff;
+            nearest = sac;
+          } else if (nearestDiff === Infinity) {
+             nearest = sac;
+          }
+        }
+      }
+      setSelectedSacramento(nearest);
+      setInitializedSelection(true);
+    }
+  }, [turma, initializedSelection]);
+
+  useEffect(() => {
+    setDataValue(configAba.dataCelebracao ?? "");
+    setEditandoData(false);
+  }, [selectedSacramento, configAba.dataCelebracao]);
 
   const catFiltrados = useMemo(() =>
     catequizandos
@@ -391,14 +445,14 @@ export default function TrilhaSacramental() {
     let totalEtapasConcluidas = 0;
     let freqBaixa = 0;
     catFiltrados.forEach(cat => {
-      const t = cat.trilhaSacramental ?? defaultTrilha();
+      const t = getTrilhaState(cat, selectedSacramento);
       totalEtapasConcluidas += ETAPAS_PARTICIPACAO.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
       const freq = calcFrequencia(cat, encontros);
       if (freq.total > 0 && freq.percent < 75) freqBaixa++;
     });
     const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
     return { total, etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100), freqBaixa };
-  }, [catFiltrados, encontros]);
+  }, [catFiltrados, encontros, selectedSacramento]);
 
   const handleSaveCat = async (updated: Catequizando) => {
     setSavingId(updated.id);
@@ -417,9 +471,22 @@ export default function TrilhaSacramental() {
     if (!turma) return;
     setSavingData(true);
     try {
-      await upsertTurma({ ...turma, dataCelebracaoSacramento: dataValue || undefined });
+      const updatedConfig = {
+        ...(turma.trilhasConfig || {}),
+        [selectedSacramento]: {
+          ...(turma.trilhasConfig?.[selectedSacramento] || {}),
+          dataCelebracao: dataValue || undefined
+        }
+      };
+      
+      const payload: Turma = { ...turma, trilhasConfig: updatedConfig };
+      if (selectedSacramento === 'eucaristia') {
+          payload.dataCelebracaoSacramento = dataValue || undefined;
+      }
+
+      await upsertTurma(payload);
       queryClient.invalidateQueries({ queryKey: ["turmas"] });
-      toast.success("Data da celebração salva!");
+      toast.success(`Data da celebração para ${selectedSacramento} salva!`);
       setEditandoData(false);
     } catch (e: any) {
       toast.error("Erro ao salvar: " + e.message);
@@ -428,9 +495,37 @@ export default function TrilhaSacramental() {
     }
   };
 
+  const handleSaveEtapaRito = async (etapaKey: string, newVal: string) => {
+    if (!turma) return;
+    try {
+        const sacConfig = turma.trilhasConfig?.[selectedSacramento] || {};
+        const legacyEtapas = (selectedSacramento === 'eucaristia' ? turma.etapasRito : undefined) || {};
+        
+        const mergedEtapasRito = { ...(sacConfig.etapasRito || legacyEtapas), [etapaKey]: newVal };
+
+        const updatedConfig = {
+            ...(turma.trilhasConfig || {}),
+            [selectedSacramento]: {
+            ...sacConfig,
+            etapasRito: mergedEtapasRito
+            }
+        };
+
+        const payload: Turma = { ...turma, trilhasConfig: updatedConfig };
+        if (selectedSacramento === 'eucaristia') {
+            payload.etapasRito = mergedEtapasRito;
+        }
+
+        await upsertTurma(payload);
+        queryClient.invalidateQueries({ queryKey: ["turmas"] });
+        toast.success(`Etapa atualizada!`);
+    } catch (err: any) {
+        toast.error("Erro ao salvar: " + err.message);
+    }
+  };
+
   return (
     <div className="space-y-5 pb-10 animate-fade-in">
-      {/* Header */}
       <div className="flex items-center gap-3 pt-4">
         <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn">
           <ArrowLeft className="h-5 w-5 text-black" />
@@ -443,21 +538,41 @@ export default function TrilhaSacramental() {
         </div>
       </div>
 
-      {/* Data da Celebração */}
+      <div className="flex bg-muted/50 p-1.5 rounded-2xl gap-1 overflow-x-auto hide-scrollbar">
+          {[
+            { key: 'batismo', label: 'Batismo' },
+            { key: 'eucaristia', label: 'Eucaristia' },
+            { key: 'crisma', label: 'Crisma' },
+          ].map(s => (
+            <button
+                key={s.key}
+                onClick={() => { setSelectedSacramento(s.key as SacramentoType); setOpenId(null); }}
+                className={cn(
+                    "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs md:text-sm font-black uppercase tracking-wider transition-all duration-300",
+                    selectedSacramento === s.key 
+                        ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-white/50"
+                )}
+            >
+                {s.label}
+            </button>
+          ))}
+      </div>
+
       <div className="float-card p-4 bg-gradient-to-br from-violet-50 to-white dark:from-violet-900/10 dark:to-background border-violet-100">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-xl bg-violet-600 flex items-center justify-center">
               <Calendar className="h-3.5 w-3.5 text-white" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-700">Data da Celebração</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-700">Data da Celebração ({selectedSacramento})</p>
           </div>
           {!editandoData && (
             <button
-              onClick={() => { setEditandoData(true); setDataValue(turma?.dataCelebracaoSacramento ?? ""); }}
+              onClick={() => { setEditandoData(true); setDataValue(configAba.dataCelebracao ?? ""); }}
               className="text-[9px] font-black uppercase tracking-wider text-violet-600 hover:text-violet-800 transition-colors"
             >
-              {turma?.dataCelebracaoSacramento ? "Alterar" : "Definir"}
+              {configAba.dataCelebracao ? "Alterar" : "Definir"}
             </button>
           )}
         </div>
@@ -479,15 +594,14 @@ export default function TrilhaSacramental() {
             <button onClick={() => setEditandoData(false)} className="text-xs text-muted-foreground">Cancelar</button>
           </div>
         ) : (
-          <p className={cn("text-sm font-black", turma?.dataCelebracaoSacramento ? "text-violet-800" : "text-muted-foreground italic")}>
-            {turma?.dataCelebracaoSacramento
-              ? new Date(turma.dataCelebracaoSacramento + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
-              : "Nenhuma data definida ainda"}
+          <p className={cn("text-sm font-black", configAba.dataCelebracao ? "text-violet-800" : "text-muted-foreground italic")}>
+            {configAba.dataCelebracao
+              ? new Date(configAba.dataCelebracao + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
+              : `Nenhuma data definida para ${selectedSacramento}`}
           </p>
         )}
       </div>
 
-      {/* Stats cards */}
       <div className="grid grid-cols-3 gap-2">
         <div className="float-card p-3 text-center">
           <p className="text-xl font-black text-primary">{stats.total}</p>
@@ -495,7 +609,7 @@ export default function TrilhaSacramental() {
         </div>
         <div className="float-card p-3 text-center">
           <p className="text-xl font-black text-emerald-600">{stats.etapasPercent}%</p>
-          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Etapas OK</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Etapas OK ({selectedSacramento})</p>
         </div>
         <div className={cn("float-card p-3 text-center", stats.freqBaixa > 0 && "border-red-200 bg-red-50/50")}>
           <p className={cn("text-xl font-black", stats.freqBaixa > 0 ? "text-red-600" : "text-foreground")}>{stats.freqBaixa}</p>
@@ -503,7 +617,6 @@ export default function TrilhaSacramental() {
         </div>
       </div>
 
-      {/* Etapas de Preparação do Rito (Global) */}
       {turma && (
         <div className="float-card bg-amber-50/50 dark:bg-amber-900/10 border-amber-200 overflow-hidden">
           <button
@@ -515,7 +628,7 @@ export default function TrilhaSacramental() {
                 <Star className="h-4 w-4 text-white" />
               </div>
               <h2 className="text-sm md:text-base font-black uppercase tracking-wider text-amber-700 text-left">
-                Etapas de Preparação do Rito
+                Etapas de Preparação do Rito ({selectedSacramento})
               </h2>
             </div>
             {ritoOpen ? <ChevronUp className="h-5 w-5 text-amber-700 shrink-0" /> : <ChevronDown className="h-5 w-5 text-amber-700 shrink-0" />}
@@ -525,7 +638,7 @@ export default function TrilhaSacramental() {
             <div className="p-4 pt-0 space-y-3">
               {ETAPAS_RITO.map(etapa => {
                 const Icon = etapa.icon;
-                const dateVal = turma.etapasRito?.[etapa.key] || "";
+                const dateVal = configAba.etapasRito?.[etapa.key] || "";
                 return (
                   <div key={etapa.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-card border border-amber-100">
                     <div className="flex items-center gap-2.5">
@@ -536,17 +649,7 @@ export default function TrilhaSacramental() {
                       <input
                         type="date"
                         value={dateVal}
-                        onChange={async (e) => {
-                          const newVal = e.target.value;
-                          const newRito = { ...(turma.etapasRito || {}), [etapa.key]: newVal };
-                          try {
-                            await upsertTurma({ ...turma, etapasRito: newRito });
-                            queryClient.invalidateQueries({ queryKey: ["turmas"] });
-                            toast.success(`${etapa.label} atualizado!`);
-                          } catch (err: any) {
-                            toast.error("Erro ao salvar: " + err.message);
-                          }
-                        }}
+                        onChange={(e) => handleSaveEtapaRito(etapa.key, e.target.value)}
                         className="h-10 px-3 w-full sm:w-auto rounded-lg text-sm border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50/30"
                       />
                     </div>
@@ -558,7 +661,6 @@ export default function TrilhaSacramental() {
         </div>
       )}
 
-      {/* Busca */}
       <input
         type="text"
         value={busca}
@@ -567,7 +669,6 @@ export default function TrilhaSacramental() {
         className="w-full h-10 px-4 rounded-2xl text-sm border border-border/60 bg-white dark:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30"
       />
 
-      {/* Lista */}
       {isLoading ? (
         <div className="space-y-2">
           {[1,2,3].map(i => <div key={i} className="h-16 rounded-2xl bg-muted/50 animate-pulse" />)}
@@ -584,6 +685,7 @@ export default function TrilhaSacramental() {
               key={cat.id}
               cat={cat}
               encontros={encontros}
+              selectedSacramento={selectedSacramento}
               isOpen={openId === cat.id}
               onToggle={() => setOpenId(openId === cat.id ? null : cat.id)}
               onSave={handleSaveCat}

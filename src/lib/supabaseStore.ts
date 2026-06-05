@@ -35,6 +35,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     comunidadeId: t.comunidade_id,
     dataCelebracaoSacramento: t.data_celebracao_sacramento || undefined,
     etapasRito: t.etapas_rito || undefined,
+    trilhasConfig: t.trilhas_config || undefined,
     catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
     codigoAcesso: t.codigo_acesso,
     isShared: false,
@@ -68,6 +69,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
       comunidadeId: t.comunidade_id,
       dataCelebracaoSacramento: t.data_celebracao_sacramento || undefined,
       etapasRito: t.etapas_rito || undefined,
+      trilhasConfig: t.trilhas_config || undefined,
       catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
       codigoAcesso: t.codigo_acesso,
       isShared: true,
@@ -93,6 +95,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
           criadoEm: cached?.criadoEm || new Date().toISOString(),
           comunidadeId: '',
           etapasRito: undefined,
+          trilhasConfig: undefined,
           catequistasIds: [],
           codigoAcesso: '',
           isShared: true,
@@ -120,6 +123,7 @@ export async function upsertTurma(turma: Turma) {
     codigo_acesso: codigo,
     data_celebracao_sacramento: turma.dataCelebracaoSacramento || null,
     etapas_rito: turma.etapasRito || null,
+    trilhas_config: turma.trilhasConfig || null,
   });
   if (error) throw error;
 
@@ -222,6 +226,7 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
     criadoEm: c.criado_em,
     origem: c.origem,
     trilhaSacramental: c.trilha_sacramental || undefined,
+    trilhasPorSacramento: c.trilhas_por_sacramento || undefined,
   }));
 
 }
@@ -239,6 +244,7 @@ export async function upsertCatequizando(c: Catequizando) {
     dados_pastorais: c.dadosPastorais || null,
     origem: c.origem || 'manual',
     trilha_sacramental: c.trilhaSacramental || null,
+    trilhas_por_sacramento: c.trilhasPorSacramento || null,
   });
 
   if (error) throw error;
