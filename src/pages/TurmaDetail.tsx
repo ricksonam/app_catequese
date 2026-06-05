@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useApproveTurmaMembro, useComunidades } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, QrCode, Shield, CheckCircle2, BellRing, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, QrCode, Shield, CheckCircle2, BellRing, X, Sparkles } from "lucide-react";
+
 import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
 import {
@@ -228,7 +229,9 @@ export default function TurmaDetail() {
     { label: "Eventos", desc: "Calendário e freq.", icon: ListChecks, count: atividades.length, unit: "evento", path: `/turmas/${id}/eventos`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false },
     { label: "Reuniões", desc: "Atas e pautas", icon: Users, count: reunioes.length, unit: "reunião", path: `/turmas/${id}/reunioes`, color: "bg-blue-600 text-white", bgGradient: "from-blue-500/60 via-blue-500/30 to-white", gradient: "from-blue-500/15 to-white", textColor: "text-blue-700", hasAlert: false },
     { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700", hasAlert: false },
+    { label: "Trilha Sacramental", desc: "Preparação p/ sacramento", icon: Sparkles, count: null, unit: "", path: `/turmas/${id}/trilha-sacramental`, color: "bg-violet-600 text-white", bgGradient: "from-violet-500/60 via-violet-500/30 to-white", gradient: "from-violet-500/15 to-white", textColor: "text-violet-700", hasAlert: false, isTrilha: true },
   ];
+
 
   const relatorioModulo = { label: "Relatórios", icon: PieChart, path: `/turmas/${id}/relatorios` };
 
@@ -345,6 +348,7 @@ export default function TurmaDetail() {
         {modulos.map((mod, i) => {
           const Icon = mod.icon;
           const isPlan = mod.label === "Plano da turma";
+          const isTrilha = (mod as any).isTrilha === true;
           return (
             <div 
               key={mod.label}
@@ -382,21 +386,21 @@ export default function TurmaDetail() {
                 <div className="relative z-30 flex-1 flex flex-col items-center justify-center w-full min-h-0">
                   <div className="flex flex-col items-center justify-center mb-0.5">
                     <h3 className="text-[12px] font-black text-foreground tracking-tight leading-none group-hover:text-primary transition-colors">{mod.label}</h3>
-                    {isPlan && (
+                    {(isPlan || isTrilha) && (
                       <p className="text-[7px] text-muted-foreground leading-tight mt-0.5 px-1 font-medium line-clamp-1">{mod.desc}</p>
                     )}
                   </div>
                   
-                  {(mod.count !== null || isPlan) && (
+                  {(mod.count !== null || isPlan || isTrilha) && (
                     <div className={cn(
                       "mt-1 flex flex-col items-center justify-center min-w-[65px] transition-colors mx-auto",
                       mod.textColor
                     )}>
-                      <span className={cn("font-black leading-none", isPlan ? "text-[9px]" : "text-base")}>
-                        {isPlan ? (turma.etapa || "N/A") : mod.count}
+                      <span className={cn("font-black leading-none", (isPlan || isTrilha) ? "text-[9px]" : "text-base")}>
+                        {isPlan ? (turma.etapa || "N/A") : isTrilha ? (turma.dataCelebracaoSacramento ? new Date(turma.dataCelebracaoSacramento + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }) : "—") : mod.count}
                       </span>
                       <span className="text-[7px] font-black uppercase tracking-wider mt-0.5 opacity-80">
-                        {isPlan ? "Etapa Atual" : (mod.count !== 1 ? `${mod.unit}s` : mod.unit)}
+                        {isPlan ? "Etapa Atual" : isTrilha ? (turma.dataCelebracaoSacramento ? "Celebração" : "Sem data") : (mod.count !== 1 ? `${mod.unit}s` : mod.unit)}
                       </span>
                     </div>
                   )}

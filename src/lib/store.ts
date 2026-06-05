@@ -5,6 +5,35 @@ export interface CoordenadorInfo {
   email?: string;
 }
 
+export interface SacramentoInfo {
+  recebido: boolean;
+  paroquia: string;
+  data: string;
+}
+
+export interface DocumentoCustom {
+  id: string;
+  nome: string;
+  entregue: boolean;
+}
+
+export interface TrilhaSacramental {
+  documentos_entregues: boolean;
+  documentos_rg: boolean;
+  documentos_batistério: boolean;
+  documentos_residencia: boolean;
+  documentos_custom: DocumentoCustom[];
+  contribuicao: boolean;
+  reuniao_pais: boolean;
+  confissao: boolean;
+  retiro: boolean;
+  ensaio: boolean;
+  padrinhos: boolean;
+  participacao_missas: boolean;
+  participacao_encontros: boolean;
+  observacoes?: string;
+}
+
 export interface Turma {
   id: string;
   nome: string;
@@ -15,6 +44,7 @@ export interface Turma {
   etapa: string;
   outrosDados: string;
   criadoEm: string;
+  dataCelebracaoSacramento?: string;
   comunidadeId?: string;
   catequistasIds?: string[];
   coordenadores?: CoordenadorInfo[];
@@ -67,6 +97,7 @@ export interface Catequizando {
   dadosPastorais?: DadosPastoraisInfo;
   criadoEm?: string;
   origem?: 'manual' | 'online';
+  trilhaSacramental?: TrilhaSacramental;
 }
 
 

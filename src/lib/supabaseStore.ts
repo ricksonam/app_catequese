@@ -33,6 +33,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
     criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
     comunidadeId: t.comunidade_id,
+    dataCelebracaoSacramento: t.data_celebracao_sacramento || undefined,
     catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
     codigoAcesso: t.codigo_acesso,
     isShared: false,
@@ -64,6 +65,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
       horario: t.horario, local: t.local, etapa: t.etapa, outrosDados: t.outros_dados,
       criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
       comunidadeId: t.comunidade_id,
+      dataCelebracaoSacramento: t.data_celebracao_sacramento || undefined,
       catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
       codigoAcesso: t.codigo_acesso,
       isShared: true,
@@ -113,6 +115,7 @@ export async function upsertTurma(turma: Turma) {
     criado_em: turma.criadoEm, proposito: turma.proposito || null, objetivo: turma.objetivo || null, metas: turma.metas || null,
     comunidade_id: turma.comunidadeId || null,
     codigo_acesso: codigo,
+    data_celebracao_sacramento: turma.dataCelebracaoSacramento || null,
   });
   if (error) throw error;
 
@@ -214,6 +217,7 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
     dadosPastorais: c.dados_pastorais || undefined,
     criadoEm: c.criado_em,
     origem: c.origem,
+    trilhaSacramental: c.trilha_sacramental || undefined,
   }));
 
 }
@@ -230,6 +234,7 @@ export async function upsertCatequizando(c: Catequizando) {
     responsaveis: c.responsaveis || null,
     dados_pastorais: c.dadosPastorais || null,
     origem: c.origem || 'manual',
+    trilha_sacramental: c.trilhaSacramental || null,
   });
 
   if (error) throw error;

@@ -1,0 +1,538 @@
+import { useParams, useNavigate } from "react-router-dom";
+import { useCatequizandos, useEncontros, useTurmas } from "@/hooks/useSupabaseData";
+import { upsertCatequizando, upsertTurma } from "@/lib/supabaseStore";
+import { useState, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  ArrowLeft, Cross, CheckCircle2, Circle, ChevronDown, ChevronUp,
+  AlertTriangle, Calendar, Users, FileText, BookOpen, Music,
+  Heart, Baby, Star, Church, Plus, Trash2, Save, Info
+} from "lucide-react";
+import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, DocumentoCustom, Turma } from "@/lib/store";
+import { cn } from "@/lib/utils";
+
+const ETAPAS = [
+  { key: "contribuicao", label: "Contribuição / Taxas", icon: Star },
+  { key: "participacao_encontros", label: "Participação nos Encontros", icon: Users },
+  { key: "participacao_missas", label: "Participação nas Missas", icon: Church },
+  { key: "reuniao_pais", label: "Reunião com os Pais", icon: Heart },
+  { key: "confissao", label: "Celebração Penitencial – Confissão", icon: BookOpen },
+  { key: "retiro", label: "Retiro Espiritual", icon: Cross },
+  { key: "ensaio", label: "Ensaio do Rito", icon: Music },
+  { key: "padrinhos", label: "Padrinhos e Madrinhas", icon: Baby },
+] as const;
+
+const DOCS_PADRAO = [
+  { key: "documentos_rg", label: "RG (Documento de Identidade)" },
+  { key: "documentos_batistério", label: "Certidão de Batismo" },
+  { key: "documentos_residencia", label: "Comprovante de Residência" },
+] as const;
+
+function defaultTrilha(): TrilhaSacramentalType {
+  return {
+    documentos_entregues: false,
+    documentos_rg: false,
+    "documentos_batistério": false,
+    documentos_residencia: false,
+    documentos_custom: [],
+    contribuicao: false,
+    reuniao_pais: false,
+    confissao: false,
+    retiro: false,
+    ensaio: false,
+    padrinhos: false,
+    participacao_missas: false,
+    participacao_encontros: false,
+    observacoes: "",
+  };
+}
+
+function calcFrequencia(cat: Catequizando, encontros: any[]): { percent: number; presencas: number; total: number } {
+  const realizados = encontros.filter(e => e.status === "realizado");
+  if (realizados.length === 0) return { percent: 0, presencas: 0, total: 0 };
+  const presencas = realizados.filter(e => (e.presencas || []).includes(cat.id)).length;
+  return { percent: Math.round((presencas / realizados.length) * 100), presencas, total: realizados.length };
+}
+
+function FrequenciaBar({ percent }: { percent: number }) {
+  const color = percent >= 75 ? "bg-emerald-500" : percent >= 50 ? "bg-amber-500" : "bg-red-500";
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+        <div className={cn("h-full rounded-full transition-all duration-700", color)} style={{ width: `${percent}%` }} />
+      </div>
+      <span className={cn("text-xs font-black w-10 text-right",
+        percent >= 75 ? "text-emerald-600" : percent >= 50 ? "text-amber-600" : "text-red-600"
+      )}>{percent}%</span>
+    </div>
+  );
+}
+
+function CheckItem({ checked, onToggle, label, disabled }: { checked: boolean; onToggle: () => void; label: string; disabled?: boolean }) {
+  return (
+    <button
+      onClick={onToggle}
+      disabled={disabled}
+      className={cn(
+        "flex items-center gap-2 w-full text-left rounded-xl px-3 py-2 border transition-all active:scale-95 text-xs font-semibold",
+        checked
+          ? "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-700"
+          : "bg-white border-border/50 text-foreground/70 dark:bg-muted/30",
+        disabled && "opacity-50 cursor-not-allowed"
+      )}
+    >
+      {checked
+        ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+        : <Circle className="h-4 w-4 text-muted-foreground shrink-0" />}
+      <span className="leading-tight">{label}</span>
+    </button>
+  );
+}
+
+function ProgressRing({ value, max }: { value: number; max: number }) {
+  const pct = max === 0 ? 0 : Math.round((value / max) * 100);
+  const color = pct === 100 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444";
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="16" fill="none" stroke="#e5e7eb" strokeWidth="4" />
+        <circle
+          cx="20" cy="20" r="16" fill="none" stroke={color} strokeWidth="4"
+          strokeDasharray={`${100.53}`}
+          strokeDashoffset={`${100.53 * (1 - pct / 100)}`}
+          strokeLinecap="round"
+          transform="rotate(-90 20 20)"
+          style={{ transition: "stroke-dashoffset 0.7s ease" }}
+        />
+        <text x="20" y="24" textAnchor="middle" fontSize="9" fontWeight="800" fill={color}>{pct}%</text>
+      </svg>
+    </div>
+  );
+}
+
+function CatequizandoRow({
+  cat, encontros, isOpen, onToggle, onSave, saving
+}: {
+  cat: Catequizando;
+  encontros: any[];
+  isOpen: boolean;
+  onToggle: () => void;
+  onSave: (updated: Catequizando) => void;
+  saving: boolean;
+}) {
+  const trilha: TrilhaSacramentalType = cat.trilhaSacramental ?? defaultTrilha();
+  const [localTrilha, setLocalTrilha] = useState<TrilhaSacramentalType>(trilha);
+  const [newDocNome, setNewDocNome] = useState("");
+  const freq = calcFrequencia(cat, encontros);
+
+  const sacramentos = cat.dadosPastorais?.sacramentos ?? cat.sacramentos;
+
+  const totalEtapas = ETAPAS.length;
+  const concluidas = ETAPAS.filter(e => localTrilha[e.key as keyof TrilhaSacramentalType]).length;
+  const totalDocs = DOCS_PADRAO.length + localTrilha.documentos_custom.length;
+  const docsConcluidos = DOCS_PADRAO.filter(d => localTrilha[d.key as keyof TrilhaSacramentalType]).length
+    + localTrilha.documentos_custom.filter(d => d.entregue).length;
+
+  const toggle = (key: keyof TrilhaSacramentalType) => {
+    setLocalTrilha(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleDocCustom = (id: string) => {
+    setLocalTrilha(prev => ({
+      ...prev,
+      documentos_custom: prev.documentos_custom.map(d => d.id === id ? { ...d, entregue: !d.entregue } : d),
+    }));
+  };
+
+  const addDocCustom = () => {
+    if (!newDocNome.trim()) return;
+    setLocalTrilha(prev => ({
+      ...prev,
+      documentos_custom: [...prev.documentos_custom, { id: crypto.randomUUID(), nome: newDocNome.trim(), entregue: false }],
+    }));
+    setNewDocNome("");
+  };
+
+  const removeDocCustom = (id: string) => {
+    setLocalTrilha(prev => ({
+      ...prev,
+      documentos_custom: prev.documentos_custom.filter(d => d.id !== id),
+    }));
+  };
+
+  const handleSave = () => {
+    onSave({ ...cat, trilhaSacramental: localTrilha });
+  };
+
+  const freqAlert = freq.total > 0 && freq.percent < 75;
+
+  return (
+    <div className={cn("rounded-2xl border transition-all duration-300 overflow-hidden", isOpen ? "shadow-md" : "shadow-sm")}>
+      {/* Header row */}
+      <button
+        className={cn(
+          "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors",
+          isOpen ? "bg-primary/5" : "bg-white dark:bg-card",
+          "hover:bg-primary/5"
+        )}
+        onClick={onToggle}
+      >
+        {cat.foto
+          ? <img src={cat.foto} alt={cat.nome} className="w-9 h-9 rounded-xl object-cover shrink-0 border-2 border-white shadow" />
+          : <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shrink-0 text-primary font-black text-sm border border-primary/20">
+            {cat.nome.charAt(0).toUpperCase()}
+          </div>
+        }
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-black text-foreground leading-tight truncate">{cat.nome}</p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+              {concluidas}/{totalEtapas} etapas · {docsConcluidos}/{totalDocs} docs
+            </span>
+            {freqAlert && (
+              <span className="flex items-center gap-0.5 text-[9px] font-black text-red-600 uppercase tracking-wide">
+                <AlertTriangle className="h-2.5 w-2.5" /> Freq. baixa
+              </span>
+            )}
+          </div>
+        </div>
+        <ProgressRing value={concluidas} max={totalEtapas} />
+        {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
+      </button>
+
+      {/* Expanded */}
+      {isOpen && (
+        <div className="px-4 pb-4 pt-2 space-y-5 bg-white dark:bg-card border-t border-border/30">
+
+          {/* 1. Situação Sacramental */}
+          <section>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-2 flex items-center gap-1.5">
+              <Cross className="h-3 w-3" /> Situação Sacramental
+            </h4>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { key: "batismo", label: "Batismo" },
+                { key: "eucaristia", label: "Eucaristia" },
+                { key: "crisma", label: "Crisma" },
+              ].map(s => {
+                const sacInfo = sacramentos?.[s.key as "batismo" | "eucaristia" | "crisma"];
+                const recebido = sacInfo?.recebido ?? false;
+                return (
+                  <div key={s.key} className={cn(
+                    "rounded-xl border p-2 text-center",
+                    recebido ? "bg-emerald-50 border-emerald-200" : "bg-muted/30 border-border/50"
+                  )}>
+                    {recebido
+                      ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
+                      : <Circle className="h-4 w-4 text-muted-foreground mx-auto mb-1" />}
+                    <p className="text-[9px] font-black uppercase text-foreground">{s.label}</p>
+                    {recebido && sacInfo?.data && (
+                      <p className="text-[8px] text-muted-foreground mt-0.5">{new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-[9px] text-muted-foreground mt-1.5 flex items-center gap-1">
+              <Info className="h-2.5 w-2.5" /> Dados vindos do cadastro do catequizando (somente leitura)
+            </p>
+          </section>
+
+          {/* 2. Controle de Frequência */}
+          <section>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2 flex items-center gap-1.5">
+              <Calendar className="h-3 w-3" /> Controle de Frequência
+            </h4>
+            {freq.total === 0 ? (
+              <p className="text-xs text-muted-foreground italic">Nenhum encontro realizado ainda.</p>
+            ) : (
+              <div className="space-y-1.5">
+                <FrequenciaBar percent={freq.percent} />
+                <p className="text-[10px] text-muted-foreground">
+                  {freq.presencas} presenças de {freq.total} encontros realizados
+                </p>
+                {freqAlert && (
+                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-red-50 border border-red-200">
+                    <AlertTriangle className="h-3.5 w-3.5 text-red-600 shrink-0 mt-0.5" />
+                    <p className="text-[10px] font-bold text-red-700 leading-snug">
+                      Frequência abaixo de 75%. Considere contato com o responsável.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
+          {/* 3. Etapas de Preparação */}
+          <section>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600 mb-2 flex items-center gap-1.5">
+              <Star className="h-3 w-3" /> Etapas de Preparação
+            </h4>
+            <div className="space-y-1.5">
+              {ETAPAS.map(etapa => (
+                <CheckItem
+                  key={etapa.key}
+                  checked={!!localTrilha[etapa.key as keyof TrilhaSacramentalType]}
+                  onToggle={() => toggle(etapa.key as keyof TrilhaSacramentalType)}
+                  label={etapa.label}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* 4. Documentos */}
+          <section>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-600 mb-2 flex items-center gap-1.5">
+              <FileText className="h-3 w-3" /> Documentos Necessários
+            </h4>
+            <div className="space-y-1.5">
+              {DOCS_PADRAO.map(doc => (
+                <CheckItem
+                  key={doc.key}
+                  checked={!!localTrilha[doc.key as keyof TrilhaSacramentalType]}
+                  onToggle={() => toggle(doc.key as keyof TrilhaSacramentalType)}
+                  label={doc.label}
+                />
+              ))}
+              {localTrilha.documentos_custom.map(doc => (
+                <div key={doc.id} className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <CheckItem
+                      checked={doc.entregue}
+                      onToggle={() => toggleDocCustom(doc.id)}
+                      label={doc.nome}
+                    />
+                  </div>
+                  <button
+                    onClick={() => removeDocCustom(doc.id)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 border border-red-100 shrink-0 transition-colors"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              {/* Adicionar documento customizado */}
+              <div className="flex gap-2 mt-1">
+                <input
+                  type="text"
+                  value={newDocNome}
+                  onChange={e => setNewDocNome(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && addDocCustom()}
+                  placeholder="Adicionar documento..."
+                  className="flex-1 h-8 px-3 rounded-xl text-xs border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <button
+                  onClick={addDocCustom}
+                  className="w-8 h-8 flex items-center justify-center rounded-xl bg-violet-600 text-white hover:bg-violet-700 shrink-0 transition-colors"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* Observações */}
+          <section>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Observações</h4>
+            <textarea
+              value={localTrilha.observacoes ?? ""}
+              onChange={e => setLocalTrilha(prev => ({ ...prev, observacoes: e.target.value }))}
+              placeholder="Anotações adicionais sobre este catequizando..."
+              className="w-full h-16 px-3 py-2 rounded-xl text-xs border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+            />
+          </section>
+
+          {/* Salvar */}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full h-10 flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-60"
+          >
+            <Save className="h-3.5 w-3.5" />
+            {saving ? "Salvando..." : "Salvar Trilha"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function TrilhaSacramental() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { data: turmas = [] } = useTurmas();
+  const { data: catequizandos = [], isLoading } = useCatequizandos(id);
+  const { data: encontros = [] } = useEncontros(id);
+
+  const turma = turmas.find(t => t.id === id);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [editandoData, setEditandoData] = useState(false);
+  const [dataValue, setDataValue] = useState(turma?.dataCelebracaoSacramento ?? "");
+  const [savingData, setSavingData] = useState(false);
+  const [busca, setBusca] = useState("");
+
+  const catFiltrados = useMemo(() =>
+    catequizandos
+      .filter(c => c.status === "ativo" || c.status === "inscrito" || !c.status)
+      .filter(c => c.nome.toLowerCase().includes(busca.toLowerCase())),
+    [catequizandos, busca]
+  );
+
+  const stats = useMemo(() => {
+    const total = catFiltrados.length;
+    let totalEtapasConcluidas = 0;
+    let freqBaixa = 0;
+    catFiltrados.forEach(cat => {
+      const t = cat.trilhaSacramental ?? defaultTrilha();
+      totalEtapasConcluidas += ETAPAS.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
+      const freq = calcFrequencia(cat, encontros);
+      if (freq.total > 0 && freq.percent < 75) freqBaixa++;
+    });
+    const maxEtapas = total * ETAPAS.length;
+    return { total, etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100), freqBaixa };
+  }, [catFiltrados, encontros]);
+
+  const handleSaveCat = async (updated: Catequizando) => {
+    setSavingId(updated.id);
+    try {
+      await upsertCatequizando(updated);
+      queryClient.invalidateQueries({ queryKey: ["catequizandos", id] });
+      toast.success("Trilha salva com sucesso!");
+    } catch (e: any) {
+      toast.error("Erro ao salvar: " + e.message);
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleSaveData = async () => {
+    if (!turma) return;
+    setSavingData(true);
+    try {
+      await upsertTurma({ ...turma, dataCelebracaoSacramento: dataValue || undefined });
+      queryClient.invalidateQueries({ queryKey: ["turmas"] });
+      toast.success("Data da celebração salva!");
+      setEditandoData(false);
+    } catch (e: any) {
+      toast.error("Erro ao salvar: " + e.message);
+    } finally {
+      setSavingData(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5 pb-10 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center gap-3 pt-4">
+        <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn">
+          <ArrowLeft className="h-5 w-5 text-black" />
+        </button>
+        <div>
+          <h1 className="text-lg font-black text-foreground tracking-tight uppercase leading-tight">
+            Trilha Sacramental
+          </h1>
+          {turma && <p className="text-xs text-muted-foreground font-medium">{turma.nome} · {turma.ano}</p>}
+        </div>
+      </div>
+
+      {/* Data da Celebração */}
+      <div className="float-card p-4 bg-gradient-to-br from-violet-50 to-white dark:from-violet-900/10 dark:to-background border-violet-100">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-violet-600 flex items-center justify-center">
+              <Calendar className="h-3.5 w-3.5 text-white" />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-700">Data da Celebração</p>
+          </div>
+          {!editandoData && (
+            <button
+              onClick={() => { setEditandoData(true); setDataValue(turma?.dataCelebracaoSacramento ?? ""); }}
+              className="text-[9px] font-black uppercase tracking-wider text-violet-600 hover:text-violet-800 transition-colors"
+            >
+              {turma?.dataCelebracaoSacramento ? "Alterar" : "Definir"}
+            </button>
+          )}
+        </div>
+        {editandoData ? (
+          <div className="flex gap-2 items-center">
+            <input
+              type="date"
+              value={dataValue}
+              onChange={e => setDataValue(e.target.value)}
+              className="flex-1 h-9 px-3 rounded-xl text-sm border border-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-400"
+            />
+            <button
+              onClick={handleSaveData}
+              disabled={savingData}
+              className="px-4 h-9 rounded-xl bg-violet-600 text-white text-xs font-black uppercase hover:bg-violet-700 transition-colors disabled:opacity-60"
+            >
+              {savingData ? "..." : "Salvar"}
+            </button>
+            <button onClick={() => setEditandoData(false)} className="text-xs text-muted-foreground">Cancelar</button>
+          </div>
+        ) : (
+          <p className={cn("text-sm font-black", turma?.dataCelebracaoSacramento ? "text-violet-800" : "text-muted-foreground italic")}>
+            {turma?.dataCelebracaoSacramento
+              ? new Date(turma.dataCelebracaoSacramento + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
+              : "Nenhuma data definida ainda"}
+          </p>
+        )}
+      </div>
+
+      {/* Stats cards */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="float-card p-3 text-center">
+          <p className="text-xl font-black text-primary">{stats.total}</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Catequizandos</p>
+        </div>
+        <div className="float-card p-3 text-center">
+          <p className="text-xl font-black text-emerald-600">{stats.etapasPercent}%</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Etapas OK</p>
+        </div>
+        <div className={cn("float-card p-3 text-center", stats.freqBaixa > 0 && "border-red-200 bg-red-50/50")}>
+          <p className={cn("text-xl font-black", stats.freqBaixa > 0 ? "text-red-600" : "text-foreground")}>{stats.freqBaixa}</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Freq. Baixa</p>
+        </div>
+      </div>
+
+      {/* Busca */}
+      <input
+        type="text"
+        value={busca}
+        onChange={e => setBusca(e.target.value)}
+        placeholder="Buscar catequizando..."
+        className="w-full h-10 px-4 rounded-2xl text-sm border border-border/60 bg-white dark:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
+
+      {/* Lista */}
+      {isLoading ? (
+        <div className="space-y-2">
+          {[1,2,3].map(i => <div key={i} className="h-16 rounded-2xl bg-muted/50 animate-pulse" />)}
+        </div>
+      ) : catFiltrados.length === 0 ? (
+        <div className="text-center py-10">
+          <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground font-medium">Nenhum catequizando encontrado</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {catFiltrados.map(cat => (
+            <CatequizandoRow
+              key={cat.id}
+              cat={cat}
+              encontros={encontros}
+              isOpen={openId === cat.id}
+              onToggle={() => setOpenId(openId === cat.id ? null : cat.id)}
+              onSave={handleSaveCat}
+              saving={savingId === cat.id}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

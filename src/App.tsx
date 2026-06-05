@@ -23,6 +23,7 @@ import ReunioesList from "@/pages/ReunioesList";
 import ReuniaoPresentation from "@/pages/ReuniaoPresentation";
 import PlanoTurma from "@/pages/PlanoTurma";
 import RelatoriosTurma from "@/pages/RelatoriosTurma";
+import TrilhaSacramental from "@/pages/TrilhaSacramental";
 
 import DiarioEspiritualList from "@/pages/DiarioEspiritualList";
 import DiarioEspiritualForm from "@/pages/DiarioEspiritualForm";
@@ -151,6 +152,8 @@ const AppRoutes = () => (
       <Route path="/turmas/:id/reunioes" element={<ReunioesList />} />
       <Route path="/turmas/:id/reunioes/:reuniaoId/apresentacao" element={<ReuniaoPresentation />} />
       <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
+      <Route path="/turmas/:id/trilha-sacramental" element={<TrilhaSacramental />} />
+
 
       <Route path="/turmas/:id/diario" element={<DiarioEspiritualList />} />
       <Route path="/turmas/:id/diario/novo" element={<DiarioEspiritualForm />} />
