@@ -130,9 +130,10 @@ function CatequizandoRow({
 
   const totalEtapas = ETAPAS.length;
   const concluidas = ETAPAS.filter(e => localTrilha[e.key as keyof TrilhaSacramentalType]).length;
-  const totalDocs = DOCS_PADRAO.length + localTrilha.documentos_custom.length;
+  const docsCustom = localTrilha.documentos_custom || [];
+  const totalDocs = DOCS_PADRAO.length + docsCustom.length;
   const docsConcluidos = DOCS_PADRAO.filter(d => localTrilha[d.key as keyof TrilhaSacramentalType]).length
-    + localTrilha.documentos_custom.filter(d => d.entregue).length;
+    + docsCustom.filter(d => d.entregue).length;
 
   const toggle = (key: keyof TrilhaSacramentalType) => {
     setLocalTrilha(prev => ({ ...prev, [key]: !prev[key] }));
@@ -141,7 +142,7 @@ function CatequizandoRow({
   const toggleDocCustom = (id: string) => {
     setLocalTrilha(prev => ({
       ...prev,
-      documentos_custom: prev.documentos_custom.map(d => d.id === id ? { ...d, entregue: !d.entregue } : d),
+      documentos_custom: (prev.documentos_custom || []).map(d => d.id === id ? { ...d, entregue: !d.entregue } : d),
     }));
   };
 
@@ -149,7 +150,7 @@ function CatequizandoRow({
     if (!newDocNome.trim()) return;
     setLocalTrilha(prev => ({
       ...prev,
-      documentos_custom: [...prev.documentos_custom, { id: crypto.randomUUID(), nome: newDocNome.trim(), entregue: false }],
+      documentos_custom: [...(prev.documentos_custom || []), { id: crypto.randomUUID(), nome: newDocNome.trim(), entregue: false }],
     }));
     setNewDocNome("");
   };
@@ -157,7 +158,7 @@ function CatequizandoRow({
   const removeDocCustom = (id: string) => {
     setLocalTrilha(prev => ({
       ...prev,
-      documentos_custom: prev.documentos_custom.filter(d => d.id !== id),
+      documentos_custom: (prev.documentos_custom || []).filter(d => d.id !== id),
     }));
   };
 
@@ -295,7 +296,7 @@ function CatequizandoRow({
                   label={doc.label}
                 />
               ))}
-              {localTrilha.documentos_custom.map(doc => (
+              {(localTrilha.documentos_custom || []).map(doc => (
                 <div key={doc.id} className="flex items-center gap-2">
                   <div className="flex-1">
                     <CheckItem
