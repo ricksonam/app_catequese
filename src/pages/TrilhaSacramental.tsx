@@ -64,7 +64,7 @@ function FrequenciaBar({ percent }: { percent: number }) {
       <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
         <div className={cn("h-full rounded-full transition-all duration-700", color)} style={{ width: `${percent}%` }} />
       </div>
-      <span className={cn("text-xs font-black w-10 text-right",
+      <span className={cn("text-sm font-black w-12 text-right",
         percent >= 75 ? "text-emerald-600" : percent >= 50 ? "text-amber-600" : "text-red-600"
       )}>{percent}%</span>
     </div>
@@ -77,7 +77,7 @@ function CheckItem({ checked, onToggle, label, disabled }: { checked: boolean; o
       onClick={onToggle}
       disabled={disabled}
       className={cn(
-        "flex items-center gap-2 w-full text-left rounded-xl px-3 py-2 border transition-all active:scale-95 text-xs font-semibold",
+        "flex items-center gap-2 w-full text-left rounded-xl px-3 py-3 border transition-all active:scale-95 font-semibold",
         checked
           ? "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-700"
           : "bg-white border-border/50 text-foreground/70 dark:bg-muted/30",
@@ -85,9 +85,9 @@ function CheckItem({ checked, onToggle, label, disabled }: { checked: boolean; o
       )}
     >
       {checked
-        ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-        : <Circle className="h-4 w-4 text-muted-foreground shrink-0" />}
-      <span className="leading-tight">{label}</span>
+        ? <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+        : <Circle className="h-5 w-5 text-muted-foreground shrink-0" />}
+      <span className="leading-tight text-sm md:text-base">{label}</span>
     </button>
   );
 }
@@ -210,8 +210,8 @@ function CatequizandoRow({
 
           {/* 1. Situação Sacramental */}
           <section>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-2 flex items-center gap-1.5">
-              <Cross className="h-3 w-3" /> Situação Sacramental
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-primary mb-3 flex items-center gap-1.5">
+              <Cross className="h-4 w-4" /> Situação Sacramental
             </h4>
             <div className="grid grid-cols-3 gap-2">
               {[
@@ -227,38 +227,38 @@ function CatequizandoRow({
                     recebido ? "bg-emerald-50 border-emerald-200" : "bg-muted/30 border-border/50"
                   )}>
                     {recebido
-                      ? <CheckCircle2 className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
-                      : <Circle className="h-4 w-4 text-muted-foreground mx-auto mb-1" />}
-                    <p className="text-[9px] font-black uppercase text-foreground">{s.label}</p>
+                      ? <CheckCircle2 className="h-5 w-5 text-emerald-600 mx-auto mb-1.5" />
+                      : <Circle className="h-5 w-5 text-muted-foreground mx-auto mb-1.5" />}
+                    <p className="text-xs font-black uppercase text-foreground">{s.label}</p>
                     {recebido && sacInfo?.data && (
-                      <p className="text-[8px] text-muted-foreground mt-0.5">{new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
                     )}
                   </div>
                 );
               })}
             </div>
-            <p className="text-[9px] text-muted-foreground mt-1.5 flex items-center gap-1">
-              <Info className="h-2.5 w-2.5" /> Dados vindos do cadastro do catequizando (somente leitura)
+            <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1">
+              <Info className="h-3 w-3" /> Dados vindos do cadastro do catequizando (somente leitura)
             </p>
           </section>
 
           {/* 2. Controle de Frequência */}
           <section>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-2 flex items-center gap-1.5">
-              <Calendar className="h-3 w-3" /> Controle de Frequência
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-blue-600 mb-3 flex items-center gap-1.5">
+              <Calendar className="h-4 w-4" /> Controle de Frequência
             </h4>
             {freq.total === 0 ? (
-              <p className="text-xs text-muted-foreground italic">Nenhum encontro realizado ainda.</p>
+              <p className="text-sm md:text-base text-muted-foreground italic">Nenhum encontro realizado ainda.</p>
             ) : (
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <FrequenciaBar percent={freq.percent} />
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   {freq.presencas} presenças de {freq.total} encontros realizados
                 </p>
                 {freqAlert && (
-                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-red-50 border border-red-200">
-                    <AlertTriangle className="h-3.5 w-3.5 text-red-600 shrink-0 mt-0.5" />
-                    <p className="text-[10px] font-bold text-red-700 leading-snug">
+                  <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200">
+                    <AlertTriangle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+                    <p className="text-xs font-bold text-red-700 leading-snug">
                       Frequência abaixo de 75%. Considere contato com o responsável.
                     </p>
                   </div>
@@ -269,10 +269,10 @@ function CatequizandoRow({
 
           {/* 3. Etapas de Participação */}
           <section>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600 mb-2 flex items-center gap-1.5">
-              <Star className="h-3 w-3" /> Etapas de Participação
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-amber-600 mb-3 flex items-center gap-1.5">
+              <Star className="h-4 w-4" /> Etapas de Participação
             </h4>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {ETAPAS_PARTICIPACAO.map(etapa => (
                 <CheckItem
                   key={etapa.key}
@@ -286,10 +286,10 @@ function CatequizandoRow({
 
           {/* 4. Documentos */}
           <section>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-600 mb-2 flex items-center gap-1.5">
-              <FileText className="h-3 w-3" /> Documentos Necessários
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-violet-600 mb-3 flex items-center gap-1.5">
+              <FileText className="h-4 w-4" /> Documentos Necessários
             </h4>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {DOCS_PADRAO.map(doc => (
                 <CheckItem
                   key={doc.key}
@@ -317,32 +317,32 @@ function CatequizandoRow({
               ))}
               {/* Adicionar documento customizado */}
               <div className="flex gap-2 mt-1">
-                <input
-                  type="text"
-                  value={newDocNome}
-                  onChange={e => setNewDocNome(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && addDocCustom()}
-                  placeholder="Adicionar documento..."
-                  className="flex-1 h-8 px-3 rounded-xl text-xs border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30"
-                />
-                <button
-                  onClick={addDocCustom}
-                  className="w-8 h-8 flex items-center justify-center rounded-xl bg-violet-600 text-white hover:bg-violet-700 shrink-0 transition-colors"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                </button>
+                  <input
+                    type="text"
+                    value={newDocNome}
+                    onChange={e => setNewDocNome(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && addDocCustom()}
+                    placeholder="Adicionar documento..."
+                    className="flex-1 h-10 px-3 rounded-xl text-sm border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <button
+                    onClick={addDocCustom}
+                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-violet-600 text-white hover:bg-violet-700 shrink-0 transition-colors"
+                  >
+                    <Plus className="h-5 w-5" />
+                  </button>
               </div>
             </div>
           </section>
 
           {/* Observações */}
           <section>
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Observações</h4>
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-muted-foreground mb-2">Observações</h4>
             <textarea
               value={localTrilha.observacoes ?? ""}
               onChange={e => setLocalTrilha(prev => ({ ...prev, observacoes: e.target.value }))}
               placeholder="Anotações adicionais sobre este catequizando..."
-              className="w-full h-16 px-3 py-2 rounded-xl text-xs border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+              className="w-full h-20 px-3 py-3 rounded-xl text-sm border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
           </section>
 
@@ -350,9 +350,9 @@ function CatequizandoRow({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full h-10 flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-60"
+            className="w-full h-12 flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-black text-sm uppercase tracking-widest hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-60"
           >
-            <Save className="h-3.5 w-3.5" />
+            <Save className="h-5 w-5" />
             {saving ? "Salvando..." : "Salvar Trilha"}
           </button>
         </div>
@@ -377,6 +377,7 @@ export default function TrilhaSacramental() {
   const [dataValue, setDataValue] = useState(turma?.dataCelebracaoSacramento ?? "");
   const [savingData, setSavingData] = useState(false);
   const [busca, setBusca] = useState("");
+  const [ritoOpen, setRitoOpen] = useState(false);
 
   const catFiltrados = useMemo(() =>
     catequizandos
@@ -504,47 +505,56 @@ export default function TrilhaSacramental() {
 
       {/* Etapas de Preparação do Rito (Global) */}
       {turma && (
-        <div className="float-card p-4 bg-amber-50/50 dark:bg-amber-900/10 border-amber-200">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-7 h-7 rounded-xl bg-amber-500 flex items-center justify-center">
-              <Star className="h-3.5 w-3.5 text-white" />
+        <div className="float-card bg-amber-50/50 dark:bg-amber-900/10 border-amber-200 overflow-hidden">
+          <button
+            onClick={() => setRitoOpen(!ritoOpen)}
+            className="w-full flex items-center justify-between p-4 hover:bg-amber-100/50 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-amber-500 flex items-center justify-center shrink-0">
+                <Star className="h-4 w-4 text-white" />
+              </div>
+              <h2 className="text-sm md:text-base font-black uppercase tracking-wider text-amber-700 text-left">
+                Etapas de Preparação do Rito
+              </h2>
             </div>
-            <h2 className="text-xs font-black uppercase tracking-[0.15em] text-amber-700">
-              Etapas de Preparação do Rito
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {ETAPAS_RITO.map(etapa => {
-              const Icon = etapa.icon;
-              const dateVal = turma.etapasRito?.[etapa.key] || "";
-              return (
-                <div key={etapa.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-card border border-amber-100">
-                  <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-amber-600" />
-                    <span className="text-sm font-semibold text-foreground">{etapa.label}</span>
+            {ritoOpen ? <ChevronUp className="h-5 w-5 text-amber-700 shrink-0" /> : <ChevronDown className="h-5 w-5 text-amber-700 shrink-0" />}
+          </button>
+          
+          {ritoOpen && (
+            <div className="p-4 pt-0 space-y-3">
+              {ETAPAS_RITO.map(etapa => {
+                const Icon = etapa.icon;
+                const dateVal = turma.etapasRito?.[etapa.key] || "";
+                return (
+                  <div key={etapa.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white dark:bg-card border border-amber-100">
+                    <div className="flex items-center gap-2.5">
+                      <Icon className="h-5 w-5 text-amber-600 shrink-0" />
+                      <span className="text-sm md:text-base font-semibold text-foreground">{etapa.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        value={dateVal}
+                        onChange={async (e) => {
+                          const newVal = e.target.value;
+                          const newRito = { ...(turma.etapasRito || {}), [etapa.key]: newVal };
+                          try {
+                            await upsertTurma({ ...turma, etapasRito: newRito });
+                            queryClient.invalidateQueries({ queryKey: ["turmas"] });
+                            toast.success(`${etapa.label} atualizado!`);
+                          } catch (err: any) {
+                            toast.error("Erro ao salvar: " + err.message);
+                          }
+                        }}
+                        className="h-10 px-3 w-full sm:w-auto rounded-lg text-sm border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50/30"
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="date"
-                      value={dateVal}
-                      onChange={async (e) => {
-                        const newVal = e.target.value;
-                        const newRito = { ...(turma.etapasRito || {}), [etapa.key]: newVal };
-                        try {
-                          await upsertTurma({ ...turma, etapasRito: newRito });
-                          queryClient.invalidateQueries({ queryKey: ["turmas"] });
-                          toast.success(`${etapa.label} atualizado!`);
-                        } catch (err: any) {
-                          toast.error("Erro ao salvar: " + err.message);
-                        }
-                      }}
-                      className="h-8 px-2 rounded-lg text-xs border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50/30"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
 
