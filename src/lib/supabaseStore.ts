@@ -34,6 +34,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
     comunidadeId: t.comunidade_id,
     dataCelebracaoSacramento: t.data_celebracao_sacramento || undefined,
+    etapasRito: t.etapas_rito || undefined,
     catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
     codigoAcesso: t.codigo_acesso,
     isShared: false,
@@ -66,6 +67,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
       criadoEm: t.criado_em, proposito: t.proposito, objetivo: t.objetivo, metas: t.metas,
       comunidadeId: t.comunidade_id,
       dataCelebracaoSacramento: t.data_celebracao_sacramento || undefined,
+      etapasRito: t.etapas_rito || undefined,
       catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
       codigoAcesso: t.codigo_acesso,
       isShared: true,
@@ -90,6 +92,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
           outrosDados: '',
           criadoEm: cached?.criadoEm || new Date().toISOString(),
           comunidadeId: '',
+          etapasRito: undefined,
           catequistasIds: [],
           codigoAcesso: '',
           isShared: true,
@@ -116,6 +119,7 @@ export async function upsertTurma(turma: Turma) {
     comunidade_id: turma.comunidadeId || null,
     codigo_acesso: codigo,
     data_celebracao_sacramento: turma.dataCelebracaoSacramento || null,
+    etapas_rito: turma.etapasRito || null,
   });
   if (error) throw error;
 

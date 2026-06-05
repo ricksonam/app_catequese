@@ -12,21 +12,26 @@ import {
 import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, DocumentoCustom, Turma } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-const ETAPAS = [
-  { key: "contribuicao", label: "Contribuição / Taxas", icon: Star },
+const ETAPAS_PARTICIPACAO = [
   { key: "participacao_encontros", label: "Participação nos Encontros", icon: Users },
   { key: "participacao_missas", label: "Participação nas Missas", icon: Church },
-  { key: "reuniao_pais", label: "Reunião com os Pais", icon: Heart },
-  { key: "confissao", label: "Celebração Penitencial – Confissão", icon: BookOpen },
+  { key: "participacao_eventos", label: "Participação nos Eventos", icon: Star },
+  { key: "atividades_extras", label: "Atividades Extras", icon: Plus },
+] as const;
+
+const ETAPAS_RITO = [
+  { key: "reuniao_pais", label: "Reunião com os pais", icon: Heart },
+  { key: "confissao", label: "Celebração penitencial - Confissão", icon: BookOpen },
   { key: "retiro", label: "Retiro Espiritual", icon: Cross },
   { key: "ensaio", label: "Ensaio do Rito", icon: Music },
-  { key: "padrinhos", label: "Padrinhos e Madrinhas", icon: Baby },
+  { key: "confraternizacao", label: "Confraternização", icon: Star },
 ] as const;
 
 const DOCS_PADRAO = [
   { key: "documentos_rg", label: "RG (Documento de Identidade)" },
   { key: "documentos_batistério", label: "Certidão de Batismo" },
   { key: "documentos_residencia", label: "Comprovante de Residência" },
+  { key: "contribuicao", label: "Contribuição / Taxas" },
 ] as const;
 
 function defaultTrilha(): TrilhaSacramentalType {
@@ -37,13 +42,10 @@ function defaultTrilha(): TrilhaSacramentalType {
     documentos_residencia: false,
     documentos_custom: [],
     contribuicao: false,
-    reuniao_pais: false,
-    confissao: false,
-    retiro: false,
-    ensaio: false,
-    padrinhos: false,
     participacao_missas: false,
     participacao_encontros: false,
+    participacao_eventos: false,
+    atividades_extras: false,
     observacoes: "",
   };
 }
@@ -128,8 +130,8 @@ function CatequizandoRow({
 
   const sacramentos = cat.dadosPastorais?.sacramentos ?? cat.sacramentos;
 
-  const totalEtapas = ETAPAS.length;
-  const concluidas = ETAPAS.filter(e => localTrilha[e.key as keyof TrilhaSacramentalType]).length;
+  const totalEtapas = ETAPAS_PARTICIPACAO.length;
+  const concluidas = ETAPAS_PARTICIPACAO.filter(e => localTrilha[e.key as keyof TrilhaSacramentalType]).length;
   const docsCustom = localTrilha.documentos_custom || [];
   const totalDocs = DOCS_PADRAO.length + docsCustom.length;
   const docsConcluidos = DOCS_PADRAO.filter(d => localTrilha[d.key as keyof TrilhaSacramentalType]).length
@@ -265,13 +267,13 @@ function CatequizandoRow({
             )}
           </section>
 
-          {/* 3. Etapas de Preparação */}
+          {/* 3. Etapas de Participação */}
           <section>
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600 mb-2 flex items-center gap-1.5">
-              <Star className="h-3 w-3" /> Etapas de Preparação
+              <Star className="h-3 w-3" /> Etapas de Participação
             </h4>
             <div className="space-y-1.5">
-              {ETAPAS.map(etapa => (
+              {ETAPAS_PARTICIPACAO.map(etapa => (
                 <CheckItem
                   key={etapa.key}
                   checked={!!localTrilha[etapa.key as keyof TrilhaSacramentalType]}
@@ -389,11 +391,11 @@ export default function TrilhaSacramental() {
     let freqBaixa = 0;
     catFiltrados.forEach(cat => {
       const t = cat.trilhaSacramental ?? defaultTrilha();
-      totalEtapasConcluidas += ETAPAS.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
+      totalEtapasConcluidas += ETAPAS_PARTICIPACAO.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
       const freq = calcFrequencia(cat, encontros);
       if (freq.total > 0 && freq.percent < 75) freqBaixa++;
     });
-    const maxEtapas = total * ETAPAS.length;
+    const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
     return { total, etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100), freqBaixa };
   }, [catFiltrados, encontros]);
 
@@ -499,6 +501,52 @@ export default function TrilhaSacramental() {
           <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Freq. Baixa</p>
         </div>
       </div>
+
+      {/* Etapas de Preparação do Rito (Global) */}
+      {turma && (
+        <div className="float-card p-4 bg-amber-50/50 dark:bg-amber-900/10 border-amber-200">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-xl bg-amber-500 flex items-center justify-center">
+              <Star className="h-3.5 w-3.5 text-white" />
+            </div>
+            <h2 className="text-xs font-black uppercase tracking-[0.15em] text-amber-700">
+              Etapas de Preparação do Rito
+            </h2>
+          </div>
+          <div className="space-y-3">
+            {ETAPAS_RITO.map(etapa => {
+              const Icon = etapa.icon;
+              const dateVal = turma.etapasRito?.[etapa.key] || "";
+              return (
+                <div key={etapa.key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white dark:bg-card border border-amber-100">
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-4 w-4 text-amber-600" />
+                    <span className="text-sm font-semibold text-foreground">{etapa.label}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={dateVal}
+                      onChange={async (e) => {
+                        const newVal = e.target.value;
+                        const newRito = { ...(turma.etapasRito || {}), [etapa.key]: newVal };
+                        try {
+                          await upsertTurma({ ...turma, etapasRito: newRito });
+                          queryClient.invalidateQueries({ queryKey: ["turmas"] });
+                          toast.success(`${etapa.label} atualizado!`);
+                        } catch (err: any) {
+                          toast.error("Erro ao salvar: " + err.message);
+                        }
+                      }}
+                      className="h-8 px-2 rounded-lg text-xs border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50/30"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Busca */}
       <input

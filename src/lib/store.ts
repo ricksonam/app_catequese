@@ -24,13 +24,10 @@ export interface TrilhaSacramental {
   documentos_residencia: boolean;
   documentos_custom: DocumentoCustom[];
   contribuicao: boolean;
-  reuniao_pais: boolean;
-  confissao: boolean;
-  retiro: boolean;
-  ensaio: boolean;
-  padrinhos: boolean;
   participacao_missas: boolean;
   participacao_encontros: boolean;
+  participacao_eventos: boolean;
+  atividades_extras: boolean;
   observacoes?: string;
 }
 
@@ -54,6 +51,7 @@ export interface Turma {
   proposito?: string;
   objetivo?: string;
   metas?: string;
+  etapasRito?: Record<string, string>;
 }
 
 export interface ResponsavelInfo {
