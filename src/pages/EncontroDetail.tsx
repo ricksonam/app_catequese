@@ -221,7 +221,7 @@ export default function EncontroDetail() {
         <button 
           onClick={() => setShowStatus(true)} 
           className={cn(
-            "flex items-center gap-3 px-5 py-2 rounded-full border-2 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 group",
+            "flex items-center gap-3 px-5 py-2.5 rounded-full border-2 transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 group",
             currentStatus.bg, currentStatus.border
           )}
         >
@@ -232,8 +232,8 @@ export default function EncontroDetail() {
               {currentStatus.value === 'cancelado' && <AlertCircle className={`h-4 w-4 ${currentStatus.text}`} />}
            </div>
            <div className="flex flex-col items-start leading-none">
-             <span className="text-[7px] font-black uppercase tracking-[0.2em] opacity-50 mb-0.5">Status</span>
-             <span className={`text-[10px] font-black uppercase tracking-widest ${currentStatus.text}`}>
+             <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-50 mb-0.5">Status</span>
+             <span className={`text-sm font-black uppercase tracking-widest ${currentStatus.text}`}>
                {currentStatus.label}
              </span>
            </div>
@@ -245,34 +245,34 @@ export default function EncontroDetail() {
           {/* Presença */}
           <button 
             onClick={() => setShowPresenca(true)} 
-            className="flex flex-col items-center justify-center py-3 px-1 rounded-2xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+            className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
           >
-             <div className="w-8 h-8 flex items-center justify-center bg-white/50 rounded-xl mb-1 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
-               <Users className="h-4 w-4 text-orange-600" />
+             <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
+               <Users className="h-5 w-5 text-orange-600" />
              </div>
-             <span className="text-[8px] font-black uppercase tracking-wider text-orange-700">Presença</span>
+             <span className="text-[11px] font-black uppercase tracking-wide text-orange-700">Presença</span>
           </button>
 
           {/* Avaliar */}
           <button 
             onClick={() => setShowOcorrencias(true)} 
-            className="flex flex-col items-center justify-center py-3 px-1 rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+            className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
           >
-             <div className="w-8 h-8 flex items-center justify-center bg-white/50 rounded-xl mb-1 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
-               <FileText className="h-4 w-4 text-blue-600" />
+             <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
+               <FileText className="h-5 w-5 text-blue-600" />
              </div>
-             <span className="text-[8px] font-black uppercase tracking-wider text-blue-700">Avaliar</span>
+             <span className="text-[11px] font-black uppercase tracking-wide text-blue-700">Avaliar</span>
           </button>
 
           {/* Apresentar */}
           <button 
             onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/apresentacao`)} 
-            className="flex flex-col items-center justify-center py-3 px-1 rounded-2xl border-2 border-liturgical/20 bg-gradient-to-br from-liturgical/5 to-liturgical/10 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+            className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-liturgical/20 bg-gradient-to-br from-liturgical/5 to-liturgical/10 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
           >
-             <div className="w-8 h-8 flex items-center justify-center bg-white/50 rounded-xl mb-1 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
-               <Play className="h-4 w-4 text-liturgical" />
+             <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm animate-pulse">
+               <Play className="h-5 w-5 text-liturgical" />
              </div>
-             <span className="text-[8px] font-black uppercase tracking-wider text-liturgical">Apresentar</span>
+             <span className="text-[11px] font-black uppercase tracking-wide text-liturgical">Apresentar</span>
           </button>
         </div>
       </div>

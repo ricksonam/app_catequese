@@ -185,14 +185,18 @@ export default function EncontrosList() {
         <div className="space-y-8">
           {groups.map(([monthKey, { monthLabel, items }], gi) => (
             <div key={monthKey} className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-200 to-slate-300" />
-                <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white dark:bg-zinc-800 border-2 border-slate-300 dark:border-zinc-600 shadow-md">
-                  <Feather className="w-3 h-3 text-primary" />
-                  <h3 className="text-xs font-black text-slate-800 dark:text-slate-100 uppercase tracking-[0.18em]">{monthLabel}</h3>
-                  <span className="text-[10px] font-black text-primary ml-1">({items.length})</span>
+              {/* Chip do Mês - Layout novo */}
+              <div className="flex items-center gap-2 my-1">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/20 to-primary/30" />
+                <div className="relative flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-primary/90 to-primary/70 shadow-lg border border-primary/20 overflow-hidden">
+                  {/* Decorative circles */}
+                  <div className="absolute -left-2 -top-2 w-8 h-8 rounded-full bg-white/10 pointer-events-none" />
+                  <div className="absolute -right-1 -bottom-2 w-6 h-6 rounded-full bg-white/10 pointer-events-none" />
+                  <Feather className="w-3.5 h-3.5 text-white/80 relative z-10" />
+                  <h3 className="text-sm font-black text-white uppercase tracking-[0.15em] relative z-10">{monthLabel}</h3>
+                  <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/20 relative z-10">{items.length}</span>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-slate-200 to-slate-300" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/20 to-primary/30" />
               </div>
 
               <div className="space-y-4">
@@ -269,32 +273,32 @@ export default function EncontrosList() {
 
                             <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
                               <div className="flex justify-center items-center gap-2 mb-2">
-                                <span className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-widest ${status.text}`}>
-                                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${status.dot}`} />
+                                <span className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest ${status.text}`}>
+                                  <span className={`w-2 h-2 rounded-full inline-block shrink-0 ${status.dot}`} />
                                   {status.label}
                                 </span>
                               </div>
 
                               {/* Tema */}
-                              <p className={`text-base font-bold leading-snug mb-3 ${enc.status === "cancelado" ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                              <p className={`text-[17px] font-black leading-snug mb-3 ${enc.status === "cancelado" ? "line-through text-muted-foreground" : "text-foreground"}`}>
                                 {enc.tema}
                               </p>
 
                               {/* Meta-info linha */}
                               <div className="flex flex-wrap items-center justify-center gap-2 mt-auto mb-1">
                                 {enc.leituraBiblica && (
-                                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                    <BookOpen className="h-3 w-3 shrink-0" />
+                                  <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+                                    <BookOpen className="h-3.5 w-3.5 shrink-0" />
                                     <span className="truncate max-w-[120px]">{enc.leituraBiblica}</span>
                                   </span>
                                 )}
                                 {tempoTotal > 0 && (
-                                  <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                                    <Clock className="h-3 w-3" />{tempoTotal}min
+                                  <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+                                    <Clock className="h-3.5 w-3.5 shrink-0" />{tempoTotal}min
                                   </span>
                                 )}
-                                <span className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/8 px-1.5 py-0.5 rounded-md border border-primary/10">
-                                  <Users className="h-3 w-3" />{presPct}%
+                                <span className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/10 whitespace-nowrap">
+                                  <Users className="h-3.5 w-3.5 shrink-0" />{presPct}%
                                 </span>
                               </div>
                             </div>
