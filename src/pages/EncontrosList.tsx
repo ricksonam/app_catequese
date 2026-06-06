@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos } from "@/hooks/useSupabaseData";
 import { type EncontroStatus } from "@/lib/store";
-import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X as XIcon, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle, Feather } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Eye, Play, Users, Search, X as XIcon, ChevronRight, BookOpen, Clock, FileText, BellRing, Sparkles, AlertTriangle, Feather, ChevronDown } from "lucide-react";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 
@@ -43,7 +43,6 @@ export default function EncontrosList() {
     [encontros]
   );
 
-  // Meses disponíveis
   const availableMonths = useMemo(() => {
     const seen = new Set<string>();
     sorted.forEach((enc) => {
@@ -71,7 +70,6 @@ export default function EncontrosList() {
     });
   }, [sorted, filterMonth, search]);
 
-  // Agrupa por mês/ano (após filtro)
   const groups = useMemo(() => {
     const g: Record<string, { monthLabel: string; items: typeof filtered }> = {};
     filtered.forEach((enc) => {
@@ -82,6 +80,46 @@ export default function EncontrosList() {
     });
     return Object.entries(g);
   }, [filtered]);
+
+  const defaultExpandedKey = useMemo(() => {
+    const now = new Date();
+    const currentKey = `${now.getFullYear()}-${now.getMonth()}`;
+    const allGroupKeys = groups.map(([key]) => key);
+    if (allGroupKeys.includes(currentKey)) return currentKey;
+    return allGroupKeys[allGroupKeys.length - 1] ?? null;
+  }, [groups]);
+
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(() => new Set());
+
+  const isExpanded = (key: string) => {
+    if (search || filterMonth !== "todos") return true;
+    if (key === defaultExpandedKey) {
+      return !expandedMonths.has(`close:${key}`);
+    }
+    return expandedMonths.has(`open:${key}`);
+  };
+
+  const toggleMonth = (key: string) => {
+    setExpandedMonths(prev => {
+      const next = new Set(prev);
+      if (key === defaultExpandedKey) {
+        if (next.has(`close:${key}`)) {
+          next.delete(`close:${key}`);
+        } else {
+          next.add(`close:${key}`);
+          next.delete(`open:${key}`);
+        }
+      } else {
+        if (next.has(`open:${key}`)) {
+          next.delete(`open:${key}`);
+        } else {
+          next.add(`open:${key}`);
+          next.delete(`close:${key}`);
+        }
+      }
+      return next;
+    });
+  };
 
   if (isLoading) {
     return (
@@ -101,20 +139,13 @@ export default function EncontrosList() {
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn absolute left-0">
             <ArrowLeft className="h-5 w-5 text-black" />
           </button>
-          
           <div className="flex flex-col items-center gap-1 text-center">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
-              Encontros
-            </h1>
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Encontros</h1>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{encontros.length} encontros</p>
           </div>
         </div>
         <div className="flex items-center justify-end gap-4 pt-2 border-t border-black/5">
-
-          <button 
-            onClick={() => navigate(`/turmas/${id}/encontros/novo`)} 
-            className="action-btn-sm shrink-0 shadow-md hover:shadow-lg"
-          >
+          <button onClick={() => navigate(`/turmas/${id}/encontros/novo`)} className="action-btn-sm shrink-0 shadow-md hover:shadow-lg">
             <Plus className="h-4 w-4" /> Novo
           </button>
         </div>
@@ -137,7 +168,6 @@ export default function EncontrosList() {
               </button>
             )}
           </div>
-
           {availableMonths.length > 0 && (
             <div className="flex items-center">
               <div className="relative inline-flex items-center bg-white border border-slate-200 rounded-full transition-all shadow-sm">
@@ -158,7 +188,6 @@ export default function EncontrosList() {
               </div>
             </div>
           )}
-
           {(search || filterMonth !== "todos") && (
             <p className="text-[11px] text-muted-foreground px-1">
               {filtered.length === 0 ? "Nenhum encontro encontrado" : `${filtered.length} encontro${filtered.length !== 1 ? "s" : ""} encontrado${filtered.length !== 1 ? "s" : ""}`}
@@ -182,153 +211,174 @@ export default function EncontrosList() {
           </button>
         </div>
       ) : (
-        <div className="space-y-8">
-          {groups.map(([monthKey, { monthLabel, items }], gi) => (
-            <div key={monthKey} className="space-y-3">
-              {/* Chip do Mês - Layout novo */}
-              <div className="flex items-center gap-2 my-1">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/20 to-primary/30" />
-                <div className="relative flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-primary/90 to-primary/70 shadow-lg border border-primary/20 overflow-hidden">
-                  {/* Decorative circles */}
-                  <div className="absolute -left-2 -top-2 w-8 h-8 rounded-full bg-white/10 pointer-events-none" />
-                  <div className="absolute -right-1 -bottom-2 w-6 h-6 rounded-full bg-white/10 pointer-events-none" />
-                  <Feather className="w-3.5 h-3.5 text-white/80 relative z-10" />
-                  <h3 className="text-sm font-black text-white uppercase tracking-[0.15em] relative z-10">{monthLabel}</h3>
-                  <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/20 relative z-10">{items.length}</span>
-                </div>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/20 to-primary/30" />
-              </div>
+        <div className="space-y-6">
+          {groups.map(([monthKey, { monthLabel, items }], gi) => {
+            const expanded = isExpanded(monthKey);
+            const isDefault = monthKey === defaultExpandedKey;
+            return (
+              <div key={monthKey} className="space-y-3">
+                <button
+                  onClick={() => toggleMonth(monthKey)}
+                  className="w-full flex items-center gap-2 my-1 group"
+                >
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/20 to-primary/30" />
+                  <div className={cn(
+                    "relative flex items-center gap-2 px-4 py-2 rounded-2xl shadow-lg border overflow-hidden transition-all duration-300",
+                    isDefault && expanded
+                      ? "bg-gradient-to-r from-primary/90 to-primary/70 border-primary/20"
+                      : "bg-gradient-to-r from-primary/55 to-primary/40 border-primary/15 group-hover:from-primary/70 group-hover:to-primary/55"
+                  )}>
+                    <div className="absolute -left-2 -top-2 w-8 h-8 rounded-full bg-white/10 pointer-events-none" />
+                    <div className="absolute -right-1 -bottom-2 w-6 h-6 rounded-full bg-white/10 pointer-events-none" />
+                    <Feather className="w-3.5 h-3.5 text-white/80 relative z-10 shrink-0" />
+                    <h3 className="text-sm font-black text-white uppercase tracking-[0.15em] relative z-10">{monthLabel}</h3>
+                    <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/20 relative z-10 shrink-0">{items.length}</span>
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 text-white/80 relative z-10 shrink-0 transition-transform duration-300 ml-0.5",
+                        expanded ? "rotate-180" : "rotate-0"
+                      )}
+                    />
+                  </div>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent via-primary/20 to-primary/30" />
+                </button>
 
-              <div className="space-y-4">
-                {items.map((enc, i) => {
-                  const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
-                  const presPct = Math.round(((enc.presencas || []).length / totalAlunos) * 100);
-                  const d = parseLocalDate(enc.data);
-                  const diaSemana = DIAS_PT[d.getDay()];
-                  const dia = String(d.getDate()).padStart(2, "0");
-                  const mes = MESES_PT[d.getMonth()].slice(0, 3).toUpperCase();
-                  const tempoTotal = enc.roteiro?.reduce((s: number, r: any) => s + (r.tempo || 0), 0) || 0;
-                  const hasEval = !!(enc.avaliacao && (enc.avaliacao.conclusao || enc.avaliacao.pontosPositivos || enc.avaliacao.pontosMelhorar));
-                  const isAvaliado = hasEval;
+                <div
+                  className={cn(
+                    "overflow-hidden transition-all duration-500 ease-in-out",
+                    expanded ? "max-h-[9999px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+                  )}
+                >
+                  <div className="space-y-4 pt-1">
+                    {items.map((enc, i) => {
+                      const status = STATUS_CONFIG[enc.status] || STATUS_CONFIG.pendente;
+                      const presPct = Math.round(((enc.presencas || []).length / totalAlunos) * 100);
+                      const d = parseLocalDate(enc.data);
+                      const diaSemana = DIAS_PT[d.getDay()];
+                      const dia = String(d.getDate()).padStart(2, "0");
+                      const mes = MESES_PT[d.getMonth()].slice(0, 3).toUpperCase();
+                      const tempoTotal = enc.roteiro?.reduce((s: number, r: any) => s + (r.tempo || 0), 0) || 0;
+                      const hasEval = !!(enc.avaliacao && (enc.avaliacao.conclusao || enc.avaliacao.pontosPositivos || enc.avaliacao.pontosMelhorar));
+                      const isAvaliado = hasEval;
 
-                  const cfg = alertConfig.moduloEncontros || { ativo: true, presenca: true, avaliacao: true, status: true };
-                  const nowTime = new Date().getTime();
-                  const noPresence = (enc.presencas || []).length === 0;
-                  
-                  let hasNoPresenceAlert = false;
-                  let hasNoEvaluationAlert = false;
-                  let hasStatusAlert = false;
-                  
-                  if (cfg?.ativo) {
-                    if (cfg.presenca && noPresence) {
-                      if (enc.status === 'realizado') hasNoPresenceAlert = true;
-                      else if (enc.status === 'pendente' && nowTime > d.getTime() + 86400000) hasNoPresenceAlert = true;
-                    }
-                    if (cfg.avaliacao && enc.status === 'realizado' && !isAvaliado) {
-                       hasNoEvaluationAlert = true;
-                    }
-                    if (cfg.status && enc.status === 'pendente' && nowTime > d.getTime() + 86400000) {
-                       hasStatusAlert = true;
-                    }
-                  }
+                      const cfg = alertConfig.moduloEncontros || { ativo: true, presenca: true, avaliacao: true, status: true };
+                      const nowTime = new Date().getTime();
+                      const noPresence = (enc.presencas || []).length === 0;
+                      
+                      let hasNoPresenceAlert = false;
+                      let hasNoEvaluationAlert = false;
+                      let hasStatusAlert = false;
+                      
+                      if (cfg?.ativo) {
+                        if (cfg.presenca && noPresence) {
+                          if (enc.status === 'realizado') hasNoPresenceAlert = true;
+                          else if (enc.status === 'pendente' && nowTime > d.getTime() + 86400000) hasNoPresenceAlert = true;
+                        }
+                        if (cfg.avaliacao && enc.status === 'realizado' && !isAvaliado) {
+                           hasNoEvaluationAlert = true;
+                        }
+                        if (cfg.status && enc.status === 'pendente' && nowTime > d.getTime() + 86400000) {
+                           hasStatusAlert = true;
+                        }
+                      }
 
-                  return (
-                      <div
-                        key={enc.id}
-                        className={cn(
-                          "relative p-[1px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.08)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.12)] border-2",
-                          status.border,
-                          "bg-card"
-                        )}
-                      style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
-                    >
-                      <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
+                      return (
+                          <div
+                            key={enc.id}
+                            className={cn(
+                              "relative p-[1px] rounded-2xl animate-float-up transition-all duration-300 hover:-translate-y-0.5 group shadow-[0_6px_24px_rgb(0,0,0,0.08)] hover:shadow-[0_12px_35px_rgb(0,0,0,0.12)] border-2",
+                              status.border,
+                              "bg-card"
+                            )}
+                          style={{ animationDelay: `${(gi * 3 + i) * 55}ms` }}
+                        >
+                          <div className="absolute inset-[3px] rounded-xl border border-white/40 dark:border-white/5 z-20 pointer-events-none opacity-50 mix-blend-overlay" />
 
-                      <div className="relative rounded-[14px] bg-card overflow-hidden">
-                        <div className="flex flex-col">
-                          {hasNoPresenceAlert && (
-                            <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
-                              <BellRing className="w-3 h-3 text-destructive" />
-                              <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Chamada pendente</span>
-                            </div>
-                          )}
-                          {hasNoEvaluationAlert && (
-                            <div className="bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
-                              <Sparkles className="w-3 h-3 text-amber-600" />
-                              <span className="text-[9px] font-black uppercase tracking-widest text-amber-600">Avaliação pendente</span>
-                            </div>
-                          )}
-                          {hasStatusAlert && (
-                            <div className="bg-orange-500/10 border-b border-orange-500/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
-                              <AlertTriangle className="w-3 h-3 text-orange-600" />
-                              <span className="text-[9px] font-black uppercase tracking-widest text-orange-600">Encontro atrasado</span>
-                            </div>
-                          )}
-                          <div className="flex items-stretch bg-white">
-                            <div className="flex flex-col items-center justify-center px-4 py-5 border-r-2 border-black/10 shrink-0 min-w-[70px]">
-                              <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
-                              <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
-                              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
-                            </div>
+                          <div className="relative rounded-[14px] bg-card overflow-hidden">
+                            <div className="flex flex-col">
+                              {hasNoPresenceAlert && (
+                                <div className="bg-destructive/10 border-b border-destructive/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                                  <BellRing className="w-3 h-3 text-destructive" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-destructive">Chamada pendente</span>
+                                </div>
+                              )}
+                              {hasNoEvaluationAlert && (
+                                <div className="bg-amber-500/10 border-b border-amber-500/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                                  <Sparkles className="w-3 h-3 text-amber-600" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-amber-600">Avaliação pendente</span>
+                                </div>
+                              )}
+                              {hasStatusAlert && (
+                                <div className="bg-orange-500/10 border-b border-orange-500/20 py-1.5 px-3 flex justify-center items-center gap-1.5 animate-pulse">
+                                  <AlertTriangle className="w-3 h-3 text-orange-600" />
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-orange-600">Encontro atrasado</span>
+                                </div>
+                              )}
+                              <div className="flex items-stretch bg-white">
+                                <div className="flex flex-col items-center justify-center px-4 py-5 border-r-2 border-black/10 shrink-0 min-w-[70px]">
+                                  <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest leading-none">{diaSemana}</span>
+                                  <span className="text-3xl font-black text-foreground leading-tight mt-0.5">{dia}</span>
+                                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">{mes}</span>
+                                </div>
 
-                            <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
-                              <div className="flex justify-center items-center gap-2 mb-2">
-                                <span className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest ${status.text}`}>
-                                  <span className={`w-2 h-2 rounded-full inline-block shrink-0 ${status.dot}`} />
-                                  {status.label}
-                                </span>
+                                <div className="flex-1 px-4 py-4 min-w-0 flex flex-col items-center text-center justify-center">
+                                  <div className="flex justify-center items-center gap-2 mb-2">
+                                    <span className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-widest ${status.text}`}>
+                                      <span className={`w-2 h-2 rounded-full inline-block shrink-0 ${status.dot}`} />
+                                      {status.label}
+                                    </span>
+                                  </div>
+
+                                  <p className={`text-[17px] font-black leading-snug mb-3 ${enc.status === "cancelado" ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                                    {enc.tema}
+                                  </p>
+
+                                  <div className="flex flex-wrap items-center justify-center gap-2 mt-auto mb-1">
+                                    {enc.leituraBiblica && (
+                                      <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+                                        <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                                        <span className="truncate max-w-[120px]">{enc.leituraBiblica}</span>
+                                      </span>
+                                    )}
+                                    {tempoTotal > 0 && (
+                                      <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+                                        <Clock className="h-3.5 w-3.5 shrink-0" />{tempoTotal}min
+                                      </span>
+                                    )}
+                                    <span className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/10 whitespace-nowrap">
+                                      <Users className="h-3.5 w-3.5 shrink-0" />{presPct}%
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
 
-                              {/* Tema */}
-                              <p className={`text-[17px] font-black leading-snug mb-3 ${enc.status === "cancelado" ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                                {enc.tema}
-                              </p>
+                              <div className="px-4 pb-4 mt-2">
+                                <div className="flex items-center justify-end gap-3">
+                                    <button
+                                      onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
+                                      className="w-[100px] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
+                                    >
+                                      <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
+                                    </button>
 
-                              {/* Meta-info linha */}
-                              <div className="flex flex-wrap items-center justify-center gap-2 mt-auto mb-1">
-                                {enc.leituraBiblica && (
-                                  <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
-                                    <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                                    <span className="truncate max-w-[120px]">{enc.leituraBiblica}</span>
-                                  </span>
-                                )}
-                                {tempoTotal > 0 && (
-                                  <span className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
-                                    <Clock className="h-3.5 w-3.5 shrink-0" />{tempoTotal}min
-                                  </span>
-                                )}
-                                <span className="flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/10 whitespace-nowrap">
-                                  <Users className="h-3.5 w-3.5 shrink-0" />{presPct}%
-                                </span>
+                                    <button
+                                      onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
+                                      className="w-[110px] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-600 text-white hover:bg-violet-700 border border-violet-700 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
+                                    >
+                                      <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
+                                    </button>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-
-                          <div className="px-4 pb-4 mt-2">
-                            <div className="flex items-center justify-end gap-3">
-                                <button
-                                  onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}`)}
-                                  className="w-[100px] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
-                                >
-                                  <Eye className="h-3.5 w-3.5 mb-px" /> Abrir
-                                </button>
-
-                                <button
-                                  onClick={() => navigate(`/turmas/${id}/encontros/${enc.id}/apresentacao`)}
-                                  className="w-[110px] py-2 px-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-violet-600 text-white hover:bg-violet-700 border border-violet-700 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-1.5"
-                                >
-                                  <Play className="h-3.5 w-3.5 mb-px" /> Apresentar
-                                </button>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
