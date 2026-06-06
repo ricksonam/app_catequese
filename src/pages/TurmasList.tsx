@@ -195,7 +195,7 @@ export default function TurmasList() {
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
               >
                 <div className={cn(
-                  "relative overflow-hidden rounded-[1.95rem] p-5 flex flex-col gap-3 h-full bg-gradient-to-br",
+                  "relative overflow-hidden rounded-[1.95rem] p-5 flex flex-col justify-between h-full bg-gradient-to-br",
                   isPending ? "from-amber-50 to-orange-50" : palette.bg
                 )}>
                   {/* Subtle glow */}
@@ -219,82 +219,70 @@ export default function TurmasList() {
                   )}
 
                   {/* Header Row */}
-                  <div className="flex items-start gap-4 relative z-0">
+                  <div className="flex items-center gap-4 relative z-10 w-full mb-3">
                     {/* Animated Icon */}
                     <div className={cn(
-                      `w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-lg shrink-0 transition-all duration-500 bg-white border border-black/5`,
+                      `w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shrink-0 transition-all duration-500 bg-white border border-black/5`,
                       isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
-                      !isPending && "group-hover:scale-105 group-hover:-rotate-6",
+                      !isPending && "group-hover:scale-110 group-hover:-rotate-6",
                       isClicking && "scale-90 rotate-12"
                     )}>
                       {isPending
-                        ? <Lock className="h-7 w-7 text-white" />
-                        : <UsersRound className={cn("h-8 w-8", palette.text)} />
+                        ? <Lock className="h-6 w-6 text-white" />
+                        : <UsersRound className={cn("h-7 w-7", palette.text)} />
                       }
                     </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 pr-14 mt-1">
+                    <div className="flex-1 min-w-0 pr-12">
                       <h3 className={cn(
-                        "text-[22px] font-black truncate font-liturgical leading-tight mb-1 drop-shadow-sm",
+                        "text-[19px] font-black truncate font-liturgical leading-tight mb-0.5",
                         isPending ? "text-amber-950" : palette.text
                       )}>{turma.nome}</h3>
 
                       {turmaCom && (
                         <p className={cn(
-                          "text-[11px] font-bold uppercase tracking-widest truncate mb-2",
+                          "text-[10px] font-bold uppercase tracking-widest truncate",
                           isPending ? "text-amber-700/80" : palette.sub
                         )}>{turmaCom}</p>
                       )}
 
                       {dataCriacao && !isPending && (
-                        <p className={`text-[9px] ${palette.sub} font-bold opacity-60 uppercase tracking-widest`}>
+                        <p className={`text-[8px] ${palette.sub} font-bold opacity-60 uppercase tracking-widest mt-0.5`}>
                           Criada em {dataCriacao}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  {/* Stats Row */}
+                  {/* Stats Section */}
                   {!isPending && (
-                    <div className="grid grid-cols-2 gap-2 mt-2 relative z-0">
-                      <div className={`col-span-2 flex items-center justify-between px-4 py-3.5 rounded-2xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md transition-all group-hover:bg-white/80 ${palette.text}`}>
-                        <div className="flex items-center gap-2.5">
-                          <div className={`p-2 rounded-xl ${palette.chipCal} text-white shadow-md`}>
-                             <CalendarDays className="h-4 w-4" />
-                          </div>
-                          <span className="text-[14px] font-black uppercase tracking-wide">{turma.diaCatequese}</span>
+                    <div className="flex flex-col gap-2 relative z-10 mt-auto">
+                      <div className={`flex items-center justify-between p-2.5 rounded-xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md ${palette.text}`}>
+                        <div className="flex items-center gap-2 pl-1">
+                          <CalendarDays className="h-4 w-4 opacity-70" />
+                          <span className="text-[12px] font-black uppercase tracking-wide">{turma.diaCatequese}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-white/70 px-3 py-1.5 rounded-full shadow-inner border border-white">
-                          <Clock className="h-3.5 w-3.5 opacity-70" />
-                          <span className="text-[15px] font-black">{turma.horario}</span>
-                        </div>
-                      </div>
-                      
-                      <div className={`flex items-center gap-3 p-3.5 rounded-2xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md transition-all group-hover:bg-white/80 ${palette.text}`}>
-                        <div className={`p-2 rounded-xl bg-white shadow-sm border border-black/5`}>
-                          <Users className="h-5 w-5 opacity-80" />
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[20px] font-black leading-none mb-0.5">{tCatequizandos.length}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 leading-none">Alunos</span>
+                        <div className="flex items-center gap-1.5 bg-white/70 px-2.5 py-1 rounded-lg shadow-inner border border-white">
+                          <Clock className="h-3 w-3 opacity-70" />
+                          <span className="text-[12px] font-black">{turma.horario}</span>
                         </div>
                       </div>
 
-                      <div className={`flex items-center gap-3 p-3.5 rounded-2xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md transition-all group-hover:bg-white/80 ${palette.text}`}>
-                        <div className={`p-2 rounded-xl bg-white shadow-sm border border-black/5`}>
-                          <BookOpen className="h-5 w-5 opacity-80" />
+                      <div className="flex items-center gap-2">
+                        <div className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md ${palette.text}`}>
+                          <Users className="h-4 w-4 opacity-70 shrink-0" />
+                          <span className="text-[13px] font-black leading-none">{tCatequizandos.length} <span className="text-[9px] uppercase tracking-widest opacity-80">Alunos</span></span>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-[20px] font-black leading-none mb-0.5">{tEncontros.length}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-80 leading-none">Encontros</span>
+                        <div className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md ${palette.text}`}>
+                          <BookOpen className="h-4 w-4 opacity-70 shrink-0" />
+                          <span className="text-[13px] font-black leading-none">{tEncontros.length} <span className="text-[9px] uppercase tracking-widest opacity-80">Enc.</span></span>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {isPending && (
-                    <div className="flex flex-col gap-2 mt-2 opacity-40">
+                    <div className="flex flex-col gap-2 mt-auto opacity-40">
                       <div className="flex items-center gap-2 text-amber-900 text-[11px] font-black px-3 py-1.5 rounded-xl bg-amber-200/60 w-fit">
                         <CalendarDays className="h-3.5 w-3.5" />
                         {turma.diaCatequese}, {turma.horario}
@@ -306,7 +294,7 @@ export default function TurmasList() {
                   {!isPending && (
                     <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 z-20">
                       {turma.ano && (
-                        <span className={`text-[11px] font-black ${palette.badge} px-2.5 py-1 rounded-full shadow-sm`}>{turma.ano}</span>
+                        <span className={`text-[10px] font-black ${palette.badge} px-2.5 py-1 rounded-full shadow-sm`}>{turma.ano}</span>
                       )}
 
                       {turma.isShared && (
@@ -323,15 +311,13 @@ export default function TurmasList() {
                     </div>
                   )}
 
-                  {/* Arrow Bottom Right - Absolute but within normal layout to not overlap */}
+                  {/* Arrow - Center Right Hover */}
                   {!isPending && (
-                    <div className="absolute bottom-5 right-5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                       <div className={cn(
-                        "w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-lg transition-transform duration-300",
-                        "group-hover:translate-x-1"
-                      )}>
-                        <ArrowRight className={`h-5 w-5 ${palette.text}`} />
-                      </div>
+                    <div className={cn(
+                      "absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md transition-all duration-300 z-20 opacity-0",
+                      "group-hover:opacity-100 group-hover:translate-x-1 group-hover:shadow-lg"
+                    )}>
+                      <ArrowRight className={`h-4 w-4 ${palette.text}`} />
                     </div>
                   )}
                 </div>
