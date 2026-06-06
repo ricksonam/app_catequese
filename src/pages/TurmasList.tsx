@@ -193,7 +193,8 @@ export default function TurmasList() {
                   !isPending && palette.borderMain
                 )}
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
-                             <div className={cn(
+              >
+                <div className={cn(
                   "relative overflow-hidden rounded-[1.95rem] p-5 flex flex-col gap-3 h-full bg-gradient-to-br",
                   isPending ? "from-amber-50 to-orange-50" : palette.bg
                 )}>
@@ -333,7 +334,7 @@ export default function TurmasList() {
                       </div>
                     </div>
                   )}
-                </div>    </div>
+                </div>
               </div>
             );
           })}
