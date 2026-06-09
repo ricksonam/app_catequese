@@ -4,6 +4,7 @@ import { useTurmas, useEncontros, useCatequizandos, useComunidades, useAtividade
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Sparkles, Lock, Clock, PartyPopper, Users2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Palette: vibrant gradients for each turma
 const CARD_PALETTES = [
@@ -63,6 +64,12 @@ export default function TurmasList() {
   const { data: reunioes = [] } = useReunioes();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [clickingId, setClickingId] = useState<string | null>(null);
+  const [summaryModal, setSummaryModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    items: { id: string; title: string; subtitle?: string }[];
+    colorTheme: string;
+  }>({ isOpen: false, title: '', items: [], colorTheme: '' });
 
   const selectedTurmaId = localStorage.getItem("ivc_selected_turma");
 
@@ -293,7 +300,12 @@ export default function TurmasList() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/turmas/${turma.id}/catequizandos`);
+                            setSummaryModal({
+                              isOpen: true,
+                              title: `Catequizandos`,
+                              items: tCatequizandos.map(c => ({ id: c.id, title: c.nome, subtitle: c.etapaAtual })),
+                              colorTheme: "text-sky-500",
+                            });
                           }}
                           className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-sky-500/90 border border-sky-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-sky-500/50 cursor-pointer focus:outline-none"
                         >
@@ -303,7 +315,12 @@ export default function TurmasList() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/turmas/${turma.id}/encontros`);
+                            setSummaryModal({
+                              isOpen: true,
+                              title: `Encontros`,
+                              items: tEncontros.map(enc => ({ id: enc.id, title: enc.tema || `Encontro ${enc.ordem || ''}`, subtitle: enc.data ? formatDate(enc.data) || "" : "Sem data" })),
+                              colorTheme: "text-emerald-500",
+                            });
                           }}
                           className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-emerald-500/90 border border-emerald-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/50 cursor-pointer focus:outline-none"
                         >
@@ -313,7 +330,12 @@ export default function TurmasList() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/turmas/${turma.id}/eventos`);
+                            setSummaryModal({
+                              isOpen: true,
+                              title: `Eventos`,
+                              items: tAtividades.map(a => ({ id: a.id, title: a.titulo, subtitle: a.dataInicio ? formatDate(a.dataInicio) || "" : "Sem data" })),
+                              colorTheme: "text-purple-500",
+                            });
                           }}
                           className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-purple-500/90 border border-purple-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 cursor-pointer focus:outline-none"
                         >
@@ -323,7 +345,12 @@ export default function TurmasList() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/turmas/${turma.id}/reunioes`);
+                            setSummaryModal({
+                              isOpen: true,
+                              title: `Reuniões`,
+                              items: tReunioes.map(r => ({ id: r.id, title: r.tema || 'Reunião', subtitle: r.data ? formatDate(r.data) || "" : "Sem data" })),
+                              colorTheme: "text-rose-500",
+                            });
                           }}
                           className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-rose-500/90 border border-rose-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-rose-500/50 cursor-pointer focus:outline-none"
                         >
@@ -361,6 +388,27 @@ export default function TurmasList() {
 
       <JoinTurmaModal open={joinModalOpen} onClose={() => setJoinModalOpen(false)} />
 
+      <Dialog open={summaryModal.isOpen} onOpenChange={(open) => setSummaryModal(prev => ({ ...prev, isOpen: open }))}>
+        <DialogContent className="max-w-md max-h-[85vh] flex flex-col overflow-hidden bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-white/20 shadow-2xl rounded-[1.5rem]">
+          <DialogHeader className="pb-2">
+            <DialogTitle className={cn("text-2xl font-black font-liturgical tracking-tight", summaryModal.colorTheme)}>
+              {summaryModal.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto pr-2 space-y-2 pb-2">
+            {summaryModal.items.length === 0 ? (
+              <p className="text-center text-muted-foreground text-sm py-8 font-medium">Nenhum registro encontrado.</p>
+            ) : (
+              summaryModal.items.map(item => (
+                <div key={item.id} className="p-3 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-0.5 hover:shadow-sm transition-shadow">
+                  <span className="font-bold text-sm text-foreground">{item.title}</span>
+                  {item.subtitle && <span className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground">{item.subtitle}</span>}
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
