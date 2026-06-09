@@ -1,59 +1,47 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useComunidades } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useComunidades, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
-import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Sparkles, Lock, Clock } from "lucide-react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Sparkles, Lock, Clock, PartyPopper, Users2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Palette: vibrant gradients for each turma
 const CARD_PALETTES = [
   {
-    bg: "from-emerald-50 to-teal-50", borderMain: "border-emerald-300",
-    accent: "bg-gradient-to-br from-emerald-400 to-teal-500", icon: "text-white",
-    text: "text-emerald-950", sub: "text-emerald-700/80",
-    chipCal: "bg-gradient-to-r from-emerald-500 to-teal-500",
-    chipUsers: "bg-gradient-to-r from-green-500 to-emerald-600",
-    badge: "bg-emerald-500 text-white",
+    bg: "from-emerald-400 to-teal-500", borderMain: "border-emerald-200",
+    iconColor: "text-emerald-600",
+    text: "text-white", sub: "text-emerald-50",
+    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
   },
   {
-    bg: "from-blue-50 to-indigo-50", borderMain: "border-blue-300",
-    accent: "bg-gradient-to-br from-blue-400 to-indigo-500", icon: "text-white",
-    text: "text-blue-950", sub: "text-blue-700/80",
-    chipCal: "bg-gradient-to-r from-blue-500 to-indigo-500",
-    chipUsers: "bg-gradient-to-r from-indigo-500 to-blue-600",
-    badge: "bg-blue-500 text-white",
+    bg: "from-blue-400 to-indigo-500", borderMain: "border-blue-200",
+    iconColor: "text-blue-600",
+    text: "text-white", sub: "text-blue-50",
+    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
   },
   {
-    bg: "from-purple-50 to-violet-50", borderMain: "border-purple-300",
-    accent: "bg-gradient-to-br from-purple-400 to-violet-500", icon: "text-white",
-    text: "text-purple-950", sub: "text-purple-700/80",
-    chipCal: "bg-gradient-to-r from-purple-500 to-violet-500",
-    chipUsers: "bg-gradient-to-r from-violet-500 to-purple-600",
-    badge: "bg-purple-500 text-white",
+    bg: "from-purple-400 to-violet-500", borderMain: "border-purple-200",
+    iconColor: "text-purple-600",
+    text: "text-white", sub: "text-purple-50",
+    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
   },
   {
-    bg: "from-rose-50 to-pink-50", borderMain: "border-rose-300",
-    accent: "bg-gradient-to-br from-rose-400 to-pink-500", icon: "text-white",
-    text: "text-rose-950", sub: "text-rose-700/80",
-    chipCal: "bg-gradient-to-r from-rose-500 to-pink-500",
-    chipUsers: "bg-gradient-to-r from-pink-500 to-rose-600",
-    badge: "bg-rose-500 text-white",
+    bg: "from-rose-400 to-pink-500", borderMain: "border-rose-200",
+    iconColor: "text-rose-600",
+    text: "text-white", sub: "text-rose-50",
+    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
   },
   {
-    bg: "from-sky-50 to-cyan-50", borderMain: "border-sky-300",
-    accent: "bg-gradient-to-br from-sky-400 to-cyan-500", icon: "text-white",
-    text: "text-sky-950", sub: "text-sky-700/80",
-    chipCal: "bg-gradient-to-r from-sky-500 to-cyan-500",
-    chipUsers: "bg-gradient-to-r from-cyan-500 to-sky-600",
-    badge: "bg-sky-500 text-white",
+    bg: "from-sky-400 to-cyan-500", borderMain: "border-sky-200",
+    iconColor: "text-sky-600",
+    text: "text-white", sub: "text-sky-50",
+    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
   },
   {
-    bg: "from-amber-50 to-orange-50", borderMain: "border-amber-300",
-    accent: "bg-gradient-to-br from-amber-400 to-orange-500", icon: "text-white",
-    text: "text-amber-950", sub: "text-amber-700/80",
-    chipCal: "bg-gradient-to-r from-amber-500 to-orange-500",
-    chipUsers: "bg-gradient-to-r from-orange-500 to-amber-600",
-    badge: "bg-amber-500 text-white",
+    bg: "from-amber-400 to-orange-500", borderMain: "border-amber-200",
+    iconColor: "text-amber-600",
+    text: "text-white", sub: "text-amber-50",
+    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
   },
 ];
 
@@ -71,6 +59,8 @@ export default function TurmasList() {
   const { data: encontros = [] } = useEncontros();
   const { data: catequizandos = [] } = useCatequizandos();
   const { data: comunidades = [] } = useComunidades();
+  const { data: atividades = [] } = useAtividades();
+  const { data: reunioes = [] } = useReunioes();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [clickingId, setClickingId] = useState<string | null>(null);
 
@@ -174,6 +164,8 @@ export default function TurmasList() {
           {turmas.map((turma, i) => {
             const tEncontros = encontros.filter(e => e.turmaId === turma.id);
             const tCatequizandos = catequizandos.filter(c => c.turmaId === turma.id);
+            const tAtividades = atividades.filter(a => a.turmaId === turma.id);
+            const tReunioes = reunioes.filter(r => r.turmaId === turma.id);
             const turmaCom = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
             const palette = CARD_PALETTES[i % CARD_PALETTES.length];
             const dataCriacao = formatDate(turma.criadoEm);
@@ -185,26 +177,26 @@ export default function TurmasList() {
                 key={turma.id}
                 onClick={() => handleTurmaClick(turma)}
                 className={cn(
-                  "group relative overflow-hidden rounded-[2rem] p-0.5 transition-all duration-500 shadow-lg animate-fade-in border-2",
+                  "group relative overflow-hidden rounded-[2rem] transition-all duration-500 shadow-xl animate-fade-in border-2",
                   isPending
                     ? "border-amber-300 opacity-90 cursor-default"
-                    : "hover:shadow-xl hover:-translate-y-1.5 active:scale-95 cursor-pointer",
+                    : "hover:shadow-2xl hover:-translate-y-1 active:scale-95 cursor-pointer",
                   !isPending && (isClicking ? "scale-95 opacity-80" : "scale-100"),
                   !isPending && palette.borderMain
                 )}
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
               >
                 <div className={cn(
-                  "relative overflow-hidden rounded-[1.95rem] p-6 flex flex-col justify-between min-h-[220px] bg-gradient-to-br transition-all duration-500",
-                  isPending ? "from-amber-50/90 to-orange-100/90" : `${palette.bg} shadow-inner`
+                  "relative overflow-hidden p-5 flex flex-col justify-between min-h-[220px] bg-gradient-to-br transition-all duration-500 h-full",
+                  isPending ? "from-amber-50/90 to-orange-100/90 text-amber-950" : `${palette.bg} ${palette.text}`
                 )}>
                   {/* Glass effect background shapes */}
-                  <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30 blur-3xl pointer-events-none mix-blend-overlay bg-white" />
-                  <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-20 blur-2xl pointer-events-none bg-white" />
+                  <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none mix-blend-overlay bg-white" />
+                  <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full opacity-20 blur-3xl pointer-events-none mix-blend-overlay bg-white" />
 
                   {/* Pending overlay */}
                   {isPending && (
-                    <div className="absolute inset-0 z-10 rounded-[1.95rem] bg-amber-50/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 px-6">
+                    <div className="absolute inset-0 z-10 bg-amber-50/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 px-6">
                       <div className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-full shadow-lg border border-amber-400/50">
                         <Clock className="h-4 w-4 animate-pulse" />
                         <span className="text-xs font-black uppercase tracking-widest">Aguardando aprovação</span>
@@ -220,16 +212,16 @@ export default function TurmasList() {
                   )}
 
                   {/* Header Row: Icon and Badges */}
-                  <div className="flex justify-between items-start w-full relative z-10 mb-4">
+                  <div className="flex justify-between items-start w-full relative z-10 mb-2">
                     <div className={cn(
-                      `w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white/80 backdrop-blur-sm border border-white`,
+                      `w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white backdrop-blur-sm`,
                       isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
-                      !isPending && "group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-white group-hover:shadow-xl",
+                      !isPending && "group-hover:scale-110 group-hover:-rotate-6",
                       isClicking && "scale-90 rotate-12"
                     )}>
                       {isPending
-                        ? <Lock className="h-7 w-7 text-white" />
-                        : <UsersRound className={cn("h-8 w-8", palette.text)} />
+                        ? <Lock className="h-6 w-6 text-white" />
+                        : <UsersRound className={cn("h-7 w-7", palette.iconColor)} />
                       }
                     </div>
                     
@@ -238,21 +230,21 @@ export default function TurmasList() {
                       <div className="flex flex-col items-end gap-1.5">
                         {turma.ano && (
                           <span className={cn(
-                            "text-[11px] font-black px-3 py-1 rounded-full shadow-sm backdrop-blur-md border border-white/20",
+                            "text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm",
                             palette.badge
                           )}>{turma.ano}</span>
                         )}
                         {turma.isShared && (
                           <span className={cn(
-                            "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md border border-white/20",
+                            "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm",
                             palette.badge
                           )}>
                             Partilhada
                           </span>
                         )}
                         {turma.id === selectedTurmaId && (
-                          <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-400 text-yellow-900 shadow-md border border-yellow-200 mt-1">
-                            <Sparkles className="h-3 w-3" /> Selecionada
+                          <span className="flex items-center gap-1 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-md mt-0.5">
+                            <Sparkles className="h-2.5 w-2.5" /> Selecionada
                           </span>
                         )}
                       </div>
@@ -260,20 +252,19 @@ export default function TurmasList() {
                   </div>
 
                   {/* Content: Title & Subtitle */}
-                  <div className="relative z-10 flex-1 mb-5">
-                    <h3 className={cn(
-                      "text-[22px] font-black truncate font-liturgical tracking-tight drop-shadow-sm mb-1",
-                      isPending ? "text-amber-950" : palette.text
-                    )}>{turma.nome}</h3>
+                  <div className="relative z-10 flex-1 mb-4">
+                    <h3 className="text-xl font-black truncate font-liturgical tracking-tight drop-shadow-md mb-0.5">
+                      {turma.nome}
+                    </h3>
                     {turmaCom && (
                       <p className={cn(
-                        "text-[11px] font-bold uppercase tracking-widest truncate mb-1.5",
+                        "text-[10px] font-bold uppercase tracking-widest truncate mb-1",
                         isPending ? "text-amber-800/80" : palette.sub
                       )}>{turmaCom}</p>
                     )}
                     {dataCriacao && !isPending && (
                       <p className={cn(
-                        "text-[9px] font-black uppercase tracking-widest opacity-50",
+                        "text-[9px] font-black uppercase tracking-widest opacity-80",
                         palette.sub
                       )}>
                         Criada em {dataCriacao}
@@ -281,50 +272,47 @@ export default function TurmasList() {
                     )}
                   </div>
 
-                  {/* Stats Grid (Glassmorphism) */}
+                  {/* Stats & Schedule (Compact Glassmorphism) */}
                   {!isPending && (
-                    <div className="grid grid-cols-2 gap-2.5 relative z-10 mt-auto">
-                      {/* Schedule Info */}
-                      <div className={cn(
-                        "col-span-2 flex items-center justify-between p-3.5 rounded-[1rem] shadow-sm border border-white/60 bg-white/40 backdrop-blur-md transition-all duration-300 group-hover:bg-white/60 group-hover:shadow-md",
-                        palette.text
-                      )}>
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-xl bg-white/60 shadow-sm border border-white/80">
-                            <CalendarDays className="h-4 w-4 opacity-90" />
-                          </div>
-                          <span className="text-[13px] font-black uppercase tracking-wide">{turma.diaCatequese}</span>
+                    <div className="flex flex-col gap-2 relative z-10 mt-auto">
+                      {/* Compact Schedule */}
+                      <div className="flex items-center justify-between px-3 py-2 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20">
+                        <div className="flex items-center gap-2">
+                          <CalendarDays className="h-3.5 w-3.5 opacity-90" />
+                          <span className="text-xs font-black uppercase tracking-wide">{turma.diaCatequese}</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-white/70 px-3.5 py-2 rounded-xl shadow-inner border border-white/80">
-                          <Clock className="h-4 w-4 opacity-80" />
-                          <span className="text-[13px] font-black">{turma.horario}</span>
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/10 rounded-md">
+                          <Clock className="h-3 w-3 opacity-90" />
+                          <span className="text-[11px] font-bold">{turma.horario}</span>
                         </div>
                       </div>
 
-                      {/* Catequizandos Count */}
-                      <div className={cn(
-                        "flex flex-col items-center justify-center py-3.5 px-2 rounded-[1rem] shadow-sm border border-white/60 bg-white/40 backdrop-blur-md transition-all duration-300 group-hover:bg-white/60 group-hover:shadow-md",
-                        palette.text
-                      )}>
-                        <span className="text-2xl font-black leading-none mb-1">{tCatequizandos.length}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Catequizandos</span>
-                      </div>
-
-                      {/* Encontros Count */}
-                      <div className={cn(
-                        "flex flex-col items-center justify-center py-3.5 px-2 rounded-[1rem] shadow-sm border border-white/60 bg-white/40 backdrop-blur-md transition-all duration-300 group-hover:bg-white/60 group-hover:shadow-md",
-                        palette.text
-                      )}>
-                        <span className="text-2xl font-black leading-none mb-1">{tEncontros.length}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Encontros</span>
+                      {/* Compact 4-Grid Stats */}
+                      <div className="grid grid-cols-4 gap-1.5">
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
+                          <span className="text-sm font-black leading-none mb-1">{tCatequizandos.length}</span>
+                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Cateq.</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
+                          <span className="text-sm font-black leading-none mb-1">{tEncontros.length}</span>
+                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Encontros</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
+                          <span className="text-sm font-black leading-none mb-1">{tAtividades.length}</span>
+                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Eventos</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
+                          <span className="text-sm font-black leading-none mb-1">{tReunioes.length}</span>
+                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Reuniões</span>
+                        </div>
                       </div>
                     </div>
                   )}
 
                   {isPending && (
-                    <div className="flex flex-col gap-2 mt-auto opacity-50 relative z-10">
-                      <div className="flex items-center gap-2 text-amber-900 text-[12px] font-black px-4 py-2 rounded-xl bg-amber-100/50 w-fit backdrop-blur-sm border border-amber-900/10">
-                        <CalendarDays className="h-4 w-4" />
+                    <div className="flex flex-col gap-2 mt-auto opacity-70 relative z-10">
+                      <div className="flex items-center gap-2 text-amber-900 text-[11px] font-black px-3 py-1.5 rounded-lg bg-white/40 w-fit backdrop-blur-sm border border-amber-900/10">
+                        <CalendarDays className="h-3.5 w-3.5" />
                         {turma.diaCatequese}, {turma.horario}
                       </div>
                     </div>
@@ -333,10 +321,10 @@ export default function TurmasList() {
                   {/* Arrow - Center Right Hover */}
                   {!isPending && (
                     <div className={cn(
-                      "absolute top-1/2 -translate-y-1/2 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xl transition-all duration-500 z-20 opacity-0 scale-75",
+                      "absolute top-1/2 -translate-y-1/2 right-3 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-lg transition-all duration-300 z-20 opacity-0 scale-75",
                       "group-hover:opacity-100 group-hover:translate-x-1 group-hover:scale-100"
                     )}>
-                      <ArrowRight className={cn("h-5 w-5", palette.text)} />
+                      <ArrowRight className={cn("h-4 w-4", palette.iconColor)} />
                     </div>
                   )}
                 </div>
