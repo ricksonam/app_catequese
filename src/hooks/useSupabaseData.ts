@@ -69,7 +69,9 @@ export function useCatequizandos(turmaId?: string) {
   return useQuery({ 
     queryKey: ["catequizandos", user?.id, turmaId], 
     queryFn: () => fetchCatequizandos(turmaId),
-    enabled: !!user 
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 export function useCatequizandoMutation() {
@@ -87,7 +89,9 @@ export function useEncontros(turmaId?: string) {
   return useQuery({ 
     queryKey: ["encontros", user?.id, turmaId], 
     queryFn: () => fetchEncontros(turmaId),
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 export function useEncontroMutation() {
@@ -105,7 +109,9 @@ export function useAtividades(turmaId?: string) {
   return useQuery({ 
     queryKey: ["atividades", user?.id, turmaId], 
     queryFn: () => fetchAtividades(turmaId),
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 export function useAtividadeMutation() {
@@ -123,7 +129,9 @@ export function useReunioes(turmaId?: string) {
   return useQuery({ 
     queryKey: ["reunioes", user?.id, turmaId], 
     queryFn: () => fetchReunioes(turmaId),
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 export function useReuniaoMutation() {

@@ -385,6 +385,19 @@
   animation: liturgical-float 4s ease-in-out infinite;
 }
 
+@keyframes chip-float {
+  0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+  50% { transform: translateY(-5px) scale(1.04); box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+}
+
+.animate-chip-float {
+  animation: chip-float 3s ease-in-out infinite;
+}
+.animate-chip-float-1 { animation: chip-float 3s ease-in-out 0s infinite; }
+.animate-chip-float-2 { animation: chip-float 3s ease-in-out 0.4s infinite; }
+.animate-chip-float-3 { animation: chip-float 3s ease-in-out 0.8s infinite; }
+.animate-chip-float-4 { animation: chip-float 3s ease-in-out 1.2s infinite; }
+
 .bg-liturgical-gold {
   background-color: #D4AF37;
 }
