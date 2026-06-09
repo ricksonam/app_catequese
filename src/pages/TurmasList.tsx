@@ -319,13 +319,13 @@ export default function TurmasList() {
                     </div>
                   )}
 
-                  {/* Arrow - Center Right Hover */}
+                  {/* Arrow - Center Right */}
                   {!isPending && (
                     <div className={cn(
-                      "absolute top-1/2 -translate-y-1/2 right-3 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-lg transition-all duration-300 z-20 opacity-0 scale-75",
-                      "group-hover:opacity-100 group-hover:translate-x-1 group-hover:scale-100"
+                      "absolute top-1/2 -translate-y-1/2 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md transition-all duration-300 z-20 border border-white/50",
+                      "group-hover:shadow-xl group-hover:scale-110 group-hover:translate-x-1"
                     )}>
-                      <ArrowRight className={cn("h-4 w-4", palette.iconColor)} />
+                      <ArrowRight className={cn("h-5 w-5", palette.iconColor)} />
                     </div>
                   )}
                 </div>
