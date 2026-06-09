@@ -333,7 +333,7 @@ export default function TurmasList() {
                             setSummaryModal({
                               isOpen: true,
                               title: `Eventos`,
-                              items: tAtividades.map(a => ({ id: a.id, title: a.titulo, subtitle: a.dataInicio ? formatDate(a.dataInicio) || "" : "Sem data" })),
+                              items: tAtividades.map(a => ({ id: a.id, title: a.nome || 'Evento', subtitle: a.data ? formatDate(a.data) || "" : "Sem data" })),
                               colorTheme: "text-purple-500",
                             });
                           }}
