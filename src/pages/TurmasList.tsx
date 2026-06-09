@@ -228,12 +228,6 @@ export default function TurmasList() {
                     {/* Badges Stack */}
                     {!isPending && (
                       <div className="flex flex-col items-end gap-1.5">
-                        {turma.ano && (
-                          <span className={cn(
-                            "text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm",
-                            palette.badge
-                          )}>{turma.ano}</span>
-                        )}
                         {turma.isShared && (
                           <span className={cn(
                             "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm",
@@ -253,9 +247,16 @@ export default function TurmasList() {
 
                   {/* Content: Title & Subtitle */}
                   <div className="relative z-10 flex-1 mb-4">
-                    <h3 className="text-xl font-black truncate font-liturgical tracking-tight drop-shadow-md mb-0.5">
-                      {turma.nome}
-                    </h3>
+                    <div className="flex items-center gap-2.5 mb-1 flex-wrap">
+                      <h3 className="text-xl font-black truncate font-liturgical tracking-tight drop-shadow-md">
+                        {turma.nome.toLowerCase().startsWith('turma') ? turma.nome : `Turma de ${turma.nome}`}
+                      </h3>
+                      {turma.ano && (
+                        <span className="text-[13px] font-black px-2.5 py-0.5 rounded-full shadow-md bg-white/30 border border-white/50 backdrop-blur-md">
+                          {turma.ano}
+                        </span>
+                      )}
+                    </div>
                     {turmaCom && (
                       <p className={cn(
                         "text-[10px] font-bold uppercase tracking-widest truncate mb-1",
@@ -272,38 +273,38 @@ export default function TurmasList() {
                     )}
                   </div>
 
-                  {/* Stats & Schedule (Compact Glassmorphism) */}
+                  {/* Stats & Schedule */}
                   {!isPending && (
                     <div className="flex flex-col gap-2 relative z-10 mt-auto">
                       {/* Compact Schedule */}
-                      <div className="flex items-center justify-between px-3 py-2 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20">
+                      <div className="flex items-center justify-between px-3 py-2 rounded-xl shadow-sm bg-white/30 backdrop-blur-md border border-white/40 text-white font-black">
                         <div className="flex items-center gap-2">
                           <CalendarDays className="h-3.5 w-3.5 opacity-90" />
-                          <span className="text-xs font-black uppercase tracking-wide">{turma.diaCatequese}</span>
+                          <span className="text-xs uppercase tracking-wide">{turma.diaCatequese}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-black/10 rounded-md">
+                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-black/20 rounded-md shadow-inner">
                           <Clock className="h-3 w-3 opacity-90" />
-                          <span className="text-[11px] font-bold">{turma.horario}</span>
+                          <span className="text-[11px] font-black">{turma.horario}</span>
                         </div>
                       </div>
 
-                      {/* Compact 4-Grid Stats */}
+                      {/* Colorful 4-Grid Stats */}
                       <div className="grid grid-cols-4 gap-1.5">
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
-                          <span className="text-sm font-black leading-none mb-1">{tCatequizandos.length}</span>
-                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Cateq.</span>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-sky-500/90 border border-sky-400 text-white transition-transform hover:scale-[1.02]">
+                          <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tCatequizandos.length}</span>
+                          <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Cateq.</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
-                          <span className="text-sm font-black leading-none mb-1">{tEncontros.length}</span>
-                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Encontros</span>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-emerald-500/90 border border-emerald-400 text-white transition-transform hover:scale-[1.02]">
+                          <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tEncontros.length}</span>
+                          <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Encontros</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
-                          <span className="text-sm font-black leading-none mb-1">{tAtividades.length}</span>
-                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Eventos</span>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-purple-500/90 border border-purple-400 text-white transition-transform hover:scale-[1.02]">
+                          <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tAtividades.length}</span>
+                          <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Eventos</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-sm bg-white/20 backdrop-blur-md border border-white/20 transition-colors hover:bg-white/30">
-                          <span className="text-sm font-black leading-none mb-1">{tReunioes.length}</span>
-                          <span className="text-[8px] font-bold uppercase tracking-wider opacity-90">Reuniões</span>
+                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-rose-500/90 border border-rose-400 text-white transition-transform hover:scale-[1.02]">
+                          <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tReunioes.length}</span>
+                          <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Reuniões</span>
                         </div>
                       </div>
                     </div>
