@@ -290,22 +290,46 @@ export default function TurmasList() {
 
                       {/* Colorful 4-Grid Stats */}
                       <div className="grid grid-cols-4 gap-1.5">
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-sky-500/90 border border-sky-400 text-white transition-transform hover:scale-[1.02]">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/turmas/${turma.id}/catequizandos`);
+                          }}
+                          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-sky-500/90 border border-sky-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-sky-500/50 cursor-pointer focus:outline-none"
+                        >
                           <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tCatequizandos.length}</span>
                           <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Cateq.</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-emerald-500/90 border border-emerald-400 text-white transition-transform hover:scale-[1.02]">
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/turmas/${turma.id}/encontros`);
+                          }}
+                          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-emerald-500/90 border border-emerald-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/50 cursor-pointer focus:outline-none"
+                        >
                           <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tEncontros.length}</span>
                           <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Encontros</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-purple-500/90 border border-purple-400 text-white transition-transform hover:scale-[1.02]">
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/turmas/${turma.id}/eventos`);
+                          }}
+                          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-purple-500/90 border border-purple-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 cursor-pointer focus:outline-none"
+                        >
                           <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tAtividades.length}</span>
                           <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Eventos</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-rose-500/90 border border-rose-400 text-white transition-transform hover:scale-[1.02]">
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/turmas/${turma.id}/reunioes`);
+                          }}
+                          className="flex flex-col items-center justify-center py-2 px-1 rounded-xl shadow-md bg-rose-500/90 border border-rose-400 text-white transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg hover:shadow-rose-500/50 cursor-pointer focus:outline-none"
+                        >
                           <span className="text-sm font-black leading-none mb-1 drop-shadow-sm">{tReunioes.length}</span>
                           <span className="text-[8px] font-black uppercase tracking-wider opacity-95">Reuniões</span>
-                        </div>
+                        </button>
                       </div>
                     </div>
                   )}
