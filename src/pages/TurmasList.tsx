@@ -195,129 +195,148 @@ export default function TurmasList() {
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
               >
                 <div className={cn(
-                  "relative overflow-hidden rounded-[1.95rem] p-5 flex flex-col justify-between h-full bg-gradient-to-br",
-                  isPending ? "from-amber-50 to-orange-50" : palette.bg
+                  "relative overflow-hidden rounded-[1.95rem] p-6 flex flex-col justify-between min-h-[220px] bg-gradient-to-br transition-all duration-500",
+                  isPending ? "from-amber-50/90 to-orange-100/90" : `${palette.bg} shadow-inner`
                 )}>
-                  {/* Subtle glow */}
-                  <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full opacity-20 blur-3xl pointer-events-none bg-white" />
+                  {/* Glass effect background shapes */}
+                  <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30 blur-3xl pointer-events-none mix-blend-overlay bg-white" />
+                  <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-20 blur-2xl pointer-events-none bg-white" />
 
                   {/* Pending overlay */}
                   {isPending && (
-                    <div className="absolute inset-0 z-10 rounded-[1.95rem] bg-amber-50/70 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 px-5">
-                      <div className="flex items-center gap-2 bg-amber-500 text-white px-3 py-1.5 rounded-full shadow-md">
-                        <Clock className="h-4 w-4" />
-                        <span className="text-[11px] font-black uppercase tracking-widest">Aguardando aprovação</span>
+                    <div className="absolute inset-0 z-10 rounded-[1.95rem] bg-amber-50/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 px-6">
+                      <div className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-full shadow-lg border border-amber-400/50">
+                        <Clock className="h-4 w-4 animate-pulse" />
+                        <span className="text-xs font-black uppercase tracking-widest">Aguardando aprovação</span>
                       </div>
-                      <p className="text-[10px] font-semibold text-amber-800 text-center leading-tight max-w-[220px]">
+                      <p className="text-[11px] font-semibold text-amber-900/90 text-center leading-relaxed max-w-[240px]">
                         Sua solicitação foi enviada. Acesso liberado após aprovação do catequista da turma.
                       </p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Lock className="h-3 w-3 text-amber-600" />
-                        <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Acesso restrito</span>
+                      <div className="flex items-center gap-1.5 mt-2 px-3 py-1 bg-white/40 rounded-full border border-amber-900/10">
+                        <Lock className="h-3.5 w-3.5 text-amber-700" />
+                        <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest">Acesso restrito</span>
                       </div>
                     </div>
                   )}
 
-                  {/* Header Row */}
-                  <div className="flex items-center gap-4 relative z-10 w-full mb-3">
-                    {/* Animated Icon */}
+                  {/* Header Row: Icon and Badges */}
+                  <div className="flex justify-between items-start w-full relative z-10 mb-4">
                     <div className={cn(
-                      `w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shrink-0 transition-all duration-500 bg-white border border-black/5`,
+                      `w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white/80 backdrop-blur-sm border border-white`,
                       isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
-                      !isPending && "group-hover:scale-110 group-hover:-rotate-6",
+                      !isPending && "group-hover:scale-110 group-hover:-rotate-6 group-hover:bg-white group-hover:shadow-xl",
                       isClicking && "scale-90 rotate-12"
                     )}>
                       {isPending
-                        ? <Lock className="h-6 w-6 text-white" />
-                        : <UsersRound className={cn("h-7 w-7", palette.text)} />
+                        ? <Lock className="h-7 w-7 text-white" />
+                        : <UsersRound className={cn("h-8 w-8", palette.text)} />
                       }
                     </div>
-
-                    <div className="flex-1 min-w-0 pr-12">
-                      <h3 className={cn(
-                        "text-[19px] font-black truncate font-liturgical leading-tight mb-0.5",
-                        isPending ? "text-amber-950" : palette.text
-                      )}>{turma.nome}</h3>
-
-                      {turmaCom && (
-                        <p className={cn(
-                          "text-[10px] font-bold uppercase tracking-widest truncate",
-                          isPending ? "text-amber-700/80" : palette.sub
-                        )}>{turmaCom}</p>
-                      )}
-
-                      {dataCriacao && !isPending && (
-                        <p className={`text-[8px] ${palette.sub} font-bold opacity-60 uppercase tracking-widest mt-0.5`}>
-                          Criada em {dataCriacao}
-                        </p>
-                      )}
-                    </div>
+                    
+                    {/* Badges Stack */}
+                    {!isPending && (
+                      <div className="flex flex-col items-end gap-1.5">
+                        {turma.ano && (
+                          <span className={cn(
+                            "text-[11px] font-black px-3 py-1 rounded-full shadow-sm backdrop-blur-md border border-white/20",
+                            palette.badge
+                          )}>{turma.ano}</span>
+                        )}
+                        {turma.isShared && (
+                          <span className={cn(
+                            "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md border border-white/20",
+                            palette.badge
+                          )}>
+                            Partilhada
+                          </span>
+                        )}
+                        {turma.id === selectedTurmaId && (
+                          <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-400 text-yellow-900 shadow-md border border-yellow-200 mt-1">
+                            <Sparkles className="h-3 w-3" /> Selecionada
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Stats Section */}
+                  {/* Content: Title & Subtitle */}
+                  <div className="relative z-10 flex-1 mb-5">
+                    <h3 className={cn(
+                      "text-[22px] font-black truncate font-liturgical tracking-tight drop-shadow-sm mb-1",
+                      isPending ? "text-amber-950" : palette.text
+                    )}>{turma.nome}</h3>
+                    {turmaCom && (
+                      <p className={cn(
+                        "text-[11px] font-bold uppercase tracking-widest truncate mb-1.5",
+                        isPending ? "text-amber-800/80" : palette.sub
+                      )}>{turmaCom}</p>
+                    )}
+                    {dataCriacao && !isPending && (
+                      <p className={cn(
+                        "text-[9px] font-black uppercase tracking-widest opacity-50",
+                        palette.sub
+                      )}>
+                        Criada em {dataCriacao}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Stats Grid (Glassmorphism) */}
                   {!isPending && (
-                    <div className="flex flex-col gap-2 relative z-10 mt-auto">
-                      <div className={`flex items-center justify-between p-2.5 rounded-xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md ${palette.text}`}>
-                        <div className="flex items-center gap-2 pl-1">
-                          <CalendarDays className="h-4 w-4 opacity-70" />
-                          <span className="text-[12px] font-black uppercase tracking-wide">{turma.diaCatequese}</span>
+                    <div className="grid grid-cols-2 gap-2.5 relative z-10 mt-auto">
+                      {/* Schedule Info */}
+                      <div className={cn(
+                        "col-span-2 flex items-center justify-between p-3.5 rounded-[1rem] shadow-sm border border-white/60 bg-white/40 backdrop-blur-md transition-all duration-300 group-hover:bg-white/60 group-hover:shadow-md",
+                        palette.text
+                      )}>
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-xl bg-white/60 shadow-sm border border-white/80">
+                            <CalendarDays className="h-4 w-4 opacity-90" />
+                          </div>
+                          <span className="text-[13px] font-black uppercase tracking-wide">{turma.diaCatequese}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-white/70 px-2.5 py-1 rounded-lg shadow-inner border border-white">
-                          <Clock className="h-3 w-3 opacity-70" />
-                          <span className="text-[12px] font-black">{turma.horario}</span>
+                        <div className="flex items-center gap-2 bg-white/70 px-3.5 py-2 rounded-xl shadow-inner border border-white/80">
+                          <Clock className="h-4 w-4 opacity-80" />
+                          <span className="text-[13px] font-black">{turma.horario}</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <div className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md ${palette.text}`}>
-                          <Users className="h-4 w-4 opacity-70 shrink-0" />
-                          <span className="text-[13px] font-black leading-none">{tCatequizandos.length} <span className="text-[9px] uppercase tracking-widest opacity-80">Alunos</span></span>
-                        </div>
-                        <div className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl shadow-sm border border-white/50 bg-white/60 backdrop-blur-md ${palette.text}`}>
-                          <BookOpen className="h-4 w-4 opacity-70 shrink-0" />
-                          <span className="text-[13px] font-black leading-none">{tEncontros.length} <span className="text-[9px] uppercase tracking-widest opacity-80">Enc.</span></span>
-                        </div>
+                      {/* Catequizandos Count */}
+                      <div className={cn(
+                        "flex flex-col items-center justify-center py-3.5 px-2 rounded-[1rem] shadow-sm border border-white/60 bg-white/40 backdrop-blur-md transition-all duration-300 group-hover:bg-white/60 group-hover:shadow-md",
+                        palette.text
+                      )}>
+                        <span className="text-2xl font-black leading-none mb-1">{tCatequizandos.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Catequizandos</span>
+                      </div>
+
+                      {/* Encontros Count */}
+                      <div className={cn(
+                        "flex flex-col items-center justify-center py-3.5 px-2 rounded-[1rem] shadow-sm border border-white/60 bg-white/40 backdrop-blur-md transition-all duration-300 group-hover:bg-white/60 group-hover:shadow-md",
+                        palette.text
+                      )}>
+                        <span className="text-2xl font-black leading-none mb-1">{tEncontros.length}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Encontros</span>
                       </div>
                     </div>
                   )}
 
                   {isPending && (
-                    <div className="flex flex-col gap-2 mt-auto opacity-40">
-                      <div className="flex items-center gap-2 text-amber-900 text-[11px] font-black px-3 py-1.5 rounded-xl bg-amber-200/60 w-fit">
-                        <CalendarDays className="h-3.5 w-3.5" />
+                    <div className="flex flex-col gap-2 mt-auto opacity-50 relative z-10">
+                      <div className="flex items-center gap-2 text-amber-900 text-[12px] font-black px-4 py-2 rounded-xl bg-amber-100/50 w-fit backdrop-blur-sm border border-amber-900/10">
+                        <CalendarDays className="h-4 w-4" />
                         {turma.diaCatequese}, {turma.horario}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Badges Stack - Top Right */}
-                  {!isPending && (
-                    <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 z-20">
-                      {turma.ano && (
-                        <span className={`text-[10px] font-black ${palette.badge} px-2.5 py-1 rounded-full shadow-sm`}>{turma.ano}</span>
-                      )}
-
-                      {turma.isShared && (
-                        <span className={`shrink-0 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${palette.badge} shadow-sm`}>
-                          Partilhada
-                        </span>
-                      )}
-
-                      {turma.id === selectedTurmaId && (
-                        <span className="shrink-0 flex items-center gap-0.5 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-sm border border-yellow-500/20 mt-1">
-                          <Sparkles className="h-2.5 w-2.5" /> Selecionada
-                        </span>
-                      )}
                     </div>
                   )}
 
                   {/* Arrow - Center Right Hover */}
                   {!isPending && (
                     <div className={cn(
-                      "absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md transition-all duration-300 z-20 opacity-0",
-                      "group-hover:opacity-100 group-hover:translate-x-1 group-hover:shadow-lg"
+                      "absolute top-1/2 -translate-y-1/2 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-xl transition-all duration-500 z-20 opacity-0 scale-75",
+                      "group-hover:opacity-100 group-hover:translate-x-1 group-hover:scale-100"
                     )}>
-                      <ArrowRight className={`h-4 w-4 ${palette.text}`} />
+                      <ArrowRight className={cn("h-5 w-5", palette.text)} />
                     </div>
                   )}
                 </div>
