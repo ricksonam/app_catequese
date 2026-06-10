@@ -284,15 +284,12 @@ export default function TurmasList() {
                   {!isPending && (
                     <div className="flex flex-col gap-2 relative z-10 mt-auto">
                       {/* Compact Schedule */}
-                      <div className="flex items-center justify-between px-3 py-2 rounded-xl shadow-sm bg-white/30 backdrop-blur-md border border-white/40 text-white font-black">
-                        <div className="flex items-center gap-2">
-                          <CalendarDays className="h-3.5 w-3.5 opacity-90" />
-                          <span className="text-xs uppercase tracking-wide">{turma.diaCatequese}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-black/20 rounded-md shadow-inner">
-                          <Clock className="h-3 w-3 opacity-90" />
-                          <span className="text-[11px] font-black">{turma.horario}</span>
-                        </div>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-sm bg-white/30 backdrop-blur-md border border-white/40 text-white font-black w-fit">
+                        <CalendarDays className="h-3.5 w-3.5 opacity-90 shrink-0" />
+                        <span className="text-xs uppercase tracking-wide font-black">{turma.diaCatequese}</span>
+                        <span className="opacity-60 text-xs">·</span>
+                        <Clock className="h-3 w-3 opacity-90 shrink-0" />
+                        <span className="text-[11px] font-black">{turma.horario}</span>
                       </div>
 
                       {/* Colorful 4-Grid Stats */}
@@ -348,7 +345,7 @@ export default function TurmasList() {
                             setSummaryModal({
                               isOpen: true,
                               title: `Reuniões`,
-                              items: tReunioes.map(r => ({ id: r.id, title: r.tema || 'Reunião', subtitle: r.data ? formatDate(r.data) || "" : "Sem data" })),
+                              items: tReunioes.map(r => ({ id: r.id, title: r.tipo || r.tema || 'Reunião', subtitle: r.data ? formatDate(r.data) || "" : "Sem data" })),
                               colorTheme: "text-rose-500",
                             });
                           }}
