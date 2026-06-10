@@ -298,16 +298,6 @@ const modules: Module[] = [
     previewContent: <JogosPreview />,
   },
   {
-    id: "familia",
-    icon: <Heart className="w-6 h-6" />,
-    color: "#e11d48",
-    gradient: "from-rose-600 to-pink-500",
-    title: "Apoio às Famílias",
-    description: "Missões semanais, mural de fotos e comunicados direto para as famílias.",
-    features: ["Missões em família", "Mural de fotos", "Formulários", "Comunicados"],
-    previewContent: <FamiliaPreview />,
-  },
-  {
     id: "calendario",
     icon: <Calendar className="w-6 h-6" />,
     color: "#059669",
@@ -316,16 +306,6 @@ const modules: Module[] = [
     description: "Acompanhe o Ano Litúrgico e sincronize seus encontros com as solenidades da Igreja.",
     features: ["Ano litúrgico", "Cores do tempo", "Solenidades", "Integração com turmas"],
     previewContent: <CalendarioPreview />,
-  },
-  {
-    id: "comunicacao",
-    icon: <MessageSquare className="w-6 h-6" />,
-    color: "#2563eb",
-    gradient: "from-blue-600 to-indigo-500",
-    title: "Comunicação",
-    description: "Crie avisos e comunicados profissionais e envie para pais e catequizandos.",
-    features: ["Avisos em massa", "Modelos prontos", "WhatsApp integrado", "Histórico"],
-    previewContent: <ComunicacaoPreview />,
   },
 ];
 
@@ -487,7 +467,7 @@ const screens = [
   { src: "/tela_2.jpg", label: "Relatórios" },
   { src: "/tela_3.jpg", label: "Jogos" },
   { src: "/tela_4.jpg", label: "Atividades" },
-  { src: "/tela_5.jpg", label: "Turmas" },
+  { src: "/tela_5.jpeg", label: "Turmas" },
 ];
 
 const ScreenCarousel = () => {
@@ -711,36 +691,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="relative z-10 pt-32 pb-10 px-6 flex flex-col items-center text-center max-w-5xl mx-auto">
-        {/* ── BOTÃO PREMIUM ENTRAR NA PLATAFORMA (Movido para o topo) ── */}
-        <div className="relative z-10 flex flex-col items-center justify-center mb-10 w-full">
-          <motion.button
-            whileHover={{ scale: 1.04, boxShadow: "0 20px 40px -8px rgba(140,42,60,0.45)" }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/auth?view=login")}
-            className="relative flex items-center justify-center gap-3 px-12 py-4 rounded-2xl font-black text-lg text-white overflow-hidden group w-full sm:w-auto"
-            style={{
-              background: "linear-gradient(135deg, #6b1e2c 0%, #8C2A3C 40%, #b33a52 100%)",
-              boxShadow: "0 12px 30px -6px rgba(140,42,60,0.4), 0 0 0 1px rgba(212,175,55,0.25)",
-              minWidth: 280,
-            }}
-          >
-            {/* Shimmer */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-            {/* Gold top border */}
-            <div
-              className="absolute top-0 left-0 right-0 h-[2px]"
-              style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }}
-            />
-            <LogIn className="w-6 h-6 relative z-10" />
-            <span className="relative z-10">Entrar na Plataforma</span>
-            <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-          </motion.button>
-          <p className="mt-3 text-xs text-stone-500 font-medium">
-            Já tem uma conta? Acesse aqui.
-          </p>
-        </div>
-
+      <section className="relative z-10 pt-28 pb-10 px-6 flex flex-col items-center text-center max-w-5xl mx-auto">
         {/* Logo */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -777,46 +728,51 @@ export default function LandingPage() {
           transition={{ delay: 0.2 }}
           className="text-stone-600 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-medium"
         >
-          Gerencie turmas, encontros, catequizandos e famílias em um só lugar. 
+          Gerencie turmas, encontros, catequizandos e famílias em um só lugar.
           Ferramentas litúrgicas modernas com alma pastoral.
         </motion.p>
 
-        {/* CTAs */}
+        {/* CTAs — lado a lado */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto"
         >
-          {/* Primary CTA — super destacado */}
+          {/* Entrar na Plataforma */}
           <motion.button
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ scale: 1.03, boxShadow: "0 16px 32px -6px rgba(140,42,60,0.45)" }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/auth?view=signup")}
-            className="relative w-full sm:w-auto px-10 py-4 rounded-2xl font-bold text-base text-white overflow-hidden group shadow-lg"
+            onClick={() => navigate("/auth?view=login")}
+            className="relative w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-base text-white overflow-hidden group shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #8C2A3C 0%, #c93a56 100%)",
-              boxShadow: "0 10px 25px -5px rgba(140,42,60,0.4), 0 8px 10px -6px rgba(140,42,60,0.2)",
+              background: "linear-gradient(135deg, #6b1e2c 0%, #8C2A3C 40%, #b33a52 100%)",
+              boxShadow: "0 10px 25px -5px rgba(140,42,60,0.4)",
             }}
           >
-            {/* Animated shimmer */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-            <span className="relative flex items-center justify-center gap-2.5">
-              <UserPlus className="w-5 h-5" />
-              Cadastre-se — é grátis
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
+            <LogIn className="w-5 h-5 relative z-10" />
+            <span className="relative z-10">Entrar na Plataforma</span>
           </motion.button>
 
-          {/* Secondary CTA */}
-          <button
-            onClick={() => document.getElementById("modulos")?.scrollIntoView({ behavior: "smooth" })}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold text-sm text-stone-700 bg-white hover:bg-stone-50 border border-stone-200 hover:border-stone-300 shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
+          {/* Cadastre-se — Azul */}
+          <motion.button
+            whileHover={{ scale: 1.03, boxShadow: "0 16px 32px -6px rgba(37,99,235,0.45)" }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/auth?view=signup")}
+            className="relative w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-base text-white overflow-hidden group shadow-lg"
+            style={{
+              background: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%)",
+              boxShadow: "0 10px 25px -5px rgba(37,99,235,0.4)",
+            }}
           >
-            <Play className="w-4 h-4 text-stone-500" /> Ver os módulos
-          </button>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            <UserPlus className="w-5 h-5 relative z-10" />
+            <span className="relative z-10">Cadastre-se — grátis</span>
+            <span className="relative z-10 ml-1 text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold border border-white/20">FREE</span>
+          </motion.button>
         </motion.div>
-
 
       </section>
 
