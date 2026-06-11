@@ -10,6 +10,8 @@ import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import { PremiumPaywall } from "@/components/PremiumPaywall";
 
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
@@ -27,6 +29,7 @@ export default function RelatoriosTurma() {
   const { data: paroquias = [], isLoading: loadingP } = useParoquias();
   const { data: comunidades = [], isLoading: loadingCom } = useComunidades();
   const { diarios = [], isLoading: loadingD } = useDiarioEspiritual(id!);
+  const { isPremium, isLoading: loadingPremium } = usePremiumStatus();
 
   const turma = turmas.find(t => t.id === id);
 
@@ -36,7 +39,7 @@ export default function RelatoriosTurma() {
     return null;
   }
 
-  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom || loadingD) {
+  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom || loadingD || loadingPremium) {
     return <div className="flex justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
@@ -61,6 +64,29 @@ export default function RelatoriosTurma() {
     paroquia: paroquia?.nome || "Paróquia não informada", 
     comunidade: comunidade?.nome || "Comunidade não informada" 
   };
+
+  if (!isPremium) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-center min-h-[44px] relative pt-4">
+          <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
+            <X className="h-5 w-5 text-foreground" />
+          </button>
+          
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+              Relatórios da Turma
+            </h1>
+          </div>
+        </div>
+        <PremiumPaywall 
+          title="Relatórios Bloqueados" 
+          description="Acesse o painel completo de desempenho, engajamento e imprima as fichas da sua turma assinando o Premium."
+          icon={<PieChartIcon className="h-10 w-10 text-primary" />}
+        />
+      </div>
+    );
+  }
 
   return (
 

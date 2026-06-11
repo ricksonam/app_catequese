@@ -2,11 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, Cross, Hands } from "lucide-react";
 import { oracoesBase, categoriasOracao, CategoriaOracao } from "@/data/oracoes";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import { PremiumPaywall } from "@/components/PremiumPaywall";
 
 export default function OracoesList() {
   const navigate = useNavigate();
   const [busca, setBusca] = useState("");
   const [categoriaAtiva, setCategoriaAtiva] = useState<CategoriaOracao | "Todas">("Todas");
+  const { isPremium, isLoading } = usePremiumStatus();
 
   // Filtra as orações baseadas na busca e na categoria selecionada
   const oracoesFiltradas = oracoesBase.filter((oracao) => {
@@ -19,6 +22,30 @@ export default function OracoesList() {
       
     return matchCategoria && matchBusca;
   });
+
+  if (isLoading) {
+    return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
+  }
+
+  if (!isPremium) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-center min-h-[44px] relative pt-4">
+          <button onClick={() => navigate(-1)} className="back-btn absolute left-0">
+            <ArrowLeft className="h-5 w-5 text-black" />
+          </button>
+          <h1 className="text-xl font-black text-liturgical tracking-tight uppercase">
+            Orações
+          </h1>
+        </div>
+        <PremiumPaywall 
+          title="Módulo de Orações Bloqueado" 
+          description="Assine o Premium para acessar nossa biblioteca completa de orações, dinâmicas e roteiros para catequese."
+          icon={<Hands className="h-10 w-10 text-primary" />}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-20">

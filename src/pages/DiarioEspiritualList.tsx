@@ -7,6 +7,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import { PremiumPaywall } from "@/components/PremiumPaywall";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -237,6 +239,7 @@ export default function DiarioEspiritualList() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { diarios = [], isLoading, excluirDiario } = useDiarioEspiritual(id!);
+  const { isPremium, isLoading: isLoadingPremium } = usePremiumStatus();
 
   const [viewItem, setViewItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -259,6 +262,33 @@ export default function DiarioEspiritualList() {
     }
     return Array.from(map.entries()).sort((a, b) => b[0].localeCompare(a[0]));
   }, [diarios]);
+
+  if (isLoadingPremium) {
+    return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
+  }
+
+  if (!isPremium) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-center min-h-[44px] relative pt-4">
+          <button 
+            onClick={() => navigate(`/turmas/${id}`)} 
+            className="back-btn absolute left-0"
+          >
+            <ArrowLeft className="h-5 w-5 text-black" />
+          </button>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Diário do Catequista</h1>
+          </div>
+        </div>
+        <PremiumPaywall 
+          title="Diário Espiritual Bloqueado" 
+          description="Acompanhe a evolução individual de cada catequizando, anote pontos fortes e áreas de melhoria de cada encontro ativando o Premium."
+          icon={<BookOpen className="h-10 w-10 text-primary" />}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5 pb-10">

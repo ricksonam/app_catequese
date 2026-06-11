@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { NOMES_TURMA, DIAS_SEMANA, type Turma } from "@/lib/store";
 import { useTurmas, useTurmaMutation, useComunidades, useCatequistas, useParoquias, useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
 import { EtapaMap } from "@/components/EtapaMap";
-import { ArrowLeft, Check, ChevronRight, Pencil, Search, Plus, Trash2, Mail, Phone, User, Users, Building2, MapPin, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Check, ChevronRight, Pencil, Search, Plus, Trash2, Mail, Phone, User, Users, Building2, MapPin, ChevronDown, ChevronUp, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import { cn, mascaraTelefone } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { CoordenadorInfo } from "@/lib/store";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import { PremiumPaywall } from "@/components/PremiumPaywall";
 
 // Paleta de cores únicas por índice — nunca repete as mesmas para todos
 const CAT_PALETTE = [
@@ -31,6 +33,7 @@ export default function TurmaForm() {
   const mutation = useTurmaMutation();
   const paroquiaMutation = useParoquiaMutation();
   const comunidadeMutation = useComunidadeMutation();
+  const { isPremium, isLoading: loadingPremium } = usePremiumStatus();
 
   const isEditing = Boolean(id);
   const existingTurma = turmas.find(t => t.id === id);
@@ -195,6 +198,27 @@ export default function TurmaForm() {
       <span className="text-red-500">*</span>
     </>
   ) : label;
+
+  if (loadingPremium) {
+    return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
+  }
+
+  // Se não for premium, bloqueia a criação da 3ª turma (limite de 2)
+  if (!isPremium && !isEditing && turmas.length >= 2) {
+    return (
+      <div className="space-y-4 pt-4">
+        <div className="page-header animate-fade-in">
+          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-black" /></button>
+          <h1 className="text-xl font-bold text-foreground inline-flex items-center gap-2">Nova Turma</h1>
+        </div>
+        <PremiumPaywall 
+          title="Limite de Turmas Atingido" 
+          description="Você atingiu o limite de 2 turmas gratuitas. Assine o Premium para criar turmas ilimitadas e gerenciar toda a sua paróquia sem restrições."
+          icon={<UsersRound className="h-10 w-10 text-primary" />}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-10">

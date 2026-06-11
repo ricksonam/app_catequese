@@ -2,6 +2,8 @@ import { ArrowLeft, FolderOpen, Download, Eye, FileText, Image, Loader2, Sparkle
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
+import { PremiumPaywall } from "@/components/PremiumPaywall";
 
 import { cn } from "@/lib/utils";
 
@@ -191,6 +193,7 @@ export default function MaterialApoio() {
   const [busca, setBusca] = useState("");
   const [materiais, setMateriais] = useState<MaterialCatalogo[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isPremium, isLoading: loadingPremium } = usePremiumStatus();
 
   useEffect(() => {
     async function fetchMateriais() {
@@ -227,6 +230,28 @@ export default function MaterialApoio() {
   });
 
   const totalNovos = materiais.filter((m) => isNovo(m.publicado_em)).length;
+
+  if (loadingPremium) {
+    return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
+  }
+
+  if (!isPremium) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 animate-fade-in pt-4">
+          <button onClick={() => navigate(-1)} className="back-btn">
+            <ArrowLeft className="h-5 w-5 text-black" />
+          </button>
+          <h1 className="text-xl font-bold text-foreground">Catálogo de Materiais</h1>
+        </div>
+        <PremiumPaywall 
+          title="Material de Apoio Bloqueado" 
+          description="Desbloqueie todo o acervo de materiais de apoio, PDFs, slides e dinâmicas para enriquecer seus encontros assinando o Premium."
+          icon={<FolderOpen className="h-10 w-10 text-primary" />}
+        />
+      </div>
+    );
+  }
 
   return (
 

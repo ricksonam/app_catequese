@@ -55,6 +55,7 @@ const CalendarioLiturgico     = lazy(() => import("@/pages/CalendarioLiturgico")
 const LiturgiaDiaria          = lazy(() => import("@/pages/LiturgiaDiaria"));
 const AdminDashboard          = lazy(() => import("@/pages/AdminDashboard"));
 const AdminLogin              = lazy(() => import("@/pages/AdminLogin"));
+const PremiumCheckout         = lazy(() => import("@/pages/PremiumCheckout"));
 const PlaceholderPage         = lazy(() => import("@/pages/PlaceholderPage"));
 const PublicPlano             = lazy(() => import("@/pages/PublicPlano"));
 const PublicInscricao         = lazy(() => import("@/pages/PublicInscricao"));
@@ -199,6 +200,7 @@ const AppRoutes = () => (
         <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
         <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
         <Route path="/mapa-panoramico" element={<MapaPanoramico />} />
+        <Route path="/premium" element={<PremiumCheckout />} />
       </Route>
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       <Route path="*" element={<NotFound />} />
