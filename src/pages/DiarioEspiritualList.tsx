@@ -8,7 +8,7 @@ import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog"
 import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumPaywall } from "@/components/PremiumPaywall";
+import { PremiumModal } from "@/components/PremiumModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -244,6 +244,7 @@ export default function DiarioEspiritualList() {
   const [viewItem, setViewItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const confirmDelete = async () => {
     if (!itemToDeleteId) return;
@@ -267,28 +268,13 @@ export default function DiarioEspiritualList() {
     return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
   }
 
-  if (!isPremium) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-center min-h-[44px] relative pt-4">
-          <button 
-            onClick={() => navigate(`/turmas/${id}`)} 
-            className="back-btn absolute left-0"
-          >
-            <ArrowLeft className="h-5 w-5 text-black" />
-          </button>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Diário do Catequista</h1>
-          </div>
-        </div>
-        <PremiumPaywall 
-          title="Diário Espiritual Bloqueado" 
-          description="Acompanhe a evolução individual de cada catequizando, anote pontos fortes e áreas de melhoria de cada encontro ativando o Premium."
-          icon={<BookOpen className="h-10 w-10 text-primary" />}
-        />
-      </div>
-    );
-  }
+  const handleActionClick = (action: () => void) => {
+    if (!isPremium) {
+      setShowPremiumModal(true);
+      return;
+    }
+    action();
+  };
 
   return (
     <div className="space-y-5 pb-10">
@@ -311,7 +297,7 @@ export default function DiarioEspiritualList() {
 
         <div className="flex justify-end">
           <button
-            onClick={() => navigate(`/turmas/${id}/diario/novo`)}
+            onClick={() => handleActionClick(() => navigate(`/turmas/${id}/diario/novo`))}
             className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             <Plus className="h-4 w-4" /> Novo Registro
@@ -351,7 +337,7 @@ export default function DiarioEspiritualList() {
             </p>
           </div>
           <button
-            onClick={() => navigate(`/turmas/${id}/diario/novo`)}
+            onClick={() => handleActionClick(() => navigate(`/turmas/${id}/diario/novo`))}
             className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-black text-sm shadow-xl shadow-indigo-600/25 hover:shadow-indigo-600/40 active:scale-95 transition-all"
           >
             <Plus className="h-4 w-4" /> Criar Primeiro Registro
@@ -360,7 +346,7 @@ export default function DiarioEspiritualList() {
       ) : (
         <div className="space-y-7">
           {groupedByMonth.map(([monthKey, items]) => (
-            <MonthBlock key={monthKey} monthKey={monthKey} items={items} onView={setViewItem} />
+            <MonthBlock key={monthKey} monthKey={monthKey} items={items} onView={(item) => handleActionClick(() => setViewItem(item))} />
           ))}
         </div>
       )}
@@ -504,6 +490,14 @@ export default function DiarioEspiritualList() {
         onConfirm={confirmDelete}
         itemName="este registro do diário"
         isLoading={excluirDiario.isPending}
+      />
+
+      <PremiumModal 
+        isOpen={showPremiumModal} 
+        onClose={() => setShowPremiumModal(false)}
+        title="Diário Espiritual Bloqueado" 
+        description="Acompanhe a evolução individual de cada catequizando, anote pontos fortes e áreas de melhoria de cada encontro ativando o Premium."
+        icon={<BookOpen className="h-10 w-10 text-primary" />}
       />
     </div>
   );

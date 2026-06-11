@@ -60,6 +60,7 @@ const PlaceholderPage         = lazy(() => import("@/pages/PlaceholderPage"));
 const PublicPlano             = lazy(() => import("@/pages/PublicPlano"));
 const PublicInscricao         = lazy(() => import("@/pages/PublicInscricao"));
 const MapaPanoramico          = lazy(() => import("@/pages/MapaPanoramico"));
+const MinhaAssinatura         = lazy(() => import("@/pages/MinhaAssinatura"));
 const NotFound                = lazy(() => import("@/pages/NotFound"));
 const LandingPage             = lazy(() => import("@/pages/LandingPage"));
 
@@ -201,6 +202,7 @@ const AppRoutes = () => (
         <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
         <Route path="/mapa-panoramico" element={<MapaPanoramico />} />
         <Route path="/premium" element={<PremiumCheckout />} />
+        <Route path="/minha-assinatura" element={<MinhaAssinatura />} />
       </Route>
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       <Route path="*" element={<NotFound />} />

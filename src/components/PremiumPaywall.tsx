@@ -8,7 +8,6 @@ interface PremiumPaywallProps {
 }
 
 export function PremiumPaywall({ title, description, icon }: PremiumPaywallProps) {
-  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center animate-fade-in my-8 max-w-md mx-auto">
@@ -47,12 +46,14 @@ export function PremiumPaywall({ title, description, icon }: PremiumPaywallProps
           </ul>
         </div>
 
-        <button 
-          onClick={() => navigate('/premium')}
+        <a 
+          href="https://checkout.infinitepay.io/ricksonam/GuSd0TynkX"
+          target="_blank"
+          rel="noopener noreferrer"
           className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-primary-foreground font-bold py-4 px-6 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
           Desbloquear por R$ 9,90/ano <ChevronRight className="h-5 w-5" />
-        </button>
+        </a>
         <p className="text-xs text-muted-foreground/60">
           Pagamento único anual. Não há renovação automática sem seu aviso.
         </p>

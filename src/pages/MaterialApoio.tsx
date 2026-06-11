@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumPaywall } from "@/components/PremiumPaywall";
+import { PremiumModal } from "@/components/PremiumModal";
 
 import { cn } from "@/lib/utils";
 
@@ -70,7 +70,7 @@ function ImageIcon({ src, className }: { src?: string | null; className?: string
   );
 }
 
-function MaterialCard({ mat, index }: { mat: MaterialCatalogo; index: number }) {
+function MaterialCard({ mat, index, isPremium, onPremiumClick }: { mat: MaterialCatalogo; index: number; isPremium: boolean; onPremiumClick: () => void }) {
   const novo = isNovo(mat.publicado_em);
   const isPdf = mat.arquivo_tipo === "pdf" || mat.arquivo_url?.toLowerCase().includes(".pdf");
   const isImage = mat.arquivo_tipo === "image" || ["jpg","jpeg","png","webp","gif"].some(ext => mat.arquivo_url?.toLowerCase().includes(`.${ext}`));
@@ -106,23 +106,44 @@ function MaterialCard({ mat, index }: { mat: MaterialCatalogo; index: number }) 
         {/* Overlay de ações ao hover */}
         {fileUrl && (
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white hover:bg-white/40 transition-colors"
-              title="Visualizar"
-            >
-              <Eye className="w-4 w-4" />
-            </a>
-            <a
-              href={fileUrl}
-              download
-              className="w-10 h-10 rounded-full bg-primary/80 backdrop-blur-sm border border-primary/40 flex items-center justify-center text-white hover:bg-primary transition-colors"
-              title="Baixar"
-            >
-              <Download className="w-4 h-4" />
-            </a>
+            {isPremium ? (
+              <>
+                <a
+                  href={fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white hover:bg-white/40 transition-colors"
+                  title="Visualizar"
+                >
+                  <Eye className="w-4 h-4" />
+                </a>
+                <a
+                  href={fileUrl}
+                  download
+                  className="w-10 h-10 rounded-full bg-primary/80 backdrop-blur-sm border border-primary/40 flex items-center justify-center text-white hover:bg-primary transition-colors"
+                  title="Baixar"
+                >
+                  <Download className="w-4 h-4" />
+                </a>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={(e) => { e.preventDefault(); onPremiumClick(); }}
+                  className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center text-white hover:bg-white/40 transition-colors"
+                  title="Visualizar"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); onPremiumClick(); }}
+                  className="w-10 h-10 rounded-full bg-primary/80 backdrop-blur-sm border border-primary/40 flex items-center justify-center text-white hover:bg-primary transition-colors"
+                  title="Baixar"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -159,23 +180,44 @@ function MaterialCard({ mat, index }: { mat: MaterialCatalogo; index: number }) 
         {/* Botões de ação */}
         {fileUrl ? (
           <div className="flex gap-2 mt-1">
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-muted hover:bg-primary/10 text-foreground hover:text-primary text-[11px] font-bold transition-colors border border-border/50 hover:border-primary/20"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              Visualizar
-            </a>
-            <a
-              href={fileUrl}
-              download
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-primary text-primary-foreground text-[11px] font-bold transition-all hover:bg-primary/90 active:scale-95 shadow-sm shadow-primary/20"
-            >
-              <Download className="w-3.5 h-3.5" />
-              Baixar
-            </a>
+            {isPremium ? (
+              <>
+                <a
+                  href={fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-muted hover:bg-primary/10 text-foreground hover:text-primary text-[11px] font-bold transition-colors border border-border/50 hover:border-primary/20"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  Visualizar
+                </a>
+                <a
+                  href={fileUrl}
+                  download
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-primary text-primary-foreground text-[11px] font-bold transition-all hover:bg-primary/90 active:scale-95 shadow-sm shadow-primary/20"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Baixar
+                </a>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={(e) => { e.preventDefault(); onPremiumClick(); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-muted hover:bg-primary/10 text-foreground hover:text-primary text-[11px] font-bold transition-colors border border-border/50 hover:border-primary/20"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  Visualizar
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); onPremiumClick(); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-primary text-primary-foreground text-[11px] font-bold transition-all hover:bg-primary/90 active:scale-95 shadow-sm shadow-primary/20"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Baixar
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div className="flex items-center justify-center py-2 rounded-xl bg-muted text-muted-foreground text-[11px] font-bold mt-1">
@@ -194,6 +236,7 @@ export default function MaterialApoio() {
   const [materiais, setMateriais] = useState<MaterialCatalogo[]>([]);
   const [loading, setLoading] = useState(true);
   const { isPremium, isLoading: loadingPremium } = usePremiumStatus();
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   useEffect(() => {
     async function fetchMateriais() {
@@ -233,24 +276,6 @@ export default function MaterialApoio() {
 
   if (loadingPremium) {
     return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
-  }
-
-  if (!isPremium) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 animate-fade-in pt-4">
-          <button onClick={() => navigate(-1)} className="back-btn">
-            <ArrowLeft className="h-5 w-5 text-black" />
-          </button>
-          <h1 className="text-xl font-bold text-foreground">Catálogo de Materiais</h1>
-        </div>
-        <PremiumPaywall 
-          title="Material de Apoio Bloqueado" 
-          description="Desbloqueie todo o acervo de materiais de apoio, PDFs, slides e dinâmicas para enriquecer seus encontros assinando o Premium."
-          icon={<FolderOpen className="h-10 w-10 text-primary" />}
-        />
-      </div>
-    );
   }
 
   return (
@@ -332,12 +357,20 @@ export default function MaterialApoio() {
             ) : (
               <div className="grid grid-cols-2 gap-3 animate-fade-in">
                 {filtered.map((mat, i) => (
-                  <MaterialCard key={mat.id} mat={mat} index={i} />
+                  <MaterialCard key={mat.id} mat={mat} index={i} isPremium={isPremium} onPremiumClick={() => setShowPremiumModal(true)} />
                 ))}
               </div>
             )}
           </>
         )}
+
+        <PremiumModal 
+          isOpen={showPremiumModal} 
+          onClose={() => setShowPremiumModal(false)}
+          title="Material de Apoio Bloqueado" 
+          description="Desbloqueie todo o acervo de materiais de apoio, PDFs, slides e dinâmicas para enriquecer seus encontros assinando o Premium."
+          icon={<FolderOpen className="h-10 w-10 text-primary" />}
+        />
       </div>
 
   );

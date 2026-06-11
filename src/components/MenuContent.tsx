@@ -421,6 +421,11 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             <AccordionContent className="pt-1 px-1 space-y-1">
               <div className="p-3 bg-slate-50 dark:bg-zinc-900/50 rounded-2xl border border-black/5 dark:border-white/5 space-y-1">
                 <p className="px-3 pb-2 text-[9px] font-black uppercase text-muted-foreground tracking-widest border-b border-black/5 dark:border-white/5 mb-2">Meus Dados</p>
+
+                <button onClick={() => go("/minha-assinatura")} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
+                  <span className="text-sm font-bold text-foreground/80 text-left">Minha Assinatura</span>
+                </button>
                 
                 <button onClick={() => setShowMeusDadosDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                   <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><User className="h-4 w-4" /></div>

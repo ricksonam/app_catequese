@@ -1,7 +1,8 @@
 import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, UsersRound, Theater, ArrowLeft, Gamepad2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumPaywall } from "@/components/PremiumPaywall";
+import { PremiumModal } from "@/components/PremiumModal";
 
 const jogos = [
   {
@@ -65,30 +66,17 @@ const jogos = [
 export default function JogosHub() {
   const navigate = useNavigate();
   const { isPremium, isLoading } = usePremiumStatus();
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   if (isLoading) {
     return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
   }
 
-  if (!isPremium) {
-    return (
-      <div className="space-y-4">
-        <div className="page-header">
-          <button onClick={() => navigate(-1)} className="back-btn"><ArrowLeft className="h-5 w-5 text-black" /></button>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Jogos e Dinâmicas</h1>
-          </div>
-        </div>
-        <PremiumPaywall 
-          title="Módulo de Jogos Bloqueado" 
-          description="Desbloqueie todos os jogos bíblicos interativos para engajar seus catequizandos durante os encontros."
-          icon={<Gamepad2 className="h-10 w-10 text-primary" />}
-        />
-      </div>
-    );
-  }
-
   const handleGameClick = (path: string, label: string) => {
+    if (!isPremium) {
+      setShowPremiumModal(true);
+      return;
+    }
     navigate(path);
   };
 
@@ -130,7 +118,13 @@ export default function JogosHub() {
         })}
       </div>
 
-
+      <PremiumModal 
+        isOpen={showPremiumModal} 
+        onClose={() => setShowPremiumModal(false)}
+        title="Módulo de Jogos Bloqueado" 
+        description="Assine o Premium para acessar nossa biblioteca completa de jogos bíblicos, quiz e dinâmicas."
+        icon={<Gamepad2 className="h-10 w-10 text-primary" />}
+      />
     </div>
   );
 }

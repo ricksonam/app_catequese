@@ -11,7 +11,7 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumPaywall } from "@/components/PremiumPaywall";
+import { PremiumModal } from "@/components/PremiumModal";
 
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
@@ -21,6 +21,7 @@ export default function RelatoriosTurma() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"inteligente" | "documentos">("inteligente");
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const { data: turmas = [], isLoading: loadingT } = useTurmas();
   const { data: encontros = [], isLoading: loadingE } = useEncontros(id);
@@ -64,29 +65,6 @@ export default function RelatoriosTurma() {
     paroquia: paroquia?.nome || "Paróquia não informada", 
     comunidade: comunidade?.nome || "Comunidade não informada" 
   };
-
-  if (!isPremium) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-center min-h-[44px] relative pt-4">
-          <button onClick={() => navigate(`/turmas/${id}`)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
-            <X className="h-5 w-5 text-foreground" />
-          </button>
-          
-          <div className="flex flex-col items-center gap-1 text-center">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
-              Relatórios da Turma
-            </h1>
-          </div>
-        </div>
-        <PremiumPaywall 
-          title="Relatórios Bloqueados" 
-          description="Acesse o painel completo de desempenho, engajamento e imprima as fichas da sua turma assinando o Premium."
-          icon={<PieChartIcon className="h-10 w-10 text-primary" />}
-        />
-      </div>
-    );
-  }
 
   return (
 
@@ -132,8 +110,16 @@ export default function RelatoriosTurma() {
       {tab === "inteligente" ? (
         <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} diarios={diarios} />
       ) : (
-        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} />
+        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} isPremium={isPremium} onPremiumClick={() => setShowPremiumModal(true)} />
       )}
+
+      <PremiumModal 
+        isOpen={showPremiumModal} 
+        onClose={() => setShowPremiumModal(false)}
+        title="Relatórios Bloqueados" 
+        description="Acesse o painel completo de desempenho, engajamento e imprima as fichas da sua turma assinando o Premium."
+        icon={<PieChartIcon className="h-10 w-10 text-primary" />}
+      />
       </div>
 
   );
@@ -455,7 +441,7 @@ const DOC_TYPES = [
   { id: "materiais_apoio", label: "Materiais de Apoio", icon: BookOpen, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-600" },
 ];
 
-function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
+function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org, isPremium, onPremiumClick }: any) {
   const [docTipo, setDocTipo] = useState<string>("ficha_cat");
   const [printTarget, setPrintTarget] = useState<any>(null);
 
@@ -509,11 +495,19 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   const selectedType = DOC_TYPES.find(d => d.id === docTipo)!;
 
   const handlePrint = (target: any) => {
+    if (!isPremium) {
+      onPremiumClick();
+      return;
+    }
     setPrintTarget(target);
     setTimeout(() => window.print(), 100);
   };
 
   const handleCompartilhar = async (target: any) => {
+    if (!isPremium) {
+      onPremiumClick();
+      return;
+    }
     setPrintTarget(target);
     setIsGenerating(true);
     setReadyToShareParams(null);
