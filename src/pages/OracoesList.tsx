@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, Cross, Hands } from "lucide-react";
+import { ArrowLeft, Search, Cross, Heart } from "lucide-react";
 import { oracoesBase, categoriasOracao, CategoriaOracao } from "@/data/oracoes";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { PremiumPaywall } from "@/components/PremiumPaywall";
@@ -41,7 +41,7 @@ export default function OracoesList() {
         <PremiumPaywall 
           title="Módulo de Orações Bloqueado" 
           description="Assine o Premium para acessar nossa biblioteca completa de orações, dinâmicas e roteiros para catequese."
-          icon={<Hands className="h-10 w-10 text-primary" />}
+          icon={<Heart className="h-10 w-10 text-primary" />}
         />
       </div>
     );
