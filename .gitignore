@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variáveis de ambiente — NUNCA commitar chaves secretas
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+
+# Arquivos de debug temporários
+check-divs*.mjs
+count-divs.mjs
+divs-trace.txt
+update-colors.cjs
+build_err.log
+build_error.txt
+build_log*.txt

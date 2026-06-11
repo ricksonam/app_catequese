@@ -280,13 +280,20 @@ export function useSaveHistoricoCitacao() {
 
 // ===== BINGO BÍBLICO =====
 export function useBingoModelos() {
-  return useQuery({ queryKey: ["bingo_modelos"], queryFn: fetchBingoModelos });
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["bingo_modelos", user?.id],
+    queryFn: fetchBingoModelos,
+    enabled: !!user,
+  });
 }
 
 export function useMissoesFamilia(turmaId?: string) {
+  const { user } = useAuth();
   return useQuery({
-    queryKey: ["missoesFamilia", turmaId],
+    queryKey: ["missoesFamilia", user?.id, turmaId],
     queryFn: () => fetchMissoesFamilia(turmaId),
+    enabled: !!user,
   });
 }
 

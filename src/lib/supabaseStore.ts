@@ -591,11 +591,24 @@ export async function approveTurmaMembro(turmaId: string, userId: string) {
 }
 
 // ========== STORAGE ==========
+const ALLOWED_UPLOAD_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_UPLOAD_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
 export async function uploadFile(file: Blob, folder: string, fileName: string): Promise<string> {
+  // Validar tipo de arquivo
+  if (!ALLOWED_UPLOAD_TYPES.includes(file.type)) {
+    throw new Error(`Tipo de arquivo não permitido. Use: ${ALLOWED_UPLOAD_TYPES.join(', ')}`);
+  }
+
+  // Validar tamanho
+  if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+    throw new Error(`Arquivo muito grande. O tamanho máximo é 5 MB.`);
+  }
+
   const path = `${folder}/${fileName}`;
   const { data, error } = await supabase.storage.from("catequese").upload(path, file, {
     upsert: true,
-    contentType: 'image/jpeg'
+    contentType: file.type,
   });
   
   if (error) throw error;

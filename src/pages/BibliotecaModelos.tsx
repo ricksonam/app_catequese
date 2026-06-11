@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MODELOS_ENCONTROS, CATEGORIAS_MODELOS, type ModeloEncontro } from "@/lib/modelosEncontros";
-import { saveEncontro, type Encontro } from "@/lib/store";
+import { type Encontro } from "@/lib/store";
+import { upsertEncontro } from "@/lib/supabaseStore";
 import { ArrowLeft, BookOpen, Clock, ChevronRight, Search, Check, Library } from "lucide-react";
 import { toast } from "sonner";
 
@@ -11,6 +12,7 @@ export default function BibliotecaModelos() {
   const [categoriaAtiva, setCategoriaAtiva] = useState<string | null>(null);
   const [busca, setBusca] = useState("");
   const [expandido, setExpandido] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
 
   const modelosFiltrados = MODELOS_ENCONTROS.filter((m) => {
     const matchCategoria = !categoriaAtiva || m.categoria === categoriaAtiva;
@@ -18,18 +20,26 @@ export default function BibliotecaModelos() {
     return matchCategoria && matchBusca;
   });
 
-  const usarModelo = (modelo: ModeloEncontro) => {
+  const usarModelo = async (modelo: ModeloEncontro) => {
     if (!turmaId) { toast.error("Selecione uma turma primeiro."); return; }
-    const novoEncontro: Encontro = {
-      id: crypto.randomUUID(), turmaId, tema: modelo.tema,
-      data: new Date().toISOString().split("T")[0], leituraBiblica: modelo.leituraBiblica,
-      materialApoio: modelo.materialApoio,
-      roteiro: modelo.roteiro.map((s) => ({ ...s, id: crypto.randomUUID() })),
-      status: "pendente", presencas: [], criadoEm: new Date().toISOString(),
-    };
-    saveEncontro(novoEncontro);
-    toast.success("Modelo aplicado! Encontro criado.");
-    navigate(`/turmas/${turmaId}/encontros/${novoEncontro.id}`);
+    setSalvando(true);
+    try {
+      const novoEncontro: Encontro = {
+        id: crypto.randomUUID(), turmaId, tema: modelo.tema,
+        data: new Date().toISOString().split("T")[0], leituraBiblica: modelo.leituraBiblica,
+        materialApoio: modelo.materialApoio,
+        roteiro: modelo.roteiro.map((s) => ({ ...s, id: crypto.randomUUID() })),
+        status: "pendente", presencas: [], criadoEm: new Date().toISOString(),
+      };
+      await upsertEncontro(novoEncontro);
+      toast.success("Modelo aplicado! Encontro criado.");
+      navigate(`/turmas/${turmaId}/encontros/${novoEncontro.id}`);
+    } catch (err) {
+      toast.error("Erro ao salvar o modelo. Tente novamente.");
+      console.error("[BibliotecaModelos] Erro ao criar encontro:", err);
+    } finally {
+      setSalvando(false);
+    }
   };
 
   const tempoTotal = (modelo: ModeloEncontro) => modelo.roteiro.reduce((acc, s) => acc + s.tempo, 0);
@@ -102,8 +112,13 @@ export default function BibliotecaModelos() {
                     </div>
                   </div>
                   {turmaId && (
-                    <button onClick={() => usarModelo(modelo)} className="w-full action-btn mt-2">
-                      <Check className="h-4 w-4" /> Usar este Modelo
+                    <button
+                      onClick={() => usarModelo(modelo)}
+                      disabled={salvando}
+                      className="w-full action-btn mt-2 disabled:opacity-60"
+                    >
+                      <Check className="h-4 w-4" />
+                      {salvando ? "Salvando..." : "Usar este Modelo"}
                     </button>
                   )}
                 </div>
