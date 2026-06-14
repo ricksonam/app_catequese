@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, CreditCard, Sparkles, Star, XCircle, ShieldCheck, Hash, Clock, AlertCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, CreditCard, Sparkles, Star, XCircle, ShieldCheck, AlertCircle } from "lucide-react";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -13,80 +13,66 @@ export default function MinhaAssinatura() {
   const { user } = useAuth();
   const { isPremium, expiresAt, isLoading, refetch } = usePremiumStatus();
   
-  const [isLinkingPayment, setIsLinkingPayment] = useState(false);
+  const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
-  // Link estático da InfinitePay
-  const INFINITEPAY_CHECKOUT_URL = "https://checkout.infinitepay.io/ricksonam/iq754vwJ1z";
-
-  // Efeito para "Late Binding" (quando a InfinitePay redireciona de volta com ?order_nsu=...)
+  // Verifica o retorno do Mercado Pago
   useEffect(() => {
-    const orderNsu = searchParams.get("order_nsu");
+    const mpStatus = searchParams.get("mp_status");
     
-    if (orderNsu && user && !isPremium) {
-      const linkPayment = async () => {
-        setIsLinkingPayment(true);
-        try {
-          // Chama repetidamente (polling) por 1 minuto se não encontrar, pois o webhook pode demorar alguns segundos
-          let attempts = 0;
-          let linked = false;
-          
-          while (attempts < 12 && !linked) {
-            console.log(`Tentando vincular pagamento ${orderNsu} (Tentativa ${attempts + 1})`);
-            const { data, error } = await supabase.functions.invoke("link-payment", {
-              body: { order_nsu: orderNsu }
-            });
-
-            if (data?.activated) {
-              toast.success("Pagamento confirmado! Bem-vindo(a) ao Premium 🎉");
-              refetch();
-              linked = true;
-              // Limpa a URL
-              searchParams.delete("order_nsu");
-              setSearchParams(searchParams);
-              break;
-            } else if (data?.reason === "not_found" || data?.reason === "not_paid") {
-              // Espera 5 segundos e tenta de novo
-              await new Promise(r => setTimeout(r, 5000));
-              attempts++;
-            } else if (error || data?.error) {
-              console.error("Erro no vínculo:", error || data?.error);
-              toast.error(data?.error || "Erro ao verificar pagamento. Contate o suporte.");
-              break;
-            }
-          }
-
-          if (!linked && attempts >= 12) {
-            toast.info("Aguardando confirmação...", {
-              description: "O sistema da InfinitePay ainda está processando. Se o pagamento foi feito, sua conta será ativada automaticamente em breve."
-            });
-          }
-
-        } catch (err) {
-          console.error("Erro fatal no vínculo:", err);
-        } finally {
-          setIsLinkingPayment(false);
-        }
-      };
-
-      linkPayment();
+    if (mpStatus === "success") {
+      toast.success("Pagamento aprovado! Seu Premium será ativado em instantes.", {
+        description: "Se não for ativado imediatamente, recarregue a página em alguns segundos."
+      });
+      // Limpa a URL
+      searchParams.delete("mp_status");
+      setSearchParams(searchParams);
+      refetch(); // Força recarregar o status caso o webhook já tenha atualizado
+    } else if (mpStatus === "pending") {
+      toast.info("Pagamento em análise", {
+        description: "Seu pagamento via Mercado Pago está sendo processado."
+      });
+      searchParams.delete("mp_status");
+      setSearchParams(searchParams);
+    } else if (mpStatus === "failure") {
+      toast.error("Pagamento recusado", {
+        description: "Houve um problema com seu pagamento no Mercado Pago."
+      });
+      searchParams.delete("mp_status");
+      setSearchParams(searchParams);
     }
-  }, [searchParams, user, isPremium]);
+  }, [searchParams, refetch, setSearchParams]);
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
     if (!user) {
       toast.error("Você precisa estar logado para assinar.");
       return;
     }
-    // Abre a InfinitePay em uma nova aba para o usuário pagar.
-    // O usuário DEVE voltar para a mesma aba após o pagamento para o vínculo tardio funcionar.
-    window.location.href = INFINITEPAY_CHECKOUT_URL;
+
+    setIsCreatingCheckout(true);
+    try {
+      // Chama a edge function para criar a preferência no Mercado Pago
+      const { data, error } = await supabase.functions.invoke("create-mp-preference");
+
+      if (error || !data?.init_point) {
+        throw new Error(error?.message || "Não foi possível gerar o link de pagamento.");
+      }
+
+      // Redireciona o usuário para o checkout do Mercado Pago
+      window.location.href = data.init_point;
+    } catch (err: any) {
+      console.error("Erro ao gerar checkout MP:", err);
+      toast.error("Falha ao iniciar pagamento", {
+        description: err.message || "Tente novamente mais tarde."
+      });
+    } finally {
+      setIsCreatingCheckout(false);
+    }
   };
 
-  if (isLoading || isLinkingPayment) {
+  if (isLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col gap-4 items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        {isLinkingPayment && <p className="text-sm font-bold animate-pulse">Confirmando seu pagamento...</p>}
       </div>
     );
   }
@@ -184,12 +170,13 @@ export default function MinhaAssinatura() {
                 <div className="pt-2">
                   <Button
                     onClick={handleSubscribe}
+                    disabled={isCreatingCheckout}
                     className="w-full h-14 rounded-2xl bg-white text-primary hover:bg-white/90 font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                   >
-                    Assinar Premium — R$ 9,90/ano
+                    {isCreatingCheckout ? "Preparando checkout..." : "Assinar Premium — R$ 9,90/ano"}
                   </Button>
                   <p className="text-[10px] text-white/60 text-center mt-3 uppercase tracking-widest">
-                    Pagamento 100% seguro via InfinitePay
+                    Pagamento 100% seguro via Mercado Pago
                   </p>
                 </div>
               </div>
@@ -202,14 +189,14 @@ export default function MinhaAssinatura() {
                 Como funciona?
               </h4>
               <p className="text-xs text-blue-800 dark:text-blue-400 leading-relaxed mb-3">
-                Ao clicar em "Assinar", você será redirecionado para a tela de pagamento segura da InfinitePay.
+                Ao clicar em "Assinar", você será redirecionado para a tela de pagamento super segura do Mercado Pago.
               </p>
               <div className="p-3 bg-white/60 dark:bg-black/20 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
                 <p className="text-xs font-bold text-blue-900 dark:text-blue-300">
-                  ⚠️ Importante: Após concluir o pagamento na InfinitePay, não feche a janela!
+                  ⚠️ Ativação Automática
                 </p>
                 <p className="text-[10px] text-blue-800/80 dark:text-blue-400/80 mt-1">
-                  Aguarde ser redirecionado automaticamente de volta para esta página para que sua conta Premium seja ativada na hora.
+                  Logo após a aprovação do seu pagamento, o Mercado Pago nos avisa e sua conta é ativada em segundos, sem complicações.
                 </p>
               </div>
             </div>
@@ -243,7 +230,7 @@ export default function MinhaAssinatura() {
               <div>
                 <p className="text-sm font-bold text-sky-900 dark:text-sky-300">Gerenciar Pagamento</p>
                 <p className="text-xs text-sky-700/70 dark:text-sky-400/70 mt-1">
-                  Sua assinatura é processada de forma segura através da InfinitePay.
+                  Sua assinatura é processada de forma segura através do Mercado Pago.
                   {premiumUntil && ` Válida até ${premiumUntil}.`}
                 </p>
               </div>
