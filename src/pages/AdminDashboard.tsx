@@ -822,7 +822,7 @@ export default function AdminDashboard() {
                     <DialogHeader className="p-6 pb-2">
                       <DialogTitle className="flex items-center gap-2">
                         <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                        Dados Brutos da InfinitePay
+                        Dados Brutos do Webhook
                       </DialogTitle>
                       <DialogDescription>
                         Payload completo recebido via Webhook
