@@ -6,7 +6,8 @@ import {
   ShieldAlert, ShieldCheck, Trash2, ArrowLeft, TrendingUp, 
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
   BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter,
-  BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2, Tag, Gift
+  BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2, Tag, Gift,
+  CreditCard, Crown, BadgeCheck, Hash, RefreshCw, CalendarCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -46,6 +47,22 @@ interface Profile {
   role?: string;
   sub_admin_status?: string;
   sub_admin_created_by?: string;
+  is_premium?: boolean;
+  premium_since?: string | null;
+  premium_expires_at?: string | null;
+  premium_set_by?: string | null;
+  premium_transaction_nsu?: string | null;
+}
+
+interface PaymentOrder {
+  id: string;
+  user_id: string;
+  order_nsu: string;
+  status: string;
+  amount: number;
+  created_at: string;
+  paid_at: string | null;
+  user_email: string | null;
 }
 
 const BLOCK_REASONS = [
@@ -104,6 +121,14 @@ export default function AdminDashboard() {
   const [adminPassword, setAdminPassword] = useState("");
   const [isSubAdminLoading, setIsSubAdminLoading] = useState(false);
   const [createdCredentials, setCreatedCredentials] = useState<{ email: string; password: string } | null>(null);
+
+  // Subscription management states
+  const [subscriptionSearch, setSubscriptionSearch] = useState("");
+  const [subscriptionFilter, setSubscriptionFilter] = useState<"all" | "premium" | "basic">("all");
+  const [isPremiumDialogOpen, setIsPremiumDialogOpen] = useState(false);
+  const [userToSetPremium, setUserToSetPremium] = useState<Profile | null>(null);
+  const [premiumDuration, setPremiumDuration] = useState("1year");
+  const [isSettingPremium, setIsSettingPremium] = useState(false);
 
   const [financeFilters, setFinanceFilters] = useState({
     estado: "Todos",
@@ -219,6 +244,21 @@ export default function AdminDashboard() {
         };
       });
     }
+  });
+
+  // Query: payment orders
+  const { data: paymentOrders = [], isLoading: loadingOrders, refetch: refetchOrders } = useQuery({
+    queryKey: ["admin_payment_orders"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("payment_orders")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return data as PaymentOrder[];
+    },
+    enabled: activeTab === "subscriptions"
   });
 
   const { data: sugestoes = [], isLoading: loadingSugestoes } = useQuery({
@@ -353,6 +393,7 @@ export default function AdminDashboard() {
   const stats = useMemo(() => {
     const total = profiles.length;
     const blocked = profiles.filter(p => p.is_blocked).length;
+    const premium = profiles.filter(p => p.is_premium).length;
 
     const activeToday = profiles.filter(p => {
       if (!p.last_login) return false;
@@ -363,7 +404,7 @@ export default function AdminDashboard() {
     const deletedReasons = sugestoes.filter(s => s.tipo === 'exclusao').length;
     const safetyAlertsCount = safetyAlerts.length;
 
-    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount };
+    return { total, blocked, activeToday, deletedReasons, safetyAlertsCount, premium };
   }, [profiles, sugestoes, safetyAlerts]);
 
 
@@ -443,7 +484,14 @@ export default function AdminDashboard() {
             description="Sessões hoje"
             onClick={() => setActiveTab("users")}
           />
-
+          <StatsCard 
+            title="Assinantes Premium" 
+            value={stats.premium} 
+            icon={Crown} 
+            color="amber" 
+            description={`R$ ${(stats.premium * 9.9).toFixed(2).replace('.', ',')} estimado`}
+            onClick={() => setActiveTab("subscriptions")}
+          />
           <StatsCard 
             title="Bloqueados" 
             value={stats.blocked} 
@@ -470,7 +518,7 @@ export default function AdminDashboard() {
           <aside className="w-full md:w-64 border-r border-border/50 bg-slate-50/50 p-6 space-y-2">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
-
+            <TabButton active={activeTab === "subscriptions"} onClick={() => setActiveTab("subscriptions")} icon={Crown} label="Assinaturas" />
             <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Catálogo" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
@@ -520,6 +568,226 @@ export default function AdminDashboard() {
                     <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                       <Users className="h-12 w-12 mb-3 opacity-20" />
                       <p className="text-sm font-bold">Nenhum usuário encontrado</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ═══════════ SUBSCRIPTIONS TAB ═══════════ */}
+            {activeTab === "subscriptions" && (
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Controle de Assinaturas</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Gerencie os planos dos usuários — Básico e Premium
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
+                      {(["all", "premium", "basic"] as const).map(f => (
+                        <button
+                          key={f}
+                          onClick={() => setSubscriptionFilter(f)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                            subscriptionFilter === f
+                              ? "bg-white shadow-sm text-foreground"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {f === "all" ? "Todos" : f === "premium" ? "⭐ Premium" : "Básico"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Summary cards */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
+                    <div className="text-2xl font-black text-amber-700">{stats.premium}</div>
+                    <div className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mt-1">Premium</div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                    <div className="text-2xl font-black text-slate-700">{stats.total - stats.premium}</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Básico</div>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
+                    <div className="text-2xl font-black text-emerald-700">R$ {(stats.premium * 9.9).toFixed(2).replace('.', ',')}</div>
+                    <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mt-1">Receita Est.</div>
+                  </div>
+                </div>
+
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por e-mail..."
+                    className="pl-9 rounded-xl border-border/50 h-10"
+                    value={subscriptionSearch}
+                    onChange={(e) => setSubscriptionSearch(e.target.value)}
+                  />
+                </div>
+
+                {/* Users list */}
+                <div className="space-y-2">
+                  {profiles
+                    .filter(p => {
+                      const matchSearch = (p.email?.toLowerCase() || "").includes(subscriptionSearch.toLowerCase());
+                      const matchFilter = subscriptionFilter === "all" ? true
+                        : subscriptionFilter === "premium" ? p.is_premium
+                        : !p.is_premium;
+                      return matchSearch && matchFilter;
+                    })
+                    .map(p => (
+                      <div key={p.id} className="bg-white border border-border/50 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3 hover:shadow-sm transition-all">
+                        {/* Avatar */}
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0",
+                          p.is_premium ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"
+                        )}>
+                          {p.is_premium ? <Crown className="w-5 h-5" /> : p.email.slice(0,2).toUpperCase()}
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm font-bold text-foreground truncate">{p.email}</span>
+                            {p.is_premium ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 text-[10px] font-black uppercase">
+                                <Star className="w-2.5 h-2.5" /> Premium
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-bold uppercase">
+                                Básico
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1">
+                            {p.is_premium && p.premium_since && (
+                              <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                <CalendarCheck className="w-3 h-3" />
+                                Premium desde {new Date(p.premium_since).toLocaleDateString("pt-BR")}
+                              </span>
+                            )}
+                            {p.is_premium && p.premium_expires_at && (
+                              <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                Expira {new Date(p.premium_expires_at).toLocaleDateString("pt-BR")}
+                              </span>
+                            )}
+                            {p.is_premium && p.premium_set_by && (
+                              <span className="text-[11px] text-muted-foreground">
+                                Via: {p.premium_set_by === "admin" ? "✋ Admin" : "🔗 Webhook"}
+                              </span>
+                            )}
+                            {p.is_premium && p.premium_transaction_nsu && (
+                              <span className="text-[10px] font-mono text-muted-foreground/70 flex items-center gap-1">
+                                <Hash className="w-3 h-3" />{p.premium_transaction_nsu}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-2 shrink-0">
+                          {p.is_premium ? (
+                            <button
+                              onClick={async () => {
+                                if (!confirm(`Revogar premium de ${p.email}?`)) return;
+                                const { error } = await supabase.from("profiles").update({
+                                  is_premium: false,
+                                  premium_since: null,
+                                  premium_expires_at: null,
+                                  premium_set_by: null,
+                                }).eq("id", p.id);
+                                if (!error) {
+                                  qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                                  toast.success(`Premium de ${p.email} revogado.`);
+                                } else {
+                                  toast.error("Erro ao revogar premium.");
+                                }
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 text-xs font-bold hover:bg-destructive/20 transition-all active:scale-95"
+                            >
+                              <XCircle className="w-3.5 h-3.5" /> Revogar
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => { setUserToSetPremium(p); setIsPremiumDialogOpen(true); }}
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold hover:bg-amber-200 transition-all active:scale-95"
+                            >
+                              <Crown className="w-3.5 h-3.5" /> Marcar Premium
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  }
+                  {profiles.filter(p => {
+                    const matchSearch = (p.email?.toLowerCase() || "").includes(subscriptionSearch.toLowerCase());
+                    const matchFilter = subscriptionFilter === "all" ? true : subscriptionFilter === "premium" ? p.is_premium : !p.is_premium;
+                    return matchSearch && matchFilter;
+                  }).length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                      <Crown className="h-12 w-12 mb-3 opacity-20" />
+                      <p className="text-sm font-bold">Nenhum usuário encontrado</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Payment Orders History */}
+                <div className="mt-8">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Histórico de Pedidos (NSU)</h3>
+                    <button onClick={() => refetchOrders()} className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">
+                      <RefreshCw className="w-3.5 h-3.5" /> Atualizar
+                    </button>
+                  </div>
+                  {loadingOrders ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                  ) : paymentOrders.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-10 text-muted-foreground border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50">
+                      <CreditCard className="h-8 w-8 mb-2 opacity-20" />
+                      <p className="text-xs font-bold">Nenhum pedido registrado ainda</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {paymentOrders.map(order => (
+                        <div key={order.id} className="bg-white border border-border/50 rounded-xl p-3 flex items-center gap-3">
+                          <div className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                            order.status === "paid" ? "bg-emerald-100 text-emerald-600" :
+                            order.status === "failed" ? "bg-destructive/10 text-destructive" :
+                            "bg-amber-100 text-amber-600"
+                          )}>
+                            {order.status === "paid" ? <CheckCircle2 className="w-4 h-4" /> :
+                             order.status === "failed" ? <XCircle className="w-4 h-4" /> :
+                             <Loader2 className="w-4 h-4" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-mono font-bold text-foreground truncate">{order.order_nsu}</span>
+                              <span className={cn(
+                                "text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full",
+                                order.status === "paid" ? "bg-emerald-100 text-emerald-700" :
+                                order.status === "failed" ? "bg-destructive/10 text-destructive" :
+                                "bg-amber-100 text-amber-700"
+                              )}>{order.status === "paid" ? "Pago" : order.status === "failed" ? "Falhou" : "Pendente"}</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground truncate">{order.user_email || "—"}</p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="text-xs font-bold text-foreground">R$ {Number(order.amount || 9.9).toFixed(2).replace('.', ',')}</p>
+                            <p className="text-[9px] text-muted-foreground">{new Date(order.created_at).toLocaleDateString("pt-BR")}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -1312,6 +1580,93 @@ export default function AdminDashboard() {
               className="w-full rounded-xl h-12 font-bold bg-indigo-600 hover:bg-indigo-500 text-white"
             >
               Copiar Credenciais & Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Set Premium Dialog */}
+      <Dialog open={isPremiumDialogOpen} onOpenChange={setIsPremiumDialogOpen}>
+        <DialogContent className="rounded-[32px] border-none shadow-2xl p-8 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-center flex items-center justify-center gap-2">
+              <Crown className="h-6 w-6 text-amber-500" />
+              Ativar Premium
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              Marcar <strong>{userToSetPremium?.email}</strong> como assinante Premium manualmente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-3">Duração da assinatura:</p>
+              <div className="space-y-2">
+                {[
+                  { value: "1year", label: "1 Ano", desc: "Expira em " + new Date(Date.now() + 365*24*60*60*1000).toLocaleDateString("pt-BR") },
+                  { value: "6months", label: "6 Meses", desc: "Expira em " + new Date(Date.now() + 180*24*60*60*1000).toLocaleDateString("pt-BR") },
+                  { value: "lifetime", label: "Vitalício", desc: "Sem data de expiração" },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setPremiumDuration(opt.value)}
+                    className={cn(
+                      "w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all",
+                      premiumDuration === opt.value
+                        ? "border-amber-400 bg-amber-50"
+                        : "border-border/40 hover:border-amber-200"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
+                      premiumDuration === opt.value ? "border-amber-500 bg-amber-500" : "border-muted-foreground/30"
+                    )}>
+                      {premiumDuration === opt.value && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-foreground">{opt.label}</p>
+                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setIsPremiumDialogOpen(false)} className="rounded-xl h-12 border-2">Cancelar</Button>
+            <Button
+              disabled={isSettingPremium}
+              onClick={async () => {
+                if (!userToSetPremium) return;
+                setIsSettingPremium(true);
+                try {
+                  let expiresAt: string | null = null;
+                  if (premiumDuration === "1year") {
+                    const d = new Date(); d.setFullYear(d.getFullYear() + 1);
+                    expiresAt = d.toISOString();
+                  } else if (premiumDuration === "6months") {
+                    const d = new Date(); d.setMonth(d.getMonth() + 6);
+                    expiresAt = d.toISOString();
+                  }
+                  const { error } = await supabase.from("profiles").update({
+                    is_premium: true,
+                    premium_since: new Date().toISOString(),
+                    premium_expires_at: expiresAt,
+                    premium_set_by: "admin",
+                  }).eq("id", userToSetPremium.id);
+                  if (error) throw error;
+                  qc.invalidateQueries({ queryKey: ["admin_profiles"] });
+                  toast.success(`✅ ${userToSetPremium.email} agora é Premium!`);
+                  setIsPremiumDialogOpen(false);
+                  setUserToSetPremium(null);
+                } catch (err: any) {
+                  toast.error(err.message || "Erro ao ativar premium.");
+                } finally {
+                  setIsSettingPremium(false);
+                }
+              }}
+              className="flex-1 rounded-xl h-12 font-bold bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              {isSettingPremium ? "Ativando..." : "⭐ Confirmar Premium"}
             </Button>
           </DialogFooter>
         </DialogContent>
