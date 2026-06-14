@@ -1,61 +1,92 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, CreditCard, Sparkles, Star, XCircle, ShieldCheck, Hash, Clock, AlertCircle } from "lucide-react";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function MinhaAssinatura() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
-  const { isPremium, expiresAt, isLoading } = usePremiumStatus();
-  const [isGeneratingOrder, setIsGeneratingOrder] = useState(false);
-  const [generatedNsu, setGeneratedNsu] = useState<string | null>(null);
+  const { isPremium, expiresAt, isLoading, refetch } = usePremiumStatus();
+  
+  const [isLinkingPayment, setIsLinkingPayment] = useState(false);
 
-  const handleSubscribe = async () => {
+  // Link estático da InfinitePay
+  const INFINITEPAY_CHECKOUT_URL = "https://checkout.infinitepay.io/ricksonam/iq754vwJ1z";
+
+  // Efeito para "Late Binding" (quando a InfinitePay redireciona de volta com ?order_nsu=...)
+  useEffect(() => {
+    const orderNsu = searchParams.get("order_nsu");
+    
+    if (orderNsu && user && !isPremium) {
+      const linkPayment = async () => {
+        setIsLinkingPayment(true);
+        try {
+          // Chama repetidamente (polling) por 1 minuto se não encontrar, pois o webhook pode demorar alguns segundos
+          let attempts = 0;
+          let linked = false;
+          
+          while (attempts < 12 && !linked) {
+            console.log(`Tentando vincular pagamento ${orderNsu} (Tentativa ${attempts + 1})`);
+            const { data, error } = await supabase.functions.invoke("link-payment", {
+              body: { order_nsu: orderNsu }
+            });
+
+            if (data?.activated) {
+              toast.success("Pagamento confirmado! Bem-vindo(a) ao Premium 🎉");
+              refetch();
+              linked = true;
+              // Limpa a URL
+              searchParams.delete("order_nsu");
+              setSearchParams(searchParams);
+              break;
+            } else if (data?.reason === "not_found" || data?.reason === "not_paid") {
+              // Espera 5 segundos e tenta de novo
+              await new Promise(r => setTimeout(r, 5000));
+              attempts++;
+            } else if (error || data?.error) {
+              console.error("Erro no vínculo:", error || data?.error);
+              toast.error(data?.error || "Erro ao verificar pagamento. Contate o suporte.");
+              break;
+            }
+          }
+
+          if (!linked && attempts >= 12) {
+            toast.info("Aguardando confirmação...", {
+              description: "O sistema da InfinitePay ainda está processando. Se o pagamento foi feito, sua conta será ativada automaticamente em breve."
+            });
+          }
+
+        } catch (err) {
+          console.error("Erro fatal no vínculo:", err);
+        } finally {
+          setIsLinkingPayment(false);
+        }
+      };
+
+      linkPayment();
+    }
+  }, [searchParams, user, isPremium]);
+
+  const handleSubscribe = () => {
     if (!user) {
       toast.error("Você precisa estar logado para assinar.");
       return;
     }
-
-    setIsGeneratingOrder(true);
-    try {
-      // Chama a Edge Function que cria o link personalizado na InfinitePay
-      // já com nome e e-mail do usuário pré-preenchidos
-      const { data, error } = await supabase.functions.invoke("create-payment-link", {
-        method: "POST",
-      });
-
-      if (error || !data?.checkout_url) {
-        console.error("Erro ao criar link:", error || data);
-        toast.error("Erro ao iniciar pagamento. Tente novamente.");
-        return;
-      }
-
-      setGeneratedNsu(data.order_nsu);
-
-      toast.success(`Pedido criado! Código: ${data.order_nsu}`, {
-        description: "Você será redirecionado para o pagamento com seus dados já preenchidos.",
-        duration: 5000,
-      });
-
-      // Abre o checkout personalizado em nova aba
-      window.open(data.checkout_url, "_blank");
-
-    } catch (err) {
-      console.error("Erro inesperado:", err);
-      toast.error("Erro ao iniciar pagamento. Tente novamente.");
-    } finally {
-      setIsGeneratingOrder(false);
-    }
+    // Abre a InfinitePay em uma nova aba para o usuário pagar.
+    // O usuário DEVE voltar para a mesma aba após o pagamento para o vínculo tardio funcionar.
+    window.location.href = INFINITEPAY_CHECKOUT_URL;
   };
 
-  if (isLoading) {
+  if (isLoading || isLinkingPayment) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-[60vh] flex flex-col gap-4 items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        {isLinkingPayment && <p className="text-sm font-bold animate-pulse">Confirmando seu pagamento...</p>}
       </div>
     );
   }
@@ -153,20 +184,12 @@ export default function MinhaAssinatura() {
                 <div className="pt-2">
                   <Button
                     onClick={handleSubscribe}
-                    disabled={isGeneratingOrder}
-                    className="w-full h-14 rounded-2xl bg-white text-primary hover:bg-white/90 font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-all disabled:opacity-70"
+                    className="w-full h-14 rounded-2xl bg-white text-primary hover:bg-white/90 font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                   >
-                    {isGeneratingOrder ? (
-                      <span className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        Preparando pagamento...
-                      </span>
-                    ) : (
-                      "Assinar Premium — R$ 9,90/ano"
-                    )}
+                    Assinar Premium — R$ 9,90/ano
                   </Button>
                   <p className="text-[10px] text-white/60 text-center mt-3 uppercase tracking-widest">
-                    Pagamento 100% seguro via InfinitePay · Seus dados já estarão preenchidos
+                    Pagamento 100% seguro via InfinitePay
                   </p>
                 </div>
               </div>
@@ -178,31 +201,19 @@ export default function MinhaAssinatura() {
                 <AlertCircle className="w-4 h-4" />
                 Como funciona?
               </h4>
-              <p className="text-xs text-blue-800 dark:text-blue-400 leading-relaxed">
-                Ao clicar em "Assinar", abriremos a página de pagamento da InfinitePay com seu <strong>nome e e-mail já preenchidos</strong>.
-                Após o pagamento confirmado, sua conta é liberada <strong>automaticamente</strong> em instantes.
+              <p className="text-xs text-blue-800 dark:text-blue-400 leading-relaxed mb-3">
+                Ao clicar em "Assinar", você será redirecionado para a tela de pagamento segura da InfinitePay.
               </p>
+              <div className="p-3 bg-white/60 dark:bg-black/20 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
+                <p className="text-xs font-bold text-blue-900 dark:text-blue-300">
+                  ⚠️ Importante: Após concluir o pagamento na InfinitePay, não feche a janela!
+                </p>
+                <p className="text-[10px] text-blue-800/80 dark:text-blue-400/80 mt-1">
+                  Aguarde ser redirecionado automaticamente de volta para esta página para que sua conta Premium seja ativada na hora.
+                </p>
+              </div>
             </div>
 
-            {/* NSU gerado (após clicar) */}
-            {generatedNsu && (
-              <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 rounded-[20px] p-5">
-                <h4 className="text-xs font-black text-emerald-900 dark:text-emerald-300 uppercase tracking-widest mb-2 flex items-center gap-2">
-                  <Hash className="w-4 h-4" />
-                  Seu Código de Pedido
-                </h4>
-                <p className="font-mono text-sm font-bold text-emerald-800 dark:text-emerald-400 bg-white dark:bg-black/30 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                  {generatedNsu}
-                </p>
-                <p className="text-[10px] text-emerald-700/70 dark:text-emerald-400/70 mt-2">
-                  Guarde este código como comprovante. Após pagar, aguarde alguns minutos e recarregue a página.
-                </p>
-                <div className="flex items-center gap-1.5 mt-3 text-emerald-700 dark:text-emerald-400">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold">A ativação é automática após o pagamento ser processado</span>
-                </div>
-              </div>
-            )}
           </div>
         ) : (
           <div className="space-y-4">

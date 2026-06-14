@@ -56,13 +56,14 @@ interface Profile {
 
 interface PaymentOrder {
   id: string;
-  user_id: string;
+  user_id: string | null;
   order_nsu: string;
   status: string;
   amount: number;
   created_at: string;
   paid_at: string | null;
   user_email: string | null;
+  webhook_payload: any | null;
 }
 
 const BLOCK_REASONS = [
@@ -136,6 +137,9 @@ export default function AdminDashboard() {
     mes: "Todos",
     dia: "Todos"
   });
+
+  const [selectedPayload, setSelectedPayload] = useState<any | null>(null);
+  const [isPayloadDialogOpen, setIsPayloadDialogOpen] = useState(false);
 
   // Catalog states
   const [catalogMateriais, setCatalogMateriais] = useState<any[]>([]);
@@ -759,7 +763,7 @@ export default function AdminDashboard() {
                   ) : (
                     <div className="space-y-2">
                       {paymentOrders.map(order => (
-                        <div key={order.id} className="bg-white border border-border/50 rounded-xl p-3 flex items-center gap-3">
+                        <div key={order.id} className="bg-white border border-border/50 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-3">
                           <div className={cn(
                             "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
                             order.status === "paid" ? "bg-emerald-100 text-emerald-600" :
@@ -771,7 +775,7 @@ export default function AdminDashboard() {
                              <Loader2 className="w-4 h-4" />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                               <span className="text-xs font-mono font-bold text-foreground truncate">{order.order_nsu}</span>
                               <span className={cn(
                                 "text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full",
@@ -779,18 +783,61 @@ export default function AdminDashboard() {
                                 order.status === "failed" ? "bg-destructive/10 text-destructive" :
                                 "bg-amber-100 text-amber-700"
                               )}>{order.status === "paid" ? "Pago" : order.status === "failed" ? "Falhou" : "Pendente"}</span>
+                              
+                              {!order.user_id && order.status === "paid" && (
+                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                                  ⚠️ Vínculo Pendente (Órfão)
+                                </span>
+                              )}
                             </div>
-                            <p className="text-[10px] text-muted-foreground truncate">{order.user_email || "—"}</p>
+                            <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                              {order.user_email ? order.user_email : order.user_id ? "Usuário ID: " + order.user_id : "Aguardando redirecionamento do usuário..."}
+                            </p>
                           </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-xs font-bold text-foreground">R$ {Number(order.amount || 9.9).toFixed(2).replace('.', ',')}</p>
-                            <p className="text-[9px] text-muted-foreground">{new Date(order.created_at).toLocaleDateString("pt-BR")}</p>
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 mt-2 sm:mt-0 w-full sm:w-auto">
+                            <div className="text-left sm:text-right">
+                              <p className="text-xs font-bold text-foreground">R$ {Number(order.amount || 9.9).toFixed(2).replace('.', ',')}</p>
+                              <p className="text-[9px] text-muted-foreground">{new Date(order.created_at).toLocaleDateString("pt-BR")}</p>
+                            </div>
+                            {order.webhook_payload && (
+                              <button
+                                onClick={() => {
+                                  setSelectedPayload(order.webhook_payload);
+                                  setIsPayloadDialogOpen(true);
+                                }}
+                                className="p-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition-colors flex items-center gap-1 font-bold"
+                              >
+                                <Eye className="w-3.5 h-3.5" /> Payload
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
+
+                <Dialog open={isPayloadDialogOpen} onOpenChange={setIsPayloadDialogOpen}>
+                  <DialogContent className="sm:max-w-md max-h-[80vh] overflow-hidden flex flex-col p-0">
+                    <DialogHeader className="p-6 pb-2">
+                      <DialogTitle className="flex items-center gap-2">
+                        <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                        Dados Brutos da InfinitePay
+                      </DialogTitle>
+                      <DialogDescription>
+                        Payload completo recebido via Webhook
+                      </DialogDescription>
+                    </DialogHeader>
+                    <ScrollArea className="flex-1 p-6 pt-2">
+                      <pre className="bg-slate-950 text-emerald-400 p-4 rounded-xl text-[10px] overflow-x-auto font-mono whitespace-pre-wrap">
+                        {selectedPayload ? JSON.stringify(selectedPayload, null, 2) : "Nenhum dado"}
+                      </pre>
+                    </ScrollArea>
+                    <div className="p-4 border-t border-border/50 bg-slate-50 flex justify-end">
+                      <Button variant="outline" onClick={() => setIsPayloadDialogOpen(false)}>Fechar</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
 

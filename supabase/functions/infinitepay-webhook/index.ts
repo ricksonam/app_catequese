@@ -86,15 +86,17 @@ serve(async (req) => {
       });
     }
 
-    // === ESTRATÉGIA 1: Rastrear por Order NSU (método principal) ===
+    // === ESTRATÉGIA 1: Rastrear por Order NSU ===
     const orderNsu = extractOrderNsu(payload);
+    const amount = payload.amount ? payload.amount / 100 : 9.90;
+
     console.log("[InfinitePay Webhook] Order NSU encontrado:", orderNsu);
 
     if (orderNsu) {
-      // Buscar o pedido pelo NSU para obter o user_id
+      // Buscar o pedido pelo NSU para ver se existe
       const { data: order, error: orderError } = await supabaseAdmin
         .from("payment_orders")
-        .select("user_id, status, user_email")
+        .select("id, user_id, status, user_email")
         .eq("order_nsu", orderNsu)
         .maybeSingle();
 
@@ -108,9 +110,7 @@ serve(async (req) => {
           });
         }
 
-        console.log(`[InfinitePay Webhook] Ativando premium para user_id: ${order.user_id}`);
-
-        // Atualizar o pedido como pago
+        // Atualizar o pedido existente como pago
         await supabaseAdmin
           .from("payment_orders")
           .update({
@@ -120,43 +120,49 @@ serve(async (req) => {
           })
           .eq("order_nsu", orderNsu);
 
-        // Ativar premium no perfil do usuário
-        const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        if (order.user_id) {
+          console.log(`[InfinitePay Webhook] Ativando premium para user_id: ${order.user_id}`);
+          // Ativar premium no perfil do usuário
+          const expiresAt = new Date();
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
-        const { data: profile, error: updateError } = await supabaseAdmin
-          .from("profiles")
-          .update({
-            is_premium: true,
-            premium_since: new Date().toISOString(),
-            premium_expires_at: expiresAt.toISOString(),
-            premium_email: order.user_email,
-            premium_set_by: "webhook",
-            premium_transaction_nsu: orderNsu,
-          })
-          .eq("id", order.user_id)
-          .select("id, email")
-          .single();
-
-        if (updateError) {
-          console.error("[InfinitePay Webhook] Erro ao ativar premium:", updateError);
-          return new Response(JSON.stringify({ error: "Error updating profile" }), {
-            status: 500,
+          await supabaseAdmin
+            .from("profiles")
+            .update({
+              is_premium: true,
+              premium_since: new Date().toISOString(),
+              premium_expires_at: expiresAt.toISOString(),
+              premium_email: order.user_email,
+              premium_set_by: "webhook",
+              premium_transaction_nsu: orderNsu,
+            })
+            .eq("id", order.user_id);
+          
+          return new Response(JSON.stringify({ success: true, method: "order_nsu_matched" }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        } else {
+          console.log(`[InfinitePay Webhook] Order ${orderNsu} atualizado como paid, mas sem user_id. Aguardando Vínculo Tardio.`);
+          return new Response(JSON.stringify({ success: true, method: "order_nsu_orphan_updated" }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
+      } else {
+        // Pedido não existe! Vamos CRIAR o registro como PAGO e sem user_id (Vínculo Tardio)
+        console.warn(`[InfinitePay Webhook] Order NSU "${orderNsu}" não encontrado na tabela. Criando pedido órfão.`);
+        
+        await supabaseAdmin.from("payment_orders").insert({
+          order_nsu: orderNsu,
+          status: "paid",
+          amount: amount,
+          user_id: null, // Vínculo tardio
+          paid_at: new Date().toISOString(),
+          webhook_payload: payload,
+        });
 
-        console.log(`[InfinitePay Webhook] ✅ Premium ativado! User: ${profile?.id} | NSU: ${orderNsu}`);
-        return new Response(JSON.stringify({ 
-          success: true, 
-          method: "order_nsu",
-          profile_id: profile?.id,
-          order_nsu: orderNsu
-        }), {
+        return new Response(JSON.stringify({ success: true, method: "order_nsu_orphan_created" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
-      } else {
-        console.warn(`[InfinitePay Webhook] Order NSU "${orderNsu}" não encontrado na tabela.`);
       }
     }
 
@@ -165,15 +171,14 @@ serve(async (req) => {
     console.log(`[InfinitePay Webhook] Tentando fallback por e-mail: ${email}`);
 
     if (!email) {
-      console.error("[InfinitePay Webhook] ❌ Não foi possível identificar o pagador (sem NSU nem e-mail).");
+      console.error("[InfinitePay Webhook] ❌ Não foi possível identificar o pagador e sem NSU gerado.");
       await supabaseAdmin.from("error_logs").insert({
         tipo: "WEBHOOK_UNIDENTIFIED",
         mensagem: "Pagamento aprovado mas sem NSU ou e-mail para identificar o usuário",
         metadata: JSON.stringify(payload),
       });
       return new Response(JSON.stringify({ 
-        error: "Cannot identify payer: no order_nsu or email in payload",
-        tip: "Make sure to pass order_nsu when creating the payment link"
+        error: "Cannot identify payer: no order_nsu or email in payload"
       }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
