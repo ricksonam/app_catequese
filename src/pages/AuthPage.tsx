@@ -24,16 +24,41 @@ type View = "login" | "signup" | "forgot";
 
 const SAVED_EMAIL_KEY = "ivc_saved_email";
 
-interface IBGEState {
-  id: number;
-  sigla: string;
-  nome: string;
-}
-
 interface IBGECity {
   id: number;
   nome: string;
 }
+
+/* Lista estática de estados brasileiros */
+const ESTADOS_BR: { sigla: string; nome: string }[] = [
+  { sigla: "AC", nome: "Acre" },
+  { sigla: "AL", nome: "Alagoas" },
+  { sigla: "AP", nome: "Amapá" },
+  { sigla: "AM", nome: "Amazonas" },
+  { sigla: "BA", nome: "Bahia" },
+  { sigla: "CE", nome: "Ceará" },
+  { sigla: "DF", nome: "Distrito Federal" },
+  { sigla: "ES", nome: "Espírito Santo" },
+  { sigla: "GO", nome: "Goiás" },
+  { sigla: "MA", nome: "Maranhão" },
+  { sigla: "MT", nome: "Mato Grosso" },
+  { sigla: "MS", nome: "Mato Grosso do Sul" },
+  { sigla: "MG", nome: "Minas Gerais" },
+  { sigla: "PA", nome: "Pará" },
+  { sigla: "PB", nome: "Paraíba" },
+  { sigla: "PR", nome: "Paraná" },
+  { sigla: "PE", nome: "Pernambuco" },
+  { sigla: "PI", nome: "Piauí" },
+  { sigla: "RJ", nome: "Rio de Janeiro" },
+  { sigla: "RN", nome: "Rio Grande do Norte" },
+  { sigla: "RS", nome: "Rio Grande do Sul" },
+  { sigla: "RO", nome: "Rondônia" },
+  { sigla: "RR", nome: "Roraima" },
+  { sigla: "SC", nome: "Santa Catarina" },
+  { sigla: "SP", nome: "São Paulo" },
+  { sigla: "SE", nome: "Sergipe" },
+  { sigla: "TO", nome: "Tocantins" },
+];
 
 /* Formata CPF: 000.000.000-00 */
 const formatCPF = (val: string) => {
@@ -154,10 +179,8 @@ export default function AuthPage() {
   const [showVerificationNotice, setShowVerificationNotice] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  // Location APIs
-  const [states, setStates] = useState<IBGEState[]>([]);
+  // Location
   const [cities, setCities] = useState<IBGECity[]>([]);
-  const [loadingStates, setLoadingStates] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
 
   useEffect(() => {
@@ -166,18 +189,8 @@ export default function AuthPage() {
   }, []);
 
   useEffect(() => {
-    if (view === "signup" && states.length === 0 && !loadingStates) {
-      setLoadingStates(true);
-      fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome")
-        .then(res => res.json())
-        .then(data => { setStates(data); setLoadingStates(false); })
-        .catch(() => { setLoadingStates(false); });
-    }
-  }, [view]);
-
-  useEffect(() => {
-    if (signupState && states.length > 0) {
-      const uf = states.find(s => s.nome === signupState)?.sigla;
+    if (signupState) {
+      const uf = ESTADOS_BR.find(s => s.nome === signupState)?.sigla;
       if (uf) {
         setLoadingCities(true);
         setCities([]);
@@ -192,7 +205,7 @@ export default function AuthPage() {
       setCities([]);
       setLoadingCities(false);
     }
-  }, [signupState, states]);
+  }, [signupState]);
 
   // Redirect if already logged in
   if (isReady && session) return <Navigate to="/" replace />;
@@ -551,14 +564,9 @@ export default function AuthPage() {
                 label="Estado"
                 value={signupState}
                 onChange={(v) => { setSignupState(v); setSignupCity(""); }}
-                options={states.map(s => ({ value: s.nome, label: s.nome }))}
+                options={ESTADOS_BR.map(s => ({ value: s.nome, label: s.nome }))}
                 valid={!!signupState}
-                disabled={loadingStates}
               />
-
-              {loadingStates && (
-                <p className="text-slate-500 text-xs mb-4 -mt-4 animate-pulse">Carregando estados...</p>
-              )}
 
               <SelectLine
                 label="Cidade"
@@ -663,7 +671,7 @@ export default function AuthPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Localização</span>
-                    <span className="font-semibold">{signupCity} - {states.find(s => s.nome === signupState)?.sigla}</span>
+                    <span className="font-semibold">{signupCity} - {ESTADOS_BR.find(s => s.nome === signupState)?.sigla}</span>
                   </div>
                 </div>
               </div>
