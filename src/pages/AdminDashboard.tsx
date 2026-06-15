@@ -175,6 +175,8 @@ export default function AdminDashboard() {
   const [catalogUploading, setCatalogUploading] = useState(false);
   const [catalogForm, setCatalogForm] = useState({ titulo: "", descricao: "", categoria: "" });
   const [catalogFile, setCatalogFile] = useState<File | null>(null);
+
+  const [atendimentoSearch, setAtendimentoSearch] = useState("");
   const catalogFileRef = useRef<HTMLInputElement>(null);
 
   const fetchCatalogMateriais = async () => {
@@ -465,7 +467,16 @@ export default function AdminDashboard() {
 
 
 
-  const feedbackList = atendimentos;
+  const filteredFeedbackList = useMemo(() => {
+    if (!atendimentoSearch) return atendimentos;
+    const lowerSearch = atendimentoSearch.toLowerCase();
+    return atendimentos.filter((atendimento: any) => 
+      atendimento.protocolo?.toLowerCase().includes(lowerSearch) ||
+      atendimento.email?.toLowerCase().includes(lowerSearch) ||
+      atendimento.profiles?.nome?.toLowerCase().includes(lowerSearch)
+    );
+  }, [atendimentos, atendimentoSearch]);
+
   const churnList = sugestoes.filter(s => s.tipo === 'exclusao');
 
   if (loadingProfiles || loadingSugestoes || loadingSafety || loadingAtendimentos) {
@@ -1026,13 +1037,24 @@ export default function AdminDashboard() {
 
             {activeTab === "feedback" && (
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">Atendimentos ao Cliente</h2>
-                  <p className="text-sm text-muted-foreground">Gerencie as solicitações, dúvidas e reclamações</p>
+                <div className="flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Atendimentos ao Cliente</h2>
+                    <p className="text-sm text-muted-foreground">Gerencie as solicitações, dúvidas e reclamações</p>
+                  </div>
+                  <div className="relative w-full sm:w-72">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar por protocolo, email ou nome..."
+                      value={atendimentoSearch}
+                      onChange={(e) => setAtendimentoSearch(e.target.value)}
+                      className="pl-9 bg-white dark:bg-zinc-900 border-2 rounded-xl w-full"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {feedbackList.map((atendimento) => (
+                  {filteredFeedbackList.map((atendimento: any) => (
                     <div key={atendimento.id} className="p-5 rounded-2xl border-2 bg-card hover:border-primary/30 transition-all flex flex-col gap-3 group relative overflow-hidden">
                       <div className="flex justify-between items-start gap-2">
                         <div className={cn(
@@ -1096,7 +1118,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                   
-                  {feedbackList.length === 0 && (
+                  {filteredFeedbackList.length === 0 && (
                     <div className="col-span-full py-12 flex flex-col items-center justify-center text-muted-foreground">
                       <HeadphonesIcon className="w-12 h-12 mb-3 opacity-20" />
                       <p className="font-medium text-sm">Nenhum atendimento registrado.</p>
