@@ -3,7 +3,7 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, Crown
+  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, Crown, HeadphonesIcon
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { SubscriptionManager } from "./SubscriptionManager";
