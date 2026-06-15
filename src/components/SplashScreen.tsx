@@ -17,7 +17,9 @@ export default function SplashScreen() {
 
       <div className="mt-8 text-center space-y-2 animate-float-up" style={{ animationDelay: '300ms' }}>
         <h1 className="text-5xl font-black text-primary tracking-tighter sm:text-6xl drop-shadow-sm">iCatequese</h1>
-        <p className="text-[14px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80">Gestão inteligente para catequistas</p>
+        <p className="text-[13px] font-black uppercase tracking-[0.25em] text-muted-foreground/80 leading-loose mt-2">
+          A Gestão Mais Inteligente<br/>Para a Sua Catequese
+        </p>
       </div>
       
       {/* Loading Progress Bar */}

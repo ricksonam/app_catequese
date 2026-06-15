@@ -731,13 +731,13 @@ export default function Dashboard() {
               </div>
               
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner overflow-hidden animate-bounce-subtle">
-                  <img src="/acesso_nova_turma.png" alt="Nova Turma" className="w-10 h-10 object-contain" />
+                <div className="w-20 h-20 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner overflow-hidden animate-bounce-subtle">
+                  <img src="/acesso_nova_turma.jpg" alt="Nova Turma" className="w-16 h-16 object-cover rounded-xl" />
                 </div>
                 
                 <div className="space-y-2">
                   <h3 className="text-2xl font-black text-foreground tracking-tight">Sua jornada começa aqui!</h3>
-                  <p className="text-sm font-bold text-muted-foreground max-w-[320px] mx-auto leading-relaxed">
+                  <p className="text-base font-bold text-muted-foreground max-w-[360px] mx-auto leading-relaxed">
                     Agora para usar o aplicativo com todas as suas funcionalidades <strong className="text-blue-600 dark:text-blue-400">crie sua turma de catequese</strong> ou você pode <strong className="text-blue-600 dark:text-blue-400">entrar em uma turma de catequese já existente</strong>, é só pedir para o catequista responsável lhe fornecer o código da turma e aguardar que ele autorize a sua entrada.
                   </p>
                 </div>
@@ -745,18 +745,18 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 gap-3 w-full mt-2">
                   <button
                     onClick={() => setShowCreateTurma(true)}
-                    className="w-full bg-emerald-600 text-white h-12 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2"
+                    className="w-full bg-emerald-600 text-white h-14 rounded-xl font-black uppercase tracking-widest text-[13px] sm:text-sm hover:bg-emerald-700 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-5 w-5" />
                     Criar Minha Primeira Turma
                   </button>
                   
                   <button
                     onClick={() => setJoinModalOpen(true)}
-                    className="w-full bg-white dark:bg-zinc-800 text-blue-700 dark:text-blue-400 h-12 rounded-xl font-black uppercase tracking-widest text-xs border-2 border-blue-500 hover:bg-blue-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2 relative overflow-hidden group"
+                    className="w-full bg-white dark:bg-zinc-800 text-blue-700 dark:text-blue-400 h-14 rounded-xl font-black uppercase tracking-widest text-[13px] sm:text-sm border-2 border-blue-500 hover:bg-blue-50 dark:hover:bg-zinc-700/50 active:scale-95 transition-all shadow-sm flex items-center justify-center gap-2 relative overflow-hidden group"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                    <Link2 className="h-4 w-4 relative z-10" />
+                    <Link2 className="h-5 w-5 relative z-10" />
                     <span className="relative z-10">Entrar na Turma com código</span>
                   </button>
                 </div>
