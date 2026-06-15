@@ -29,6 +29,7 @@ export function PremiumModal({ isOpen, onClose, title, description, icon }: Prem
             title={title}
             description={description}
             icon={icon}
+            onAction={onClose}
           />
         </div>
       </DialogContent>

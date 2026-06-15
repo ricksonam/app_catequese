@@ -5,9 +5,10 @@ interface PremiumPaywallProps {
   title: string;
   description: string;
   icon?: React.ReactNode;
+  onAction?: () => void;
 }
 
-export function PremiumPaywall({ title, description, icon }: PremiumPaywallProps) {
+export function PremiumPaywall({ title, description, icon, onAction }: PremiumPaywallProps) {
 
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center animate-fade-in my-8 max-w-md mx-auto">
@@ -47,10 +48,14 @@ export function PremiumPaywall({ title, description, icon }: PremiumPaywallProps
         </div>
 
         <button 
-          onClick={() => navigate('/minha-assinatura')}
+          onClick={() => {
+            if (onAction) onAction();
+            // Dá um tempo bem curtinho para o modal fechar antes de navegar
+            setTimeout(() => navigate('/minha-assinatura'), 50);
+          }}
           className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-primary-foreground font-bold py-4 px-6 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
-          Desbloquear por R$ 9,90/ano <ChevronRight className="h-5 w-5" />
+          Assinar Plano Premium <ChevronRight className="h-5 w-5" />
         </button>
         <p className="text-xs text-muted-foreground/60">
           Pagamento único anual. Não há renovação automática sem seu aviso.
