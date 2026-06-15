@@ -157,6 +157,8 @@ export default function AuthPage() {
   // Location APIs
   const [states, setStates] = useState<IBGEState[]>([]);
   const [cities, setCities] = useState<IBGECity[]>([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(SAVED_EMAIL_KEY);
@@ -164,27 +166,31 @@ export default function AuthPage() {
   }, []);
 
   useEffect(() => {
-    if (view === "signup" && signupStep === 1 && states.length === 0) {
+    if (view === "signup" && states.length === 0 && !loadingStates) {
+      setLoadingStates(true);
       fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome")
         .then(res => res.json())
-        .then(data => setStates(data))
-        .catch(() => {});
+        .then(data => { setStates(data); setLoadingStates(false); })
+        .catch(() => { setLoadingStates(false); });
     }
-  }, [view, signupStep, states.length]);
+  }, [view]);
 
   useEffect(() => {
-    if (signupState) {
+    if (signupState && states.length > 0) {
       const uf = states.find(s => s.nome === signupState)?.sigla;
       if (uf) {
-        fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`)
+        setLoadingCities(true);
+        setCities([]);
+        fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`)
           .then(res => res.json())
-          .then(data => setCities(data))
-          .catch(() => {});
+          .then(data => { setCities(data); setLoadingCities(false); })
+          .catch(() => { setLoadingCities(false); });
       } else {
         setCities([]);
       }
     } else {
       setCities([]);
+      setLoadingCities(false);
     }
   }, [signupState, states]);
 
@@ -231,8 +237,12 @@ export default function AuthPage() {
   };
 
   const handleSignupNextStep1 = () => {
-    if (!signupName || signupCpf.length < 14 || !signupEmail || !signupGender || !signupDob || !signupState || !signupCity) {
-      toast({ title: "Dados incompletos", description: "Preencha todos os campos para avançar.", variant: "destructive" });
+    if (!signupName || !signupEmail || !signupGender || !signupDob || !signupState || !signupCity) {
+      toast({ title: "Dados incompletos", description: "Preencha todos os campos obrigatórios para avançar.", variant: "destructive" });
+      return;
+    }
+    if (signupCpf && signupCpf.length < 14) {
+      toast({ title: "CPF inválido", description: "Digite o CPF completo ou deixe em branco.", variant: "destructive" });
       return;
     }
     setSignupStep(2);
@@ -493,7 +503,7 @@ export default function AuthPage() {
                 placeholder="Ex: Maria de Souza"
               />
               <InputLine
-                label="CPF"
+                label="CPF (opcional)"
                 value={signupCpf}
                 onChange={(v) => setSignupCpf(formatCPF(v))}
                 valid={signupCpf.length === 14}
@@ -543,18 +553,23 @@ export default function AuthPage() {
                 onChange={(v) => { setSignupState(v); setSignupCity(""); }}
                 options={states.map(s => ({ value: s.nome, label: s.nome }))}
                 valid={!!signupState}
+                disabled={loadingStates}
               />
+
+              {loadingStates && (
+                <p className="text-slate-500 text-xs mb-4 -mt-4 animate-pulse">Carregando estados...</p>
+              )}
 
               <SelectLine
                 label="Cidade"
                 value={signupCity}
                 onChange={setSignupCity}
                 options={cities.map(c => ({ value: c.nome, label: c.nome }))}
-                disabled={!signupState || cities.length === 0}
+                disabled={!signupState || loadingCities}
                 valid={!!signupCity}
               />
 
-              {signupState && cities.length === 0 && (
+              {signupState && loadingCities && (
                 <p className="text-slate-500 text-xs mb-4 -mt-4 animate-pulse">Carregando cidades...</p>
               )}
 
