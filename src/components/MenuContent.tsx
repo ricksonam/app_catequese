@@ -482,7 +482,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
         {/* Atendimento ao Cliente */}
         <div className="pt-3">
-          <button onClick={() => setShowSuggestionDialog(true)} className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-emerald-500/20 hover:border-emerald-500/40 shadow-sm hover:shadow-md active:scale-[0.98] group">
+          <button onClick={() => setShowSuggestionDialog(true)} className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-black/10 dark:border-white/10 hover:border-primary/40 shadow-sm hover:shadow-md active:scale-[0.98] group">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                <HeadphonesIcon className="w-5 h-5" />
             </div>
