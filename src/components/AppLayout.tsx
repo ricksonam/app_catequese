@@ -95,12 +95,6 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
 
             {/* Botão Agenda / Chip Premium */}
             <div className="flex items-center gap-2">
-              {isPremium && (
-                <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-600 dark:text-amber-500 cursor-pointer hover:bg-amber-400/30 transition-colors" onClick={() => navigate("/minha-assinatura")}>
-                  <Crown className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-black uppercase tracking-wider">Premium</span>
-                </div>
-              )}
               <button
                 onClick={() => {
                   if (currentPath === "/modulos/calendario") {
