@@ -161,7 +161,14 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
         <Tabs defaultValue="novo" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="novo">Nova Solicitação</TabsTrigger>
-            <TabsTrigger value="historico">Minhas Solicitações</TabsTrigger>
+            <TabsTrigger value="historico" className="flex items-center gap-2">
+              Minhas Solicitações
+              {meusAtendimentos && meusAtendimentos.length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-black">
+                  {meusAtendimentos.length}
+                </span>
+              )}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="novo">
@@ -271,12 +278,6 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
               </div>
             ) : meusAtendimentos && meusAtendimentos.length > 0 ? (
               <div className="space-y-3 mt-4">
-                <div className="flex items-center gap-2 mb-2 pb-2 border-b">
-                  <span className="text-sm font-bold text-foreground">Total de solicitações enviadas:</span>
-                  <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-black">
-                    {meusAtendimentos.length}
-                  </span>
-                </div>
                 {meusAtendimentos.map((atendimento) => (
                   <div key={atendimento.id} className="p-4 rounded-2xl border-2 bg-card hover:border-primary/30 transition-all flex flex-col gap-2">
                     <div className="flex justify-between items-start">
