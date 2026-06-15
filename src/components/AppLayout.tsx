@@ -50,7 +50,6 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
 
   const [maisOpen, setMaisOpen] = useState(false);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
-  const [sugestaoOpen, setSugestaoOpen] = useState(false);
   const [pickerDestination, setPickerDestination] = useState<"relatorios" | "diario">("relatorios");
   const [suggestionText, setSuggestionText] = useState("");
   const [isSavingSuggestion, setIsSavingSuggestion] = useState(false);
@@ -325,53 +324,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Modal de Sugestões */}
-      <Dialog open={sugestaoOpen} onOpenChange={setSugestaoOpen}>
-        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6 bg-white dark:bg-zinc-950">
-          <div className="h-2 w-full bg-emerald-500 absolute top-0 left-0" />
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black text-foreground">Tem uma ideia?</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-             <Textarea 
-               placeholder="Escreva sua sugestão ou reclamação aqui..." 
-               className="rounded-2xl min-h-[140px] bg-muted/20 border-muted p-4 text-sm font-medium focus:ring-emerald-500"
-               value={suggestionText}
-               onChange={(e) => setSuggestionText(e.target.value)}
-             />
-             <p className="text-[10px] text-muted-foreground text-center italic">Sua opinião nos ajuda a crescer!</p>
-             <Button 
-               onClick={async () => {
-                 if (!suggestionText.trim()) return;
-                 setIsSavingSuggestion(true);
-                 try {
-                   const { error } = await supabase.from('sugestoes').insert({
-                     usuario_id: user?.id,
-                     email_usuario: user?.email,
-                     texto: suggestionText,
-                     tipo: 'sugestao'
-                   });
-                   if (error) throw error;
-                   
-                   toast.success("Sugestão enviada com sucesso!");
-                   setSugestaoOpen(false);
-                   setSuggestionText("");
-                 } catch (error: any) {
-                   toast.error("Erro ao enviar: " + error.message);
-                 } finally {
-                   setIsSavingSuggestion(false);
-                 }
-               }} 
-               disabled={isSavingSuggestion || !suggestionText.trim()} 
-               className="w-full h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 text-lg text-white"
-             >
-                {isSavingSuggestion ? "Enviando..." : "Enviar Sugestão"}
-             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
+      {/* Removido o Dialog de Sugestão daqui pois agora fica no AtendimentoClienteModal */}
       {/* Turma picker dialog for Reports */}
       <Dialog open={turmaPickerOpen} onOpenChange={setTurmaPickerOpen}>
         <DialogContent className="max-w-sm mx-auto rounded-[32px] p-6 shadow-2xl border-none bg-background/95 backdrop-blur-xl">

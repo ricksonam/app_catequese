@@ -6,6 +6,10 @@ import {
   GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, Crown
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
+import { SubscriptionManager } from "./SubscriptionManager";
+import { ThemeToggle } from "./ThemeToggle";
+import { UserProfileModal } from "./UserProfileModal";
+import { AtendimentoClienteModal } from "./AtendimentoClienteModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useState, useEffect } from "react";
@@ -190,30 +194,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
     }
   };
 
-  const handleSuggestion = async () => {
-    if (!suggestion.trim()) return;
-    setSavingSuggestion(true);
-    try {
-      const { error } = await supabase.from('sugestoes').insert({
-        usuario_id: user?.id,
-        email_usuario: user?.email,
-        texto: suggestion,
-        tipo: 'sugestao'
-      });
-      if (error) throw error;
-      
-      toast({ 
-        title: "Sugestão Enviada!", 
-        description: "Enviamos também para ricksonam@hotmail.com. Obrigado!" 
-      });
-      setShowSuggestionDialog(false);
-      setSuggestion("");
-    } catch (error: any) {
-      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
-    } finally {
-      setSavingSuggestion(false);
-    }
-  };
+  // O modal de Sugestão antigo foi removido. Agora usamos o AtendimentoClienteModal.
 
   const handleDeleteAccount = async () => {
     if (!exitReason.trim()) {
@@ -493,22 +474,19 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
               <button onClick={() => setShowSuggestionDialog(true)} className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform"><MessageSquare className="h-4 w-4" /></div>
-                <span className="text-sm font-bold text-foreground/80 text-left">Dar Sugestão</span>
+                <span className="text-sm font-bold text-foreground/80 text-left">Atendimento ao Cliente</span>
               </button>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
 
-        {/* Dar Sugestão */}
+        {/* Atendimento ao Cliente */}
         <div className="pt-3">
-          <button 
-             onClick={() => setShowSuggestionDialog(true)}
-             className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-emerald-500/20 hover:border-emerald-500/40 shadow-sm hover:shadow-md active:scale-[0.98] group"
-           >
-             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
-               <MessageSquare className="w-5 h-5" />
-             </div>
-             <span className="flex-1 text-sm font-black text-left text-emerald-700 dark:text-emerald-400 tracking-wider">Dar Sugestão</span>
+          <button onClick={() => setShowSuggestionDialog(true)} className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all duration-300 border-2 border-emerald-500/20 hover:border-emerald-500/40 shadow-sm hover:shadow-md active:scale-[0.98] group">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shadow-sm shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+               <HeadphonesIcon className="w-5 h-5" />
+            </div>
+             <span className="flex-1 text-sm font-black text-left text-emerald-700 dark:text-emerald-400 tracking-wider">Atendimento ao Cliente</span>
              <ChevronRight className="h-4 w-4 text-emerald-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
            </button>
         </div>
@@ -843,24 +821,11 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
 
 
-      {/* 3. Dar Sugestão */}
-      <Dialog open={showSuggestionDialog} onOpenChange={setShowSuggestionDialog}>
-        <DialogContent className="max-w-sm rounded-[32px] border-none shadow-2xl p-6">
-          <DialogHeader><DialogTitle className="text-xl font-black mb-4">Tem uma ideia?</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-             <Textarea 
-               placeholder="Escreva sua sugestão aqui..." 
-               className="rounded-2xl min-h-[140px] bg-muted/20 border-muted p-4 text-sm font-medium"
-               value={suggestion}
-               onChange={(e) => setSuggestion(e.target.value)}
-             />
-             <p className="text-[10px] text-muted-foreground text-center italic">Você também pode enviar diretamente para ricksonam@hotmail.com</p>
-             <Button onClick={handleSuggestion} disabled={savingSuggestion} className="w-full h-14 rounded-2xl font-black bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 text-lg">
-                {savingSuggestion ? "Enviando..." : "Enviar Sugestão"}
-             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* 3. Atendimento ao Cliente */}
+      <AtendimentoClienteModal 
+        open={showSuggestionDialog} 
+        onOpenChange={setShowSuggestionDialog} 
+      />
 
       {/* 4. Excluir Usuário */}
       <Dialog open={showDeleteAccountDialog} onOpenChange={setShowDeleteAccountDialog}>

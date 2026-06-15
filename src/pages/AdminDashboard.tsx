@@ -7,7 +7,7 @@ import {
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
   BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter,
   BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2, Tag, Gift,
-  CreditCard, Crown, BadgeCheck, Hash, RefreshCw, CalendarCheck
+  CreditCard, Crown, BadgeCheck, Hash, RefreshCw, CalendarCheck, HeadphonesIcon, FileUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -79,6 +79,19 @@ interface Sugestao {
   texto: string;
   tipo: 'sugestao' | 'exclusao' | 'critica';
   motivo_exclusao: string | null;
+  created_at: string;
+}
+
+interface Atendimento {
+  id: string;
+  protocolo: string;
+  usuario_id: string;
+  email: string;
+  telefone: string;
+  tipo: string;
+  mensagem: string;
+  anexo_url: string | null;
+  status: string;
   created_at: string;
 }
 
@@ -277,6 +290,25 @@ export default function AdminDashboard() {
     enabled: activeTab === "subscriptions"
   });
 
+  // Query para buscar Atendimentos ao Cliente
+  const { data: atendimentos = [], isLoading: loadingAtendimentos } = useQuery({
+    queryKey: ["admin_atendimentos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("atendimentos")
+        .select("*")
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.warn("Erro ou tabela não encontrada:", error);
+        return [];
+      }
+      return data as Atendimento[];
+    },
+    enabled: isSuperAdmin,
+    staleTime: 1000 * 60 * 5,
+  });
+
   const { data: sugestoes = [], isLoading: loadingSugestoes } = useQuery({
     queryKey: ["admin_sugestoes"],
     queryFn: async () => {
@@ -430,10 +462,10 @@ export default function AdminDashboard() {
 
 
 
-  const feedbackList = sugestoes.filter(s => s.tipo !== 'exclusao');
+  const feedbackList = atendimentos;
   const churnList = sugestoes.filter(s => s.tipo === 'exclusao');
 
-  if (loadingProfiles || loadingSugestoes || loadingSafety) {
+  if (loadingProfiles || loadingSugestoes || loadingSafety || loadingAtendimentos) {
 
     return (
       <div className="p-8 space-y-6">
@@ -544,7 +576,7 @@ export default function AdminDashboard() {
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "lixeira"} onClick={() => setActiveTab("lixeira")} icon={Trash2} label="Lixeira" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Deserção" />
-            <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={MessageSquare} label="Sugestões" />
+            <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={HeadphonesIcon} label="Atendimento" />
             {isSuperAdmin && (
               <TabButton active={activeTab === "admins"} onClick={() => setActiveTab("admins")} icon={ShieldCheck} label="Administradores" />
             )}
@@ -992,43 +1024,78 @@ export default function AdminDashboard() {
             {activeTab === "feedback" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">Sugestões e Críticas</h2>
-                  <p className="text-sm text-muted-foreground">O que os usuários estão dizendo sobre o iCatequese</p>
+                  <h2 className="text-xl font-bold text-foreground">Atendimentos ao Cliente</h2>
+                  <p className="text-sm text-muted-foreground">Gerencie as solicitações, dúvidas e reclamações</p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                  {feedbackList.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                      <MessageSquare className="h-12 w-12 mb-4 opacity-20" />
-                      <p className="text-sm font-medium">Ainda não recebemos feedbacks</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {feedbackList.map((atendimento) => (
+                    <div key={atendimento.id} className="p-5 rounded-2xl border-2 bg-card hover:border-primary/30 transition-all flex flex-col gap-3 group relative overflow-hidden">
+                      <div className="flex justify-between items-start gap-2">
+                        <div className={cn(
+                          "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1",
+                          atendimento.tipo === 'Fazer reclamação' || atendimento.tipo === 'Denúncia' ? "bg-destructive/10 text-destructive" :
+                          atendimento.tipo === 'Fazer um elogio' ? "bg-emerald-100 text-emerald-700" :
+                          "bg-primary/10 text-primary"
+                        )}>
+                          {atendimento.tipo}
+                        </div>
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          {new Date(atendimento.created_at).toLocaleDateString('pt-BR')}
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{atendimento.protocolo}</p>
+                        <p className="text-sm font-bold truncate">{atendimento.email}</p>
+                        {atendimento.telefone && <p className="text-[10px] font-medium text-muted-foreground flex items-center gap-1"><Phone className="h-3 w-3" /> {atendimento.telefone}</p>}
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-muted/30 text-sm flex-1 break-words">
+                        {atendimento.mensagem}
+                      </div>
+
+                      {atendimento.anexo_url && (
+                        <a 
+                          href={atendimento.anexo_url} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="flex items-center gap-2 p-2 rounded-xl bg-primary/5 text-primary text-xs font-bold hover:bg-primary/10 transition-colors"
+                        >
+                          <FileUp className="w-4 h-4" />
+                          Ver Anexo
+                        </a>
+                      )}
+
+                      <div className="flex justify-between items-center mt-2 pt-3 border-t">
+                        <div className={cn(
+                          "text-[10px] font-black uppercase px-2 py-1 rounded-full",
+                          atendimento.status === 'Resolvido' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                        )}>
+                          {atendimento.status}
+                        </div>
+                        {atendimento.status !== 'Resolvido' && (
+                          <button 
+                            onClick={async () => {
+                              await supabase.from('atendimentos').update({ status: 'Resolvido' }).eq('id', atendimento.id);
+                              toast.success("Atendimento marcado como resolvido!");
+                              qc.invalidateQueries({ queryKey: ["admin_atendimentos"] });
+                            }}
+                            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                          >
+                            <CheckCircle2 className="w-3 h-3" />
+                            Marcar Resolvido
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    feedbackList.map((s) => (
-                      <Card key={s.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="p-5 flex items-start gap-4">
-                          <div className={cn(
-                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                            s.tipo === 'sugestao' ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-600"
-                          )}>
-                            {s.tipo === 'sugestao' ? <TrendingUp className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <h4 className="text-sm font-bold text-foreground truncate">{s.email_usuario}</h4>
-                                <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
-                                  {s.tipo}
-                                </Badge>
-                              </div>
-                              <span className="text-[10px] font-medium text-muted-foreground">{new Date(s.created_at).toLocaleString("pt-BR")}</span>
-                            </div>
-                            <p className="text-sm text-foreground leading-relaxed">
-                              {s.texto}
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
+                  ))}
+                  
+                  {feedbackList.length === 0 && (
+                    <div className="col-span-full py-12 flex flex-col items-center justify-center text-muted-foreground">
+                      <HeadphonesIcon className="w-12 h-12 mb-3 opacity-20" />
+                      <p className="font-medium text-sm">Nenhum atendimento registrado.</p>
+                    </div>
                   )}
                 </div>
               </div>
