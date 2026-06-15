@@ -116,6 +116,18 @@ export default function AdminDashboard() {
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false);
   const [blockReason, setBlockReason] = useState("");
   const [userToBlock, setUserToBlock] = useState<Profile | null>(null);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteReason, setDeleteReason] = useState("");
+  const [userToDelete, setUserToDelete] = useState<Profile | null>(null);
+
+  const DELETE_REASONS = [
+    "Usuário teste",
+    "Usuário solicitou a exclusão",
+    "Usuário descumpriu os termos",
+    "Usuário a mais de 1 ano inativo",
+    "Usuário excluído por ordem judicial"
+  ];
   
   // Sub-admin states
   const [adminEmail, setAdminEmail] = useState("");
@@ -388,11 +400,16 @@ export default function AdminDashboard() {
   // Derived Data
   const filteredProfiles = useMemo(() => {
     return profiles.filter(p => 
-      (p.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      !(p.is_blocked && p.motivo_bloqueio?.startsWith("EXCLUIDO:")) &&
+      ((p.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
       (p.cidade?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (p.estado?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+      (p.estado?.toLowerCase() || "").includes(searchTerm.toLowerCase()))
     );
   }, [profiles, searchTerm]);
+
+  const deletedProfiles = useMemo(() => {
+    return profiles.filter(p => p.is_blocked && p.motivo_bloqueio?.startsWith("EXCLUIDO:"));
+  }, [profiles]);
 
   const stats = useMemo(() => {
     const total = profiles.length;
@@ -525,7 +542,8 @@ export default function AdminDashboard() {
             <TabButton active={activeTab === "subscriptions"} onClick={() => setActiveTab("subscriptions")} icon={Crown} label="Assinaturas" />
             <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Catálogo" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
-            <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Excluídos" />
+            <TabButton active={activeTab === "lixeira"} onClick={() => setActiveTab("lixeira")} icon={Trash2} label="Lixeira" />
+            <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Deserção" />
             <TabButton active={activeTab === "feedback"} onClick={() => setActiveTab("feedback")} icon={MessageSquare} label="Sugestões" />
             {isSuperAdmin && (
               <TabButton active={activeTab === "admins"} onClick={() => setActiveTab("admins")} icon={ShieldCheck} label="Administradores" />
@@ -565,6 +583,10 @@ export default function AdminDashboard() {
                           setUserToBlock(p);
                           setIsBlockDialogOpen(true);
                         }
+                      }}
+                      onDelete={() => {
+                        setUserToDelete(p);
+                        setIsDeleteDialogOpen(true);
                       }}
                     />
                   ))}
@@ -1475,6 +1497,38 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {activeTab === "lixeira" && (
+              <div className="space-y-5">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">Lixeira (Usuários Excluídos)</h2>
+                    <p className="text-sm text-muted-foreground">{deletedProfiles.length} usuários na lixeira</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {deletedProfiles.map((p) => (
+                    <UserCard
+                      key={p.id}
+                      profile={p}
+                      onBlock={() => {}}
+                      onDelete={() => {
+                        // Restaurar usuário
+                        toggleBlockMutation.mutate({ id: p.id, is_blocked: false });
+                        toast.success("Usuário restaurado com sucesso!");
+                      }}
+                    />
+                  ))}
+                  {deletedProfiles.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                      <Trash2 className="h-12 w-12 mb-3 opacity-20" />
+                      <p className="text-sm font-bold">Lixeira vazia</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {activeTab === "settings" && (
               <div className="space-y-6 max-w-md">
                 <div>
@@ -1587,6 +1641,71 @@ export default function AdminDashboard() {
               className="flex-1 rounded-xl h-12 font-bold bg-destructive hover:bg-destructive/90"
             >
               {toggleBlockMutation.isPending ? "Bloqueando..." : "Confirmar Bloqueio"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete User Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="rounded-[32px] border-none shadow-2xl p-8 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-center text-destructive">Excluir Usuário</DialogTitle>
+            <DialogDescription className="text-center">
+              Atenção! Esta ação enviará <strong>{userToDelete?.email}</strong> para a Lixeira e revogará seu acesso.
+              Selecione o motivo da exclusão:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6 space-y-3">
+            {DELETE_REASONS.map((reason) => (
+              <button
+                key={reason}
+                onClick={() => setDeleteReason(reason)}
+                className={cn(
+                  "w-full text-left p-4 rounded-2xl border-2 transition-all font-bold text-sm flex items-center gap-4",
+                  deleteReason === reason 
+                    ? "border-destructive bg-destructive/5 text-destructive shadow-md scale-[1.01]" 
+                    : "border-border/40 hover:border-destructive/30 hover:bg-slate-50 text-muted-foreground"
+                )}
+              >
+                <div className={cn(
+                  "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                  deleteReason === reason ? "border-destructive bg-destructive" : "border-muted-foreground/30"
+                )}>
+                  {deleteReason === reason && <div className="w-1.5 h-1.5 rounded-full bg-white animate-in zoom-in-50" />}
+                </div>
+                {reason}
+              </button>
+            ))}
+            
+            {deleteReason && (
+              <div className="mt-4 p-4 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 text-xs font-bold flex gap-2 items-start">
+                <AlertTriangle className="h-5 w-5 shrink-0" />
+                <p>Tem certeza que deseja excluir este usuário? Você poderá restaurá-lo na lixeira caso precise.</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" onClick={() => {
+              setIsDeleteDialogOpen(false);
+              setDeleteReason("");
+              setUserToDelete(null);
+            }} className="rounded-xl h-12 border-2 flex-1">
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => {
+                if (userToDelete) {
+                  toggleBlockMutation.mutate({ id: userToDelete.id, is_blocked: true, reason: "EXCLUIDO: " + deleteReason });
+                  setIsDeleteDialogOpen(false);
+                  setUserToDelete(null);
+                  setDeleteReason("");
+                }
+              }} 
+              disabled={!deleteReason || toggleBlockMutation.isPending}
+              className="flex-1 rounded-xl h-12 font-bold bg-destructive hover:bg-destructive/90"
+            >
+              {toggleBlockMutation.isPending ? "Excluindo..." : "Confirmar Exclusão"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1727,9 +1846,11 @@ export default function AdminDashboard() {
 function UserCard({
   profile: p,
   onBlock,
+  onDelete,
 }: {
   profile: Profile;
   onBlock: () => void;
+  onDelete: () => void;
 }) {
   const initials = p.email.slice(0, 2).toUpperCase();
   const avatarColors = [
@@ -1790,21 +1911,36 @@ function UserCard({
 
       {/* Action chips */}
       <div className="flex flex-wrap gap-2 shrink-0">
-        {/* Block/Unblock chip */}
-        <button
-          onClick={onBlock}
-          className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all active:scale-95",
-            p.is_blocked
-              ? "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100"
-              : "bg-destructive/8 text-destructive border-destructive/30 hover:bg-destructive/15"
-          )}
-        >
-          {p.is_blocked ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-          {p.is_blocked ? "Desbloquear" : "Bloquear"}
-        </button>
-
-
+        {p.is_blocked && p.motivo_bloqueio?.startsWith("EXCLUIDO:") ? (
+          <button
+            onClick={onDelete}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all active:scale-95"
+          >
+            <RefreshCw className="h-3 w-3" /> Restaurar
+          </button>
+        ) : (
+          <>
+            {/* Block/Unblock chip */}
+            <button
+              onClick={onBlock}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border transition-all active:scale-95",
+                p.is_blocked
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100"
+                  : "bg-destructive/8 text-destructive border-destructive/30 hover:bg-destructive/15"
+              )}
+            >
+              {p.is_blocked ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
+              {p.is_blocked ? "Desbloquear" : "Bloquear"}
+            </button>
+            <button
+              onClick={onDelete}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-wider border border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all active:scale-95"
+            >
+              <Trash2 className="h-3 w-3" /> Excluir
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
