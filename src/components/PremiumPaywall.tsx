@@ -1,5 +1,5 @@
 import { Lock, Sparkles, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface PremiumPaywallProps {
   title: string;
@@ -9,7 +9,6 @@ interface PremiumPaywallProps {
 }
 
 export function PremiumPaywall({ title, description, icon, onAction }: PremiumPaywallProps) {
-
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center animate-fade-in my-8 max-w-md mx-auto">
       <div className="relative mb-6">
@@ -22,9 +21,20 @@ export function PremiumPaywall({ title, description, icon, onAction }: PremiumPa
       </div>
 
       <h2 className="text-2xl font-bold text-foreground mb-3">{title}</h2>
-      <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
+      <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
         {description}
       </p>
+
+      {/* Preço em destaque */}
+      <div className="bg-primary/5 border border-primary/20 rounded-2xl px-6 py-3 mb-6 flex items-center gap-3">
+        <div>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Plano Premium</p>
+          <p className="text-2xl font-black text-primary">
+            R$ 9,90 <span className="text-sm font-normal text-muted-foreground">/ ano</span>
+          </p>
+          <p className="text-[11px] text-muted-foreground">Pagamento único anual — sem renovação automática</p>
+        </div>
+      </div>
 
       <div className="w-full space-y-4">
         <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/30 dark:to-amber-900/20 border border-amber-200/50 dark:border-amber-800/50 rounded-2xl p-4 text-left shadow-sm">
@@ -47,16 +57,14 @@ export function PremiumPaywall({ title, description, icon, onAction }: PremiumPa
           </ul>
         </div>
 
-        <button 
-          onClick={() => {
-            if (onAction) onAction();
-            // Dá um tempo bem curtinho para o modal fechar antes de navegar
-            setTimeout(() => navigate('/minha-assinatura'), 50);
-          }}
+        {/* Usando Link ao invés de navigate() para garantir que a navegação funciona mesmo após o modal fechar */}
+        <Link
+          to="/minha-assinatura"
+          onClick={onAction}
           className="w-full bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 text-primary-foreground font-bold py-4 px-6 rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
           Assinar Plano Premium <ChevronRight className="h-5 w-5" />
-        </button>
+        </Link>
         <p className="text-xs text-muted-foreground/60">
           Pagamento único anual. Não há renovação automática sem seu aviso.
         </p>

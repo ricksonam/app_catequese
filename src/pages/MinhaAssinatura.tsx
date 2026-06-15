@@ -50,14 +50,30 @@ export default function MinhaAssinatura() {
 
     setIsCreatingCheckout(true);
     try {
-      // Chama a edge function para criar a preferência no Mercado Pago
-      const { data, error } = await supabase.functions.invoke("create-mp-preference");
+      // Pega a sessão para obter o token JWT do usuário
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
 
-      if (error || !data?.init_point) {
-        throw new Error(error?.message || "Não foi possível gerar o link de pagamento.");
+      if (!token) {
+        throw new Error("Sessão expirada. Faça login novamente.");
       }
 
-      // Redireciona o usuário para o checkout do Mercado Pago
+      // Chama a edge function passando explicitamente o token de autenticação
+      const { data, error } = await supabase.functions.invoke("create-mp-preference", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || "Erro ao contactar o servidor.");
+      }
+
+      if (!data?.init_point) {
+        throw new Error("Link de pagamento não gerado. Verifique as configurações do Mercado Pago.");
+      }
+
+      // Redireciona o usuário para o checkout do Mercado Pago (mesma aba — nunca bloqueado)
       window.location.href = data.init_point;
     } catch (err: any) {
       console.error("Erro ao gerar checkout MP:", err);
