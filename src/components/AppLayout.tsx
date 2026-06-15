@@ -13,7 +13,8 @@ import {
   BarChart2,
   ChevronRight,
   X,
-  BookHeart
+  BookHeart,
+  Crown
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { useState, useMemo } from "react";
