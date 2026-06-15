@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, MapPin, ArrowRight, Sparkles, Check, Search, ChevronRight, Plus, Trash2, Mail, Phone, User } from "lucide-react";
-import { useTurmaMutation, useParoquias, useComunidades, useCatequistas, useTurmas, useParoquiaMutation, useComunidadeMutation } from "@/hooks/useSupabaseData";
+import { useTurmaMutation, useParoquias, useComunidades, useCatequistas, useTurmas, useParoquiaMutation, useComunidadeMutation, useCatequistaMutation } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -38,6 +38,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
   const { data: turmas = [] } = useTurmas();
   const paroquiaMutation = useParoquiaMutation();
   const comunidadeMutation = useComunidadeMutation();
+  const catequistaMutation = useCatequistaMutation();
 
   const [form, setForm] = useState({
     nome: "",
@@ -59,9 +60,16 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (user && catequistas.length > 0 && form.catequistasIds.length === 0) {
-      if (catequistas.some(c => c.id === user.id)) {
-        setForm(f => ({ ...f, catequistasIds: [user.id] }));
+    if (user && form.catequistasIds.length === 0) {
+      if (catequistas.length > 0) {
+        const self = catequistas.find(c => c.email === user.email || c.nome === user.user_metadata?.nome);
+        if (self) {
+          setForm(f => ({ ...f, catequistasIds: [self.id] }));
+        } else {
+          setForm(f => ({ ...f, catequistasIds: [catequistas[0].id] }));
+        }
+      } else {
+        setForm(f => ({ ...f, catequistasIds: ["NEW_SELF"] }));
       }
     }
   }, [user, catequistas]);
@@ -137,6 +145,28 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
         });
       }
 
+      let finalCatequistasIds = form.catequistasIds.length > 0 ? [...form.catequistasIds] : [];
+      if (finalCatequistasIds.includes("NEW_SELF")) {
+        const selfId = crypto.randomUUID();
+        await catequistaMutation.mutateAsync({
+          id: selfId,
+          nome: user?.user_metadata?.nome || user?.email?.split('@')[0] || "Catequista Responsável",
+          email: user?.email || "",
+          telefone: "",
+          dataNascimento: "",
+          endereco: "",
+          numero: "",
+          bairro: "",
+          complemento: "",
+          profissao: "",
+          formacao: "",
+          anosExperiencia: "",
+          observacao: "Perfil criado automaticamente no cadastro da turma.",
+          status: "ativo"
+        });
+        finalCatequistasIds = finalCatequistasIds.filter(id => id !== "NEW_SELF").concat(selfId);
+      }
+
       const id = crypto.randomUUID();
       await mutation.mutateAsync({
         id,
@@ -148,7 +178,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
         etapa: form.etapa,
         outrosDados: form.outrosDados,
         comunidadeId: finalComunidadeId,
-        catequistasIds: form.catequistasIds.length > 0 ? form.catequistasIds : [catequistas[0]?.id].filter(Boolean) as string[],
+        catequistasIds: finalCatequistasIds.length > 0 ? finalCatequistasIds : [catequistas[0]?.id].filter(Boolean) as string[],
         coordenadores: form.coordenadores,
         criadoEm: new Date().toISOString(),
         codigoAcesso: Math.random().toString(36).substring(2, 8).toUpperCase(),
@@ -395,6 +425,9 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
               <label className={labelCls}>{labelWithRedAsterisk("Catequista Responsável *")}</label>
               <select value={form.catequistasIds[0] || ""} onChange={(e) => update("catequistasIds", e.target.value ? [e.target.value] : [])} className="form-input h-11">
                 <option value="">Selecione...</option>
+                {catequistas.length === 0 && (
+                  <option value="NEW_SELF">Eu ({user?.user_metadata?.nome || user?.email || 'Catequista Responsável'})</option>
+                )}
                 {catequistas.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
               </select>
             </div>
