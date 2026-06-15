@@ -22,6 +22,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MenuContent } from "./MenuContent";
 import { ObjectiveModal } from "./ObjectiveModal";
 import { useTurmas } from "@/hooks/useSupabaseData";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,7 +55,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const [isSavingSuggestion, setIsSavingSuggestion] = useState(false);
   const { user } = useAuth();
   const { data: turmas = [] } = useTurmas();
-
+  const { isPremium } = usePremiumStatus();
 
   const currentPath = location.pathname;
 
@@ -91,22 +92,30 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
             </button>
 
-            {/* Botão Agenda */}
-            <button
-              onClick={() => {
-                if (currentPath === "/modulos/calendario") {
-                  navigate("/");
-                } else {
-                  navigate("/modulos/calendario");
-                }
-              }}
-              className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-md shadow-emerald-500/30 border border-emerald-400 overflow-hidden"
-            >
-              {/* shimmer */}
-              <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-              <CalendarDays className="h-3.5 w-3.5 text-white shrink-0" />
-              <span className="text-[11px] font-black tracking-wide relative z-10">Agenda</span>
-            </button>
+            {/* Botão Agenda / Chip Premium */}
+            <div className="flex items-center gap-2">
+              {isPremium && (
+                <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-600 dark:text-amber-500 cursor-pointer hover:bg-amber-400/30 transition-colors" onClick={() => navigate("/minha-assinatura")}>
+                  <Crown className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-black uppercase tracking-wider">Premium</span>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  if (currentPath === "/modulos/calendario") {
+                    navigate("/");
+                  } else {
+                    navigate("/modulos/calendario");
+                  }
+                }}
+                className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-md shadow-emerald-500/30 border border-emerald-400 overflow-hidden"
+              >
+                {/* shimmer */}
+                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <CalendarDays className="h-3.5 w-3.5 text-white shrink-0" />
+                <span className="text-[11px] font-black tracking-wide relative z-10">Agenda</span>
+              </button>
+            </div>
           </div>
           
           <ObjectiveModal 
@@ -198,49 +207,67 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
-                  { label: "Diário do Catequista", path: "__diario__", icon: BookHeart, color: "bg-indigo-500/15 text-indigo-600" },
-                  { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600" },
+                  { label: "Diário do Catequista", path: "__diario__", icon: BookHeart, color: "bg-indigo-500/15 text-indigo-600", premium: true },
+                  { label: "Jogos", path: "/jogos", icon: Dices, color: "bg-amber-500/15 text-amber-600", premium: true },
                   { label: "Agenda Catequética", path: "/modulos/calendario", icon: CalendarDays, color: "bg-destructive/15 text-destructive" },
                   { label: "Liturgia Diária", path: "/modulos/liturgia", icon: BookOpen, color: "bg-amber-500/15 text-amber-600" },
-                  { label: "Orações", path: "/modulos/oracoes", icon: PrayingHands, color: "bg-liturgical/15 text-liturgical" },
+                  { label: "Orações", path: "/modulos/oracoes", icon: PrayingHands, color: "bg-liturgical/15 text-liturgical", premium: true },
                   { label: "Mural de Fotos", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
                   { label: "Bíblia Online", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
-                  { label: "Material de Apoio", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
-                  { label: "Biblioteca de Encontros", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
+                  { label: "Material de Apoio", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600", premium: true },
+                  { label: "Biblioteca de Encontros", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600", premium: true },
                   { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
-                ].map((item, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setMaisOpen(false);
-                      if (item.onClick) {
-                        item.onClick();
-                      } else if (item.path === "__diario__") {
-                        const activeTurma = localStorage.getItem("ivc_selected_turma");
-                        if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
-                          navigate(`/turmas/${activeTurma}/diario`);
-                        } else if (turmas.length === 1) {
-                          navigate(`/turmas/${turmas[0].id}/diario`);
-                        } else if (turmas.length > 1) {
-                          setPickerDestination("diario");
-                          setTurmaPickerOpen(true);
-                        } else {
-                          toast.error("Crie uma turma primeiro.");
+                ].map((item, i) => {
+                  const isLocked = item.premium && !isPremium;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setMaisOpen(false);
+                        if (item.onClick) {
+                          item.onClick();
+                        } else if (item.path === "__diario__") {
+                          const activeTurma = localStorage.getItem("ivc_selected_turma");
+                          if (activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma)) {
+                            navigate(`/turmas/${activeTurma}/diario`);
+                          } else if (turmas.length === 1) {
+                            navigate(`/turmas/${turmas[0].id}/diario`);
+                          } else if (turmas.length > 1) {
+                            setPickerDestination("diario");
+                            setTurmaPickerOpen(true);
+                          } else {
+                            toast.error("Crie uma turma primeiro.");
+                          }
+                        } else if (item.path) {
+                          navigate(item.path);
                         }
-                      } else if (item.path) {
-                        navigate(item.path);
-                      }
-                    }}
-                    className="flex flex-col items-center gap-2 p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md hover:border-primary/20 text-center group min-h-[110px] w-full"
-                  >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform shadow-inner`}>
-                      <item.icon className="h-7 w-7" />
-                    </div>
-                    <span className="text-[9px] font-black text-foreground/80 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
+                      }}
+                      className={`flex flex-col items-center gap-2 p-3.5 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all hover:shadow-md text-center group min-h-[110px] w-full relative overflow-hidden ${isLocked ? "border border-amber-300/50 dark:border-amber-700/40" : "border border-black/5 dark:border-white/5 hover:border-primary/20"}`}
+                    >
+                      {/* Badge Premium */}
+                      {isLocked && (
+                        <div className="absolute top-2 right-2 flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
+                          <Crown className="w-2.5 h-2.5" />
+                          <span>Premium</span>
+                        </div>
+                      )}
+
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${item.color} group-hover:scale-110 transition-transform shadow-inner`}>
+                        <item.icon className="h-7 w-7" />
+                      </div>
+                      <span className="text-[9px] font-black text-foreground/80 leading-tight uppercase tracking-wider group-hover:text-primary transition-colors break-words w-full px-0.5">
+                        {item.label}
+                      </span>
+
+                      {/* Aviso textual embaixo */}
+                      {isLocked && (
+                        <p className="text-[8px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5 absolute bottom-1.5">
+                          🔒 Apenas Premium
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -267,20 +294,34 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                     toast.error("Crie uma turma primeiro.");
                   }
                 }}
-                className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
+                className={`w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all shadow-md active:scale-[0.98] text-left overflow-hidden relative ${!isPremium ? "border border-amber-300/50 dark:border-amber-700/40" : "border-2 border-violet-500/40 dark:border-violet-400/20 hover:shadow-lg hover:border-violet-500"}`}
               >
+                {/* Badge Premium */}
+                {!isPremium && (
+                  <div className="absolute top-2 right-2 flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
+                    <Crown className="w-2.5 h-2.5" />
+                    <span>Premium</span>
+                  </div>
+                )}
+
                 <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                   <BarChart2 className="h-6 w-6" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="block text-xs font-black text-foreground uppercase tracking-wider">Acessar Relatórios</span>
-                  <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
-                    {(() => {
-                      const activeTurmaId = localStorage.getItem("ivc_selected_turma");
-                      const found = turmas.find(t => t.id === activeTurmaId);
-                      return found ? `Turma ativa: ${found.nome}` : "Selecione uma turma para ver relatórios";
-                    })()}
-                  </span>
+                  {!isPremium ? (
+                    <span className="block text-[10px] text-amber-600 dark:text-amber-400 font-bold mt-0.5 flex items-center gap-1">
+                      🔒 Apenas Premium
+                    </span>
+                  ) : (
+                    <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
+                      {(() => {
+                        const activeTurmaId = localStorage.getItem("ivc_selected_turma");
+                        const found = turmas.find(t => t.id === activeTurmaId);
+                        return found ? `Turma ativa: ${found.nome}` : "Selecione uma turma para ver relatórios";
+                      })()}
+                    </span>
+                  )}
                 </div>
                 <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </button>

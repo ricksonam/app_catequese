@@ -203,8 +203,8 @@ export default function TurmaForm() {
     return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
   }
 
-  // Se não for premium, bloqueia a criação da 3ª turma (limite de 2)
-  if (!isPremium && !isEditing && turmas.length >= 2) {
+  // Se não for premium, bloqueia a criação da 2ª turma (limite de 1)
+  if (!isPremium && !isEditing && turmas.length >= 1) {
     return (
       <div className="space-y-4 pt-4">
         <div className="page-header animate-fade-in">
@@ -213,7 +213,7 @@ export default function TurmaForm() {
         </div>
         <PremiumPaywall 
           title="Limite de Turmas Atingido" 
-          description="Você atingiu o limite de 2 turmas gratuitas. Assine o Premium para criar turmas ilimitadas e gerenciar toda a sua paróquia sem restrições."
+          description="Você atingiu o limite de 1 turma gratuita. Assine o Premium para criar turmas ilimitadas e gerenciar toda a sua paróquia sem restrições."
           icon={<UsersRound className="h-10 w-10 text-primary" />}
         />
       </div>

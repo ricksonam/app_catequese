@@ -29,9 +29,6 @@ interface BibliaData {
 
 const TRADUCOES = [
   { id: "ave_maria", nome: "Ave Maria", file: "/biblia_ave_maria.json" },
-  { id: "cnbb", nome: "CNBB (Nova)", file: "/biblia_cnbb.json" },
-  { id: "jerusalem", nome: "Jerusalém", file: "/biblia_jerusalem.json" },
-  { id: "pastoral", nome: "Ed. Pastoral", file: "/biblia_pastoral.json" },
 ];
 
 const PASSAGENS_POPULARES = [

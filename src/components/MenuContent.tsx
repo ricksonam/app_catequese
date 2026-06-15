@@ -3,10 +3,11 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart
+  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, Crown
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTurmas } from "@/lib/supabaseStore";
@@ -35,15 +36,15 @@ const cadastros = [
 ];
 
 const modulosGlobais = [
-  { label: "Diário do Catequista", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500" },
-  { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold" },
+  { label: "Diário do Catequista", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500", premium: true },
+  { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold", premium: true },
   { label: "Agenda catequética", icon: CalendarDays, path: "/modulos/calendario", color: "bg-destructive/10 text-destructive" },
   { label: "Liturgia Diária", icon: BookOpen, path: "/modulos/liturgia", color: "bg-amber-500/10 text-amber-500" },
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-success/10 text-success" },
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
-  { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
-  { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
-  { label: "Orações", icon: PrayingHands, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical", premium: true },
+  { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success", premium: true },
+  { label: "Orações", icon: PrayingHands, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical", premium: true },
   { label: "Mapa Panorâmico IVC", icon: Map, path: "/mapa-panoramico", color: "bg-rose-500/10 text-rose-500" },
 ];
 
@@ -62,6 +63,7 @@ const classModules = [
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { isPremium } = usePremiumStatus();
   
   // Queries
   const { data: turmas = [], isLoading: isLoadingTurmas } = useQuery({
@@ -390,18 +392,32 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                </div>
             </AccordionTrigger>
             <AccordionContent className="pt-1 px-1 space-y-1">
-              {modulosGlobais.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => go(item.path)}
-                  className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
-                    <item.icon className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
-                </button>
-              ))}
+              {modulosGlobais.map((item) => {
+                const isLocked = item.premium && !isPremium;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => go(item.path)}
+                    className="w-full group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors relative overflow-hidden"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform ${isLocked ? "opacity-60" : ""}`}>
+                        <item.icon className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
+                        {isLocked && <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5 mt-0.5">🔒 Apenas Premium</span>}
+                      </div>
+                    </div>
+                    {isLocked && (
+                      <div className="flex items-center gap-1 text-[9px] bg-amber-400/20 text-amber-600 dark:text-amber-500 font-black px-2 py-1 rounded-full uppercase tracking-wider">
+                        <Crown className="w-3 h-3" />
+                        Premium
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </AccordionContent>
           </AccordionItem>
 
