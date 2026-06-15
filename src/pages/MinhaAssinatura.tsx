@@ -50,7 +50,7 @@ export default function MinhaAssinatura() {
 
     setIsCreatingCheckout(true);
     try {
-      // Pega a sessão para obter o token JWT do usuário
+      // Pega o token da sessão ativa
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
 
@@ -58,22 +58,31 @@ export default function MinhaAssinatura() {
         throw new Error("Sessão expirada. Faça login novamente.");
       }
 
-      // Chama a edge function passando explicitamente o token de autenticação
-      const { data, error } = await supabase.functions.invoke("create-mp-preference", {
+      // Usa fetch direto para evitar problemas do SDK do Supabase com headers customizados
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/create-mp-preference`, {
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "apikey": supabaseAnonKey,
         },
       });
 
-      if (error) {
-        throw new Error(error.message || "Erro ao contactar o servidor.");
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody?.error || `Erro ${response.status} ao gerar o checkout.`);
       }
+
+      const data = await response.json();
 
       if (!data?.init_point) {
-        throw new Error("Link de pagamento não gerado. Verifique as configurações do Mercado Pago.");
+        throw new Error("Link de pagamento não retornado pelo servidor.");
       }
 
-      // Redireciona o usuário para o checkout do Mercado Pago (mesma aba — nunca bloqueado)
+      // Redireciona para o checkout do Mercado Pago na mesma aba
       window.location.href = data.init_point;
     } catch (err: any) {
       console.error("Erro ao gerar checkout MP:", err);
@@ -157,13 +166,21 @@ export default function MinhaAssinatura() {
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
               
               <div className="relative z-10 space-y-4">
-                <div>
-                  <h3 className="text-lg font-black uppercase tracking-tight mb-1">
-                    Desbloqueie Tudo
-                  </h3>
-                  <p className="text-sm text-white/80">
-                    Acesso a recursos exclusivos que facilitam a sua catequese por apenas R$ 9,90 ao ano.
-                  </p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-black uppercase tracking-tight mb-1">
+                      Desbloqueie Tudo
+                    </h3>
+                    <p className="text-sm text-white/80">
+                      Acesso a recursos exclusivos que facilitam a sua catequese.
+                    </p>
+                  </div>
+                  {/* Chip de Preço em destaque */}
+                  <div className="shrink-0 bg-amber-400 text-amber-900 rounded-2xl px-3 py-2 text-center shadow-lg border-2 border-amber-300">
+                    <p className="text-[9px] font-black uppercase tracking-widest leading-none mb-0.5">apenas</p>
+                    <p className="text-lg font-black leading-none">R$9,90</p>
+                    <p className="text-[9px] font-bold leading-none mt-0.5">/ano</p>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -189,7 +206,7 @@ export default function MinhaAssinatura() {
                     disabled={isCreatingCheckout}
                     className="w-full h-14 rounded-2xl bg-white text-primary hover:bg-white/90 font-black text-sm uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                   >
-                    {isCreatingCheckout ? "Preparando checkout..." : "Assinar Premium — R$ 9,90/ano"}
+                    {isCreatingCheckout ? "Preparando checkout..." : "Assinar Premium"}
                   </Button>
                   <p className="text-[10px] text-white/60 text-center mt-3 uppercase tracking-widest">
                     Pagamento 100% seguro via Mercado Pago

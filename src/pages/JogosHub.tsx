@@ -1,4 +1,4 @@
-import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, UsersRound, Theater, ArrowLeft, Gamepad2 } from "lucide-react";
+import { Dices, Shuffle, HelpCircle, User, MessageCircleQuestion, Book, UsersRound, Theater, ArrowLeft, Gamepad2, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { usePremiumStatus } from "@/hooks/usePremiumStatus";
@@ -99,9 +99,17 @@ export default function JogosHub() {
             <button
               key={jogo.path}
               onClick={() => handleGameClick(jogo.path, jogo.label)}
-              className="float-card p-5 text-center animate-float-up group relative overflow-hidden"
+              className={`float-card p-5 text-center animate-float-up group relative overflow-hidden transition-all ${!isPremium ? 'border border-amber-300/50 dark:border-amber-700/40' : ''}`}
               style={{ animationDelay: `${i * 80}ms` }}
             >
+              {/* Badge Premium */}
+              {!isPremium && (
+                <div className="absolute top-2 right-2 flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
+                  <Crown className="w-2.5 h-2.5" />
+                  <span>Premium</span>
+                </div>
+              )}
+
               <div
                 className={`icon-box w-13 h-13 rounded-2xl ${jogo.color} mb-3 mx-auto group-hover:scale-110 transition-transform duration-500 shadow-sm`}
               >
@@ -113,6 +121,11 @@ export default function JogosHub() {
               <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight font-medium opacity-80">
                 {jogo.desc}
               </p>
+              {!isPremium && (
+                <p className="text-[9px] text-amber-600 dark:text-amber-400 font-bold mt-1 flex items-center justify-center gap-0.5">
+                  🔒 Apenas Premium
+                </p>
+              )}
             </button>
           );
         })}
