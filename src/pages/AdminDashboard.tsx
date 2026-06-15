@@ -93,6 +93,9 @@ interface Atendimento {
   anexo_url: string | null;
   status: string;
   created_at: string;
+  profiles?: {
+    nome: string | null;
+  } | null;
 }
 
 interface SafetyAlert {
@@ -296,7 +299,7 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("atendimentos")
-        .select("*")
+        .select(`*, profiles(nome)`)
         .order("created_at", { ascending: false });
       
       if (error) {
@@ -1047,7 +1050,9 @@ export default function AdminDashboard() {
                       
                       <div className="space-y-1">
                         <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{atendimento.protocolo}</p>
-                        <p className="text-sm font-bold truncate">{atendimento.email}</p>
+                        <p className="text-sm font-bold truncate">
+                          {atendimento.profiles?.nome ? `${atendimento.profiles.nome} (${atendimento.email})` : atendimento.email}
+                        </p>
                         {atendimento.telefone && <p className="text-[10px] font-medium text-muted-foreground flex items-center gap-1"><Phone className="h-3 w-3" /> {atendimento.telefone}</p>}
                       </div>
 
