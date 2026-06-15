@@ -150,7 +150,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
         const selfId = crypto.randomUUID();
         await catequistaMutation.mutateAsync({
           id: selfId,
-          nome: user?.user_metadata?.nome || user?.email?.split('@')[0] || "Catequista Responsável",
+          nome: user?.user_metadata?.nome || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Catequista Responsável",
           email: user?.email || "",
           telefone: "",
           dataNascimento: "",
@@ -426,7 +426,9 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
               <select value={form.catequistasIds[0] || ""} onChange={(e) => update("catequistasIds", e.target.value ? [e.target.value] : [])} className="form-input h-11">
                 <option value="">Selecione...</option>
                 {catequistas.length === 0 && (
-                  <option value="NEW_SELF">Eu ({user?.user_metadata?.nome || user?.email || 'Catequista Responsável'})</option>
+                  <option value="NEW_SELF">
+                    Eu ({user?.user_metadata?.nome || user?.user_metadata?.name || user?.user_metadata?.full_name || 'Catequista Responsável'})
+                  </option>
                 )}
                 {catequistas.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
               </select>
