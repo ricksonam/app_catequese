@@ -121,28 +121,42 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     try {
       let finalParoquiaId = form.paroquiaId;
       if (form.paroquiaId === "NEW") {
-        finalParoquiaId = crypto.randomUUID();
-        await paroquiaMutation.mutateAsync({
-          id: finalParoquiaId,
-          nome: form.paroquiaNome.trim(),
-          endereco: "",
-          telefone: "",
-          email: "",
-          responsavel: ""
-        });
+        const paroquiaNomeTrimmed = form.paroquiaNome.trim();
+        const existingParoquia = paroquias.find(p => p.nome.toLowerCase() === paroquiaNomeTrimmed.toLowerCase());
+        
+        if (existingParoquia) {
+          finalParoquiaId = existingParoquia.id;
+        } else {
+          finalParoquiaId = crypto.randomUUID();
+          await paroquiaMutation.mutateAsync({
+            id: finalParoquiaId,
+            nome: paroquiaNomeTrimmed,
+            endereco: "",
+            telefone: "",
+            email: "",
+            responsavel: ""
+          });
+        }
       }
 
       let finalComunidadeId = form.comunidadeId;
       if (form.comunidadeId === "NEW") {
-        finalComunidadeId = crypto.randomUUID();
-        await comunidadeMutation.mutateAsync({
-          id: finalComunidadeId,
-          nome: form.comunidadeNome.trim(),
-          paroquiaId: finalParoquiaId,
-          endereco: "",
-          responsavel: "",
-          telefone: ""
-        });
+        const comunidadeNomeTrimmed = form.comunidadeNome.trim();
+        const existingComunidade = comunidades.find(c => c.nome.toLowerCase() === comunidadeNomeTrimmed.toLowerCase() && c.paroquiaId === finalParoquiaId);
+
+        if (existingComunidade) {
+          finalComunidadeId = existingComunidade.id;
+        } else {
+          finalComunidadeId = crypto.randomUUID();
+          await comunidadeMutation.mutateAsync({
+            id: finalComunidadeId,
+            nome: comunidadeNomeTrimmed,
+            paroquiaId: finalParoquiaId,
+            endereco: "",
+            responsavel: "",
+            telefone: ""
+          });
+        }
       }
 
       let finalCatequistasIds = form.catequistasIds.length > 0 ? [...form.catequistasIds] : [];
