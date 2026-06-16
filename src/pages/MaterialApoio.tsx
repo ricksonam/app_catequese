@@ -1,4 +1,4 @@
-import { ArrowLeft, FolderOpen, Download, Eye, FileText, Image, Loader2, Sparkles, Search, BookOpen } from "lucide-react";
+import { ArrowLeft, FolderOpen, Download, Eye, FileText, Image, Loader2, Sparkles, Search, BookOpen, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -288,7 +288,13 @@ export default function MaterialApoio() {
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-foreground">Catálogo de Materiais</h1>
+              <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+                Catálogo de Materiais
+                <span className="flex items-center gap-1 text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white px-2 py-0.5 rounded-full shadow-sm">
+                  <Crown className="w-3 h-3" />
+                  PREMIUM
+                </span>
+              </h1>
               {totalNovos > 0 && (
                 <span className="flex items-center gap-1 text-[9px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white px-2 py-0.5 rounded-full shadow-sm animate-pulse">
                   <Sparkles className="w-2.5 h-2.5" />

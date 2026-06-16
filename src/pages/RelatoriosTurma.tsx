@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2 } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2, Crown } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
@@ -77,9 +77,17 @@ export default function RelatoriosTurma() {
           </button>
           
           <div className="flex flex-col items-center gap-1 text-center">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
-              Relatórios da Turma
-            </h1>
+            <div className="flex items-center gap-2 justify-center">
+              <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+                Relatórios da Turma
+              </h1>
+              {!isPremium && (
+                <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
+                  <Crown className="w-2.5 h-2.5" />
+                  <span>Premium</span>
+                </div>
+              )}
+            </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{turma.nome} • {turma.etapa}</p>
           </div>
         </div>

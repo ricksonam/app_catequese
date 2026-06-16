@@ -113,6 +113,13 @@ export default function TurmaForm() {
       toast.error("Informe o nome da paróquia.");
       return;
     }
+
+    const existente = paroquias.find(p => p.nome.toLowerCase() === novaParoquiaNome.trim().toLowerCase());
+    if (existente) {
+      toast.error("Já existe uma paróquia com este nome.");
+      return;
+    }
+
     setIsSavingParoquia(true);
     try {
       await paroquiaMutation.mutateAsync({
@@ -138,6 +145,21 @@ export default function TurmaForm() {
       toast.error("Informe o nome da comunidade.");
       return;
     }
+
+    const existente = comunidades.find(c => {
+      const nomeComunidade = c.name || c.nome;
+      return nomeComunidade?.toLowerCase() === novaComunidadeNome.trim().toLowerCase();
+    });
+    
+    if (existente) {
+      toast.success("Comunidade já existente selecionada!");
+      update("comunidadeId", existente.id);
+      setNovaComunidadeNome("");
+      setNovaComunidadeParoquiaId("");
+      setShowNovaComunidade(false);
+      return;
+    }
+
     setIsSavingComunidade(true);
     try {
       const newId = crypto.randomUUID();

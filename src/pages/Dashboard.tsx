@@ -771,7 +771,7 @@ export default function Dashboard() {
         {/* Título da Seção — estilo litúrgico */}
         <div className="flex items-center gap-2 justify-center mb-2">
           <div className="h-px flex-1 max-w-[40px]" style={{ background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5))' }} />
-          <h2 className="text-sm font-black uppercase tracking-[0.25em]" style={{ color: '#B8860B' }}>Próximos Aniversários</h2>
+          <h2 className="text-base font-black uppercase tracking-[0.25em]" style={{ color: '#B8860B' }}>Próximos Aniversários</h2>
           <div className="h-px flex-1 max-w-[40px]" style={{ background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))' }} />
         </div>
 

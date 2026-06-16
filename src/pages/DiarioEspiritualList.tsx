@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown, Crown } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -288,7 +288,15 @@ export default function DiarioEspiritualList() {
             <ArrowLeft className="h-5 w-5 text-black" />
           </button>
           <div className="flex flex-col items-center gap-1 text-center">
-            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Diário do Catequista</h1>
+            <div className="flex items-center gap-2 justify-center">
+              <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Diário do Catequista</h1>
+              {!isPremium && (
+                <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
+                  <Crown className="w-2.5 h-2.5" />
+                  <span>Premium</span>
+                </div>
+              )}
+            </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
               {diarios.length} {diarios.length === 1 ? "registro" : "registros"}
             </p>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MODELOS_ENCONTROS, CATEGORIAS_MODELOS, type ModeloEncontro } from "@/lib/modelosEncontros";
 import { type Encontro } from "@/lib/store";
 import { upsertEncontro } from "@/lib/supabaseStore";
-import { ArrowLeft, BookOpen, Clock, ChevronRight, Search, Check, Library } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, ChevronRight, Search, Check, Library, Crown } from "lucide-react";
 import { toast } from "sonner";
 
 export default function BibliotecaModelos() {
@@ -50,7 +50,13 @@ export default function BibliotecaModelos() {
       <div className="page-header animate-fade-in">
         <button onClick={() => navigate(backPath)} className="back-btn"><ArrowLeft className="h-5 w-5 text-black" /></button>
         <div>
-          <h1 className="text-xl font-bold text-foreground">Biblioteca de Encontros</h1>
+          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+            Biblioteca de Encontros
+            <span className="flex items-center gap-1 text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-500 text-white px-2 py-0.5 rounded-full shadow-sm">
+              <Crown className="w-3 h-3" />
+              PREMIUM
+            </span>
+          </h1>
           <p className="text-xs text-muted-foreground">{MODELOS_ENCONTROS.length} modelos disponíveis</p>
         </div>
       </div>
