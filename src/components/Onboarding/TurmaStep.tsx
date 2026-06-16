@@ -161,21 +161,23 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
 
       let finalCatequistasIds = form.catequistasIds.length > 0 ? [...form.catequistasIds] : [];
       if (finalCatequistasIds.includes("NEW_SELF")) {
-        const selfId = crypto.randomUUID();
+        const selfId = user?.id || crypto.randomUUID();
         await catequistaMutation.mutateAsync({
           id: selfId,
-          nome: user?.user_metadata?.nome || user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Catequista Responsável",
+          nome: user?.user_metadata?.full_name || user?.user_metadata?.nome || user?.email?.split('@')[0] || "Catequista Responsável",
           email: user?.email || "",
-          telefone: "",
-          dataNascimento: "",
+          telefone: user?.user_metadata?.telefone || user?.user_metadata?.phone || "",
+          dataNascimento: user?.user_metadata?.data_nascimento || "",
+          cidade: user?.user_metadata?.cidade || "",
+          estado: user?.user_metadata?.estado || "",
           endereco: "",
           numero: "",
           bairro: "",
           complemento: "",
           profissao: "",
           formacao: "",
-          anosExperiencia: "",
-          observacao: "Perfil criado automaticamente no cadastro da turma.",
+          anosExperiencia: "0",
+          observacao: "Perfil criado automaticamente.",
           status: "ativo"
         });
         finalCatequistasIds = finalCatequistasIds.filter(id => id !== "NEW_SELF").concat(selfId);

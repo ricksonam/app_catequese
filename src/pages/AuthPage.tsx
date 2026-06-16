@@ -283,6 +283,12 @@ export default function AuthPage() {
     localStorage.removeItem("ivc_onboarding_completed");
     localStorage.removeItem("ivc_terms_accepted");
 
+    let isoDob = signupDob;
+    if (signupDob.length === 10 && signupDob.includes("/")) {
+      const parts = signupDob.split("/");
+      if (parts.length === 3) isoDob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
     const { error } = await supabase.auth.signUp({
       email: signupEmail,
       password: signupPassword,
@@ -292,7 +298,7 @@ export default function AuthPage() {
           full_name: signupName,
           cpf: signupCpf,
           genero: signupGender,
-          data_nascimento: signupDob,
+          data_nascimento: isoDob,
           estado: signupState,
           cidade: signupCity,
           terms_accepted: true,
