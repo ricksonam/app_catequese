@@ -280,24 +280,24 @@ export default function DiarioEspiritualList() {
     <div className="space-y-5 pb-10">
       {/* Header */}
       <div className="space-y-4 animate-fade-in flex flex-col pt-4">
-        <div className="flex items-center justify-center min-h-[44px] relative">
+        <div className="flex items-center gap-3">
           <button 
             onClick={() => navigate(`/turmas/${id}`)} 
-            className="back-btn absolute left-0"
+            className="back-btn shrink-0"
           >
             <ArrowLeft className="h-5 w-5 text-black" />
           </button>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <div className="flex items-center gap-2 justify-center">
-              <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Diário do Catequista</h1>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl font-black text-foreground tracking-tight uppercase truncate">Diário do Catequista</h1>
               {!isPremium && (
-                <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
+                <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm shrink-0">
                   <Crown className="w-2.5 h-2.5" />
                   <span>Premium</span>
                 </div>
               )}
             </div>
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mt-1">
               {diarios.length} {diarios.length === 1 ? "registro" : "registros"}
             </p>
           </div>
