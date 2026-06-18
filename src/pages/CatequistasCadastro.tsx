@@ -32,7 +32,10 @@ const emptyForm: FormData = {
 
 function calcAge(birth: string): number | null {
   if (!birth) return null;
-  const b = new Date(birth); const now = new Date();
+  // Adiciona T12:00:00 para evitar problema de fuso horário UTC (sem isso,
+  // "2000-05-10" vira meia-noite UTC que no Brasil (UTC-3) recua para dia 9)
+  const dateStr = birth.includes('T') ? birth : birth + 'T12:00:00';
+  const b = new Date(dateStr); const now = new Date();
   let age = now.getFullYear() - b.getFullYear();
   if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) age--;
   return age;

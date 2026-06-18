@@ -63,6 +63,7 @@ const MapaPanoramico          = lazy(() => import("@/pages/MapaPanoramico"));
 const MinhaAssinatura         = lazy(() => import("@/pages/MinhaAssinatura"));
 const NotFound                = lazy(() => import("@/pages/NotFound"));
 const LandingPage             = lazy(() => import("@/pages/LandingPage"));
+const OnboardingPage          = lazy(() => import("@/pages/OnboardingPage"));
 
 // ===== FALLBACK DE LOADING =====
 function PageLoader() {
@@ -121,11 +122,16 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+const ONBOARDING_KEY = "ivc_onboarding_completed";
+
 const HomeOrLanding = () => {
   const { session, loading, isAdmin } = useAuth();
   if (loading) return null;
   if (session) {
     if (isAdmin) return <Navigate to="/admin" replace />;
+    // Redireciona para onboarding apenas na primeira vez (flag no localStorage)
+    const onboardingCompleted = localStorage.getItem(ONBOARDING_KEY) === "true";
+    if (!onboardingCompleted) return <Navigate to="/onboarding" replace />;
     return (
       <AppLayout>
         <Suspense fallback={<PageLoader />}>
@@ -148,6 +154,17 @@ const AppRoutes = () => (
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      {/* Onboarding: página standalone (sem AppLayout) mas protegida */}
+      <Route
+        path="/onboarding"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <OnboardingPage />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
       <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
       <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
       <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
