@@ -81,65 +81,67 @@ function StepCard({
   return (
     <div className={`${baseCardStyle} ${cardStateStyle}`}>
       {/* Header do card */}
-      <div className="flex items-center gap-3.5 px-5 py-4">
-        {/* Ícone */}
-        <div
-          className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-            done
-              ? "bg-emerald-100 text-emerald-600"
-              : expanded
-              ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
-              : `${iconBg} ${iconColor}`
-          }`}
-        >
-          {icon}
-        </div>
-
-        {/* Texto */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight truncate">
-              {title}
-            </p>
-            {optional && !isPremium && (
-              <span className="shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
-                Opcional
-              </span>
-            )}
-            {isPremium && (
-              <span className="shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-200 to-amber-400 text-amber-900 shadow-sm">
-                Premium
-              </span>
-            )}
-          </div>
-          {subtitle && (
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug truncate">
-              {subtitle}
-            </p>
-          )}
-        </div>
-
-        {/* Ação / Status */}
-        {done ? (
-          <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-        ) : expanded ? (
-          <button
-            onClick={onCollapse}
-            className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        ) : (
-          <button
-            onClick={onAdd}
-            className={`shrink-0 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
-              isPremium 
-                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-violet-500/25"
-                : "bg-primary text-white shadow-primary/20"
+      <div className="flex flex-col px-5 py-4 gap-3">
+        <div className="flex items-center gap-3.5">
+          {/* Ícone */}
+          <div
+            className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+              done
+                ? "bg-emerald-100 text-emerald-600"
+                : expanded
+                ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
+                : `${iconBg} ${iconColor}`
             }`}
           >
-            Adicionar
-          </button>
+            {icon}
+          </div>
+
+          {/* Texto */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight truncate">
+                {title}
+              </p>
+              {optional && !isPremium && (
+                <span className="shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
+                  Opcional
+                </span>
+              )}
+            </div>
+            {subtitle && (
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug truncate">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {/* Ação / Status */}
+          {done ? (
+            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+          ) : expanded ? (
+            <button
+              onClick={onCollapse}
+              className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          ) : null}
+        </div>
+        
+        {/* Botão de adicionar na linha de baixo para não esconder o título */}
+        {!done && !expanded && (
+          <div className="pl-[58px]">
+            <button
+              onClick={onAdd}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
+                isPremium 
+                  ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-violet-500/25"
+                  : "bg-primary text-white shadow-primary/20"
+              }`}
+            >
+              Adicionar
+            </button>
+          </div>
         )}
       </div>
 
@@ -160,8 +162,9 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  // Estado para a tela de boas vindas
+  // Estado para a tela de boas vindas e modal de info
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // ── Dados do Supabase ──
   const { data: catequistas = [], refetch: refetchCats } = useCatequistas();
@@ -185,13 +188,7 @@ export default function OnboardingPage() {
   const doneParoquia = paroquias.length > 0;
   const doneTurma = turmas.length > 0;
 
-  // ── Abre automaticamente o primeiro card pendente (somente se não estiver na tela de boas vindas) ──
-  useEffect(() => {
-    if (showWelcome) return;
-    if (!doneCatequista) { setExpanded("catequista"); return; }
-    if (!doneParoquia) { setExpanded("paroquia"); return; }
-    if (!doneTurma) { setExpanded("turma"); return; }
-  }, [doneCatequista, doneParoquia, doneTurma, showWelcome]);
+  // Abertura automática removida para que a página inicie com todos os cards fechados
 
   // ── Quando tudo estiver pronto ──
   useEffect(() => {
@@ -429,10 +426,37 @@ export default function OnboardingPage() {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <button className="w-10 h-10 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0">
+        <button 
+          onClick={() => setShowInfoModal(true)}
+          className="w-10 h-10 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0">
           <HelpCircle className="w-5 h-5" />
         </button>
       </div>
+
+      {/* MODAL DE INFORMAÇÃO */}
+      {showInfoModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
+              <HelpCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-black text-foreground mb-2">
+              Cadastros Básicos
+            </h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+              Os cadastros desta tela inicial são muito importantes para o funcionamento essencial do sistema, como criar sua turma e vinculá-la a uma comunidade.
+              <br/><br/>
+              Fique tranquilo! Outros dados com mais detalhes poderão ser cadastrados ou editados depois, diretamente no painel.
+            </p>
+            <button
+              onClick={() => setShowInfoModal(false)}
+              className="w-full h-12 rounded-2xl bg-zinc-100 text-zinc-700 font-black text-sm uppercase tracking-wider hover:bg-zinc-200 active:scale-[0.98] transition-all"
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Título */}
       <div className="px-6 pt-3 pb-5">
