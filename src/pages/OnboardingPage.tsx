@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Key, Building2, Link2, CheckCircle2, ChevronRight,
+  Key, Building2, CheckCircle2, ChevronRight,
   ArrowLeft, HelpCircle, Sparkles, User, Phone, Mail,
-  Calendar, Plus, X, Loader2, MapPin, Clock, Star,
-  GraduationCap
+  X, Loader2, MapPin, Clock, Star, GraduationCap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -46,30 +45,30 @@ function calcAge(birth: string): number | null {
 interface StepCardProps {
   icon: React.ReactNode;
   title: string;
-  subtitle?: string;
+  description?: string;          // texto descritivo abaixo do título
+  subtitle?: string;             // mostrado quando done=true
   done: boolean;
   expanded: boolean;
   onAdd: () => void;
   onCollapse: () => void;
   children?: React.ReactNode;
-  optional?: boolean;
   iconBg?: string;
   iconColor?: string;
   isPremium?: boolean;
+  footerActions?: React.ReactNode; // botões custom no rodapé do card fechado
 }
 
 function StepCard({
-  icon, title, subtitle, done, expanded, onAdd, onCollapse, children, optional,
-  iconBg = "bg-zinc-100", iconColor = "text-zinc-400", isPremium = false
+  icon, title, description, subtitle, done, expanded, onAdd, onCollapse,
+  children, iconBg = "bg-zinc-100", iconColor = "text-zinc-400",
+  isPremium = false, footerActions,
 }: StepCardProps) {
-  // Define os estilos baseados no estado (done, expanded, premium)
   const baseCardStyle = "rounded-3xl border-2 transition-all duration-300 overflow-hidden";
-  
   let cardStateStyle = "";
   if (done) {
     cardStateStyle = "border-emerald-200 bg-emerald-50/40";
   } else if (expanded) {
-    cardStateStyle = isPremium 
+    cardStateStyle = isPremium
       ? "border-violet-300 bg-white shadow-xl shadow-violet-500/10"
       : "border-primary/30 bg-white shadow-lg shadow-primary/5";
   } else {
@@ -80,64 +79,76 @@ function StepCard({
 
   return (
     <div className={`${baseCardStyle} ${cardStateStyle}`}>
-      {/* Header do card: ícone + texto + ação na mesma linha */}
-      <div className="flex items-center gap-3.5 px-5 py-4">
-        {/* Ícone */}
-        <div
-          className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-            done
-              ? "bg-emerald-100 text-emerald-600"
-              : expanded
-              ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
-              : `${iconBg} ${iconColor}`
-          }`}
-        >
-          {icon}
-        </div>
+      {/* Layout em 3 linhas */}
+      <div className="px-5 pt-4 pb-4">
 
-        {/* Texto (flex-1 + overflow hidden garante truncate) */}
-        <div className="flex-1 min-w-0 mr-3">
-          <div className="flex items-center gap-2">
+        {/* Linha 1: ícone + título + status/fechar */}
+        <div className="flex items-center gap-3.5">
+          {/* Ícone */}
+          <div
+            className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+              done
+                ? "bg-emerald-100 text-emerald-600"
+                : expanded
+                ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
+                : `${iconBg} ${iconColor}`
+            }`}
+          >
+            {icon}
+          </div>
+
+          {/* Título */}
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight truncate">
               {title}
             </p>
-            {optional && !isPremium && (
-              <span className="shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
-                Opcional
-              </span>
+            {/* Subtítulo quando concluído */}
+            {done && subtitle && (
+              <p className="text-[11px] text-emerald-600 mt-0.5 leading-snug truncate font-semibold">
+                {subtitle}
+              </p>
             )}
           </div>
-          {subtitle && (
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug truncate">
-              {subtitle}
-            </p>
-          )}
+
+          {/* Status / Fechar — sempre no canto direito */}
+          <div className="shrink-0 ml-2">
+            {done ? (
+              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+            ) : expanded ? (
+              <button
+                onClick={onCollapse}
+                className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            ) : null}
+          </div>
         </div>
 
-        {/* Ação / Status — sempre no canto direito */}
-        <div className="shrink-0">
-          {done ? (
-            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-          ) : expanded ? (
-            <button
-              onClick={onCollapse}
-              className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={onAdd}
-              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
-                isPremium
-                  ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-violet-500/25"
-                  : "bg-primary text-white shadow-primary/20"
-              }`}
-            >
-              Adicionar
-            </button>
-          )}
-        </div>
+        {/* Linha 2: descrição (visível apenas quando não concluído) */}
+        {!done && description && (
+          <p className="text-xs text-muted-foreground mt-2 ml-[58px] leading-relaxed">
+            {description}
+          </p>
+        )}
+
+        {/* Linha 3: ações do rodapé (somente fechado e não concluído) */}
+        {!done && !expanded && (
+          <div className="mt-3 ml-[58px] flex items-center justify-end gap-2">
+            {footerActions ? footerActions : (
+              <button
+                onClick={onAdd}
+                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
+                  isPremium
+                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-violet-500/25"
+                    : "bg-primary text-white shadow-primary/20"
+                }`}
+              >
+                Adicionar
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Conteúdo expandível */}
@@ -156,7 +167,7 @@ function StepCard({
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   // Estado para a tela de boas vindas e modal de info
   const [showWelcome, setShowWelcome] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -175,32 +186,24 @@ export default function OnboardingPage() {
   const joinMut = useJoinTurma();
 
   // ── Qual card está expandido ──
-  type CardKey = "catequista" | "paroquia" | "turma" | "entrar" | null;
+  type CardKey = "catequista" | "paroquia" | "turma" | null;
   const [expanded, setExpanded] = useState<CardKey>(null);
 
   // ── Modo do card de turma: criar ou entrar ──
   const [turmaMode, setTurmaMode] = useState<"criar" | "entrar">("criar");
 
-  // ── Status de conclusão (derivado dos dados) ──
+  // ── Status de conclusão ──
   const doneCatequista = catequistas.some((c) => c.id === user?.id);
   const doneParoquia = paroquias.length > 0;
   const doneTurma = turmas.length > 0;
 
-  // Abertura automática removida para que a página inicie com todos os cards fechados
-
   // ── Quando tudo estiver pronto ──
-  useEffect(() => {
-    if (doneCatequista && doneParoquia && doneTurma) {
-      setExpanded(null);
-    }
-  }, [doneCatequista, doneParoquia, doneTurma]);
+  const isAllDone = doneCatequista && doneParoquia && doneTurma;
 
   const handleFinish = () => {
     localStorage.setItem(ONBOARDING_KEY, "true");
     navigate("/", { replace: true });
   };
-
-  const isAllDone = doneCatequista && doneParoquia && doneTurma;
 
   // ─────────────────────────────────────
   //  FORMULÁRIO: Catequista
@@ -265,13 +268,19 @@ export default function OnboardingPage() {
   });
 
   const saveParoquia = async () => {
-    const nomePar = parForm.paroquiaNome.trim() || paroquias.find(p => p.id === parForm.paroquiaId)?.nome || "";
+    const nomePar =
+      parForm.paroquiaNome.trim() ||
+      paroquias.find((p) => p.id === parForm.paroquiaId)?.nome ||
+      "";
     if (!nomePar) {
       toast.error("Informe o nome da paróquia");
       return;
     }
     try {
-      let parId = parForm.paroquiaId && parForm.paroquiaId !== "NEW" ? parForm.paroquiaId : "";
+      let parId =
+        parForm.paroquiaId && parForm.paroquiaId !== "NEW"
+          ? parForm.paroquiaId
+          : "";
       if (!parId) {
         const existing = paroquias.find(
           (p) => p.nome.toLowerCase() === nomePar.toLowerCase()
@@ -289,7 +298,10 @@ export default function OnboardingPage() {
         }
       }
 
-      const nomeCom = parForm.comunidadeNome.trim() || comunidades.find(c => c.id === parForm.comunidadeId)?.nome || "";
+      const nomeCom =
+        parForm.comunidadeNome.trim() ||
+        comunidades.find((c) => c.id === parForm.comunidadeId)?.nome ||
+        "";
       if (nomeCom) {
         const existingCom = comunidades.find(
           (c) =>
@@ -378,7 +390,7 @@ export default function OnboardingPage() {
   };
 
   // ─────────────────────────────────────
-  //  RENDER DA TELA DE BOAS VINDAS (TRANSITION)
+  //  TELA DE BOAS-VINDAS (transição)
   // ─────────────────────────────────────
   if (showWelcome) {
     return (
@@ -387,13 +399,15 @@ export default function OnboardingPage() {
           <GraduationCap className="w-12 h-12 text-primary" />
         </div>
         <h1 className="text-4xl font-black text-foreground tracking-tighter leading-tight mb-4">
-          Bem-vindo ao <br/>
+          Bem-vindo ao <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">
             iCatequese
           </span>
         </h1>
         <p className="text-base text-muted-foreground leading-relaxed max-w-sm mb-12">
-          Estamos muito felizes em ter você aqui. Para começarmos, precisamos apenas de algumas informações básicas para configurar seu perfil e sua turma.
+          Estamos muito felizes em ter você aqui. Para começarmos, precisamos
+          apenas de algumas informações básicas para configurar seu perfil e sua
+          turma.
         </p>
         <button
           onClick={() => setShowWelcome(false)}
@@ -406,32 +420,31 @@ export default function OnboardingPage() {
   }
 
   // ─────────────────────────────────────
-  //  RENDER DO ONBOARDING
+  //  PÁGINA DE ONBOARDING
   // ─────────────────────────────────────
   return (
     <div className="min-h-screen bg-white flex flex-col animate-in slide-in-from-bottom-8 fade-in duration-500">
-      {/* Topo litúrgico */}
+      {/* Barra litúrgica */}
       <div className="h-1 w-full bg-gradient-to-r from-violet-600 via-amber-400 to-violet-600" />
 
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-2">
+        {/* Voltar para a tela de login */}
         <button
-          onClick={() => {
-            localStorage.setItem(ONBOARDING_KEY, "true");
-            navigate("/", { replace: true });
-          }}
+          onClick={() => navigate("/auth", { replace: true })}
           className="w-10 h-10 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-600 hover:bg-zinc-200 transition-colors active:scale-95 shrink-0"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <button 
+        <button
           onClick={() => setShowInfoModal(true)}
-          className="w-10 h-10 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0">
+          className="w-10 h-10 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0"
+        >
           <HelpCircle className="w-5 h-5" />
         </button>
       </div>
 
-      {/* MODAL DE INFORMAÇÃO */}
+      {/* Modal de Ajuda */}
       {showInfoModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
@@ -442,9 +455,12 @@ export default function OnboardingPage() {
               Cadastros Básicos
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              Os cadastros desta tela inicial são muito importantes para o funcionamento essencial do sistema, como criar sua turma e vinculá-la a uma comunidade.
-              <br/><br/>
-              Fique tranquilo! Outros dados com mais detalhes poderão ser cadastrados ou editados depois, diretamente no painel.
+              Os cadastros desta tela são essenciais para o funcionamento do
+              sistema — como criar sua turma e vinculá-la à comunidade.
+              <br />
+              <br />
+              Fique tranquilo! Dados mais detalhados (endereço, formação,
+              histórico) podem ser preenchidos depois diretamente no painel.
             </p>
             <button
               onClick={() => setShowInfoModal(false)}
@@ -481,7 +497,8 @@ export default function OnboardingPage() {
           iconBg="bg-sky-100"
           iconColor="text-sky-600"
           title="Dados do Catequista"
-          subtitle={doneCatequista ? "Perfil configurado" : "Nome, telefone e data de nascimento"}
+          description="Informe seus dados pessoais para identificação no sistema. O nome é obrigatório; os demais dados podem ser completados depois."
+          subtitle="Perfil configurado"
           done={doneCatequista}
           expanded={expanded === "catequista"}
           onAdd={() => setExpanded("catequista")}
@@ -505,7 +522,9 @@ export default function OnboardingPage() {
                 <input
                   type="text"
                   value={catForm.nome}
-                  onChange={(e) => setCatForm((f) => ({ ...f, nome: e.target.value }))}
+                  onChange={(e) =>
+                    setCatForm((f) => ({ ...f, nome: e.target.value }))
+                  }
                   placeholder="Ex: Maria das Graças"
                   className="form-input"
                 />
@@ -515,7 +534,9 @@ export default function OnboardingPage() {
                 <CustomDatePicker
                   label="Data de nascimento"
                   value={catForm.dataNascimento}
-                  onChange={(v) => setCatForm((f) => ({ ...f, dataNascimento: v }))}
+                  onChange={(v) =>
+                    setCatForm((f) => ({ ...f, dataNascimento: v }))
+                  }
                 />
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
@@ -538,7 +559,10 @@ export default function OnboardingPage() {
                     type="tel"
                     value={catForm.telefone}
                     onChange={(e) =>
-                      setCatForm((f) => ({ ...f, telefone: mascaraTelefone(e.target.value) }))
+                      setCatForm((f) => ({
+                        ...f,
+                        telefone: mascaraTelefone(e.target.value),
+                      }))
                     }
                     placeholder="(00) 00000-0000"
                     className="form-input"
@@ -551,7 +575,9 @@ export default function OnboardingPage() {
                   <input
                     type="email"
                     value={catForm.email}
-                    onChange={(e) => setCatForm((f) => ({ ...f, email: e.target.value }))}
+                    onChange={(e) =>
+                      setCatForm((f) => ({ ...f, email: e.target.value }))
+                    }
                     placeholder="email@exemplo.com"
                     className="form-input"
                   />
@@ -581,7 +607,8 @@ export default function OnboardingPage() {
           iconBg="bg-amber-100"
           iconColor="text-amber-600"
           title="Paróquia / Área Missionária"
-          subtitle={doneParoquia ? `${paroquias[0]?.nome}` : "Paróquia e comunidade"}
+          description="Vincule seu perfil à paróquia ou área missionária onde você atua como catequista."
+          subtitle={paroquias[0]?.nome}
           done={doneParoquia}
           expanded={expanded === "paroquia"}
           onAdd={() => setExpanded("paroquia")}
@@ -599,7 +626,8 @@ export default function OnboardingPage() {
                     setParForm((f) => ({
                       ...f,
                       paroquiaId: e.target.value,
-                      paroquiaNome: e.target.value === "NEW" ? f.paroquiaNome : "",
+                      paroquiaNome:
+                        e.target.value === "NEW" ? f.paroquiaNome : "",
                       comunidadeId: "",
                       comunidadeNome: "",
                     }));
@@ -641,7 +669,9 @@ export default function OnboardingPage() {
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
                 Comunidade / Núcleo{" "}
-                <span className="text-zinc-400 font-normal normal-case">(opcional)</span>
+                <span className="text-zinc-400 font-normal normal-case">
+                  (opcional)
+                </span>
               </label>
               {comunidades.filter(
                 (c) =>
@@ -655,7 +685,8 @@ export default function OnboardingPage() {
                     setParForm((f) => ({
                       ...f,
                       comunidadeId: e.target.value,
-                      comunidadeNome: e.target.value === "NEW" ? f.comunidadeNome : "",
+                      comunidadeNome:
+                        e.target.value === "NEW" ? f.comunidadeNome : "",
                     }));
                   }}
                   className="form-input"
@@ -680,7 +711,10 @@ export default function OnboardingPage() {
                   type="text"
                   value={parForm.comunidadeNome}
                   onChange={(e) =>
-                    setParForm((f) => ({ ...f, comunidadeNome: e.target.value }))
+                    setParForm((f) => ({
+                      ...f,
+                      comunidadeNome: e.target.value,
+                    }))
                   }
                   placeholder="Ex: Comunidade São José (opcional)"
                   className="form-input"
@@ -691,7 +725,10 @@ export default function OnboardingPage() {
                   type="text"
                   value={parForm.comunidadeNome}
                   onChange={(e) =>
-                    setParForm((f) => ({ ...f, comunidadeNome: e.target.value }))
+                    setParForm((f) => ({
+                      ...f,
+                      comunidadeNome: e.target.value,
+                    }))
                   }
                   placeholder="Nome da nova comunidade..."
                   className="form-input mt-2 animate-in fade-in zoom-in-95"
@@ -721,38 +758,57 @@ export default function OnboardingPage() {
           iconBg="bg-emerald-100"
           iconColor="text-emerald-600"
           title="Turma"
-          subtitle={
-            doneTurma
-              ? turmas[0]?.nome
-              : "Crie sua turma ou entre em uma existente"
-          }
+          description="Crie uma nova turma de catequese ou entre em uma turma já existente com o código de acesso."
+          subtitle={turmas[0]?.nome}
           done={doneTurma}
           expanded={expanded === "turma"}
-          onAdd={() => setExpanded("turma")}
+          onAdd={() => {
+            setTurmaMode("criar");
+            setExpanded("turma");
+          }}
           onCollapse={() => setExpanded(null)}
-        >
-          <div className="space-y-3 pt-3">
-            {/* Toggle Criar / Entrar */}
-            <div className="flex rounded-2xl bg-zinc-100 p-1 gap-1">
+          footerActions={
+            <div className="flex gap-2">
               <button
-                onClick={() => setTurmaMode("criar")}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                  turmaMode === "criar"
-                    ? "bg-white text-primary shadow-md"
-                    : "text-zinc-500 hover:text-zinc-700"
-                }`}
+                onClick={() => {
+                  setTurmaMode("entrar");
+                  setExpanded("turma");
+                }}
+                className="px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 border-violet-300 text-violet-600 hover:bg-violet-50 active:scale-95 transition-all"
+              >
+                Entrar
+              </button>
+              <button
+                onClick={() => {
+                  setTurmaMode("criar");
+                  setExpanded("turma");
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-white shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition-all"
               >
                 Criar Turma
               </button>
-              <button
-                onClick={() => setTurmaMode("entrar")}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                  turmaMode === "entrar"
-                    ? "bg-white text-violet-600 shadow-md"
-                    : "text-zinc-500 hover:text-zinc-700"
+            </div>
+          }
+        >
+          <div className="space-y-3 pt-3">
+            {/* Indicador de modo + link para trocar */}
+            <div className="flex items-center justify-between">
+              <p
+                className={`text-xs font-black uppercase tracking-widest ${
+                  turmaMode === "criar" ? "text-primary" : "text-violet-600"
                 }`}
               >
-                Entrar em Turma
+                {turmaMode === "criar"
+                  ? "✏️  Criando nova turma"
+                  : "🔗  Entrando em turma existente"}
+              </p>
+              <button
+                onClick={() =>
+                  setTurmaMode(turmaMode === "criar" ? "entrar" : "criar")
+                }
+                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+              >
+                {turmaMode === "criar" ? "Entrar em turma" : "Criar turma"}
               </button>
             </div>
 
@@ -791,13 +847,18 @@ export default function OnboardingPage() {
                       }
                       className="form-input"
                     >
-                      {["1° Ano", "2° Ano", "3° Ano", "Ciclo 1", "Ciclo 2", "Ciclo 3"].map(
-                        (a) => (
-                          <option key={a} value={a}>
-                            {a}
-                          </option>
-                        )
-                      )}
+                      {[
+                        "1° Ano",
+                        "2° Ano",
+                        "3° Ano",
+                        "Ciclo 1",
+                        "Ciclo 2",
+                        "Ciclo 3",
+                      ].map((a) => (
+                        <option key={a} value={a}>
+                          {a}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -807,7 +868,10 @@ export default function OnboardingPage() {
                     <select
                       value={turmaForm.diaCatequese}
                       onChange={(e) =>
-                        setTurmaForm((f) => ({ ...f, diaCatequese: e.target.value }))
+                        setTurmaForm((f) => ({
+                          ...f,
+                          diaCatequese: e.target.value,
+                        }))
                       }
                       className="form-input"
                     >
@@ -823,7 +887,8 @@ export default function OnboardingPage() {
 
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Horário <span className="text-red-500">*</span>
+                    <Clock className="w-3 h-3" /> Horário{" "}
+                    <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="time"
@@ -843,7 +908,10 @@ export default function OnboardingPage() {
                     <select
                       value={turmaForm.comunidadeId}
                       onChange={(e) =>
-                        setTurmaForm((f) => ({ ...f, comunidadeId: e.target.value }))
+                        setTurmaForm((f) => ({
+                          ...f,
+                          comunidadeId: e.target.value,
+                        }))
                       }
                       className="form-input"
                     >
@@ -878,7 +946,8 @@ export default function OnboardingPage() {
               <div className="space-y-3">
                 <div className="p-3 bg-violet-50 rounded-2xl border border-violet-100">
                   <p className="text-xs text-violet-900 leading-relaxed text-center">
-                    Peça o <strong>código de acesso</strong> ao catequista responsável da turma que deseja ingressar.
+                    Peça o <strong>código de acesso</strong> ao catequista
+                    responsável da turma que deseja ingressar.
                   </p>
                 </div>
 
@@ -889,7 +958,9 @@ export default function OnboardingPage() {
                   <input
                     type="text"
                     value={codigoTurma}
-                    onChange={(e) => setCodigoTurma(e.target.value.toUpperCase())}
+                    onChange={(e) =>
+                      setCodigoTurma(e.target.value.toUpperCase())
+                    }
                     placeholder="Ex: ABC123"
                     maxLength={8}
                     className="w-full h-14 bg-zinc-50 border-2 border-zinc-200 rounded-2xl outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 transition-all uppercase tracking-[0.3em] font-black text-center text-xl text-foreground placeholder:text-zinc-300 placeholder:tracking-normal placeholder:font-medium"
@@ -914,12 +985,12 @@ export default function OnboardingPage() {
           </div>
         </StepCard>
 
-        {/* ── SEPARADOR + PULAR ── */}
+        {/* ── SEPARADOR ── */}
         <div className="pt-2 pb-1">
           <div className="h-px bg-zinc-100" />
         </div>
 
-        {/* ── BOTÃO FINALIZAR (quando tudo pronto) ou PULAR ── */}
+        {/* ── BOTÃO FINALIZAR ou PULAR ── */}
         {isAllDone ? (
           <button
             onClick={handleFinish}
@@ -940,7 +1011,7 @@ export default function OnboardingPage() {
           </button>
         )}
 
-        {/* Progress indicator */}
+        {/* Indicador de progresso */}
         <div className="flex items-center justify-center gap-2 pt-1 pb-2">
           {[doneCatequista, doneParoquia, doneTurma].map((done, i) => (
             <div
