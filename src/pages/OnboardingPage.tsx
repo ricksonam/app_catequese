@@ -80,69 +80,64 @@ function StepCard({
 
   return (
     <div className={`${baseCardStyle} ${cardStateStyle}`}>
-      {/* Header do card */}
-      <div className="flex flex-col px-5 py-4 gap-3">
-        <div className="flex items-center gap-3.5">
-          {/* Ícone */}
-          <div
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-              done
-                ? "bg-emerald-100 text-emerald-600"
-                : expanded
-                ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
-                : `${iconBg} ${iconColor}`
-            }`}
-          >
-            {icon}
-          </div>
+      {/* Header do card: ícone + texto + ação na mesma linha */}
+      <div className="flex items-center gap-3.5 px-5 py-4">
+        {/* Ícone */}
+        <div
+          className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+            done
+              ? "bg-emerald-100 text-emerald-600"
+              : expanded
+              ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
+              : `${iconBg} ${iconColor}`
+          }`}
+        >
+          {icon}
+        </div>
 
-          {/* Texto */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight truncate">
-                {title}
-              </p>
-              {optional && !isPremium && (
-                <span className="shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
-                  Opcional
-                </span>
-              )}
-            </div>
-            {subtitle && (
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug truncate">
-                {subtitle}
-              </p>
+        {/* Texto (flex-1 + overflow hidden garante truncate) */}
+        <div className="flex-1 min-w-0 mr-3">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight truncate">
+              {title}
+            </p>
+            {optional && !isPremium && (
+              <span className="shrink-0 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500">
+                Opcional
+              </span>
             )}
           </div>
+          {subtitle && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug truncate">
+              {subtitle}
+            </p>
+          )}
+        </div>
 
-          {/* Ação / Status */}
+        {/* Ação / Status — sempre no canto direito */}
+        <div className="shrink-0">
           {done ? (
-            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
           ) : expanded ? (
             <button
               onClick={onCollapse}
-              className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors shrink-0"
+              className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
-          ) : null}
-        </div>
-        
-        {/* Botão de adicionar na linha de baixo para não esconder o título */}
-        {!done && !expanded && (
-          <div className="pl-[58px]">
+          ) : (
             <button
               onClick={onAdd}
-              className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
-                isPremium 
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
+                isPremium
                   ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-violet-500/25"
                   : "bg-primary text-white shadow-primary/20"
               }`}
             >
               Adicionar
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Conteúdo expandível */}
@@ -182,6 +177,9 @@ export default function OnboardingPage() {
   // ── Qual card está expandido ──
   type CardKey = "catequista" | "paroquia" | "turma" | "entrar" | null;
   const [expanded, setExpanded] = useState<CardKey>(null);
+
+  // ── Modo do card de turma: criar ou entrar ──
+  const [turmaMode, setTurmaMode] = useState<"criar" | "entrar">("criar");
 
   // ── Status de conclusão (derivado dos dados) ──
   const doneCatequista = catequistas.some((c) => c.id === user?.id);
@@ -717,16 +715,16 @@ export default function OnboardingPage() {
           </div>
         </StepCard>
 
-        {/* ── CARD 3: Turma ── */}
+        {/* ── CARD 3: Turma (Criar ou Entrar) ── */}
         <StepCard
           icon={<Building2 className="w-5 h-5" />}
           iconBg="bg-emerald-100"
           iconColor="text-emerald-600"
-          title="Dados da Turma"
+          title="Turma"
           subtitle={
             doneTurma
               ? turmas[0]?.nome
-              : "Tipo de turma, horário, etapa do IVC..."
+              : "Crie sua turma ou entre em uma existente"
           }
           done={doneTurma}
           expanded={expanded === "turma"}
@@ -734,172 +732,187 @@ export default function OnboardingPage() {
           onCollapse={() => setExpanded(null)}
         >
           <div className="space-y-3 pt-3">
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                Nome da Turma <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={turmaForm.nome}
-                onChange={(e) =>
-                  setTurmaForm((f) => ({ ...f, nome: e.target.value }))
-                }
-                className="form-input"
+            {/* Toggle Criar / Entrar */}
+            <div className="flex rounded-2xl bg-zinc-100 p-1 gap-1">
+              <button
+                onClick={() => setTurmaMode("criar")}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                  turmaMode === "criar"
+                    ? "bg-white text-primary shadow-md"
+                    : "text-zinc-500 hover:text-zinc-700"
+                }`}
               >
-                <option value="">Selecione...</option>
-                {NOMES_TURMA.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
+                Criar Turma
+              </button>
+              <button
+                onClick={() => setTurmaMode("entrar")}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
+                  turmaMode === "entrar"
+                    ? "bg-white text-violet-600 shadow-md"
+                    : "text-zinc-500 hover:text-zinc-700"
+                }`}
+              >
+                Entrar em Turma
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                  Ano/Ciclo <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={turmaForm.ano}
-                  onChange={(e) =>
-                    setTurmaForm((f) => ({ ...f, ano: e.target.value }))
-                  }
-                  className="form-input"
-                >
-                  {["1° Ano", "2° Ano", "3° Ano", "Ciclo 1", "Ciclo 2", "Ciclo 3"].map(
-                    (a) => (
-                      <option key={a} value={a}>
-                        {a}
+            {/* ── MODO: CRIAR ── */}
+            {turmaMode === "criar" && (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                    Nome da Turma <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={turmaForm.nome}
+                    onChange={(e) =>
+                      setTurmaForm((f) => ({ ...f, nome: e.target.value }))
+                    }
+                    className="form-input"
+                  >
+                    <option value="">Selecione...</option>
+                    {NOMES_TURMA.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
                       </option>
-                    )
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                      Ano/Ciclo <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={turmaForm.ano}
+                      onChange={(e) =>
+                        setTurmaForm((f) => ({ ...f, ano: e.target.value }))
+                      }
+                      className="form-input"
+                    >
+                      {["1° Ano", "2° Ano", "3° Ano", "Ciclo 1", "Ciclo 2", "Ciclo 3"].map(
+                        (a) => (
+                          <option key={a} value={a}>
+                            {a}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                      Dia do Encontro <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={turmaForm.diaCatequese}
+                      onChange={(e) =>
+                        setTurmaForm((f) => ({ ...f, diaCatequese: e.target.value }))
+                      }
+                      className="form-input"
+                    >
+                      <option value="">Selecione...</option>
+                      {DIAS_SEMANA.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> Horário <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={turmaForm.horario}
+                    onChange={(e) =>
+                      setTurmaForm((f) => ({ ...f, horario: e.target.value }))
+                    }
+                    className="form-input"
+                  />
+                </div>
+
+                {comunidades.length > 0 && (
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                      Comunidade
+                    </label>
+                    <select
+                      value={turmaForm.comunidadeId}
+                      onChange={(e) =>
+                        setTurmaForm((f) => ({ ...f, comunidadeId: e.target.value }))
+                      }
+                      className="form-input"
+                    >
+                      <option value="">Selecione (opcional)...</option>
+                      {comunidades.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <button
+                  onClick={saveTurma}
+                  disabled={turmaMut.isPending}
+                  className="w-full action-btn h-12 mt-1"
+                >
+                  {turmaMut.isPending ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Criando...
+                    </span>
+                  ) : (
+                    "Criar Turma e Continuar"
                   )}
-                </select>
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                  Dia do Encontro <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={turmaForm.diaCatequese}
-                  onChange={(e) =>
-                    setTurmaForm((f) => ({ ...f, diaCatequese: e.target.value }))
-                  }
-                  className="form-input"
-                >
-                  <option value="">Selecione...</option>
-                  {DIAS_SEMANA.map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block flex items-center gap-1">
-                <Clock className="w-3 h-3" /> Horário <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="time"
-                value={turmaForm.horario}
-                onChange={(e) =>
-                  setTurmaForm((f) => ({ ...f, horario: e.target.value }))
-                }
-                className="form-input"
-              />
-            </div>
-
-            {comunidades.length > 0 && (
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                  Comunidade
-                </label>
-                <select
-                  value={turmaForm.comunidadeId}
-                  onChange={(e) =>
-                    setTurmaForm((f) => ({ ...f, comunidadeId: e.target.value }))
-                  }
-                  className="form-input"
-                >
-                  <option value="">Selecione (opcional)...</option>
-                  {comunidades.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nome}
-                    </option>
-                  ))}
-                </select>
+                </button>
               </div>
             )}
 
-            <button
-              onClick={saveTurma}
-              disabled={turmaMut.isPending}
-              className="w-full action-btn h-12 mt-1"
-            >
-              {turmaMut.isPending ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Criando...
-                </span>
-              ) : (
-                "Criar Turma e Continuar"
-              )}
-            </button>
+            {/* ── MODO: ENTRAR ── */}
+            {turmaMode === "entrar" && (
+              <div className="space-y-3">
+                <div className="p-3 bg-violet-50 rounded-2xl border border-violet-100">
+                  <p className="text-xs text-violet-900 leading-relaxed text-center">
+                    Peça o <strong>código de acesso</strong> ao catequista responsável da turma que deseja ingressar.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block text-center">
+                    Código da Turma
+                  </label>
+                  <input
+                    type="text"
+                    value={codigoTurma}
+                    onChange={(e) => setCodigoTurma(e.target.value.toUpperCase())}
+                    placeholder="Ex: ABC123"
+                    maxLength={8}
+                    className="w-full h-14 bg-zinc-50 border-2 border-zinc-200 rounded-2xl outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 transition-all uppercase tracking-[0.3em] font-black text-center text-xl text-foreground placeholder:text-zinc-300 placeholder:tracking-normal placeholder:font-medium"
+                  />
+                </div>
+
+                <button
+                  onClick={joinTurma}
+                  disabled={joinMut.isPending || !codigoTurma.trim()}
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-violet-500/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 mt-1"
+                >
+                  {joinMut.isPending ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Enviando...
+                    </span>
+                  ) : (
+                    "Solicitar Acesso"
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </StepCard>
-
-        {/* ── CARD 4: Entrar em turma (PREMIUM) ── */}
-        {!doneTurma && (
-          <StepCard
-            icon={<Star className="w-5 h-5" />}
-            iconBg="bg-gradient-to-br from-violet-500 to-fuchsia-500"
-            iconColor="text-white"
-            isPremium={true}
-            title="Entrar em Turma"
-            subtitle="Ingresse em uma turma já existente"
-            done={false}
-            expanded={expanded === "entrar"}
-            onAdd={() => setExpanded("entrar")}
-            onCollapse={() => setExpanded(null)}
-            optional
-          >
-            <div className="space-y-3 pt-3">
-              <div className="p-3 bg-violet-50 rounded-2xl border border-violet-100 mb-4">
-                <p className="text-xs text-violet-900 leading-relaxed text-center">
-                  Se você é um catequista auxiliar ou quer ingressar numa turma já existente, peça o <strong>código de acesso</strong> ao catequista responsável.
-                </p>
-              </div>
-              
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-violet-600 mb-1 block text-center">
-                  Código da Turma
-                </label>
-                <input
-                  type="text"
-                  value={codigoTurma}
-                  onChange={(e) => setCodigoTurma(e.target.value.toUpperCase())}
-                  placeholder="Ex: ABC123"
-                  maxLength={8}
-                  className="w-full h-14 bg-zinc-50 border-2 border-zinc-200 rounded-2xl outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 transition-all uppercase tracking-[0.3em] font-black text-center text-xl text-foreground placeholder:text-zinc-300 placeholder:tracking-normal placeholder:font-medium"
-                />
-              </div>
-              
-              <button
-                onClick={joinTurma}
-                disabled={joinMut.isPending || !codigoTurma.trim()}
-                className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-violet-500/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 mt-2"
-              >
-                {joinMut.isPending ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Enviando...
-                  </span>
-                ) : (
-                  "Solicitar Acesso"
-                )}
-              </button>
-            </div>
-          </StepCard>
-        )}
 
         {/* ── SEPARADOR + PULAR ── */}
         <div className="pt-2 pb-1">
