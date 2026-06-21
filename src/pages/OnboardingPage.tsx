@@ -169,7 +169,7 @@ function StepCard({
 // ─────────────────────────────────────────────────
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Estado para a tela de boas vindas e modal de info
   const [showWelcome, setShowWelcome] = useState(true);
@@ -395,7 +395,10 @@ export default function OnboardingPage() {
       <div className="flex items-center justify-between px-5 pt-4 pb-2">
         {/* Voltar para a tela de login */}
         <button
-          onClick={() => navigate("/auth", { replace: true })}
+          onClick={async () => {
+            await signOut();
+            navigate("/auth", { replace: true });
+          }}
           className="w-10 h-10 rounded-2xl bg-zinc-100 flex items-center justify-center text-zinc-600 hover:bg-zinc-200 transition-colors active:scale-95 shrink-0"
         >
           <ArrowLeft className="w-5 h-5" />
