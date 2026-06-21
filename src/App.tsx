@@ -8,6 +8,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { logError, initGlobalErrorCapture } from "@/lib/errorLogger";
 import ScrollToTop from "./components/ScrollToTop";
 import { useState, useEffect, lazy, Suspense } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // ===== IMPORTS ESTÁTICOS (usados no carregamento inicial) =====
 import AppLayout from "@/components/AppLayout";
@@ -126,10 +127,58 @@ const ONBOARDING_KEY = "ivc_onboarding_completed";
 
 const HomeOrLanding = () => {
   const { session, loading, isAdmin } = useAuth();
+  const [checkingData, setCheckingData] = useState(false);
+  const [dataChecked, setDataChecked] = useState(false);
+
+  useEffect(() => {
+    if (!session?.user || loading || isAdmin) return;
+
+    const onboardingCompleted = localStorage.getItem(ONBOARDING_KEY) === "true";
+    if (onboardingCompleted) {
+      setDataChecked(true);
+      return;
+    }
+
+    // Para usuários sem flag no localStorage, verifica se já têm dados no banco
+    // Isso evita redirecionar usuários existentes para o onboarding
+    setCheckingData(true);
+    Promise.all([
+      supabase.from("catequistas").select("id", { count: "exact", head: true }).eq("id", session.user.id),
+      supabase.from("paroquias").select("id", { count: "exact", head: true }),
+    ]).then(([catResult, parResult]) => {
+      const hasCatequista = (catResult.count ?? 0) > 0;
+      const hasParoquia = (parResult.count ?? 0) > 0;
+      // Se já tem dados completos, marca onboarding como concluído
+      if (hasCatequista && hasParoquia) {
+        localStorage.setItem(ONBOARDING_KEY, "true");
+      }
+      setCheckingData(false);
+      setDataChecked(true);
+    }).catch(() => {
+      setCheckingData(false);
+      setDataChecked(true);
+    });
+  }, [session, loading, isAdmin]);
+
   if (loading) return null;
   if (session) {
     if (isAdmin) return <Navigate to="/admin" replace />;
-    // Redireciona para onboarding apenas na primeira vez (flag no localStorage)
+
+    // Enquanto verifica dados, mostra loading
+    if (checkingData || !dataChecked) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-2xl bg-white shadow-lg overflow-hidden animate-pulse p-2 flex items-center justify-center">
+              <img src="/Logo_sem_fundo.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+            <p className="text-xs font-black text-primary/60 uppercase tracking-widest">Carregando...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Redireciona para onboarding apenas se não completou e não tem dados
     const onboardingCompleted = localStorage.getItem(ONBOARDING_KEY) === "true";
     if (!onboardingCompleted) return <Navigate to="/onboarding" replace />;
     return (

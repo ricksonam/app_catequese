@@ -1,26 +1,23 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Key, Building2, CheckCircle2, ChevronRight,
+  Key,
+  CheckCircle2, ChevronRight,
   ArrowLeft, HelpCircle, Sparkles, User, Phone, Mail,
-  X, Loader2, MapPin, Clock, Star, GraduationCap
+  X, Loader2, MapPin, GraduationCap, Pencil
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useCatequistaMutation,
   useParoquiaMutation,
   useComunidadeMutation,
-  useTurmaMutation,
-  useJoinTurma,
   useCatequistas,
   useParoquias,
   useComunidades,
-  useTurmas,
 } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { mascaraTelefone } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
-import { NOMES_TURMA, DIAS_SEMANA } from "@/lib/store";
 
 export const ONBOARDING_KEY = "ivc_onboarding_completed";
 
@@ -65,7 +62,7 @@ function StepCard({
 }: StepCardProps) {
   const baseCardStyle = "rounded-3xl border-2 transition-all duration-300 overflow-hidden";
   let cardStateStyle = "";
-  if (done) {
+  if (done && !expanded) {
     cardStateStyle = "border-emerald-200 bg-emerald-50/40";
   } else if (expanded) {
     cardStateStyle = isPremium
@@ -87,7 +84,7 @@ function StepCard({
           {/* Ícone */}
           <div
             className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-              done
+              done && !expanded
                 ? "bg-emerald-100 text-emerald-600"
                 : expanded
                 ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
@@ -103,7 +100,7 @@ function StepCard({
               {title}
             </p>
             {/* Subtítulo quando concluído */}
-            {done && subtitle && (
+            {done && !expanded && subtitle && (
               <p className="text-[11px] text-emerald-600 mt-0.5 leading-snug truncate font-semibold">
                 {subtitle}
               </p>
@@ -112,8 +109,14 @@ function StepCard({
 
           {/* Status / Fechar — sempre no canto direito */}
           <div className="shrink-0 ml-2">
-            {done ? (
-              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+            {done && !expanded ? (
+              <button
+                onClick={onAdd}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-200 active:scale-95 transition-all text-[10px] font-black uppercase tracking-wider"
+              >
+                <Pencil className="w-3 h-3" />
+                Editar
+              </button>
             ) : expanded ? (
               <button
                 onClick={onCollapse}
@@ -125,8 +128,8 @@ function StepCard({
           </div>
         </div>
 
-        {/* Linha 2: descrição (visível apenas quando não concluído) */}
-        {!done && description && (
+        {/* Linha 2: descrição (visível apenas quando não concluído e não expandido) */}
+        {!done && !expanded && description && (
           <p className="text-xs text-muted-foreground mt-2 ml-[58px] leading-relaxed">
             {description}
           </p>
@@ -176,29 +179,22 @@ export default function OnboardingPage() {
   const { data: catequistas = [], refetch: refetchCats } = useCatequistas();
   const { data: paroquias = [], refetch: refetchParoquias } = useParoquias();
   const { data: comunidades = [], refetch: refetchComunidades } = useComunidades();
-  const { data: turmas = [], refetch: refetchTurmas } = useTurmas();
 
   // ── Mutations ──
   const catMut = useCatequistaMutation();
   const parMut = useParoquiaMutation();
   const comMut = useComunidadeMutation();
-  const turmaMut = useTurmaMutation();
-  const joinMut = useJoinTurma();
 
   // ── Qual card está expandido ──
-  type CardKey = "catequista" | "paroquia" | "turma" | null;
+  type CardKey = "catequista" | "paroquia" | null;
   const [expanded, setExpanded] = useState<CardKey>(null);
 
-  // ── Modo do card de turma: criar ou entrar ──
-  const [turmaMode, setTurmaMode] = useState<"criar" | "entrar">("criar");
-
-  // ── Status de conclusão ──
+  // ── Status de conclusão (apenas catequista e paróquia são obrigatórios) ──
   const doneCatequista = catequistas.some((c) => c.id === user?.id);
   const doneParoquia = paroquias.length > 0;
-  const doneTurma = turmas.length > 0;
 
   // ── Quando tudo estiver pronto ──
-  const isAllDone = doneCatequista && doneParoquia && doneTurma;
+  const isAllDone = doneCatequista && doneParoquia;
 
   const handleFinish = () => {
     localStorage.setItem(ONBOARDING_KEY, "true");
@@ -251,7 +247,7 @@ export default function OnboardingPage() {
       });
       await refetchCats();
       toast.success("Dados do catequista salvos!");
-      setExpanded(doneParoquia ? (doneTurma ? null : "turma") : "paroquia");
+      setExpanded(doneParoquia ? null : "paroquia");
     } catch (err: any) {
       toast.error("Erro: " + err.message);
     }
@@ -322,72 +318,13 @@ export default function OnboardingPage() {
 
       await Promise.all([refetchParoquias(), refetchComunidades()]);
       toast.success("Paróquia/Comunidade salva!");
-      setExpanded(doneTurma ? null : "turma");
-    } catch (err: any) {
-      toast.error("Erro: " + err.message);
-    }
-  };
-
-  // ─────────────────────────────────────
-  //  FORMULÁRIO: Turma
-  // ─────────────────────────────────────
-  const [turmaForm, setTurmaForm] = useState({
-    nome: "",
-    ano: "1° Ano",
-    diaCatequese: "",
-    horario: "",
-    comunidadeId: "",
-  });
-
-  const saveTurma = async () => {
-    if (!turmaForm.nome || !turmaForm.diaCatequese || !turmaForm.horario) {
-      toast.error("Preencha nome, dia e horário da turma");
-      return;
-    }
-    try {
-      const comId = turmaForm.comunidadeId || comunidades[0]?.id || "";
-      await turmaMut.mutateAsync({
-        id: crypto.randomUUID(),
-        nome: turmaForm.nome,
-        ano: turmaForm.ano,
-        diaCatequese: turmaForm.diaCatequese,
-        horario: turmaForm.horario,
-        local: "",
-        etapa: "",
-        outrosDados: "",
-        comunidadeId: comId,
-        catequistasIds: user ? [user.id] : [],
-        coordenadores: [],
-        criadoEm: new Date().toISOString(),
-        codigoAcesso: Math.random().toString(36).substring(2, 8).toUpperCase(),
-      });
-      await refetchTurmas();
-      toast.success("Turma criada com sucesso!");
       setExpanded(null);
     } catch (err: any) {
       toast.error("Erro: " + err.message);
     }
   };
 
-  // ─────────────────────────────────────
-  //  FORMULÁRIO: Entrar em turma
-  // ─────────────────────────────────────
-  const [codigoTurma, setCodigoTurma] = useState("");
-
-  const joinTurma = async () => {
-    if (!codigoTurma.trim()) {
-      toast.error("Digite o código da turma");
-      return;
-    }
-    try {
-      await joinMut.mutateAsync(codigoTurma.trim().toUpperCase());
-      await refetchTurmas();
-      toast.success("Solicitação enviada! Aguarde a aprovação do responsável.");
-      setExpanded(null);
-    } catch (err: any) {
-      toast.error("Código inválido ou turma não encontrada.");
-    }
-  };
+  // (Turma removida do onboarding — o usuário cria turma pelo Dashboard)
 
   // ─────────────────────────────────────
   //  TELA DE BOAS-VINDAS (transição)
@@ -789,202 +726,6 @@ export default function OnboardingPage() {
               </button>
             </div>
           }
-        >
-          <div className="space-y-3 pt-3">
-            {/* Indicador de modo + link para trocar */}
-            <div className="flex items-center justify-between">
-              <p
-                className={`text-xs font-black uppercase tracking-widest ${
-                  turmaMode === "criar" ? "text-primary" : "text-violet-600"
-                }`}
-              >
-                {turmaMode === "criar"
-                  ? "✏️  Criando nova turma"
-                  : "🔗  Entrando em turma existente"}
-              </p>
-              <button
-                onClick={() =>
-                  setTurmaMode(turmaMode === "criar" ? "entrar" : "criar")
-                }
-                className="text-[10px] font-black uppercase tracking-widest text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
-              >
-                {turmaMode === "criar" ? "Entrar em turma" : "Criar turma"}
-              </button>
-            </div>
-
-            {/* ── MODO: CRIAR ── */}
-            {turmaMode === "criar" && (
-              <div className="space-y-3">
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                    Nome da Turma <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={turmaForm.nome}
-                    onChange={(e) =>
-                      setTurmaForm((f) => ({ ...f, nome: e.target.value }))
-                    }
-                    className="form-input"
-                  >
-                    <option value="">Selecione...</option>
-                    {NOMES_TURMA.map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                      Ano/Ciclo <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={turmaForm.ano}
-                      onChange={(e) =>
-                        setTurmaForm((f) => ({ ...f, ano: e.target.value }))
-                      }
-                      className="form-input"
-                    >
-                      {[
-                        "1° Ano",
-                        "2° Ano",
-                        "3° Ano",
-                        "Ciclo 1",
-                        "Ciclo 2",
-                        "Ciclo 3",
-                      ].map((a) => (
-                        <option key={a} value={a}>
-                          {a}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                      Dia do Encontro <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={turmaForm.diaCatequese}
-                      onChange={(e) =>
-                        setTurmaForm((f) => ({
-                          ...f,
-                          diaCatequese: e.target.value,
-                        }))
-                      }
-                      className="form-input"
-                    >
-                      <option value="">Selecione...</option>
-                      {DIAS_SEMANA.map((d) => (
-                        <option key={d} value={d}>
-                          {d}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Horário{" "}
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="time"
-                    value={turmaForm.horario}
-                    onChange={(e) =>
-                      setTurmaForm((f) => ({ ...f, horario: e.target.value }))
-                    }
-                    className="form-input"
-                  />
-                </div>
-
-                {comunidades.length > 0 && (
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                      Comunidade
-                    </label>
-                    <select
-                      value={turmaForm.comunidadeId}
-                      onChange={(e) =>
-                        setTurmaForm((f) => ({
-                          ...f,
-                          comunidadeId: e.target.value,
-                        }))
-                      }
-                      className="form-input"
-                    >
-                      <option value="">Selecione (opcional)...</option>
-                      {comunidades.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.nome}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <button
-                  onClick={saveTurma}
-                  disabled={turmaMut.isPending}
-                  className="w-full action-btn h-12 mt-1"
-                >
-                  {turmaMut.isPending ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" /> Criando...
-                    </span>
-                  ) : (
-                    "Criar Turma e Continuar"
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* ── MODO: ENTRAR ── */}
-            {turmaMode === "entrar" && (
-              <div className="space-y-3">
-                <div className="p-3 bg-violet-50 rounded-2xl border border-violet-100">
-                  <p className="text-xs text-violet-900 leading-relaxed text-center">
-                    Peça o <strong>código de acesso</strong> ao catequista
-                    responsável da turma que deseja ingressar.
-                  </p>
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block text-center">
-                    Código da Turma
-                  </label>
-                  <input
-                    type="text"
-                    value={codigoTurma}
-                    onChange={(e) =>
-                      setCodigoTurma(e.target.value.toUpperCase())
-                    }
-                    placeholder="Ex: ABC123"
-                    maxLength={8}
-                    className="w-full h-14 bg-zinc-50 border-2 border-zinc-200 rounded-2xl outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10 transition-all uppercase tracking-[0.3em] font-black text-center text-xl text-foreground placeholder:text-zinc-300 placeholder:tracking-normal placeholder:font-medium"
-                  />
-                </div>
-
-                <button
-                  onClick={joinTurma}
-                  disabled={joinMut.isPending || !codigoTurma.trim()}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-violet-500/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 mt-1"
-                >
-                  {joinMut.isPending ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" /> Enviando...
-                    </span>
-                  ) : (
-                    "Solicitar Acesso"
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        </StepCard>
-
         {/* ── SEPARADOR ── */}
         <div className="pt-2 pb-1">
           <div className="h-px bg-zinc-100" />
@@ -1013,7 +754,7 @@ export default function OnboardingPage() {
 
         {/* Indicador de progresso */}
         <div className="flex items-center justify-center gap-2 pt-1 pb-2">
-          {[doneCatequista, doneParoquia, doneTurma].map((done, i) => (
+          {[doneCatequista, doneParoquia].map((done, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-500 ${
