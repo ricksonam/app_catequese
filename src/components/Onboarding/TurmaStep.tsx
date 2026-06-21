@@ -50,8 +50,6 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     outrosDados: "",
     comunidadeId: "",
     paroquiaId: "",
-    comunidadeNome: "",
-    paroquiaNome: "",
     catequistasIds: [] as string[],
     coordenadores: [] as CoordenadorInfo[],
   });
@@ -101,14 +99,6 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
       toast.error("Preencha os campos obrigatórios da turma");
       return;
     }
-    if (!form.paroquiaId || (form.paroquiaId === "NEW" && !form.paroquiaNome)) {
-      toast.error("Selecione ou preencha a paróquia");
-      return;
-    }
-    if (!form.comunidadeId || (form.comunidadeId === "NEW" && !form.comunidadeNome)) {
-      toast.error("Selecione ou preencha a comunidade");
-      return;
-    }
     
     const invalidCoord = form.coordenadores.find(c => !c.nome.trim());
     if (invalidCoord) {
@@ -119,45 +109,7 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
     if (isSaving) return;
     setIsSaving(true);
     try {
-      let finalParoquiaId = form.paroquiaId;
-      if (form.paroquiaId === "NEW") {
-        const paroquiaNomeTrimmed = form.paroquiaNome.trim();
-        const existingParoquia = paroquias.find(p => p.nome.toLowerCase() === paroquiaNomeTrimmed.toLowerCase());
-        
-        if (existingParoquia) {
-          finalParoquiaId = existingParoquia.id;
-        } else {
-          finalParoquiaId = crypto.randomUUID();
-          await paroquiaMutation.mutateAsync({
-            id: finalParoquiaId,
-            nome: paroquiaNomeTrimmed,
-            endereco: "",
-            telefone: "",
-            email: "",
-            responsavel: ""
-          });
-        }
-      }
-
-      let finalComunidadeId = form.comunidadeId;
-      if (form.comunidadeId === "NEW") {
-        const comunidadeNomeTrimmed = form.comunidadeNome.trim();
-        const existingComunidade = comunidades.find(c => c.nome.toLowerCase() === comunidadeNomeTrimmed.toLowerCase() && c.paroquiaId === finalParoquiaId);
-
-        if (existingComunidade) {
-          finalComunidadeId = existingComunidade.id;
-        } else {
-          finalComunidadeId = crypto.randomUUID();
-          await comunidadeMutation.mutateAsync({
-            id: finalComunidadeId,
-            nome: comunidadeNomeTrimmed,
-            paroquiaId: finalParoquiaId,
-            endereco: "",
-            responsavel: "",
-            telefone: ""
-          });
-        }
-      }
+      let finalComunidadeId = form.comunidadeId || undefined;
 
       let finalCatequistasIds = form.catequistasIds.length > 0 ? [...form.catequistasIds] : [];
       if (finalCatequistasIds.includes("NEW_SELF")) {
@@ -310,55 +262,31 @@ export function TurmaStep({ open, onSuccess, onClose, embedded }: TurmaStepProps
           <div className="p-5 space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className={labelCls}>{labelWithRedAsterisk("Paróquia *")}</label>
+                <label className={labelCls}>{labelWithRedAsterisk("Paróquia")}</label>
                 <select 
                   value={form.paroquiaId} 
                   onChange={(e) => {
                     update("paroquiaId", e.target.value);
-                    if (e.target.value !== "NEW") update("paroquiaNome", "");
                     update("comunidadeId", "");
-                    update("comunidadeNome", "");
                   }} 
-                  className="form-input h-11"
+                  className="form-input h-11 bg-white"
                 >
                   <option value="">Selecione...</option>
                   {paroquias.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
-                  <option value="NEW" className="font-bold text-blue-600">+ Cadastrar Nova...</option>
                 </select>
-                {form.paroquiaId === "NEW" && (
-                  <input 
-                    type="text" 
-                    value={form.paroquiaNome} 
-                    onChange={(e) => update("paroquiaNome", e.target.value)} 
-                    className="form-input h-11 animate-in fade-in zoom-in-95" 
-                    placeholder="Nome da nova paróquia..." 
-                  />
-                )}
               </div>
               <div className="space-y-2">
-                <label className={labelCls}>{labelWithRedAsterisk("Comunidade *")}</label>
+                <label className={labelCls}>{labelWithRedAsterisk("Comunidade")}</label>
                 <select 
                   value={form.comunidadeId} 
                   onChange={(e) => {
                     update("comunidadeId", e.target.value);
-                    if (e.target.value !== "NEW") update("comunidadeNome", "");
                   }} 
-                  className="form-input h-11" 
-                  disabled={!form.paroquiaId}
+                  className="form-input h-11 bg-white" 
                 >
                   <option value="">Selecione...</option>
-                  {comunidades.filter(c => form.paroquiaId === "NEW" || c.paroquiaId === form.paroquiaId).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-                  <option value="NEW" className="font-bold text-blue-600">+ Cadastrar Nova...</option>
+                  {comunidades.filter(c => !form.paroquiaId || c.paroquiaId === form.paroquiaId).map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                 </select>
-                {form.comunidadeId === "NEW" && (
-                  <input 
-                    type="text" 
-                    value={form.comunidadeNome} 
-                    onChange={(e) => update("comunidadeNome", e.target.value)} 
-                    className="form-input h-11 animate-in fade-in zoom-in-95" 
-                    placeholder="Nome da nova comunidade..." 
-                  />
-                )}
               </div>
             </div>
 
