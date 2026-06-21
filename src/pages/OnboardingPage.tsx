@@ -583,7 +583,7 @@ export default function OnboardingPage() {
           <div className="space-y-3 pt-3">
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
-                Paróquia / Área Pastoral <span className="text-red-500">*</span>
+                Paróquia / Área Missionária <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"

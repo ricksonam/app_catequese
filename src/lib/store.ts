@@ -222,7 +222,7 @@ export interface Reuniao {
 export interface Paroquia {
   id: string;
   nome: string;
-  tipo?: 'Paróquia' | 'Área Pastoral' | 'Escola';
+  tipo?: 'Paróquia' | 'Área Missionária' | 'Escola';
   endereco: string;
   telefone: string;
   email: string;
