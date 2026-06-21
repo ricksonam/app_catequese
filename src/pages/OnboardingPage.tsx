@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Key,
@@ -77,7 +77,10 @@ function StepCard({
   return (
     <div className={`${baseCardStyle} ${cardStateStyle}`}>
       {/* Layout em 3 linhas */}
-      <div className="px-5 pt-4 pb-4">
+      <div 
+        className={`px-5 pt-4 pb-4 ${!expanded ? "cursor-pointer" : ""}`}
+        onClick={!expanded ? onAdd : undefined}
+      >
 
         {/* Linha 1: ícone + título + status/fechar */}
         <div className="flex items-center gap-3.5">
@@ -96,12 +99,12 @@ function StepCard({
 
           {/* Título */}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight truncate">
+            <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight">
               {title}
             </p>
             {/* Subtítulo quando concluído */}
             {done && !expanded && subtitle && (
-              <p className="text-[11px] text-emerald-600 mt-0.5 leading-snug truncate font-semibold">
+              <p className="text-[11px] text-emerald-600 mt-0.5 leading-snug font-semibold">
                 {subtitle}
               </p>
             )}
@@ -110,16 +113,13 @@ function StepCard({
           {/* Status / Fechar — sempre no canto direito */}
           <div className="shrink-0 ml-2">
             {done && !expanded ? (
-              <button
-                onClick={onAdd}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-200 active:scale-95 transition-all text-[10px] font-black uppercase tracking-wider"
-              >
-                <Pencil className="w-3 h-3" />
-                Editar
-              </button>
+              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
             ) : expanded ? (
               <button
-                onClick={onCollapse}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCollapse();
+                }}
                 className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -211,6 +211,20 @@ export default function OnboardingPage() {
     dataNascimento: "",
   });
 
+  useEffect(() => {
+    if (catequistas.length > 0 && user) {
+      const myCat = catequistas.find((c) => c.id === user.id);
+      if (myCat) {
+        setCatForm({
+          nome: myCat.nome || "",
+          telefone: myCat.telefone || "",
+          email: myCat.email || "",
+          dataNascimento: myCat.dataNascimento || "",
+        });
+      }
+    }
+  }, [catequistas, user]);
+
   const fillFromUser = useCallback(() => {
     if (!user) return;
     const meta = user.user_metadata || {};
@@ -262,6 +276,19 @@ export default function OnboardingPage() {
     comunidadeId: "",
     comunidadeNome: "",
   });
+
+  useEffect(() => {
+    if (paroquias.length > 0) {
+      const p = paroquias[0];
+      const c = comunidades.find((com) => com.paroquiaId === p.id);
+      setParForm({
+        paroquiaId: p.id,
+        paroquiaNome: p.nome || "",
+        comunidadeId: c?.id || "",
+        comunidadeNome: c?.nome || "",
+      });
+    }
+  }, [paroquias, comunidades]);
 
   const saveParoquia = async () => {
     const nomePar =
@@ -416,9 +443,8 @@ export default function OnboardingPage() {
           Cadastros Iniciais
         </p>
         <h1 className="text-3xl font-black text-foreground tracking-tighter leading-tight">
-          Preencha os dados<br />
-          para criar sua{" "}
-          <span className="text-primary">turma</span>
+          Antes de criar ou entrar em uma turma<br />
+          defina os <span className="text-primary">dados abaixo</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
           Complete as etapas abaixo para ter acesso a todas as funcionalidades.
