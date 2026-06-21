@@ -689,43 +689,7 @@ export default function OnboardingPage() {
           </div>
         </StepCard>
 
-        {/* ── CARD 3: Turma (Criar ou Entrar) ── */}
-        <StepCard
-          icon={<Building2 className="w-5 h-5" />}
-          iconBg="bg-emerald-100"
-          iconColor="text-emerald-600"
-          title="Turma"
-          description="Crie uma nova turma de catequese ou entre em uma turma já existente com o código de acesso."
-          subtitle={turmas[0]?.nome}
-          done={doneTurma}
-          expanded={expanded === "turma"}
-          onAdd={() => {
-            setTurmaMode("criar");
-            setExpanded("turma");
-          }}
-          onCollapse={() => setExpanded(null)}
-          footerActions={
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  setTurmaMode("entrar");
-                  setExpanded("turma");
-                }}
-                className="px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider border-2 border-violet-300 text-violet-600 hover:bg-violet-50 active:scale-95 transition-all"
-              >
-                Entrar
-              </button>
-              <button
-                onClick={() => {
-                  setTurmaMode("criar");
-                  setExpanded("turma");
-                }}
-                className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-white shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition-all"
-              >
-                Criar Turma
-              </button>
-            </div>
-          }
+
         {/* ── SEPARADOR ── */}
         <div className="pt-2 pb-1">
           <div className="h-px bg-zinc-100" />
