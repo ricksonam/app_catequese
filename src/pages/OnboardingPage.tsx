@@ -582,51 +582,29 @@ export default function OnboardingPage() {
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
                 Paróquia / Área Pastoral <span className="text-red-500">*</span>
               </label>
-              {paroquias.length > 0 ? (
-                <select
-                  value={parForm.paroquiaId}
-                  onChange={(e) => {
-                    setParForm((f) => ({
-                      ...f,
-                      paroquiaId: e.target.value,
-                      paroquiaNome:
-                        e.target.value === "NEW" ? f.paroquiaNome : "",
-                      comunidadeId: "",
-                      comunidadeNome: "",
-                    }));
-                  }}
-                  className="form-input"
-                >
-                  <option value="">Selecione...</option>
-                  {paroquias.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.nome}
-                    </option>
-                  ))}
-                  <option value="NEW">+ Cadastrar nova...</option>
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={parForm.paroquiaNome}
-                  onChange={(e) =>
-                    setParForm((f) => ({ ...f, paroquiaNome: e.target.value }))
-                  }
-                  placeholder="Ex: Paróquia Nossa Senhora..."
-                  className="form-input"
-                />
-              )}
-              {parForm.paroquiaId === "NEW" && (
-                <input
-                  type="text"
-                  value={parForm.paroquiaNome}
-                  onChange={(e) =>
-                    setParForm((f) => ({ ...f, paroquiaNome: e.target.value }))
-                  }
-                  placeholder="Nome da nova paróquia..."
-                  className="form-input mt-2 animate-in fade-in zoom-in-95"
-                />
-              )}
+              <input
+                type="text"
+                list="paroquias-list"
+                value={parForm.paroquiaNome}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const existing = paroquias.find(p => p.nome.toLowerCase() === val.toLowerCase());
+                  setParForm(f => ({
+                    ...f,
+                    paroquiaNome: val,
+                    paroquiaId: existing ? existing.id : "NEW",
+                    comunidadeId: "",
+                    comunidadeNome: ""
+                  }));
+                }}
+                placeholder="Ex: Paróquia Nossa Senhora..."
+                className="form-input"
+              />
+              <datalist id="paroquias-list">
+                {paroquias.map((p) => (
+                  <option key={p.id} value={p.nome} />
+                ))}
+              </datalist>
             </div>
 
             <div>
@@ -636,67 +614,34 @@ export default function OnboardingPage() {
                   (opcional)
                 </span>
               </label>
-              {comunidades.filter(
-                (c) =>
-                  !parForm.paroquiaId ||
-                  parForm.paroquiaId === "NEW" ||
-                  c.paroquiaId === parForm.paroquiaId
-              ).length > 0 ? (
-                <select
-                  value={parForm.comunidadeId}
-                  onChange={(e) => {
-                    setParForm((f) => ({
-                      ...f,
-                      comunidadeId: e.target.value,
-                      comunidadeNome:
-                        e.target.value === "NEW" ? f.comunidadeNome : "",
-                    }));
-                  }}
-                  className="form-input"
-                >
-                  <option value="">Selecione...</option>
-                  {comunidades
-                    .filter(
-                      (c) =>
-                        !parForm.paroquiaId ||
-                        parForm.paroquiaId === "NEW" ||
-                        c.paroquiaId === parForm.paroquiaId
-                    )
-                    .map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nome}
-                      </option>
-                    ))}
-                  <option value="NEW">+ Cadastrar nova...</option>
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={parForm.comunidadeNome}
-                  onChange={(e) =>
-                    setParForm((f) => ({
-                      ...f,
-                      comunidadeNome: e.target.value,
-                    }))
-                  }
-                  placeholder="Ex: Comunidade São José (opcional)"
-                  className="form-input"
-                />
-              )}
-              {parForm.comunidadeId === "NEW" && (
-                <input
-                  type="text"
-                  value={parForm.comunidadeNome}
-                  onChange={(e) =>
-                    setParForm((f) => ({
-                      ...f,
-                      comunidadeNome: e.target.value,
-                    }))
-                  }
-                  placeholder="Nome da nova comunidade..."
-                  className="form-input mt-2 animate-in fade-in zoom-in-95"
-                />
-              )}
+              <input
+                type="text"
+                list="comunidades-list"
+                value={parForm.comunidadeNome}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const existing = comunidades.find(c => c.nome.toLowerCase() === val.toLowerCase());
+                  setParForm(f => ({
+                    ...f,
+                    comunidadeNome: val,
+                    comunidadeId: existing ? existing.id : "NEW"
+                  }));
+                }}
+                placeholder="Ex: Comunidade São João..."
+                className="form-input"
+              />
+              <datalist id="comunidades-list">
+                {comunidades
+                  .filter(
+                    (c) =>
+                      !parForm.paroquiaId ||
+                      parForm.paroquiaId === "NEW" ||
+                      c.paroquiaId === parForm.paroquiaId
+                  )
+                  .map((c) => (
+                    <option key={c.id} value={c.nome} />
+                  ))}
+              </datalist>
             </div>
 
             <button
