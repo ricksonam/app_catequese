@@ -60,6 +60,7 @@ const AdminLogin              = lazy(() => import("@/pages/AdminLogin"));
 const PremiumCheckout         = lazy(() => import("@/pages/PremiumCheckout"));
 const PlaceholderPage         = lazy(() => import("@/pages/PlaceholderPage"));
 const PublicPlano             = lazy(() => import("@/pages/PublicPlano"));
+const PublicRitoSacramental   = lazy(() => import("@/pages/PublicRitoSacramental"));
 const PublicInscricao         = lazy(() => import("@/pages/PublicInscricao"));
 const MapaPanoramico          = lazy(() => import("@/pages/MapaPanoramico"));
 const MinhaAssinatura         = lazy(() => import("@/pages/MinhaAssinatura"));
@@ -206,6 +207,7 @@ const AppRoutes = () => (
       />
       <Route path="/plano-pais/:codigo" element={<PublicPlano />} />
       <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
+      <Route path="/rito-sacramental/:codigo/:sacramento" element={<PublicRitoSacramental />} />
       <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
 
       <Route

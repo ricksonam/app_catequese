@@ -1,12 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeMutation, useEncontroMutation, useReunioes, useTurmaMutation } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2, Target, Check } from "lucide-react";
+import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2, Target, Check, Copy, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { formatarDataVigente, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 type TimelineItem = { id: string; tipo: 'encontro' | 'atividade' | 'reuniao'; titulo: string; subtitulo: string; data: string; color: string; status?: string; presencas: string[]; itemOriginal: any; };
 const statusColors: Record<string, string> = { pendente: 'bg-primary', realizado: 'bg-success', transferido: 'bg-caution', cancelado: 'bg-destructive' };
@@ -24,6 +25,7 @@ export default function PlanoTurma() {
   const [activeFilter, setActiveFilter] = useState<'all' | 'encontro' | 'atividade' | 'reuniao'>('all');
   const [viewItem, setViewItem] = useState<TimelineItem | null>(null);
   const [presencaOpen, setPresencaOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   
   const atividadeMut = useAtividadeMutation();
@@ -114,26 +116,29 @@ export default function PlanoTurma() {
     setViewItem({ ...viewItem, presencas: updated, itemOriginal: { ...viewItem.itemOriginal, presencas: updated } });
   };
 
-  const shareWithParents = async () => {
+  const shareUrl = turma?.codigoAcesso
+    ? `${getAppUrl()}/plano-da-turma/${turma.codigoAcesso}`
+    : "";
 
-    if (!turma?.codigoAcesso) {
-      toast.error("Turma sem código de acesso.");
-      return;
-    }
-    const url = `${getAppUrl()}/plano-da-turma/${turma.codigoAcesso}`;
-    
-    const success = await copyToClipboardOrShare(url, {
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    const success = await copyToClipboardOrShare(shareUrl, {
       title: 'Plano da Turma',
       text: 'Confira o cronograma da catequese:'
     });
-
     if (success) {
-      toast.success("Link pronto para enviar aos pais!", {
-        description: "Eles verão apenas o cronograma, sem acesso a ferramentas.",
-        duration: 5000,
-      });
+      toast.success("Link copiado!", { description: "Cole no WhatsApp ou onde preferir.", duration: 3000 });
+    }
+  };
+
+  const handleNativeShare = async () => {
+    if (!shareUrl) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Plano da Turma', text: 'Confira o cronograma da catequese:', url: shareUrl });
+      } catch {}
     } else {
-      toast.error("Não foi possível gerar o link de compartilhamento.");
+      handleCopyLink();
     }
   };
 
@@ -170,7 +175,7 @@ export default function PlanoTurma() {
       {turma?.codigoAcesso && (
         <div className="animate-fade-in stagger-1">
           <button 
-            onClick={shareWithParents}
+            onClick={() => setShareModalOpen(true)}
             className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-primary/20 hover:border-primary/40 text-primary shadow-lg shadow-primary/5 hover:shadow-primary/10 transition-all group active:scale-[0.98]"
           >
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -186,6 +191,54 @@ export default function PlanoTurma() {
           </button>
         </div>
       )}
+
+      {/* Modal de Compartilhamento com QR Code */}
+      <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
+        <DialogContent className="rounded-2xl border-border/30 max-w-sm mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center text-base font-black uppercase tracking-wider">Compartilhar Plano</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-5 py-2">
+            <p className="text-xs text-muted-foreground text-center">
+              Pais e responsáveis podem acessar o cronograma da turma pelo link ou QR Code abaixo — sem precisar de conta.
+            </p>
+
+            {/* QR Code */}
+            {shareUrl && (
+              <div className="p-4 bg-white rounded-2xl border-2 border-primary/10 shadow-md">
+                <QRCodeSVG
+                  value={shareUrl}
+                  size={180}
+                  level="M"
+                  includeMargin={false}
+                  fgColor="#1e40af"
+                />
+              </div>
+            )}
+
+            {/* Link copiável */}
+            <div className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50">
+              <p className="flex-1 text-xs text-muted-foreground truncate font-mono">{shareUrl}</p>
+              <button
+                onClick={handleCopyLink}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-black hover:bg-primary/90 active:scale-95 transition-all"
+              >
+                <Copy className="h-3.5 w-3.5" />
+                Copiar
+              </button>
+            </div>
+
+            {/* Compartilhar nativo */}
+            <button
+              onClick={handleNativeShare}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary text-sm font-black hover:bg-primary/20 active:scale-95 transition-all"
+            >
+              <Share2 className="h-4 w-4" />
+              Compartilhar via WhatsApp / E-mail
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Painel Inteligente da Turma */}
       <div className="bg-white dark:bg-zinc-900 rounded-3xl border-2 border-primary/20 shadow-sm p-5 relative overflow-hidden animate-float-up stagger-2">
