@@ -734,34 +734,44 @@ export default function TrilhaSacramental() {
                 </DialogTitle>
               </DialogHeader>
               <div className="flex flex-col items-center gap-5 py-2">
-                <p className="text-xs text-muted-foreground text-center">
+                <p className="text-xs text-muted-foreground text-center leading-relaxed">
                   Pais e responsáveis podem ver as datas de preparação para o rito de <strong className="text-amber-700 capitalize">{selectedSacramento}</strong> pelo link ou QR Code abaixo.
                 </p>
 
-                <div className="p-4 bg-white rounded-2xl border-2 border-amber-200 shadow-md">
-                  <QRCodeSVG
-                    value={ritoUrl}
-                    size={180}
-                    level="M"
-                    includeMargin={false}
-                    fgColor="#b45309"
-                  />
+                {/* QR Code centralizado */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="p-4 bg-white rounded-2xl border-2 border-black/10 shadow-md">
+                    <QRCodeSVG
+                      value={ritoUrl}
+                      size={180}
+                      level="M"
+                      includeMargin={false}
+                      fgColor="#000000"
+                    />
+                  </div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Aponte a câmera para ler</p>
                 </div>
 
-                <div className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50">
-                  <p className="flex-1 text-xs text-muted-foreground truncate font-mono">{ritoUrl}</p>
-                  <button
-                    onClick={handleCopyRito}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-black hover:bg-amber-600 active:scale-95 transition-all"
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                    Copiar
-                  </button>
+                <div className="w-full border-t border-border/40" />
+
+                {/* Link copiável centralizado */}
+                <div className="w-full space-y-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Ou copie o link</p>
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50">
+                    <p className="flex-1 text-xs text-muted-foreground truncate font-mono">{ritoUrl}</p>
+                    <button
+                      onClick={handleCopyRito}
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-black hover:bg-amber-600 active:scale-95 transition-all"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                      Copiar
+                    </button>
+                  </div>
                 </div>
 
                 <button
                   onClick={handleShareRito}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-100 text-amber-700 text-sm font-black hover:bg-amber-200 active:scale-95 transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500 text-white text-sm font-black hover:bg-amber-600 active:scale-95 transition-all shadow-md shadow-amber-500/20"
                 >
                   <Share2 className="h-4 w-4" />
                   Compartilhar via WhatsApp / E-mail

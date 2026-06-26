@@ -199,39 +199,47 @@ export default function PlanoTurma() {
             <DialogTitle className="text-center text-base font-black uppercase tracking-wider">Compartilhar Plano</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center gap-5 py-2">
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-xs text-muted-foreground text-center leading-relaxed">
               Pais e responsáveis podem acessar o cronograma da turma pelo link ou QR Code abaixo — sem precisar de conta.
             </p>
 
-            {/* QR Code */}
+            {/* QR Code centralizado */}
             {shareUrl && (
-              <div className="p-4 bg-white rounded-2xl border-2 border-primary/10 shadow-md">
-                <QRCodeSVG
-                  value={shareUrl}
-                  size={180}
-                  level="M"
-                  includeMargin={false}
-                  fgColor="#1e40af"
-                />
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 bg-white rounded-2xl border-2 border-black/10 shadow-md">
+                  <QRCodeSVG
+                    value={shareUrl}
+                    size={180}
+                    level="M"
+                    includeMargin={false}
+                    fgColor="#000000"
+                  />
+                </div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Aponte a câmera para ler</p>
               </div>
             )}
 
-            {/* Link copiável */}
-            <div className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50">
-              <p className="flex-1 text-xs text-muted-foreground truncate font-mono">{shareUrl}</p>
-              <button
-                onClick={handleCopyLink}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-black hover:bg-primary/90 active:scale-95 transition-all"
-              >
-                <Copy className="h-3.5 w-3.5" />
-                Copiar
-              </button>
+            <div className="w-full border-t border-border/40" />
+
+            {/* Link copiável centralizado */}
+            <div className="w-full space-y-2">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Ou copie o link</p>
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50">
+                <p className="flex-1 text-xs text-muted-foreground truncate font-mono">{shareUrl}</p>
+                <button
+                  onClick={handleCopyLink}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-black hover:bg-primary/90 active:scale-95 transition-all"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  Copiar
+                </button>
+              </div>
             </div>
 
             {/* Compartilhar nativo */}
             <button
               onClick={handleNativeShare}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary/10 text-primary text-sm font-black hover:bg-primary/20 active:scale-95 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white text-sm font-black hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/20"
             >
               <Share2 className="h-4 w-4" />
               Compartilhar via WhatsApp / E-mail
