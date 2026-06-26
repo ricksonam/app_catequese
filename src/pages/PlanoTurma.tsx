@@ -3,6 +3,7 @@ import { useTurmas, useEncontros, useAtividades, useCatequizandos, useAtividadeM
 import { ArrowLeft, CalendarDays, ListChecks, MapPin, Users, CheckCircle2, Info, Clock, Calendar, Pencil, Trash2, Printer, Car, Share2, Target, Check, Copy, X } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatarDataVigente, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
