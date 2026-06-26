@@ -727,27 +727,26 @@ export default function TrilhaSacramental() {
         };
         return (
           <Dialog open={shareRitoOpen} onOpenChange={setShareRitoOpen}>
-            <DialogContent className="rounded-2xl border-border/30 w-[calc(100vw-2rem)] max-w-sm mx-auto p-5">
+            <DialogContent className="rounded-2xl border-border/30 w-[calc(100%-2rem)] max-w-sm mx-auto overflow-hidden">
               <DialogHeader>
                 <DialogTitle className="text-center text-base font-black uppercase tracking-wider text-amber-700">
                   Compartilhar Etapas do Rito
                 </DialogTitle>
               </DialogHeader>
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center gap-4 px-1 pb-2">
                 <p className="text-xs text-muted-foreground text-center leading-relaxed">
                   Pais e responsáveis podem ver as datas de preparação para o rito de <strong className="text-amber-700 capitalize">{selectedSacramento}</strong> pelo link ou QR Code abaixo.
                 </p>
 
-                {/* QR Code centralizado e responsivo */}
+                {/* QR Code centralizado */}
                 <div className="flex flex-col items-center gap-2 w-full">
-                  <div className="p-3 bg-white rounded-2xl border-2 border-black/10 shadow-md inline-flex">
+                  <div className="flex items-center justify-center p-3 bg-white rounded-2xl border-2 border-black/10 shadow-md">
                     <QRCodeSVG
                       value={ritoUrl}
-                      size={160}
+                      size={150}
                       level="M"
                       includeMargin={false}
                       fgColor="#000000"
-                      style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
                     />
                   </div>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Aponte a câmera para ler</p>
@@ -758,8 +757,8 @@ export default function TrilhaSacramental() {
                 {/* Link copiável */}
                 <div className="w-full space-y-2">
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Ou copie o link</p>
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50 min-w-0">
-                    <p className="flex-1 text-xs text-muted-foreground truncate font-mono min-w-0">{ritoUrl}</p>
+                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50 overflow-hidden">
+                    <p className="flex-1 text-xs text-muted-foreground truncate font-mono overflow-hidden">{ritoUrl}</p>
                     <button
                       onClick={handleCopyRito}
                       className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-black hover:bg-amber-600 active:scale-95 transition-all"
