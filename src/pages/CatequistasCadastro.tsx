@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useCatequistas, useCatequistaMutation, useDeleteCatequista, useComunidades } from "@/hooks/useSupabaseData";
 import { type CatequistaCadastro } from "@/lib/store";
-import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar, Clock, ChevronRight, X, User, Lock } from "lucide-react";
+import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar, ChevronRight, X, User, Lock } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -17,7 +17,6 @@ interface FormData {
   numero: string; bairro: string;
   telefone: string;
   email: string; comunidadeId: string;
-  anosExperiencia: string;
   cidade: string; estado: string;
   foto: string;
 }
@@ -25,7 +24,7 @@ const emptyForm: FormData = {
   nome: "", dataNascimento: "", endereco: "", 
   numero: "", bairro: "",
   telefone: "",
-  email: "", comunidadeId: "", anosExperiencia: "",
+  email: "", comunidadeId: "",
   cidade: "", estado: "",
   foto: "",
 };
@@ -111,7 +110,6 @@ export default function CatequistasCadastro() {
       endereco: item.endereco, numero: item.numero || "", bairro: item.bairro || "",
       telefone: item.telefone, email: item.email,
       comunidadeId: item.comunidadeId || "",
-      anosExperiencia: item.anosExperiencia,
       cidade: item.cidade || "",
       estado: item.estado || "",
       foto: item.foto || "",
@@ -240,7 +238,6 @@ export default function CatequistasCadastro() {
               <FieldInput label="Estado" value={form.estado} onChange={(v) => updateField("estado", v)} placeholder="Ex: SP" />
               <FieldInput label="Cidade" value={form.cidade} onChange={(v) => updateField("cidade", v)} placeholder="Ex: São Paulo" />
             </div>
-            <FieldInput label="Profissão" value={form.anosExperiencia} onChange={(v) => updateField("anosExperiencia", v)} />
             
             <div className="flex gap-2 pt-2">
               <button 
@@ -305,7 +302,6 @@ export default function CatequistasCadastro() {
                   {viewItem.profissao && <DetailRow icon={<Briefcase className="h-4 w-4" />} label="Profissão" value={viewItem.profissao} />}
                   {viewItem.comunidadeId && <DetailRow icon={<User className="h-4 w-4" />} label="Comunidade" value={getComunidadeNome(viewItem.comunidadeId)} />}
                   {viewItem.formacao && <DetailRow icon={<BookOpen className="h-4 w-4" />} label="Formação" value={viewItem.formacao} />}
-                  {viewItem.anosExperiencia && <DetailRow icon={<Clock className="h-4 w-4" />} label="Experiência" value={`${viewItem.anosExperiencia} anos`} />}
                   {viewItem.observacao && (
                     <div className="p-3 rounded-xl bg-muted/50">
                       <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Observação</p>

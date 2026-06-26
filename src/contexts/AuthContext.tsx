@@ -32,7 +32,7 @@ export const useAuth = () => useContext(AuthContext);
 // Timeout de segurança: se a auth não responder em 8s, libera o app
 const AUTH_TIMEOUT_MS = 8000;
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children, onAuthReady }: { children: ReactNode; onAuthReady?: () => void }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
@@ -49,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       resolved.current = true;
       setLoading(false);
       setIsReady(true);
+      onAuthReady?.();
     }
     setSession(s);
   };

@@ -7,13 +7,14 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { logError, initGlobalErrorCapture } from "@/lib/errorLogger";
 import ScrollToTop from "./components/ScrollToTop";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 // ===== IMPORTS ESTÁTICOS (usados no carregamento inicial) =====
 import AppLayout from "@/components/AppLayout";
 import AuthPage from "@/pages/AuthPage";
 import SplashScreen from "@/components/SplashScreen";
+
 
 // ===== LAZY IMPORTS (carregados apenas quando a rota é acessada) =====
 const ResetPasswordPage       = lazy(() => import("@/pages/ResetPasswordPage"));
@@ -100,18 +101,7 @@ const queryClient = new QueryClient({
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-32 h-32 rounded-3xl bg-white shadow-lg overflow-hidden animate-float transform-gpu p-3 flex items-center justify-center">
-            <img src="/Logo_sem_fundo.png" alt="Logo" className="w-[85%] h-[85%] object-contain" />
-          </div>
-          <p className="text-xs font-black text-primary/60 uppercase tracking-widest animate-pulse">Conectando...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return null; // Splash já cobre o carregamento inicial
   if (!session) return <Navigate to="/auth" replace />;
   return <>{children}</>;
 }
@@ -278,20 +268,38 @@ const AppRoutes = () => (
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
+  const minTimeRef = useRef(false);
+
+  // Splash some quando: (1) tempo mínimo passou E (2) auth já foi verificado
+  const tryHideSplash = useCallback(() => {
+    if (minTimeRef.current && authReady) {
+      setShowSplash(false);
+    }
+  }, [authReady]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 2200);
-    initGlobalErrorCapture(); // Captura global de erros JS
+    initGlobalErrorCapture();
+
+    // Tempo mínimo de 1200ms para a splash
+    const timer = setTimeout(() => {
+      minTimeRef.current = true;
+      tryHideSplash();
+    }, 1200);
 
     // Detectar fluxo de recuperação de senha via evento do Supabase Auth
-    // (O redirect é tratado pelo onAuthStateChange no AuthContext)
     const hash = window.location.hash;
     if (hash && hash.includes("type=recovery")) {
       window.history.replaceState(null, "", "/reset-password" + hash);
     }
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [tryHideSplash]);
+
+  // Quando auth ficar pronto, tenta esconder a splash
+  useEffect(() => {
+    if (authReady) tryHideSplash();
+  }, [authReady, tryHideSplash]);
 
   return (
     <ErrorBoundary>
@@ -301,7 +309,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <AuthProvider>
+            <AuthProvider onAuthReady={() => setAuthReady(true)}>
               <ScrollToTop />
               <AppRoutes />
             </AuthProvider>
