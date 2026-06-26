@@ -11,9 +11,8 @@ import {
   Heart, Baby, Star, Church, Plus, Trash2, Save, Info, Share2, Copy
 } from "lucide-react";
 import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma } from "@/lib/store";
-import { cn, getAppUrl, copyToClipboardOrShare } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { QRCodeSVG } from "qrcode.react";
+import { cn, getAppUrl } from "@/lib/utils";
+import { QRShareModal } from "@/components/QRShareModal";
 
 type SacramentoType = 'batismo' | 'eucaristia' | 'crisma';
 
@@ -713,72 +712,21 @@ export default function TrilhaSacramental() {
       {/* Modal de Compartilhamento do Rito com QR Code */}
       {turma?.codigoAcesso && (() => {
         const ritoUrl = `${getAppUrl()}/rito-sacramental/${turma.codigoAcesso}/${selectedSacramento}`;
-        const handleCopyRito = async () => {
-          const ok = await copyToClipboardOrShare(ritoUrl, {
-            title: `Preparação para ${selectedSacramento}`,
-            text: `Confira as datas de preparação para o rito de ${selectedSacramento}:`
-          });
-          if (ok) toast.success("Link copiado!", { duration: 3000 });
-        };
-        const handleShareRito = async () => {
-          if (navigator.share) {
-            try { await navigator.share({ title: `Preparação para ${selectedSacramento}`, text: `Confira as datas de preparação para o rito de ${selectedSacramento}:`, url: ritoUrl }); } catch {}
-          } else { handleCopyRito(); }
-        };
         return (
-          <Dialog open={shareRitoOpen} onOpenChange={setShareRitoOpen}>
-            <DialogContent className="rounded-2xl border-border/30 w-[calc(100%-2rem)] max-w-sm mx-auto overflow-hidden">
-              <DialogHeader>
-                <DialogTitle className="text-center text-base font-black uppercase tracking-wider text-amber-700">
-                  Compartilhar Etapas do Rito
-                </DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col items-center gap-4 px-1 pb-2">
-                <p className="text-xs text-muted-foreground text-center leading-relaxed">
-                  Pais e responsáveis podem ver as datas de preparação para o rito de <strong className="text-amber-700 capitalize">{selectedSacramento}</strong> pelo link ou QR Code abaixo.
-                </p>
-
-                {/* QR Code centralizado */}
-                <div className="flex flex-col items-center gap-2 w-full">
-                  <div className="flex items-center justify-center p-3 bg-white rounded-2xl border-2 border-black/10 shadow-md">
-                    <QRCodeSVG
-                      value={ritoUrl}
-                      size={150}
-                      level="M"
-                      includeMargin={false}
-                      fgColor="#000000"
-                    />
-                  </div>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Aponte a câmera para ler</p>
-                </div>
-
-                <div className="w-full border-t border-border/40" />
-
-                {/* Link copiável */}
-                <div className="w-full space-y-2">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Ou copie o link</p>
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50 overflow-hidden">
-                    <p className="flex-1 text-xs text-muted-foreground truncate font-mono overflow-hidden">{ritoUrl}</p>
-                    <button
-                      onClick={handleCopyRito}
-                      className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-black hover:bg-amber-600 active:scale-95 transition-all"
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                      Copiar
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleShareRito}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500 text-white text-sm font-black hover:bg-amber-600 active:scale-95 transition-all shadow-md shadow-amber-500/20"
-                >
-                  <Share2 className="h-4 w-4" />
-                  Compartilhar via WhatsApp / E-mail
-                </button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <QRShareModal
+            open={shareRitoOpen}
+            onClose={() => setShareRitoOpen(false)}
+            url={ritoUrl}
+            title="Compartilhar Etapas do Rito"
+            description={
+              <>
+                Pais e responsáveis podem ver as datas de preparação para o rito de <strong className="text-amber-700 capitalize">{selectedSacramento}</strong> pelo link ou QR Code abaixo.
+              </>
+            }
+            accentColor="bg-amber-500"
+            shareTitle={`Preparação para ${selectedSacramento}`}
+            shareText={`Confira as datas de preparação para o rito de ${selectedSacramento}:`}
+          />
         );
       })()}
 
