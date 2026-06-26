@@ -194,25 +194,26 @@ export default function PlanoTurma() {
 
       {/* Modal de Compartilhamento com QR Code */}
       <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
-        <DialogContent className="rounded-2xl border-border/30 max-w-sm mx-auto">
+        <DialogContent className="rounded-2xl border-border/30 w-[calc(100vw-2rem)] max-w-sm mx-auto p-5">
           <DialogHeader>
             <DialogTitle className="text-center text-base font-black uppercase tracking-wider">Compartilhar Plano</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col items-center gap-5 py-2">
+          <div className="flex flex-col items-center gap-4">
             <p className="text-xs text-muted-foreground text-center leading-relaxed">
               Pais e responsáveis podem acessar o cronograma da turma pelo link ou QR Code abaixo — sem precisar de conta.
             </p>
 
-            {/* QR Code centralizado */}
+            {/* QR Code centralizado e responsivo */}
             {shareUrl && (
-              <div className="flex flex-col items-center gap-2">
-                <div className="p-4 bg-white rounded-2xl border-2 border-black/10 shadow-md">
+              <div className="flex flex-col items-center gap-2 w-full">
+                <div className="p-3 bg-white rounded-2xl border-2 border-black/10 shadow-md inline-flex">
                   <QRCodeSVG
                     value={shareUrl}
-                    size={180}
+                    size={160}
                     level="M"
                     includeMargin={false}
                     fgColor="#000000"
+                    style={{ display: 'block', maxWidth: '100%', height: 'auto' }}
                   />
                 </div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Aponte a câmera para ler</p>
@@ -221,14 +222,14 @@ export default function PlanoTurma() {
 
             <div className="w-full border-t border-border/40" />
 
-            {/* Link copiável centralizado */}
+            {/* Link copiável */}
             <div className="w-full space-y-2">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">Ou copie o link</p>
-              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50">
-                <p className="flex-1 text-xs text-muted-foreground truncate font-mono">{shareUrl}</p>
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/50 border border-border/50 min-w-0">
+                <p className="flex-1 text-xs text-muted-foreground truncate font-mono min-w-0">{shareUrl}</p>
                 <button
                   onClick={handleCopyLink}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-black hover:bg-primary/90 active:scale-95 transition-all"
+                  className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-black hover:bg-primary/90 active:scale-95 transition-all"
                 >
                   <Copy className="h-3.5 w-3.5" />
                   Copiar
