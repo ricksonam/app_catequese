@@ -212,8 +212,21 @@ export default function LiturgiaDiaria() {
       try {
         const d = padDate(currentDate.getDate());
         const m = padDate(currentDate.getMonth() + 1);
-        const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}`);
-        if (!res.ok) throw new Error("HTTP error");
+        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}`;
+        
+        // Função para tentar buscar com retries (útil para quando a API Railway está 'dormindo' e retorna 503)
+        let res;
+        for (let i = 0; i < 4; i++) {
+          try {
+            res = await fetch(targetUrl);
+            if (res.ok) break;
+          } catch (e) {
+            // Falha de rede (ex: CORS no 503)
+          }
+          if (i < 3) await new Promise(r => setTimeout(r, 4000)); // Espera 4s antes de tentar novamente
+        }
+
+        if (!res || !res.ok) throw new Error("HTTP error");
         const data: LiturgiaData = await res.json();
         setLiturgia(data);
         // Selecionar a primeira aba disponível

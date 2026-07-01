@@ -877,7 +877,9 @@ export default function Dashboard() {
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[300px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
+              {/* Moldura Externa do Card */}
+              <div className="w-full max-w-[320px] relative mb-2 mt-2 p-1.5 rounded-[26px] bg-gradient-to-br from-slate-200/50 via-slate-300/30 to-slate-400/20 border border-slate-300 shadow-sm" style={{ zIndex: 10 }}>
+                <div className="w-full relative mb-0 mt-0">
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
                   className="w-full text-left relative rounded-[22px] overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] group"
@@ -942,6 +944,7 @@ export default function Dashboard() {
                   </div>
                 </button>
               </div>
+            </div>
             );
           })()}
 
