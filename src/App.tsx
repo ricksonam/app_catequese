@@ -279,11 +279,11 @@ const App = () => {
   useEffect(() => {
     initGlobalErrorCapture();
 
-    // Tempo mínimo de 600ms para a splash (mais ágil)
+    // Tempo mínimo de 2000ms para a splash, conforme solicitado para a splash demorar mais
     const timer = setTimeout(() => {
       minTimeRef.current = true;
       tryHideSplash();
-    }, 600);
+    }, 2000);
 
     // Detectar fluxo de recuperação de senha via evento do Supabase Auth
     const hash = window.location.hash;

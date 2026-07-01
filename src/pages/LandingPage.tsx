@@ -632,22 +632,24 @@ export default function LandingPage() {
             </button>
 
             {/* Cadastre-se — DESTAQUE */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => navigate("/auth?view=signup")}
-              className="relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white overflow-hidden group shadow-md"
-              style={{
-                background: "linear-gradient(135deg, #8C2A3C 0%, #b33a52 50%, #8C2A3C 100%)",
-                boxShadow: "0 4px 14px 0 rgba(140, 42, 60, 0.39)",
-              }}
-            >
-              {/* Shimmer */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              <UserPlus className="w-4 h-4" />
-              Cadastre-se grátis
-              <span className="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold border border-white/10">FREE</span>
-            </motion.button>
+            <div className="flex flex-col items-center mt-1">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate("/auth?view=signup")}
+                className="relative flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold text-white overflow-hidden group shadow-md"
+                style={{
+                  background: "linear-gradient(135deg, #8C2A3C 0%, #b33a52 50%, #8C2A3C 100%)",
+                  boxShadow: "0 4px 14px 0 rgba(140, 42, 60, 0.39)",
+                }}
+              >
+                {/* Shimmer */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                <UserPlus className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">Cadastrar</span>
+              </motion.button>
+              <span className="text-[9px] text-stone-500 mt-1 font-semibold uppercase tracking-wider">Acesso 100% Gratuito</span>
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -757,21 +759,25 @@ export default function LandingPage() {
           </motion.button>
 
           {/* Cadastre-se — Azul */}
-          <motion.button
-            whileHover={{ scale: 1.03, boxShadow: "0 16px 32px -6px rgba(37,99,235,0.45)" }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/auth?view=signup")}
-            className="relative w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-base text-white overflow-hidden group shadow-lg"
-            style={{
-              background: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%)",
-              boxShadow: "0 10px 25px -5px rgba(37,99,235,0.4)",
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-            <UserPlus className="w-5 h-5 relative z-10" />
-            <span className="relative z-10">Cadastre-se — grátis</span>
-            <span className="relative z-10 ml-1 text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold border border-white/20">FREE</span>
-          </motion.button>
+          <div className="flex flex-col items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+            <motion.button
+              whileHover={{ scale: 1.03, boxShadow: "0 10px 20px -6px rgba(37,99,235,0.45)" }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate("/auth?view=signup")}
+              className="relative w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white overflow-hidden group shadow-md"
+              style={{
+                background: "linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%)",
+                boxShadow: "0 6px 15px -5px rgba(37,99,235,0.4)",
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              <UserPlus className="w-4 h-4 relative z-10" />
+              <span className="relative z-10">Cadastrar</span>
+            </motion.button>
+            <span className="text-stone-500 text-xs font-bold uppercase tracking-wider bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
+              Plataforma Gratuita
+            </span>
+          </div>
         </motion.div>
 
       </section>
