@@ -944,7 +944,7 @@ export default function Dashboard() {
                     onClick={item.onClick}
                     className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-primary hover:shadow-lg hover:shadow-primary/20 hover:scale-[1.03]"
                   >
-                    <img src={item.image} alt={item.title} fetchPriority="high" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                    <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                   </button>
                   <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors duration-300 truncate w-full px-1">
                     {item.title}

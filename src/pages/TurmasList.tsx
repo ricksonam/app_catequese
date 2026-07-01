@@ -6,43 +6,43 @@ import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Spa
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-// Palette: vibrant gradients for each turma
+// Palette: robust, deep solid tones (no neon gradients)
 const CARD_PALETTES = [
   {
-    bg: "from-emerald-400 to-teal-500", borderMain: "border-emerald-200",
-    iconColor: "text-emerald-600",
-    text: "text-white", sub: "text-emerald-50",
-    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    bg: "from-slate-700 to-slate-800", borderMain: "border-slate-400",
+    iconColor: "text-slate-600",
+    text: "text-white", sub: "text-slate-300",
+    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
   {
-    bg: "from-blue-400 to-indigo-500", borderMain: "border-blue-200",
+    bg: "from-blue-800 to-blue-900", borderMain: "border-blue-400",
     iconColor: "text-blue-600",
-    text: "text-white", sub: "text-blue-50",
-    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    text: "text-white", sub: "text-blue-200",
+    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
   {
-    bg: "from-purple-400 to-violet-500", borderMain: "border-purple-200",
-    iconColor: "text-purple-600",
-    text: "text-white", sub: "text-purple-50",
-    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    bg: "from-emerald-800 to-emerald-900", borderMain: "border-emerald-400",
+    iconColor: "text-emerald-600",
+    text: "text-white", sub: "text-emerald-200",
+    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
   {
-    bg: "from-rose-400 to-pink-500", borderMain: "border-rose-200",
+    bg: "from-violet-800 to-violet-900", borderMain: "border-violet-400",
+    iconColor: "text-violet-600",
+    text: "text-white", sub: "text-violet-200",
+    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
+  },
+  {
+    bg: "from-rose-800 to-rose-900", borderMain: "border-rose-400",
     iconColor: "text-rose-600",
-    text: "text-white", sub: "text-rose-50",
-    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    text: "text-white", sub: "text-rose-200",
+    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
   {
-    bg: "from-sky-400 to-cyan-500", borderMain: "border-sky-200",
-    iconColor: "text-sky-600",
-    text: "text-white", sub: "text-sky-50",
-    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
-  },
-  {
-    bg: "from-amber-400 to-orange-500", borderMain: "border-amber-200",
+    bg: "from-amber-800 to-amber-900", borderMain: "border-amber-400",
     iconColor: "text-amber-600",
-    text: "text-white", sub: "text-amber-50",
-    badge: "bg-white/20 text-white border-white/30 backdrop-blur-md",
+    text: "text-white", sub: "text-amber-200",
+    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
 ];
 
