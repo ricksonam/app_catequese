@@ -566,6 +566,13 @@ export default function Dashboard() {
       }
     },
     {
+      title: "Orações",
+      image: "/icone_oraçoes.png",
+      onClick: () => {
+        toast.info("Módulo de orações em breve!");
+      }
+    },
+    {
       title: "Jogos",
       image: "/acesso_jogos.jpg",
       onClick: () => {
@@ -874,7 +881,7 @@ export default function Dashboard() {
               <div className="w-full max-w-[280px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-[1.01] active:scale-[0.99] group bg-white dark:bg-zinc-900"
+                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-800 border-t-4 border-t-blue-500 transition-all hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-[1.01] active:scale-[0.99] group bg-white dark:bg-zinc-900"
                 >
                   {/* Conteúdo */}
                   <div className="relative z-10 px-4 py-3 flex flex-col items-center text-center">
