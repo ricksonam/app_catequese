@@ -464,10 +464,40 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
         try {
           const d = String(selectedDay).padStart(2, '0');
           const m = String(currentMonth + 1).padStart(2, '0');
-          const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}`);
+          const y = currentYear;
+          const targetUrl = `https://api-liturgia-diaria.vercel.app/?date=${y}-${m}-${d}`;
+          
+          const res = await fetch(targetUrl);
           if (res.ok) {
-            const data = await res.json();
-            setLiturgiaDiaria(data);
+            const json = await res.json();
+            if (json && json.today) {
+              const today = json.today;
+              const readings = today.readings;
+              
+              setLiturgiaDiaria({
+                  liturgia: today.entry_title,
+                  cor: today.color,
+                  primeiraLeitura: readings.first_reading ? {
+                      referencia: readings.first_reading.title?.split(': ')[1] || readings.first_reading.title || readings.first_reading.head,
+                      texto: readings.first_reading.text
+                  } : undefined,
+                  segundaLeitura: readings.second_reading ? {
+                      referencia: readings.second_reading.title?.split(': ')[1] || readings.second_reading.title || readings.second_reading.head,
+                      texto: readings.second_reading.text
+                  } : undefined,
+                  salmo: readings.psalm ? {
+                      referencia: readings.psalm.title,
+                      refrao: readings.psalm.response,
+                      texto: readings.psalm.content_psalm?.join('\n') || ''
+                  } : undefined,
+                  evangelho: readings.gospel ? {
+                      referencia: readings.gospel.head_title || readings.gospel.title,
+                      texto: readings.gospel.text
+                  } : undefined,
+              });
+            } else {
+              setLiturgiaDiaria(null);
+            }
           } else {
             setLiturgiaDiaria(null);
           }
