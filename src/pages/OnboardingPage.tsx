@@ -26,7 +26,7 @@ import {
   useParoquias,
   useComunidades,
 } from "@/hooks/useSupabaseData";
-import { NOMES_TURMA, DIAS_SEMANA } from "@/lib/store";
+import { NOMES_TURMA, DIAS_SEMANA, ETAPAS_CATEQUESE } from "@/lib/store";
 import { toast } from "sonner";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { useJoinTurma } from "@/hooks/useSupabaseData";
@@ -160,6 +160,8 @@ export default function OnboardingPage() {
   // ── Formulário: Turma ──
   const [turmaForm, setTurmaForm] = useState({
     nomeTurma: "",
+    ano: "1° Ano",
+    etapa: "",
     diaCatequese: "",
     horario: "",
   });
@@ -274,11 +276,11 @@ export default function OnboardingPage() {
       await turmaMut.mutateAsync({
         id: crypto.randomUUID(),
         nome: turmaForm.nomeTurma,
-        ano: "1° Ano",
+        ano: turmaForm.ano,
         diaCatequese: turmaForm.diaCatequese,
         horario: turmaForm.horario,
         local: paroquia?.nome || "",
-        etapa: "",
+        etapa: turmaForm.etapa,
         outrosDados: "",
         comunidadeId: comunidade?.id || "",
         catequistasIds: user ? [user.id] : [],
@@ -728,21 +730,60 @@ export default function OnboardingPage() {
             />
 
             <QuestionCard className="space-y-4">
-              {/* Nome da turma */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Nome da turma */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Nome da Turma <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={turmaForm.nomeTurma}
+                    onChange={(e) => setTurmaForm((f) => ({ ...f, nomeTurma: e.target.value }))}
+                    className="form-input h-12 font-bold"
+                    autoFocus
+                  >
+                    <option value="">Selecione...</option>
+                    {NOMES_TURMA.map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {/* Ano/Ciclo */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    Ano / Ciclo <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={turmaForm.ano}
+                    onChange={(e) => setTurmaForm((f) => ({ ...f, ano: e.target.value }))}
+                    className="form-input h-12 font-bold"
+                  >
+                    <option value="1° Ano">1° Ano</option>
+                    <option value="2° Ano">2° Ano</option>
+                    <option value="3° Ano">3° Ano</option>
+                    <option value="Ciclo 1">Ciclo 1</option>
+                    <option value="Ciclo 2">Ciclo 2</option>
+                    <option value="Ciclo 3">Ciclo 3</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Etapa (Tempo da Catequese) */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                  Nome da Turma <span className="text-red-500">*</span>
+                  Tempo da Catequese (Etapa)
                 </label>
                 <select
-                  value={turmaForm.nomeTurma}
-                  onChange={(e) => setTurmaForm((f) => ({ ...f, nomeTurma: e.target.value }))}
+                  value={turmaForm.etapa}
+                  onChange={(e) => setTurmaForm((f) => ({ ...f, etapa: e.target.value }))}
                   className="form-input h-12 font-bold"
-                  autoFocus
                 >
-                  <option value="">Selecione...</option>
-                  {NOMES_TURMA.map((n) => (
-                    <option key={n} value={n}>
-                      {n}
+                  <option value="">Nenhum / Não definido</option>
+                  {ETAPAS_CATEQUESE.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.label}
                     </option>
                   ))}
                 </select>

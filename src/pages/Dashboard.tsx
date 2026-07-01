@@ -447,8 +447,19 @@ export default function Dashboard() {
        });
     }
 
+    if (showIncompleteAlert) {
+      feed.push({
+        id: 'alerta_cadastro_incompleto',
+        tipo: 'aviso_cadastro',
+        titulo: 'Complete os Cadastros',
+        remetente: 'Faltam informações importantes no seu perfil, paróquia ou turma.',
+        data: new Date(Date.now() + 10000), // Coloca no topo
+        rawDate: new Date().toISOString()
+      });
+    }
+
     return feed.sort((a, b) => b.data.getTime() - a.data.getTime());
-  }, [pendentesInscricao, encontros, reunioes, catequizandos, catequistas, selectedTurmaId, turmas]);
+  }, [pendentesInscricao, encontros, reunioes, catequizandos, catequistas, selectedTurmaId, turmas, showIncompleteAlert]);
 
   const totalMensagens = feedMensagens.length;
   const [lastSeenMensagens, setLastSeenMensagens] = useState(() => {
@@ -746,47 +757,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── ALERTA DE DADOS INCOMPLETOS ── */}
-      {showIncompleteAlert && (
-        <div className="px-4 mb-4 animate-fade-in">
-          <div className="bg-amber-50 border-2 border-amber-200 rounded-[24px] p-4 shadow-sm relative overflow-hidden">
-            <div className="absolute -right-4 -top-4 opacity-5 pointer-events-none">
-              <AlertTriangle className="w-24 h-24 text-amber-500" />
-            </div>
-            <div className="flex items-start gap-3 relative z-10">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 border border-amber-200">
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-black text-amber-800 uppercase tracking-tight leading-tight mb-1">
-                  Complete os Cadastros
-                </h3>
-                <p className="text-[11px] font-medium text-amber-700/90 leading-snug mb-2">
-                  Faltam algumas informações importantes para a experiência ser completa:
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {incompleteCatequista && (
-                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200">
-                      Seu Perfil
-                    </span>
-                  )}
-                  {incompleteParoquia && (
-                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200">
-                      Paróquia/Comunidade
-                    </span>
-                  )}
-                  {incompleteTurma && (
-                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200">
-                      Turma Ativa
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
       <div className="relative pt-1 pb-3 mb-0 animate-fade-in">
         {/* Título da Seção — estilo litúrgico */}
@@ -939,22 +909,6 @@ export default function Dashboard() {
                         )}
                       </div>
                     </div>
-
-                    {/* Alerta de dados incompletos da Turma */}
-                    {selectedTurmaId !== 'all' && incompleteTurma && (
-                      <div className="w-full bg-red-50/80 rounded-xl p-2 mb-3 border border-red-100 text-left">
-                        <div className="flex items-center gap-1 mb-1">
-                          <AlertTriangle className="h-3 w-3 text-red-500" />
-                          <span className="text-[9px] font-black uppercase tracking-widest text-red-600">Completar Cadastro</span>
-                        </div>
-                        <ul className="text-[10px] text-red-600/80 font-medium pl-4 list-disc space-y-0.5">
-                          {!selectedTurma?.ano && <li>Ano ou Ciclo não definido</li>}
-                          {!selectedTurma?.etapa && <li>Etapa não definida</li>}
-                          {!selectedTurma?.local && <li>Local não definido</li>}
-                          {(!selectedTurma?.diaCatequese || !selectedTurma?.horario) && <li>Tempo/Dia não definido</li>}
-                        </ul>
-                      </div>
-                    )}
 
                     {/* Stats dinâmicos */}
                     <div className="flex items-center justify-center gap-2 w-full mt-0.5">
@@ -1208,6 +1162,7 @@ export default function Dashboard() {
                     msg.tipo === 'encontro' ? "bg-blue-50 text-blue-600 border-blue-200" :
                     msg.tipo === 'reuniao' ? "bg-purple-50 text-purple-600 border-purple-200" :
                     msg.tipo === 'nascimento' ? "bg-amber-50 text-amber-600 border-amber-200" :
+                    msg.tipo === 'aviso_cadastro' ? "bg-red-50 text-red-600 border-red-200" :
                     "bg-blue-50 text-blue-600 border-blue-200"
                   )}>
                     {msg.tipo === 'iavalia' ? <BookOpen className="h-5 w-5" /> : 
@@ -1215,6 +1170,7 @@ export default function Dashboard() {
                      msg.tipo === 'encontro' ? <CalendarDays className="h-5 w-5" /> :
                      msg.tipo === 'reuniao' ? <Users className="h-5 w-5" /> :
                      msg.tipo === 'nascimento' ? <Cake className="h-5 w-5" /> :
+                     msg.tipo === 'aviso_cadastro' ? <AlertTriangle className="h-5 w-5" /> :
                      <Users className="h-5 w-5" />}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1224,6 +1180,7 @@ export default function Dashboard() {
                       msg.tipo === 'encontro' ? "text-blue-600" :
                       msg.tipo === 'reuniao' ? "text-purple-600" :
                       msg.tipo === 'nascimento' ? "text-amber-600" :
+                      msg.tipo === 'aviso_cadastro' ? "text-red-600" :
                       "text-blue-600"
                     )}>
                       {msg.tipo === 'iavalia' ? 'Conecta famílias - Resposta' : 
@@ -1231,6 +1188,7 @@ export default function Dashboard() {
                        msg.tipo === 'encontro' ? 'Lembrete de Encontro' :
                        msg.tipo === 'reuniao' ? 'Lembrete de Reunião' :
                        msg.tipo === 'nascimento' ? 'Aniversariante' :
+                       msg.tipo === 'aviso_cadastro' ? 'Atenção' :
                        'Nova Inscrição Online'}
                     </p>
                     <h4 className="text-sm font-bold text-foreground truncate">{msg.titulo}</h4>
@@ -1240,6 +1198,8 @@ export default function Dashboard() {
                       ) : msg.tipo === 'missao' ? (
                         <>{msg.remetente}</>
                       ) : msg.tipo === 'nascimento' ? (
+                        <>{msg.remetente}</>
+                      ) : msg.tipo === 'aviso_cadastro' ? (
                         <>{msg.remetente}</>
                       ) : msg.tipo === 'encontro' || msg.tipo === 'reuniao' ? (
                         <>Tema: <strong className="text-foreground">{msg.remetente}</strong></>
