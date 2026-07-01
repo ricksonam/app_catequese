@@ -4,7 +4,7 @@ import {
   Key,
   CheckCircle2, ChevronRight,
   ArrowLeft, HelpCircle, Sparkles, User, Phone, Mail,
-  X, Loader2, MapPin, GraduationCap, Pencil, Plus, LogIn
+  X, Loader2, MapPin, GraduationCap, Pencil, Plus, LogIn, Lock
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -45,75 +45,106 @@ function calcAge(birth: string): number | null {
 interface StepCardProps {
   icon: React.ReactNode;
   title: string;
-  description?: string;          // texto descritivo abaixo do título
-  subtitle?: string;             // mostrado quando done=true
+  description?: string;
+  subtitle?: string;
   done: boolean;
   expanded: boolean;
+  locked?: boolean;
   onAdd: () => void;
   onCollapse: () => void;
   children?: React.ReactNode;
-  iconBg?: string;
-  iconColor?: string;
-  isPremium?: boolean;
-  footerActions?: React.ReactNode; // botões custom no rodapé do card fechado
+  themeColor: "sky" | "amber" | "emerald";
+  footerActions?: React.ReactNode;
 }
 
 function StepCard({
-  icon, title, description, subtitle, done, expanded, onAdd, onCollapse,
-  children, iconBg = "bg-zinc-100", iconColor = "text-zinc-400",
-  isPremium = false, footerActions,
+  icon, title, description, subtitle, done, expanded, locked, onAdd, onCollapse,
+  children, themeColor, footerActions,
 }: StepCardProps) {
+  const themes = {
+    sky: {
+      border: "border-sky-200",
+      bgOpen: "bg-white",
+      bgClosed: "bg-sky-50",
+      bgDone: "bg-sky-50/50",
+      iconBg: "bg-sky-100",
+      iconText: "text-sky-600",
+      shadow: "shadow-sky-500/10",
+      button: "bg-sky-500 hover:bg-sky-600 text-white shadow-sky-500/25"
+    },
+    amber: {
+      border: "border-amber-200",
+      bgOpen: "bg-white",
+      bgClosed: "bg-amber-50",
+      bgDone: "bg-amber-50/50",
+      iconBg: "bg-amber-100",
+      iconText: "text-amber-600",
+      shadow: "shadow-amber-500/10",
+      button: "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/25"
+    },
+    emerald: {
+      border: "border-emerald-200",
+      bgOpen: "bg-white",
+      bgClosed: "bg-emerald-50",
+      bgDone: "bg-emerald-50/50",
+      iconBg: "bg-emerald-100",
+      iconText: "text-emerald-600",
+      shadow: "shadow-emerald-500/10",
+      button: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/25"
+    }
+  };
+
+  const t = themes[themeColor];
   const baseCardStyle = "rounded-3xl border-2 transition-all duration-300 overflow-hidden";
+  
   let cardStateStyle = "";
-  if (done && !expanded) {
-    cardStateStyle = "border-emerald-200 bg-emerald-50/40";
+  if (locked) {
+    cardStateStyle = "opacity-60 grayscale-[40%] border-zinc-200 bg-zinc-50 pointer-events-none";
+  } else if (done && !expanded) {
+    cardStateStyle = `${t.border} ${t.bgDone}`;
   } else if (expanded) {
-    cardStateStyle = isPremium
-      ? "border-violet-300 bg-white shadow-xl shadow-violet-500/10"
-      : "border-primary/30 bg-white shadow-lg shadow-primary/5";
+    cardStateStyle = `${t.border} ${t.bgOpen} shadow-xl ${t.shadow}`;
   } else {
-    cardStateStyle = isPremium
-      ? "border-violet-100 bg-gradient-to-br from-violet-50/50 to-fuchsia-50/50"
-      : "border-zinc-100 bg-white";
+    cardStateStyle = `${t.border} ${t.bgClosed}`;
   }
 
   return (
     <div className={`${baseCardStyle} ${cardStateStyle}`}>
-      {/* Layout em 3 linhas */}
       <div 
-        className={`px-5 pt-4 pb-4 ${!expanded ? "cursor-pointer" : ""}`}
-        onClick={!expanded ? onAdd : undefined}
+        className={`px-5 py-3.5 ${!expanded && !locked ? "cursor-pointer hover:brightness-[0.98]" : ""}`}
+        onClick={(!expanded && !locked) ? onAdd : undefined}
       >
-
-        {/* Linha 1: ícone + título + status/fechar */}
         <div className="flex items-center gap-3.5">
-          {/* Ícone */}
-          <div
-            className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
-              done && !expanded
-                ? "bg-emerald-100 text-emerald-600"
-                : expanded
-                ? (isPremium ? "bg-violet-100 text-violet-600" : "bg-primary/10 text-primary")
-                : `${iconBg} ${iconColor}`
+          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-colors ${
+              locked ? "bg-zinc-200 text-zinc-400" : (done && !expanded ? "bg-emerald-100 text-emerald-600" : `${t.iconBg} ${t.iconText}`)
             }`}
           >
-            {icon}
+            {locked ? <Lock className="w-5 h-5" /> : icon}
           </div>
 
-          {/* Título */}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-black text-foreground uppercase tracking-wide leading-tight">
               {title}
             </p>
-            {/* Subtítulo quando concluído */}
-            {done && !expanded && subtitle && (
+            {/* Se concluído, mostra o subtitle ou "Concluído" */}
+            {done && !expanded && (
               <p className="text-[11px] text-emerald-600 mt-0.5 leading-snug font-semibold">
-                {subtitle}
+                {subtitle || "Concluído"}
+              </p>
+            )}
+            {/* Descrição super curta se não estiver concluído, nem expandido, nem travado */}
+            {!done && !expanded && !locked && description && (
+              <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight line-clamp-1">
+                {description}
+              </p>
+            )}
+            {locked && (
+              <p className="text-[10px] text-zinc-400 mt-0.5 leading-tight font-semibold">
+                Complete a etapa anterior
               </p>
             )}
           </div>
 
-          {/* Status / Fechar — sempre no canto direito */}
           <div className="shrink-0 ml-2">
             {done && !expanded ? (
               <CheckCircle2 className="w-6 h-6 text-emerald-500" />
@@ -127,39 +158,22 @@ function StepCard({
               >
                 <X className="w-4 h-4" />
               </button>
+            ) : !locked ? (
+              <ChevronRight className={`w-5 h-5 ${t.iconText} opacity-70`} />
             ) : null}
           </div>
         </div>
 
-        {/* Linha 2: descrição (visível apenas quando não concluído e não expandido) */}
-        {!done && !expanded && description && (
-          <p className="text-xs text-muted-foreground mt-2 ml-[58px] leading-relaxed">
-            {description}
-          </p>
-        )}
-
-        {/* Linha 3: ações do rodapé (somente fechado e não concluído) */}
-        {!done && !expanded && (
-          <div className="mt-3 ml-[58px] flex items-center justify-end gap-2">
-            {footerActions ? footerActions : (
-              <button
-                onClick={onAdd}
-                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all ${
-                  isPremium
-                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-violet-500/25"
-                    : "bg-primary text-white shadow-primary/20"
-                }`}
-              >
-                Adicionar
-              </button>
-            )}
+        {/* Rodapé customizado quando não expandido */}
+        {!done && !expanded && !locked && footerActions && (
+          <div className="mt-3 ml-[58px] flex items-center gap-2">
+            {footerActions}
           </div>
         )}
       </div>
 
-      {/* Conteúdo expandível */}
       {expanded && children && (
-        <div className="px-5 pb-5 pt-1 border-t border-zinc-100/50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="px-5 pb-5 pt-0 border-t border-zinc-100/50 animate-in fade-in slide-in-from-top-2 duration-200">
           {children}
         </div>
       )}
@@ -201,6 +215,14 @@ export default function OnboardingPage() {
 
   // ── Quando tudo estiver pronto (turma é opcional para prosseguir) ──
   const isAllDone = doneCatequista && doneParoquia;
+
+  // ── Auto-expandir ao entrar ──
+  useEffect(() => {
+    if (!doneCatequista) setExpanded("catequista");
+    else if (!doneParoquia) setExpanded("paroquia");
+    else if (!turmaCreatedOrJoined) setExpanded("turma");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFinish = () => {
     localStorage.setItem(ONBOARDING_KEY, "true");
@@ -267,7 +289,7 @@ export default function OnboardingPage() {
       });
       await refetchCats();
       toast.success("Dados do catequista salvos!");
-      setExpanded(doneParoquia ? null : "paroquia");
+      setExpanded("paroquia"); // Auto-avança para paróquia
     } catch (err: any) {
       toast.error("Erro: " + err.message);
     }
@@ -351,7 +373,7 @@ export default function OnboardingPage() {
 
       await Promise.all([refetchParoquias(), refetchComunidades()]);
       toast.success("Paróquia/Comunidade salva!");
-      setExpanded(null);
+      setExpanded("turma"); // Auto-avança para turma
     } catch (err: any) {
       toast.error("Erro: " + err.message);
     }
@@ -490,38 +512,33 @@ export default function OnboardingPage() {
         </div>
       )}
 
-      {/* Título */}
-      <div className="px-6 pt-3 pb-5">
+      {/* Título mais compacto para economizar espaço */}
+      <div className="px-6 pt-3 pb-3">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 mb-1 flex items-center gap-1.5">
           <Sparkles className="w-3 h-3 text-amber-500" />
-          Cadastros Iniciais
+          Passo a Passo
         </p>
-        <h1 className="text-3xl font-black text-foreground tracking-tighter leading-tight">
-          Antes de criar ou entrar em uma turma<br />
-          defina os <span className="text-primary">dados abaixo</span>
+        <h1 className="text-2xl font-black text-foreground tracking-tight leading-tight">
+          Configure seu <span className="text-primary">perfil</span>
         </h1>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          Complete as etapas abaixo para ter acesso a todas as funcionalidades.
-        </p>
       </div>
 
-      {/* Cards */}
-      <div className="flex-1 px-5 pb-8 space-y-3 overflow-y-auto">
+      {/* Cards - Sequência */}
+      <div className="flex-1 px-5 pb-6 space-y-2.5 overflow-y-auto">
 
         {/* ── CARD 1: Catequista ── */}
         <StepCard
           icon={<Key className="w-5 h-5" />}
-          iconBg="bg-sky-100"
-          iconColor="text-sky-600"
-          title="Dados do Catequista"
-          description="Informe seus dados pessoais para identificação no sistema. O nome é obrigatório; os demais dados podem ser completados depois."
-          subtitle="Perfil configurado"
+          themeColor="sky"
+          title="Dados Pessoais"
+          description="Seu nome, telefone e nascimento."
+          subtitle={catForm.nome}
           done={doneCatequista}
           expanded={expanded === "catequista"}
           onAdd={() => setExpanded("catequista")}
           onCollapse={() => setExpanded(null)}
         >
-          <div className="space-y-3 pt-3">
+          <div className="space-y-3 pt-2">
             {/* Botão importar dados */}
             <button
               onClick={fillFromUser}
@@ -621,17 +638,17 @@ export default function OnboardingPage() {
         {/* ── CARD 2: Paróquia / Comunidade ── */}
         <StepCard
           icon={<MapPin className="w-5 h-5" />}
-          iconBg="bg-amber-100"
-          iconColor="text-amber-600"
-          title="Paróquia / Área Missionária"
-          description="Vincule seu perfil à paróquia ou área missionária onde você atua como catequista."
+          themeColor="amber"
+          title="Paróquia e Comunidade"
+          description="Onde você atua como catequista."
           subtitle={paroquias[0]?.nome}
           done={doneParoquia}
+          locked={!doneCatequista}
           expanded={expanded === "paroquia"}
           onAdd={() => setExpanded("paroquia")}
           onCollapse={() => setExpanded(null)}
         >
-          <div className="space-y-3 pt-3">
+          <div className="space-y-3 pt-2">
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
                 Paróquia / Área Missionária <span className="text-red-500">*</span>
@@ -717,33 +734,33 @@ export default function OnboardingPage() {
         {/* ── CARD 3: Turma ── */}
         <StepCard
           icon={<GraduationCap className="w-5 h-5" />}
-          iconBg="bg-emerald-100"
-          iconColor="text-emerald-600"
+          themeColor="emerald"
           title="Sua Turma de Catequese"
-          description="Crie uma nova turma ou entre em uma turma existente usando um código de acesso."
-          subtitle={turmaCreatedOrJoined ? "Turma configurada!" : undefined}
+          description="Crie ou entre em uma turma existente."
+          subtitle={turmaCreatedOrJoined ? "Turma vinculada!" : undefined}
           done={turmaCreatedOrJoined}
+          locked={!doneCatequista || !doneParoquia}
           expanded={expanded === "turma"}
           onAdd={() => { setTurmaMode(null); setExpanded("turma"); }}
           onCollapse={() => { setExpanded(null); setTurmaMode(null); }}
           footerActions={
-            <div className="flex gap-2">
+            <>
               <button
                 onClick={(e) => { e.stopPropagation(); setTurmaMode(null); setExpanded("turma"); }}
-                className="px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-white shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-700 shadow-sm hover:brightness-95 active:scale-95 transition-all flex items-center gap-1"
               >
-                <Plus className="w-3.5 h-3.5" /> Criar Turma
+                <Plus className="w-3 h-3" /> Criar
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); setJoinTurmaOpen(true); }}
-                className="px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-600 text-white shadow-md shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-sm hover:brightness-110 active:scale-95 transition-all flex items-center gap-1"
               >
-                <LogIn className="w-3.5 h-3.5" /> Entrar na Turma
+                <LogIn className="w-3 h-3" /> Entrar
               </button>
-            </div>
+            </>
           }
         >
-          <div className="space-y-3 pt-3">
+          <div className="space-y-3 pt-2">
             {/* Escolha de ação */}
             <div className="grid grid-cols-2 gap-2">
               <button
