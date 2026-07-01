@@ -567,9 +567,9 @@ export default function Dashboard() {
     },
     {
       title: "Orações",
-      image: "/icone_oraçoes.png",
+      image: "/icone_oracoes.png",
       onClick: () => {
-        toast.info("Módulo de orações em breve!");
+        navigate("/modulos/oracoes");
       }
     },
     {
