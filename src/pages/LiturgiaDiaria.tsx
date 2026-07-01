@@ -179,6 +179,7 @@ export default function LiturgiaDiaria() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [liturgia, setLiturgia] = useState<LiturgiaData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMsg, setLoadingMsg] = useState("Buscando liturgia...");
   const [error, setError] = useState(false);
 
   const [abaAtiva, setAbaAtiva] = useState<AbaId>("primeira");
@@ -208,26 +209,43 @@ export default function LiturgiaDiaria() {
   useEffect(() => {
     const fetchLiturgia = async () => {
       setLoading(true);
+      setLoadingMsg("Conectando ao servidor...");
       setError(false);
       try {
         const d = padDate(currentDate.getDate());
         const m = padDate(currentDate.getMonth() + 1);
         const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}`;
         
-        // Função para tentar buscar com retries (útil para quando a API Railway está 'dormindo' e retorna 503)
-        let res;
-        for (let i = 0; i < 4; i++) {
+        const urls = [
+          targetUrl,
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+        ];
+
+        let data: LiturgiaData | null = null;
+        let lastError = null;
+
+        for (let i = 0; i < urls.length; i++) {
           try {
-            res = await fetch(targetUrl);
-            if (res.ok) break;
+            if (i > 0) setLoadingMsg("Tentando rota alternativa (isso pode demorar uns 20s)...");
+            const res = await fetch(urls[i]);
+            if (res.ok) {
+              const json = await res.json();
+              if (json && json.data) {
+                data = json;
+                break;
+              }
+            }
           } catch (e) {
-            // Falha de rede (ex: CORS no 503)
+            lastError = e;
           }
-          if (i < 3) await new Promise(r => setTimeout(r, 4000)); // Espera 4s antes de tentar novamente
+          // Espera um pouco antes de tentar o fallback
+          if (!data && i < urls.length - 1) {
+            await new Promise(r => setTimeout(r, 2000));
+          }
         }
 
-        if (!res || !res.ok) throw new Error("HTTP error");
-        const data: LiturgiaData = await res.json();
+        if (!data) throw lastError || new Error("HTTP error");
+        
         setLiturgia(data);
         // Selecionar a primeira aba disponível
         if (isLeitura(data.primeiraLeitura)) setAbaAtiva("primeira");
@@ -276,7 +294,12 @@ export default function LiturgiaDiaria() {
   // ── Render current reading ──────────────────────────────────────────────────
 
   function renderContent() {
-    if (loading) return <ReadingSkeleton />;
+    if (loading) return (
+      <div className="flex flex-col items-center justify-center py-10 space-y-4">
+        <ReadingSkeleton />
+        <p className="text-zinc-500 font-medium text-xs mt-4 animate-pulse">{loadingMsg}</p>
+      </div>
+    );
     if (error || !liturgia) return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
         <div className="w-16 h-16 rounded-2xl bg-black/5 flex items-center justify-center">
@@ -416,10 +439,9 @@ export default function LiturgiaDiaria() {
 
   return (
     <div
-      className={`min-h-screen transition-all duration-500 ${
+      className={`min-h-screen transition-all duration-500 bg-zinc-50/50 ${
         fullScreen ? "fixed inset-0 z-50 overflow-y-auto" : "pb-24"
       }`}
-      style={{ backgroundColor: "#b8bec7" }}
     >
       {/* ── Ambient gradient ── */}
       <div
