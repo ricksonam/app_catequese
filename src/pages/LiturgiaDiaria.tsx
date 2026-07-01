@@ -214,37 +214,44 @@ export default function LiturgiaDiaria() {
       try {
         const d = padDate(currentDate.getDate());
         const m = padDate(currentDate.getMonth() + 1);
-        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}`;
+        const y = currentDate.getFullYear();
+        const targetUrl = `https://api-liturgia-diaria.vercel.app/?date=${y}-${m}-${d}`;
         
-        const urls = [
-          targetUrl,
-          `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
-        ];
+        const res = await fetch(targetUrl);
+        if (!res.ok) throw new Error("HTTP error");
+        
+        const json = await res.json();
+        if (!json || !json.today) throw new Error("Invalid format");
+        
+        const t = json.today;
+        const r = t.readings || {};
+        
+        const mapLeitura = (l: any) => {
+          if (!l || !l.text) return "Não há leitura";
+          return {
+            referencia: l.title || "",
+            titulo: l.head || l.title || "",
+            texto: l.text
+          };
+        };
 
-        let data: LiturgiaData | null = null;
-        let lastError = null;
+        const mapSalmo = (s: any) => {
+          if (!s) return "Não há salmo";
+          return {
+            referencia: s.title || "",
+            refrao: s.response || "",
+            texto: Array.isArray(s.content_psalm) ? s.content_psalm.join("\n") : (s.content_psalm || "")
+          };
+        };
 
-        for (let i = 0; i < urls.length; i++) {
-          try {
-            if (i > 0) setLoadingMsg("Tentando rota alternativa (isso pode demorar uns 20s)...");
-            const res = await fetch(urls[i]);
-            if (res.ok) {
-              const json = await res.json();
-              if (json && json.data) {
-                data = json;
-                break;
-              }
-            }
-          } catch (e) {
-            lastError = e;
-          }
-          // Espera um pouco antes de tentar o fallback
-          if (!data && i < urls.length - 1) {
-            await new Promise(r => setTimeout(r, 2000));
-          }
-        }
-
-        if (!data) throw lastError || new Error("HTTP error");
+        const data: LiturgiaData = {
+          liturgia: t.entry_title,
+          cor: t.color,
+          primeiraLeitura: r.first_reading ? mapLeitura(r.first_reading) : "Não há primeira leitura hoje!",
+          segundaLeitura: r.second_reading ? mapLeitura(r.second_reading) : "Não há segunda leitura hoje!",
+          evangelho: r.gospel ? mapLeitura(r.gospel) : "Não há evangelho hoje!",
+          salmo: r.psalm ? mapSalmo(r.psalm) : "Não há salmo"
+        };
         
         setLiturgia(data);
         // Selecionar a primeira aba disponível
@@ -501,7 +508,7 @@ export default function LiturgiaDiaria() {
       <div className="relative z-10 max-w-2xl mx-auto px-4 pt-6 space-y-5">
 
         {/* ── Novo Card de Informações ── */}
-        <div className="bg-white/80 border border-black/5 rounded-3xl p-5 backdrop-blur-sm flex flex-col items-center text-center shadow-sm">
+        <div className="bg-white border border-black/5 rounded-3xl p-5 shadow-sm flex flex-col items-center text-center">
           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.25em] mb-4">
             Liturgia Diária
           </span>
@@ -564,7 +571,7 @@ export default function LiturgiaDiaria() {
         </div>
 
         {/* ── Reading Tabs ── */}
-        <div className="flex gap-1 bg-white/60 border border-black/5 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide shadow-sm">
+        <div className="flex gap-1 bg-white border border-black/5 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide shadow-sm">
           {(loading ? ABAS_BASE : abasVisiveis).map((aba) => {
             const Icon = aba.icon;
             const isActive = abaAtiva === aba.id;
@@ -575,7 +582,7 @@ export default function LiturgiaDiaria() {
                 disabled={loading}
                 className={`flex-1 min-w-[70px] flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
                   isActive
-                    ? `bg-white/90 border border-black/20 ${cor.text} shadow-lg shadow-black/5`
+                    ? `bg-slate-50 border border-black/10 ${cor.text} shadow-sm`
                     : "text-zinc-500 hover:text-zinc-600 hover:bg-black/5"
                 }`}
               >
@@ -588,7 +595,7 @@ export default function LiturgiaDiaria() {
         </div>
 
         {/* ── Reading Content Card ── */}
-        <div className="bg-white/80 border border-black/5 rounded-3xl p-6 backdrop-blur-sm min-h-[300px] animate-fade-in shadow-sm">
+        <div className="bg-white border border-black/5 rounded-3xl p-6 min-h-[300px] animate-fade-in shadow-sm">
           {renderContent()}
         </div>
 
