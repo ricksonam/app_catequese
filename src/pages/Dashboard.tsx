@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart, Crown } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { upsertCatequista } from "@/lib/supabaseStore";
@@ -10,7 +10,6 @@ import { formatarDataVigente, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ObjectiveModal } from "@/components/ObjectiveModal";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 
 
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
@@ -25,7 +24,6 @@ import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { isPremium } = usePremiumStatus();
   const [selectedTurmaId, setSelectedTurmaIdRaw] = useState<string | "all">(
     () => localStorage.getItem("ivc_selected_turma") || "all"
   );
@@ -682,12 +680,6 @@ export default function Dashboard() {
               <h1 className="text-base font-black text-white uppercase tracking-tight flex flex-wrap items-center gap-1.5 drop-shadow-md">
                 Olá, Catequista!
                 <span className="inline-block animate-waving-hand text-sm">👋</span>
-                {isPremium && (
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-300 to-amber-500 border border-amber-200 text-amber-950 cursor-pointer hover:brightness-110 transition-all shadow-md ml-1" onClick={() => navigate("/minha-assinatura")}>
-                    <Crown className="w-3 h-3" />
-                    <span className="text-[9px] font-black uppercase tracking-wider">Premium</span>
-                  </div>
-                )}
               </h1>
             </div>
             <div className="flex items-center gap-2">

@@ -2,15 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, Cross, Heart, Crown } from "lucide-react";
 import { oracoesBase, categoriasOracao, CategoriaOracao } from "@/data/oracoes";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumModal } from "@/components/PremiumModal";
 
 export default function OracoesList() {
   const navigate = useNavigate();
   const [busca, setBusca] = useState("");
   const [categoriaAtiva, setCategoriaAtiva] = useState<CategoriaOracao | "Todas">("Todas");
-  const { isPremium, isLoading } = usePremiumStatus();
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   // Filtra as orações baseadas na busca e na categoria selecionada
   const oracoesFiltradas = oracoesBase.filter((oracao) => {
@@ -24,15 +20,7 @@ export default function OracoesList() {
     return matchCategoria && matchBusca;
   });
 
-  if (isLoading) {
-    return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
-  }
-
   const handleOracaoClick = (id: string) => {
-    if (!isPremium) {
-      setShowPremiumModal(true);
-      return;
-    }
     navigate(`/modulos/oracoes/${id}`);
   };
 
@@ -47,12 +35,6 @@ export default function OracoesList() {
             <h1 className="text-xl font-black text-liturgical tracking-tight uppercase">
               Orações
             </h1>
-            {!isPremium && (
-              <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
-                <Crown className="w-2.5 h-2.5" />
-                <span>Premium</span>
-              </div>
-            )}
           </div>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
             {oracoesFiltradas.length} orações
@@ -145,14 +127,6 @@ export default function OracoesList() {
           ))
         )}
       </div>
-
-      <PremiumModal 
-        isOpen={showPremiumModal} 
-        onClose={() => setShowPremiumModal(false)}
-        title="Módulo de Orações Bloqueado" 
-        description="Assine o Premium para acessar nossa biblioteca completa de orações, dinâmicas e roteiros para catequese."
-        icon={<Heart className="h-10 w-10 text-primary" />}
-      />
     </div>
   );
 }

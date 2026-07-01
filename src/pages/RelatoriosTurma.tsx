@@ -10,8 +10,6 @@ import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumModal } from "@/components/PremiumModal";
 
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
@@ -21,7 +19,6 @@ export default function RelatoriosTurma() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"inteligente" | "documentos">("inteligente");
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const { data: turmas = [], isLoading: loadingT } = useTurmas();
   const { data: encontros = [], isLoading: loadingE } = useEncontros(id);
@@ -30,7 +27,6 @@ export default function RelatoriosTurma() {
   const { data: paroquias = [], isLoading: loadingP } = useParoquias();
   const { data: comunidades = [], isLoading: loadingCom } = useComunidades();
   const { diarios = [], isLoading: loadingD } = useDiarioEspiritual(id!);
-  const { isPremium, isLoading: loadingPremium } = usePremiumStatus();
 
   const turma = turmas.find(t => t.id === id);
 
@@ -40,7 +36,7 @@ export default function RelatoriosTurma() {
     return null;
   }
 
-  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom || loadingD || loadingPremium) {
+  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom || loadingD) {
     return <div className="flex justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
@@ -81,12 +77,6 @@ export default function RelatoriosTurma() {
               <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
                 Relatórios da Turma
               </h1>
-              {!isPremium && (
-                <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm">
-                  <Crown className="w-2.5 h-2.5" />
-                  <span>Premium</span>
-                </div>
-              )}
             </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{turma.nome} • {turma.etapa}</p>
           </div>
@@ -118,16 +108,9 @@ export default function RelatoriosTurma() {
       {tab === "inteligente" ? (
         <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} diarios={diarios} />
       ) : (
-        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} isPremium={isPremium} onPremiumClick={() => setShowPremiumModal(true)} />
+        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} />
       )}
 
-      <PremiumModal 
-        isOpen={showPremiumModal} 
-        onClose={() => setShowPremiumModal(false)}
-        title="Relatórios Bloqueados" 
-        description="Acesse o painel completo de desempenho, engajamento e imprima as fichas da sua turma assinando o Premium."
-        icon={<PieChartIcon className="h-10 w-10 text-primary" />}
-      />
       </div>
 
   );
@@ -449,7 +432,7 @@ const DOC_TYPES = [
   { id: "materiais_apoio", label: "Materiais de Apoio", icon: BookOpen, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-600" },
 ];
 
-function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org, isPremium, onPremiumClick }: any) {
+function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
   const [docTipo, setDocTipo] = useState<string>("ficha_cat");
   const [printTarget, setPrintTarget] = useState<any>(null);
 
@@ -503,19 +486,11 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org, i
   const selectedType = DOC_TYPES.find(d => d.id === docTipo)!;
 
   const handlePrint = (target: any) => {
-    if (!isPremium) {
-      onPremiumClick();
-      return;
-    }
     setPrintTarget(target);
     setTimeout(() => window.print(), 100);
   };
 
   const handleCompartilhar = async (target: any) => {
-    if (!isPremium) {
-      onPremiumClick();
-      return;
-    }
     setPrintTarget(target);
     setIsGenerating(true);
     setReadyToShareParams(null);

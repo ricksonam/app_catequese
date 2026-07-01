@@ -1,14 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown, Crown } from "lucide-react";
+import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
-import { PremiumModal } from "@/components/PremiumModal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -239,12 +237,9 @@ export default function DiarioEspiritualList() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { diarios = [], isLoading, excluirDiario } = useDiarioEspiritual(id!);
-  const { isPremium, isLoading: isLoadingPremium } = usePremiumStatus();
-
   const [viewItem, setViewItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const confirmDelete = async () => {
     if (!itemToDeleteId) return;
@@ -264,17 +259,7 @@ export default function DiarioEspiritualList() {
     return Array.from(map.entries()).sort((a, b) => b[0].localeCompare(a[0]));
   }, [diarios]);
 
-  if (isLoadingPremium) {
-    return <div className="p-8 text-center animate-pulse text-muted-foreground">Verificando acesso...</div>;
-  }
 
-  const handleActionClick = (action: () => void) => {
-    if (!isPremium) {
-      setShowPremiumModal(true);
-      return;
-    }
-    action();
-  };
 
   return (
     <div className="space-y-5 pb-10">
@@ -290,12 +275,6 @@ export default function DiarioEspiritualList() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl font-black text-foreground tracking-tight uppercase truncate">Diário do Catequista</h1>
-              {!isPremium && (
-                <div className="flex items-center gap-0.5 bg-amber-400/90 dark:bg-amber-500/80 text-white text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full shadow-sm shrink-0">
-                  <Crown className="w-2.5 h-2.5" />
-                  <span>Premium</span>
-                </div>
-              )}
             </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mt-1">
               {diarios.length} {diarios.length === 1 ? "registro" : "registros"}
@@ -305,7 +284,7 @@ export default function DiarioEspiritualList() {
 
         <div className="flex justify-end">
           <button
-            onClick={() => handleActionClick(() => navigate(`/turmas/${id}/diario/novo`))}
+            onClick={() => navigate(`/turmas/${id}/diario/novo`)}
             className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             <Plus className="h-4 w-4" /> Novo Registro
@@ -345,7 +324,7 @@ export default function DiarioEspiritualList() {
             </p>
           </div>
           <button
-            onClick={() => handleActionClick(() => navigate(`/turmas/${id}/diario/novo`))}
+            onClick={() => navigate(`/turmas/${id}/diario/novo`)}
             className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-black text-sm shadow-xl shadow-indigo-600/25 hover:shadow-indigo-600/40 active:scale-95 transition-all"
           >
             <Plus className="h-4 w-4" /> Criar Primeiro Registro
@@ -354,7 +333,7 @@ export default function DiarioEspiritualList() {
       ) : (
         <div className="space-y-7">
           {groupedByMonth.map(([monthKey, items]) => (
-            <MonthBlock key={monthKey} monthKey={monthKey} items={items} onView={(item) => handleActionClick(() => setViewItem(item))} />
+            <MonthBlock key={monthKey} monthKey={monthKey} items={items} onView={(item) => setViewItem(item)} />
           ))}
         </div>
       )}
@@ -500,13 +479,6 @@ export default function DiarioEspiritualList() {
         isLoading={excluirDiario.isPending}
       />
 
-      <PremiumModal 
-        isOpen={showPremiumModal} 
-        onClose={() => setShowPremiumModal(false)}
-        title="Diário Espiritual Bloqueado" 
-        description="Acompanhe a evolução individual de cada catequizando, anote pontos fortes e áreas de melhoria de cada encontro ativando o Premium."
-        icon={<BookOpen className="h-10 w-10 text-primary" />}
-      />
-    </div>
+      </div>
   );
 }

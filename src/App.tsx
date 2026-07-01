@@ -57,13 +57,11 @@ const CalendarioLiturgico     = lazy(() => import("@/pages/CalendarioLiturgico")
 const LiturgiaDiaria          = lazy(() => import("@/pages/LiturgiaDiaria"));
 const AdminDashboard          = lazy(() => import("@/pages/AdminDashboard"));
 const AdminLogin              = lazy(() => import("@/pages/AdminLogin"));
-const PremiumCheckout         = lazy(() => import("@/pages/PremiumCheckout"));
 const PlaceholderPage         = lazy(() => import("@/pages/PlaceholderPage"));
 const PublicPlano             = lazy(() => import("@/pages/PublicPlano"));
 const PublicRitoSacramental   = lazy(() => import("@/pages/PublicRitoSacramental"));
 const PublicInscricao         = lazy(() => import("@/pages/PublicInscricao"));
 const MapaPanoramico          = lazy(() => import("@/pages/MapaPanoramico"));
-const MinhaAssinatura         = lazy(() => import("@/pages/MinhaAssinatura"));
 const NotFound                = lazy(() => import("@/pages/NotFound"));
 const LandingPage             = lazy(() => import("@/pages/LandingPage"));
 const OnboardingPage          = lazy(() => import("@/pages/OnboardingPage"));
@@ -259,8 +257,6 @@ const AppRoutes = () => (
         <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
         <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
         <Route path="/mapa-panoramico" element={<MapaPanoramico />} />
-        <Route path="/premium" element={<PremiumCheckout />} />
-        <Route path="/minha-assinatura" element={<MinhaAssinatura />} />
       </Route>
       <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       <Route path="*" element={<NotFound />} />

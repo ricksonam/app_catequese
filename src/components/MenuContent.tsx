@@ -3,7 +3,7 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, Crown, HeadphonesIcon
+  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, HeadphonesIcon
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -11,7 +11,6 @@ import { ThemeToggle } from "./ThemeToggle";
 import { UserProfileModal } from "./UserProfileModal";
 import { AtendimentoClienteModal } from "./AtendimentoClienteModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePremiumStatus } from "@/hooks/usePremiumStatus";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTurmas } from "@/lib/supabaseStore";
@@ -40,15 +39,15 @@ const cadastros = [
 ];
 
 const modulosGlobais = [
-  { label: "Diário do Catequista", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500", premium: true },
-  { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold", premium: true },
+  { label: "Diário do Catequista", icon: BookHeart, path: "__diario__", color: "bg-indigo-500/15 text-indigo-500" },
+  { label: "Jogos", icon: Dices, path: "/jogos", color: "bg-gold/15 text-gold" },
   { label: "Agenda catequética", icon: CalendarDays, path: "/modulos/calendario", color: "bg-destructive/10 text-destructive" },
   { label: "Liturgia Diária", icon: BookOpen, path: "/modulos/liturgia", color: "bg-amber-500/10 text-amber-500" },
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-success/10 text-success" },
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
-  { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical", premium: true },
-  { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success", premium: true },
-  { label: "Orações", icon: PrayingHands, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical", premium: true },
+  { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
+  { label: "Orações", icon: PrayingHands, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
   { label: "Mapa Panorâmico IVC", icon: Map, path: "/mapa-panoramico", color: "bg-rose-500/10 text-rose-500" },
 ];
 
@@ -67,7 +66,6 @@ const classModules = [
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { isPremium } = usePremiumStatus();
   
   // Queries
   const { data: turmas = [], isLoading: isLoadingTurmas } = useQuery({
@@ -374,7 +372,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
             </AccordionTrigger>
             <AccordionContent className="pt-1 px-1 space-y-1">
               {modulosGlobais.map((item) => {
-                const isLocked = item.premium && !isPremium;
                 return (
                   <button
                     key={item.path}
@@ -382,20 +379,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                     className="w-full group flex items-center justify-between px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors relative overflow-hidden"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform ${isLocked ? "opacity-60" : ""}`}>
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${item.color} shadow-sm border border-black/5 group-hover:scale-110 transition-transform`}>
                         <item.icon className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-bold text-foreground/80 text-left"> {item.label}</span>
-                        {isLocked && <span className="text-[9px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5 mt-0.5">🔒 Apenas Premium</span>}
                       </div>
                     </div>
-                    {isLocked && (
-                      <div className="flex items-center gap-1 text-[9px] bg-amber-400/20 text-amber-600 dark:text-amber-500 font-black px-2 py-1 rounded-full uppercase tracking-wider">
-                        <Crown className="w-3 h-3" />
-                        Premium
-                      </div>
-                    )}
                   </button>
                 );
               })}
@@ -419,11 +409,6 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               <div className="p-3 bg-slate-50 dark:bg-zinc-900/50 rounded-2xl border border-black/5 dark:border-white/5 space-y-1">
                 <p className="px-3 pb-2 text-[9px] font-black uppercase text-muted-foreground tracking-widest border-b border-black/5 dark:border-white/5 mb-2">Meus Dados</p>
 
-                <button onClick={() => go("/minha-assinatura")} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><Sparkles className="h-4 w-4" /></div>
-                  <span className="text-sm font-bold text-foreground/80 text-left">Minha Assinatura</span>
-                </button>
-                
                 <button onClick={() => setShowMeusDadosDialog(true)} className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white dark:hover:bg-zinc-800 transition-colors">
                   <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-110 transition-transform"><User className="h-4 w-4" /></div>
                   <span className="text-sm font-bold text-foreground/80 text-left">Meus Dados</span>
