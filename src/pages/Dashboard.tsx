@@ -871,22 +871,18 @@ export default function Dashboard() {
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[260px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
+              <div className="w-full max-w-[280px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-lg border-2 border-blue-200/80 ring-4 ring-blue-50 transition-all hover:scale-[1.02] active:scale-[0.98] group bg-white/95 backdrop-blur-md"
+                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-800 transition-all hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-[1.01] active:scale-[0.99] group bg-white dark:bg-zinc-900"
                 >
-                  {/* Raios de luz de fundo subtis */}
-                  <div className="absolute inset-0 pointer-events-none opacity-20"
-                    style={{ background: `radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.15), transparent 70%)` }} />
-
                   {/* Conteúdo */}
-                  <div className="relative z-10 px-3 py-2 flex flex-col items-center text-center">
+                  <div className="relative z-10 px-4 py-3 flex flex-col items-center text-center">
                     
                     {/* Botão Trocar (Visual) */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
                       <div className="absolute top-2 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-100 text-[7px] font-black uppercase tracking-widest">
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 text-[7px] font-black uppercase tracking-widest">
                           <RefreshCw className="h-2 w-2" />
                           Trocar
                         </div>
@@ -894,16 +890,16 @@ export default function Dashboard() {
                     )}
 
                     {/* Nome da turma */}
-                    <div className="mb-2 mt-1">
-                      <p className="text-[8px] font-bold uppercase tracking-[0.3em] mb-1 text-slate-400">
+                    <div className="mb-2 mt-2">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-1.5 text-zinc-400 dark:text-zinc-500">
                         Turma Selecionada
                       </p>
-                      <div className="flex flex-col items-center justify-center gap-1.5">
-                        <h3 className="text-xl font-black tracking-tight leading-tight text-blue-950 drop-shadow-sm">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <h3 className="text-xl font-black tracking-tight leading-tight text-zinc-900 dark:text-zinc-100">
                           {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
                         </h3>
                         {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[10px] font-black bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 px-2 py-0.5 rounded-full shadow-sm">
+                          <span className="text-[10px] font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2.5 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-700">
                             {selectedTurma.ano || selectedTurma.etapa}
                           </span>
                         )}
@@ -911,17 +907,17 @@ export default function Dashboard() {
                     </div>
 
                     {/* Stats dinâmicos */}
-                    <div className="flex items-center justify-center gap-2 w-full mt-0.5">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md border border-indigo-400/50 text-white">
+                    <div className="flex items-center justify-center gap-2 w-full mt-2">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50">
                         <Users className="h-3.5 w-3.5" />
                         <span className="text-[11px] font-black">
-                          {catCount} <span className="opacity-90 font-bold">catequizandos</span>
+                          {catCount} <span className="opacity-80 font-bold">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 shadow-md border border-teal-400/50 text-white">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50">
                         <BookOpen className="h-3.5 w-3.5" />
                         <span className="text-[11px] font-black">
-                          {encCount} <span className="opacity-90 font-bold">encontros</span>
+                          {encCount} <span className="opacity-80 font-bold">encontros</span>
                         </span>
                       </div>
                     </div>
@@ -942,7 +938,6 @@ export default function Dashboard() {
                     className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-primary hover:shadow-lg hover:shadow-primary/20 hover:scale-[1.03]"
                   >
                     <img src={item.image} alt={item.title} fetchPriority="high" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent group-hover:from-black/50 transition-all duration-300" />
                   </button>
                   <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors duration-300 truncate w-full px-1">
                     {item.title}
