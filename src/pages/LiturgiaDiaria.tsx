@@ -214,44 +214,37 @@ export default function LiturgiaDiaria() {
       try {
         const d = padDate(currentDate.getDate());
         const m = padDate(currentDate.getMonth() + 1);
-        const y = currentDate.getFullYear();
-        const targetUrl = `https://api-liturgia-diaria.vercel.app/?date=${y}-${m}-${d}`;
+        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}`;
         
-        const res = await fetch(targetUrl);
-        if (!res.ok) throw new Error("HTTP error");
-        
-        const json = await res.json();
-        if (!json || !json.today) throw new Error("Invalid format");
-        
-        const t = json.today;
-        const r = t.readings || {};
-        
-        const mapLeitura = (l: any) => {
-          if (!l || !l.text) return "Não há leitura";
-          return {
-            referencia: l.title || "",
-            titulo: l.head || l.title || "",
-            texto: l.text
-          };
-        };
+        let data: LiturgiaData | null = null;
+        let lastError = null;
 
-        const mapSalmo = (s: any) => {
-          if (!s) return "Não há salmo";
-          return {
-            referencia: s.title || "",
-            refrao: s.response || "",
-            texto: Array.isArray(s.content_psalm) ? s.content_psalm.join("\n") : (s.content_psalm || "")
-          };
-        };
+        // O servidor gratuito no Railway dorme após inatividade e leva até 30s para acordar.
+        // Faremos até 15 tentativas (15 * 2s = 30s).
+        for (let i = 0; i < 15; i++) {
+          try {
+            if (i === 1) setLoadingMsg("Acordando o servidor da liturgia (pode demorar uns 30s)...");
+            if (i === 7) setLoadingMsg("O servidor está quase lá, aguarde só mais um pouco...");
+            if (i === 12) setLoadingMsg("Finalizando inicialização do servidor...");
 
-        const data: LiturgiaData = {
-          liturgia: t.entry_title,
-          cor: t.color,
-          primeiraLeitura: r.first_reading ? mapLeitura(r.first_reading) : "Não há primeira leitura hoje!",
-          segundaLeitura: r.second_reading ? mapLeitura(r.second_reading) : "Não há segunda leitura hoje!",
-          evangelho: r.gospel ? mapLeitura(r.gospel) : "Não há evangelho hoje!",
-          salmo: r.psalm ? mapSalmo(r.psalm) : "Não há salmo"
-        };
+            const res = await fetch(targetUrl);
+            if (res.ok) {
+              const json = await res.json();
+              if (json && json.data) {
+                data = json;
+                break;
+              }
+            }
+          } catch (e) {
+            lastError = e;
+          }
+          
+          if (!data && i < 14) {
+            await new Promise(r => setTimeout(r, 2000));
+          }
+        }
+
+        if (!data) throw lastError || new Error("HTTP error");
         
         setLiturgia(data);
         // Selecionar a primeira aba disponível
