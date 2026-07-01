@@ -871,25 +871,34 @@ export default function Dashboard() {
       {turmas.length > 0 && (
         <div className="px-4 mt-2 animate-fade-in flex flex-col items-center">
           
-          {/* Card Turma Selecionada — Azul Suave Centralizado */}
+          {/* Card Turma Selecionada — Prata Suave */}
           {(() => {
-            const colors = { from: '#3b82f6', to: '#60a5fa', accent: '#eff6ff', text: '#ffffff' };
             const catCount = filteredCatequizandos.length;
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[280px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
+              <div className="w-full max-w-[300px] relative mb-1 mt-1" style={{ zIndex: 10 }}>
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[20px] overflow-hidden shadow-sm border border-zinc-200 dark:border-zinc-800 border-t-4 border-t-blue-500 transition-all hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-[1.01] active:scale-[0.99] group bg-white dark:bg-zinc-900"
+                  className="w-full text-left relative rounded-[22px] overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] group"
+                  style={{
+                    background: "linear-gradient(145deg, #e8ecf0 0%, #d4d9e0 40%, #c8cdd6 100%)",
+                    boxShadow: "0 2px 12px rgba(100,116,139,0.18), 0 1px 3px rgba(0,0,0,0.10)",
+                    borderTop: "4px solid #94a3b8",
+                    border: "1px solid #b0bac6",
+                  }}
                 >
+                  {/* Reflexo metálico sutil */}
+                  <div className="absolute inset-0 pointer-events-none"
+                    style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 55%)" }} />
+
                   {/* Conteúdo */}
                   <div className="relative z-10 px-4 py-3 flex flex-col items-center text-center">
-                    
-                    {/* Botão Trocar (Visual) */}
+
+                    {/* Botão Trocar */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                      <div className="absolute top-2 right-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 text-[7px] font-black uppercase tracking-widest">
+                      <div className="absolute top-2.5 right-2.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/60 text-slate-600 border border-slate-300/70 text-[7px] font-black uppercase tracking-widest backdrop-blur-sm">
                           <RefreshCw className="h-2 w-2" />
                           Trocar
                         </div>
@@ -898,33 +907,35 @@ export default function Dashboard() {
 
                     {/* Nome da turma */}
                     <div className="mb-2 mt-2">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.25em] mb-1.5 text-zinc-400 dark:text-zinc-500">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.28em] mb-1.5 text-slate-500">
                         Turma Selecionada
                       </p>
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <h3 className="text-xl font-black tracking-tight leading-tight text-zinc-900 dark:text-zinc-100">
+                        <h3 className="text-xl font-black tracking-tight leading-tight text-slate-800">
                           {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
                         </h3>
                         {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[10px] font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2.5 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-700">
+                          <span className="text-[10px] font-black bg-white/70 text-slate-700 px-2.5 py-0.5 rounded-md border border-slate-300/80 backdrop-blur-sm shadow-sm">
                             {selectedTurma.ano || selectedTurma.etapa}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Stats dinâmicos */}
+                    {/* Chips de estatísticas */}
                     <div className="flex items-center justify-center gap-2 w-full mt-2">
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-black shadow-sm"
+                        style={{ background: "linear-gradient(135deg, #3b82f6, #1d4ed8)" }}>
                         <Users className="h-3.5 w-3.5" />
                         <span className="text-[11px] font-black">
-                          {catCount} <span className="opacity-80 font-bold">catequizandos</span>
+                          {catCount} <span className="opacity-85 font-bold">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-black shadow-sm"
+                        style={{ background: "linear-gradient(135deg, #059669, #047857)" }}>
                         <BookOpen className="h-3.5 w-3.5" />
                         <span className="text-[11px] font-black">
-                          {encCount} <span className="opacity-80 font-bold">encontros</span>
+                          {encCount} <span className="opacity-85 font-bold">encontros</span>
                         </span>
                       </div>
                     </div>
