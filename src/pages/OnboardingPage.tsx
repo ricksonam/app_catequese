@@ -4,20 +4,23 @@ import {
   Key,
   CheckCircle2, ChevronRight,
   ArrowLeft, HelpCircle, Sparkles, User, Phone, Mail,
-  X, Loader2, MapPin, GraduationCap, Pencil
+  X, Loader2, MapPin, GraduationCap, Pencil, Plus, LogIn
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useCatequistaMutation,
   useParoquiaMutation,
   useComunidadeMutation,
+  useTurmaMutation,
   useCatequistas,
   useParoquias,
   useComunidades,
 } from "@/hooks/useSupabaseData";
+import { NOMES_TURMA, DIAS_SEMANA } from "@/lib/store";
 import { toast } from "sonner";
 import { mascaraTelefone } from "@/lib/utils";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
+import { JoinTurmaModal } from "@/components/JoinTurmaModal";
 
 export const ONBOARDING_KEY = "ivc_onboarding_completed";
 
@@ -184,16 +187,19 @@ export default function OnboardingPage() {
   const catMut = useCatequistaMutation();
   const parMut = useParoquiaMutation();
   const comMut = useComunidadeMutation();
+  const turmaMut = useTurmaMutation();
 
   // ── Qual card está expandido ──
-  type CardKey = "catequista" | "paroquia" | null;
+  type CardKey = "catequista" | "paroquia" | "turma" | null;
   const [expanded, setExpanded] = useState<CardKey>(null);
 
-  // ── Status de conclusão (apenas catequista e paróquia são obrigatórios) ──
+  // ── Status de conclusão ──
   const doneCatequista = catequistas.some((c) => c.id === user?.id);
   const doneParoquia = paroquias.length > 0;
+  const doneTurma = false; // controlled via local state after creation
+  const [turmaCreatedOrJoined, setTurmaCreatedOrJoined] = useState(false);
 
-  // ── Quando tudo estiver pronto ──
+  // ── Quando tudo estiver pronto (turma é opcional para prosseguir) ──
   const isAllDone = doneCatequista && doneParoquia;
 
   const handleFinish = () => {
@@ -346,6 +352,51 @@ export default function OnboardingPage() {
       await Promise.all([refetchParoquias(), refetchComunidades()]);
       toast.success("Paróquia/Comunidade salva!");
       setExpanded(null);
+    } catch (err: any) {
+      toast.error("Erro: " + err.message);
+    }
+  };
+
+  // ─────────────────────────────────────
+  //  FORMULÁRIO: Turma
+  // ─────────────────────────────────────
+  const [turmaForm, setTurmaForm] = useState({
+    nomeTurma: "",
+    diaCatequese: "",
+    horario: "",
+  });
+  const [joinTurmaOpen, setJoinTurmaOpen] = useState(false);
+  const [turmaMode, setTurmaMode] = useState<"choose" | "criar" | null>(null);
+
+  const saveTurma = async () => {
+    if (!turmaForm.nomeTurma || !turmaForm.diaCatequese || !turmaForm.horario) {
+      toast.error("Preencha nome da turma, dia e horário");
+      return;
+    }
+    try {
+      // Resolve comunidade e paróquia a partir dos dados já cadastrados
+      const paroquia = paroquias[0];
+      const comunidade = comunidades.find(c => c.paroquiaId === paroquia?.id);
+
+      await turmaMut.mutateAsync({
+        id: crypto.randomUUID(),
+        nome: turmaForm.nomeTurma,
+        ano: "1° Ano",
+        diaCatequese: turmaForm.diaCatequese,
+        horario: turmaForm.horario,
+        local: paroquia?.nome || "",
+        etapa: "",
+        outrosDados: "",
+        comunidadeId: comunidade?.id || "",
+        catequistasIds: user ? [user.id] : [],
+        coordenadores: [],
+        codigoAcesso: Math.random().toString(36).substring(2, 10).toUpperCase(),
+        criadoEm: new Date().toISOString(),
+      });
+      toast.success("✅ Turma criada e vinculada com sucesso!");
+      setTurmaCreatedOrJoined(true);
+      setExpanded(null);
+      setTurmaMode(null);
     } catch (err: any) {
       toast.error("Erro: " + err.message);
     }
@@ -663,6 +714,136 @@ export default function OnboardingPage() {
           </div>
         </StepCard>
 
+        {/* ── CARD 3: Turma ── */}
+        <StepCard
+          icon={<GraduationCap className="w-5 h-5" />}
+          iconBg="bg-emerald-100"
+          iconColor="text-emerald-600"
+          title="Sua Turma de Catequese"
+          description="Crie uma nova turma ou entre em uma turma existente usando um código de acesso."
+          subtitle={turmaCreatedOrJoined ? "Turma configurada!" : undefined}
+          done={turmaCreatedOrJoined}
+          expanded={expanded === "turma"}
+          onAdd={() => { setTurmaMode(null); setExpanded("turma"); }}
+          onCollapse={() => { setExpanded(null); setTurmaMode(null); }}
+          footerActions={
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setTurmaMode(null); setExpanded("turma"); }}
+                className="px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-white shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" /> Criar Turma
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setJoinTurmaOpen(true); }}
+                className="px-3 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-600 text-white shadow-md shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5"
+              >
+                <LogIn className="w-3.5 h-3.5" /> Entrar na Turma
+              </button>
+            </div>
+          }
+        >
+          <div className="space-y-3 pt-3">
+            {/* Escolha de ação */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setTurmaMode("criar")}
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl font-bold text-xs transition-all active:scale-95 border-2 ${
+                  turmaMode === "criar"
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                    : "bg-primary/5 text-primary border-primary/20 hover:bg-primary/10"
+                }`}
+              >
+                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Plus className="h-5 w-5" />
+                </div>
+                Criar Turma
+              </button>
+              <button
+                onClick={() => { setJoinTurmaOpen(true); }}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-emerald-50 text-emerald-700 font-bold text-xs border-2 border-emerald-200 hover:bg-emerald-100 active:scale-95 transition-all"
+              >
+                <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <LogIn className="h-5 w-5" />
+                </div>
+                Entrar na Turma
+              </button>
+            </div>
+
+            {/* Formulário de criar turma */}
+            {turmaMode === "criar" && (
+              <div className="space-y-3 pt-2 border-t border-zinc-100 mt-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                    Nome da Turma <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={turmaForm.nomeTurma}
+                    onChange={(e) => setTurmaForm(f => ({ ...f, nomeTurma: e.target.value }))}
+                    className="form-input"
+                  >
+                    <option value="">Selecione...</option>
+                    {NOMES_TURMA.map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                      Dia da Catequese <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={turmaForm.diaCatequese}
+                      onChange={(e) => setTurmaForm(f => ({ ...f, diaCatequese: e.target.value }))}
+                      className="form-input"
+                    >
+                      <option value="">Selecione...</option>
+                      {DIAS_SEMANA.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1 block">
+                      Horário <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="time"
+                      value={turmaForm.horario}
+                      onChange={(e) => setTurmaForm(f => ({ ...f, horario: e.target.value }))}
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Preview da vinculação */}
+                {(paroquias[0] || comunidades[0]) && (
+                  <div className="p-3 rounded-xl bg-primary/5 border border-primary/15">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-primary mb-1.5">Será vinculada a:</p>
+                    <div className="space-y-0.5">
+                      {user && <p className="text-xs font-semibold text-foreground">👤 {catequistas.find(c => c.id === user.id)?.nome || "Você"}</p>}
+                      {paroquias[0] && <p className="text-xs text-muted-foreground">⛪ {paroquias[0].nome}</p>}
+                      {(() => { const com = comunidades.find(c => c.paroquiaId === paroquias[0]?.id); return com ? <p className="text-xs text-muted-foreground">🏘️ {com.nome}</p> : null; })()}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={saveTurma}
+                  disabled={turmaMut.isPending}
+                  className="w-full action-btn h-12 bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {turmaMut.isPending ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Criando...
+                    </span>
+                  ) : (
+                    "✅ Criar e Vincular Turma"
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        </StepCard>
+
 
         {/* ── SEPARADOR ── */}
         <div className="pt-2 pb-1">
@@ -690,9 +871,9 @@ export default function OnboardingPage() {
           </button>
         )}
 
-        {/* Indicador de progresso */}
+        {/* Indicador de progresso — agora 3 etapas */}
         <div className="flex items-center justify-center gap-2 pt-1 pb-2">
-          {[doneCatequista, doneParoquia].map((done, i) => (
+          {[doneCatequista, doneParoquia, turmaCreatedOrJoined].map((done, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-500 ${
@@ -702,6 +883,17 @@ export default function OnboardingPage() {
           ))}
         </div>
       </div>
+
+      {/* Modal: Entrar na Turma (por código / QR) */}
+      <JoinTurmaModal
+        open={joinTurmaOpen}
+        onClose={() => setJoinTurmaOpen(false)}
+        onSuccess={() => {
+          setTurmaCreatedOrJoined(true);
+          setJoinTurmaOpen(false);
+          setExpanded(null);
+        }}
+      />
     </div>
   );
 }

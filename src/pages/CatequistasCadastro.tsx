@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useCatequistas, useCatequistaMutation, useDeleteCatequista, useComunidades } from "@/hooks/useSupabaseData";
 import { type CatequistaCadastro } from "@/lib/store";
-import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, MapPin, BookOpen, Briefcase, Calendar, ChevronRight, X, User, Lock } from "lucide-react";
+import { ArrowLeft, Plus, UserCheck, Trash2, Pencil, Phone, Mail, BookOpen, Briefcase, Calendar, ChevronRight, X, User, Lock } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";

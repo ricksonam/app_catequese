@@ -60,15 +60,7 @@ const ESTADOS_BR: { sigla: string; nome: string }[] = [
   { sigla: "TO", nome: "Tocantins" },
 ];
 
-/* Formata CPF: 000.000.000-00 */
-const formatCPF = (val: string) => {
-  return val
-    .replace(/\D/g, "")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d{1,2})/, "$1-$2")
-    .replace(/(-\d{2})\d+?$/, "$1");
-};
+
 
 const isValidDate = (d: string) => {
   return d.length === 10;
@@ -168,9 +160,7 @@ export default function AuthPage() {
   // Signup states
   const [signupStep, setSignupStep] = useState<1 | 2 | 3>(1);
   const [signupName, setSignupName] = useState("");
-  const [signupCpf, setSignupCpf] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
-  const [signupGender, setSignupGender] = useState("");
   const [signupDob, setSignupDob] = useState("");
   const [signupState, setSignupState] = useState("");
   const [signupCity, setSignupCity] = useState("");
@@ -250,12 +240,8 @@ export default function AuthPage() {
   };
 
   const handleSignupNextStep1 = () => {
-    if (!signupName || !signupEmail || !signupGender || !signupDob || !signupState || !signupCity) {
+    if (!signupName || !signupEmail || !signupDob || !signupState || !signupCity) {
       toast({ title: "Dados incompletos", description: "Preencha todos os campos obrigatórios para avançar.", variant: "destructive" });
-      return;
-    }
-    if (signupCpf && signupCpf.length < 14) {
-      toast({ title: "CPF inválido", description: "Digite o CPF completo ou deixe em branco.", variant: "destructive" });
       return;
     }
     setSignupStep(2);
@@ -296,8 +282,6 @@ export default function AuthPage() {
         emailRedirectTo: getAppUrl(),
         data: {
           full_name: signupName,
-          cpf: signupCpf,
-          genero: signupGender,
           data_nascimento: isoDob,
           estado: signupState,
           cidade: signupCity,
@@ -522,14 +506,6 @@ export default function AuthPage() {
                 placeholder="Ex: Maria de Souza"
               />
               <InputLine
-                label="CPF (opcional)"
-                value={signupCpf}
-                onChange={(v) => setSignupCpf(formatCPF(v))}
-                valid={signupCpf.length === 14}
-                placeholder="000.000.000-00"
-                maxLength={14}
-              />
-              <InputLine
                 label="E-mail"
                 value={signupEmail}
                 onChange={setSignupEmail}
@@ -538,33 +514,19 @@ export default function AuthPage() {
                 placeholder="seu@email.com"
               />
 
-              <div className="flex gap-4">
-                <SelectLine
-                  label="Gênero"
-                  value={signupGender}
-                  onChange={setSignupGender}
-                  options={[
-                    { value: "Masculino", label: "Masculino" },
-                    { value: "Feminino", label: "Feminino" },
-                    { value: "Outro", label: "Outro" }
-                  ]}
-                  valid={!!signupGender}
-                />
-
-                <InputLine
-                  label="Data de nascimento"
-                  value={signupDob}
-                  onChange={(v) => {
-                    let val = v.replace(/\D/g, "");
-                    if (val.length > 2) val = val.substring(0, 2) + "/" + val.substring(2);
-                    if (val.length > 5) val = val.substring(0, 5) + "/" + val.substring(5, 9);
-                    setSignupDob(val);
-                  }}
-                  valid={isValidDate(signupDob)}
-                  placeholder="DD/MM/AAAA"
-                  maxLength={10}
-                />
-              </div>
+              <InputLine
+                label="Data de nascimento"
+                value={signupDob}
+                onChange={(v) => {
+                  let val = v.replace(/\D/g, "");
+                  if (val.length > 2) val = val.substring(0, 2) + "/" + val.substring(2);
+                  if (val.length > 5) val = val.substring(0, 5) + "/" + val.substring(5, 9);
+                  setSignupDob(val);
+                }}
+                valid={isValidDate(signupDob)}
+                placeholder="DD/MM/AAAA"
+                maxLength={10}
+              />
 
               <SelectLine
                 label="Estado"
@@ -662,10 +624,6 @@ export default function AuthPage() {
                   <div className="flex justify-between">
                     <span className="text-slate-400">Nome</span>
                     <span className="font-semibold text-right">{signupName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">CPF</span>
-                    <span className="font-semibold">{signupCpf}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">E-mail</span>
