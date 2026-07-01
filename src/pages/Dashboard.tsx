@@ -1,5 +1,4 @@
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import useEmblaCarousel from "embla-carousel-react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
@@ -36,28 +35,15 @@ export default function Dashboard() {
     else localStorage.setItem("ivc_selected_turma", id);
   };
 
-  const [activeModuleIndex, setActiveModuleIndex] = useState(50);
-  const [moduleInfo, setModuleInfo] = useState<{title: string; desc: string; icon: string; onAccess: () => void} | null>(null);
-  
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    loop: false, 
-    align: 'center', 
-    skipSnaps: false,
-    dragFree: false,
-    startIndex: 57
-  });
+  const catequistaLogado = useMemo(() => catequistas.find(c => c.id === user?.id), [catequistas, user]);
+  const comunidadeLogada = useMemo(() => catequistaLogado?.comunidadeId ? comunidades.find(c => c.id === catequistaLogado.comunidadeId) : null, [comunidades, catequistaLogado]);
+  const paroquiaLogada = useMemo(() => comunidadeLogada?.paroquiaId ? paroquias.find(p => p.id === comunidadeLogada.paroquiaId) : (paroquias.length > 0 ? paroquias[0] : null), [paroquias, comunidadeLogada]);
 
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setActiveModuleIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
+  const incompleteCatequista = catequistaLogado && (!catequistaLogado.telefone || !catequistaLogado.endereco);
+  const incompleteParoquia = paroquiaLogada && (!paroquiaLogada.endereco || !paroquiaLogada.responsavel);
+  const incompleteTurma = selectedTurmaId !== 'all' && turmas.find(t => t.id === selectedTurmaId) && (!turmas.find(t => t.id === selectedTurmaId)?.ano || !turmas.find(t => t.id === selectedTurmaId)?.etapa || !turmas.find(t => t.id === selectedTurmaId)?.local || !turmas.find(t => t.id === selectedTurmaId)?.horario || !turmas.find(t => t.id === selectedTurmaId)?.diaCatequese);
 
-  useEffect(() => {
-    if (!emblaApi) return;
-    onSelect();
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-  }, [emblaApi, onSelect]);
+  const showIncompleteAlert = incompleteCatequista || incompleteTurma || incompleteParoquia;
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch, isFetching: tFetching } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: atividades = [] } = useAtividades();
@@ -758,6 +744,47 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* ── ALERTA DE DADOS INCOMPLETOS ── */}
+      {showIncompleteAlert && (
+        <div className="px-4 mb-4 animate-fade-in">
+          <div className="bg-amber-50 border-2 border-amber-200 rounded-[24px] p-4 shadow-sm relative overflow-hidden">
+            <div className="absolute -right-4 -top-4 opacity-5 pointer-events-none">
+              <AlertTriangle className="w-24 h-24 text-amber-500" />
+            </div>
+            <div className="flex items-start gap-3 relative z-10">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 border border-amber-200">
+                <AlertTriangle className="h-5 w-5 text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-black text-amber-800 uppercase tracking-tight leading-tight mb-1">
+                  Complete os Cadastros
+                </h3>
+                <p className="text-[11px] font-medium text-amber-700/90 leading-snug mb-2">
+                  Faltam algumas informações importantes para a experiência ser completa:
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {incompleteCatequista && (
+                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200">
+                      Seu Perfil
+                    </span>
+                  )}
+                  {incompleteParoquia && (
+                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200">
+                      Paróquia/Comunidade
+                    </span>
+                  )}
+                  {incompleteTurma && (
+                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200">
+                      Turma Ativa
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── VARAL DE POLAROIDS (ANIVERSARIANTES) ── sempre visível */}
       <div className="relative pt-1 pb-3 mb-0 animate-fade-in">
         {/* Título da Seção — estilo litúrgico */}
@@ -911,6 +938,22 @@ export default function Dashboard() {
                       </div>
                     </div>
 
+                    {/* Alerta de dados incompletos da Turma */}
+                    {selectedTurmaId !== 'all' && incompleteTurma && (
+                      <div className="w-full bg-red-50/80 rounded-xl p-2 mb-3 border border-red-100 text-left">
+                        <div className="flex items-center gap-1 mb-1">
+                          <AlertTriangle className="h-3 w-3 text-red-500" />
+                          <span className="text-[9px] font-black uppercase tracking-widest text-red-600">Completar Cadastro</span>
+                        </div>
+                        <ul className="text-[10px] text-red-600/80 font-medium pl-4 list-disc space-y-0.5">
+                          {!selectedTurma?.ano && <li>Ano ou Ciclo não definido</li>}
+                          {!selectedTurma?.etapa && <li>Etapa não definida</li>}
+                          {!selectedTurma?.local && <li>Local não definido</li>}
+                          {(!selectedTurma?.diaCatequese || !selectedTurma?.horario) && <li>Tempo/Dia não definido</li>}
+                        </ul>
+                      </div>
+                    )}
+
                     {/* Stats dinâmicos */}
                     <div className="flex items-center justify-center gap-2 w-full mt-0.5">
                       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md border border-indigo-400/50 text-white">
@@ -933,67 +976,24 @@ export default function Dashboard() {
           })()}
 
 
-          {/* Carrossel de Módulos (Rolagem Horizontal com Embla) */}
-          <div className="-mx-8 w-[calc(100%+4rem)] overflow-hidden relative z-10 py-6 mt-0" ref={emblaRef}>
-            <div className="flex gap-12 touch-pan-y" style={{ backfaceVisibility: 'hidden' }}>
-              {Array.from({ length: 15 }).flatMap(() => carouselItems).map((item, index) => {
-                const originalIndex = index % 8;
-                return (
-                  <div
-                    key={index}
-                    className="flex-[0_0_130px] sm:flex-[0_0_145px] min-w-0 relative group animate-fade-in"
-                    style={{ animationDelay: `${originalIndex * 80}ms`, animationFillMode: 'both' }}
+          {/* Grid de Módulos (3x3) */}
+          <div className="w-full relative z-10 py-4 mt-2">
+            <div className="grid grid-cols-3 gap-3">
+              {carouselItems.map((item, index) => (
+                <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                  <button
+                    onClick={item.onClick}
+                    className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-primary hover:shadow-lg hover:shadow-primary/20 hover:scale-[1.03]"
                   >
-                    {/* Estrela decorativa no centro do espaçamento (gap-12 = 48px -> centro é 24px ou 1.5rem) */}
-                    {index < 104 && (
-                      <div className="absolute top-[40%] left-[calc(100%+1.5rem)] -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none text-amber-400/80">
-                        <Star className="w-5 h-5 fill-amber-400 drop-shadow-sm opacity-60 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-110" />
-                      </div>
-                    )}
-
-                    <div className={`w-full flex flex-col items-center transition-all duration-500 ${activeModuleIndex === index ? 'scale-[1.08] z-20 opacity-100' : 'scale-100 opacity-70'}`}>
-                      <button
-                        onClick={item.onClick}
-                        className={`relative aspect-square w-full rounded-[24px] overflow-hidden active:scale-95 transition-all duration-500 shadow-lg ${
-                          activeModuleIndex === index
-                            ? 'border-[3px] border-primary ring-4 ring-primary/25 shadow-primary/30 shadow-xl hover:scale-[1.04]'
-                            : 'border-2 border-white/50 hover:scale-[1.04]'
-                        }`}
-                      >
-                        <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent group-hover:from-black/10 transition-all duration-300" />
-                      </button>
-                      <span className={`text-[10px] font-black text-center mt-1.5 uppercase tracking-wider transition-colors duration-500 truncate w-full ${
-                        activeModuleIndex === index ? 'text-primary' : (originalIndex === 6 ? 'text-muted-foreground group-hover:text-indigo-600' : 'text-muted-foreground group-hover:text-primary')
-                      }`}>
-                        {item.title}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+                    <img src={item.image} alt={item.title} fetchPriority="high" loading="lazy" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent group-hover:from-black/50 transition-all duration-300" />
+                  </button>
+                  <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors duration-300 truncate w-full px-1">
+                    {item.title}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
-
-          {/* Indicador de Bolinhas (Pagination Dots) */}
-          <div className="flex justify-center items-center gap-1.5 mt-4 mb-10">
-            {carouselItems.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  if (emblaApi) {
-                    const currentSetStart = Math.floor(activeModuleIndex / 8) * 8;
-                    emblaApi.scrollTo(currentSetStart + idx);
-                  }
-                }}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  (activeModuleIndex % 8) === idx
-                    ? "w-4 bg-primary"
-                    : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                }`}
-                aria-label={`Ir para módulo ${idx + 1}`}
-              />
-            ))}
           </div>
 
           {/* Card Central de Relatórios */}
