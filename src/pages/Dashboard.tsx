@@ -35,15 +35,6 @@ export default function Dashboard() {
     else localStorage.setItem("ivc_selected_turma", id);
   };
 
-  const catequistaLogado = useMemo(() => catequistas.find(c => c.id === user?.id), [catequistas, user]);
-  const comunidadeLogada = useMemo(() => catequistaLogado?.comunidadeId ? comunidades.find(c => c.id === catequistaLogado.comunidadeId) : null, [comunidades, catequistaLogado]);
-  const paroquiaLogada = useMemo(() => comunidadeLogada?.paroquiaId ? paroquias.find(p => p.id === comunidadeLogada.paroquiaId) : (paroquias.length > 0 ? paroquias[0] : null), [paroquias, comunidadeLogada]);
-
-  const incompleteCatequista = catequistaLogado && (!catequistaLogado.telefone || !catequistaLogado.endereco);
-  const incompleteParoquia = paroquiaLogada && (!paroquiaLogada.endereco || !paroquiaLogada.responsavel);
-  const incompleteTurma = selectedTurmaId !== 'all' && turmas.find(t => t.id === selectedTurmaId) && (!turmas.find(t => t.id === selectedTurmaId)?.ano || !turmas.find(t => t.id === selectedTurmaId)?.etapa || !turmas.find(t => t.id === selectedTurmaId)?.local || !turmas.find(t => t.id === selectedTurmaId)?.horario || !turmas.find(t => t.id === selectedTurmaId)?.diaCatequese);
-
-  const showIncompleteAlert = incompleteCatequista || incompleteTurma || incompleteParoquia;
   const { data: turmas = [], isLoading: tLoading, error: tError, refetch: tRefetch, isFetching: tFetching } = useTurmas();
   const { data: encontros = [], isLoading: eLoading } = useEncontros();
   const { data: atividades = [] } = useAtividades();
@@ -55,6 +46,17 @@ export default function Dashboard() {
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const { user, isReady, signOut } = useAuth();
+  
+  const catequistaLogado = useMemo(() => catequistas.find(c => c.id === user?.id), [catequistas, user]);
+  const comunidadeLogada = useMemo(() => catequistaLogado?.comunidadeId ? comunidades.find(c => c.id === catequistaLogado.comunidadeId) : null, [comunidades, catequistaLogado]);
+  const paroquiaLogada = useMemo(() => comunidadeLogada?.paroquiaId ? paroquias.find(p => p.id === comunidadeLogada.paroquiaId) : (paroquias.length > 0 ? paroquias[0] : null), [paroquias, comunidadeLogada]);
+
+  const incompleteCatequista = catequistaLogado && (!catequistaLogado.telefone || !catequistaLogado.endereco);
+  const incompleteParoquia = paroquiaLogada && (!paroquiaLogada.endereco || !paroquiaLogada.responsavel);
+  const incompleteTurma = selectedTurmaId !== 'all' && turmas.find(t => t.id === selectedTurmaId) && (!turmas.find(t => t.id === selectedTurmaId)?.ano || !turmas.find(t => t.id === selectedTurmaId)?.etapa || !turmas.find(t => t.id === selectedTurmaId)?.local || !turmas.find(t => t.id === selectedTurmaId)?.horario || !turmas.find(t => t.id === selectedTurmaId)?.diaCatequese);
+
+  const showIncompleteAlert = incompleteCatequista || incompleteTurma || incompleteParoquia;
+
   const [showCreateTurma, setShowCreateTurma] = useState(false);
   const { permission, subscribe, loading: pushLoading } = usePushNotifications();
 
