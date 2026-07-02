@@ -303,17 +303,18 @@ export default function SorteioNomes() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Adicionar nome manualmente</Label>
+          <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Participante Manual</Label>
             <div className="flex gap-2">
               <Input
                 value={novoNome}
-                onChange={(e) => setNovoNome(e.target.value)}
-                placeholder="Nome"
-                onKeyDown={(e) => e.key === "Enter" && adicionarNome()}
+                onChange={e => setNovoNome(e.target.value)}
+                placeholder="Digite o nome..."
+                onKeyDown={e => e.key === "Enter" && adicionarNome()}
+                className="flex-1 h-12 rounded-xl border-2 font-medium bg-muted/30 focus-visible:bg-background"
               />
-              <Button variant="outline" size="icon" onClick={adicionarNome}>
-                <Plus className="h-4 w-4" />
+              <Button onClick={adicionarNome} size="icon" className="h-12 w-12 rounded-xl shrink-0 bg-rose-500 hover:bg-rose-600">
+                <Plus className="h-5 w-5 text-white" />
               </Button>
             </div>
           </div>

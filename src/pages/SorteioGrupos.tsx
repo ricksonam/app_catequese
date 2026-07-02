@@ -225,71 +225,71 @@ export default function SorteioGrupos() {
       <div className={cn("flex-1 p-4 sm:p-6 pb-24", isFullscreen ? "max-w-4xl mx-auto w-full pt-8" : "max-w-3xl mx-auto w-full")}>
         {!sorteado ? (
           <div className="space-y-6">
-            {/* Bloco Premium para Seleção Mais Suave */}
-            <div className="bg-indigo-50 dark:bg-indigo-950/20 rounded-3xl p-5 shadow-inner border border-indigo-100 dark:border-indigo-900/50 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-200/50 dark:bg-indigo-500/10 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
-              
-              <div className="relative z-10 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-400 to-blue-400 flex items-center justify-center shadow-lg shadow-indigo-500/40">
-                    <Users className="h-5 w-5 text-white" />
+            {/* Bloco 1: Introdução de Nomes (Turma + Manual) */}
+            <div className="space-y-4">
+              <div className="bg-indigo-50 dark:bg-indigo-950/20 rounded-3xl p-5 shadow-inner border border-indigo-100 dark:border-indigo-900/50 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-200/50 dark:bg-indigo-500/10 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
+                
+                <div className="relative z-10 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-400 to-blue-400 flex items-center justify-center shadow-lg shadow-indigo-500/40">
+                      <Users className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-black text-indigo-900 dark:text-indigo-100 uppercase tracking-[0.2em]">Selecionar Turma</label>
+                      <p className="text-[10px] text-indigo-700/80 dark:text-indigo-300 font-medium mt-0.5">Participantes carregados automaticamente</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-black text-indigo-900 dark:text-indigo-100 uppercase tracking-[0.2em]">Selecionar Turma</label>
-                    <p className="text-[10px] text-indigo-700/80 dark:text-indigo-300 font-medium mt-0.5">Participantes carregados automaticamente</p>
-                  </div>
-                </div>
 
-                {/* Grid de Turmas Premium */}
-                <div className={cn("gap-2.5", turmas && turmas.length === 1 ? "flex justify-center" : "grid grid-cols-2")}>
-                  {turmas?.map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => setSelectedTurma(selectedTurma === t.id ? "" : t.id)}
-                      className={cn(
-                        "relative p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 text-center overflow-hidden",
-                        selectedTurma === t.id
-                          ? "border-indigo-400 bg-white dark:bg-indigo-400/20 shadow-md shadow-indigo-400/20"
-                          : "border-indigo-200/50 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10"
-                      )}
-                    >
-                      {selectedTurma === t.id && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/10 to-blue-400/5 rounded-2xl" />
-                      )}
-                      <div className={cn(
-                        "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm relative z-10",
-                        selectedTurma === t.id
-                          ? "bg-gradient-to-br from-indigo-400 to-blue-400 text-white shadow-indigo-500/40"
-                          : "bg-indigo-100 dark:bg-white/10 text-indigo-500 dark:text-indigo-200"
-                      )}>
-                        <Users className="h-4 w-4" />
-                      </div>
-                      <div className="space-y-0.5 relative z-10">
-                        <p className={cn("text-[11px] font-black leading-tight truncate px-1 max-w-[100px]", selectedTurma === t.id ? "text-indigo-900 dark:text-indigo-100" : "text-indigo-700/80 dark:text-indigo-200/80")}>{t.nome}</p>
-                        {t.ano && <p className="text-[9px] font-bold text-indigo-400 dark:text-indigo-300/50 uppercase tracking-tighter">{t.ano}</p>}
-                      </div>
-                      {selectedTurma === t.id && (
-                        <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-indigo-400 flex items-center justify-center">
-                          <div className="w-2 h-2 rounded-full bg-white" />
+                  {/* Grid de Turmas Premium */}
+                  <div className={cn("gap-2.5", turmas && turmas.length === 1 ? "flex justify-center" : "grid grid-cols-2")}>
+                    {turmas?.map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => setSelectedTurma(selectedTurma === t.id ? "" : t.id)}
+                        className={cn(
+                          "relative p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 text-center overflow-hidden",
+                          selectedTurma === t.id
+                            ? "border-indigo-400 bg-white dark:bg-indigo-400/20 shadow-md shadow-indigo-400/20"
+                            : "border-indigo-200/50 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10"
+                        )}
+                      >
+                        {selectedTurma === t.id && (
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/10 to-blue-400/5 rounded-2xl" />
+                        )}
+                        <div className={cn(
+                          "w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm relative z-10",
+                          selectedTurma === t.id
+                            ? "bg-gradient-to-br from-indigo-400 to-blue-400 text-white shadow-indigo-500/40"
+                            : "bg-indigo-100 dark:bg-white/10 text-indigo-500 dark:text-indigo-200"
+                        )}>
+                          <Users className="h-4 w-4" />
                         </div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-
-                {selectedTurma && participantes.length > 0 && (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/30">
-                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-[11px] font-black text-emerald-300 uppercase tracking-wider">
-                      {participantes.length} participantes carregados ✓
-                    </span>
+                        <div className="space-y-0.5 relative z-10">
+                          <p className={cn("text-[11px] font-black leading-tight truncate px-1 max-w-[100px]", selectedTurma === t.id ? "text-indigo-900 dark:text-indigo-100" : "text-indigo-700/80 dark:text-indigo-200/80")}>{t.nome}</p>
+                          {t.ano && <p className="text-[9px] font-bold text-indigo-400 dark:text-indigo-300/50 uppercase tracking-tighter">{t.ano}</p>}
+                        </div>
+                        {selectedTurma === t.id && (
+                          <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-indigo-400 flex items-center justify-center">
+                            <div className="w-2 h-2 rounded-full bg-white" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {selectedTurma && participantes.length > 0 && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/15 border border-emerald-400/30">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[11px] font-black text-emerald-300 uppercase tracking-wider">
+                        {participantes.length} participantes carregados ✓
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Adicionar Manual */}
               <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Participante Manual</Label>
@@ -306,80 +306,9 @@ export default function SorteioGrupos() {
                   </Button>
                 </div>
               </div>
-
-              {/* Toggles (Líder / 1 por vez) */}
-              <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-3">
-                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Configurações Base</Label>
-                 <div className="flex gap-3">
-                    <button 
-                      onClick={() => setSortearLider(!sortearLider)}
-                      className={cn("flex-1 p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1", sortearLider ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-border bg-muted/30 text-muted-foreground")}
-                    >
-                      <div className={cn("w-5 h-5 rounded border-2 flex items-center justify-center", sortearLider ? "bg-indigo-500 border-indigo-500 text-white" : "border-zinc-300")} >
-                        {sortearLider && <Plus className="h-3 w-3 stroke-[4]" />}
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-wider">Líder do Grupo</span>
-                    </button>
-                    <button 
-                      onClick={() => setUmPorVez(!umPorVez)}
-                      className={cn("flex-1 p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1", umPorVez ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-border bg-muted/30 text-muted-foreground")}
-                    >
-                      <div className={cn("w-5 h-5 rounded border-2 flex items-center justify-center", umPorVez ? "bg-indigo-500 border-indigo-500 text-white" : "border-zinc-300")} >
-                        {umPorVez && <Plus className="h-3 w-3 stroke-[4]" />}
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-wider">Modo Suspense</span>
-                    </button>
-                 </div>
-              </div>
             </div>
 
-            {/* Quantidade de Grupos - Glass Cards */}
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Quantidade de Grupos</Label>
-              <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar items-center">
-                {quantidadeOpcoes.map(n => (
-                  <button
-                    key={n}
-                    onClick={() => {
-                      setQuantidadeGrupos(n);
-                      setCustomQtde("");
-                    }}
-                    className={cn(
-                      "w-16 h-16 rounded-2xl border-2 font-black text-xl transition-all shrink-0 flex flex-col items-center justify-center relative overflow-hidden",
-                      quantidadeGrupos === n && !customQtde
-                        ? "border-indigo-500 text-indigo-700 shadow-md shadow-indigo-500/20 bg-indigo-50" 
-                        : "bg-card border-border hover:border-indigo-500/40 text-foreground"
-                    )}
-                  >
-                    {quantidadeGrupos === n && !customQtde && <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-blue-500/10" />}
-                    <span className="relative z-10">{n}</span>
-                  </button>
-                ))}
-                
-                <div className="flex items-center gap-2 pl-2 border-l border-border ml-1 h-16">
-                  <Input 
-                    type="number" 
-                    min="2"
-                    className={cn(
-                      "w-20 h-16 rounded-2xl border-2 font-black text-xl text-center focus-visible:ring-indigo-500 transition-all",
-                      customQtde ? "border-indigo-500 text-indigo-700 bg-indigo-50/50" : "bg-card"
-                    )}
-                    placeholder="Outro"
-                    value={customQtde}
-                    onChange={e => {
-                      const valStr = e.target.value;
-                      setCustomQtde(valStr);
-                      const val = parseInt(valStr);
-                      if (!isNaN(val) && val > 0) {
-                        setQuantidadeGrupos(val);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Participantes Lista de Chips */}
+            {/* Bloco 2: Lista de Participantes */}
             {participantes.length > 0 && (
               <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">
@@ -397,6 +326,80 @@ export default function SorteioGrupos() {
                 </div>
               </div>
             )}
+
+            {/* Bloco 3: Quantidade de Grupos e Configurações */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Quantidade de Grupos - Glass Cards */}
+              <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Quantidade de Grupos</Label>
+                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar items-center">
+                  {quantidadeOpcoes.map(n => (
+                    <button
+                      key={n}
+                      onClick={() => {
+                        setQuantidadeGrupos(n);
+                        setCustomQtde("");
+                      }}
+                      className={cn(
+                        "w-14 h-14 rounded-2xl border-2 font-black text-lg transition-all shrink-0 flex flex-col items-center justify-center relative overflow-hidden",
+                        quantidadeGrupos === n && !customQtde
+                          ? "border-indigo-500 text-indigo-700 shadow-md shadow-indigo-500/20 bg-indigo-50" 
+                          : "bg-background border-border hover:border-indigo-500/40 text-foreground"
+                      )}
+                    >
+                      {quantidadeGrupos === n && !customQtde && <div className="absolute inset-0 bg-gradient-to-br from-indigo-400/20 to-blue-500/10" />}
+                      <span className="relative z-10">{n}</span>
+                    </button>
+                  ))}
+                  
+                  <div className="flex items-center gap-2 pl-2 border-l border-border ml-1 h-14">
+                    <Input 
+                      type="number" 
+                      min="2"
+                      className={cn(
+                        "w-16 h-14 rounded-2xl border-2 font-black text-lg text-center focus-visible:ring-indigo-500 transition-all px-1",
+                        customQtde ? "border-indigo-500 text-indigo-700 bg-indigo-50/50" : "bg-background"
+                      )}
+                      placeholder="..."
+                      value={customQtde}
+                      onChange={e => {
+                        const valStr = e.target.value;
+                        setCustomQtde(valStr);
+                        const val = parseInt(valStr);
+                        if (!isNaN(val) && val > 0) {
+                          setQuantidadeGrupos(val);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Toggles (Líder / 1 por vez) */}
+              <div className="bg-card p-4 rounded-3xl border border-border shadow-sm space-y-3">
+                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Configurações Base</Label>
+                 <div className="flex gap-3">
+                    <button 
+                      onClick={() => setSortearLider(!sortearLider)}
+                      className={cn("flex-1 p-3 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1.5", sortearLider ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-border bg-muted/30 text-muted-foreground")}
+                    >
+                      <div className={cn("w-5 h-5 rounded border-2 flex items-center justify-center", sortearLider ? "bg-indigo-500 border-indigo-500 text-white" : "border-zinc-300")} >
+                        {sortearLider && <Plus className="h-3 w-3 stroke-[4]" />}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider">Líder</span>
+                    </button>
+                    <button 
+                      onClick={() => setUmPorVez(!umPorVez)}
+                      className={cn("flex-1 p-3 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1.5", umPorVez ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-border bg-muted/30 text-muted-foreground")}
+                    >
+                      <div className={cn("w-5 h-5 rounded border-2 flex items-center justify-center", umPorVez ? "bg-indigo-500 border-indigo-500 text-white" : "border-zinc-300")} >
+                        {umPorVez && <Plus className="h-3 w-3 stroke-[4]" />}
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-wider">Suspense</span>
+                    </button>
+                 </div>
+              </div>
+            </div>
 
             <Button
               onClick={realizarSorteio}
