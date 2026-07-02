@@ -877,22 +877,20 @@ export default function Dashboard() {
             const encCount = filteredEncontros.length;
 
             return (
-              <div className="w-full max-w-[320px] relative mb-2 mt-2 p-1.5 rounded-[26px] bg-gradient-to-br from-slate-200/50 via-slate-300/30 to-slate-400/20 border border-slate-300 shadow-sm" style={{ zIndex: 10 }}>
+              <div className="w-full max-w-[320px] relative mb-2 mt-2 p-1.5 rounded-[26px] bg-blue-50/50 border-2 border-blue-200 shadow-lg shadow-blue-500/20" style={{ zIndex: 10 }}>
                 {/* Moldura Externa do Card */}
                 <div className="w-full relative mb-0 mt-0">
                 <button
                   onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[22px] overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] group"
+                  className="w-full text-left relative rounded-[22px] overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] group bg-white"
                   style={{
-                    background: "linear-gradient(145deg, #e8ecf0 0%, #d4d9e0 40%, #c8cdd6 100%)",
-                    boxShadow: "0 2px 12px rgba(59,130,246,0.25), 0 1px 3px rgba(0,0,0,0.10)",
-                    borderTop: "4px solid #3b82f6", // Blue-500
-                    border: "1px solid #bfdbfe", // Blue-200
+                    boxShadow: "0 8px 24px rgba(59, 130, 246, 0.25)",
+                    border: "3px solid #3b82f6", // Blue-500 prominent border
                   }}
                 >
                   {/* Reflexo metálico sutil */}
                   <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 55%)" }} />
+                    style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 60%)" }} />
 
                   {/* Conteúdo */}
                   <div className="relative z-10 px-4 py-3 flex flex-col items-center text-center">
@@ -900,7 +898,7 @@ export default function Dashboard() {
                     {/* Botão Trocar */}
                     {(turmas.length > 1 || selectedTurmaId === 'all') && (
                       <div className="absolute top-2.5 right-2.5 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/60 text-slate-600 border border-slate-300/70 text-[7px] font-black uppercase tracking-widest backdrop-blur-sm">
+                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[7px] font-black uppercase tracking-widest backdrop-blur-sm">
                           <RefreshCw className="h-2 w-2" />
                           Trocar
                         </div>
@@ -917,7 +915,7 @@ export default function Dashboard() {
                           {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
                         </h3>
                         {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[10px] font-black bg-white/70 text-slate-700 px-2.5 py-0.5 rounded-md border border-slate-300/80 backdrop-blur-sm shadow-sm">
+                          <span className="text-[10px] font-black bg-blue-50 text-blue-800 px-2.5 py-0.5 rounded-md border border-blue-200 shadow-sm">
                             {selectedTurma.ano || selectedTurma.etapa}
                           </span>
                         )}
@@ -926,18 +924,18 @@ export default function Dashboard() {
 
                     {/* Chips de estatísticas */}
                     <div className="flex items-center justify-center gap-3 w-full mt-3">
-                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-md w-full justify-center"
+                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-lg shadow-blue-500/30 w-full justify-center"
                         style={{ background: "linear-gradient(135deg, #3b82f6, #1d4ed8)" }}>
-                        <Users className="h-5 w-5" />
+                        <Users className="h-5 w-5 text-blue-100" />
                         <span className="text-[13px] sm:text-sm font-black">
-                          {catCount} <span className="opacity-85 font-bold text-[11px] sm:text-[12px] block sm:inline">catequizandos</span>
+                          {catCount} <span className="opacity-90 font-bold text-[11px] sm:text-[12px] block sm:inline text-blue-100">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-md w-full justify-center"
+                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-lg shadow-emerald-500/30 w-full justify-center"
                         style={{ background: "linear-gradient(135deg, #059669, #047857)" }}>
-                        <BookOpen className="h-5 w-5" />
+                        <BookOpen className="h-5 w-5 text-emerald-100" />
                         <span className="text-[13px] sm:text-sm font-black">
-                          {encCount} <span className="opacity-85 font-bold text-[11px] sm:text-[12px] block sm:inline">encontros</span>
+                          {encCount} <span className="opacity-90 font-bold text-[11px] sm:text-[12px] block sm:inline text-emerald-100">encontros</span>
                         </span>
                       </div>
                     </div>
