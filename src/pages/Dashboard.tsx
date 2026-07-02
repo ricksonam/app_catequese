@@ -885,9 +885,9 @@ export default function Dashboard() {
                   className="w-full text-left relative rounded-[22px] overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] group"
                   style={{
                     background: "linear-gradient(145deg, #e8ecf0 0%, #d4d9e0 40%, #c8cdd6 100%)",
-                    boxShadow: "0 2px 12px rgba(100,116,139,0.18), 0 1px 3px rgba(0,0,0,0.10)",
-                    borderTop: "4px solid #94a3b8",
-                    border: "1px solid #b0bac6",
+                    boxShadow: "0 2px 12px rgba(59,130,246,0.25), 0 1px 3px rgba(0,0,0,0.10)",
+                    borderTop: "4px solid #3b82f6", // Blue-500
+                    border: "1px solid #bfdbfe", // Blue-200
                   }}
                 >
                   {/* Reflexo metálico sutil */}
@@ -909,7 +909,7 @@ export default function Dashboard() {
 
                     {/* Nome da turma */}
                     <div className="mb-2 mt-2">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.28em] mb-1.5 text-slate-500">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.28em] mb-1.5 text-blue-600">
                         Turma Selecionada
                       </p>
                       <div className="flex flex-col items-center justify-center gap-2">
@@ -925,19 +925,19 @@ export default function Dashboard() {
                     </div>
 
                     {/* Chips de estatísticas */}
-                    <div className="flex items-center justify-center gap-2 w-full mt-2">
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-black shadow-sm"
+                    <div className="flex items-center justify-center gap-3 w-full mt-3">
+                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-md w-full justify-center"
                         style={{ background: "linear-gradient(135deg, #3b82f6, #1d4ed8)" }}>
-                        <Users className="h-3.5 w-3.5" />
-                        <span className="text-[11px] font-black">
-                          {catCount} <span className="opacity-85 font-bold">catequizandos</span>
+                        <Users className="h-5 w-5" />
+                        <span className="text-[13px] sm:text-sm font-black">
+                          {catCount} <span className="opacity-85 font-bold text-[11px] sm:text-[12px] block sm:inline">catequizandos</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-black shadow-sm"
+                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-md w-full justify-center"
                         style={{ background: "linear-gradient(135deg, #059669, #047857)" }}>
-                        <BookOpen className="h-3.5 w-3.5" />
-                        <span className="text-[11px] font-black">
-                          {encCount} <span className="opacity-85 font-bold">encontros</span>
+                        <BookOpen className="h-5 w-5" />
+                        <span className="text-[13px] sm:text-sm font-black">
+                          {encCount} <span className="opacity-85 font-bold text-[11px] sm:text-[12px] block sm:inline">encontros</span>
                         </span>
                       </div>
                     </div>
