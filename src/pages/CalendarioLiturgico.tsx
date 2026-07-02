@@ -459,15 +459,14 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
 
   useEffect(() => {
     if (selectedDay !== null) {
+      const date = new Date(currentYear, currentMonth, selectedDay);
       const fetchLiturgia = async () => {
         setLoadingLiturgia(true);
         try {
-          const d = String(selectedDay).padStart(2, '0');
-          const m = String(currentMonth + 1).padStart(2, '0');
-          const y = currentYear;
-          const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}&ano=${y}`);
-          if (res.ok) {
-            const data = await res.json();
+          const { getLiturgiaOffline } = await import('@/services/liturgiaOffline');
+          const data = await getLiturgiaOffline(date);
+          
+          if (data) {
             setLiturgiaDiaria(data);
           } else {
             setLiturgiaDiaria(null);

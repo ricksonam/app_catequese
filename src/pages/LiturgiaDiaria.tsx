@@ -209,50 +209,20 @@ export default function LiturgiaDiaria() {
   useEffect(() => {
     const fetchLiturgia = async () => {
       setLoading(true);
-      setLoadingMsg("Conectando ao servidor...");
+      setLoadingMsg("Buscando liturgia...");
       setError(false);
       try {
-        const d = padDate(currentDate.getDate());
-        const m = padDate(currentDate.getMonth() + 1);
-        const y = currentDate.getFullYear();
-        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}&ano=${y}`;
-        
-        let data: LiturgiaData | null = null;
-        let lastError = null;
+        const { getLiturgiaOffline } = await import('@/services/liturgiaOffline');
+        const data = await getLiturgiaOffline(currentDate);
 
-        // O servidor gratuito no Railway dorme após inatividade e leva até 30s para acordar.
-        // Faremos até 15 tentativas (15 * 2s = 30s).
-        for (let i = 0; i < 15; i++) {
-          try {
-            if (i === 1) setLoadingMsg("Acordando o servidor da liturgia (pode demorar uns 30s)...");
-            if (i === 7) setLoadingMsg("O servidor está quase lá, aguarde só mais um pouco...");
-            if (i === 12) setLoadingMsg("Finalizando inicialização do servidor...");
-
-            const res = await fetch(targetUrl);
-            if (res.ok) {
-              const json = await res.json();
-              if (json && json.data) {
-                data = json;
-                break;
-              }
-            }
-          } catch (e) {
-            lastError = e;
-          }
-          
-          if (!data && i < 14) {
-            await new Promise(r => setTimeout(r, 2000));
-          }
-        }
-
-        if (!data) throw lastError || new Error("HTTP error");
+        if (!data) throw new Error("Liturgia não encontrada");
         
         setLiturgia(data);
         // Selecionar a primeira aba disponível
         if (isLeitura(data.primeiraLeitura)) setAbaAtiva("primeira");
         else if (isSalmo(data.salmo)) setAbaAtiva("salmo");
         else if (isLeitura(data.evangelho)) setAbaAtiva("evangelho");
-      } catch {
+      } catch (err) {
         setError(true);
         setLiturgia(null);
       } finally {
