@@ -214,45 +214,34 @@ export default function LiturgiaDiaria() {
       try {
         const d = padDate(currentDate.getDate());
         const m = padDate(currentDate.getMonth() + 1);
-        const y = currentDate.getFullYear();
-        const targetUrl = `https://api-liturgia-diaria.vercel.app/?date=${y}-${m}-${d}`;
+        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}`;
         
         let data: LiturgiaData | null = null;
         let lastError = null;
 
-        try {
-          const res = await fetch(targetUrl);
-          if (res.ok) {
-            const json = await res.json();
-            if (json && json.today) {
-              const today = json.today;
-              const readings = today.readings;
-              
-              data = {
-                  liturgia: today.entry_title,
-                  cor: today.color,
-                  primeiraLeitura: readings.first_reading ? {
-                      referencia: readings.first_reading.title?.split(': ')[1] || readings.first_reading.title || readings.first_reading.head,
-                      texto: readings.first_reading.text
-                  } : undefined,
-                  segundaLeitura: readings.second_reading ? {
-                      referencia: readings.second_reading.title?.split(': ')[1] || readings.second_reading.title || readings.second_reading.head,
-                      texto: readings.second_reading.text
-                  } : undefined,
-                  salmo: readings.psalm ? {
-                      referencia: readings.psalm.title,
-                      refrao: readings.psalm.response,
-                      texto: readings.psalm.content_psalm?.join('\n') || ''
-                  } : undefined,
-                  evangelho: readings.gospel ? {
-                      referencia: readings.gospel.head_title || readings.gospel.title,
-                      texto: readings.gospel.text
-                  } : undefined,
-              };
+        // O servidor gratuito no Railway dorme após inatividade e leva até 30s para acordar.
+        // Faremos até 15 tentativas (15 * 2s = 30s).
+        for (let i = 0; i < 15; i++) {
+          try {
+            if (i === 1) setLoadingMsg("Acordando o servidor da liturgia (pode demorar uns 30s)...");
+            if (i === 7) setLoadingMsg("O servidor está quase lá, aguarde só mais um pouco...");
+            if (i === 12) setLoadingMsg("Finalizando inicialização do servidor...");
+
+            const res = await fetch(targetUrl);
+            if (res.ok) {
+              const json = await res.json();
+              if (json && json.data) {
+                data = json;
+                break;
+              }
             }
+          } catch (e) {
+            lastError = e;
           }
-        } catch (e) {
-          lastError = e;
+          
+          if (!data && i < 14) {
+            await new Promise(r => setTimeout(r, 2000));
+          }
         }
 
         if (!data) throw lastError || new Error("HTTP error");

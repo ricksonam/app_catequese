@@ -123,17 +123,14 @@ export default function CitacaoSorteio() {
     if (categoriaSorteio !== "citacao") return null;
     try {
       const res = await fetch("https://api-liturgia-diaria.vercel.app/");
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.today && data.today.readings && data.today.readings.gospel) {
-          const gospel = data.today.readings.gospel;
-          return {
-            id: "evangelho-dia",
-            referencia: gospel.head_title || gospel.title,
-            texto: gospel.text,
-            categoria: "Evangelho do Dia"
-          } as CitacaoBiblica;
-        }
+      const data = await res.json();
+      if (data.evangelho) {
+        return {
+          id: "evangelho-dia",
+          referencia: data.evangelho.referencia,
+          texto: data.evangelho.texto,
+          categoria: "Evangelho do Dia"
+        } as CitacaoBiblica;
       }
     } catch (e) {
       console.error("Erro ao buscar evangelho", e);
