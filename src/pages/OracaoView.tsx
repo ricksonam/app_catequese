@@ -8,7 +8,7 @@ export default function OracaoView() {
   const navigate = useNavigate();
   const oracao = oracoesBase.find(o => o.id === id);
 
-  const [fontSize, setFontSize] = useState(18); // Default font size in px
+  const [fontSize, setFontSize] = useState(24); // Default font size increased for better visibility
   const [fullScreen, setFullScreen] = useState(false);
 
   // Toggle full screen mode
@@ -47,13 +47,13 @@ export default function OracaoView() {
     <div className={`min-h-screen transition-colors duration-500 ${fullScreen ? "bg-amber-50/90 dark:bg-zinc-950 fixed inset-0 z-50 overflow-y-auto" : "pb-20"}`}>
       
       {/* Top Bar */}
-      <div className={`sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-black/5 transition-all ${fullScreen ? "opacity-0 hover:opacity-100" : ""}`}>
+      <div className={`sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-black/5 transition-all`}>
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
-          <button onClick={() => fullScreen ? toggleFullScreen() : navigate(-1)} className="back-btn">
-            <ArrowLeft className="h-5 w-5 text-black" />
+          <button onClick={() => fullScreen ? toggleFullScreen() : navigate(-1)} className="back-btn p-2 rounded-full hover:bg-black/5 transition-colors">
+            <ArrowLeft className="h-7 w-7 text-black dark:text-white" />
           </button>
           
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 transition-opacity duration-300 ${fullScreen ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
             <button 
               onClick={() => setFontSize(prev => Math.max(14, prev - 2))} 
               className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-black/5 shadow-sm active:scale-90 transition-all text-foreground"
@@ -83,7 +83,7 @@ export default function OracaoView() {
           {oracao.categoria}
         </span>
         
-        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-foreground mb-4 leading-tight">
+        <h1 className="text-3xl sm:text-5xl font-serif font-black text-black dark:text-white mb-4 leading-tight">
           {oracao.titulo}
         </h1>
         
@@ -122,7 +122,7 @@ export default function OracaoView() {
             // 1. Numbered Headings (e.g., "1. Silêncio...", "2. Abertura")
             if (/^\d+\.\s/.test(trimmed)) {
               return (
-                <h3 key={index} className="font-bold text-foreground mt-8 mb-4 font-sans tracking-tight" style={{ fontSize: `${fontSize * 1.1}px` }}>
+                <h3 key={index} className="font-bold text-black dark:text-white mt-8 mb-4 font-sans tracking-tight" style={{ fontSize: `${fontSize * 1.1}px` }}>
                   {trimmed}
                 </h3>
               );
@@ -141,8 +141,8 @@ export default function OracaoView() {
             if (trimmed.startsWith('—')) {
               return (
                 <div key={index} className="flex mb-1.5 mt-2">
-                  <span className="w-6 shrink-0 text-foreground font-light">—</span>
-                  <p>{parseText(trimmed.substring(1).trim())}</p>
+                  <span className="w-6 shrink-0 text-black dark:text-white font-light">—</span>
+                  <p className="text-black dark:text-white font-medium">{parseText(trimmed.substring(1).trim())}</p>
                 </div>
               );
             }
@@ -150,7 +150,7 @@ export default function OracaoView() {
             // 4. Regular lines (Response or continuation)
             return (
               <div key={index} className="flex mb-1.5 pl-6">
-                <p>{parseText(trimmed)}</p>
+                <p className="text-black dark:text-white font-medium">{parseText(trimmed)}</p>
               </div>
             );
           })}
