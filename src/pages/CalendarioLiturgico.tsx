@@ -464,7 +464,8 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
         try {
           const d = String(selectedDay).padStart(2, '0');
           const m = String(currentMonth + 1).padStart(2, '0');
-          const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}`);
+          const y = currentYear;
+          const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}&ano=${y}`);
           if (res.ok) {
             const data = await res.json();
             setLiturgiaDiaria(data);

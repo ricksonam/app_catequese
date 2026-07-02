@@ -122,9 +122,14 @@ export default function CitacaoSorteio() {
   const getEvangelhoDia = async () => {
     if (categoriaSorteio !== "citacao") return null;
     try {
-      const res = await fetch("https://api-liturgia-diaria.vercel.app/");
+      const today = new Date();
+      const d = String(today.getDate()).padStart(2, '0');
+      const m = String(today.getMonth() + 1).padStart(2, '0');
+      const y = today.getFullYear();
+      
+      const res = await fetch(`https://liturgia.up.railway.app/?dia=${d}&mes=${m}&ano=${y}`);
       const data = await res.json();
-      if (data.evangelho) {
+      if (data && data.evangelho) {
         return {
           id: "evangelho-dia",
           referencia: data.evangelho.referencia,

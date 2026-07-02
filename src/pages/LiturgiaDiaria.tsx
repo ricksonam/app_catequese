@@ -214,7 +214,8 @@ export default function LiturgiaDiaria() {
       try {
         const d = padDate(currentDate.getDate());
         const m = padDate(currentDate.getMonth() + 1);
-        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}`;
+        const y = currentDate.getFullYear();
+        const targetUrl = `https://liturgia.up.railway.app/?dia=${d}&mes=${m}&ano=${y}`;
         
         let data: LiturgiaData | null = null;
         let lastError = null;
