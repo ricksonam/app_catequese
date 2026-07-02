@@ -212,7 +212,7 @@ export default function SorteioNomes() {
   const started = resultado.length > 0 || disponiveis.length > 0;
 
   return (
-    <div ref={containerRef} className={cn("flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background" : "")}>
+    <div ref={containerRef} className={cn("flex flex-col min-h-full transition-all duration-500", isFullscreen ? "bg-background overflow-y-auto h-screen" : "")}>
       <GameHeader 
         title="Sorteio de Nomes" 
         subtitle="Aleatório & Justo" 
@@ -321,14 +321,14 @@ export default function SorteioNomes() {
           {nomes.length > 0 && (
             <div className="space-y-1.5">
               <Label className="text-zinc-900">{nomes.length} nome(s) na lista</Label>
-              <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2">
                 {nomes.map((nome) => (
-                  <span key={nome} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-foreground">
-                    {nome}
-                    <button onClick={() => removerNome(nome)} className="text-muted-foreground hover:text-destructive">
-                      <XIcon className="h-3 w-3" />
+                  <div key={nome} className="flex items-center justify-between px-3 py-2 rounded-xl bg-muted/50 border border-muted hover:border-primary/20 transition-all">
+                    <span className="text-sm font-medium text-foreground">{nome}</span>
+                    <button onClick={() => removerNome(nome)} className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                      <Trash2 className="h-4 w-4" />
                     </button>
-                  </span>
+                  </div>
                 ))}
               </div>
             </div>

@@ -212,7 +212,7 @@ export default function SorteioGrupos() {
   const quantidadeOpcoes = [2, 3, 4, 5, 10];
 
   return (
-    <div ref={containerRef} className="min-h-full flex flex-col transition-all duration-500 bg-background">
+    <div ref={containerRef} className={cn("min-h-full flex flex-col transition-all duration-500 bg-background", isFullscreen ? "overflow-y-auto h-screen" : "")}>
       <GameHeader
         title="Sorteio de Grupos"
         subtitle="Divisão de Equipes"
@@ -385,14 +385,14 @@ export default function SorteioGrupos() {
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">
                   Participantes na Lista ({participantes.length})
                 </Label>
-                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-1 custom-scrollbar">
+                <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                   {participantes.map(p => (
-                    <span key={p.nome} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-muted border-border text-foreground shadow-sm hover:shadow-md transition-all group">
-                      {p.nome}
-                      <button onClick={() => removerParticipante(p.nome)} className="text-muted-foreground group-hover:text-destructive transition-colors p-0.5 rounded-full hover:bg-black/5">
-                        <XIcon className="h-3 w-3" />
+                    <div key={p.nome} className="flex items-center justify-between px-3 py-2 rounded-xl bg-muted/50 border border-muted hover:border-primary/20 transition-all group">
+                      <span className="text-sm font-medium text-foreground">{p.nome}</span>
+                      <button onClick={() => removerParticipante(p.nome)} className="p-1.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
+                        <Trash2 className="h-4 w-4" />
                       </button>
-                    </span>
+                    </div>
                   ))}
                 </div>
               </div>
