@@ -185,13 +185,13 @@ function PainelResumo({
   const totalProntos = allStats.reduce((a, s) => a + s.prontos, 0);
 
   // Mini gráfico de rosca SVG inline para cada sacramento
-  function DonutRing({ pct, color }: { pct: number; color: string }) {
+  function DonutRing({ pct, color, trackColor }: { pct: number; color: string; trackColor?: string }) {
     const r = 26;
     const circ = 2 * Math.PI * r;
     const dash = (pct / 100) * circ;
     return (
       <svg width="64" height="64" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="7" />
+        <circle cx="32" cy="32" r={r} fill="none" stroke={trackColor ?? "rgba(255,255,255,0.15)"} strokeWidth="7" />
         <circle
           cx="32" cy="32" r={r} fill="none" stroke={color} strokeWidth="7"
           strokeDasharray={`${dash} ${circ}`}
@@ -199,7 +199,7 @@ function PainelResumo({
           transform="rotate(-90 32 32)"
           style={{ transition: "stroke-dasharray 1s ease" }}
         />
-        <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="900" fill="white">
+        <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="900" fill={color}>
           {pct}%
         </text>
       </svg>
@@ -211,22 +211,22 @@ function PainelResumo({
       onClick={onClick}
       className="w-full text-left rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-all group"
     >
-      {/* Fundo escuro premium */}
-      <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-5">
+      {/* Fundo prata brilho premium */}
+      <div className="p-5" style={{background: "linear-gradient(135deg, #e8eaf0 0%, #f8f9fb 20%, #c8cdd8 40%, #f0f2f6 55%, #dde0e9 70%, #f5f6fa 85%, #c5cad6 100%)"}}>
         {/* Título do painel */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-              <BarChart3 className="h-6 w-6 text-white" />
+            <div className="w-11 h-11 rounded-2xl bg-white/70 border border-slate-300/60 shadow-inner flex items-center justify-center shrink-0">
+              <BarChart3 className="h-6 w-6 text-slate-600" />
             </div>
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-white/50">Painel Inteligente</p>
-              <h2 className="text-xl font-black text-white leading-tight">Trilhas Sacramentais</h2>
+              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500">Painel Inteligente</p>
+              <h2 className="text-xl font-black text-slate-800 leading-tight">Trilhas Sacramentais</h2>
             </div>
           </div>
-          <div className="bg-white/10 border border-white/20 rounded-2xl px-3 py-1.5 text-right">
-            <p className="text-2xl font-black text-white leading-none">{totalGeral}</p>
-            <p className="text-[10px] text-white/50 font-bold uppercase">total</p>
+          <div className="bg-white/70 border border-slate-300/60 shadow-sm rounded-2xl px-3 py-1.5 text-right">
+            <p className="text-2xl font-black text-slate-800 leading-none">{totalGeral}</p>
+            <p className="text-[10px] text-slate-500 font-bold uppercase">total</p>
           </div>
         </div>
 
@@ -235,28 +235,33 @@ function PainelResumo({
           {allStats.map(({ sac, total, etapasPercent, freqBaixa }) => {
             const cfg = SACRAMENTO_CONFIG[sac];
             const ringColors: Record<SacramentoType, string> = {
-              batismo: "#38bdf8",
-              eucaristia: "#fbbf24",
-              crisma: "#a78bfa",
+              batismo: "#0284c7",
+              eucaristia: "#d97706",
+              crisma: "#7c3aed",
             };
-            const bgColors: Record<SacramentoType, string> = {
-              batismo: "from-sky-500/30 to-blue-600/30",
-              eucaristia: "from-amber-500/30 to-orange-500/30",
-              crisma: "from-violet-500/30 to-purple-600/30",
+            const bgSolids: Record<SacramentoType, string> = {
+              batismo: "bg-sky-100 border-sky-200",
+              eucaristia: "bg-amber-100 border-amber-200",
+              crisma: "bg-violet-100 border-violet-200",
+            };
+            const ringTrack: Record<SacramentoType, string> = {
+              batismo: "rgba(14,165,233,0.15)",
+              eucaristia: "rgba(245,158,11,0.15)",
+              crisma: "rgba(139,92,246,0.15)",
             };
             return (
               <div
                 key={sac}
-                className={cn("bg-gradient-to-br rounded-2xl p-3 border border-white/10 flex flex-col items-center gap-1.5", bgColors[sac])}
+                className={cn("rounded-2xl p-3 border flex flex-col items-center gap-1.5", bgSolids[sac])}
               >
-                <p className="text-[10px] font-black uppercase tracking-wider text-white/70 text-center">{cfg.label}</p>
-                <DonutRing pct={etapasPercent} color={ringColors[sac]} />
-                <p className="text-2xl font-black text-white leading-none">{total}</p>
-                <p className="text-[9px] text-white/50 font-bold uppercase">catequiz.</p>
+                <p className="text-[10px] font-black uppercase tracking-wider text-slate-600 text-center">{cfg.label}</p>
+                <DonutRing pct={etapasPercent} color={ringColors[sac]} trackColor={ringTrack[sac]} />
+                <p className="text-2xl font-black text-slate-800 leading-none">{total}</p>
+                <p className="text-[9px] text-slate-500 font-bold uppercase">catequiz.</p>
                 {freqBaixa > 0 && (
-                  <div className="flex items-center gap-1 bg-red-500/40 border border-red-400/30 rounded-full px-2 py-0.5">
-                    <AlertTriangle className="h-2.5 w-2.5 text-red-300" />
-                    <span className="text-[9px] font-black text-red-200">{freqBaixa} alerta{freqBaixa > 1 ? "s" : ""}</span>
+                  <div className="flex items-center gap-1 bg-red-100 border border-red-300 rounded-full px-2 py-0.5">
+                    <AlertTriangle className="h-2.5 w-2.5 text-red-600" />
+                    <span className="text-[9px] font-black text-red-700">{freqBaixa} alerta{freqBaixa > 1 ? "s" : ""}</span>
                   </div>
                 )}
               </div>
@@ -266,27 +271,27 @@ function PainelResumo({
 
         {/* Barra geral de alertas e prontos */}
         <div className="flex items-center gap-3">
-          <div className="flex-1 flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
-            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+          <div className="flex-1 flex items-center gap-2 bg-white/70 border border-slate-200 shadow-sm rounded-2xl px-4 py-3">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
             <div>
-              <p className="text-base font-black text-white leading-none">{totalProntos} prontos</p>
-              <p className="text-[10px] text-white/40 font-bold">todas as etapas concluídas</p>
+              <p className="text-base font-black text-slate-800 leading-none">{totalProntos} prontos</p>
+              <p className="text-[10px] text-slate-500 font-bold">todas as etapas concluídas</p>
             </div>
           </div>
           {totalFreqBaixa > 0 ? (
-            <div className="flex items-center gap-2 bg-red-500/20 border border-red-400/30 rounded-2xl px-4 py-3">
-              <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
+            <div className="flex items-center gap-2 bg-red-50 border border-red-300 rounded-2xl px-4 py-3">
+              <AlertTriangle className="h-5 w-5 text-red-600 shrink-0" />
               <div>
-                <p className="text-base font-black text-red-300 leading-none">{totalFreqBaixa}</p>
-                <p className="text-[10px] text-red-400/70 font-bold">freq. baixa</p>
+                <p className="text-base font-black text-red-700 leading-none">{totalFreqBaixa}</p>
+                <p className="text-[10px] text-red-500 font-bold">freq. baixa</p>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-2xl px-4 py-3">
-              <Sparkles className="h-5 w-5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-300 rounded-2xl px-4 py-3">
+              <Sparkles className="h-5 w-5 text-emerald-600 shrink-0" />
               <div>
-                <p className="text-base font-black text-emerald-300 leading-none">Ótimo!</p>
-                <p className="text-[10px] text-emerald-400/70 font-bold">sem alertas</p>
+                <p className="text-base font-black text-emerald-800 leading-none">Ótimo!</p>
+                <p className="text-[10px] text-emerald-600 font-bold">sem alertas</p>
               </div>
             </div>
           )}
@@ -294,8 +299,8 @@ function PainelResumo({
 
         {/* Rodapé clique */}
         <div className="mt-4 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <BarChart3 className="h-3.5 w-3.5 text-white/40" />
-          <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Toque para ver detalhes</p>
+          <BarChart3 className="h-3.5 w-3.5 text-slate-400" />
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Toque para ver detalhes</p>
         </div>
       </div>
     </button>
