@@ -163,53 +163,27 @@ export default function DiarioEspiritualForm() {
       </div>
 
       {/* Seletor de tipo */}
-      <div className="flex flex-col gap-3 max-w-3xl mx-auto w-full">
-        {/* Encontro, Evento e Reunião */}
-        <div className="grid grid-cols-3 gap-3">
-          {tiposRegistro.filter(t => t.value !== "evolucao").map((tipo) => {
-            const Icon = tipo.icon;
-            const isActive = tipoRegistro === tipo.value;
-            return (
-              <button
-                key={tipo.value}
-                type="button"
-                onClick={() => setTipoRegistro(tipo.value)}
-                className={cn(
-                  "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 font-bold text-center group",
-                  isActive
-                    ? `${tipo.cor} shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/30" : tipo.value === "evento" ? "ring-amber-500/30" : "ring-blue-600/30"} scale-[1.03]`
-                    : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black hover:shadow-md"
-                )}
-              >
-                <Icon className={cn("w-7 h-7 transition-all duration-500", isActive ? `text-white ${tipo.animation}` : `${tipo.iconColor} group-hover:scale-110 group-hover:-rotate-3`)} />
-                <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
-              </button>
-            );
-          })}
-        </div>
-        {/* Evolução centralizado abaixo */}
-        <div className="flex justify-center">
-          {tiposRegistro.filter(t => t.value === "evolucao").map((tipo) => {
-            const Icon = tipo.icon;
-            const isActive = tipoRegistro === tipo.value;
-            return (
-              <button
-                key={tipo.value}
-                type="button"
-                onClick={() => setTipoRegistro(tipo.value)}
-                className={cn(
-                  "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 font-bold text-center group w-full max-w-xs",
-                  isActive
-                    ? `${tipo.cor} shadow-lg ring-4 ring-emerald-600/30 scale-[1.03]`
-                    : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black hover:shadow-md"
-                )}
-              >
-                <Icon className={cn("w-7 h-7 transition-all duration-500", isActive ? `text-white ${tipo.animation}` : `${tipo.iconColor} group-hover:scale-110 group-hover:rotate-3`)} />
-                <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto w-full">
+        {tiposRegistro.map((tipo) => {
+          const Icon = tipo.icon;
+          const isActive = tipoRegistro === tipo.value;
+          return (
+            <button
+              key={tipo.value}
+              type="button"
+              onClick={() => setTipoRegistro(tipo.value)}
+              className={cn(
+                "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 font-bold text-center group",
+                isActive
+                  ? `${tipo.cor} shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/30" : tipo.value === "evento" ? "ring-amber-500/30" : tipo.value === "evolucao" ? "ring-emerald-600/30" : "ring-blue-600/30"} scale-[1.03]`
+                  : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black hover:shadow-md"
+              )}
+            >
+              <Icon className={cn("w-7 h-7 transition-all duration-500", isActive ? `text-white ${tipo.animation}` : `${tipo.iconColor} group-hover:scale-110 group-hover:rotate-3`)} />
+              <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto w-full">
