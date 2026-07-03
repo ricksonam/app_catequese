@@ -180,7 +180,7 @@ function MonthBlock({ monthKey, items, onView }: { monthKey: string; items: any[
       </div>
 
       {/* 4 summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-4 gap-2.5">
         {(["encontro", "evento", "evolucao", "reuniao"] as TipoKey[]).map((tipo) => {
           const cfg = TIPO_CONFIG[tipo];
           const count = byTipo[tipo].length;
