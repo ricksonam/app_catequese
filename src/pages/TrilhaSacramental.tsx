@@ -172,71 +172,131 @@ function getTrilhaState(cat: Catequizando, sacramento: SacramentoType): TrilhaSa
   return defaultTrilha();
 }
 
-// ===== PAINEL INTELIGENTE DE RESUMO (Compacto) =====
+// ===== PAINEL INTELIGENTE DE RESUMO (Dashboard com gráficos) =====
 function PainelResumo({
-  stats,
-  sacramento,
+  allStats,
   onClick
 }: {
-  stats: { total: number; etapasPercent: number; freqBaixa: number };
-  sacramento: SacramentoType;
+  allStats: { sac: SacramentoType; total: number; etapasPercent: number; freqBaixa: number; prontos: number }[];
   onClick: () => void;
 }) {
-  const cfg = SACRAMENTO_CONFIG[sacramento];
-  const SacIcon = cfg.icon;
+  const totalGeral = allStats.reduce((a, s) => a + s.total, 0);
+  const totalFreqBaixa = allStats.reduce((a, s) => a + s.freqBaixa, 0);
+  const totalProntos = allStats.reduce((a, s) => a + s.prontos, 0);
+
+  // Mini gráfico de rosca SVG inline para cada sacramento
+  function DonutRing({ pct, color }: { pct: number; color: string }) {
+    const r = 26;
+    const circ = 2 * Math.PI * r;
+    const dash = (pct / 100) * circ;
+    return (
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="7" />
+        <circle
+          cx="32" cy="32" r={r} fill="none" stroke={color} strokeWidth="7"
+          strokeDasharray={`${dash} ${circ}`}
+          strokeLinecap="round"
+          transform="rotate(-90 32 32)"
+          style={{ transition: "stroke-dasharray 1s ease" }}
+        />
+        <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="900" fill="white">
+          {pct}%
+        </text>
+      </svg>
+    );
+  }
 
   return (
-    <button 
+    <button
       onClick={onClick}
-      className={cn(
-        "w-full text-left rounded-3xl overflow-hidden shadow-md border-2 border-transparent transition-all active:scale-95 group",
-        "hover:shadow-lg hover:border-white/40"
-      )}
+      className="w-full text-left rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-all group"
     >
-      <div className={cn("bg-gradient-to-br p-5 relative", cfg.gradient)}>
-        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-           <BarChart3 className="h-4 w-4 text-white" />
-        </div>
-
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shrink-0">
-            <SacIcon className="h-5 w-5 text-white" />
+      {/* Fundo escuro premium */}
+      <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-5">
+        {/* Título do painel */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.25em] text-white/50">Painel Inteligente</p>
+              <h2 className="text-xl font-black text-white leading-tight">Trilhas Sacramentais</h2>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Resumo da Trilha</p>
-            <h2 className="text-lg font-black text-white leading-tight">{cfg.label} {cfg.emoji}</h2>
-          </div>
-        </div>
-
-        {/* Métricas principais */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/20">
-            <p className="text-2xl font-black text-white">{stats.total}</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Na Trilha</p>
-          </div>
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/20">
-            <p className="text-2xl font-black text-white">{stats.etapasPercent}%</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Progresso</p>
-          </div>
-          <div className={cn(
-            "backdrop-blur-sm rounded-2xl p-3 text-center border",
-            stats.freqBaixa > 0 ? "bg-red-500/40 border-red-300/40" : "bg-white/15 border-white/20"
-          )}>
-            <p className="text-2xl font-black text-white">{stats.freqBaixa}</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Freq. Baixa</p>
+          <div className="bg-white/10 border border-white/20 rounded-2xl px-3 py-1.5 text-right">
+            <p className="text-2xl font-black text-white leading-none">{totalGeral}</p>
+            <p className="text-[10px] text-white/50 font-bold uppercase">total</p>
           </div>
         </div>
 
-        {/* Barra de progresso global */}
-        <div className="bg-white/20 rounded-full h-2 overflow-hidden mb-1">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-1000"
-            style={{ width: `${stats.etapasPercent}%` }}
-          />
+        {/* Cards por sacramento com gráfico de rosca */}
+        <div className="grid grid-cols-3 gap-3 mb-5">
+          {allStats.map(({ sac, total, etapasPercent, freqBaixa }) => {
+            const cfg = SACRAMENTO_CONFIG[sac];
+            const ringColors: Record<SacramentoType, string> = {
+              batismo: "#38bdf8",
+              eucaristia: "#fbbf24",
+              crisma: "#a78bfa",
+            };
+            const bgColors: Record<SacramentoType, string> = {
+              batismo: "from-sky-500/30 to-blue-600/30",
+              eucaristia: "from-amber-500/30 to-orange-500/30",
+              crisma: "from-violet-500/30 to-purple-600/30",
+            };
+            return (
+              <div
+                key={sac}
+                className={cn("bg-gradient-to-br rounded-2xl p-3 border border-white/10 flex flex-col items-center gap-1.5", bgColors[sac])}
+              >
+                <p className="text-[10px] font-black uppercase tracking-wider text-white/70 text-center">{cfg.label}</p>
+                <DonutRing pct={etapasPercent} color={ringColors[sac]} />
+                <p className="text-2xl font-black text-white leading-none">{total}</p>
+                <p className="text-[9px] text-white/50 font-bold uppercase">catequiz.</p>
+                {freqBaixa > 0 && (
+                  <div className="flex items-center gap-1 bg-red-500/40 border border-red-400/30 rounded-full px-2 py-0.5">
+                    <AlertTriangle className="h-2.5 w-2.5 text-red-300" />
+                    <span className="text-[9px] font-black text-red-200">{freqBaixa} alerta{freqBaixa > 1 ? "s" : ""}</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-        <p className="text-[10px] text-white/80 font-bold text-center">
-            Clique para ver os detalhes e comparativos
-        </p>
+
+        {/* Barra geral de alertas e prontos */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+            <div>
+              <p className="text-base font-black text-white leading-none">{totalProntos} prontos</p>
+              <p className="text-[10px] text-white/40 font-bold">todas as etapas concluídas</p>
+            </div>
+          </div>
+          {totalFreqBaixa > 0 ? (
+            <div className="flex items-center gap-2 bg-red-500/20 border border-red-400/30 rounded-2xl px-4 py-3">
+              <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
+              <div>
+                <p className="text-base font-black text-red-300 leading-none">{totalFreqBaixa}</p>
+                <p className="text-[10px] text-red-400/70 font-bold">freq. baixa</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-2xl px-4 py-3">
+              <Sparkles className="h-5 w-5 text-emerald-400 shrink-0" />
+              <div>
+                <p className="text-base font-black text-emerald-300 leading-none">Ótimo!</p>
+                <p className="text-[10px] text-emerald-400/70 font-bold">sem alertas</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Rodapé clique */}
+        <div className="mt-4 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <BarChart3 className="h-3.5 w-3.5 text-white/40" />
+          <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">Toque para ver detalhes</p>
+        </div>
       </div>
     </button>
   );
@@ -1145,24 +1205,36 @@ export default function TrilhaSacramental() {
     }
   };
 
-  // Calcular estatísticas atuais
-  const currentStats = useMemo(() => {
-    const total = catDaTrilha.length;
-    let totalEtapasConcluidas = 0;
-    let freqBaixa = 0;
-    catDaTrilha.forEach(cat => {
-      const t = getTrilhaState(cat, selectedSacramento);
-      totalEtapasConcluidas += ETAPAS_PARTICIPACAO.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
-      const freq = calcFrequencia(cat, encontros);
-      if (freq.total > 0 && freq.percent < 75) freqBaixa++;
+  // Calcular estatísticas para todos os sacramentos (Painel Inteligente)
+  const allStats = useMemo(() => {
+    const sacramentos: SacramentoType[] = ['batismo', 'eucaristia', 'crisma'];
+    return sacramentos.map(sac => {
+      const ids: string[] = turma?.trilhasConfig?.[sac]?.catequizandosTrilha ?? [];
+      const cats = todosOsCatequizandos.filter(c =>
+        (c.status === "ativo" || c.status === "inscrito" || !c.status) && ids.includes(c.id)
+      );
+      const total = cats.length;
+      let totalEtapasConcluidas = 0;
+      let freqBaixa = 0;
+      let prontos = 0;
+      cats.forEach(cat => {
+        const t = getTrilhaState(cat, sac);
+        const etapasCat = ETAPAS_PARTICIPACAO.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
+        totalEtapasConcluidas += etapasCat;
+        if (etapasCat === ETAPAS_PARTICIPACAO.length) prontos++;
+        const freq = calcFrequencia(cat, encontros);
+        if (freq.total > 0 && freq.percent < 75) freqBaixa++;
+      });
+      const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
+      return {
+        sac,
+        total,
+        etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100),
+        freqBaixa,
+        prontos,
+      };
     });
-    const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
-    return {
-      total,
-      etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100),
-      freqBaixa
-    };
-  }, [catDaTrilha, encontros, selectedSacramento]);
+  }, [todosOsCatequizandos, encontros, turma]);
 
   const etapasRitoAtual = selectedSacramento === 'batismo' ? ETAPAS_RITO_BATISMO : ETAPAS_RITO;
   const sacramentoLabel = SACRAMENTO_CONFIG[selectedSacramento].label;
@@ -1207,28 +1279,27 @@ export default function TrilhaSacramental() {
       {/* Botão de gerenciar catequizandos da trilha */}
       <button
         onClick={() => setModalSelecaoOpen(true)}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
+        className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <UserPlus className="h-4 w-4 text-primary" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
+            <UserPlus className="h-5 w-5 text-primary" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-black text-primary">Gerenciar catequizandos da trilha</p>
-            <p className="text-[10px] text-muted-foreground font-medium">
+            <p className="text-base font-black text-primary">Gerenciar catequizandos da trilha</p>
+            <p className="text-sm text-muted-foreground font-semibold">
               {catequizandosTrilhaIds.length === 0
                 ? `Nenhum selecionado para ${sacramentoLabel}`
                 : `${catequizandosTrilhaIds.length} catequizando${catequizandosTrilhaIds.length !== 1 ? "s" : ""} em ${sacramentoLabel}`}
             </p>
           </div>
         </div>
-        <ChevronDown className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
+        <ChevronDown className="h-5 w-5 text-primary/60 group-hover:text-primary transition-colors shrink-0" />
       </button>
 
-      {/* PAINEL INTELIGENTE — substitui os 3 cards, agora abre modal ao clicar */}
+      {/* PAINEL INTELIGENTE — todos os sacramentos com gráficos */}
       <PainelResumo
-        stats={currentStats}
-        sacramento={selectedSacramento}
+        allStats={allStats}
         onClick={() => setModalDetalhesOpen(true)}
       />
 
