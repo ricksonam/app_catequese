@@ -8,11 +8,11 @@ import { cn, formatarDataVigente } from "@/lib/utils";
 
 type TipoRegistro = "encontro" | "evento" | "evolucao" | "reuniao";
 
-const tiposRegistro: { value: TipoRegistro; label: string; icon: React.ElementType; cor: string; descricao: string }[] = [
-  { value: "encontro", label: "Encontro", icon: BookOpen, cor: "bg-indigo-600 text-white ring-indigo-600/50 border-indigo-600", descricao: "Registro de um encontro catequético" },
-  { value: "evento", label: "Evento", icon: Sparkles, cor: "bg-amber-500 text-white ring-amber-500/50 border-amber-500", descricao: "Registro de um evento ou atividade especial" },
-  { value: "evolucao", label: "Evolução", icon: TrendingUp, cor: "bg-emerald-600 text-white ring-emerald-600/50 border-emerald-600", descricao: "Registro de evolução espiritual e comportamental" },
-  { value: "reuniao", label: "Reunião", icon: Users, cor: "bg-blue-600 text-white ring-blue-600/50 border-blue-600", descricao: "Registro de reunião com pais ou catequistas" },
+const tiposRegistro: { value: TipoRegistro; label: string; icon: React.ElementType; cor: string; iconColor: string; animation: string; descricao: string }[] = [
+  { value: "encontro", label: "Encontro", icon: BookOpen, cor: "bg-indigo-600 text-white ring-indigo-600/50 border-indigo-600", iconColor: "text-indigo-500", animation: "animate-[pulse_2s_ease-in-out_infinite]", descricao: "Registro de um encontro catequético" },
+  { value: "evento", label: "Evento", icon: Sparkles, cor: "bg-amber-500 text-white ring-amber-500/50 border-amber-500", iconColor: "text-amber-500", animation: "animate-[pulse_2s_ease-in-out_infinite]", descricao: "Registro de um evento ou atividade especial" },
+  { value: "reuniao", label: "Reunião", icon: Users, cor: "bg-blue-600 text-white ring-blue-600/50 border-blue-600", iconColor: "text-blue-500", animation: "animate-[pulse_2s_ease-in-out_infinite]", descricao: "Registro de reunião com pais ou catequistas" },
+  { value: "evolucao", label: "Evolução", icon: TrendingUp, cor: "bg-emerald-600 text-white ring-emerald-600/50 border-emerald-600", iconColor: "text-emerald-500", animation: "animate-[pulse_2s_ease-in-out_infinite]", descricao: "Registro de evolução espiritual e comportamental" },
 ];
 
 export default function DiarioEspiritualForm() {
@@ -43,6 +43,9 @@ export default function DiarioEspiritualForm() {
   
   const [openEncontro, setOpenEncontro] = useState(false);
   const [openEvento, setOpenEvento] = useState(false);
+  const [openReuniao, setOpenReuniao] = useState(false);
+
+  const [reuniaoId, setReuniaoId] = useState("");
 
   const toggleAv = (cid: string) => setExpandedAv(prev => ({ ...prev, [cid]: !prev[cid] }));
   const toggleEv = (cid: string) => setExpandedEv(prev => ({ ...prev, [cid]: !prev[cid] }));
@@ -54,6 +57,11 @@ export default function DiarioEspiritualForm() {
     !a.tipo?.toLowerCase().includes("reunião") && !a.tipo?.toLowerCase().includes("reuniao")
   );
 
+  // Reuniões filtradas
+  const reunioes = atividades.filter((a: any) =>
+    a.tipo?.toLowerCase().includes("reunião") || a.tipo?.toLowerCase().includes("reuniao")
+  );
+
   useEffect(() => {
     if (catequizandos.length > 0) {
       if (isEditing && diarios) {
@@ -62,7 +70,11 @@ export default function DiarioEspiritualForm() {
           setTipoRegistro((diario as any).tipo_registro || "encontro");
           setDataRegistro(diario.data_registro || new Date().toISOString().split("T")[0]);
           setEncontroId(diario.encontro_id || "");
-          setEventoId((diario as any).evento_id || "");
+          if ((diario as any).tipo_registro === "reuniao") {
+            setReuniaoId((diario as any).evento_id || "");
+          } else {
+            setEventoId((diario as any).evento_id || "");
+          }
           setComoFoi(diario.como_foi || "");
           setPontosPositivos(diario.pontos_positivos || "");
           setPontosNegativos(diario.pontos_negativos || "");
@@ -105,7 +117,7 @@ export default function DiarioEspiritualForm() {
       tipo_registro: tipoRegistro,
       data_registro: dataRegistro,
       encontro_id: tipoRegistro === "encontro" ? (encontroId || null) : null,
-      evento_id: tipoRegistro === "evento" ? (eventoId || null) : null,
+      evento_id: tipoRegistro === "evento" ? (eventoId || null) : tipoRegistro === "reuniao" ? (reuniaoId || null) : null,
       como_foi: tipoRegistro !== "evolucao" ? comoFoi : "",
       pontos_positivos: tipoRegistro !== "evolucao" ? pontosPositivos : "",
       pontos_negativos: tipoRegistro !== "evolucao" ? pontosNegativos : "",
@@ -151,27 +163,53 @@ export default function DiarioEspiritualForm() {
       </div>
 
       {/* Seletor de tipo */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {tiposRegistro.map((tipo) => {
-          const Icon = tipo.icon;
-          const isActive = tipoRegistro === tipo.value;
-          return (
-            <button
-              key={tipo.value}
-              type="button"
-              onClick={() => setTipoRegistro(tipo.value)}
-              className={cn(
-                "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 font-bold text-center",
-                isActive
-                  ? `${tipo.cor} shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/30" : tipo.value === "evento" ? "ring-amber-500/30" : tipo.value === "evolucao" ? "ring-emerald-600/30" : "ring-blue-600/30"} scale-[1.03]`
-                  : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black"
-              )}
-            >
-              <Icon className={cn("w-6 h-6", isActive ? "opacity-100" : "opacity-60")} />
-              <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
-            </button>
-          );
-        })}
+      <div className="flex flex-col gap-3 max-w-3xl mx-auto w-full">
+        {/* Encontro, Evento e Reunião */}
+        <div className="grid grid-cols-3 gap-3">
+          {tiposRegistro.filter(t => t.value !== "evolucao").map((tipo) => {
+            const Icon = tipo.icon;
+            const isActive = tipoRegistro === tipo.value;
+            return (
+              <button
+                key={tipo.value}
+                type="button"
+                onClick={() => setTipoRegistro(tipo.value)}
+                className={cn(
+                  "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 font-bold text-center group",
+                  isActive
+                    ? `${tipo.cor} shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/30" : tipo.value === "evento" ? "ring-amber-500/30" : "ring-blue-600/30"} scale-[1.03]`
+                    : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black hover:shadow-md"
+                )}
+              >
+                <Icon className={cn("w-7 h-7 transition-all duration-500", isActive ? `text-white ${tipo.animation}` : `${tipo.iconColor} group-hover:scale-110 group-hover:-rotate-3`)} />
+                <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        {/* Evolução centralizado abaixo */}
+        <div className="flex justify-center">
+          {tiposRegistro.filter(t => t.value === "evolucao").map((tipo) => {
+            const Icon = tipo.icon;
+            const isActive = tipoRegistro === tipo.value;
+            return (
+              <button
+                key={tipo.value}
+                type="button"
+                onClick={() => setTipoRegistro(tipo.value)}
+                className={cn(
+                  "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 font-bold text-center group w-full max-w-xs",
+                  isActive
+                    ? `${tipo.cor} shadow-lg ring-4 ring-emerald-600/30 scale-[1.03]`
+                    : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black hover:shadow-md"
+                )}
+              >
+                <Icon className={cn("w-7 h-7 transition-all duration-500", isActive ? `text-white ${tipo.animation}` : `${tipo.iconColor} group-hover:scale-110 group-hover:rotate-3`)} />
+                <span className="text-xs font-black uppercase tracking-widest">{tipo.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto w-full">
@@ -188,7 +226,7 @@ export default function DiarioEspiritualForm() {
               
               <button
                 type="button"
-                onClick={() => { setOpenEncontro(!openEncontro); setOpenEvento(false); }}
+                onClick={() => { setOpenEncontro(!openEncontro); setOpenEvento(false); setOpenReuniao(false); }}
                 className="w-full h-14 px-4 rounded-xl border-2 border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 hover:border-indigo-500/50 text-sm font-medium focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all flex items-center justify-between text-left"
               >
                 <div className="flex flex-col truncate">
@@ -248,7 +286,7 @@ export default function DiarioEspiritualForm() {
               
               <button
                 type="button"
-                onClick={() => { setOpenEvento(!openEvento); setOpenEncontro(false); }}
+                onClick={() => { setOpenEvento(!openEvento); setOpenEncontro(false); setOpenReuniao(false); }}
                 className="w-full h-14 px-4 rounded-xl border-2 border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/50 text-sm font-medium focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 outline-none transition-all flex items-center justify-between text-left"
               >
                 <div className="flex flex-col truncate">
@@ -291,6 +329,66 @@ export default function DiarioEspiritualForm() {
                       {ev.data && (
                         <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", eventoId === ev.id ? "text-amber-100" : "text-amber-600/70")}>
                           {formatarDataVigente(ev.data)}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {tipoRegistro === "reuniao" && (
+            <div className="space-y-2 relative">
+              <label className="text-sm font-black text-blue-700 uppercase tracking-wider flex items-center gap-2">
+                <Users className="w-5 h-5" /> Reunião Referente
+              </label>
+              
+              <button
+                type="button"
+                onClick={() => { setOpenReuniao(!openReuniao); setOpenEncontro(false); setOpenEvento(false); }}
+                className="w-full h-14 px-4 rounded-xl border-2 border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 hover:border-blue-500/50 text-sm font-medium focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all flex items-center justify-between text-left"
+              >
+                <div className="flex flex-col truncate">
+                  <span className="truncate font-bold text-blue-900 dark:text-blue-100">
+                    {reuniaoId 
+                      ? reunioes.find((r: any) => r.id === reuniaoId)?.nome 
+                      : "Nenhuma (Registro Geral)"}
+                  </span>
+                  {reuniaoId && reunioes.find((r: any) => r.id === reuniaoId)?.data && (
+                    <span className="text-[10px] text-blue-600 font-black uppercase tracking-widest mt-0.5">
+                      {formatarDataVigente(reunioes.find((r: any) => r.id === reuniaoId)!.data)}
+                    </span>
+                  )}
+                </div>
+                <ChevronDown className={cn("w-5 h-5 text-blue-500 transition-transform duration-300", openReuniao && "rotate-180")} />
+              </button>
+              
+              {openReuniao && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border-2 border-blue-500/30 rounded-2xl shadow-xl shadow-blue-500/10 z-50 max-h-72 overflow-y-auto overflow-x-hidden p-2 space-y-1 animate-in fade-in slide-in-from-top-2">
+                  <button 
+                    type="button"
+                    onClick={() => { setReuniaoId(""); setOpenReuniao(false); }}
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-sm font-bold text-blue-900/70 transition-colors border border-transparent hover:border-blue-500/20"
+                  >
+                    Nenhuma (Registro Geral)
+                  </button>
+                  {reunioes.map((re: any) => (
+                    <button
+                      key={re.id}
+                      type="button"
+                      onClick={() => { setReuniaoId(re.id); setOpenReuniao(false); }}
+                      className={cn(
+                        "w-full text-left px-4 py-3 rounded-xl transition-all border",
+                        reuniaoId === re.id 
+                          ? "bg-blue-500 text-white border-blue-600 shadow-md" 
+                          : "bg-white dark:bg-zinc-900 border-black/5 hover:border-blue-500/30 hover:bg-blue-50"
+                      )}
+                    >
+                      <div className={cn("font-bold", reuniaoId === re.id ? "text-white" : "text-blue-900 dark:text-blue-100")}>{re.nome}</div>
+                      {re.data && (
+                        <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", reuniaoId === re.id ? "text-blue-100" : "text-blue-600/70")}>
+                          {formatarDataVigente(re.data)}
                         </div>
                       )}
                     </button>
