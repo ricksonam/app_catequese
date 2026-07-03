@@ -3,6 +3,7 @@ import { PartyPopper } from "lucide-react";
 import { useCatequizandos, useEncontros, useTurmas } from "@/hooks/useSupabaseData";
 import { upsertCatequizando, upsertTurma } from "@/lib/supabaseStore";
 import { useState, useMemo, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -284,10 +285,10 @@ function ModalDetalhesTrilha({
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <>
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed inset-x-0 bottom-0 z-50 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
+      <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-x-0 bottom-0 z-[9999] sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
         <div className="bg-white dark:bg-card rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl flex flex-col overflow-hidden" style={{ maxHeight: "85vh" }} onClick={e => e.stopPropagation()}>
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 bg-muted/30">
@@ -373,7 +374,8 @@ function ModalDetalhesTrilha({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 
@@ -582,15 +584,15 @@ function ModalSelecaoCatequizandos({
 
   const cfg = SACRAMENTO_CONFIG[sacramento];
 
-  return (
+  return createPortal(
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      {/* Drawer/Modal centralizado — position fixed, não relativo ao pai */}
-      <div className="fixed inset-x-0 bottom-0 z-50 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
+      {/* Drawer/Modal centralizado — renderizado via portal no document.body */}
+      <div className="fixed inset-x-0 bottom-0 z-[9999] sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
         <div
           className="bg-white dark:bg-card rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl flex flex-col"
           style={{ maxHeight: "85vh" }}
@@ -722,7 +724,8 @@ function ModalSelecaoCatequizandos({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 
