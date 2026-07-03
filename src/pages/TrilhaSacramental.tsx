@@ -172,6 +172,56 @@ function getTrilhaState(cat: Catequizando, sacramento: SacramentoType): TrilhaSa
   return defaultTrilha();
 }
 
+// ===== DONUT RING ANIMADO =====
+function DonutRing({ pct, color, trackColor, delay = 0 }: { pct: number; color: string; trackColor?: string; delay?: number }) {
+  const [animatedPct, setAnimatedPct] = useState(0);
+  const [displayPct, setDisplayPct] = useState(0);
+  const r = 26;
+  const circ = 2 * Math.PI * r;
+  const dashOffset = circ - (animatedPct / 100) * circ;
+
+  useEffect(() => {
+    setAnimatedPct(0);
+    setDisplayPct(0);
+    const startTimer = setTimeout(() => {
+      setAnimatedPct(pct);
+      // Anima o contador de 0 até pct
+      const duration = 1200;
+      const steps = 40;
+      const stepTime = duration / steps;
+      let current = 0;
+      const interval = setInterval(() => {
+        current += pct / steps;
+        if (current >= pct) {
+          setDisplayPct(pct);
+          clearInterval(interval);
+        } else {
+          setDisplayPct(Math.round(current));
+        }
+      }, stepTime);
+      return () => clearInterval(interval);
+    }, delay);
+    return () => clearTimeout(startTimer);
+  }, [pct, delay]);
+
+  return (
+    <svg width="64" height="64" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r={r} fill="none" stroke={trackColor ?? "rgba(0,0,0,0.08)"} strokeWidth="7" />
+      <circle
+        cx="32" cy="32" r={r} fill="none" stroke={color} strokeWidth="7"
+        strokeDasharray={circ}
+        strokeDashoffset={dashOffset}
+        strokeLinecap="round"
+        transform="rotate(-90 32 32)"
+        style={{ transition: `stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1) ${delay}ms` }}
+      />
+      <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="900" fill={color}>
+        {displayPct}%
+      </text>
+    </svg>
+  );
+}
+
 // ===== PAINEL INTELIGENTE DE RESUMO (Dashboard com gráficos) =====
 function PainelResumo({
   allStats,
@@ -184,27 +234,6 @@ function PainelResumo({
   const totalFreqBaixa = allStats.reduce((a, s) => a + s.freqBaixa, 0);
   const totalProntos = allStats.reduce((a, s) => a + s.prontos, 0);
 
-  // Mini gráfico de rosca SVG inline para cada sacramento
-  function DonutRing({ pct, color, trackColor }: { pct: number; color: string; trackColor?: string }) {
-    const r = 26;
-    const circ = 2 * Math.PI * r;
-    const dash = (pct / 100) * circ;
-    return (
-      <svg width="64" height="64" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" stroke={trackColor ?? "rgba(255,255,255,0.15)"} strokeWidth="7" />
-        <circle
-          cx="32" cy="32" r={r} fill="none" stroke={color} strokeWidth="7"
-          strokeDasharray={`${dash} ${circ}`}
-          strokeLinecap="round"
-          transform="rotate(-90 32 32)"
-          style={{ transition: "stroke-dasharray 1s ease" }}
-        />
-        <text x="32" y="37" textAnchor="middle" fontSize="13" fontWeight="900" fill={color}>
-          {pct}%
-        </text>
-      </svg>
-    );
-  }
 
   return (
     <button
@@ -232,7 +261,7 @@ function PainelResumo({
 
         {/* Cards por sacramento com gráfico de rosca */}
         <div className="grid grid-cols-3 gap-3 mb-5">
-          {allStats.map(({ sac, total, etapasPercent, freqBaixa }) => {
+          {allStats.map(({ sac, total, etapasPercent, freqBaixa }, idx) => {
             const cfg = SACRAMENTO_CONFIG[sac];
             const ringColors: Record<SacramentoType, string> = {
               batismo: "#0284c7",
@@ -255,7 +284,7 @@ function PainelResumo({
                 className={cn("rounded-2xl p-3 border flex flex-col items-center gap-1.5", bgSolids[sac])}
               >
                 <p className="text-[10px] font-black uppercase tracking-wider text-slate-600 text-center">{cfg.label}</p>
-                <DonutRing pct={etapasPercent} color={ringColors[sac]} trackColor={ringTrack[sac]} />
+                <DonutRing pct={etapasPercent} color={ringColors[sac]} trackColor={ringTrack[sac]} delay={idx * 200} />
                 <p className="text-2xl font-black text-slate-800 leading-none">{total}</p>
                 <p className="text-[9px] text-slate-500 font-bold uppercase">catequiz.</p>
                 {freqBaixa > 0 && (
