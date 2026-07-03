@@ -1,11 +1,11 @@
 import { useState, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2, Crown } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2, Crown, ClipboardList, LayoutList, Target } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
-import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades, useReunioes } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
@@ -24,6 +24,7 @@ export default function RelatoriosTurma() {
   const { data: encontros = [], isLoading: loadingE } = useEncontros(id);
   const { data: catequizandos = [], isLoading: loadingC } = useCatequizandos(id);
   const { data: atividades = [], isLoading: loadingA } = useAtividades(id);
+  const { data: reunioes = [], isLoading: loadingR } = useReunioes(id);
   const { data: paroquias = [], isLoading: loadingP } = useParoquias();
   const { data: comunidades = [], isLoading: loadingCom } = useComunidades();
   const { diarios = [], isLoading: loadingD } = useDiarioEspiritual(id!);
@@ -36,7 +37,7 @@ export default function RelatoriosTurma() {
     return null;
   }
 
-  if (loadingT || loadingE || loadingC || loadingA || loadingP || loadingCom || loadingD) {
+  if (loadingT || loadingE || loadingC || loadingA || loadingR || loadingP || loadingCom || loadingD) {
     return <div className="flex justify-center min-h-[60vh]"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"/></div>;
   }
 
@@ -108,7 +109,7 @@ export default function RelatoriosTurma() {
       {tab === "inteligente" ? (
         <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} diarios={diarios} />
       ) : (
-        <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} org={orgNomes} />
+          <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} reunioes={reunioes} turma={turma} org={orgNomes} />
       )}
 
       </div>
@@ -428,11 +429,14 @@ const DOC_TYPES = [
   { id: "ficha_enc", label: "Fichas de Encontros", icon: CalendarDays, color: "from-sky-500 to-blue-600", bg: "bg-sky-500/10", border: "border-sky-500/30", text: "text-sky-600" },
   { id: "lista_chamada", label: "Grade de Frequência", icon: CheckCircle2, color: "from-emerald-500 to-teal-600", bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-600" },
   { id: "freq_encontros", label: "Frequência por Encontro", icon: Users, color: "from-rose-500 to-pink-600", bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-600" },
+  { id: "freq_branco", label: "Chamada em Branco", icon: ClipboardList, color: "from-cyan-500 to-teal-600", bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-600" },
+  { id: "ficha_reuniao_evento", label: "Fichas Reuniões/Eventos", icon: LayoutList, color: "from-fuchsia-500 to-pink-600", bg: "bg-fuchsia-500/10", border: "border-fuchsia-500/30", text: "text-fuchsia-600" },
+  { id: "plano_turma", label: "Plano da Turma", icon: Target, color: "from-orange-500 to-amber-600", bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-600" },
   { id: "boletim_turma", label: "Relatório da Turma", icon: FileText, color: "from-amber-500 to-orange-600", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-600" },
   { id: "materiais_apoio", label: "Materiais de Apoio", icon: BookOpen, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-600" },
 ];
 
-function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }: any) {
+function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, turma, org }: any) {
   const [docTipo, setDocTipo] = useState<string>("ficha_cat");
   const [printTarget, setPrintTarget] = useState<any>(null);
 
@@ -447,6 +451,9 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
   const [dataInicio, setDataInicio] = useState<string>("");
   const [dataFim, setDataFim] = useState<string>("");
   const [freqEncontroId, setFreqEncontroId] = useState<string>("todos");
+  const [freqBrancoEncontroId, setFreqBrancoEncontroId] = useState<string>("todos");
+  const [reuniaoEventoSubTab, setReuniaoEventoSubTab] = useState<"preenchida" | "branco">("preenchida");
+  const [reuniaoEventoTipoFiltro, setReuniaoEventoTipoFiltro] = useState<"reuniao" | "atividade">("reuniao");
 
   const meses = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -582,6 +589,10 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
       {docTipo === "ficha_enc" && <Templates.EncontroFullSheet doc={printTarget} org={org} turma={turma} />}
       {docTipo === "lista_chamada" && <Templates.SemesterAttendanceSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
       {docTipo === "freq_encontros" && <Templates.FrequenciaEncontrosSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} encontroId={printTarget?.freqEncontroId || "todos"} />}
+      {docTipo === "freq_branco" && <Templates.FrequenciaEmBrancoSheet org={org} turma={turma} catequizandos={catequizandos} encontro={printTarget?.encontro || null} />}
+      {docTipo === "ficha_reuniao_evento" && printTarget?.modo === "preenchida" && <Templates.AtividadeReuniaoSheet doc={printTarget.doc} org={org} turma={turma} tipo={printTarget.tipo} />}
+      {docTipo === "ficha_reuniao_evento" && printTarget?.modo === "branco" && <Templates.AtividadeReuniaoEmBrancoSheet org={org} turma={turma} tipo={printTarget.tipo} />}
+      {docTipo === "plano_turma" && <Templates.PlanoTurmaSheet org={org} turma={turma} encontros={encontros} atividades={atividades} reunioes={reunioes} />}
       {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
       {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
     </>
@@ -803,6 +814,202 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, turma, org }:
                       <button disabled={isGenerating} onClick={() => handleCompartilhar({ freqEncontroId, id: `freq-${freqEncontroId}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-emerald-600/20 disabled:opacity-50">
                         <Share2 className={cn("h-4 w-4 shrink-0", isGenerating && printTarget?.id === `freq-${freqEncontroId}` && "animate-spin")} /> 
                         {isGenerating && printTarget?.id === `freq-${freqEncontroId}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== CHAMADA EM BRANCO ===== */}
+              {docTipo === "freq_branco" && (
+                <div className="p-5 space-y-5 bg-card">
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Selecionar Encontro (opcional)</p>
+                    <p className="text-[10px] text-muted-foreground">Selecione um encontro para pré-preencher o cabeçalho, ou deixe em branco para ficha genérica.</p>
+                    <select
+                      className="w-full h-11 px-3 text-sm font-semibold rounded-xl border-2 border-black/10 bg-white focus:outline-none focus:border-cyan-500"
+                      value={freqBrancoEncontroId}
+                      onChange={(e) => setFreqBrancoEncontroId(e.target.value)}
+                    >
+                      <option value="todos">Ficha Genérica (sem encontro específico)</option>
+                      {[...encontros].sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime()).map((e: any) => (
+                        <option key={e.id} value={e.id}>{new Date(e.data + 'T12:00:00').toLocaleDateString('pt-BR')} - {e.tema}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => {
+                        const enc = freqBrancoEncontroId !== "todos" ? encontros.find((e: any) => e.id === freqBrancoEncontroId) : null;
+                        handlePrint({ encontro: enc, id: `freq-branco-${freqBrancoEncontroId}` });
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-cyan-600 hover:bg-cyan-700 active:bg-cyan-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-cyan-600/20"
+                    >
+                      <Printer className="h-4 w-4" /> Imprimir Ficha em Branco
+                    </button>
+                    {readyToShareParams?.id === `freq-branco-${freqBrancoEncontroId}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] hover:bg-[#1EBE5A] text-white rounded-xl font-bold animate-pulse">
+                        <Share2 className="h-4 w-4" /> Enviar Agora!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => {
+                        const enc = freqBrancoEncontroId !== "todos" ? encontros.find((e: any) => e.id === freqBrancoEncontroId) : null;
+                        handleCompartilhar({ encontro: enc, id: `freq-branco-${freqBrancoEncontroId}` });
+                      }} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4", isGenerating && printTarget?.id === `freq-branco-${freqBrancoEncontroId}` && "animate-spin")} />
+                        {isGenerating && printTarget?.id === `freq-branco-${freqBrancoEncontroId}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== FICHAS REUNIÕES / EVENTOS ===== */}
+              {docTipo === "ficha_reuniao_evento" && (
+                <div className="p-5 space-y-5 bg-card">
+                  {/* SubTabs: Preenchida / Em Branco */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Versão da Ficha</p>
+                    <div className="flex gap-2">
+                      {(["preenchida", "branco"] as const).map(sub => (
+                        <button
+                          key={sub}
+                          onClick={() => setReuniaoEventoSubTab(sub)}
+                          className={cn(
+                            "flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            reuniaoEventoSubTab === sub
+                              ? "bg-fuchsia-600 text-white shadow-sm scale-105"
+                              : "bg-muted text-muted-foreground hover:bg-muted/80"
+                          )}
+                        >
+                          {sub === "preenchida" ? "📋 Preenchida" : "✏️ Em Branco"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tipo: Reunião / Atividade */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Tipo</p>
+                    <div className="flex gap-2">
+                      {(["reuniao", "atividade"] as const).map(tipo => (
+                        <button
+                          key={tipo}
+                          onClick={() => setReuniaoEventoTipoFiltro(tipo)}
+                          className={cn(
+                            "flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                            reuniaoEventoTipoFiltro === tipo
+                              ? "bg-fuchsia-500/20 text-fuchsia-700 border-2 border-fuchsia-500/40 scale-105"
+                              : "bg-muted text-muted-foreground border-2 border-transparent hover:bg-muted/80"
+                          )}
+                        >
+                          {tipo === "reuniao" ? "🤝 Reuniões" : "🎉 Eventos"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Ficha em Branco */}
+                  {reuniaoEventoSubTab === "branco" && (
+                    <div className="space-y-3">
+                      <p className="text-[10px] text-muted-foreground">Ficha em branco para preenchimento manual pelo catequista.</p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={() => handlePrint({ modo: "branco", tipo: reuniaoEventoTipoFiltro, id: `branco-${reuniaoEventoTipoFiltro}` })}
+                          className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-fuchsia-600 hover:bg-fuchsia-700 text-white rounded-xl font-bold shadow-sm"
+                        >
+                          <Printer className="h-4 w-4" /> Imprimir Ficha em Branco
+                        </button>
+                        {readyToShareParams?.id === `branco-${reuniaoEventoTipoFiltro}` ? (
+                          <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] text-white rounded-xl font-bold animate-pulse">
+                            <Share2 className="h-4 w-4" /> Enviar!
+                          </button>
+                        ) : (
+                          <button disabled={isGenerating} onClick={() => handleCompartilhar({ modo: "branco", tipo: reuniaoEventoTipoFiltro, id: `branco-${reuniaoEventoTipoFiltro}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold disabled:opacity-50">
+                            <Share2 className="h-4 w-4" /> Compartilhar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Lista de itens preenchidos */}
+                  {reuniaoEventoSubTab === "preenchida" && (
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                        {reuniaoEventoTipoFiltro === "reuniao" ? `Reuniões (${reunioes.length})` : `Eventos/Atividades (${atividades.length})`}
+                      </p>
+                      {(reuniaoEventoTipoFiltro === "reuniao" ? reunioes : atividades).length === 0 ? (
+                        <div className="py-8 text-center text-xs text-muted-foreground italic bg-muted/20 rounded-2xl border border-dashed border-black/5">
+                          Nenhum {reuniaoEventoTipoFiltro === "reuniao" ? "reunião" : "evento"} cadastrado.
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-black/5 border border-black/5 rounded-2xl overflow-hidden">
+                          {[...(reuniaoEventoTipoFiltro === "reuniao" ? reunioes : atividades)]
+                            .sort((a: any, b: any) => new Date(a.data).getTime() - new Date(b.data).getTime())
+                            .map((item: any) => {
+                              const label = item.nome || item.tipo || item.tema || "—";
+                              const itemId = `reuniao-evento-${item.id}`;
+                              return (
+                                <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-3.5 hover:bg-fuchsia-500/5 gap-3 bg-card">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-xl bg-fuchsia-500/10 flex items-center justify-center shrink-0">
+                                      <LayoutList className="h-4 w-4 text-fuchsia-600" />
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-bold text-foreground truncate max-w-[180px]">{label}</p>
+                                      <p className="text-[11px] text-muted-foreground">{item.data ? new Date(item.data + 'T12:00:00').toLocaleDateString('pt-BR') : '—'} • {item.local || "—"}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                                    <button onClick={() => handlePrint({ modo: "preenchida", doc: item, tipo: reuniaoEventoTipoFiltro, id: itemId })} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-fuchsia-600 bg-fuchsia-500/10 px-3 py-2 rounded-xl border border-fuchsia-500/20 hover:bg-fuchsia-500/20 active:scale-95">
+                                      <Printer className="h-3 w-3" /> Imprimir
+                                    </button>
+                                    {readyToShareParams?.id === itemId ? (
+                                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl animate-pulse">
+                                        <Share2 className="h-3 w-3" /> Enviar!
+                                      </button>
+                                    ) : (
+                                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ modo: "preenchida", doc: item, tipo: reuniaoEventoTipoFiltro, id: itemId })} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 active:scale-95 disabled:opacity-50">
+                                        <Share2 className={cn("h-3 w-3", isGenerating && printTarget?.id === itemId && "animate-spin")} />
+                                        {isGenerating && printTarget?.id === itemId ? "Aguarde" : "Compartilhar"}
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ===== PLANO DA TURMA ===== */}
+              {docTipo === "plano_turma" && (
+                <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-5 hover:bg-orange-500/5 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-orange-500/10 flex items-center justify-center shrink-0">
+                      <Target className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-foreground">Plano Anual — {turma.nome}</p>
+                      <p className="text-[11px] text-muted-foreground">{encontros.length} encontros • {atividades.length} eventos • {reunioes.length} reuniões</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+                    <button onClick={() => handlePrint({ ...turma, _plano: true })} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-orange-600 bg-orange-500/10 px-3 py-2.5 rounded-xl border border-orange-500/20 hover:bg-orange-500/20 active:scale-95">
+                      <Printer className="h-3 w-3" /> Imprimir
+                    </button>
+                    {readyToShareParams?.id === `plano-${turma.id}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2.5 rounded-xl animate-pulse">
+                        <Share2 className="h-3 w-3" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ ...turma, id: `plano-${turma.id}` })} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 active:scale-95 disabled:opacity-50">
+                        <Share2 className={cn("h-3 w-3", isGenerating && printTarget?.id === `plano-${turma.id}` && "animate-spin")} />
+                        {isGenerating && printTarget?.id === `plano-${turma.id}` ? "Aguarde" : "Compartilhar"}
                       </button>
                     )}
                   </div>

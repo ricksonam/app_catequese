@@ -745,6 +745,479 @@ export const MateriaisApoioSheet = ({ org, turma, encontros, filtroInfo }: any) 
 // RELATÓRIO DE FREQUÊNCIA POR ENCONTRO
 // ==========================================
 
+// ==========================================
+// FICHA DE FREQUÊNCIA EM BRANCO (por encontro)
+// ==========================================
+
+export const FrequenciaEmBrancoSheet = ({ org, turma, catequizandos, encontro }: any) => {
+  const cats = (catequizandos || [])
+    .filter((c: any) => c.status === 'ativo')
+    .sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+
+  return (
+    <div className="p-6 text-black bg-white font-sans">
+      <PrintHeader
+        titulo="Ficha de Frequência"
+        subtitulo={encontro ? `${encontro.tema} — ${formatarDataVigente(encontro.data)}` : "Encontro: ___________________________________"}
+        paroquia={org.paroquia}
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      {!encontro && (
+        <div className="grid grid-cols-2 gap-6 mb-4 text-xs">
+          <div>
+            <span className="font-black uppercase text-gray-500 tracking-widest text-[9px]">Data do Encontro</span>
+            <div className="border-b-2 border-[#2c1810] mt-1 h-6" />
+          </div>
+          <div>
+            <span className="font-black uppercase text-gray-500 tracking-widest text-[9px]">Tema / Assunto</span>
+            <div className="border-b-2 border-[#2c1810] mt-1 h-6" />
+          </div>
+        </div>
+      )}
+
+      <table className="w-full border-collapse border-2 border-[#2c1810] text-xs">
+        <thead>
+          <tr className="bg-gray-100 border-b-2 border-[#2c1810]">
+            <th className="border-r border-[#2c1810] p-2 w-10 text-center font-black uppercase">Nº</th>
+            <th className="border-r border-[#2c1810] p-2 text-left font-black uppercase">Nome do Catequizando</th>
+            <th className="border-r border-[#2c1810] p-2 w-20 text-center font-black uppercase">Presença</th>
+            <th className="p-2 text-left font-black uppercase w-40">Observação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cats.map((c: any, i: number) => (
+            <tr key={c.id} className="border-b border-gray-300 h-9">
+              <td className="border-r border-[#2c1810] p-1 text-center font-bold">{i + 1}</td>
+              <td className="border-r border-[#2c1810] p-1 font-bold uppercase">{c.nome}</td>
+              <td className="border-r border-[#2c1810] p-1 text-center"></td>
+              <td className="p-1"></td>
+            </tr>
+          ))}
+          {/* Extra blank rows */}
+          {Array.from({ length: Math.max(3, 20 - cats.length) }).map((_, i) => (
+            <tr key={`blank-${i}`} className="h-9 border-b border-gray-200">
+              <td className="border-r border-[#2c1810] text-center text-xs text-gray-300">{cats.length + i + 1}</td>
+              <td className="border-r border-[#2c1810]"></td>
+              <td className="border-r border-[#2c1810]"></td>
+              <td></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="mt-4 grid grid-cols-3 gap-4 text-[9px] font-bold uppercase tracking-widest text-gray-500">
+        <p>P = Presente &bull; F = Falta &bull; J = Justificada</p>
+        <p className="text-center">Total Presentes: _______ / {cats.length}</p>
+        <p className="text-right">Catequista: _________________________</p>
+      </div>
+
+      <div className="mt-6 pt-4 border-t border-dashed border-gray-300 grid grid-cols-2 gap-8 text-[8px] font-bold uppercase tracking-widest text-center text-gray-400">
+        <div>
+          <div className="h-8 border-b border-gray-300 mb-1"></div>
+          Assinatura do Catequista
+        </div>
+        <div>
+          <div className="h-8 border-b border-gray-300 mb-1"></div>
+          Visto da Coordenação
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// FICHA DE ATIVIDADE / REUNIÃO — PREENCHIDA
+// ==========================================
+
+export const AtividadeReuniaoSheet = ({ doc, org, turma, tipo }: any) => {
+  const isReuniao = tipo === 'reuniao';
+  return (
+    <div className="p-6 text-black bg-white font-sans min-h-screen">
+      <PrintHeader
+        titulo={isReuniao ? "Ficha de Reunião / Evento" : "Ficha de Atividade e Evento"}
+        subtitulo={isReuniao ? "Registro Oficial de Reunião ou Encontro de Catequistas" : "Planejamento e Registro de Atividades Extracurriculares"}
+        paroquia={org.paroquia}
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      {/* Identificação */}
+      <div className="border-2 border-[#2c1810] p-4 mb-4 relative bg-white">
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-[#2c1810]"></div>
+        <p className="text-[8px] font-black uppercase text-gray-500 tracking-[0.2em] mb-1">
+          {isReuniao ? "Tipo de Reunião" : "Nome do Evento / Atividade"}
+        </p>
+        <h2 className="text-xl font-black uppercase text-[#2c1810] mb-3">
+          {doc.nome || doc.tipo || doc.tema || "—"}
+        </h2>
+
+        <div className="grid grid-cols-3 gap-4 pt-3 border-t border-gray-100 text-[10px]">
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest mb-0.5">Data</p>
+            <p className="font-bold">{doc.data ? formatarDataVigente(doc.data) : "—"}</p>
+          </div>
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest mb-0.5">Horário</p>
+            <p className="font-bold">{doc.horario || "—"}</p>
+          </div>
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest mb-0.5">Local</p>
+            <p className="font-bold uppercase">{doc.local || "—"}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Descrição / Pauta */}
+      <div className="border border-[#2c1810] p-3 mb-4 min-h-[80px]">
+        <p className="text-[8px] font-black uppercase text-[#2c1810] tracking-widest mb-1 border-b border-gray-100 pb-1">
+          {isReuniao ? "Pauta / Deliberações" : "Descrição do Evento"}
+        </p>
+        <p className="text-xs font-serif leading-relaxed whitespace-pre-wrap text-gray-800">
+          {doc.descricao || (doc.pautas?.map((p: any, i: number) => `${i+1}. ${p.titulo}${p.descricao ? `: ${p.descricao}` : ''}`).join('\n')) || "—"}
+        </p>
+      </div>
+
+      {/* Observações */}
+      {doc.observacao && (
+        <div className="border border-dashed border-[#2c1810] p-3 mb-4 bg-yellow-50/30">
+          <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Observações</p>
+          <p className="text-xs font-serif italic leading-relaxed">{doc.observacao}</p>
+        </div>
+      )}
+
+      {/* Lista de Presença */}
+      <div className="mb-4">
+        <h3 className="text-[10px] font-black uppercase border-b-2 border-[#2c1810] pb-1 mb-2 tracking-widest text-[#2c1810]">
+          Registro de Presença
+        </h3>
+        <table className="w-full border-collapse border border-[#2c1810] text-[10px]">
+          <thead>
+            <tr className="bg-gray-100 border-b border-[#2c1810]">
+              <th className="border-r border-[#2c1810] p-1.5 w-8 text-center font-black">Nº</th>
+              <th className="border-r border-[#2c1810] p-1.5 text-left font-black uppercase">Participante</th>
+              <th className="border-r border-[#2c1810] p-1.5 w-20 text-center font-black uppercase">Presente</th>
+              <th className="p-1.5 text-left font-black uppercase w-40">Assinatura</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(doc.presencas || []).length > 0 ? (
+              (doc.presencas || []).map((id: string, idx: number) => (
+                <tr key={`p-${idx}`} className="border-b border-gray-200 h-8">
+                  <td className="border-r border-[#2c1810] p-1 text-center font-bold">{idx + 1}</td>
+                  <td className="border-r border-[#2c1810] p-1 font-bold uppercase text-xs">Catequista</td>
+                  <td className="border-r border-[#2c1810] p-1 text-center font-black text-emerald-800">X</td>
+                  <td className="p-1"></td>
+                </tr>
+              ))
+            ) : (
+              Array.from({ length: 12 }).map((_, i) => (
+                <tr key={`blank-${i}`} className="h-8 border-b border-gray-200">
+                  <td className="border-r border-[#2c1810] p-1 text-center text-gray-300">{i + 1}</td>
+                  <td className="border-r border-[#2c1810]"></td>
+                  <td className="border-r border-[#2c1810]"></td>
+                  <td></td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-6 pt-4 border-t border-dashed border-gray-300 grid grid-cols-2 gap-8 text-[8px] font-bold uppercase tracking-widest text-center text-gray-400">
+        <div>
+          <div className="h-8 border-b border-gray-300 mb-1"></div>
+          Responsável / Coordenador
+        </div>
+        <div>
+          <div className="h-8 border-b border-gray-300 mb-1"></div>
+          Visto da Coordenação
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// FICHA EM BRANCO — ATIVIDADE / REUNIÃO
+// ==========================================
+
+export const AtividadeReuniaoEmBrancoSheet = ({ org, turma, tipo }: any) => {
+  const isReuniao = tipo === 'reuniao';
+  return (
+    <div className="p-6 text-black bg-white font-sans min-h-screen">
+      <PrintHeader
+        titulo={isReuniao ? "Ficha em Branco — Reunião / Evento" : "Ficha em Branco — Atividade e Evento"}
+        subtitulo="Para preenchimento manual pelo catequista"
+        paroquia={org.paroquia}
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      {/* Identificação em Branco */}
+      <div className="border-2 border-[#2c1810] p-4 mb-4">
+        <div className="grid grid-cols-2 gap-4 mb-3">
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">
+              {isReuniao ? "Tipo de Reunião / Evento" : "Nome do Evento / Atividade"}
+            </p>
+            <div className="border-b-2 border-[#2c1810] h-6"></div>
+          </div>
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">
+              {isReuniao ? "Classificação" : "Tipo (Passeio / Celebração / Outro)"}
+            </p>
+            <div className="border-b-2 border-[#2c1810] h-6"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Data</p>
+            <div className="border-b-2 border-[#2c1810] h-6"></div>
+          </div>
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Horário</p>
+            <div className="border-b-2 border-[#2c1810] h-6"></div>
+          </div>
+          <div>
+            <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Local</p>
+            <div className="border-b-2 border-[#2c1810] h-6"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Descrição / Pauta em branco */}
+      <div className="border border-[#2c1810] p-3 mb-4">
+        <p className="text-[8px] font-black uppercase text-[#2c1810] tracking-widest mb-2 border-b border-gray-100 pb-1">
+          {isReuniao ? "Pauta / Deliberações" : "Descrição do Evento / Objetivos"}
+        </p>
+        <div className="space-y-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="border-b border-gray-200 h-6"></div>
+          ))}
+        </div>
+      </div>
+
+      {/* Observações em branco */}
+      <div className="border border-dashed border-[#2c1810] p-3 mb-4">
+        <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-2">Observações / Materiais Necessários</p>
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="border-b border-gray-200 h-6"></div>
+          ))}
+        </div>
+      </div>
+
+      {/* Lista de Presença em branco */}
+      <div className="mb-4">
+        <h3 className="text-[10px] font-black uppercase border-b-2 border-[#2c1810] pb-1 mb-2 tracking-widest text-[#2c1810]">
+          Registro de Presença
+        </h3>
+        <table className="w-full border-collapse border border-[#2c1810] text-[10px]">
+          <thead>
+            <tr className="bg-gray-100 border-b border-[#2c1810]">
+              <th className="border-r border-[#2c1810] p-1.5 w-8 text-center font-black">Nº</th>
+              <th className="border-r border-[#2c1810] p-1.5 text-left font-black uppercase">Nome do Participante</th>
+              <th className="border-r border-[#2c1810] p-1.5 w-20 text-center font-black uppercase">Presente</th>
+              <th className="p-1.5 text-left font-black uppercase w-40">Assinatura</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 15 }).map((_, i) => (
+              <tr key={i} className="h-8 border-b border-gray-200">
+                <td className="border-r border-[#2c1810] p-1 text-center text-gray-300">{i + 1}</td>
+                <td className="border-r border-[#2c1810]"></td>
+                <td className="border-r border-[#2c1810]"></td>
+                <td></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-6 pt-4 border-t border-dashed border-gray-300 grid grid-cols-2 gap-8 text-[8px] font-bold uppercase tracking-widest text-center text-gray-400">
+        <div>
+          <div className="h-8 border-b border-gray-300 mb-1"></div>
+          Responsável / Coordenador
+        </div>
+        <div>
+          <div className="h-8 border-b border-gray-300 mb-1"></div>
+          Visto da Coordenação
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// RELATÓRIO DO PLANO DA TURMA
+// ==========================================
+
+export const PlanoTurmaSheet = ({ org, turma, encontros, atividades, reunioes }: any) => {
+  const meses = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
+  // Unifica e ordena todos os itens por data
+  const allItems = [
+    ...(encontros || []).map((e: any) => ({ ...e, _tipo: 'encontro', _titulo: e.tema })),
+    ...(atividades || []).map((a: any) => ({ ...a, _tipo: 'atividade', _titulo: a.nome })),
+    ...(reunioes || []).map((r: any) => ({ ...r, _tipo: 'reuniao', _titulo: r.nome || r.tipo })),
+  ].filter(i => !!i.data)
+   .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
+
+  // Agrupa por mês
+  const grouped: Record<string, any[]> = {};
+  allItems.forEach(item => {
+    const d = new Date(item.data + 'T12:00:00');
+    const key = meses[d.getMonth()] + ' / ' + d.getFullYear();
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(item);
+  });
+
+  const totalEncontros = (encontros || []).length;
+  const realizados = (encontros || []).filter((e: any) => e.status === 'realizado').length;
+
+  return (
+    <div className="p-8 text-black bg-white font-sans min-h-screen">
+      <PrintHeader
+        titulo="Plano Anual da Turma"
+        subtitulo="Cronograma Integrado — Encontros, Eventos e Reuniões"
+        paroquia={org.paroquia}
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      {/* Painel Estratégico */}
+      {(turma.proposito || turma.objetivo || turma.metas) && (
+        <div className="border-2 border-[#2c1810] mb-8">
+          <div className="bg-[#2c1810] px-4 py-2">
+            <p className="text-white text-[10px] font-black uppercase tracking-widest">Painel Estratégico da Turma</p>
+          </div>
+          <div className="grid grid-cols-3 divide-x divide-[#2c1810]">
+            {turma.proposito && (
+              <div className="p-4">
+                <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-2">Propósito</p>
+                <p className="text-xs font-serif leading-relaxed whitespace-pre-wrap">{turma.proposito}</p>
+              </div>
+            )}
+            {turma.objetivo && (
+              <div className="p-4">
+                <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-2">Objetivos</p>
+                <p className="text-xs font-serif leading-relaxed whitespace-pre-wrap">{turma.objetivo}</p>
+              </div>
+            )}
+            {turma.metas && (
+              <div className="p-4">
+                <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-2">Metas Práticas</p>
+                <p className="text-xs font-serif leading-relaxed whitespace-pre-wrap">{turma.metas}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Resumo de Progresso */}
+      <div className="grid grid-cols-4 border-2 border-[#2c1810] divide-x divide-[#2c1810] mb-8 text-center">
+        <div className="p-4">
+          <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Encontros Planejados</p>
+          <p className="text-2xl font-black text-[#2c1810]">{totalEncontros}</p>
+        </div>
+        <div className="p-4 bg-gray-50">
+          <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Realizados</p>
+          <p className="text-2xl font-black text-emerald-800">{realizados}</p>
+        </div>
+        <div className="p-4">
+          <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Atividades / Eventos</p>
+          <p className="text-2xl font-black text-blue-800">{(atividades || []).length}</p>
+        </div>
+        <div className="p-4 bg-gray-50">
+          <p className="text-[8px] font-black uppercase text-gray-500 tracking-widest mb-1">Reuniões</p>
+          <p className="text-2xl font-black text-purple-800">{(reunioes || []).length}</p>
+        </div>
+      </div>
+
+      {/* Cronograma por Mês */}
+      <div className="space-y-8">
+        {Object.entries(grouped).map(([mes, items]) => (
+          <div key={mes} className="break-inside-avoid">
+            <h3 className="text-xs font-black uppercase bg-[#2c1810] text-white px-4 py-1.5 tracking-widest inline-block mb-0">
+              {mes}
+            </h3>
+            <table className="w-full border-collapse border-2 border-[#2c1810]">
+              <thead>
+                <tr className="bg-gray-100 border-b border-[#2c1810] text-[9px] font-black uppercase">
+                  <th className="border-r border-[#2c1810] p-2 text-center w-20">Data</th>
+                  <th className="border-r border-[#2c1810] p-2 text-center w-24">Tipo</th>
+                  <th className="border-r border-[#2c1810] p-2 text-left">Tema / Título</th>
+                  <th className="border-r border-[#2c1810] p-2 text-center w-20">Horário</th>
+                  <th className="border-r border-[#2c1810] p-2 text-left w-28">Local</th>
+                  <th className="p-2 text-center w-20">Situação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item: any, j: number) => (
+                  <tr key={j} className="border-b border-gray-300">
+                    <td className="border-r border-[#2c1810] p-2 text-center text-xs font-bold">
+                      {new Date(item.data + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                    </td>
+                    <td className="border-r border-[#2c1810] p-2 text-center">
+                      <span className={cn(
+                        "text-[8px] font-black uppercase px-1.5 py-0.5 border",
+                        item._tipo === 'encontro' ? "border-blue-400 text-blue-800 bg-blue-50" :
+                        item._tipo === 'atividade' ? "border-emerald-400 text-emerald-800 bg-emerald-50" :
+                        "border-purple-400 text-purple-800 bg-purple-50"
+                      )}>
+                        {item._tipo === 'encontro' ? 'Encontro' : item._tipo === 'atividade' ? 'Evento' : 'Reunião'}
+                      </span>
+                    </td>
+                    <td className="border-r border-[#2c1810] p-2 text-xs font-bold uppercase">{item._titulo}</td>
+                    <td className="border-r border-[#2c1810] p-2 text-center text-xs">{item.horario || '—'}</td>
+                    <td className="border-r border-[#2c1810] p-2 text-xs uppercase">{item.local || 'Sala de Catequese'}</td>
+                    <td className="p-2 text-center">
+                      {item.status ? (
+                        <span className={cn(
+                          "text-[8px] font-black uppercase px-1.5 py-0.5",
+                          item.status === 'realizado' ? "text-emerald-800" :
+                          item.status === 'cancelado' ? "text-red-800" :
+                          "text-amber-800"
+                        )}>
+                          {item.status}
+                        </span>
+                      ) : (
+                        <span className="text-[8px] text-gray-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+
+        {Object.keys(grouped).length === 0 && (
+          <p className="text-center py-10 text-sm text-gray-500 italic">Nenhum item planejado cadastrado ainda.</p>
+        )}
+      </div>
+
+      <div className="mt-10 grid grid-cols-2 gap-8 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+        <p>Gerado em: {new Date().toLocaleDateString('pt-BR')}</p>
+        <p className="text-right">Assinatura Catequista: ___________________________</p>
+      </div>
+    </div>
+  );
+};
+
+
 export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros, encontroId }: any) => {
   // Apenas encontros realizados para o relatório de frequência
   let encsRealizados = (encontros || [])
