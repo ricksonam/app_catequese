@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
+import { useEncontros, useCatequizandos, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { ArrowLeft, BookHeart, Save, ChevronDown, BookOpen, Sparkles, TrendingUp, Users } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 import { cn, formatarDataVigente } from "@/lib/utils";
@@ -22,6 +22,7 @@ export default function DiarioEspiritualForm() {
   const { data: encontros = [] } = useEncontros(id);
   const { data: catequizandos = [] } = useCatequizandos(id);
   const { data: atividades = [] } = useAtividades(id);
+  const { data: reunioesData = [] } = useReunioes(id);
 
   const [tipoRegistro, setTipoRegistro] = useState<TipoRegistro>("encontro");
   // Ocultamos o input de data no formulário, mas mantemos o estado para salvar automaticamente
@@ -57,10 +58,8 @@ export default function DiarioEspiritualForm() {
     !a.tipo?.toLowerCase().includes("reunião") && !a.tipo?.toLowerCase().includes("reuniao")
   );
 
-  // Reuniões filtradas
-  const reunioes = atividades.filter((a: any) =>
-    a.tipo?.toLowerCase().includes("reunião") || a.tipo?.toLowerCase().includes("reuniao")
-  );
+  // Reuniões do módulo Reuniões (tabela reunioes)
+  const reunioes = reunioesData;
 
   useEffect(() => {
     if (catequizandos.length > 0) {
