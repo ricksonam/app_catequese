@@ -591,13 +591,13 @@ function CardDataCelebracao({
             </button>
           </div>
         ) : dataCelebracao ? (
-          <div className="mt-1">
+          <div className="mt-1 flex flex-col items-center text-center">
             <p className={cn("text-xl font-black leading-tight", urgente ? "text-orange-700" : passou ? "text-emerald-700" : "text-violet-800")}>
               {new Date(dataCelebracao + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
             </p>
             {diasRestantes !== null && (
               <div className={cn(
-                "inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-black",
+                "inline-flex justify-center items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-black",
                 urgente
                   ? "bg-orange-100 text-orange-700"
                   : passou
@@ -1332,26 +1332,7 @@ export default function TrilhaSacramental() {
         ))}
       </div>
 
-      {/* Botão de gerenciar catequizandos da trilha */}
-      <button
-        onClick={() => setModalSelecaoOpen(true)}
-        className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
-            <UserPlus className="h-5 w-5 text-primary" />
-          </div>
-          <div className="text-left">
-            <p className="text-base font-black text-primary">Gerenciar catequizandos da trilha</p>
-            <p className="text-sm text-muted-foreground font-semibold">
-              {catequizandosTrilhaIds.length === 0
-                ? `Nenhum selecionado para ${sacramentoLabel}`
-                : `${catequizandosTrilhaIds.length} catequizando${catequizandosTrilhaIds.length !== 1 ? "s" : ""} em ${sacramentoLabel}`}
-            </p>
-          </div>
-        </div>
-        <ChevronDown className="h-5 w-5 text-primary/60 group-hover:text-primary transition-colors shrink-0" />
-      </button>
+      {/* O botão "Gerenciar catequizandos" foi movido para depois do rito */}
 
       {/* PAINEL INTELIGENTE — todos os sacramentos com gráficos */}
       <PainelResumo
@@ -1445,6 +1426,27 @@ export default function TrilhaSacramental() {
           )}
         </div>
       )}
+
+      {/* Botão de gerenciar catequizandos da trilha (movido para cá) */}
+      <button
+        onClick={() => setModalSelecaoOpen(true)}
+        className="w-full flex items-center justify-between px-5 py-4 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors shrink-0">
+            <UserPlus className="h-5 w-5 text-primary" />
+          </div>
+          <div className="text-left min-w-0">
+            <p className="text-base font-black text-primary truncate">Gerenciar catequizandos da trilha</p>
+            <p className="text-sm text-muted-foreground font-semibold truncate">
+              {catequizandosTrilhaIds.length === 0
+                ? `Nenhum selecionado para ${sacramentoLabel}`
+                : `${catequizandosTrilhaIds.length} catequizando${catequizandosTrilhaIds.length !== 1 ? "s" : ""} em ${sacramentoLabel}`}
+            </p>
+          </div>
+        </div>
+        <ChevronDown className="h-5 w-5 text-primary/60 group-hover:text-primary transition-colors shrink-0" />
+      </button>
 
       {/* QR Modal */}
       {turma?.codigoAcesso && (() => {
