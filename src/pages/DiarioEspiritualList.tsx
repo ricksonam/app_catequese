@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown, Users } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type TipoKey = "encontro" | "evento" | "evolucao";
+type TipoKey = "encontro" | "evento" | "evolucao" | "reuniao";
 
 const TIPO_CONFIG: Record<TipoKey, {
   label: string;
@@ -68,6 +68,20 @@ const TIPO_CONFIG: Record<TipoKey, {
     shadowColor: "shadow-emerald-500/30",
     ringColor: "ring-emerald-500",
   },
+  reuniao: {
+    label: "Reunião",
+    emoji: "👥",
+    icon: Users,
+    gradient: "from-blue-600 to-blue-800",
+    gradientLight: "from-blue-50 to-blue-100/60",
+    textColor: "text-blue-700",
+    borderColor: "border-blue-500/25",
+    accentColor: "bg-blue-600",
+    badgeBg: "bg-blue-600",
+    chipBg: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+    shadowColor: "shadow-blue-500/30",
+    ringColor: "ring-blue-500",
+  },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -75,6 +89,7 @@ const TIPO_CONFIG: Record<TipoKey, {
 function getTipo(item: any): TipoKey {
   if (item.tipo_registro === "evento") return "evento";
   if (item.tipo_registro === "evolucao") return "evolucao";
+  if (item.tipo_registro === "reuniao") return "reuniao";
   return "encontro";
 }
 
@@ -82,6 +97,7 @@ function getTitulo(item: any): string {
   const tipo = getTipo(item);
   if (tipo === "encontro") return item.encontros ? item.encontros.tema : "Registro Avulso";
   if (tipo === "evento") return item.evento_nome ? item.evento_nome : "Registro de Evento";
+  if (tipo === "reuniao") return "Registro de Reunião";
   return "Evolução Espiritual";
 }
 
@@ -147,6 +163,7 @@ function MonthBlock({ monthKey, items, onView }: { monthKey: string; items: any[
     encontro: items.filter((i) => getTipo(i) === "encontro"),
     evento:   items.filter((i) => getTipo(i) === "evento"),
     evolucao: items.filter((i) => getTipo(i) === "evolucao"),
+    reuniao:  items.filter((i) => getTipo(i) === "reuniao"),
   }), [items]);
 
   const toggle = (tipo: TipoKey) => setOpenTipo((prev) => (prev === tipo ? null : tipo));
@@ -162,9 +179,9 @@ function MonthBlock({ monthKey, items, onView }: { monthKey: string; items: any[
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-200 to-transparent" />
       </div>
 
-      {/* 3 summary cards */}
-      <div className="grid grid-cols-3 gap-2.5">
-        {(["encontro", "evento", "evolucao"] as TipoKey[]).map((tipo) => {
+      {/* 4 summary cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+        {(["encontro", "evento", "evolucao", "reuniao"] as TipoKey[]).map((tipo) => {
           const cfg = TIPO_CONFIG[tipo];
           const count = byTipo[tipo].length;
           const isOpen = openTipo === tipo;
@@ -390,7 +407,7 @@ export default function DiarioEspiritualList() {
                   {viewItem.como_foi && tipo !== "evolucao" && (
                     <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-100">
                       <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">
-                        {tipo === "evento" ? "Como foi o evento" : "Como foi o encontro"}
+                        {tipo === "evento" ? "Como foi o evento" : tipo === "reuniao" ? "Pauta da Reunião" : "Como foi o encontro"}
                       </h4>
                       <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.como_foi}</p>
                     </div>
@@ -414,8 +431,16 @@ export default function DiarioEspiritualList() {
                     </div>
                   )}
 
+                  {/* Participantes Reunião */}
+                  {tipo === "reuniao" && viewItem.participantes_reuniao && (
+                    <div className="bg-blue-500/5 rounded-2xl p-4 border border-blue-500/15">
+                      <h4 className="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-2">Participantes</h4>
+                      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{viewItem.participantes_reuniao}</p>
+                    </div>
+                  )}
+
                   {/* Avaliação participação */}
-                  {tipo !== "evolucao" && Array.isArray(viewItem.avaliacoes_catequizandos) && viewItem.avaliacoes_catequizandos.length > 0 && (
+                  {(tipo === "encontro" || tipo === "evento") && Array.isArray(viewItem.avaliacoes_catequizandos) && viewItem.avaliacoes_catequizandos.length > 0 && (
                     <div className="bg-white rounded-2xl p-5 border border-zinc-100 shadow-sm">
                       <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Avaliação de Participação</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

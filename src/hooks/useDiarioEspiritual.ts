@@ -7,7 +7,7 @@ export type DiarioEspiritual = {
   id: string;
   user_id: string;
   turma_id: string;
-  tipo_registro: "encontro" | "evento" | "evolucao";
+  tipo_registro: "encontro" | "evento" | "evolucao" | "reuniao";
   encontro_id: string | null;
   evento_id: string | null;
   data_registro: string;
@@ -18,6 +18,7 @@ export type DiarioEspiritual = {
   evolucao_espiritual: string;
   avaliacoes_catequizandos?: any;
   evolucao_catequizandos?: any;
+  participantes_reuniao?: string;
   criado_em: string;
 };
 
@@ -28,20 +29,22 @@ function serializePayload(raw: any): any {
   // Garante que tipo_registro seja salvo
   if (!payload.tipo_registro) payload.tipo_registro = "encontro";
 
-  // Serializa avaliacoes dentro de observacoes_catequizandos
-  if (payload.avaliacoes_catequizandos !== undefined) {
+  // Serializa avaliacoes e participantes_reuniao dentro de observacoes_catequizandos
+  if (payload.avaliacoes_catequizandos !== undefined || payload.participantes_reuniao !== undefined) {
     const avaliacoes = payload.avaliacoes_catequizandos;
+    const participantes = payload.participantes_reuniao;
     const text = typeof payload.observacoes_catequizandos === "string" &&
       !payload.observacoes_catequizandos.startsWith("{")
       ? payload.observacoes_catequizandos
       : "";
 
-    if (Array.isArray(avaliacoes) && avaliacoes.length > 0) {
-      payload.observacoes_catequizandos = JSON.stringify({ text, avaliacoes });
+    if ((Array.isArray(avaliacoes) && avaliacoes.length > 0) || participantes) {
+      payload.observacoes_catequizandos = JSON.stringify({ text, avaliacoes, participantes });
     } else {
       payload.observacoes_catequizandos = text;
     }
     delete payload.avaliacoes_catequizandos;
+    delete payload.participantes_reuniao;
   }
 
   // Serializa evolucoes dentro de evolucao_espiritual
@@ -75,14 +78,17 @@ function deserializeItem(item: any): any {
   // Extrai tipo_registro (pode ser texto direto ou default encontro)
   if (!parsed.tipo_registro) parsed.tipo_registro = "encontro";
 
-  // Extrai avaliacoes e texto de observacoes_catequizandos
+  // Extrai avaliacoes, participantes e texto de observacoes_catequizandos
   try {
     if (parsed.observacoes_catequizandos && parsed.observacoes_catequizandos.startsWith("{")) {
       const obs = JSON.parse(parsed.observacoes_catequizandos);
       if (obs.avaliacoes) {
         parsed.avaliacoes_catequizandos = obs.avaliacoes;
-        parsed.observacoes_catequizandos = obs.text || "";
       }
+      if (obs.participantes) {
+        parsed.participantes_reuniao = obs.participantes;
+      }
+      parsed.observacoes_catequizandos = obs.text || "";
     }
   } catch (_) {}
 

@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { useEncontros, useCatequizandos, useAtividades } from "@/hooks/useSupabaseData";
-import { ArrowLeft, BookHeart, Save, ChevronDown, BookOpen, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowLeft, BookHeart, Save, ChevronDown, BookOpen, Sparkles, TrendingUp, Users } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 import { cn, formatarDataVigente } from "@/lib/utils";
 
-type TipoRegistro = "encontro" | "evento" | "evolucao";
+type TipoRegistro = "encontro" | "evento" | "evolucao" | "reuniao";
 
 const tiposRegistro: { value: TipoRegistro; label: string; icon: React.ElementType; cor: string; descricao: string }[] = [
-  { value: "encontro", label: "Encontro", icon: BookOpen, cor: "bg-indigo-600 text-white ring-indigo-600/30", descricao: "Registro de um encontro catequético" },
-  { value: "evento", label: "Evento", icon: Sparkles, cor: "bg-amber-500 text-white ring-amber-500/30", descricao: "Registro de um evento ou atividade especial" },
-  { value: "evolucao", label: "Evolução", icon: TrendingUp, cor: "bg-emerald-600 text-white ring-emerald-600/30", descricao: "Registro de evolução espiritual e comportamental" },
+  { value: "encontro", label: "Encontro", icon: BookOpen, cor: "bg-indigo-600 text-white ring-indigo-600/50 border-indigo-600", descricao: "Registro de um encontro catequético" },
+  { value: "evento", label: "Evento", icon: Sparkles, cor: "bg-amber-500 text-white ring-amber-500/50 border-amber-500", descricao: "Registro de um evento ou atividade especial" },
+  { value: "evolucao", label: "Evolução", icon: TrendingUp, cor: "bg-emerald-600 text-white ring-emerald-600/50 border-emerald-600", descricao: "Registro de evolução espiritual e comportamental" },
+  { value: "reuniao", label: "Reunião", icon: Users, cor: "bg-blue-600 text-white ring-blue-600/50 border-blue-600", descricao: "Registro de reunião com pais ou catequistas" },
 ];
 
 export default function DiarioEspiritualForm() {
@@ -32,6 +33,7 @@ export default function DiarioEspiritualForm() {
   const [pontosNegativos, setPontosNegativos] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [evolucao, setEvolucao] = useState("");
+  const [participantesReuniao, setParticipantesReuniao] = useState("");
 
   const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
   const [evolucoes, setEvolucoes] = useState<any[]>([]);
@@ -66,6 +68,7 @@ export default function DiarioEspiritualForm() {
           setPontosNegativos(diario.pontos_negativos || "");
           setObservacoes(diario.observacoes_catequizandos || "");
           setEvolucao(diario.evolucao_espiritual || "");
+          setParticipantesReuniao((diario as any).participantes_reuniao || "");
 
           if (diario.avaliacoes_catequizandos && Array.isArray(diario.avaliacoes_catequizandos) && diario.avaliacoes_catequizandos.length > 0) {
             setAvaliacoes(diario.avaliacoes_catequizandos);
@@ -106,10 +109,11 @@ export default function DiarioEspiritualForm() {
       como_foi: tipoRegistro !== "evolucao" ? comoFoi : "",
       pontos_positivos: tipoRegistro !== "evolucao" ? pontosPositivos : "",
       pontos_negativos: tipoRegistro !== "evolucao" ? pontosNegativos : "",
-      observacoes_catequizandos: tipoRegistro !== "evolucao" ? observacoes : "",
+      observacoes_catequizandos: (tipoRegistro === "encontro" || tipoRegistro === "evento") ? observacoes : "",
       evolucao_espiritual: tipoRegistro === "evolucao" ? evolucao : "",
-      avaliacoes_catequizandos: tipoRegistro !== "evolucao" ? avaliacoes : [],
+      avaliacoes_catequizandos: (tipoRegistro === "encontro" || tipoRegistro === "evento") ? avaliacoes : [],
       evolucao_catequizandos: tipoRegistro === "evolucao" ? evolucoes : [],
+      participantes_reuniao: tipoRegistro === "reuniao" ? participantesReuniao : "",
     };
 
     if (isEditing) {
@@ -123,10 +127,12 @@ export default function DiarioEspiritualForm() {
   const isPending = criarDiario.isPending || atualizarDiario.isPending;
 
   const corAtual = tipoRegistro === "encontro"
-    ? { ring: "ring-indigo-600/20", border: "border-indigo-600/30", header: "text-indigo-600", bg: "bg-indigo-600/5" }
+    ? { ring: "ring-indigo-600/30", border: "border-indigo-400", header: "text-indigo-700", bg: "bg-indigo-50/50" }
     : tipoRegistro === "evento"
-    ? { ring: "ring-amber-500/20", border: "border-amber-500/30", header: "text-amber-600", bg: "bg-amber-500/5" }
-    : { ring: "ring-emerald-600/20", border: "border-emerald-600/30", header: "text-emerald-600", bg: "bg-emerald-600/5" };
+    ? { ring: "ring-amber-500/30", border: "border-amber-400", header: "text-amber-700", bg: "bg-amber-50/50" }
+    : tipoRegistro === "evolucao"
+    ? { ring: "ring-emerald-600/30", border: "border-emerald-400", header: "text-emerald-700", bg: "bg-emerald-50/50" }
+    : { ring: "ring-blue-600/30", border: "border-blue-400", header: "text-blue-700", bg: "bg-blue-50/50" };
 
   return (
     <div className="space-y-6 pb-10">
@@ -135,7 +141,7 @@ export default function DiarioEspiritualForm() {
           <ArrowLeft className="h-5 w-5 text-black" />
         </button>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+          <h1 className="text-xl font-black text-black tracking-tight uppercase">
             {isEditing ? "Editar Registro" : "Novo Registro"}
           </h1>
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
@@ -145,7 +151,7 @@ export default function DiarioEspiritualForm() {
       </div>
 
       {/* Seletor de tipo */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {tiposRegistro.map((tipo) => {
           const Icon = tipo.icon;
           const isActive = tipoRegistro === tipo.value;
@@ -157,8 +163,8 @@ export default function DiarioEspiritualForm() {
               className={cn(
                 "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 font-bold text-center",
                 isActive
-                  ? `${tipo.cor} border-transparent shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/20" : tipo.value === "evento" ? "ring-amber-500/20" : "ring-emerald-600/20"} scale-[1.03]`
-                  : "bg-white dark:bg-zinc-900 border-black/5 text-muted-foreground hover:border-black/15 hover:text-foreground"
+                  ? `${tipo.cor} shadow-lg ring-4 ${tipo.value === "encontro" ? "ring-indigo-600/30" : tipo.value === "evento" ? "ring-amber-500/30" : tipo.value === "evolucao" ? "ring-emerald-600/30" : "ring-blue-600/30"} scale-[1.03]`
+                  : "bg-white dark:bg-zinc-900 border-slate-300 text-slate-800 hover:border-slate-400 hover:text-black"
               )}
             >
               <Icon className={cn("w-6 h-6", isActive ? "opacity-100" : "opacity-60")} />
@@ -176,8 +182,8 @@ export default function DiarioEspiritualForm() {
           {/* Referência: Encontro ou Evento */}
           {tipoRegistro === "encontro" && (
             <div className="space-y-2 relative">
-              <label className="text-xs font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-2">
-                <BookOpen className="w-4 h-4" /> Encontro Referente
+              <label className="text-sm font-black text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+                <BookOpen className="w-5 h-5" /> Encontro Referente
               </label>
               
               <button
@@ -236,8 +242,8 @@ export default function DiarioEspiritualForm() {
 
           {tipoRegistro === "evento" && (
             <div className="space-y-2 relative">
-              <label className="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4" /> Evento Referente
+              <label className="text-sm font-black text-amber-700 uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-5 h-5" /> Evento Referente
               </label>
               
               <button
@@ -294,66 +300,87 @@ export default function DiarioEspiritualForm() {
             </div>
           )}
 
-          {/* Seção "Como foi" - só para Encontro e Evento */}
+          {/* Seção "Como foi" - só para Encontro, Evento e Reunião */}
           {tipoRegistro !== "evolucao" && (
             <>
               <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                  <BookHeart className="w-4 h-4" />
-                  {tipoRegistro === "evento" ? "Como foi o evento?" : "Como foi o encontro?"}
+                <label className="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <BookHeart className="w-5 h-5 text-slate-600" />
+                  {tipoRegistro === "evento" ? "Como foi o evento?" : tipoRegistro === "reuniao" ? "Pauta e Resumo da Reunião" : "Como foi o encontro?"}
                 </label>
                 <textarea
-                  placeholder={tipoRegistro === "evento" ? "Descreva como foi o evento, o engajamento da turma..." : "Descreva como foi o encontro, o clima da turma..."}
+                  placeholder={tipoRegistro === "evento" ? "Descreva como foi o evento..." : tipoRegistro === "reuniao" ? "Descreva o que foi conversado na reunião..." : "Descreva como foi o encontro..."}
                   value={comoFoi}
                   onChange={(e) => setComoFoi(e.target.value)}
-                  className="w-full min-h-[80px] p-4 rounded-xl border border-input bg-background text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
+                  className="w-full min-h-[100px] p-4 rounded-xl border-2 border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-slate-400 focus:border-slate-500 outline-none transition-all resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Pontos Positivos</label>
+                  <label className="text-xs font-black text-emerald-700 uppercase tracking-wider">Pontos Positivos</label>
                   <textarea
                     placeholder="O que deu certo? O que surpreendeu?"
                     value={pontosPositivos}
                     onChange={(e) => setPontosPositivos(e.target.value)}
-                    className="w-full min-h-[80px] p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all resize-none"
+                    className="w-full min-h-[100px] p-4 rounded-xl border-2 border-emerald-300 bg-emerald-50 text-black font-medium focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 outline-none transition-all resize-none"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-destructive uppercase tracking-wider">Pontos a Melhorar</label>
+                  <label className="text-xs font-black text-red-700 uppercase tracking-wider">Pontos a Melhorar</label>
                   <textarea
                     placeholder="O que não saiu como planejado? Dificuldades?"
                     value={pontosNegativos}
                     onChange={(e) => setPontosNegativos(e.target.value)}
-                    className="w-full min-h-[80px] p-4 rounded-xl border border-destructive/20 bg-destructive/5 text-sm focus:ring-2 focus:ring-destructive/20 focus:border-destructive outline-none transition-all resize-none"
+                    className="w-full min-h-[100px] p-4 rounded-xl border-2 border-red-300 bg-red-50 text-black font-medium focus:ring-2 focus:ring-red-400 focus:border-red-500 outline-none transition-all resize-none"
                   />
                 </div>
               </div>
 
-              <hr className="border-border" />
+              <hr className="border-slate-200 my-6" />
+
+              {tipoRegistro === "reuniao" && (
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-blue-700 uppercase tracking-wider flex items-center gap-2">
+                    <Users className="w-5 h-5" /> Participantes (Lista de Presença)
+                  </label>
+                  <p className="text-xs text-slate-600 font-medium">Escreva quem esteve presente na reunião.</p>
+                  <textarea
+                    placeholder="Ex: João (Pai do Pedro), Maria (Mãe da Ana), Catequistas: José e Rita..."
+                    value={participantesReuniao}
+                    onChange={(e) => setParticipantesReuniao(e.target.value)}
+                    className="w-full min-h-[200px] p-4 rounded-xl border-2 border-blue-300 bg-white text-black font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-y"
+                    style={{
+                      backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #e2e8f0 31px, #e2e8f0 32px)",
+                      lineHeight: "32px",
+                      paddingTop: "6px"
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Avaliação de Participação */}
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-black text-foreground uppercase tracking-wider">Avaliação de Participação</label>
-                  <p className="text-xs text-muted-foreground mt-1">Avalie a participação individual de cada catequizando (opcional).</p>
-                </div>
+              {(tipoRegistro === "encontro" || tipoRegistro === "evento") && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-black text-black uppercase tracking-wider">Avaliação de Participação</label>
+                    <p className="text-xs text-slate-600 font-medium mt-1">Avalie a participação individual de cada catequizando (opcional).</p>
+                  </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                   {avaliacoes.map((av) => {
                     const isExpanded = expandedAv[av.catequizando_id];
                     const hasRated = av.pontualidade > 0 || av.participacao_grupo > 0 || av.engajamento > 0;
                     return (
-                      <div key={av.catequizando_id} className={cn("bg-white dark:bg-zinc-950 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-indigo-500/30 shadow-md ring-2 ring-indigo-500/10" : "border-black/5 dark:border-white/5 hover:border-black/15")}>
-                        <button type="button" onClick={() => toggleAv(av.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                      <div key={av.catequizando_id} className={cn("bg-white dark:bg-zinc-950 rounded-2xl border-2 transition-all shadow-sm overflow-hidden", isExpanded ? "border-indigo-400 shadow-md ring-2 ring-indigo-500/20" : "border-slate-300 hover:border-indigo-300")}>
+                        <button type="button" onClick={() => toggleAv(av.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
                           <div className="flex items-center gap-4">
-                            <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-indigo-600 text-white" : "bg-indigo-500/10 text-indigo-600")}>
+                            <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-indigo-600 text-white" : "bg-indigo-100 text-indigo-700")}>
                               {av.nome.charAt(0)}
                             </div>
                             <div className="flex flex-col items-start">
-                              <span className="font-bold text-base text-foreground truncate max-w-[180px]">{av.nome}</span>
-                              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{hasRated ? "Avaliado" : "Pendente"}</span>
+                              <span className="font-bold text-base text-black truncate max-w-[180px]">{av.nome}</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{hasRated ? "Avaliado" : "Pendente"}</span>
                             </div>
                           </div>
                           <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-indigo-50 text-indigo-600" : "bg-muted text-muted-foreground")}>
@@ -394,9 +421,10 @@ export default function DiarioEspiritualForm() {
                   placeholder="Observações gerais adicionais sobre a turma..."
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
-                  className="w-full min-h-[60px] p-4 rounded-xl border border-input bg-background text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none mt-2"
+                  className="w-full min-h-[80px] p-4 rounded-xl border-2 border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 outline-none transition-all resize-none mt-2"
                 />
               </div>
+              )}
             </>
           )}
 
@@ -404,10 +432,10 @@ export default function DiarioEspiritualForm() {
           {tipoRegistro === "evolucao" && (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-black text-emerald-600 uppercase tracking-wider flex items-center gap-2">
+                <label className="text-sm font-black text-emerald-700 uppercase tracking-wider flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" /> Evolução Espiritual e Comportamental
                 </label>
-                <p className="text-xs text-muted-foreground mt-1">Avalie o crescimento espiritual e comportamental de cada catequizando.</p>
+                <p className="text-xs text-slate-700 font-medium mt-1">Avalie o crescimento espiritual e comportamental de cada catequizando.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -415,15 +443,15 @@ export default function DiarioEspiritualForm() {
                   const isExpanded = expandedEv[ev.catequizando_id];
                   const hasRated = ev.evolucao_espiritual > 0 || ev.evolucao_comportamental > 0;
                   return (
-                    <div key={ev.catequizando_id} className={cn("bg-emerald-600/5 rounded-2xl border transition-all shadow-sm overflow-hidden", isExpanded ? "border-emerald-600/40 shadow-md ring-2 ring-emerald-600/10 bg-emerald-600/10" : "border-emerald-600/10 hover:border-emerald-600/20")}>
-                      <button type="button" onClick={() => toggleEv(ev.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-emerald-600/10 transition-colors">
+                    <div key={ev.catequizando_id} className={cn("bg-emerald-50 rounded-2xl border-2 transition-all shadow-sm overflow-hidden", isExpanded ? "border-emerald-400 shadow-md ring-2 ring-emerald-500/20" : "border-emerald-200 hover:border-emerald-300")}>
+                      <button type="button" onClick={() => toggleEv(ev.catequizando_id)} className="w-full flex items-center justify-between p-4 hover:bg-emerald-100/50 transition-colors">
                         <div className="flex items-center gap-4">
-                          <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-emerald-600 text-white" : "bg-emerald-600/20 text-emerald-600")}>
+                          <div className={cn("w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shrink-0 shadow-inner transition-colors", hasRated ? "bg-emerald-600 text-white" : "bg-emerald-200 text-emerald-800")}>
                             {ev.nome.charAt(0)}
                           </div>
                           <div className="flex flex-col items-start">
-                            <span className="font-bold text-base text-emerald-700 dark:text-emerald-400 truncate max-w-[180px]">{ev.nome}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600/70">{hasRated ? "Avaliado" : "Pendente"}</span>
+                            <span className="font-bold text-base text-black truncate max-w-[180px]">{ev.nome}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{hasRated ? "Avaliado" : "Pendente"}</span>
                           </div>
                         </div>
                         <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isExpanded ? "bg-white text-emerald-600 shadow-sm" : "bg-emerald-600/10 text-emerald-600/70")}>
@@ -458,7 +486,7 @@ export default function DiarioEspiritualForm() {
                 placeholder="Notas gerais sobre a evolução da turma..."
                 value={evolucao}
                 onChange={(e) => setEvolucao(e.target.value)}
-                className="w-full min-h-[60px] p-4 rounded-xl border border-emerald-600/20 bg-emerald-600/5 text-sm focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 outline-none transition-all resize-none mt-2"
+                className="w-full min-h-[80px] p-4 rounded-xl border-2 border-emerald-300 bg-white text-black font-medium focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 outline-none transition-all resize-none mt-2"
               />
             </div>
           )}
@@ -468,9 +496,10 @@ export default function DiarioEspiritualForm() {
             disabled={isPending}
             className={cn(
               "w-full h-14 rounded-2xl text-white font-black text-lg flex items-center justify-center gap-2 shadow-xl transition-all",
-              tipoRegistro === "encontro" ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20" :
-              tipoRegistro === "evento" ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" :
-              "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
+              tipoRegistro === "encontro" ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/30" :
+              tipoRegistro === "evento" ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/30" :
+              tipoRegistro === "reuniao" ? "bg-blue-600 hover:bg-blue-700 shadow-blue-600/30" :
+              "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/30"
             )}
           >
             {isPending ? (
