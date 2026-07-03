@@ -836,16 +836,17 @@ function CatequizandoRow({
   saving: boolean;
 }) {
   const [localTrilha, setLocalTrilha] = useState<TrilhaSacramentalType>(getTrilhaState(cat, selectedSacramento));
+  const [localSacramentos, setLocalSacramentos] = useState(cat.dadosPastorais?.sacramentos ?? cat.sacramentos ?? {});
   const [newDocNome, setNewDocNome] = useState("");
   const freq = calcFrequencia(cat, encontros);
 
   useEffect(() => {
     setLocalTrilha(getTrilhaState(cat, selectedSacramento));
+    setLocalSacramentos(cat.dadosPastorais?.sacramentos ?? cat.sacramentos ?? {});
     setNewDocNome("");
   }, [cat, selectedSacramento]);
 
-  const sacramentos = cat.dadosPastorais?.sacramentos ?? cat.sacramentos;
-  const sacInfo = sacramentos?.[selectedSacramento];
+  const sacInfo = localSacramentos?.[selectedSacramento];
   const sacramentoJaRecebido = sacInfo?.recebido === true;
 
   const totalEtapas = ETAPAS_PARTICIPACAO.length;
@@ -882,9 +883,23 @@ function CatequizandoRow({
     }));
   };
 
+  const toggleSacramentoCadastro = (key: "batismo" | "eucaristia" | "crisma") => {
+    setLocalSacramentos((prev: any) => {
+      const current = prev[key] || { recebido: false };
+      return {
+        ...prev,
+        [key]: { ...current, recebido: !current.recebido }
+      };
+    });
+  };
+
   const handleSave = () => {
     onSave({
       ...cat,
+      dadosPastorais: {
+        ...(cat.dadosPastorais || {}),
+        sacramentos: localSacramentos
+      },
       trilhasPorSacramento: {
         ...(cat.trilhasPorSacramento || {}),
         [selectedSacramento]: localTrilha
@@ -940,49 +955,56 @@ function CatequizandoRow({
 
       {isOpen && (
         <div className="px-4 pb-4 pt-2 space-y-5 bg-white dark:bg-card border-t border-border/30">
+          <section>
+            <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-primary mb-3 flex items-center gap-1.5">
+              <Cross className="h-4 w-4" /> Situação Sacramental (Cadastro)
+            </h4>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { key: "batismo", label: "Batismo" },
+                { key: "eucaristia", label: "Eucaristia" },
+                { key: "crisma", label: "Crisma" },
+              ].map(s => {
+                const sacInfoGrid = localSacramentos?.[s.key as "batismo" | "eucaristia" | "crisma"];
+                const recebido = sacInfoGrid?.recebido ?? false;
+                return (
+                  <button
+                    key={s.key}
+                    onClick={() => toggleSacramentoCadastro(s.key as any)}
+                    className={cn(
+                      "rounded-xl border p-2 text-center transition-all active:scale-95 w-full",
+                      recebido ? "bg-emerald-50 border-emerald-200 hover:bg-emerald-100" : "bg-muted/30 border-border/50 hover:bg-muted"
+                    )}
+                  >
+                    {recebido
+                      ? <CheckCircle2 className="h-5 w-5 text-emerald-600 mx-auto mb-1.5" />
+                      : <Circle className="h-5 w-5 text-muted-foreground mx-auto mb-1.5" />}
+                    <p className="text-xs font-black uppercase text-foreground">{s.label}</p>
+                    {recebido && sacInfoGrid?.data && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(sacInfoGrid.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
           {sacramentoJaRecebido ? (
             <div className="flex flex-col items-center justify-center gap-3 py-6 px-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 text-center">
               <PartyPopper className="h-10 w-10 text-emerald-500" />
               <div>
                 <p className="text-base font-black text-black uppercase tracking-wide">Sacramento já recebido!</p>
                 <p className="text-sm text-emerald-600 mt-1">
-                  {selectedSacramento.charAt(0).toUpperCase() + selectedSacramento.slice(1)} registrado
-                  {sacInfo?.data ? ` em ${new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}` : " no cadastro"}
-                  {sacInfo?.paroquia ? ` · ${sacInfo.paroquia}` : ""}
+                  {selectedSacramento.charAt(0).toUpperCase() + selectedSacramento.slice(1)} marcado como recebido.
+                  {sacInfo?.data ? ` Data: ${new Date(sacInfo.data + "T00:00:00").toLocaleDateString("pt-BR")}` : ""}
                 </p>
               </div>
-              <p className="text-xs text-emerald-600 italic">
-                Caso o catequizando não tenha recebido o sacramento, remova o sacramento do cadastro do catequizando.
+              <p className="text-xs text-emerald-600 font-bold mt-2">
+                Para preparar o catequizando para este sacramento, desmarque a opção acima.
               </p>
             </div>
           ) : (
             <>
-              <section>
-                <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-primary mb-3 flex items-center gap-1.5">
-                  <Cross className="h-4 w-4" /> Situação Sacramental (Cadastro)
-                </h4>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { key: "batismo", label: "Batismo" },
-                    { key: "eucaristia", label: "Eucaristia" },
-                    { key: "crisma", label: "Crisma" },
-                  ].map(s => {
-                    const sacInfoGrid = sacramentos?.[s.key as "batismo" | "eucaristia" | "crisma"];
-                    const recebido = sacInfoGrid?.recebido ?? false;
-                    return (
-                      <div key={s.key} className={cn("rounded-xl border p-2 text-center", recebido ? "bg-emerald-50 border-emerald-200" : "bg-muted/30 border-border/50")}>
-                        {recebido
-                          ? <CheckCircle2 className="h-5 w-5 text-emerald-600 mx-auto mb-1.5" />
-                          : <Circle className="h-5 w-5 text-muted-foreground mx-auto mb-1.5" />}
-                        <p className="text-xs font-black uppercase text-foreground">{s.label}</p>
-                        {recebido && sacInfoGrid?.data && (
-                          <p className="text-[10px] text-muted-foreground mt-0.5">{new Date(sacInfoGrid.data + "T00:00:00").toLocaleDateString("pt-BR")}</p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
 
               <section>
                 <h4 className="text-xs md:text-sm font-black uppercase tracking-wider text-blue-600 mb-3 flex items-center gap-1.5">
