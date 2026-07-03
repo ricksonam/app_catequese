@@ -9,7 +9,7 @@ import {
   ArrowLeft, Cross, CheckCircle2, Circle, ChevronDown, ChevronUp,
   AlertTriangle, Calendar, Users, FileText, BookOpen, Music,
   Heart, Baby, Star, Church, Plus, Trash2, Save, Share2,
-  UserPlus, X, Check, Sparkles, TrendingUp, ShieldAlert
+  UserPlus, X, Check, Sparkles, TrendingUp, ShieldAlert, BarChart3
 } from "lucide-react";
 import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma } from "@/lib/store";
 import { cn, getAppUrl } from "@/lib/utils";
@@ -140,31 +140,6 @@ function CheckItem({ checked, onToggle, label, disabled }: { checked: boolean; o
   );
 }
 
-// Anel de progresso premium com animação
-function ProgressRingLarge({ value, max, label, color }: { value: number; max: number; label: string; color: string }) {
-  const pct = max === 0 ? 0 : Math.round((value / max) * 100);
-  const r = 28;
-  const circ = 2 * Math.PI * r;
-  const stroke = pct === 100 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444";
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <svg width="68" height="68" viewBox="0 0 68 68">
-        <circle cx="34" cy="34" r={r} fill="none" stroke="#e5e7eb" strokeWidth="5" />
-        <circle
-          cx="34" cy="34" r={r} fill="none" stroke={stroke} strokeWidth="5"
-          strokeDasharray={circ}
-          strokeDashoffset={circ * (1 - pct / 100)}
-          strokeLinecap="round"
-          transform="rotate(-90 34 34)"
-          style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1)" }}
-        />
-        <text x="34" y="37" textAnchor="middle" fontSize="13" fontWeight="900" fill={stroke}>{pct}%</text>
-      </svg>
-      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-center leading-tight">{label}</span>
-    </div>
-  );
-}
-
 function ProgressRing({ value, max }: { value: number; max: number }) {
   const pct = max === 0 ? 0 : Math.round((value / max) * 100);
   const color = pct === 100 ? "#10b981" : pct >= 60 ? "#f59e0b" : "#ef4444";
@@ -196,21 +171,93 @@ function getTrilhaState(cat: Catequizando, sacramento: SacramentoType): TrilhaSa
   return defaultTrilha();
 }
 
-// ===== PAINEL INTELIGENTE DE RESUMO =====
+// ===== PAINEL INTELIGENTE DE RESUMO (Compacto) =====
 function PainelResumo({
+  stats,
+  sacramento,
+  onClick
+}: {
+  stats: { total: number; etapasPercent: number; freqBaixa: number };
+  sacramento: SacramentoType;
+  onClick: () => void;
+}) {
+  const cfg = SACRAMENTO_CONFIG[sacramento];
+  const SacIcon = cfg.icon;
+
+  return (
+    <button 
+      onClick={onClick}
+      className={cn(
+        "w-full text-left rounded-3xl overflow-hidden shadow-md border-2 border-transparent transition-all active:scale-95 group",
+        "hover:shadow-lg hover:border-white/40"
+      )}
+    >
+      <div className={cn("bg-gradient-to-br p-5 relative", cfg.gradient)}>
+        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+           <BarChart3 className="h-4 w-4 text-white" />
+        </div>
+
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shrink-0">
+            <SacIcon className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Resumo da Trilha</p>
+            <h2 className="text-lg font-black text-white leading-tight">{cfg.label} {cfg.emoji}</h2>
+          </div>
+        </div>
+
+        {/* Métricas principais */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/20">
+            <p className="text-2xl font-black text-white">{stats.total}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Na Trilha</p>
+          </div>
+          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/20">
+            <p className="text-2xl font-black text-white">{stats.etapasPercent}%</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Progresso</p>
+          </div>
+          <div className={cn(
+            "backdrop-blur-sm rounded-2xl p-3 text-center border",
+            stats.freqBaixa > 0 ? "bg-red-500/40 border-red-300/40" : "bg-white/15 border-white/20"
+          )}>
+            <p className="text-2xl font-black text-white">{stats.freqBaixa}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Freq. Baixa</p>
+          </div>
+        </div>
+
+        {/* Barra de progresso global */}
+        <div className="bg-white/20 rounded-full h-2 overflow-hidden mb-1">
+          <div
+            className="h-full bg-white rounded-full transition-all duration-1000"
+            style={{ width: `${stats.etapasPercent}%` }}
+          />
+        </div>
+        <p className="text-[10px] text-white/80 font-bold text-center">
+            Clique para ver os detalhes e comparativos
+        </p>
+      </div>
+    </button>
+  );
+}
+
+// ===== MODAL DE ESTATÍSTICAS E DETALHES =====
+function ModalDetalhesTrilha({
+  open,
+  onClose,
   catequizandos,
   encontros,
   turma,
   selectedSacramento,
-  onSelectSacramento,
-  onGerenciar,
+  onSelectSacramento
 }: {
+  open: boolean;
+  onClose: () => void;
   catequizandos: Catequizando[];
   encontros: any[];
   turma: Turma | undefined;
   selectedSacramento: SacramentoType;
   onSelectSacramento: (s: SacramentoType) => void;
-  onGerenciar: () => void;
 }) {
   const sacramentos: SacramentoType[] = ['batismo', 'eucaristia', 'crisma'];
 
@@ -231,160 +278,102 @@ function PainelResumo({
       });
       const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
       const etapasPercent = maxEtapas === 0 ? 0 : Math.round((etapasConcluidas / maxEtapas) * 100);
-      const dataCelebracao = turma?.trilhasConfig?.[sac]?.dataCelebracao
-        || (sac === 'eucaristia' ? turma?.dataCelebracaoSacramento : undefined);
-      return { sac, total, etapasPercent, freqBaixa, dataCelebracao };
+      return { sac, total, etapasPercent, freqBaixa };
     });
   }, [catequizandos, encontros, turma]);
 
-  const selected = statsPerSacramento.find(s => s.sac === selectedSacramento)!;
-  const cfg = SACRAMENTO_CONFIG[selectedSacramento];
-  const SacIcon = cfg.icon;
+  if (!open) return null;
 
   return (
-    <div className="rounded-3xl overflow-hidden shadow-lg border border-white/20">
-      {/* Header com gradiente do sacramento */}
-      <div className={cn("bg-gradient-to-br p-5", cfg.gradient)}>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-              <SacIcon className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Trilha Ativa</p>
-              <h2 className="text-base font-black text-white leading-tight">{cfg.label}</h2>
-            </div>
-          </div>
-          <span className="text-3xl">{cfg.emoji}</span>
-        </div>
-
-        {/* Métricas principais */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/20">
-            <p className="text-2xl font-black text-white">{selected.total}</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Na Trilha</p>
-          </div>
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/20">
-            <p className="text-2xl font-black text-white">{selected.etapasPercent}%</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Progresso</p>
-          </div>
-          <div className={cn(
-            "backdrop-blur-sm rounded-2xl p-3 text-center border",
-            selected.freqBaixa > 0 ? "bg-red-500/40 border-red-300/40" : "bg-white/15 border-white/20"
-          )}>
-            <p className="text-2xl font-black text-white">{selected.freqBaixa}</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mt-0.5">Freq. Baixa</p>
-          </div>
-        </div>
-
-        {/* Barra de progresso global */}
-        <div className="bg-white/20 rounded-full h-2 overflow-hidden">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-1000"
-            style={{ width: `${selected.etapasPercent}%` }}
-          />
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[9px] text-white/60 font-bold">0%</span>
-          <span className="text-[9px] text-white/80 font-black">
-            {selected.total > 0 ? `${selected.etapasPercent}% das etapas concluídas` : "Nenhum catequizando na trilha"}
-          </span>
-          <span className="text-[9px] text-white/60 font-bold">100%</span>
-        </div>
-      </div>
-
-      {/* Tabs de sacramentos + mini stats */}
-      <div className="bg-white dark:bg-card">
-        <div className="flex border-b border-border/30">
-          {statsPerSacramento.map(({ sac, total, etapasPercent, freqBaixa }) => {
-            const c = SACRAMENTO_CONFIG[sac];
-            const isActive = sac === selectedSacramento;
-            return (
-              <button
-                key={sac}
-                onClick={() => onSelectSacramento(sac)}
-                className={cn(
-                  "flex-1 flex flex-col items-center py-3 px-2 transition-all relative",
-                  isActive ? "bg-white dark:bg-card" : "bg-muted/30 hover:bg-muted/50"
-                )}
-              >
-                {isActive && (
-                  <div className={cn("absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r", c.gradient)} />
-                )}
-                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1">{c.label}</span>
-                <span className={cn("text-sm font-black", isActive ? c.accent : "text-foreground")}>
-                  {total}
-                </span>
-                <span className="text-[8px] text-muted-foreground font-medium">catequizandos</span>
-                {freqBaixa > 0 && (
-                  <span className="mt-0.5 text-[7px] font-black text-red-500 uppercase tracking-wide flex items-center gap-0.5">
-                    <ShieldAlert className="h-2 w-2" />{freqBaixa} alert
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Comparativo de progresso entre sacramentos */}
-        <div className="p-4 space-y-2.5">
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-1">
-            <TrendingUp className="h-3 w-3" /> Comparativo de Progresso
-          </p>
-          {statsPerSacramento.map(({ sac, etapasPercent, total }) => {
-            const c = SACRAMENTO_CONFIG[sac];
-            const isActive = sac === selectedSacramento;
-            return (
-              <button
-                key={sac}
-                onClick={() => onSelectSacramento(sac)}
-                className={cn(
-                  "w-full flex items-center gap-3 rounded-xl px-3 py-2 transition-all",
-                  isActive ? cn("bg-gradient-to-r", c.gradientLight, "border", c.border) : "hover:bg-muted/30"
-                )}
-              >
-                <span className="text-xs font-black w-16 text-left text-muted-foreground shrink-0">{c.label}</span>
-                <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-700", c.gradient)}
-                    style={{ width: total === 0 ? "0%" : `${etapasPercent}%` }}
-                  />
-                </div>
-                <span className={cn("text-xs font-black w-8 text-right shrink-0", isActive ? c.accent : "text-muted-foreground")}>
-                  {total === 0 ? "-" : `${etapasPercent}%`}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Botão gerenciar */}
-        <div className="px-4 pb-4">
-          <button
-            onClick={onGerenciar}
-            className={cn(
-              "w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-dashed transition-all group",
-              "border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50"
-            )}
-          >
+    <>
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-x-0 bottom-0 z-50 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
+        <div className="bg-white dark:bg-card rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl flex flex-col overflow-hidden" style={{ maxHeight: "85vh" }} onClick={e => e.stopPropagation()}>
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 bg-muted/30">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <UserPlus className="h-4 w-4 text-primary" />
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                <BarChart3 className="h-4 w-4 text-primary" />
               </div>
-              <div className="text-left">
-                <p className="text-sm font-black text-primary">Gerenciar catequizandos da trilha</p>
-                <p className="text-[10px] text-muted-foreground font-medium">
-                  {(turma?.trilhasConfig?.[selectedSacramento]?.catequizandosTrilha?.length ?? 0) === 0
-                    ? `Nenhum selecionado para ${cfg.label}`
-                    : `${turma?.trilhasConfig?.[selectedSacramento]?.catequizandosTrilha?.length} catequizandos em ${cfg.label}`}
-                </p>
-              </div>
+              <h3 className="text-sm font-black text-foreground uppercase tracking-wide">Estatísticas das Trilhas</h3>
             </div>
-            <ChevronDown className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
-          </button>
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-muted transition-colors">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            {/* Tabs de sacramentos + mini stats */}
+            <div className="flex border-b border-border/30">
+              {statsPerSacramento.map(({ sac, total, freqBaixa }) => {
+                const c = SACRAMENTO_CONFIG[sac];
+                const isActive = sac === selectedSacramento;
+                return (
+                  <button
+                    key={sac}
+                    onClick={() => onSelectSacramento(sac)}
+                    className={cn(
+                      "flex-1 flex flex-col items-center py-4 px-2 transition-all relative",
+                      isActive ? "bg-white dark:bg-card" : "bg-muted/30 hover:bg-muted/50"
+                    )}
+                  >
+                    {isActive && (
+                      <div className={cn("absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r", c.gradient)} />
+                    )}
+                    <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1">{c.label}</span>
+                    <span className={cn("text-lg font-black", isActive ? c.accent : "text-foreground")}>{total}</span>
+                    <span className="text-[9px] text-muted-foreground font-medium">catequizandos</span>
+                    {freqBaixa > 0 && (
+                      <span className="mt-1 text-[8px] font-black text-red-500 uppercase tracking-wide flex items-center gap-0.5">
+                        <ShieldAlert className="h-2.5 w-2.5" />{freqBaixa} alert
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Comparativo de progresso entre sacramentos */}
+            <div className="p-5 space-y-3 bg-muted/10">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-1.5 mb-2">
+                <TrendingUp className="h-3.5 w-3.5" /> Progresso Geral
+              </p>
+              {statsPerSacramento.map(({ sac, etapasPercent, total }) => {
+                const c = SACRAMENTO_CONFIG[sac];
+                const isActive = sac === selectedSacramento;
+                return (
+                  <button
+                    key={sac}
+                    onClick={() => onSelectSacramento(sac)}
+                    className={cn(
+                      "w-full flex items-center gap-3 rounded-2xl px-4 py-3 transition-all",
+                      isActive ? cn("bg-gradient-to-r shadow-sm", c.gradientLight, "border", c.border) : "hover:bg-muted/30 border border-transparent"
+                    )}
+                  >
+                    <span className="text-xs font-black w-20 text-left text-muted-foreground shrink-0">{c.label}</span>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-700", c.gradient)}
+                        style={{ width: total === 0 ? "0%" : `${etapasPercent}%` }}
+                      />
+                    </div>
+                    <span className={cn("text-xs font-black w-10 text-right shrink-0", isActive ? c.accent : "text-muted-foreground")}>
+                      {total === 0 ? "-" : `${etapasPercent}%`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="p-4 border-t border-border/30 bg-muted/30 shrink-0">
+             <button onClick={onClose} className="w-full h-11 rounded-xl bg-white border border-border shadow-sm text-sm font-black text-foreground hover:bg-muted/50 transition-colors">
+                Fechar
+             </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -1017,6 +1006,7 @@ export default function TrilhaSacramental() {
   const [initializedSelection, setInitializedSelection] = useState(false);
   const [shareRitoOpen, setShareRitoOpen] = useState(false);
   const [modalSelecaoOpen, setModalSelecaoOpen] = useState(false);
+  const [modalDetalhesOpen, setModalDetalhesOpen] = useState(false);
   const [savingSelecao, setSavingSelecao] = useState(false);
 
   const configAba = turma?.trilhasConfig?.[selectedSacramento] || {
@@ -1152,6 +1142,25 @@ export default function TrilhaSacramental() {
     }
   };
 
+  // Calcular estatísticas atuais
+  const currentStats = useMemo(() => {
+    const total = catDaTrilha.length;
+    let totalEtapasConcluidas = 0;
+    let freqBaixa = 0;
+    catDaTrilha.forEach(cat => {
+      const t = getTrilhaState(cat, selectedSacramento);
+      totalEtapasConcluidas += ETAPAS_PARTICIPACAO.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
+      const freq = calcFrequencia(cat, encontros);
+      if (freq.total > 0 && freq.percent < 75) freqBaixa++;
+    });
+    const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
+    return {
+      total,
+      etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100),
+      freqBaixa
+    };
+  }, [catDaTrilha, encontros, selectedSacramento]);
+
   const etapasRitoAtual = selectedSacramento === 'batismo' ? ETAPAS_RITO_BATISMO : ETAPAS_RITO;
   const sacramentoLabel = SACRAMENTO_CONFIG[selectedSacramento].label;
 
@@ -1170,14 +1179,70 @@ export default function TrilhaSacramental() {
         </div>
       </div>
 
-      {/* PAINEL INTELIGENTE — substitui os 3 cards */}
+      {/* Abas dos sacramentos no topo */}
+      <div className="flex bg-muted/50 p-1.5 rounded-2xl gap-1 overflow-x-auto hide-scrollbar">
+        {[
+          { key: 'batismo', label: 'Batismo' },
+          { key: 'eucaristia', label: 'Eucaristia' },
+          { key: 'crisma', label: 'Crisma' },
+        ].map(s => (
+          <button
+            key={s.key}
+            onClick={() => { setSelectedSacramento(s.key as SacramentoType); setOpenId(null); setBusca(""); }}
+            className={cn(
+              "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs md:text-sm font-black uppercase tracking-wider transition-all duration-300",
+              selectedSacramento === s.key 
+                ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
+                : "text-muted-foreground hover:text-foreground hover:bg-white/50"
+            )}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Botão de gerenciar catequizandos da trilha */}
+      <button
+        onClick={() => setModalSelecaoOpen(true)}
+        className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <UserPlus className="h-4 w-4 text-primary" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-black text-primary">Gerenciar catequizandos da trilha</p>
+            <p className="text-[10px] text-muted-foreground font-medium">
+              {catequizandosTrilhaIds.length === 0
+                ? `Nenhum selecionado para ${sacramentoLabel}`
+                : `${catequizandosTrilhaIds.length} catequizando${catequizandosTrilhaIds.length !== 1 ? "s" : ""} em ${sacramentoLabel}`}
+            </p>
+          </div>
+        </div>
+        <ChevronDown className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
+      </button>
+
+      {/* PAINEL INTELIGENTE — substitui os 3 cards, agora abre modal ao clicar */}
       <PainelResumo
+        stats={currentStats}
+        sacramento={selectedSacramento}
+        onClick={() => setModalDetalhesOpen(true)}
+      />
+
+      {/* Modal de Detalhes do Painel */}
+      <ModalDetalhesTrilha
+        open={modalDetalhesOpen}
+        onClose={() => setModalDetalhesOpen(false)}
         catequizandos={todosOsCatequizandos}
         encontros={encontros}
         turma={turma}
         selectedSacramento={selectedSacramento}
-        onSelectSacramento={(s) => { setSelectedSacramento(s); setOpenId(null); setBusca(""); }}
-        onGerenciar={() => setModalSelecaoOpen(true)}
+        onSelectSacramento={(s) => {
+           setSelectedSacramento(s);
+           setOpenId(null);
+           setBusca("");
+           setModalDetalhesOpen(false); // Fecha o modal ao selecionar para focar na aba
+        }}
       />
 
       {/* CARD DATA DE CELEBRAÇÃO PREMIUM */}
