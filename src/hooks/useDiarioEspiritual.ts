@@ -19,6 +19,7 @@ export type DiarioEspiritual = {
   avaliacoes_catequizandos?: any;
   evolucao_catequizandos?: any;
   participantes_reuniao?: string;
+  reuniao_id?: string | null;
   criado_em: string;
 };
 
@@ -30,21 +31,23 @@ function serializePayload(raw: any): any {
   if (!payload.tipo_registro) payload.tipo_registro = "encontro";
 
   // Serializa avaliacoes e participantes_reuniao dentro de observacoes_catequizandos
-  if (payload.avaliacoes_catequizandos !== undefined || payload.participantes_reuniao !== undefined) {
+  if (payload.avaliacoes_catequizandos !== undefined || payload.participantes_reuniao !== undefined || payload.reuniao_id !== undefined) {
     const avaliacoes = payload.avaliacoes_catequizandos;
     const participantes = payload.participantes_reuniao;
+    const reuniaoId = payload.reuniao_id;
     const text = typeof payload.observacoes_catequizandos === "string" &&
       !payload.observacoes_catequizandos.startsWith("{")
       ? payload.observacoes_catequizandos
       : "";
 
-    if ((Array.isArray(avaliacoes) && avaliacoes.length > 0) || participantes) {
-      payload.observacoes_catequizandos = JSON.stringify({ text, avaliacoes, participantes });
+    if ((Array.isArray(avaliacoes) && avaliacoes.length > 0) || participantes || reuniaoId) {
+      payload.observacoes_catequizandos = JSON.stringify({ text, avaliacoes, participantes, reuniaoId });
     } else {
       payload.observacoes_catequizandos = text;
     }
     delete payload.avaliacoes_catequizandos;
     delete payload.participantes_reuniao;
+    delete payload.reuniao_id;
   }
 
   // Serializa evolucoes dentro de evolucao_espiritual
@@ -87,6 +90,9 @@ function deserializeItem(item: any): any {
       }
       if (obs.participantes) {
         parsed.participantes_reuniao = obs.participantes;
+      }
+      if (obs.reuniaoId) {
+        parsed.reuniao_id = obs.reuniaoId;
       }
       parsed.observacoes_catequizandos = obs.text || "";
     }

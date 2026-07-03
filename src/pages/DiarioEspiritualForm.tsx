@@ -70,7 +70,7 @@ export default function DiarioEspiritualForm() {
           setDataRegistro(diario.data_registro || new Date().toISOString().split("T")[0]);
           setEncontroId(diario.encontro_id || "");
           if ((diario as any).tipo_registro === "reuniao") {
-            setReuniaoId((diario as any).evento_id || "");
+            setReuniaoId((diario as any).reuniao_id || "");
           } else {
             setEventoId((diario as any).evento_id || "");
           }
@@ -116,7 +116,8 @@ export default function DiarioEspiritualForm() {
       tipo_registro: tipoRegistro,
       data_registro: dataRegistro,
       encontro_id: tipoRegistro === "encontro" ? (encontroId || null) : null,
-      evento_id: tipoRegistro === "evento" ? (eventoId || null) : tipoRegistro === "reuniao" ? (reuniaoId || null) : null,
+      evento_id: tipoRegistro === "evento" ? (eventoId || null) : null,
+      reuniao_id: tipoRegistro === "reuniao" ? (reuniaoId || null) : null,
       como_foi: tipoRegistro !== "evolucao" ? comoFoi : "",
       pontos_positivos: tipoRegistro !== "evolucao" ? pontosPositivos : "",
       pontos_negativos: tipoRegistro !== "evolucao" ? pontosNegativos : "",
