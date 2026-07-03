@@ -8,7 +8,8 @@ import { toast } from "sonner";
 import {
   ArrowLeft, Cross, CheckCircle2, Circle, ChevronDown, ChevronUp,
   AlertTriangle, Calendar, Users, FileText, BookOpen, Music,
-  Heart, Baby, Star, Church, Plus, Trash2, Save, Info, Share2, Copy
+  Heart, Baby, Star, Church, Plus, Trash2, Save, Info, Share2, Copy,
+  UserPlus, X, Check
 } from "lucide-react";
 import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma } from "@/lib/store";
 import { cn, getAppUrl } from "@/lib/utils";
@@ -23,12 +24,21 @@ const ETAPAS_PARTICIPACAO = [
   { key: "atividades_extras", label: "Atividades Extras", icon: Plus },
 ] as const;
 
+// Etapas do Rito para Eucaristia e Crisma (mantidas)
 const ETAPAS_RITO = [
   { key: "reuniao_pais", label: "Reunião com os pais", icon: Heart },
   { key: "confissao", label: "Celebração penitencial - Confissão", icon: BookOpen },
   { key: "retiro", label: "Retiro Espiritual", icon: Cross },
   { key: "ensaio", label: "Ensaio do Rito", icon: Music },
   { key: "confraternizacao", label: "Confraternização", icon: Star },
+] as const;
+
+// Etapas específicas para o Batismo
+const ETAPAS_RITO_BATISMO = [
+  { key: "reuniao_pais", label: "Reunião com os pais", icon: Heart },
+  { key: "reuniao_preparacao_padrinhos", label: "Reunião de preparação com os pais e padrinhos", icon: Users },
+  { key: "celebracao_batismo", label: "Celebração do Batismo", icon: Baby },
+  { key: "confraternizacao_batismo", label: "Confraternização", icon: PartyPopper },
 ] as const;
 
 const DOCS_PADRAO = [
@@ -407,6 +417,154 @@ function CatequizandoRow({
   );
 }
 
+// Modal de Seleção de Catequizandos para a Trilha
+function ModalSelecaoCatequizandos({
+  open,
+  onClose,
+  todosOsCatequizandos,
+  selecionados,
+  onSave,
+  saving,
+  sacramento,
+}: {
+  open: boolean;
+  onClose: () => void;
+  todosOsCatequizandos: Catequizando[];
+  selecionados: string[];
+  onSave: (ids: string[]) => void;
+  saving: boolean;
+  sacramento: SacramentoType;
+}) {
+  const [localSelecionados, setLocalSelecionados] = useState<string[]>(selecionados);
+  const [busca, setBusca] = useState("");
+
+  useEffect(() => {
+    setLocalSelecionados(selecionados);
+    setBusca("");
+  }, [selecionados, open]);
+
+  if (!open) return null;
+
+  const filtrados = todosOsCatequizandos.filter(c =>
+    c.nome.toLowerCase().includes(busca.toLowerCase())
+  );
+
+  const toggleSelecao = (id: string) => {
+    setLocalSelecionados(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const selectAll = () => setLocalSelecionados(filtrados.map(c => c.id));
+  const clearAll = () => setLocalSelecionados([]);
+
+  const sacramentoLabel = {
+    batismo: "Batismo",
+    eucaristia: "Eucaristia",
+    crisma: "Crisma",
+  }[sacramento];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="bg-white dark:bg-card rounded-3xl w-full max-w-md shadow-2xl flex flex-col max-h-[85vh]">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-border/30">
+          <div>
+            <h3 className="text-base font-black text-foreground uppercase tracking-wide">
+              Catequizandos da Trilha
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Selecione para a trilha de <strong className="text-primary">{sacramentoLabel}</strong></p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-muted transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Search */}
+        <div className="px-5 pt-4 pb-2">
+          <input
+            type="text"
+            value={busca}
+            onChange={e => setBusca(e.target.value)}
+            placeholder="Buscar catequizando..."
+            className="w-full h-10 px-3 rounded-xl text-sm border border-border/60 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/30"
+          />
+          <div className="flex items-center justify-between mt-2.5">
+            <span className="text-xs text-muted-foreground font-medium">
+              {localSelecionados.length} selecionado{localSelecionados.length !== 1 ? "s" : ""}
+            </span>
+            <div className="flex gap-2">
+              <button onClick={selectAll} className="text-[10px] font-black uppercase text-primary hover:text-primary/80 transition-colors">
+                Selecionar todos
+              </button>
+              <span className="text-muted-foreground text-[10px]">·</span>
+              <button onClick={clearAll} className="text-[10px] font-black uppercase text-muted-foreground hover:text-foreground transition-colors">
+                Limpar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto px-5 pb-2 space-y-1.5">
+          {filtrados.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8 italic">Nenhum catequizando encontrado</p>
+          ) : (
+            filtrados.map(cat => {
+              const isSel = localSelecionados.includes(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => toggleSelecao(cat.id)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all text-left",
+                    isSel
+                      ? "bg-primary/10 border-primary/30 text-primary"
+                      : "bg-white dark:bg-muted/20 border-border/40 text-foreground hover:bg-muted/40"
+                  )}
+                >
+                  {cat.foto
+                    ? <img src={cat.foto} alt={cat.nome} className="w-8 h-8 rounded-lg object-cover shrink-0 border border-white shadow-sm" />
+                    : <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-xs font-black border",
+                        isSel ? "bg-primary/20 border-primary/30 text-primary" : "bg-muted/50 border-border/30 text-muted-foreground"
+                      )}>
+                        {cat.nome.charAt(0).toUpperCase()}
+                      </div>
+                  }
+                  <span className="flex-1 text-sm font-semibold truncate">{cat.nome}</span>
+                  <div className={cn(
+                    "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                    isSel ? "bg-primary border-primary" : "border-muted-foreground/30"
+                  )}>
+                    {isSel && <Check className="h-3 w-3 text-white" />}
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t border-border/30 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 h-11 rounded-xl border border-border text-sm font-black text-muted-foreground hover:bg-muted/50 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={() => onSave(localSelecionados)}
+            disabled={saving}
+            className="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-black uppercase tracking-wider hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-60"
+          >
+            {saving ? "Salvando..." : "Confirmar"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function TrilhaSacramental() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -423,6 +581,8 @@ export default function TrilhaSacramental() {
   const [selectedSacramento, setSelectedSacramento] = useState<SacramentoType>('eucaristia');
   const [initializedSelection, setInitializedSelection] = useState(false);
   const [shareRitoOpen, setShareRitoOpen] = useState(false);
+  const [modalSelecaoOpen, setModalSelecaoOpen] = useState(false);
+  const [savingSelecao, setSavingSelecao] = useState(false);
 
   const configAba = turma?.trilhasConfig?.[selectedSacramento] || {
     dataCelebracao: (selectedSacramento === 'eucaristia' && turma?.dataCelebracaoSacramento) ? turma.dataCelebracaoSacramento : undefined,
@@ -434,6 +594,27 @@ export default function TrilhaSacramental() {
   const [savingData, setSavingData] = useState(false);
   const [busca, setBusca] = useState("");
   const [ritoOpen, setRitoOpen] = useState(false);
+
+  // IDs dos catequizandos selecionados para esta trilha
+  const catequizandosTrilhaIds: string[] = configAba.catequizandosTrilha ?? [];
+
+  // Catequizandos ativos da turma (para o modal de seleção)
+  const todosOsCatequizandos = useMemo(() =>
+    catequizandos.filter(c => c.status === "ativo" || c.status === "inscrito" || !c.status),
+    [catequizandos]
+  );
+
+  // Catequizandos visíveis na trilha: apenas os selecionados para ela
+  const catDaTrilha = useMemo(() => {
+    if (catequizandosTrilhaIds.length === 0) return [];
+    return todosOsCatequizandos.filter(c => catequizandosTrilhaIds.includes(c.id));
+  }, [todosOsCatequizandos, catequizandosTrilhaIds]);
+
+  // Aplicar busca sobre os catequizandos da trilha
+  const catFiltrados = useMemo(() =>
+    catDaTrilha.filter(c => c.nome.toLowerCase().includes(busca.toLowerCase())),
+    [catDaTrilha, busca]
+  );
 
   useEffect(() => {
     if (turma && !initializedSelection) {
@@ -470,18 +651,11 @@ export default function TrilhaSacramental() {
     setEditandoData(false);
   }, [selectedSacramento, configAba.dataCelebracao]);
 
-  const catFiltrados = useMemo(() =>
-    catequizandos
-      .filter(c => c.status === "ativo" || c.status === "inscrito" || !c.status)
-      .filter(c => c.nome.toLowerCase().includes(busca.toLowerCase())),
-    [catequizandos, busca]
-  );
-
   const stats = useMemo(() => {
-    const total = catFiltrados.length;
+    const total = catDaTrilha.length;
     let totalEtapasConcluidas = 0;
     let freqBaixa = 0;
-    catFiltrados.forEach(cat => {
+    catDaTrilha.forEach(cat => {
       const t = getTrilhaState(cat, selectedSacramento);
       totalEtapasConcluidas += ETAPAS_PARTICIPACAO.filter(e => t[e.key as keyof TrilhaSacramentalType]).length;
       const freq = calcFrequencia(cat, encontros);
@@ -489,7 +663,7 @@ export default function TrilhaSacramental() {
     });
     const maxEtapas = total * ETAPAS_PARTICIPACAO.length;
     return { total, etapasPercent: maxEtapas === 0 ? 0 : Math.round((totalEtapasConcluidas / maxEtapas) * 100), freqBaixa };
-  }, [catFiltrados, encontros, selectedSacramento]);
+  }, [catDaTrilha, encontros, selectedSacramento]);
 
   const handleSaveCat = async (updated: Catequizando) => {
     setSavingId(updated.id);
@@ -561,6 +735,34 @@ export default function TrilhaSacramental() {
     }
   };
 
+  // Salvar lista de catequizandos selecionados para a trilha
+  const handleSaveSelecaoCatequizandos = async (ids: string[]) => {
+    if (!turma) return;
+    setSavingSelecao(true);
+    try {
+      const updatedConfig = {
+        ...(turma.trilhasConfig || {}),
+        [selectedSacramento]: {
+          ...(turma.trilhasConfig?.[selectedSacramento] || {}),
+          catequizandosTrilha: ids,
+        }
+      };
+      const payload: Turma = { ...turma, trilhasConfig: updatedConfig };
+      await upsertTurma(payload);
+      queryClient.invalidateQueries({ queryKey: ["turmas"] });
+      setModalSelecaoOpen(false);
+      toast.success(`Catequizandos da trilha de ${selectedSacramento} atualizados!`);
+    } catch (e: any) {
+      toast.error("Erro ao salvar: " + e.message);
+    } finally {
+      setSavingSelecao(false);
+    }
+  };
+
+  // Etapas do rito de acordo com o sacramento selecionado
+  const etapasRitoAtual = selectedSacramento === 'batismo' ? ETAPAS_RITO_BATISMO : ETAPAS_RITO;
+  const sacramentoLabel = { batismo: "Batismo", eucaristia: "Eucaristia", crisma: "Crisma" }[selectedSacramento];
+
   return (
     <div className="space-y-5 pb-10 animate-fade-in">
       <div className="flex items-center gap-3 pt-4">
@@ -575,6 +777,7 @@ export default function TrilhaSacramental() {
         </div>
       </div>
 
+      {/* Abas dos sacramentos */}
       <div className="flex bg-muted/50 p-1.5 rounded-2xl gap-1 overflow-x-auto hide-scrollbar">
           {[
             { key: 'batismo', label: 'Batismo' },
@@ -583,7 +786,7 @@ export default function TrilhaSacramental() {
           ].map(s => (
             <button
                 key={s.key}
-                onClick={() => { setSelectedSacramento(s.key as SacramentoType); setOpenId(null); }}
+                onClick={() => { setSelectedSacramento(s.key as SacramentoType); setOpenId(null); setBusca(""); }}
                 className={cn(
                     "flex-1 min-w-[100px] py-2.5 px-3 rounded-xl text-xs md:text-sm font-black uppercase tracking-wider transition-all duration-300",
                     selectedSacramento === s.key 
@@ -596,13 +799,51 @@ export default function TrilhaSacramental() {
           ))}
       </div>
 
+      {/* Botão de gerenciar catequizandos da trilha */}
+      <button
+        onClick={() => setModalSelecaoOpen(true)}
+        className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <UserPlus className="h-4 w-4 text-primary" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-black text-primary">Gerenciar catequizandos da trilha</p>
+            <p className="text-[10px] text-muted-foreground font-medium">
+              {catequizandosTrilhaIds.length === 0
+                ? `Nenhum catequizando selecionado para ${sacramentoLabel}`
+                : `${catequizandosTrilhaIds.length} catequizando${catequizandosTrilhaIds.length !== 1 ? "s" : ""} na trilha de ${sacramentoLabel}`}
+            </p>
+          </div>
+        </div>
+        <ChevronDown className="h-4 w-4 text-primary/60 group-hover:text-primary transition-colors" />
+      </button>
+
+      {/* Cards de resumo */}
+      <div className="grid grid-cols-3 gap-2">
+        <div className="float-card p-3 text-center">
+          <p className="text-xl font-black text-primary">{stats.total}</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Na Trilha</p>
+        </div>
+        <div className="float-card p-3 text-center">
+          <p className="text-xl font-black text-emerald-600">{stats.etapasPercent}%</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Etapas OK ({sacramentoLabel})</p>
+        </div>
+        <div className={cn("float-card p-3 text-center", stats.freqBaixa > 0 && "border-red-200 bg-red-50/50")}>
+          <p className={cn("text-xl font-black", stats.freqBaixa > 0 ? "text-red-600" : "text-foreground")}>{stats.freqBaixa}</p>
+          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Freq. Baixa</p>
+        </div>
+      </div>
+
+      {/* Data da celebração */}
       <div className="float-card p-4 bg-gradient-to-br from-violet-50 to-white dark:from-violet-900/10 dark:to-background border-violet-100">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-xl bg-violet-600 flex items-center justify-center">
               <Calendar className="h-3.5 w-3.5 text-white" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-700">Data da Celebração ({selectedSacramento})</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-700">Data da Celebração ({sacramentoLabel})</p>
           </div>
           {!editandoData && (
             <button
@@ -634,26 +875,12 @@ export default function TrilhaSacramental() {
           <p className={cn("text-sm font-black", configAba.dataCelebracao ? "text-violet-800" : "text-muted-foreground italic")}>
             {configAba.dataCelebracao
               ? new Date(configAba.dataCelebracao + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
-              : `Nenhuma data definida para ${selectedSacramento}`}
+              : `Nenhuma data definida para ${sacramentoLabel}`}
           </p>
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div className="float-card p-3 text-center">
-          <p className="text-xl font-black text-primary">{stats.total}</p>
-          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Catequizandos</p>
-        </div>
-        <div className="float-card p-3 text-center">
-          <p className="text-xl font-black text-emerald-600">{stats.etapasPercent}%</p>
-          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Etapas OK ({selectedSacramento})</p>
-        </div>
-        <div className={cn("float-card p-3 text-center", stats.freqBaixa > 0 && "border-red-200 bg-red-50/50")}>
-          <p className={cn("text-xl font-black", stats.freqBaixa > 0 ? "text-red-600" : "text-foreground")}>{stats.freqBaixa}</p>
-          <p className="text-[8px] font-black uppercase tracking-wider text-muted-foreground">Freq. Baixa</p>
-        </div>
-      </div>
-
+      {/* Etapas do Rito (diferente para batismo) */}
       {turma && (
         <div className="float-card bg-amber-50/50 dark:bg-amber-900/10 border-amber-200 overflow-hidden">
           <button
@@ -665,7 +892,7 @@ export default function TrilhaSacramental() {
                 <Star className="h-4 w-4 text-white" />
               </div>
               <h2 className="text-sm md:text-base font-black uppercase tracking-wider text-amber-700 text-left">
-                Etapas de Preparação do Rito ({selectedSacramento})
+                Etapas de Preparação do Rito ({sacramentoLabel})
               </h2>
             </div>
             {ritoOpen ? <ChevronUp className="h-5 w-5 text-amber-700 shrink-0" /> : <ChevronDown className="h-5 w-5 text-amber-700 shrink-0" />}
@@ -673,7 +900,17 @@ export default function TrilhaSacramental() {
           
           {ritoOpen && (
             <div className="p-4 pt-0 space-y-3">
-              {ETAPAS_RITO.map(etapa => {
+              {/* Banner informativo para batismo */}
+              {selectedSacramento === 'batismo' && (
+                <div className="flex items-start gap-2 p-3 rounded-xl bg-blue-50 border border-blue-200 mb-2">
+                  <Baby className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                  <p className="text-xs font-semibold text-blue-700 leading-snug">
+                    Etapas específicas para a preparação do Batismo
+                  </p>
+                </div>
+              )}
+
+              {etapasRitoAtual.map(etapa => {
                 const Icon = etapa.icon;
                 const dateVal = configAba.etapasRito?.[etapa.key] || "";
                 return (
@@ -730,39 +967,73 @@ export default function TrilhaSacramental() {
         );
       })()}
 
-      <input
-        type="text"
-        value={busca}
-        onChange={e => setBusca(e.target.value)}
-        placeholder="Buscar catequizando..."
-        className="w-full h-10 px-4 rounded-2xl text-sm border border-border/60 bg-white dark:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30"
-      />
-
-      {isLoading ? (
-        <div className="space-y-2">
-          {[1,2,3].map(i => <div key={i} className="h-16 rounded-2xl bg-muted/50 animate-pulse" />)}
-        </div>
-      ) : catFiltrados.length === 0 ? (
-        <div className="text-center py-10">
-          <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground font-medium">Nenhum catequizando encontrado</p>
+      {/* Lista de catequizandos */}
+      {catequizandosTrilhaIds.length === 0 ? (
+        /* Estado vazio - nenhum catequizando selecionado */
+        <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-3xl border-2 border-dashed border-muted-foreground/20 bg-muted/10">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+            <Users className="h-8 w-8 text-primary/50" />
+          </div>
+          <p className="text-base font-black text-foreground mb-1">Nenhum catequizando nesta trilha</p>
+          <p className="text-sm text-muted-foreground mb-4 max-w-xs">
+            Selecione os catequizandos que estão se preparando para receber o <strong>{sacramentoLabel}</strong>.
+          </p>
+          <button
+            onClick={() => setModalSelecaoOpen(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-black hover:bg-primary/90 active:scale-95 transition-all"
+          >
+            <UserPlus className="h-4 w-4" />
+            Selecionar Catequizandos
+          </button>
         </div>
       ) : (
-        <div className="space-y-2">
-          {catFiltrados.map(cat => (
-            <CatequizandoRow
-              key={cat.id}
-              cat={cat}
-              encontros={encontros}
-              selectedSacramento={selectedSacramento}
-              isOpen={openId === cat.id}
-              onToggle={() => setOpenId(openId === cat.id ? null : cat.id)}
-              onSave={handleSaveCat}
-              saving={savingId === cat.id}
-            />
-          ))}
-        </div>
+        <>
+          <input
+            type="text"
+            value={busca}
+            onChange={e => setBusca(e.target.value)}
+            placeholder={`Buscar na trilha de ${sacramentoLabel}...`}
+            className="w-full h-10 px-4 rounded-2xl text-sm border border-border/60 bg-white dark:bg-card focus:outline-none focus:ring-2 focus:ring-primary/30"
+          />
+
+          {isLoading ? (
+            <div className="space-y-2">
+              {[1,2,3].map(i => <div key={i} className="h-16 rounded-2xl bg-muted/50 animate-pulse" />)}
+            </div>
+          ) : catFiltrados.length === 0 ? (
+            <div className="text-center py-10">
+              <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground font-medium">Nenhum catequizando encontrado</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {catFiltrados.map(cat => (
+                <CatequizandoRow
+                  key={cat.id}
+                  cat={cat}
+                  encontros={encontros}
+                  selectedSacramento={selectedSacramento}
+                  isOpen={openId === cat.id}
+                  onToggle={() => setOpenId(openId === cat.id ? null : cat.id)}
+                  onSave={handleSaveCat}
+                  saving={savingId === cat.id}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
+
+      {/* Modal de seleção de catequizandos */}
+      <ModalSelecaoCatequizandos
+        open={modalSelecaoOpen}
+        onClose={() => setModalSelecaoOpen(false)}
+        todosOsCatequizandos={todosOsCatequizandos}
+        selecionados={catequizandosTrilhaIds}
+        onSave={handleSaveSelecaoCatequizandos}
+        saving={savingSelecao}
+        sacramento={selectedSacramento}
+      />
     </div>
   );
 }

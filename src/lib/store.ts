@@ -34,6 +34,7 @@ export interface TrilhaSacramental {
 export interface TurmaTrilhaConfig {
   dataCelebracao?: string;
   etapasRito?: Record<string, string>;
+  catequizandosTrilha?: string[]; // IDs dos catequizandos selecionados para esta trilha
 }
 
 export interface Turma {
