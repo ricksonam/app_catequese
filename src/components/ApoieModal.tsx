@@ -26,7 +26,8 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
       return new Promise<void>((resolve, reject) => {
         const textarea = document.createElement("textarea");
         textarea.value = pixKey;
-        textarea.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0";
+        // top: 0 e left: 0 evita que o navegador dê scroll para o elemento fora da tela
+        textarea.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none;";
         document.body.appendChild(textarea);
         textarea.focus();
         textarea.select();
