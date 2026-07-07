@@ -956,7 +956,7 @@ export default function Dashboard() {
               </div>
 
               {/* Grid módulos da turma */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {turmaModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     <button
@@ -997,7 +997,7 @@ export default function Dashboard() {
               </div>
 
               {/* Grid módulos gerais */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {globalModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     <button
