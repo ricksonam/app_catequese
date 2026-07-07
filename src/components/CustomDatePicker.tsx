@@ -54,7 +54,7 @@ export function CustomDatePicker({ value, onChange, label }: CustomDatePickerPro
 
   return (
     <div className="w-full">
-      {label && <label className="text-xs font-semibold text-zinc-900 mb-1 block">{label.includes("*") ? <>{label.replace("*", "")}<span className="text-red-500">*</span></> : label}</label>}
+      {label && <label className="text-sm font-black text-zinc-900 uppercase tracking-widest mb-1 block ml-1">{label.includes("*") ? <>{label.replace("*", "")}<span className="text-red-500">*</span></> : label}</label>}
       <input 
         type="text"
         value={inputValue}
