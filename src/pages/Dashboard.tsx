@@ -588,6 +588,11 @@ export default function Dashboard() {
       onClick: () => navigate("/modulos/oracoes")
     },
     {
+      title: "Liturgia Diária",
+      image: "/icone_liturgia.png",
+      onClick: () => navigate("/modulos/liturgia")
+    },
+    {
       title: "Jogos",
       image: "/acesso_jogos.jpg",
       onClick: () => navigate("/jogos")
