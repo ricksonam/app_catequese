@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { useState, useMemo } from "react";
 import { AuditLogModal } from "@/components/AuditLogPanel";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
-import { resetTurmaCode, toggleInscricoesAbertas } from "@/lib/supabaseStore";
+import { resetTurmaCode } from "@/lib/supabaseStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, ChevronDown } from "lucide-react";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
@@ -52,7 +52,6 @@ export default function TurmaDetail() {
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
-  const [isTogglingInscricoes, setIsTogglingInscricoes] = useState(false);
   const queryClient = useQueryClient();
 
   const alertConfig = useMemo(() => {
@@ -188,24 +187,6 @@ export default function TurmaDetail() {
       toast.error("Erro ao redefinir o código: " + error.message);
     } finally {
       setIsResettingCode(false);
-    }
-  };
-
-  const handleToggleInscricoes = async (novoEstado: boolean) => {
-    if (!id) return;
-    setIsTogglingInscricoes(true);
-    try {
-      await toggleInscricoesAbertas(id, novoEstado);
-      await queryClient.invalidateQueries({ queryKey: ["turmas"] });
-      toast.success(
-        novoEstado
-          ? "✅ Inscrições abertas! O link público já está aceitando novas inscrições."
-          : "🔒 Inscrições encerradas. O link público exibirá a mensagem de encerramento."
-      );
-    } catch (error: any) {
-      toast.error("Erro ao alterar inscrições: " + error.message);
-    } finally {
-      setIsTogglingInscricoes(false);
     }
   };
 
@@ -430,87 +411,6 @@ export default function TurmaDetail() {
         })}
       </div>
 
-      {/* Card de Controle de Inscrições Online — apenas para o dono */}
-      {!turma.isShared && turma.codigoAcesso && (
-        <div className={cn(
-          "rounded-3xl p-5 border-2 shadow-md transition-all duration-500 animate-float-up",
-          turma.inscricoesAbertas
-            ? "bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200"
-            : "bg-gradient-to-br from-slate-50 to-gray-100 border-slate-200"
-        )}>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className={cn(
-                "w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm",
-                turma.inscricoesAbertas ? "bg-emerald-500 text-white" : "bg-slate-300 text-slate-600"
-              )}>
-                {turma.inscricoesAbertas ? (
-                  <CheckCircle2 className="w-5 h-5" />
-                ) : (
-                  <Link2 className="w-5 h-5" />
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/80">Inscrições Online</p>
-                <p className={cn(
-                  "text-sm font-black uppercase tracking-tight",
-                  turma.inscricoesAbertas ? "text-emerald-700" : "text-slate-500"
-                )}>
-                  {turma.inscricoesAbertas ? "Abertas" : "Encerradas"}
-                </p>
-                <p className="text-[10px] text-muted-foreground/60 font-medium mt-0.5 truncate">
-                  {turma.inscricoesAbertas
-                    ? "Link público está aceitando inscrições"
-                    : "Link público exibe mensagem de encerramento"}
-                </p>
-              </div>
-            </div>
-
-            {/* Toggle Switch */}
-            <button
-              onClick={() => handleToggleInscricoes(!turma.inscricoesAbertas)}
-              disabled={isTogglingInscricoes}
-              title={turma.inscricoesAbertas ? "Encerrar inscrições" : "Abrir inscrições"}
-              className={cn(
-                "relative w-14 h-7 rounded-full transition-all duration-300 shrink-0 shadow-inner border-2 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                turma.inscricoesAbertas
-                  ? "bg-emerald-500 border-emerald-600 focus:ring-emerald-400"
-                  : "bg-slate-300 border-slate-400 focus:ring-slate-400"
-              )}
-            >
-              <span className={cn(
-                "absolute top-[2px] w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 flex items-center justify-center",
-                turma.inscricoesAbertas ? "left-[30px]" : "left-[2px]"
-              )}>
-                {isTogglingInscricoes && (
-                  <span className="w-3 h-3 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
-                )}
-              </span>
-            </button>
-          </div>
-
-          {turma.inscricoesAbertas && (
-            <div className="mt-4 pt-4 border-t border-emerald-200/50">
-              <p className="text-[9px] font-black text-emerald-700/60 uppercase tracking-widest mb-2">Link de inscrição</p>
-              <div className="flex items-center gap-2 bg-white/70 rounded-xl px-3 py-2 border border-emerald-100">
-                <p className="text-[10px] font-mono text-emerald-800 truncate flex-1">
-                  {window.location.origin}/inscricao/{turma.codigoAcesso}
-                </p>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/inscricao/${turma.codigoAcesso}`);
-                    toast.success("Link copiado!");
-                  }}
-                  className="text-emerald-600 hover:text-emerald-800 transition-colors shrink-0"
-                  title="Copiar link"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       {turma.outrosDados && (
         <div className="float-card p-4 animate-float-up" style={{ animationDelay: '400ms' }}>

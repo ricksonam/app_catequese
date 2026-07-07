@@ -17,7 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { generateUUID, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
-
+import { toggleInscricoesAbertas } from "@/lib/supabaseStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -180,6 +181,26 @@ export default function CatequizandosList() {
   const [showSacramentos, setShowSacramentos] = useState(false);
 
   const [showInscricaoModal, setShowInscricaoModal] = useState(false);
+  const [isTogglingInscricoes, setIsTogglingInscricoes] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleToggleInscricoes = async (novoEstado: boolean) => {
+    if (!turma?.id) return;
+    setIsTogglingInscricoes(true);
+    try {
+      await toggleInscricoesAbertas(turma.id, novoEstado);
+      await queryClient.invalidateQueries({ queryKey: ["turmas"] });
+      toast.success(
+        novoEstado
+          ? "✅ Inscrições abertas! O link público já está aceitando novas inscrições."
+          : "🔒 Inscrições encerradas. O link público exibirá a mensagem de encerramento."
+      );
+    } catch (error: any) {
+      toast.error("Erro ao alterar inscrições: " + error.message);
+    } finally {
+      setIsTogglingInscricoes(false);
+    }
+  };
 
   const handleCopyInscricaoLink = async () => {
     const url = `${getAppUrl()}/inscricao-catequizando/${turma?.codigoAcesso}`;
@@ -956,6 +977,61 @@ export default function CatequizandosList() {
                       </p>
                     </div>
 
+                    {/* Toggle de Inscrições */}
+                    {!turma?.isShared && turma?.codigoAcesso && (
+                      <div className={cn(
+                        "rounded-2xl p-4 border-2 shadow-sm transition-all duration-500",
+                        turma.inscricoesAbertas
+                          ? "bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200"
+                          : "bg-gradient-to-br from-slate-50 to-gray-100 border-slate-200"
+                      )}>
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className={cn(
+                              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                              turma.inscricoesAbertas ? "bg-emerald-500 text-white" : "bg-slate-300 text-slate-600"
+                            )}>
+                              {turma.inscricoesAbertas ? (
+                                <CheckCircle2 className="w-5 h-5" />
+                              ) : (
+                                <Link2 className="w-5 h-5" />
+                              )}
+                            </div>
+                            <div className="min-w-0 text-left">
+                              <p className="text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground/80">Status das Inscrições</p>
+                              <p className={cn(
+                                "text-sm font-black uppercase tracking-tight",
+                                turma.inscricoesAbertas ? "text-emerald-700" : "text-slate-500"
+                              )}>
+                                {turma.inscricoesAbertas ? "Abertas" : "Encerradas"}
+                              </p>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => handleToggleInscricoes(!turma.inscricoesAbertas)}
+                            disabled={isTogglingInscricoes}
+                            className={cn(
+                              "relative w-12 h-6 rounded-full transition-all duration-300 shrink-0 shadow-inner border-2 disabled:opacity-50",
+                              turma.inscricoesAbertas
+                                ? "bg-emerald-500 border-emerald-600"
+                                : "bg-slate-300 border-slate-400"
+                            )}
+                          >
+                            <span className={cn(
+                              "absolute top-[1px] w-4 h-4 bg-white rounded-full shadow-md transition-all duration-300 flex items-center justify-center",
+                              turma.inscricoesAbertas ? "left-[22px]" : "left-[2px]"
+                            )}>
+                              {isTogglingInscricoes && (
+                                <span className="w-2 h-2 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+                              )}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {turma?.inscricoesAbertas && (
                     <div className="space-y-2">
                        <label className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.2em] block ml-1">Link de Acolhida e Atualização</label>
                        <button 
@@ -977,6 +1053,7 @@ export default function CatequizandosList() {
                        </button>
                        <p className="text-[9px] font-bold text-muted-foreground/60 text-center uppercase tracking-widest mt-2">Clique acima para copiar o link e enviar aos pais</p>
                     </div>
+                    )}
                 </div>
 
 
