@@ -140,6 +140,7 @@ export default function EncontrosList() {
             <ArrowLeft className="h-5 w-5 text-black" />
           </button>
           <div className="flex flex-col items-center gap-1 text-center">
+            {turma?.nome && <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-[-2px]">{turma.nome}</p>}
             <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Encontros</h1>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{encontros.length} encontros</p>
           </div>

@@ -1303,10 +1303,10 @@ export default function TrilhaSacramental() {
           <ArrowLeft className="h-5 w-5 text-black" />
         </button>
         <div className="flex-1 text-center pr-10">
+          {turma?.nome && <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-[-2px]">{turma.nome}</p>}
           <h1 className="text-lg font-black text-foreground tracking-tight uppercase leading-tight">
             Trilha Sacramental
           </h1>
-          {turma && <p className="text-xs text-muted-foreground font-medium">{turma.nome} · {turma.ano}</p>}
         </div>
       </div>
 

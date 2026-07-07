@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
+import { useTurmas } from "@/hooks/useSupabaseData";
 import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown, Users } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
@@ -254,6 +255,8 @@ export default function DiarioEspiritualList() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { diarios = [], isLoading, excluirDiario } = useDiarioEspiritual(id!);
+  const { data: turmas = [] } = useTurmas();
+  const turma = turmas.find(t => t.id === id);
   const [viewItem, setViewItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
@@ -291,6 +294,7 @@ export default function DiarioEspiritualList() {
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
+              {turma?.nome && <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-0.5">{turma.nome}</p>}
               <h1 className="text-xl font-black text-foreground tracking-tight uppercase truncate">Diário do Catequista</h1>
             </div>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none mt-1">

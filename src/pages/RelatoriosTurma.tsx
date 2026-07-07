@@ -74,12 +74,11 @@ export default function RelatoriosTurma() {
           </button>
           
           <div className="flex flex-col items-center gap-1 text-center">
-            <div className="flex items-center gap-2 justify-center">
-              <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
-                Relatórios da Turma
-              </h1>
-            </div>
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{turma.nome} • {turma.etapa}</p>
+            {turma?.nome && <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-[-2px]">{turma.nome}</p>}
+            <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
+              Relatórios
+            </h1>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{turma.etapa}</p>
           </div>
         </div>
       </div>

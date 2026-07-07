@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useMissoesFamilia } from "@/hooks/useSupabaseData";
+import { useMissoesFamilia, useTurmas } from "@/hooks/useSupabaseData";
 import { Heart, Plus, Share2, Copy, PencilLine, Sparkles, BookOpen, Dice5, HelpCircle, ArrowLeft, Trophy, Trash2, CheckCircle2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,8 @@ export default function MissoesFamilia() {
 
   // Fetch missoes
   const { data: missoes = [], isLoading } = useMissoesFamilia(turmaId);
+  const { data: turmas = [] } = useTurmas();
+  const turma = turmas.find(t => t.id === turmaId);
 
   const deleteMissao = useMutation({
     mutationFn: async (id: string) => {
@@ -174,6 +176,7 @@ export default function MissoesFamilia() {
             </button>
             
             <div className="flex flex-col items-center gap-1 text-center">
+              {turma?.nome && <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-[-2px]">{turma.nome}</p>}
               <h1 className="text-xl font-black text-foreground tracking-tight uppercase">
                 Missões em Família
               </h1>
