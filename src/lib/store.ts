@@ -29,6 +29,8 @@ export interface TrilhaSacramental {
   participacao_eventos: boolean;
   atividades_extras: boolean;
   observacoes?: string;
+  apto?: boolean;
+  motivoNaoApto?: string;
 }
 
 export interface TurmaTrilhaConfig {
