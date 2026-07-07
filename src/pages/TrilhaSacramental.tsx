@@ -236,7 +236,8 @@ function TrilhaNode({
 }: {
   node: NodeDef; globalStatus: NodeStatus; dateVal?: string; expanded: boolean;
   onToggle: () => void;
-  catsConcluidos: Catequizando[]; catsPendentes: Catequizando[];
+  catsConcluidos: {cat: Catequizando, status: NodeStatus}[]; 
+  catsPendentes: {cat: Catequizando, status: NodeStatus}[];
   onChangeDate?: (v: string) => void; onRemove?: () => void; onClickCat: (cat: Catequizando) => void;
   isLast: boolean; isFirst: boolean; totalCats: number; sacLabel: string; dataCelebracao?: string;
   onManageCondicional?: () => void;
@@ -366,7 +367,7 @@ function TrilhaNode({
                            {node.tipo === "celebracao" ? "Aptos para Celebrar" : node.tipo === "condicional" ? "Possuem o Sacramento" : "Concluídos"} ({catsConcluidos.length})
                          </p>
                          <div className="flex flex-wrap gap-x-3 gap-y-4">
-                           {catsConcluidos.map(cat => <BonecoCatequizando key={cat.id} cat={cat} status="done" onClick={() => onClickCat(cat)} />)}
+                           {catsConcluidos.map(({cat, status}) => <BonecoCatequizando key={cat.id} cat={cat} status={status} onClick={() => onClickCat(cat)} />)}
                          </div>
                        </div>
                      )}
@@ -378,7 +379,7 @@ function TrilhaNode({
                            {node.tipo === "celebracao" ? "Não Aptos / Pendentes" : node.tipo === "condicional" ? "Não Possuem (Pendência)" : "Pendentes"} ({catsPendentes.length})
                          </p>
                          <div className="flex flex-wrap gap-x-3 gap-y-4 opacity-90">
-                           {catsPendentes.map(cat => <BonecoCatequizando key={cat.id} cat={cat} status={node.tipo === "celebracao" || node.tipo === "condicional" ? "skipped" : "pending"} onClick={() => onClickCat(cat)} />)}
+                           {catsPendentes.map(({cat, status}) => <BonecoCatequizando key={cat.id} cat={cat} status={status} onClick={() => onClickCat(cat)} />)}
                          </div>
                        </div>
                      )}
@@ -436,6 +437,7 @@ function DrawerCatequizando({ cat, sac, encontros, open, onClose, onSave, saving
   }));
   const handleSave = () => onSave({
     ...cat,
+    sacramentos: localSac,
     dadosPastorais: { ...(cat.dadosPastorais || {}), sacramentos: localSac },
     trilhasPorSacramento: { ...(cat.trilhasPorSacramento || {}), [sac]: localTrilha },
   });
@@ -929,10 +931,13 @@ export default function TrilhaSacramental() {
     setSavingCat(true);
     try {
       await upsertCatequizando(updated);
-      queryClient.invalidateQueries({ queryKey: ["catequizandos", id] });
+      await queryClient.invalidateQueries({ queryKey: ["catequizandos", id] });
       toast.success("Anotações salvas com sucesso!");
     } catch (e: any) { toast.error("Erro: " + e.message); }
-    finally { setSavingCat(false); }
+    finally { 
+      setSavingCat(false); 
+      setSelectedCat(null); // Fecha a gaveta após salvar com sucesso
+    }
   };
 
   const handleSaveSelecaoTrilha = async (ids: string[]) => {
@@ -982,7 +987,7 @@ export default function TrilhaSacramental() {
   const removidasCount = etapasRemovidas.length;
 
   return (
-    <div className="space-y-6 pb-20 animate-fade-in bg-slate-50/50 min-h-screen">
+    <div className="space-y-6 pb-20 animate-fade-in bg-slate-50/50 min-h-screen overflow-x-hidden">
       {/* ── HEADER ── */}
       <div className="flex items-center gap-3 pt-4 px-4">
         <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn shrink-0">
@@ -1050,14 +1055,19 @@ export default function TrilhaSacramental() {
            let refList = catDaTrilha;
            if (node.tipo === "inicio") refList = todosOsCatequizandos;
            
-           const concluidos = refList.filter(c => {
-             const s = catNodeStatusMap[c.id]?.[node.id];
-             return s === "done" || s === "skipped";
-           });
-           const pendentes = refList.filter(c => {
-             const s = catNodeStatusMap[c.id]?.[node.id];
-             return s !== "done" && s !== "skipped";
-           });
+           const concluidos = refList
+             .filter(c => {
+               const s = catNodeStatusMap[c.id]?.[node.id];
+               return s === "done" || s === "skipped";
+             })
+             .map(cat => ({ cat, status: catNodeStatusMap[cat.id]?.[node.id] || "done" }));
+             
+           const pendentes = refList
+             .filter(c => {
+               const s = catNodeStatusMap[c.id]?.[node.id];
+               return s !== "done" && s !== "skipped";
+             })
+             .map(cat => ({ cat, status: catNodeStatusMap[cat.id]?.[node.id] || "pending" }));
            
            return (
              <TrilhaNode
