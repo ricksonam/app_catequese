@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 import { TurmaStep } from "@/components/Onboarding/TurmaStep";
 import { MapaTimeline } from "@/components/MapaTimeline";
+import { ApoieModal } from "@/components/ApoieModal";
 
 import confetti from "canvas-confetti";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
@@ -485,6 +486,7 @@ export default function Dashboard() {
   };
 
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
+  const [apoieOpen, setApoieOpen] = useState(false);
   const [showCalendario, setShowCalendario] = useState(false);
 
   // Módulos ligados a uma turma
@@ -688,6 +690,21 @@ export default function Dashboard() {
               </h1>
             </div>
             <div className="flex items-center gap-2">
+              {/* Chip Apoie animado */}
+              <button
+                onClick={() => setApoieOpen(true)}
+                id="btn-apoie-dashboard"
+                className="group relative flex items-center gap-1 pl-2 pr-2.5 py-1.5 rounded-full bg-gradient-to-br from-amber-400 via-yellow-400 to-orange-500 text-white active:scale-95 transition-all shadow-sm border border-amber-300/60 overflow-hidden"
+              >
+                {/* Shimmer ao hover */}
+                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
+                {/* Pulso sutil */}
+                <span className="absolute inset-0 rounded-full animate-ping bg-amber-400/20 pointer-events-none" style={{ animationDuration: '3.5s' }} />
+                {/* Coração pulsante */}
+                <span className="relative z-10 text-sm leading-none" style={{ animation: 'heartbeat 1.4s ease-in-out infinite' }}>❤️</span>
+                <span className="text-[10px] font-black tracking-wide relative z-10">Apoie</span>
+              </button>
+
               {/* Ícone de mensagens */}
               <button
                 onClick={handleMessagesClick}
@@ -706,6 +723,8 @@ export default function Dashboard() {
                 )}
               </button>
             </div>
+
+            <ApoieModal open={apoieOpen} onOpenChange={setApoieOpen} />
           </div>
           {/* Linha dourada inferior ornamental */}
           <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent)' }} />

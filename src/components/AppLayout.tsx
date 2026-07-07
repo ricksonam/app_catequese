@@ -16,7 +16,6 @@ import {
   BookHeart,
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
-import { ApoieModal } from "./ApoieModal";
 import { useState, useMemo } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -52,7 +51,6 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const [pickerDestination, setPickerDestination] = useState<"relatorios" | "diario">("relatorios");
   const [suggestionText, setSuggestionText] = useState("");
   const [isSavingSuggestion, setIsSavingSuggestion] = useState(false);
-  const [apoieOpen, setApoieOpen] = useState(false);
   const { user } = useAuth();
   const { data: turmas = [] } = useTurmas();
 
@@ -91,25 +89,8 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
             </button>
 
-            {/* Chips: Apoie + Agenda */}
-            <div className="flex items-center gap-1.5">
-              {/* Chip Apoie — ícone + texto compacto */}
-              <button
-                onClick={() => setApoieOpen(true)}
-                id="btn-apoie"
-                className="group relative flex items-center gap-1 pl-2 pr-2.5 py-1.5 rounded-full bg-gradient-to-br from-amber-400 via-yellow-400 to-orange-500 text-white hover:from-amber-500 hover:to-orange-600 active:scale-95 transition-all shadow-sm shadow-amber-400/30 border border-amber-300/80 overflow-hidden"
-              >
-                {/* Shimmer ao hover */}
-                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
-                {/* Pulso sutil de fundo */}
-                <span className="absolute inset-0 rounded-full animate-ping bg-amber-400/20 pointer-events-none" style={{ animationDuration: '3.5s' }} />
-                {/* Coração com heartbeat */}
-                <span className="relative z-10 text-sm leading-none" style={{ animation: 'heartbeat 1.4s ease-in-out infinite' }}>❤️</span>
-                <span className="text-[10px] font-black tracking-wide relative z-10 hidden xs:inline">Apoie</span>
-                <span className="text-[10px] font-black tracking-wide relative z-10 xs:hidden">Apoie</span>
-              </button>
-
-              {/* Chip Agenda */}
+            {/* Chip Agenda */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => {
                   if (currentPath === "/modulos/calendario") {
@@ -119,12 +100,12 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   }
                 }}
                 id="btn-agenda"
-                className="group relative flex items-center gap-1 pl-2 pr-2.5 py-1.5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-sm shadow-emerald-500/20 border border-emerald-400/80 overflow-hidden"
+                className="group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-md shadow-emerald-500/30 border border-emerald-400 overflow-hidden"
               >
                 {/* shimmer */}
                 <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
                 <CalendarDays className="h-3.5 w-3.5 text-white shrink-0 relative z-10" />
-                <span className="text-[10px] font-black tracking-wide relative z-10">Agenda</span>
+                <span className="text-[11px] font-black tracking-wide relative z-10">Agenda</span>
               </button>
             </div>
           </div>
@@ -133,19 +114,6 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
             open={showObjective} 
             onOpenChange={setShowObjective} 
           />
-
-          <ApoieModal open={apoieOpen} onOpenChange={setApoieOpen} />
-
-          {/* Animação heartbeat global para o botão Apoie */}
-          <style>{`
-            @keyframes heartbeat {
-              0%, 100% { transform: scale(1); }
-              14% { transform: scale(1.3); }
-              28% { transform: scale(1); }
-              42% { transform: scale(1.2); }
-              70% { transform: scale(1); }
-            }
-          `}</style>
 
         </header>
       )}
