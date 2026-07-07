@@ -96,6 +96,26 @@ export default function Dashboard() {
     fetchNovosMateriaisCount();
   }, [user]);
 
+  // Pré-carrega todas as imagens dos módulos para exibição imediata
+  useEffect(() => {
+    const preloadImages = [
+      '/card_catequizandos.jpg',
+      '/card_encontros.jpg',
+      '/icone-eventos.png',
+      '/icone-reunioes.png',
+      '/icone_trilha.png',
+      '/icone_diario.png',
+      '/card_biblia.jpg',
+      '/icone_oracoes.png',
+      '/icone_liturgia.png',
+      '/acesso_jogos.jpg',
+    ];
+    preloadImages.forEach(src => {
+      const img = new window.Image();
+      img.src = src;
+    });
+  }, []);
+
 
 
 
@@ -943,7 +963,7 @@ export default function Dashboard() {
                 <div className="h-px flex-1 bg-blue-200/70" />
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/40 shadow-sm">
                   <Users className="h-3 w-3 text-blue-500" />
-                  <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Módulos da Turma Selecionada</span>
+                  <span className="text-[9px] font-black text-foreground uppercase tracking-widest">Módulos da Turma Selecionada</span>
                 </div>
                 <div className="h-px flex-1 bg-blue-200/70" />
               </div>
@@ -954,7 +974,7 @@ export default function Dashboard() {
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     <button
                       onClick={item.onClick}
-                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03]"
+                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03] focus:outline-none"
                     >
                       <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                       {/* Overlay indicando que precisa de turma */}
@@ -984,7 +1004,7 @@ export default function Dashboard() {
                 <div className="h-px flex-1 bg-emerald-200/70" />
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700/40 shadow-sm">
                   <Compass className="h-3 w-3 text-emerald-600" />
-                  <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Módulos Gerais</span>
+                  <span className="text-[9px] font-black text-foreground uppercase tracking-widest">Módulos Gerais</span>
                 </div>
                 <div className="h-px flex-1 bg-emerald-200/70" />
               </div>
@@ -995,7 +1015,7 @@ export default function Dashboard() {
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     <button
                       onClick={item.onClick}
-                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03]"
+                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03] focus:outline-none focus:border-white"
                     >
                       <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                     </button>
