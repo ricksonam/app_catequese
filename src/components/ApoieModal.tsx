@@ -13,17 +13,45 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
   const pixKey = "ricksonam@hotmail.com";
   const favorecido = "Rickson Amazonas";
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(pixKey);
-      setCopied(true);
-      toast.success("Chave Pix copiada! 💛", {
-        description: "Cole no seu app de pagamento.",
+  const handleCopy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Fallback robusto para clipboard dentro de modais
+    const copyText = () => {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(pixKey);
+      }
+      // Fallback via textarea
+      return new Promise<void>((resolve, reject) => {
+        const textarea = document.createElement("textarea");
+        textarea.value = pixKey;
+        textarea.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+          resolve();
+        } catch {
+          document.body.removeChild(textarea);
+          reject();
+        }
       });
-      setTimeout(() => setCopied(false), 3000);
-    } catch {
-      toast.error("Não foi possível copiar. Copie manualmente.");
-    }
+    };
+
+    copyText()
+      .then(() => {
+        setCopied(true);
+        toast.success("Chave Pix copiada! 💛", {
+          description: "Cole no seu app de pagamento.",
+        });
+        setTimeout(() => setCopied(false), 3000);
+      })
+      .catch(() => {
+        toast.error("Não foi possível copiar. Copie manualmente.");
+      });
   };
 
   return (
@@ -115,7 +143,8 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
                 {/* Chave + botão copiar */}
                 <button
                   onClick={handleCopy}
-                  className="w-full group flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-dashed border-amber-300 dark:border-amber-700 hover:border-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all active:scale-[0.98]"
+                  type="button"
+                  className="w-full group flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border-2 border-dashed border-amber-300 dark:border-amber-700 hover:border-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
                 >
                   <span className="text-sm font-black text-amber-800 dark:text-amber-300 tracking-wide truncate">
                     {pixKey}
