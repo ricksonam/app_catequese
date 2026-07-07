@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeadphonesIcon, FileUp, UploadCloud, AlertCircle, Clock } from "lucide-react";
+import { HeadphonesIcon, FileUp, UploadCloud, AlertCircle, Clock, ArrowLeft, PlusCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 
@@ -36,8 +36,13 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
   const [email, setEmail] = useState("");
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<'list' | 'form'>('list');
 
   useEffect(() => {
+    if (open) {
+      setView('list');
+    }
+  }, [open]);
     if (user) {
       setEmail(user.email || "");
       // Fetch phone from profiles if available
@@ -130,12 +135,12 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
         description: `Seu protocolo é ${protocolo}. Enviamos um e-mail com a confirmação.`,
       });
 
-      onOpenChange(false);
       // Limpar form
       setMensagem("");
       setArquivo(null);
       setTipo("Tirar dúvidas");
       refetch();
+      setView('list'); // Volta para a lista de atendimentos
       
     } catch (error: any) {
       console.error(error);
@@ -154,24 +159,71 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
           </div>
           <DialogTitle className="text-2xl font-black text-center">Atendimento ao Cliente</DialogTitle>
           <DialogDescription className="text-center text-base">
-            Como podemos ajudar você hoje? Selecione o tipo de atendimento ou acompanhe seus chamados.
+            {view === 'list' ? 'Acompanhe seus chamados ou solicite um novo atendimento.' : 'Preencha os dados abaixo para solicitar atendimento.'}
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="novo" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="novo">Nova Solicitação</TabsTrigger>
-            <TabsTrigger value="historico" className="flex items-center gap-2">
-              Minhas Solicitações
-              {meusAtendimentos && meusAtendimentos.length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-black">
-                  {meusAtendimentos.length}
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
+        {view === 'list' ? (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-2">
+            <Button 
+              onClick={() => setView('form')} 
+              className="w-full h-14 rounded-2xl font-black text-base shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary/90"
+            >
+              <PlusCircle className="w-5 h-5" /> Solicitar Novo Atendimento
+            </Button>
 
-          <TabsContent value="novo">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-muted-foreground/20 to-transparent" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Seus Atendimentos</span>
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-muted-foreground/20 to-transparent" />
+              </div>
+
+              {loadingAtendimentos ? (
+                <div className="flex justify-center p-8">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : meusAtendimentos && meusAtendimentos.length > 0 ? (
+                <div className="space-y-3">
+                  {meusAtendimentos.map((atendimento) => {
+                    const isPendente = atendimento.status === 'Aberto';
+                    return (
+                    <div key={atendimento.id} className="p-4 rounded-2xl border-2 bg-card hover:border-primary/30 transition-all flex flex-col gap-2">
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">{atendimento.protocolo}</span>
+                        <div className={cn(
+                          "text-[10px] font-black uppercase px-2.5 py-1 rounded-full",
+                          isPendente ? "bg-amber-50 text-amber-600 border border-amber-200/50" : "bg-emerald-50 text-emerald-600 border border-emerald-200/50"
+                        )}>
+                          {isPendente ? 'Pendente' : atendimento.status}
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="font-bold text-sm text-foreground">{atendimento.tipo}</span>
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
+                          <Clock className="w-3 h-3" />
+                          {new Date(atendimento.created_at).toLocaleDateString('pt-BR')}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{atendimento.mensagem}</p>
+                    </div>
+                  )})}
+                </div>
+              ) : (
+                <div className="text-center p-8 border-2 border-dashed rounded-2xl bg-muted/20">
+                  <p className="text-sm font-bold text-muted-foreground">Você ainda não abriu nenhuma solicitação.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300 pb-2">
+            <button 
+              onClick={() => setView('list')}
+              className="flex items-center gap-2 text-sm font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mb-6 px-3 py-1.5 rounded-lg hover:bg-primary/5"
+            >
+              <ArrowLeft className="w-4 h-4" /> Voltar
+            </button>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-sm font-bold">Tipo de Atendimento</Label>
@@ -247,7 +299,7 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
                     ) : (
                       <>
                         <UploadCloud className="w-5 h-5" />
-                        <span className="font-semibold">Clique para anexar foto ou documento</span>
+                        <span className="font-semibold text-sm">Clique para anexar foto ou documento</span>
                       </>
                     )}
                   </Label>
@@ -266,47 +318,11 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
                 disabled={loading} 
                 className="w-full h-14 rounded-2xl font-black text-lg mt-2 shadow-lg hover:scale-[1.01] transition-transform"
               >
-                {loading ? "Enviando..." : "Solicitar Atendimento"}
+                {loading ? "Enviando..." : "Enviar Solicitação"}
               </Button>
             </form>
-          </TabsContent>
-
-          <TabsContent value="historico" className="space-y-4">
-            {loadingAtendimentos ? (
-              <div className="flex justify-center p-8">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : meusAtendimentos && meusAtendimentos.length > 0 ? (
-              <div className="space-y-3 mt-4">
-                {meusAtendimentos.map((atendimento) => (
-                  <div key={atendimento.id} className="p-4 rounded-2xl border-2 bg-card hover:border-primary/30 transition-all flex flex-col gap-2">
-                    <div className="flex justify-between items-start">
-                      <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">{atendimento.protocolo}</span>
-                      <div className={cn(
-                        "text-[10px] font-black uppercase px-2 py-1 rounded-full",
-                        atendimento.status === 'Resolvido' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
-                      )}>
-                        {atendimento.status}
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center mt-1">
-                      <span className="font-bold text-sm">{atendimento.tipo}</span>
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {new Date(atendimento.created_at).toLocaleDateString('pt-BR')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{atendimento.mensagem}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center p-8 border-2 border-dashed rounded-2xl bg-muted/20">
-                <p className="text-muted-foreground font-medium">Você ainda não abriu nenhuma solicitação de atendimento.</p>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
