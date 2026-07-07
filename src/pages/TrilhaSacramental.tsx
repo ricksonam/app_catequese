@@ -983,14 +983,6 @@ export default function TrilhaSacramental() {
     } catch (e: any) { toast.error("Erro: " + e.message); }
     finally { setAddingEtapa(false); }
   };
-      await upsertTurma({ ...turma, trilhasConfig: updatedConfig });
-      queryClient.invalidateQueries({ queryKey: ["turmas"] });
-      setNovaEtapaLabel("");
-      toast.success("Nova parada adicionada ao mapa!");
-      setExpandedNode(nova.id);
-    } catch (e: any) { toast.error("Erro: " + e.message); }
-    finally { setAddingEtapa(false); }
-  };
 
   const handleRemoveEtapa = async (nodeId: string, isCustom?: boolean) => {
     if (!turma) return;
