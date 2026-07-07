@@ -8,7 +8,7 @@ import {
   UserPlus, Calendar, Phone, Mail, MapPin, 
   Plus, X as XIcon, CheckCircle2, AlertCircle, 
   ArrowRight, Sparkles, Heart, Church, 
-  Camera, Users, Info, LayoutDashboard
+  Camera, Users, Info, LayoutDashboard, Save
 } from "lucide-react";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -465,6 +465,16 @@ export default function PublicInscricao() {
             ) : (
                 <>ENVIAR INSCRIÇÃO <ArrowRight className="w-5 h-5" /></>
             )}
+          </button>
+
+          {/* BOTÃO FLUTUANTE DE SALVAR */}
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            title="Enviar Inscrição"
+            className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 disabled:opacity-50 animate-bounce-subtle"
+          >
+            {isSubmitting ? <Spinner size="sm" color="white" /> : <Save className="w-6 h-6" />}
           </button>
         </form>
 

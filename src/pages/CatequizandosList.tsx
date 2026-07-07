@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2 } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -882,6 +882,18 @@ export default function CatequizandosList() {
                 >
                   {mutation.isPending ? "Salvando..." : "CONCLUIR INSCRIÇÃO"}
                 </button>
+
+                {/* BOTÃO FLUTUANTE DE SALVAR (Modal) */}
+                <div className="sticky bottom-2 flex justify-end w-full pointer-events-none z-50">
+                  <button 
+                    onClick={handleAdd} 
+                    disabled={mutation.isPending}
+                    title="Concluir Inscrição"
+                    className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all pointer-events-auto disabled:opacity-50"
+                  >
+                    {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                  </button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
@@ -2026,6 +2038,18 @@ export default function CatequizandosList() {
                 >
                   {mutation.isPending ? "Salvando..." : "SALVAR ALTERAÇÕES"}
                 </button>
+
+                {/* BOTÃO FLUTUANTE DE SALVAR (Modal Edit) */}
+                <div className="sticky bottom-2 flex justify-end w-full pointer-events-none z-50">
+                  <button 
+                    onClick={handleSaveEdit} 
+                    disabled={mutation.isPending}
+                    title="Salvar Alterações"
+                    className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all pointer-events-auto disabled:opacity-50"
+                  >
+                    {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                  </button>
+                </div>
               </div>
             </div>
           )}
