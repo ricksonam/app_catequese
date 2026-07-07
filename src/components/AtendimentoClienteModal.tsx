@@ -43,6 +43,8 @@ export function AtendimentoClienteModal({ open, onOpenChange }: Props) {
       setView('list');
     }
   }, [open]);
+
+  useEffect(() => {
     if (user) {
       setEmail(user.email || "");
       // Fetch phone from profiles if available
