@@ -203,25 +203,25 @@ function BonecoCatequizando({ cat, status, onClick, isCondicional }: { cat: Cate
   // Na celebração, skipped = não apto. No condicional, pending = falta.
   
   return (
-    <button onClick={onClick} className="relative flex flex-col items-center gap-1 group active:scale-95 transition-all w-[64px]">
-       <div className={cn("w-12 h-12 rounded-full border-[3px] shadow-sm overflow-hidden group-hover:shadow-lg transition-all group-hover:-translate-y-1 z-10",
+    <button onClick={onClick} className="relative flex flex-col items-center gap-1.5 group active:scale-95 transition-all w-[76px] sm:w-[84px]">
+       <div className={cn("w-14 h-14 sm:w-16 sm:h-16 rounded-full border-[3px] shadow-sm overflow-hidden group-hover:shadow-lg transition-all group-hover:-translate-y-1 z-10",
          ok ? "border-emerald-400 bg-emerald-50" 
          : partial ? "border-amber-400 bg-amber-50" 
          : "border-red-300 bg-red-50"
        )}>
           {cat.foto 
              ? <img src={cat.foto} className="w-full h-full object-cover"/> 
-             : <span className={cn("font-black text-lg flex items-center justify-center w-full h-full", 
+             : <span className={cn("font-black text-xl flex items-center justify-center w-full h-full", 
                  ok ? "text-emerald-600" : partial ? "text-amber-600" : "text-red-500"
                )}>{cat.nome.charAt(0)}</span>
           }
        </div>
        
-       {ok && <div className="absolute top-0 -right-1 bg-white rounded-full p-0.5 shadow-sm z-20"><CheckCircle2 className="h-4 w-4 text-emerald-500" /></div>}
-       {!ok && partial && <div className="absolute top-0 -right-1 bg-white rounded-full p-0.5 shadow-sm z-20"><AlertTriangle className="h-4 w-4 text-amber-500" /></div>}
-       {!ok && !partial && <div className="absolute top-0 -right-1 bg-white rounded-full p-0.5 shadow-sm z-20"><Ban className="h-4 w-4 text-red-500" /></div>}
+       {ok && <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm z-20"><CheckCircle2 className="h-5 w-5 text-emerald-500" /></div>}
+       {!ok && partial && <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm z-20"><AlertTriangle className="h-5 w-5 text-amber-500" /></div>}
+       {!ok && !partial && <div className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm z-20"><Ban className="h-5 w-5 text-red-500" /></div>}
        
-       <span className="text-[9px] font-black uppercase text-center leading-tight line-clamp-1 w-full px-0.5 text-foreground/80 mt-0.5 group-hover:text-primary transition-colors">
+       <span className="text-[10px] sm:text-[11px] font-black uppercase text-center leading-tight line-clamp-2 w-full px-0.5 text-foreground/80 mt-1 group-hover:text-primary transition-colors">
          {cat.nome.split(" ")[0]}
        </span>
     </button>
@@ -366,7 +366,7 @@ function TrilhaNode({
                            <CheckCircle2 className="h-3.5 w-3.5" /> 
                            {node.tipo === "celebracao" ? "Aptos para Celebrar" : node.tipo === "condicional" ? "Possuem o Sacramento" : "Concluídos"} ({catsConcluidos.length})
                          </p>
-                         <div className="flex flex-wrap gap-x-3 gap-y-4">
+                         <div className="flex flex-wrap gap-4 sm:gap-5 justify-center sm:justify-start">
                            {catsConcluidos.map(({cat, status}) => <BonecoCatequizando key={cat.id} cat={cat} status={status} onClick={() => onClickCat(cat)} />)}
                          </div>
                        </div>
@@ -378,7 +378,7 @@ function TrilhaNode({
                            <AlertTriangle className="h-3.5 w-3.5" /> 
                            {node.tipo === "celebracao" ? "Não Aptos / Pendentes" : node.tipo === "condicional" ? "Não Possuem (Pendência)" : "Pendentes"} ({catsPendentes.length})
                          </p>
-                         <div className="flex flex-wrap gap-x-3 gap-y-4 opacity-90">
+                         <div className="flex flex-wrap gap-4 sm:gap-5 opacity-90 justify-center sm:justify-start">
                            {catsPendentes.map(({cat, status}) => <BonecoCatequizando key={cat.id} cat={cat} status={status} onClick={() => onClickCat(cat)} />)}
                          </div>
                        </div>
@@ -931,7 +931,7 @@ export default function TrilhaSacramental() {
     setSavingCat(true);
     try {
       await upsertCatequizando(updated);
-      await queryClient.invalidateQueries({ queryKey: ["catequizandos", id] });
+      await queryClient.invalidateQueries({ queryKey: ["catequizandos"] });
       toast.success("Anotações salvas com sucesso!");
     } catch (e: any) { toast.error("Erro: " + e.message); }
     finally { 
@@ -976,7 +976,7 @@ export default function TrilhaSacramental() {
           await upsertCatequizando(updated);
         }
       }
-      queryClient.invalidateQueries({ queryKey: ["catequizandos", id] });
+      await queryClient.invalidateQueries({ queryKey: ["catequizandos"] });
       setModalCondicionalOpen(null);
       toast.success("Status sacramentais atualizados!");
     } catch (e: any) { toast.error("Erro ao salvar sacramentos: " + e.message); }
@@ -1006,10 +1006,10 @@ export default function TrilhaSacramental() {
             <button key={s}
               onClick={() => { setSelectedSacramento(s); setExpandedNode(null); }}
               className={cn(
-                "flex-1 py-3 px-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300",
+                "flex-1 py-3 px-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2",
                 selectedSacramento === s ? cn("text-white shadow-md bg-gradient-to-r", SAC_CFG[s].gradient) : "text-muted-foreground hover:bg-muted"
               )}>
-              {SAC_CFG[s].emoji} <span className="hidden sm:inline">{SAC_CFG[s].label}</span>
+              <span className="text-sm sm:text-base">{SAC_CFG[s].emoji}</span> <span>{SAC_CFG[s].label}</span>
             </button>
           ))}
         </div>
