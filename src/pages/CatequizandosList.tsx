@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2, Info } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -1106,6 +1106,14 @@ export default function CatequizandosList() {
               </div>
             </div>
             
+            {/* Aviso de Origem de Dados */}
+            <div className="flex items-start gap-2 p-3 mt-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+              <Info className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+              <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium leading-relaxed">
+                Os dados apresentados neste painel são registrados automaticamente através da <strong>Ficha do Encontro</strong>.
+              </p>
+            </div>
+
             {/* Tabs Control */}
             <div className="flex items-center gap-2 mt-5 bg-black/5 p-1 rounded-xl">
               <button 
@@ -1411,6 +1419,14 @@ export default function CatequizandosList() {
                   <DialogTitle className="text-xl font-black text-emerald-900 dark:text-emerald-100 leading-tight">Painel de Evolução</DialogTitle>
                   <p className="text-[10px] font-bold text-emerald-700/70 dark:text-emerald-400/70 uppercase tracking-widest mt-0.5">Acompanhamento do Diário Espiritual</p>
                 </div>
+              </div>
+
+              {/* Aviso de Origem de Dados */}
+              <div className="flex items-start gap-2 p-3 mt-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <Info className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                <p className="text-xs text-emerald-800 dark:text-emerald-200 font-medium leading-relaxed">
+                  Os dados de evolução são registrados automaticamente através do <strong>Diário do Catequista</strong>.
+                </p>
               </div>
             </div>
 
