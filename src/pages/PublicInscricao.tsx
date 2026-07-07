@@ -8,7 +8,8 @@ import {
   UserPlus, Calendar, Phone, Mail, MapPin, 
   Plus, X as XIcon, CheckCircle2, AlertCircle, 
   ArrowRight, Sparkles, Heart, Church, 
-  Camera, Users, Info, LayoutDashboard, Save
+  Camera, Users, Info, LayoutDashboard, Save,
+  Lock, ClipboardCheck, Hash
 } from "lucide-react";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -57,6 +58,7 @@ export default function PublicInscricao() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [protocolo, setProtocolo] = useState<string | null>(null);
 
   const { data: turma, isLoading, error } = useQuery({
     queryKey: ["public_turma", codigo],
@@ -128,7 +130,6 @@ export default function PublicInscricao() {
       return;
     }
 
-
     setIsSubmitting(true);
     try {
       const existing = await checkCatequizandoExists(turma.id, form.nome.trim(), form.dataNascimento);
@@ -141,15 +142,16 @@ export default function PublicInscricao() {
         origem: 'online',
       };
 
+      const result = await publicUpsertCatequizando(payload);
 
-      await publicUpsertCatequizando(payload);
-
+      setProtocolo(result?.protocolo || null);
       setIsSuccess(true);
       toast.success("Inscrição realizada com sucesso!");
       window.scrollTo(0, 0);
     } catch (err: any) {
       console.error(err);
-      toast.error("Erro ao realizar inscrição. Tente novamente.");
+      // Show the server-side error message (e.g. inscricoes fechadas)
+      toast.error(err?.message || "Erro ao realizar inscrição. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -169,6 +171,64 @@ export default function PublicInscricao() {
     );
   }
 
+  // Tela de inscrições encerradas
+  if (!turma.inscricoes_abertas) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 flex items-center justify-center p-6">
+        <div className="max-w-sm w-full space-y-6 text-center animate-in zoom-in-95 duration-500">
+          {/* Ícone central com glow */}
+          <div className="relative mx-auto w-28 h-28">
+            <div className="absolute inset-0 rounded-full bg-purple-500/20 animate-ping" />
+            <div className="relative w-28 h-28 rounded-full bg-gradient-to-br from-purple-700 to-indigo-800 flex items-center justify-center shadow-2xl shadow-purple-900/50 border-2 border-purple-500/30">
+              <Lock className="h-14 w-14 text-white/90" />
+            </div>
+          </div>
+
+          {/* Textos */}
+          <div className="space-y-3">
+            <p className="text-[10px] font-black text-purple-300 uppercase tracking-[0.4em]">iCatequese Digital</p>
+            <h1 className="text-2xl font-black text-white tracking-tight uppercase leading-tight">
+              Inscrições
+              <br />
+              <span className="text-purple-300">Encerradas</span>
+            </h1>
+            <div className="flex items-center justify-center gap-2 text-white/60">
+              <Church className="w-4 h-4" />
+              <span className="text-sm font-bold">{turma.paroquia_nome || turma.paroquia?.nome || ""}</span>
+            </div>
+          </div>
+
+          {/* Card de mensagem */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div className="w-10 h-10 rounded-2xl bg-purple-500/20 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-5 h-5 text-purple-300" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-sm font-black text-white uppercase tracking-wide">
+                Turma {turma.nome}
+              </h2>
+              <p className="text-xs text-white/60 font-medium leading-relaxed">
+                O período de inscrições para esta turma está encerrado no momento.
+              </p>
+            </div>
+            <div className="border-t border-white/10 pt-4 space-y-1">
+              <p className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Precisa de ajuda?</p>
+              <p className="text-xs text-white/50 leading-relaxed">
+                Entre em contato diretamente com o catequista responsável para mais informações.
+              </p>
+            </div>
+          </div>
+
+          {/* Branding */}
+          <div className="flex items-center justify-center gap-2 opacity-40">
+            <img src="/app-logo.png" className="w-5 h-5 object-contain" alt="iCatequese" />
+            <span className="text-[10px] font-black text-white uppercase tracking-tight italic">iCatequese Digital</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-[#F8F9FE] flex items-center justify-center p-6">
@@ -182,6 +242,23 @@ export default function PublicInscricao() {
               A caminhada de <span className="text-primary font-bold">{form.nome}</span> foi registrada com sucesso.
             </p>
           </div>
+
+          {/* Número de Protocolo */}
+          {protocolo && (
+            <div className="bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/15 rounded-2xl p-5 space-y-2">
+              <div className="flex items-center justify-center gap-2">
+                <Hash className="w-4 h-4 text-primary" />
+                <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Número de Protocolo</p>
+              </div>
+              <p className="text-2xl font-black text-primary tracking-widest font-mono select-all">
+                {protocolo}
+              </p>
+              <p className="text-[10px] text-muted-foreground font-medium">
+                Guarde este número — ele comprova sua inscrição
+              </p>
+            </div>
+          )}
+
           <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10">
              <p className="text-xs font-bold text-primary uppercase tracking-widest leading-relaxed">
                Agora o catequista já pode visualizar os dados no sistema. Que Deus abençoe essa caminhada!

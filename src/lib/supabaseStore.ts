@@ -39,6 +39,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
     catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
     codigoAcesso: t.codigo_acesso,
     isShared: false,
+    inscricoesAbertas: t.inscricoes_abertas ?? false,
   }));
   const ownedIds = new Set(ownedTurmas.map(t => t.id));
 
@@ -73,6 +74,7 @@ export async function fetchTurmas(userId?: string): Promise<Turma[]> {
       catequistasIds: (t.turma_catequistas || []).map((tc: any) => tc.catequista_id),
       codigoAcesso: t.codigo_acesso,
       isShared: true,
+      inscricoesAbertas: t.inscricoes_abertas ?? false,
       status: memberStatusMap.get(t.id) as any
     }));
 
@@ -225,6 +227,7 @@ export async function fetchCatequizandos(turmaId?: string): Promise<Catequizando
     dadosPastorais: c.dados_pastorais || undefined,
     criadoEm: c.criado_em,
     origem: c.origem,
+    protocolo: c.protocolo || undefined,
     trilhaSacramental: c.trilha_sacramental || undefined,
     trilhasPorSacramento: c.trilhas_por_sacramento || undefined,
   }));
@@ -255,10 +258,23 @@ export async function removeCatequizando(id: string) {
   if (error) throw error;
 }
 
-export async function publicUpsertCatequizando(payload: any) {
+export async function publicUpsertCatequizando(payload: any): Promise<{ id: string; protocolo?: string }> {
   const { data, error } = await supabase.rpc('public_upsert_catequizando', { p_payload: payload });
   if (error) throw error;
-  return data;
+  // The RPC now returns a JSONB with { id, protocolo }
+  if (data && typeof data === 'object') {
+    return { id: (data as any).id, protocolo: (data as any).protocolo || undefined };
+  }
+  return { id: data as string };
+}
+
+export async function toggleInscricoesAbertas(turmaId: string, abertas: boolean): Promise<boolean> {
+  const { data, error } = await supabase.rpc('toggle_inscricoes_abertas', {
+    p_turma_id: turmaId,
+    p_abertas: abertas,
+  });
+  if (error) throw error;
+  return data as boolean;
 }
 
 export async function checkCatequizandoExists(turmaId: string, nome: string, dataNasc: string) {

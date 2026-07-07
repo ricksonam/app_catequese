@@ -1071,6 +1071,12 @@ export default function CatequizandosList() {
                         {calcularIdade(c.dataNascimento)}
                       </span>
                     )}
+                    {c.origem === 'online' && c.protocolo && (
+                      <span className="flex items-center gap-1 text-[9px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shadow-sm uppercase tracking-widest" title="Inscrição Online">
+                        <Link2 className="w-2.5 h-2.5" />
+                        {c.protocolo}
+                      </span>
+                    )}
                   </div>
                 </div>
                 
