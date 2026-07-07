@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -699,6 +699,7 @@ export default function CatequizandosList() {
                       currentImageUrl={form.foto} 
                       shape="circle" 
                       label="Foto de Perfil"
+                      hideCamera={true}
                     />
                   </div>
 
@@ -1039,6 +1040,7 @@ export default function CatequizandosList() {
                   </div>
                 )}
                 <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 w-full">
+                <div className="flex items-center justify-center w-6 text-sm font-bold text-muted-foreground">{i + 1}</div>
                 <div className="relative shrink-0 ml-1.5">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shadow-inner ring-2 ring-background">
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
@@ -1860,6 +1862,7 @@ export default function CatequizandosList() {
                       currentImageUrl={editForm.foto} 
                       shape="circle" 
                       label="Alterar Foto"
+                      hideCamera={true}
                     />
                   </div>
 
