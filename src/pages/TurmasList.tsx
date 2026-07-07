@@ -9,15 +9,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 // Palette: robust, deep solid tones (no neon gradients)
 const CARD_PALETTES = [
   {
-    bg: "from-slate-700 to-slate-800", borderMain: "border-slate-400",
-    iconColor: "text-slate-600",
-    text: "text-white", sub: "text-slate-300",
+    bg: "from-blue-600 to-blue-700", borderMain: "border-blue-400",
+    iconColor: "text-blue-500",
+    text: "text-white", sub: "text-blue-100",
     badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
   {
-    bg: "from-blue-800 to-blue-900", borderMain: "border-blue-400",
-    iconColor: "text-blue-600",
-    text: "text-white", sub: "text-blue-200",
+    bg: "from-indigo-500 to-indigo-600", borderMain: "border-indigo-400",
+    iconColor: "text-indigo-400",
+    text: "text-white", sub: "text-indigo-100",
     badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
   },
   {
