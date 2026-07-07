@@ -17,42 +17,56 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    // Fallback robusto para clipboard dentro de modais
-    const copyText = () => {
-      if (navigator.clipboard && window.isSecureContext) {
-        return navigator.clipboard.writeText(pixKey);
+    // Fallback absoluto sem uso de focus() ou inputs, que causam pulo na tela
+    const fallbackCopy = (text: string) => {
+      const el = document.createElement("span");
+      el.textContent = text;
+      el.style.whiteSpace = "pre";
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.appendChild(el);
+
+      const selection = window.getSelection();
+      const range = document.createRange();
+      selection?.removeAllRanges();
+      range.selectNodeContents(el);
+      selection?.addRange(range);
+
+      let success = false;
+      try {
+        success = document.execCommand("copy");
+      } catch {
+        success = false;
       }
-      // Fallback via textarea
-      return new Promise<void>((resolve, reject) => {
-        const textarea = document.createElement("textarea");
-        textarea.value = pixKey;
-        // top: 0 e left: 0 evita que o navegador dê scroll para o elemento fora da tela
-        textarea.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none;";
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        try {
-          document.execCommand("copy");
-          document.body.removeChild(textarea);
-          resolve();
-        } catch {
-          document.body.removeChild(textarea);
-          reject();
-        }
-      });
+
+      selection?.removeAllRanges();
+      document.body.removeChild(el);
+      return success;
     };
 
-    copyText()
-      .then(() => {
+    const copyText = async () => {
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(pixKey);
+          return true;
+        } catch {
+          return fallbackCopy(pixKey);
+        }
+      }
+      return fallbackCopy(pixKey);
+    };
+
+    copyText().then((success) => {
+      if (success) {
         setCopied(true);
         toast.success("Chave Pix copiada! 💛", {
           description: "Cole no seu app de pagamento.",
         });
         setTimeout(() => setCopied(false), 3000);
-      })
-      .catch(() => {
+      } else {
         toast.error("Não foi possível copiar. Copie manualmente.");
-      });
+      }
+    });
   };
 
   return (
