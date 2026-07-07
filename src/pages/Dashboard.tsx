@@ -870,49 +870,51 @@ export default function Dashboard() {
       {turmas.length > 0 && (
         <div className="px-4 mt-2 animate-fade-in">
 
-          {/* ── SELETOR DE TURMA COMPACTO ── */}
-          <button
-            onClick={() => setTurmaPickerOpen(true)}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-blue-400/60 shadow-sm hover:border-blue-500 hover:shadow-md active:scale-[0.98] transition-all group mb-4"
-          >
-            {/* Ícone da turma */}
-            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-              <BookOpen className="h-4 w-4 text-blue-600" />
-            </div>
-
-            {/* Info da turma */}
-            <div className="flex-1 min-w-0 text-left">
-              <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest leading-none mb-0.5">Turma Selecionada</p>
-              <p className="text-sm font-black text-foreground truncate leading-tight">
-                {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
-              </p>
-              {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
-                <p className="text-[10px] text-muted-foreground font-bold truncate leading-none mt-0.5">
-                  {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' · ')}
-                </p>
-              )}
-            </div>
-
-            {/* Stats compactas */}
-            {selectedTurmaId !== 'all' && (
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100">
-                  <Users className="h-3 w-3 text-blue-500" />
-                  <span className="text-[10px] font-black text-blue-700">{filteredCatequizandos.length}</span>
-                </div>
-                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100">
-                  <BookOpen className="h-3 w-3 text-emerald-500" />
-                  <span className="text-[10px] font-black text-emerald-700">{filteredEncontros.length}</span>
-                </div>
+          {/* ── SELETOR DE TURMA COMPACTO COM MOLDURA ── */}
+          <div className="p-1.5 rounded-[22px] bg-blue-50 border-2 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 shadow-md shadow-blue-500/10 mb-4 relative z-10">
+            <button
+              onClick={() => setTurmaPickerOpen(true)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-[18px] bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-700 shadow-sm hover:border-blue-300 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
+            >
+              {/* Ícone da turma */}
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+                <BookOpen className="h-4 w-4 text-blue-600" />
               </div>
-            )}
 
-            {/* Ícone trocar */}
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-zinc-700 shrink-0 group-hover:bg-blue-100 transition-colors">
-              <RefreshCw className="h-3 w-3 text-blue-500 group-hover:rotate-180 transition-transform duration-300" />
-              <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:block">Trocar</span>
-            </div>
-          </button>
+              {/* Info da turma */}
+              <div className="flex-1 min-w-0 text-left relative z-10">
+                <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest leading-none mb-0.5">Turma Selecionada</p>
+                <p className="text-sm font-black text-foreground truncate leading-tight">
+                  {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
+                </p>
+                {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
+                  <p className="text-[10px] text-muted-foreground font-bold truncate leading-none mt-0.5">
+                    {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' · ')}
+                  </p>
+                )}
+              </div>
+
+              {/* Stats compactas */}
+              {selectedTurmaId !== 'all' && (
+                <div className="flex items-center gap-2 shrink-0 relative z-10">
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100">
+                    <Users className="h-3 w-3 text-blue-500" />
+                    <span className="text-[10px] font-black text-blue-700">{filteredCatequizandos.length}</span>
+                  </div>
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100">
+                    <BookOpen className="h-3 w-3 text-emerald-500" />
+                    <span className="text-[10px] font-black text-emerald-700">{filteredEncontros.length}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Ícone trocar */}
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-zinc-700 shrink-0 group-hover:bg-blue-100 transition-colors relative z-10">
+                <RefreshCw className="h-3 w-3 text-blue-500 group-hover:rotate-180 transition-transform duration-300" />
+                <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:block">Trocar</span>
+              </div>
+            </button>
+          </div>
 
           {/* ── SEÇÃO: MÓDULOS DA TURMA SELECIONADA ── */}
           <div className="mb-3 relative">
@@ -924,7 +926,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card da seção com fundo colorido */}
-            <div className="rounded-3xl bg-blue-50/70 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-700/20 p-4 relative" style={{ zIndex: 1 }}>
+            <div className="rounded-3xl bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 p-4 relative shadow-sm" style={{ zIndex: 1 }}>
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-blue-200/70" />
@@ -965,7 +967,7 @@ export default function Dashboard() {
           {/* ── SEÇÃO: MÓDULOS GERAIS ── */}
           <div className="mb-3">
             {/* Card da seção com fundo colorido */}
-            <div className="rounded-3xl bg-emerald-50/70 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-700/20 p-4">
+            <div className="rounded-3xl bg-emerald-100/70 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/30 p-4 shadow-sm">
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-emerald-200/70" />
