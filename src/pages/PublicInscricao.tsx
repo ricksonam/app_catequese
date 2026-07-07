@@ -36,7 +36,7 @@ function FieldInput({ label, value, onChange, placeholder, type = "text" }: any)
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-10 px-4 bg-white dark:bg-zinc-900 border-2 border-black/5 focus:border-primary/30 rounded-xl outline-none transition-all text-sm font-medium"
+        className="w-full h-10 px-4 bg-white dark:bg-zinc-900 border-2 border-black/25 focus:border-primary/30 rounded-xl outline-none transition-all text-sm font-medium"
       />
     </div>
   );
@@ -279,7 +279,7 @@ export default function PublicInscricao() {
                   />
                   <div className="space-y-1">
                     <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1">Idade</label>
-                    <div className="h-10 flex items-center px-4 bg-muted/20 rounded-xl border-2 border-black/5 font-black text-primary text-sm">
+                    <div className="h-10 flex items-center px-4 bg-muted/20 rounded-xl border-2 border-black/25 font-black text-primary text-sm">
                       {calcularIdade(form.dataNascimento) || "—"}
                     </div>
                   </div>
@@ -358,7 +358,7 @@ export default function PublicInscricao() {
               <textarea 
                 value={form.participacaoPastoral} 
                 onChange={(e) => updateField("participacaoPastoral", e.target.value)} 
-                className="w-full min-h-[80px] p-4 bg-white dark:bg-zinc-900 border-2 border-black/5 focus:border-orange-300 rounded-xl outline-none transition-all text-sm font-medium resize-none" 
+                className="w-full min-h-[80px] p-4 bg-white dark:bg-zinc-900 border-2 border-black/25 focus:border-orange-300 rounded-xl outline-none transition-all text-sm font-medium resize-none" 
                 placeholder="Ex: Coroinhas, IA, Perseverança..." 
               />
             </div>
@@ -399,7 +399,7 @@ export default function PublicInscricao() {
                   <div>
                     <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Vínculo</label>
                     <Select value={resp.vinculo} onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v)}>
-                      <SelectTrigger className="h-10 bg-white border-2 border-black/5 rounded-xl">
+                      <SelectTrigger className="h-10 bg-white border-2 border-black/25 rounded-xl">
                         <SelectValue placeholder="Selecione o vínculo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -427,7 +427,7 @@ export default function PublicInscricao() {
               <div>
                 <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Necessidade Especial ou Restrição Alimentar?</label>
                 <Select value={form.necessidadeEspecial} onValueChange={(v) => updateField("necessidadeEspecial", v)}>
-                  <SelectTrigger className="h-10 bg-white border-2 border-black/5 rounded-xl">
+                  <SelectTrigger className="h-10 bg-white border-2 border-black/25 rounded-xl">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -448,7 +448,7 @@ export default function PublicInscricao() {
                 <textarea 
                   value={form.observacao} 
                   onChange={(e) => updateField("observacao", e.target.value)} 
-                  className="w-full min-h-[100px] p-4 bg-white dark:bg-zinc-900 border-2 border-black/5 focus:border-primary/30 rounded-xl outline-none transition-all text-sm font-medium resize-none" 
+                  className="w-full min-h-[100px] p-4 bg-white dark:bg-zinc-900 border-2 border-black/25 focus:border-primary/30 rounded-xl outline-none transition-all text-sm font-medium resize-none" 
                   placeholder="Espaço para detalhes importantes sobre o catequizando..." 
                 />
               </div>

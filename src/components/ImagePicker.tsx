@@ -59,8 +59,10 @@ export function ImagePicker({
       
       <div className="flex flex-col items-center gap-4">
         {currentImageUrl ? (
-          <div className={cn(
-            "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className={cn(
+            "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group cursor-pointer",
             shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
           )}>
             <img src={currentImageUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -75,8 +77,10 @@ export function ImagePicker({
             )}
           </div>
         ) : (
-          <div className={cn(
-            "relative bg-muted/30 border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className={cn(
+            "relative bg-muted/30 border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group cursor-pointer",
             shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
           )}>
             {isUploading ? (
@@ -84,7 +88,7 @@ export function ImagePicker({
             ) : (
               <div className="flex flex-col items-center justify-center text-muted-foreground/40">
                 <ImageIcon className="h-8 w-8 mb-1" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-center px-2 leading-tight">Adicionar<br/>Foto</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-center px-2 leading-tight animate-pulse">Adicionar<br/>Foto</span>
               </div>
             )}
           </div>
@@ -107,10 +111,10 @@ export function ImagePicker({
             onClick={() => fileInputRef.current?.click()}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gold/15 text-gold text-xs font-bold hover:bg-gold/25 transition-colors disabled:opacity-50",
-              hideCamera && "flex-none px-12 py-3.5 bg-gold text-white hover:bg-gold/90 shadow-xl shadow-gold/20 text-sm rounded-2xl"
+              hideCamera && "flex-none px-6 py-2 bg-gold text-white hover:bg-gold/90 shadow-md shadow-gold/20 text-xs rounded-full"
             )}
           >
-            <ImageIcon className={cn("h-4 w-4", hideCamera && "h-5 w-5")} /> Galeria
+            <ImageIcon className={cn("h-4 w-4", hideCamera && "h-4 w-4")} /> Galeria
           </button>
         </div>
 
