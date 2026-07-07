@@ -987,6 +987,7 @@ export default function TrilhaSacramental() {
   const removidasCount = etapasRemovidas.length;
 
   return (
+    <>
     <div className="space-y-6 pb-20 animate-fade-in bg-slate-50/50 min-h-screen overflow-x-hidden">
       {/* ── HEADER ── */}
       <div className="flex items-center gap-3 pt-4 px-4">
@@ -1094,16 +1095,16 @@ export default function TrilhaSacramental() {
 
          {/* BOTÕES EXTRAS NO FIM DO MAPA */}
          <div className="mt-12 flex flex-col items-center gap-3 w-full max-w-md mx-auto animate-fade-in pb-10">
-            <div className="flex w-full gap-2">
+            <div className="flex flex-col sm:flex-row w-full gap-2">
               <input
                 value={novaEtapaLabel}
                 onChange={e => setNovaEtapaLabel(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleAddEtapa()}
                 placeholder="Ex: Encontro no Rito..."
-                className="flex-1 h-12 px-4 text-sm rounded-2xl border-2 border-border/60 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
+                className="flex-1 h-12 px-4 text-sm rounded-2xl border-2 border-border/60 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm w-full"
               />
               <button onClick={handleAddEtapa} disabled={addingEtapa || !novaEtapaLabel.trim()}
-                className={cn("h-12 px-4 rounded-2xl text-white text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-all shrink-0 disabled:opacity-50 bg-gradient-to-r shadow-md hover:shadow-lg active:scale-95", cfg.gradient)}>
+                className={cn("h-12 px-6 rounded-2xl text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shrink-0 disabled:opacity-50 bg-gradient-to-r shadow-md hover:shadow-lg active:scale-95 w-full sm:w-auto", cfg.gradient)}>
                 <Plus className="h-4 w-4" />
                 Criar Parada
               </button>
@@ -1126,6 +1127,7 @@ export default function TrilhaSacramental() {
          </div>
 
       </div>
+    </div>
 
       {/* ── DRAWER DO CATEQUIZANDO ── */}
       {selectedCat && (
@@ -1187,6 +1189,7 @@ export default function TrilhaSacramental() {
           />
         );
       })()}
-    </div>
+
+    </>
   );
 }
