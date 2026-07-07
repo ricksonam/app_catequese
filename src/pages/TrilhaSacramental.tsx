@@ -12,7 +12,7 @@ import {
   UserPlus, X, Check, Sparkles, Cross,
   Trophy, Map, CalendarDays, PartyPopper, Flag, Ban
 } from "lucide-react";
-import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma } from "@/lib/store";
+import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma, EtapaCustom } from "@/lib/store";
 import { cn, getAppUrl } from "@/lib/utils";
 import { QRShareModal } from "@/components/QRShareModal";
 
@@ -21,9 +21,9 @@ import { QRShareModal } from "@/components/QRShareModal";
 // ─────────────────────────────────────────────────────────────
 type SacramentoType = "batismo" | "eucaristia" | "crisma";
 type NodeStatus = "done" | "partial" | "pending" | "skipped";
-type NodeTipo = "inicio" | "condicional" | "frequencia" | "rito" | "docs" | "celebracao";
+type NodeTipo = "inicio" | "condicional" | "frequencia" | "rito" | "docs" | "celebracao" | "comum";
 
-interface EtapaCustom { id: string; label: string; ordem: number; }
+
 interface NodeDef {
   id: string; label: string; tipo: NodeTipo; icon: any;
   emoji?: string; condicional?: "batismo" | "eucaristia";
@@ -93,7 +93,7 @@ function buildNodes(sac: SacramentoType, etapasCustom: EtapaCustom[], removidas:
 
   const customNodes: NodeDef[] = [...etapasCustom]
     .sort((a, b) => a.ordem - b.ordem)
-    .map(e => ({ id: e.id, label: e.label, tipo: "rito" as NodeTipo, icon: Star, isCustom: true, emoji: "⭐" }));
+    .map(e => ({ id: e.id, label: e.label, tipo: (e.incluirCatequizandos ? "comum" : "rito") as NodeTipo, icon: Star, isCustom: true, emoji: "⭐", dataAgendada: e.incluirData ? e.dataAgendada : undefined }));
 
   const celebLabel = sac === "batismo" ? "Celebração do Batismo" : sac === "eucaristia" ? "Celebração da Eucaristia" : "Celebração do Crisma";
   const celebEmoji = { batismo: "🕊️", eucaristia: "✨", crisma: "👑" }[sac];
@@ -159,6 +159,11 @@ function calcNodeStatuses(
       case "frequencia":
         if (freq.total === 0) { res[node.id] = "pending"; break; }
         res[node.id] = freq.percent >= 75 ? "done" : freq.percent >= 40 ? "partial" : "pending"; break;
+      case "comum": {
+        const concluidas = trilha.etapasCustomConcluidas || [];
+        res[node.id] = concluidas.includes(node.id) ? "done" : "pending";
+        break;
+      }
       case "rito": {
         const d = etapasRito[node.id];
         res[node.id] = !d ? "pending" : isDatePassed(d) ? "done" : "partial"; break;
@@ -398,8 +403,8 @@ function TrilhaNode({
 // ─────────────────────────────────────────────────────────────
 // DRAWER INDIVIDUAL DO CATEQUIZANDO
 // ─────────────────────────────────────────────────────────────
-function DrawerCatequizando({ cat, sac, encontros, open, onClose, onSave, saving }: {
-  cat: Catequizando; sac: SacramentoType; encontros: any[];
+function DrawerCatequizando({ cat, sac, encontros, etapasCustom, open, onClose, onSave, saving }: {
+  cat: Catequizando; sac: SacramentoType; encontros: any[]; etapasCustom: EtapaCustom[];
   open: boolean; onClose: () => void;
   onSave: (updated: Catequizando) => void; saving: boolean;
 }) {
@@ -607,6 +612,27 @@ function DrawerCatequizando({ cat, sac, encontros, open, onClose, onSave, saving
                   </div>
                 </section>
                 
+                {etapasCustom.length > 0 && (
+                  <section>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Etapas Adicionais</h4>
+                    <div className="space-y-2 mb-4">
+                      {etapasCustom.map(e => {
+                        const checked = (localTrilha.etapasCustomConcluidas || []).includes(e.id);
+                        return (
+                          <label key={e.id} className="flex items-center gap-3 bg-muted/20 p-2.5 rounded-xl border cursor-pointer hover:bg-muted/40 transition-colors">
+                            <input type="checkbox" checked={checked} onChange={ev => {
+                               const arr = localTrilha.etapasCustomConcluidas || [];
+                               const nextArr = ev.target.checked ? [...arr, e.id] : arr.filter(id => id !== e.id);
+                               setLocalTrilha(p => ({ ...p, etapasCustomConcluidas: nextArr }));
+                            }} className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary" />
+                            <span className="text-sm font-bold text-foreground">{e.label}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </section>
+                )}
+
                 <section>
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Observações Livres</h4>
                   <textarea
@@ -630,6 +656,54 @@ function DrawerCatequizando({ cat, sac, encontros, open, onClose, onSave, saving
         </div>
       </div>
     </>,
+    document.body
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// MODAL NOVO TÓPICO
+// ─────────────────────────────────────────────────────────────
+function ModalNovoTopico({ open, onClose, onSave, saving }: any) {
+  const [label, setLabel] = useState("");
+  const [incData, setIncData] = useState(false);
+  const [dataVal, setDataVal] = useState("");
+  const [incCats, setIncCats] = useState(false);
+
+  useEffect(() => {
+    if (open) { setLabel(""); setIncData(false); setDataVal(""); setIncCats(false); }
+  }, [open]);
+
+  if (!open) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="relative bg-background rounded-3xl shadow-2xl w-full max-w-sm flex flex-col gap-5 p-6 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+        <h3 className="font-black text-lg text-foreground">Criar Novo Tópico</h3>
+        <input type="text" value={label} onChange={e => setLabel(e.target.value)} placeholder="Nome do tópico..." className="h-12 px-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary/20 bg-muted/50 text-sm" />
+        
+        <div className="space-y-3">
+          <label className="flex items-center gap-3 bg-muted/30 p-3 rounded-xl border cursor-pointer hover:bg-muted/50 transition-colors">
+            <input type="checkbox" checked={incData} onChange={e => setIncData(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary" />
+            <span className="text-sm font-bold text-foreground">Incluir Data</span>
+          </label>
+          {incData && (
+            <input type="date" value={dataVal} onChange={e => setDataVal(e.target.value)} className="w-full h-12 px-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary/20 bg-muted/50 text-sm" />
+          )}
+          
+          <label className="flex items-center gap-3 bg-muted/30 p-3 rounded-xl border cursor-pointer hover:bg-muted/50 transition-colors">
+            <input type="checkbox" checked={incCats} onChange={e => setIncCats(e.target.checked)} className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary" />
+            <span className="text-sm font-bold text-foreground">Mostrar Catequizandos</span>
+          </label>
+        </div>
+
+        <div className="flex gap-3 mt-2">
+          <button onClick={onClose} className="flex-1 h-12 rounded-xl text-muted-foreground font-bold hover:bg-muted transition-colors text-sm">Cancelar</button>
+          <button onClick={() => onSave({ label: label.trim(), incluirData: incData, dataAgendada: dataVal, incluirCatequizandos: incCats })} disabled={saving || !label.trim()} className="flex-1 h-12 rounded-xl bg-primary text-white font-black hover:opacity-90 transition-opacity disabled:opacity-50 text-sm">
+            {saving ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
+      </div>
+    </div>,
     document.body
   );
 }
@@ -757,6 +831,7 @@ export default function TrilhaSacramental() {
   const [savingCat, setSavingCat] = useState(false);
   const [novaEtapaLabel, setNovaEtapaLabel] = useState("");
   const [addingEtapa, setAddingEtapa] = useState(false);
+  const [modalNovoTopicoOpen, setModalNovoTopicoOpen] = useState(false);
   const [expandedNode, setExpandedNode] = useState<string | null>(null);
   const [editandoData, setEditandoData] = useState(false);
   const [dataValue, setDataValue] = useState("");
@@ -875,17 +950,39 @@ export default function TrilhaSacramental() {
     } catch (err: any) { toast.error("Erro ao salvar: " + err.message); }
   };
 
-  const handleAddEtapa = async () => {
-    if (!novaEtapaLabel.trim() || !turma) return;
+  const handleAddEtapa = async (data: any) => {
+    if (!data.label.trim() || !turma) return;
     setAddingEtapa(true);
     try {
       const sacConfig = turma.trilhasConfig?.[selectedSacramento] || {};
       const current: EtapaCustom[] = sacConfig.etapasCustom || [];
-      const nova: EtapaCustom = { id: crypto.randomUUID(), label: novaEtapaLabel.trim(), ordem: current.length };
+      const nova: EtapaCustom = { 
+        id: crypto.randomUUID(), 
+        label: data.label, 
+        ordem: current.length,
+        incluirData: data.incluirData,
+        dataAgendada: data.dataAgendada,
+        incluirCatequizandos: data.incluirCatequizandos
+      };
+      
+      const updatedSacConfig = { ...sacConfig, etapasCustom: [...current, nova] };
+      // Se incluir data e não tiver catequizandos (Rito), podemos salvar a data diretamente em etapasRito também!
+      if (data.incluirData && data.dataAgendada && !data.incluirCatequizandos) {
+        updatedSacConfig.etapasRito = { ...(sacConfig.etapasRito || {}), [nova.id]: data.dataAgendada };
+      }
+      
       const updatedConfig = {
         ...(turma.trilhasConfig || {}),
-        [selectedSacramento]: { ...sacConfig, etapasCustom: [...current, nova] },
+        [selectedSacramento]: updatedSacConfig,
       };
+      await upsertTurma({ ...turma, trilhasConfig: updatedConfig });
+      queryClient.invalidateQueries({ queryKey: ["turmas"] });
+      setModalNovoTopicoOpen(false);
+      toast.success("Nova parada adicionada ao mapa!");
+      setExpandedNode(nova.id);
+    } catch (e: any) { toast.error("Erro: " + e.message); }
+    finally { setAddingEtapa(false); }
+  };
       await upsertTurma({ ...turma, trilhasConfig: updatedConfig });
       queryClient.invalidateQueries({ queryKey: ["turmas"] });
       setNovaEtapaLabel("");
@@ -1095,20 +1192,11 @@ export default function TrilhaSacramental() {
 
          {/* BOTÕES EXTRAS NO FIM DO MAPA */}
          <div className="mt-12 flex flex-col items-center gap-3 w-full max-w-md mx-auto animate-fade-in pb-10">
-            <div className="flex flex-col sm:flex-row w-full gap-2">
-              <input
-                value={novaEtapaLabel}
-                onChange={e => setNovaEtapaLabel(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleAddEtapa()}
-                placeholder="Ex: Encontro no Rito..."
-                className="flex-1 h-12 px-4 text-sm rounded-2xl border-2 border-border/60 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm w-full"
-              />
-              <button onClick={handleAddEtapa} disabled={addingEtapa || !novaEtapaLabel.trim()}
-                className={cn("h-12 px-6 rounded-2xl text-white text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all shrink-0 disabled:opacity-50 bg-gradient-to-r shadow-md hover:shadow-lg active:scale-95 w-full sm:w-auto", cfg.gradient)}>
-                <Plus className="h-4 w-4" />
-                Criar Parada
-              </button>
-            </div>
+            <button onClick={() => setModalNovoTopicoOpen(true)}
+              className="w-full h-14 rounded-2xl bg-white border-2 border-dashed border-primary text-primary text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-primary/5 active:scale-95 transition-all shadow-sm">
+              <Plus className="h-5 w-5" />
+              Adicionar Tópico
+            </button>
             
             {removidasCount > 0 && (
               <button onClick={handleRestoreDefaultEtapas}
@@ -1135,6 +1223,7 @@ export default function TrilhaSacramental() {
           cat={selectedCat}
           sac={selectedSacramento}
           encontros={encontros}
+          etapasCustom={turma?.trilhasConfig?.[selectedSacramento]?.etapasCustom?.filter(e => e.incluirCatequizandos) || []}
           open={!!selectedCat}
           onClose={() => setSelectedCat(null)}
           onSave={handleSaveCat}
@@ -1142,6 +1231,7 @@ export default function TrilhaSacramental() {
         />
       )}
 
+      <ModalNovoTopico open={modalNovoTopicoOpen} onClose={() => setModalNovoTopicoOpen(false)} onSave={handleAddEtapa} saving={addingEtapa} />
       {/* ── MODAL SELECIONAR CATEQUIZANDOS (TRILHA PRINCIPAL) ── */}
       <ModalSelecaoCatequizandos
         open={modalTrilhaOpen}

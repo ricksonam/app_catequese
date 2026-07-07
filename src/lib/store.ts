@@ -11,6 +11,15 @@ export interface SacramentoInfo {
   data: string;
 }
 
+export interface EtapaCustom {
+  id: string;
+  label: string;
+  ordem: number;
+  incluirData?: boolean;
+  dataAgendada?: string;
+  incluirCatequizandos?: boolean;
+}
+
 export interface DocumentoCustom {
   id: string;
   nome: string;
@@ -31,6 +40,7 @@ export interface TrilhaSacramental {
   observacoes?: string;
   apto?: boolean;
   motivoNaoApto?: string;
+  etapasCustomConcluidas?: string[]; // IDs dos tópicos customizados concluídos por este catequizando
 }
 
 export interface TurmaTrilhaConfig {
