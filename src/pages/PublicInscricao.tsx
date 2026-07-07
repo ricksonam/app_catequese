@@ -30,13 +30,13 @@ function FieldInput({ label, value, onChange, placeholder, type = "text" }: any)
 
   return (
     <div className="space-y-1">
-      <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1">{labelWithRedAsterisk}</label>
+      <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1">{labelWithRedAsterisk}</label>
       <input
         type={type}
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-10 px-4 bg-white dark:bg-zinc-900 border-2 border-black/25 focus:border-primary/30 rounded-xl outline-none transition-all text-sm font-medium"
+        className="form-input"
       />
     </div>
   );
@@ -278,8 +278,8 @@ export default function PublicInscricao() {
                     onChange={(v: string) => updateField("dataNascimento", v)} 
                   />
                   <div className="space-y-1">
-                    <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1">Idade</label>
-                    <div className="h-10 flex items-center px-4 bg-muted/20 rounded-xl border-2 border-black/25 font-black text-primary text-sm">
+                    <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1">Idade</label>
+                    <div className="h-[48px] flex items-center px-4 bg-muted/20 rounded-xl border-2 border-black/25 font-black text-primary text-sm">
                       {calcularIdade(form.dataNascimento) || "—"}
                     </div>
                   </div>
@@ -354,11 +354,11 @@ export default function PublicInscricao() {
             </div>
 
             <div className="pt-2">
-              <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-2">Participa de algum grupo ou pastoral?</label>
+              <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-2">Participa de algum grupo ou pastoral?</label>
               <textarea 
                 value={form.participacaoPastoral} 
                 onChange={(e) => updateField("participacaoPastoral", e.target.value)} 
-                className="w-full min-h-[80px] p-4 bg-white dark:bg-zinc-900 border-2 border-black/25 focus:border-orange-300 rounded-xl outline-none transition-all text-sm font-medium resize-none" 
+                className="form-input min-h-[80px] resize-none" 
                 placeholder="Ex: Coroinhas, IA, Perseverança..." 
               />
             </div>
@@ -397,9 +397,9 @@ export default function PublicInscricao() {
                     <FieldInput label="Telefone de Contato" type="tel" value={resp.telefone} onChange={(v: string) => updateResponsavel(resp.id, "telefone", mascaraTelefone(v))} placeholder="(00) 00000-0000" />
                   </div>
                   <div>
-                    <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Vínculo</label>
+                    <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Vínculo</label>
                     <Select value={resp.vinculo} onValueChange={(v) => updateResponsavel(resp.id, "vinculo", v)}>
-                      <SelectTrigger className="h-10 bg-white border-2 border-black/25 rounded-xl">
+                      <SelectTrigger className="form-input h-[48px] py-0 flex items-center">
                         <SelectValue placeholder="Selecione o vínculo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -425,9 +425,9 @@ export default function PublicInscricao() {
             
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Necessidade Especial ou Restrição Alimentar?</label>
+                <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-1">Necessidade Especial ou Restrição Alimentar?</label>
                 <Select value={form.necessidadeEspecial} onValueChange={(v) => updateField("necessidadeEspecial", v)}>
-                  <SelectTrigger className="h-10 bg-white border-2 border-black/25 rounded-xl">
+                  <SelectTrigger className="form-input h-[48px] py-0 flex items-center">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -444,12 +444,12 @@ export default function PublicInscricao() {
               </div>
 
               <div>
-                <label className="text-sm font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-2">Observações / Comentários</label>
+                <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1 mb-2">Observações / Comentários</label>
                 <textarea 
                   value={form.observacao} 
                   onChange={(e) => updateField("observacao", e.target.value)} 
-                  className="w-full min-h-[100px] p-4 bg-white dark:bg-zinc-900 border-2 border-black/25 focus:border-primary/30 rounded-xl outline-none transition-all text-sm font-medium resize-none" 
-                  placeholder="Espaço para detalhes importantes sobre o catequizando..." 
+                  className="form-input min-h-[100px] resize-none" 
+                  placeholder="Se houver alguma informação que precisamos saber, escreva aqui..." 
                 />
               </div>
             </div>

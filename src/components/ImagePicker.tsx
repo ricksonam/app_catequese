@@ -55,7 +55,7 @@ export function ImagePicker({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {label && <label className="text-xs font-semibold text-zinc-900 block">{label}</label>}
+      {label && <label className="text-base font-black text-zinc-900 uppercase tracking-widest block ml-1">{label}</label>}
       
       <div className="flex flex-col items-center gap-4">
         {currentImageUrl ? (
@@ -86,9 +86,9 @@ export function ImagePicker({
             {isUploading ? (
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             ) : (
-              <div className="flex flex-col items-center justify-center text-muted-foreground/40">
+              <div className="flex flex-col items-center justify-center text-primary/60 hover:text-primary transition-colors">
                 <ImageIcon className="h-8 w-8 mb-1" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-center px-2 leading-tight animate-pulse">Adicionar<br/>Foto</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-center px-2 leading-tight animate-pulse text-primary">Adicionar<br/>Foto</span>
               </div>
             )}
           </div>
@@ -100,9 +100,9 @@ export function ImagePicker({
               type="button"
               disabled={isUploading}
               onClick={() => cameraInputRef.current?.click()}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-primary/10 text-primary text-[10px] font-bold hover:bg-primary/20 transition-colors disabled:opacity-50"
             >
-              <Camera className="h-4 w-4" /> Câmera
+              <Camera className="h-3.5 w-3.5" /> Câmera
             </button>
           )}
           <button
@@ -110,11 +110,11 @@ export function ImagePicker({
             disabled={isUploading}
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gold/15 text-gold text-xs font-bold hover:bg-gold/25 transition-colors disabled:opacity-50",
-              hideCamera && "flex-none px-6 py-2 bg-gold text-white hover:bg-gold/90 shadow-md shadow-gold/20 text-xs rounded-full"
+              "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-gold/15 text-gold text-[10px] font-bold hover:bg-gold/25 transition-colors disabled:opacity-50",
+              hideCamera && "flex-none px-4 py-1.5 bg-gold text-white hover:bg-gold/90 shadow-md shadow-gold/20 text-[10px] rounded-full"
             )}
           >
-            <ImageIcon className={cn("h-4 w-4", hideCamera && "h-4 w-4")} /> Galeria
+            <ImageIcon className={cn("h-3.5 w-3.5", hideCamera && "h-3.5 w-3.5")} /> Galeria
           </button>
         </div>
 
