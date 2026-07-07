@@ -897,15 +897,15 @@ export default function Dashboard() {
           <div className="p-1.5 rounded-[22px] bg-blue-50 border-2 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 shadow-md shadow-blue-500/10 mb-4 relative z-10">
             <button
               onClick={() => setTurmaPickerOpen(true)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-[18px] bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-700 shadow-sm hover:border-blue-300 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
+              className="w-full flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-[18px] bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-700 shadow-sm hover:border-blue-300 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
             >
               {/* Ícone da turma */}
-              <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
                 <BookOpen className="h-4 w-4 text-blue-600" />
               </div>
 
               {/* Info da turma */}
-              <div className="flex-1 min-w-0 text-left relative z-10">
+              <div className="text-center relative z-10">
                 <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none mb-1">Turma Selecionada</p>
                 <p className="text-base sm:text-lg font-black text-foreground leading-tight line-clamp-2">
                   {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
@@ -917,27 +917,14 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* Stats compactas */}
-              {selectedTurmaId !== 'all' && (
-                <div className="flex flex-col gap-1 shrink-0 relative z-10">
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-100 justify-end">
-                    <Users className="h-3 w-3 text-blue-500" />
-                    <span className="text-[10px] font-black text-blue-700">{filteredCatequizandos.length}</span>
-                  </div>
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 justify-end">
-                    <BookOpen className="h-3 w-3 text-emerald-500" />
-                    <span className="text-[10px] font-black text-emerald-700">{filteredEncontros.length}</span>
-                  </div>
-                </div>
-              )}
-
               {/* Ícone trocar */}
-              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-zinc-700 shrink-0 group-hover:bg-blue-100 transition-colors relative z-10">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-zinc-700 group-hover:bg-blue-100 transition-colors relative z-10 mt-1">
                 <RefreshCw className="h-3 w-3 text-blue-500 group-hover:rotate-180 transition-transform duration-300" />
-                <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:block">Trocar</span>
+                <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Trocar</span>
               </div>
             </button>
           </div>
+
 
           {/* ── SEÇÃO: MÓDULOS DA TURMA SELECIONADA ── */}
           <div className="mb-3 relative">
