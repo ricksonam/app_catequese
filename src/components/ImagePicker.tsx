@@ -58,7 +58,7 @@ export function ImagePicker({
       {label && <label className="text-xs font-semibold text-zinc-900 block">{label}</label>}
       
       <div className="flex flex-col items-center gap-4">
-        {currentImageUrl && (
+        {currentImageUrl ? (
           <div className={cn(
             "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
             shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
@@ -74,14 +74,19 @@ export function ImagePicker({
               </div>
             )}
           </div>
-        )}
-
-        {isUploading && !currentImageUrl && (
+        ) : (
           <div className={cn(
-            "relative bg-muted border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
+            "relative bg-muted/30 border-2 border-dashed border-border flex items-center justify-center overflow-hidden transition-all group",
             shape === "circle" ? "w-24 h-24 rounded-full" : "w-full aspect-video rounded-2xl max-w-[300px]"
           )}>
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            {isUploading ? (
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            ) : (
+              <div className="flex flex-col items-center justify-center text-muted-foreground/40">
+                <ImageIcon className="h-8 w-8 mb-1" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-center px-2 leading-tight">Adicionar<br/>Foto</span>
+              </div>
+            )}
           </div>
         )}
 
