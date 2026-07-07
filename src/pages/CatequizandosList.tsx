@@ -678,8 +678,12 @@ export default function CatequizandosList() {
 
         <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
           <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
-            <div className="flex-1 sm:flex-none">
-            </div>
+            <button 
+              onClick={() => setShowInscricaoModal(true)}
+              className="action-btn-sm shrink-0 whitespace-nowrap bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
+            >
+              <LayoutDashboard className="h-4 w-4" /> Inscrições
+            </button>
             <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[90vh] overflow-y-auto border-border/30 w-full max-w-2xl">
@@ -931,16 +935,6 @@ export default function CatequizandosList() {
               <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
               <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Painel de Evolução</span>
             </button>
-            <button 
-              onClick={() => setShowInscricaoModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/5 border-2 border-dashed border-primary/20 text-primary hover:bg-primary/10 transition-all group active:scale-95"
-            >
-              <LayoutDashboard className="h-4 w-4 group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Inscrição Online</span>
-            </button>
-
-
-
           </div>
 
           {/* Modal Inscrição Online */}
