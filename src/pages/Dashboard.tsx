@@ -915,105 +915,119 @@ export default function Dashboard() {
           </button>
 
           {/* ── SEÇÃO: MÓDULOS DA TURMA SELECIONADA ── */}
-          <div className="mb-2">
-            {/* Label da seção */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-px flex-1 bg-gradient-to-r from-blue-200 to-transparent" />
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/40">
-                <Users className="h-3 w-3 text-blue-500" />
-                <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Módulos da Turma Selecionada</span>
+          <div className="mb-3 relative">
+
+            {/* Linha conectora vertical: sai do seletor e aponta para os módulos da turma */}
+            <div className="absolute left-1/2 -translate-x-1/2 -top-4 flex flex-col items-center pointer-events-none" style={{ zIndex: 0 }}>
+              <div className="w-0.5 h-4 bg-gradient-to-b from-blue-400 to-blue-300 rounded-full" />
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+            </div>
+
+            {/* Card da seção com fundo colorido */}
+            <div className="rounded-3xl bg-blue-50/70 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-700/20 p-4 relative" style={{ zIndex: 1 }}>
+              {/* Label da seção */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-px flex-1 bg-blue-200/70" />
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/40 shadow-sm">
+                  <Users className="h-3 w-3 text-blue-500" />
+                  <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Módulos da Turma Selecionada</span>
+                </div>
+                <div className="h-px flex-1 bg-blue-200/70" />
               </div>
-              <div className="h-px flex-1 bg-gradient-to-l from-blue-200 to-transparent" />
-            </div>
 
-            {/* Grid módulos da turma */}
-            <div className="grid grid-cols-3 gap-3">
-              {turmaModules.map((item, index) => (
-                <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                  <button
-                    onClick={item.onClick}
-                    className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03]"
-                  >
-                    <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                    {/* Overlay indicando que precisa de turma */}
-                    {selectedTurmaId === 'all' && (
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
-                          <Users className="h-3 w-3 text-blue-600" />
+              {/* Grid módulos da turma */}
+              <div className="grid grid-cols-3 gap-3">
+                {turmaModules.map((item, index) => (
+                  <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                    <button
+                      onClick={item.onClick}
+                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03]"
+                    >
+                      <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      {/* Overlay indicando que precisa de turma */}
+                      {selectedTurmaId === 'all' && (
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+                            <Users className="h-3 w-3 text-blue-600" />
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </button>
-                  <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-blue-600 transition-colors duration-300 truncate w-full px-1">
-                    {item.title}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Card Central de Relatórios */}
-            <div className="w-full pt-4 pb-2">
-              <button
-                onClick={() => {
-                  const activeTurma = localStorage.getItem("ivc_selected_turma");
-                  const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
-                  if (validTurma) {
-                    navigate(`/turmas/${activeTurma}/relatorios`);
-                  } else if (turmas.length === 1) {
-                    navigate(`/turmas/${turmas[0].id}/relatorios`);
-                  } else if (turmas.length > 1) {
-                    setTurmaPickerOpen(true);
-                  } else {
-                    toast.info("Crie uma turma para acessar os relatórios.");
-                  }
-                }}
-                className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
-              >
-                <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                  <BarChart2 className="h-6 w-6" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
-                  <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
-                    {selectedTurmaId !== 'all' && selectedTurma ? `Turma: ${selectedTurma.nome}` : "Selecione uma turma para ver relatórios"}
-                  </span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-              </button>
+                      )}
+                    </button>
+                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-blue-700/70 group-hover:text-blue-600 transition-colors duration-300 truncate w-full px-1">
+                      {item.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* ── SEÇÃO: MÓDULOS GERAIS ── */}
-          <div className="mt-2 pb-6">
-            {/* Label da seção */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-px flex-1 bg-gradient-to-r from-emerald-200 to-transparent" />
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/40">
-                <Compass className="h-3 w-3 text-emerald-600" />
-                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Módulos Gerais</span>
-              </div>
-              <div className="h-px flex-1 bg-gradient-to-l from-emerald-200 to-transparent" />
-            </div>
-
-            {/* Grid módulos gerais */}
-            <div className="grid grid-cols-3 gap-3">
-              {globalModules.map((item, index) => (
-                <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                  <button
-                    onClick={item.onClick}
-                    className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03]"
-                  >
-                    <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                  </button>
-                  <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-emerald-600 transition-colors duration-300 truncate w-full px-1">
-                    {item.title}
-                  </span>
+          <div className="mb-3">
+            {/* Card da seção com fundo colorido */}
+            <div className="rounded-3xl bg-emerald-50/70 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-700/20 p-4">
+              {/* Label da seção */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-px flex-1 bg-emerald-200/70" />
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700/40 shadow-sm">
+                  <Compass className="h-3 w-3 text-emerald-600" />
+                  <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Módulos Gerais</span>
                 </div>
-              ))}
+                <div className="h-px flex-1 bg-emerald-200/70" />
+              </div>
+
+              {/* Grid módulos gerais */}
+              <div className="grid grid-cols-3 gap-3">
+                {globalModules.map((item, index) => (
+                  <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                    <button
+                      onClick={item.onClick}
+                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03]"
+                    >
+                      <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                    </button>
+                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-emerald-700/70 group-hover:text-emerald-600 transition-colors duration-300 truncate w-full px-1">
+                      {item.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
+          </div>
+
+          {/* ── CARD CENTRAL DE RELATÓRIOS (abaixo dos módulos gerais) ── */}
+          <div className="pb-6">
+            <button
+              onClick={() => {
+                const activeTurma = localStorage.getItem("ivc_selected_turma");
+                const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
+                if (validTurma) {
+                  navigate(`/turmas/${activeTurma}/relatorios`);
+                } else if (turmas.length === 1) {
+                  navigate(`/turmas/${turmas[0].id}/relatorios`);
+                } else if (turmas.length > 1) {
+                  setTurmaPickerOpen(true);
+                } else {
+                  toast.info("Crie uma turma para acessar os relatórios.");
+                }
+              }}
+              className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
+            >
+              <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                <BarChart2 className="h-6 w-6" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
+                <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
+                  {selectedTurmaId !== 'all' && selectedTurma ? `Turma: ${selectedTurma.nome}` : "Selecione uma turma para ver relatórios"}
+                </span>
+              </div>
+              <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+            </button>
           </div>
         </div>
       )}
+
 
 
 
