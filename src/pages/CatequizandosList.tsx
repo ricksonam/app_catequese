@@ -680,9 +680,9 @@ export default function CatequizandosList() {
           <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
             <button 
               onClick={() => setShowInscricaoModal(true)}
-              className="action-btn-sm shrink-0 whitespace-nowrap bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
+              className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-50 text-indigo-500 hover:bg-indigo-100 border border-indigo-200"
             >
-              <LayoutDashboard className="h-4 w-4" /> Inscrições
+              <LayoutDashboard className="h-4 w-4" /> Inscrição Online
             </button>
             <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
@@ -904,36 +904,36 @@ export default function CatequizandosList() {
             </DialogContent>
           </Dialog>
           </div>
-          <div className="bg-card rounded-2xl border border-black/10 p-4 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-               <LayoutDashboard className="w-3 h-3 text-primary/50" />
-               Painel
+          <div className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-900/20 dark:to-background rounded-2xl border-2 border-slate-200/50 p-5 shadow-md space-y-4">
+            <div className="flex items-center gap-2 text-xs font-black text-slate-500 uppercase tracking-widest">
+               <LayoutDashboard className="w-4 h-4 text-slate-400" />
+               Painel de Gestão
             </div>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-3">
               <button 
                 onClick={() => setShowFrequencia(true)} 
-                className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3 rounded-xl bg-amber-50 border-2 border-amber-200 text-amber-700 hover:bg-amber-100 transition-all group active:scale-95"
+                className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-amber-100 border-2 border-amber-300 text-amber-800 hover:bg-amber-200 transition-all group active:scale-95 shadow-sm"
               >
                 <CalendarDays className="h-5 w-5 group-hover:animate-bounce" />
-                <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Frequência</span>
+                <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Frequência</span>
               </button>
               <button 
                 onClick={() => setShowCelebracoes(true)} 
-                className="relative flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3 rounded-xl bg-blue-50 border-2 border-blue-200 text-blue-700 hover:bg-blue-100 transition-all group active:scale-95"
+                className="relative flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-blue-100 border-2 border-blue-300 text-blue-800 hover:bg-blue-200 transition-all group active:scale-95 shadow-sm"
               >
                 <Cake className="h-5 w-5 group-hover:animate-bounce" />
-                <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Aniversários</span>
+                <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Aniversários</span>
                 {hasQualquerCelebracao && (
-                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
+                  <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
                 )}
               </button>
             </div>
             <button 
               onClick={() => setShowEvolucao(true)} 
-              className="w-full flex flex-row items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-all group active:scale-95"
+              className="w-full flex flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 hover:bg-emerald-200 transition-all group active:scale-95 shadow-sm"
             >
               <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight">Painel de Evolução</span>
+              <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Painel de Evolução</span>
             </button>
           </div>
 
