@@ -487,7 +487,8 @@ export default function Dashboard() {
   const [selectedCatequizando, setSelectedCatequizando] = useState<any>(null);
   const [showCalendario, setShowCalendario] = useState(false);
 
-  const carouselItems = useMemo(() => [
+  // Módulos ligados a uma turma
+  const turmaModules = useMemo(() => [
     {
       title: "Catequizandos",
       image: "/card_catequizandos.jpg",
@@ -559,27 +560,6 @@ export default function Dashboard() {
       }
     },
     {
-      title: "Bíblia",
-      image: "/card_biblia.jpg",
-      onClick: () => {
-        navigate("/modulos/biblia");
-      }
-    },
-    {
-      title: "Orações",
-      image: "/icone_oracoes.png",
-      onClick: () => {
-        navigate("/modulos/oracoes");
-      }
-    },
-    {
-      title: "Jogos",
-      image: "/acesso_jogos.jpg",
-      onClick: () => {
-        navigate("/jogos");
-      }
-    },
-    {
       title: "Diário",
       image: "/icone_diario.png",
       onClick: () => {
@@ -592,8 +572,27 @@ export default function Dashboard() {
           toast.info("Aguarde a aprovação do acesso.");
         }
       }
-    }
+    },
   ], [navigate, selectedTurmaId, selectedTurma, setTurmaPickerOpen]);
+
+  // Módulos globais (não dependem de turma)
+  const globalModules = useMemo(() => [
+    {
+      title: "Bíblia",
+      image: "/card_biblia.jpg",
+      onClick: () => navigate("/modulos/biblia")
+    },
+    {
+      title: "Orações",
+      image: "/icone_oracoes.png",
+      onClick: () => navigate("/modulos/oracoes")
+    },
+    {
+      title: "Jogos",
+      image: "/acesso_jogos.jpg",
+      onClick: () => navigate("/jogos")
+    },
+  ], [navigate]);
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
@@ -869,136 +868,149 @@ export default function Dashboard() {
 
       {/* ── TURMA E MÓDULOS DE ACESSO RÁPIDO ── */}
       {turmas.length > 0 && (
-        <div className="px-4 mt-2 animate-fade-in flex flex-col items-center">
-          
-          {/* Card Turma Selecionada — Prata Suave */}
-          {(() => {
-            const catCount = filteredCatequizandos.length;
-            const encCount = filteredEncontros.length;
+        <div className="px-4 mt-2 animate-fade-in">
 
-            return (
-              <div className="w-full max-w-[320px] relative mb-2 mt-2 p-1.5 rounded-[26px] bg-blue-50/50 border-2 border-blue-200 shadow-lg shadow-blue-500/20" style={{ zIndex: 10 }}>
-                {/* Moldura Externa do Card */}
-                <div className="w-full relative mb-0 mt-0">
-                <button
-                  onClick={() => setTurmaPickerOpen(true)}
-                  className="w-full text-left relative rounded-[22px] overflow-hidden transition-all hover:scale-[1.01] active:scale-[0.99] group bg-white"
-                  style={{
-                    boxShadow: "0 8px 24px rgba(59, 130, 246, 0.25)",
-                    border: "3px solid #3b82f6", // Blue-500 prominent border
-                  }}
-                >
-                  {/* Reflexo metálico sutil */}
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 60%)" }} />
-
-                  {/* Conteúdo */}
-                  <div className="relative z-10 px-4 py-3 flex flex-col items-center text-center">
-
-                    {/* Botão Trocar */}
-                    {(turmas.length > 1 || selectedTurmaId === 'all') && (
-                      <div className="absolute top-2.5 right-2.5 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 text-[7px] font-black uppercase tracking-widest backdrop-blur-sm">
-                          <RefreshCw className="h-2 w-2" />
-                          Trocar
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Nome da turma */}
-                    <div className="mb-2 mt-2">
-                      <p className="text-[9px] font-bold uppercase tracking-[0.28em] mb-1.5 text-blue-600">
-                        Turma Selecionada
-                      </p>
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <h3 className="text-xl font-black tracking-tight leading-tight text-slate-800">
-                          {selectedTurmaId === 'all' ? 'Todas as Turmas' : selectedTurma?.nome}
-                        </h3>
-                        {selectedTurmaId !== 'all' && (selectedTurma?.ano || selectedTurma?.etapa) && (
-                          <span className="text-[10px] font-black bg-blue-50 text-blue-800 px-2.5 py-0.5 rounded-md border border-blue-200 shadow-sm">
-                            {selectedTurma.ano || selectedTurma.etapa}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Chips de estatísticas */}
-                    <div className="flex items-center justify-center gap-3 w-full mt-3">
-                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-lg shadow-blue-500/30 w-full justify-center"
-                        style={{ background: "linear-gradient(135deg, #3b82f6, #1d4ed8)" }}>
-                        <Users className="h-5 w-5 text-blue-100" />
-                        <span className="text-[13px] sm:text-sm font-black">
-                          {catCount} <span className="opacity-90 font-bold text-[11px] sm:text-[12px] block sm:inline text-blue-100">catequizandos</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white font-black shadow-lg shadow-emerald-500/30 w-full justify-center"
-                        style={{ background: "linear-gradient(135deg, #059669, #047857)" }}>
-                        <BookOpen className="h-5 w-5 text-emerald-100" />
-                        <span className="text-[13px] sm:text-sm font-black">
-                          {encCount} <span className="opacity-90 font-bold text-[11px] sm:text-[12px] block sm:inline text-emerald-100">encontros</span>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              </div>
+          {/* ── SELETOR DE TURMA COMPACTO ── */}
+          <button
+            onClick={() => setTurmaPickerOpen(true)}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-blue-400/60 shadow-sm hover:border-blue-500 hover:shadow-md active:scale-[0.98] transition-all group mb-4"
+          >
+            {/* Ícone da turma */}
+            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
+              <BookOpen className="h-4 w-4 text-blue-600" />
             </div>
-            );
-          })()}
 
+            {/* Info da turma */}
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest leading-none mb-0.5">Turma Selecionada</p>
+              <p className="text-sm font-black text-foreground truncate leading-tight">
+                {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
+              </p>
+              {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
+                <p className="text-[10px] text-muted-foreground font-bold truncate leading-none mt-0.5">
+                  {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' · ')}
+                </p>
+              )}
+            </div>
 
-          {/* Grid de Módulos (3x3) */}
-          <div className="w-full relative z-10 py-4 mt-2">
+            {/* Stats compactas */}
+            {selectedTurmaId !== 'all' && (
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100">
+                  <Users className="h-3 w-3 text-blue-500" />
+                  <span className="text-[10px] font-black text-blue-700">{filteredCatequizandos.length}</span>
+                </div>
+                <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100">
+                  <BookOpen className="h-3 w-3 text-emerald-500" />
+                  <span className="text-[10px] font-black text-emerald-700">{filteredEncontros.length}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Ícone trocar */}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-zinc-700 shrink-0 group-hover:bg-blue-100 transition-colors">
+              <RefreshCw className="h-3 w-3 text-blue-500 group-hover:rotate-180 transition-transform duration-300" />
+              <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:block">Trocar</span>
+            </div>
+          </button>
+
+          {/* ── SEÇÃO: MÓDULOS DA TURMA SELECIONADA ── */}
+          <div className="mb-2">
+            {/* Label da seção */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px flex-1 bg-gradient-to-r from-blue-200 to-transparent" />
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/40">
+                <Users className="h-3 w-3 text-blue-500" />
+                <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Módulos da Turma Selecionada</span>
+              </div>
+              <div className="h-px flex-1 bg-gradient-to-l from-blue-200 to-transparent" />
+            </div>
+
+            {/* Grid módulos da turma */}
             <div className="grid grid-cols-3 gap-3">
-              {carouselItems.map((item, index) => (
+              {turmaModules.map((item, index) => (
                 <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                   <button
                     onClick={item.onClick}
-                    className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-primary hover:shadow-lg hover:shadow-primary/20 hover:scale-[1.03]"
+                    className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03]"
                   >
                     <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                    {/* Overlay indicando que precisa de turma */}
+                    {selectedTurmaId === 'all' && (
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+                          <Users className="h-3 w-3 text-blue-600" />
+                        </div>
+                      </div>
+                    )}
                   </button>
-                  <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors duration-300 truncate w-full px-1">
+                  <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-blue-600 transition-colors duration-300 truncate w-full px-1">
                     {item.title}
                   </span>
                 </div>
               ))}
             </div>
+
+            {/* Card Central de Relatórios */}
+            <div className="w-full pt-4 pb-2">
+              <button
+                onClick={() => {
+                  const activeTurma = localStorage.getItem("ivc_selected_turma");
+                  const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
+                  if (validTurma) {
+                    navigate(`/turmas/${activeTurma}/relatorios`);
+                  } else if (turmas.length === 1) {
+                    navigate(`/turmas/${turmas[0].id}/relatorios`);
+                  } else if (turmas.length > 1) {
+                    setTurmaPickerOpen(true);
+                  } else {
+                    toast.info("Crie uma turma para acessar os relatórios.");
+                  }
+                }}
+                className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
+              >
+                <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <BarChart2 className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
+                  <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
+                    {selectedTurmaId !== 'all' && selectedTurma ? `Turma: ${selectedTurma.nome}` : "Selecione uma turma para ver relatórios"}
+                  </span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
           </div>
 
-          {/* Card Central de Relatórios */}
-          <div className="w-full pt-8 pb-4">
-            <button
-              onClick={() => {
-                const activeTurma = localStorage.getItem("ivc_selected_turma");
-                const validTurma = activeTurma && activeTurma !== "all" && turmas.find(t => t.id === activeTurma);
-                if (validTurma) {
-                  navigate(`/turmas/${activeTurma}/relatorios`);
-                } else if (turmas.length === 1) {
-                  navigate(`/turmas/${turmas[0].id}/relatorios`);
-                } else if (turmas.length > 1) {
-                  setTurmaPickerOpen(true);
-                } else {
-                  toast.info("Crie uma turma para acessar os relatórios.");
-                }
-              }}
-              className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
-            >
-              <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                <BarChart2 className="h-6 w-6" />
+          {/* ── SEÇÃO: MÓDULOS GERAIS ── */}
+          <div className="mt-2 pb-6">
+            {/* Label da seção */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px flex-1 bg-gradient-to-r from-emerald-200 to-transparent" />
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/40">
+                <Compass className="h-3 w-3 text-emerald-600" />
+                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Módulos Gerais</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
-                <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
-                  {(() => {
-                    const activeTurmaId = localStorage.getItem("ivc_selected_turma");
-                    const found = turmas.find(t => t.id === activeTurmaId);
-                    return found ? `Turma ativa: ${found.nome}` : "Selecione uma turma para ver relatórios";
-                  })()}
-                </span>
-              </div>
-              <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-            </button>
+              <div className="h-px flex-1 bg-gradient-to-l from-emerald-200 to-transparent" />
+            </div>
+
+            {/* Grid módulos gerais */}
+            <div className="grid grid-cols-3 gap-3">
+              {globalModules.map((item, index) => (
+                <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
+                  <button
+                    onClick={item.onClick}
+                    className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white/80 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03]"
+                  >
+                    <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                  </button>
+                  <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-muted-foreground group-hover:text-emerald-600 transition-colors duration-300 truncate w-full px-1">
+                    {item.title}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
