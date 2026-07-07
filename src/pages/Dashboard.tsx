@@ -883,12 +883,12 @@ export default function Dashboard() {
 
               {/* Info da turma */}
               <div className="flex-1 min-w-0 text-left relative z-10">
-                <p className="text-[8px] font-black text-blue-500 uppercase tracking-widest leading-none mb-0.5">Turma Selecionada</p>
-                <p className="text-sm font-black text-foreground truncate leading-tight">
+                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none mb-1">Turma Selecionada</p>
+                <p className="text-base sm:text-lg font-black text-foreground leading-tight line-clamp-2">
                   {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
                 </p>
                 {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
-                  <p className="text-[10px] text-muted-foreground font-bold truncate leading-none mt-0.5">
+                  <p className="text-xs text-muted-foreground font-bold leading-none mt-1 break-words">
                     {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' · ')}
                   </p>
                 )}
@@ -896,12 +896,12 @@ export default function Dashboard() {
 
               {/* Stats compactas */}
               {selectedTurmaId !== 'all' && (
-                <div className="flex items-center gap-2 shrink-0 relative z-10">
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100">
+                <div className="flex flex-col gap-1 shrink-0 relative z-10">
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-100 justify-end">
                     <Users className="h-3 w-3 text-blue-500" />
                     <span className="text-[10px] font-black text-blue-700">{filteredCatequizandos.length}</span>
                   </div>
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100">
+                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 justify-end">
                     <BookOpen className="h-3 w-3 text-emerald-500" />
                     <span className="text-[10px] font-black text-emerald-700">{filteredEncontros.length}</span>
                   </div>
