@@ -973,7 +973,7 @@ export default function Dashboard() {
                         </div>
                       )}
                     </button>
-                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-blue-700/70 group-hover:text-blue-600 transition-colors duration-300 truncate w-full px-1">
+                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
                       {item.title}
                     </span>
                   </div>
@@ -1006,7 +1006,7 @@ export default function Dashboard() {
                     >
                       <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                     </button>
-                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-emerald-700/70 group-hover:text-emerald-600 transition-colors duration-300 truncate w-full px-1">
+                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
                       {item.title}
                     </span>
                   </div>
