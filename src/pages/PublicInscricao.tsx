@@ -472,7 +472,7 @@ export default function PublicInscricao() {
             type="submit" 
             disabled={isSubmitting}
             title="Enviar Inscrição"
-            className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 disabled:opacity-50 animate-bounce-subtle"
+            className="fixed top-24 right-6 w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 disabled:opacity-50 animate-bounce-subtle"
           >
             {isSubmitting ? <Spinner size="sm" color="white" /> : <Save className="w-6 h-6" />}
           </button>

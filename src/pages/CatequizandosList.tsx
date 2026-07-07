@@ -683,6 +683,19 @@ export default function CatequizandosList() {
             <DialogTrigger asChild><button className="action-btn-sm shrink-0 whitespace-nowrap"><Plus className="h-4 w-4" /> Novo</button></DialogTrigger>
             <DialogContent className="rounded-2xl max-h-[90vh] overflow-y-auto border-border/30 w-full max-w-2xl">
               <DialogHeader><DialogTitle className="text-2xl font-black">Ficha de Inscrição</DialogTitle></DialogHeader>
+
+              {/* BOTÃO FLUTUANTE DE SALVAR (Modal) */}
+              <div className="sticky top-2 flex justify-end w-full pointer-events-none z-50 -mb-14 pr-2">
+                <button 
+                  onClick={handleAdd} 
+                  disabled={mutation.isPending}
+                  title="Concluir Inscrição"
+                  className="w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all pointer-events-auto disabled:opacity-50"
+                >
+                  {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                </button>
+              </div>
+
               <div className="space-y-8 mt-4 pb-6">
                 {/* SEÇÃO 1: DADOS PESSOAIS */}
                 <div className="space-y-4">
@@ -882,18 +895,6 @@ export default function CatequizandosList() {
                 >
                   {mutation.isPending ? "Salvando..." : "CONCLUIR INSCRIÇÃO"}
                 </button>
-
-                {/* BOTÃO FLUTUANTE DE SALVAR (Modal) */}
-                <div className="sticky bottom-2 flex justify-end w-full pointer-events-none z-50">
-                  <button 
-                    onClick={handleAdd} 
-                    disabled={mutation.isPending}
-                    title="Concluir Inscrição"
-                    className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all pointer-events-auto disabled:opacity-50"
-                  >
-                    {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
-                  </button>
-                </div>
               </div>
             </DialogContent>
           </Dialog>
@@ -1858,6 +1859,19 @@ export default function CatequizandosList() {
                   <button onClick={() => setEditMode(false)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
                 </div>
               </DialogHeader>
+
+              {/* BOTÃO FLUTUANTE DE SALVAR (Modal Edit) */}
+              <div className="sticky top-2 flex justify-end w-full pointer-events-none z-50 -mb-14 pr-2">
+                <button 
+                  onClick={handleSaveEdit} 
+                  disabled={mutation.isPending}
+                  title="Salvar Alterações"
+                  className="w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all pointer-events-auto disabled:opacity-50"
+                >
+                  {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                </button>
+              </div>
+
               <div className="space-y-8 mt-4 pb-6">
                 {/* SEÇÃO 1: DADOS PESSOAIS */}
                 <div className="space-y-4">
@@ -2038,18 +2052,6 @@ export default function CatequizandosList() {
                 >
                   {mutation.isPending ? "Salvando..." : "SALVAR ALTERAÇÕES"}
                 </button>
-
-                {/* BOTÃO FLUTUANTE DE SALVAR (Modal Edit) */}
-                <div className="sticky bottom-2 flex justify-end w-full pointer-events-none z-50">
-                  <button 
-                    onClick={handleSaveEdit} 
-                    disabled={mutation.isPending}
-                    title="Salvar Alterações"
-                    className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all pointer-events-auto disabled:opacity-50"
-                  >
-                    {mutation.isPending ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
-                  </button>
-                </div>
               </div>
             </div>
           )}
