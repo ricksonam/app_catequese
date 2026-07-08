@@ -144,11 +144,11 @@ export default function TurmasList() {
           <div className="relative z-10 w-12 h-12 shrink-0 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
             <Link2 className="h-6 w-6 text-blue-600 animate-pulse" />
           </div>
-          <div className="relative z-10 flex flex-col items-start text-left">
+          <div className="relative z-10 flex flex-col items-center justify-center text-center">
             <span className="font-black text-sm uppercase tracking-widest text-blue-950 group-hover:text-blue-800 transition-colors leading-tight">
               Entrar na Turma
             </span>
-            <span className="font-bold text-[10px] text-blue-600 uppercase tracking-widest leading-tight">
+            <span className="font-bold text-[10px] text-blue-600 uppercase tracking-widest leading-tight mt-0.5">
               com código
             </span>
           </div>
@@ -246,58 +246,56 @@ export default function TurmasList() {
                     </div>
                   )}
 
-                  {/* Header Row: Icon, Title and Badges */}
-                  <div className="flex justify-between items-start w-full relative z-10 mb-4">
-                    <div className="flex gap-3 items-center w-full pr-8">
-                      <div className={cn(
-                        `w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white backdrop-blur-sm`,
-                        isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
-                        !isPending && "group-hover:scale-110 group-hover:-rotate-6",
-                        isClicking && "scale-90 rotate-12"
-                      )}>
-                        {isPending
-                          ? <Lock className="h-6 w-6 text-white" />
-                          : <ThemeIcon className={cn("h-7 w-7", theme.iconColor)} />
-                        }
-                      </div>
-                      
-                      <div className="flex flex-col gap-1.5 min-w-0">
-                        <h3 className="text-xl font-black truncate font-liturgical tracking-tight drop-shadow-md">
-                          {turma.nome.toLowerCase().startsWith('turma') ? turma.nome : `Turma de ${turma.nome}`}
-                        </h3>
-                        {turma.ano && (
-                          <span className="text-sm font-black px-3 py-0.5 rounded-full shadow-md bg-white/40 border border-white/60 backdrop-blur-md w-fit text-black">
-                            {turma.ano}
-                          </span>
-                        )}
-                      </div>
+                  {/* Badges Stack (Moved to Card Top-Right) */}
+                  {!isPending && (
+                    <div className="flex flex-col items-end gap-1.5 absolute top-4 right-4 z-20">
+                      {turma.isShared && (
+                        <span className={cn(
+                          "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm",
+                          theme.badge
+                        )}>
+                          Partilhada
+                        </span>
+                      )}
+                      {turma.id === selectedTurmaId && (
+                        <span className="flex items-center gap-1 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-md mt-0.5">
+                          <Sparkles className="h-2.5 w-2.5" /> Selecionada
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Header Row: Icon and Title */}
+                  <div className="flex items-center gap-4 w-full relative z-10 mb-4 pr-16">
+                    <div className={cn(
+                      `w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white backdrop-blur-sm`,
+                      isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
+                      !isPending && "group-hover:scale-110 group-hover:-rotate-6",
+                      isClicking && "scale-90 rotate-12"
+                    )}>
+                      {isPending
+                        ? <Lock className="h-6 w-6 text-white" />
+                        : <ThemeIcon className={cn("h-7 w-7", theme.iconColor)} />
+                      }
                     </div>
                     
-                    {/* Badges Stack */}
-                    {!isPending && (
-                      <div className="flex flex-col items-end gap-1.5 absolute top-0 right-0">
-                        {turma.isShared && (
-                          <span className={cn(
-                            "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm",
-                            theme.badge
-                          )}>
-                            Partilhada
-                          </span>
-                        )}
-                        {turma.id === selectedTurmaId && (
-                          <span className="flex items-center gap-1 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-yellow-400 text-yellow-950 shadow-md mt-0.5">
-                            <Sparkles className="h-2.5 w-2.5" /> Selecionada
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex flex-col items-center text-center gap-1.5 min-w-0 flex-1">
+                      <h3 className="text-xl font-black font-liturgical tracking-tight drop-shadow-md leading-tight">
+                        {turma.nome.toLowerCase().startsWith('turma') ? turma.nome : `Turma de ${turma.nome}`}
+                      </h3>
+                      {turma.ano && (
+                        <span className="text-sm font-black px-4 py-0.5 rounded-full shadow-md bg-white/40 border border-white/60 backdrop-blur-md w-fit text-black">
+                          {turma.ano}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Content: Community & Date */}
-                  <div className="relative z-10 flex-1 mb-4">
+                  <div className="relative z-10 flex-1 mb-4 pr-12">
                     {turmaCom && (
                       <p className={cn(
-                        "text-sm font-black uppercase tracking-widest truncate mb-2",
+                        "text-sm font-black uppercase tracking-widest mb-2 leading-snug",
                         isPending ? "text-amber-900" : theme.sub
                       )}>{turmaCom}</p>
                     )}
