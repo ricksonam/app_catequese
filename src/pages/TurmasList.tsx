@@ -201,7 +201,7 @@ export default function TurmasList() {
             const tAtividades = atividades.filter(a => a.turmaId === turma.id);
             const tReunioes = reunioes.filter(r => r.turmaId === turma.id);
             const turmaCom = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
-            const theme = getTurmaTheme(turma.etapa);
+            const theme = getTurmaTheme(turma.nome);
             const ThemeIcon = theme.Icon;
             const dataCriacao = formatDate(turma.criadoEm);
             const isClicking = clickingId === turma.id;
