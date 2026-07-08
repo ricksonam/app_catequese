@@ -138,17 +138,17 @@ export default function TurmasList() {
         {/* Join with Code Card */}
         <button
           onClick={() => setJoinModalOpen(true)}
-          className="flex-[1.2] group relative overflow-hidden flex flex-row items-center justify-center gap-2.5 px-3 py-2 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
+          className="flex-[1.2] group relative overflow-hidden flex flex-row items-center justify-center gap-3 px-4 py-3 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10 w-10 h-10 shrink-0 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
-            <Link2 className="h-5 w-5 text-blue-600 animate-pulse" />
+          <div className="relative z-10 w-12 h-12 shrink-0 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
+            <Link2 className="h-6 w-6 text-blue-600 animate-pulse" />
           </div>
           <div className="relative z-10 flex flex-col items-start text-left">
-            <span className="font-black text-[11px] uppercase tracking-widest text-blue-900 group-hover:text-blue-700 transition-colors leading-tight">
+            <span className="font-black text-sm uppercase tracking-widest text-blue-950 group-hover:text-blue-800 transition-colors leading-tight">
               Entrar na Turma
             </span>
-            <span className="font-bold text-[9px] text-blue-500 uppercase tracking-widest leading-tight">
+            <span className="font-bold text-[10px] text-blue-600 uppercase tracking-widest leading-tight">
               com código
             </span>
           </div>
@@ -246,23 +246,36 @@ export default function TurmasList() {
                     </div>
                   )}
 
-                  {/* Header Row: Icon and Badges */}
-                  <div className="flex justify-between items-start w-full relative z-10 mb-2">
-                    <div className={cn(
-                      `w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white backdrop-blur-sm`,
-                      isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
-                      !isPending && "group-hover:scale-110 group-hover:-rotate-6",
-                      isClicking && "scale-90 rotate-12"
-                    )}>
-                      {isPending
-                        ? <Lock className="h-6 w-6 text-white" />
-                        : <ThemeIcon className={cn("h-7 w-7", theme.iconColor)} />
-                      }
+                  {/* Header Row: Icon, Title and Badges */}
+                  <div className="flex justify-between items-start w-full relative z-10 mb-4">
+                    <div className="flex gap-3 items-center w-full pr-8">
+                      <div className={cn(
+                        `w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-transform duration-500 bg-white backdrop-blur-sm`,
+                        isPending && "bg-gradient-to-br from-amber-400 to-orange-500",
+                        !isPending && "group-hover:scale-110 group-hover:-rotate-6",
+                        isClicking && "scale-90 rotate-12"
+                      )}>
+                        {isPending
+                          ? <Lock className="h-6 w-6 text-white" />
+                          : <ThemeIcon className={cn("h-7 w-7", theme.iconColor)} />
+                        }
+                      </div>
+                      
+                      <div className="flex flex-col gap-1.5 min-w-0">
+                        <h3 className="text-xl font-black truncate font-liturgical tracking-tight drop-shadow-md">
+                          {turma.nome.toLowerCase().startsWith('turma') ? turma.nome : `Turma de ${turma.nome}`}
+                        </h3>
+                        {turma.ano && (
+                          <span className="text-sm font-black px-3 py-0.5 rounded-full shadow-md bg-white/40 border border-white/60 backdrop-blur-md w-fit text-black">
+                            {turma.ano}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     
                     {/* Badges Stack */}
                     {!isPending && (
-                      <div className="flex flex-col items-end gap-1.5">
+                      <div className="flex flex-col items-end gap-1.5 absolute top-0 right-0">
                         {turma.isShared && (
                           <span className={cn(
                             "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm",
@@ -280,22 +293,12 @@ export default function TurmasList() {
                     )}
                   </div>
 
-                  {/* Content: Title & Subtitle */}
+                  {/* Content: Community & Date */}
                   <div className="relative z-10 flex-1 mb-4">
-                    <div className="flex items-center gap-2.5 mb-1 flex-wrap">
-                      <h3 className="text-xl font-black truncate font-liturgical tracking-tight drop-shadow-md">
-                        {turma.nome.toLowerCase().startsWith('turma') ? turma.nome : `Turma de ${turma.nome}`}
-                      </h3>
-                      {turma.ano && (
-                        <span className="text-[13px] font-black px-2.5 py-0.5 rounded-full shadow-md bg-white/30 border border-white/50 backdrop-blur-md">
-                          {turma.ano}
-                        </span>
-                      )}
-                    </div>
                     {turmaCom && (
                       <p className={cn(
-                        "text-[10px] font-bold uppercase tracking-widest truncate mb-1",
-                        isPending ? "text-amber-800/80" : theme.sub
+                        "text-sm font-black uppercase tracking-widest truncate mb-2",
+                        isPending ? "text-amber-900" : theme.sub
                       )}>{turmaCom}</p>
                     )}
                     {dataCriacao && !isPending && (
@@ -310,14 +313,14 @@ export default function TurmasList() {
 
                   {/* Stats & Schedule */}
                   {!isPending && (
-                    <div className="flex flex-col gap-2 relative z-10 mt-auto">
+                    <div className="flex flex-col gap-3 relative z-10 mt-auto pr-12">
                       {/* Compact Schedule */}
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-sm bg-white/30 backdrop-blur-md border border-white/40 text-white font-black w-fit">
-                        <CalendarDays className="h-3.5 w-3.5 opacity-90 shrink-0" />
-                        <span className="text-xs uppercase tracking-wide font-black">{turma.diaCatequese}</span>
-                        <span className="opacity-60 text-xs">·</span>
-                        <Clock className="h-3 w-3 opacity-90 shrink-0" />
-                        <span className="text-[11px] font-black">{turma.horario}</span>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-xl shadow-sm bg-white/60 backdrop-blur-md border border-white/80 text-black font-black w-fit">
+                        <CalendarDays className="h-4 w-4 opacity-90 shrink-0" />
+                        <span className="text-sm uppercase tracking-wide font-black">{turma.diaCatequese}</span>
+                        <span className="opacity-60 text-sm">·</span>
+                        <Clock className="h-3.5 w-3.5 opacity-90 shrink-0" />
+                        <span className="text-xs font-black">{turma.horario}</span>
                       </div>
 
                       {/* Colorful 4-Grid Stats */}
@@ -398,10 +401,10 @@ export default function TurmasList() {
                   {/* Arrow - Center Right */}
                   {!isPending && (
                     <div className={cn(
-                      "absolute top-1/2 -translate-y-1/2 right-4 flex items-center justify-center transition-all duration-300 z-20 opacity-70",
-                      "group-hover:opacity-100 group-hover:translate-x-1 group-hover:scale-110"
+                      "absolute top-1/2 -translate-y-1/2 right-3 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center shadow-md transition-all duration-300 z-20",
+                      "group-hover:bg-white group-hover:translate-x-1 group-hover:scale-110"
                     )}>
-                      <ArrowRight className="h-6 w-6 text-white drop-shadow-md" />
+                      <ArrowRight className={cn("h-5 w-5", theme.iconColor)} />
                     </div>
                   )}
                 </div>
