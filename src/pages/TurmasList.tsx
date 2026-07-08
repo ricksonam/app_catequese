@@ -2,49 +2,76 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useComunidades, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { JoinTurmaModal } from "@/components/JoinTurmaModal";
-import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Sparkles, Lock, Clock, PartyPopper, Users2 } from "lucide-react";
+import { BookOpen, Plus, CalendarDays, Users, Link2, ArrowRight, UsersRound, Sparkles, Lock, Clock, PartyPopper, Users2, Sprout, Star, Heart, Compass, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-// Palette: robust, deep solid tones (no neon gradients)
-const CARD_PALETTES = [
-  {
-    bg: "from-blue-600 to-blue-700", borderMain: "border-blue-400",
-    iconColor: "text-blue-500",
-    text: "text-white", sub: "text-blue-100",
-    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
-  },
-  {
-    bg: "from-indigo-500 to-indigo-600", borderMain: "border-indigo-400",
-    iconColor: "text-indigo-400",
-    text: "text-white", sub: "text-indigo-100",
-    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
-  },
-  {
-    bg: "from-emerald-800 to-emerald-900", borderMain: "border-emerald-400",
-    iconColor: "text-emerald-600",
-    text: "text-white", sub: "text-emerald-200",
-    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
-  },
-  {
-    bg: "from-violet-800 to-violet-900", borderMain: "border-violet-400",
-    iconColor: "text-violet-600",
-    text: "text-white", sub: "text-violet-200",
-    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
-  },
-  {
-    bg: "from-rose-800 to-rose-900", borderMain: "border-rose-400",
-    iconColor: "text-rose-600",
-    text: "text-white", sub: "text-rose-200",
-    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
-  },
-  {
-    bg: "from-amber-800 to-amber-900", borderMain: "border-amber-400",
-    iconColor: "text-amber-600",
-    text: "text-white", sub: "text-amber-200",
-    badge: "bg-white/15 text-white border-white/25 backdrop-blur-md",
-  },
-];
+const getTurmaTheme = (etapa?: string) => {
+  const norm = etapa?.toLowerCase() || "";
+  
+  if (norm.includes("sementinha")) {
+    return {
+      bg: "from-yellow-200 to-yellow-300", borderMain: "border-yellow-400",
+      iconColor: "text-yellow-600",
+      text: "text-yellow-950", sub: "text-yellow-800",
+      badge: "bg-yellow-100/50 text-yellow-900 border-yellow-300 backdrop-blur-md",
+      Icon: Sprout,
+    };
+  }
+  if (norm.includes("pré-catequese") || norm.includes("pre-catequese") || norm.includes("pre catequese")) {
+    return {
+      bg: "from-purple-200 to-purple-300", borderMain: "border-purple-400",
+      iconColor: "text-purple-600",
+      text: "text-purple-950", sub: "text-purple-800",
+      badge: "bg-purple-100/50 text-purple-900 border-purple-300 backdrop-blur-md",
+      Icon: Star,
+    };
+  }
+  if (norm.includes("pré-crisma") || norm.includes("pre-crisma") || norm.includes("pre crisma")) {
+    return {
+      bg: "from-orange-200 to-orange-300", borderMain: "border-orange-400",
+      iconColor: "text-orange-600",
+      text: "text-orange-950", sub: "text-orange-800",
+      badge: "bg-orange-100/50 text-orange-900 border-orange-300 backdrop-blur-md",
+      Icon: Compass,
+    };
+  }
+  if (norm.includes("crisma")) {
+    return {
+      bg: "from-red-200 to-red-300", borderMain: "border-red-400",
+      iconColor: "text-red-600",
+      text: "text-red-950", sub: "text-red-800",
+      badge: "bg-red-100/50 text-red-900 border-red-300 backdrop-blur-md",
+      Icon: Flame,
+    };
+  }
+  if (norm.includes("eucaristia")) {
+    return {
+      bg: "from-blue-200 to-blue-300", borderMain: "border-blue-400",
+      iconColor: "text-blue-600",
+      text: "text-blue-950", sub: "text-blue-800",
+      badge: "bg-blue-100/50 text-blue-900 border-blue-300 backdrop-blur-md",
+      Icon: Heart,
+    };
+  }
+  if (norm.includes("adulto")) {
+    return {
+      bg: "from-green-200 to-green-300", borderMain: "border-green-400",
+      iconColor: "text-green-600",
+      text: "text-green-950", sub: "text-green-800",
+      badge: "bg-green-100/50 text-green-900 border-green-300 backdrop-blur-md",
+      Icon: Users,
+    };
+  }
+  
+  return {
+    bg: "from-white to-slate-100", borderMain: "border-slate-300",
+    iconColor: "text-slate-500",
+    text: "text-slate-900", sub: "text-slate-600",
+    badge: "bg-white/50 text-slate-700 border-slate-300 backdrop-blur-md",
+    Icon: UsersRound,
+  };
+};
 
 function formatDate(dateStr?: string) {
   if (!dateStr) return null;
@@ -174,7 +201,8 @@ export default function TurmasList() {
             const tAtividades = atividades.filter(a => a.turmaId === turma.id);
             const tReunioes = reunioes.filter(r => r.turmaId === turma.id);
             const turmaCom = comunidades.find(c => c.id === turma.comunidadeId)?.nome;
-            const palette = CARD_PALETTES[i % CARD_PALETTES.length];
+            const theme = getTurmaTheme(turma.etapa);
+            const ThemeIcon = theme.Icon;
             const dataCriacao = formatDate(turma.criadoEm);
             const isClicking = clickingId === turma.id;
             const isPending = (turma as any).status === 'pending';
@@ -189,13 +217,13 @@ export default function TurmasList() {
                     ? "border-amber-300 opacity-90 cursor-default"
                     : "hover:shadow-2xl hover:-translate-y-1 active:scale-95 cursor-pointer",
                   !isPending && (isClicking ? "scale-95 opacity-80" : "scale-100"),
-                  !isPending && palette.borderMain
+                  !isPending && theme.borderMain
                 )}
                 style={{ animationDelay: `${(i + 1) * 150}ms` }}
               >
                 <div className={cn(
                   "relative overflow-hidden p-5 flex flex-col justify-between min-h-[220px] bg-gradient-to-br transition-all duration-500 h-full",
-                  isPending ? "from-amber-50/90 to-orange-100/90 text-amber-950" : `${palette.bg} ${palette.text}`
+                  isPending ? "from-amber-50/90 to-orange-100/90 text-amber-950" : `${theme.bg} ${theme.text}`
                 )}>
                   {/* Glass effect background shapes */}
                   <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-20 blur-3xl pointer-events-none mix-blend-overlay bg-white" />
@@ -228,7 +256,7 @@ export default function TurmasList() {
                     )}>
                       {isPending
                         ? <Lock className="h-6 w-6 text-white" />
-                        : <UsersRound className={cn("h-7 w-7", palette.iconColor)} />
+                        : <ThemeIcon className={cn("h-7 w-7", theme.iconColor)} />
                       }
                     </div>
                     
@@ -238,7 +266,7 @@ export default function TurmasList() {
                         {turma.isShared && (
                           <span className={cn(
                             "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm",
-                            palette.badge
+                            theme.badge
                           )}>
                             Partilhada
                           </span>
@@ -267,13 +295,13 @@ export default function TurmasList() {
                     {turmaCom && (
                       <p className={cn(
                         "text-[10px] font-bold uppercase tracking-widest truncate mb-1",
-                        isPending ? "text-amber-800/80" : palette.sub
+                        isPending ? "text-amber-800/80" : theme.sub
                       )}>{turmaCom}</p>
                     )}
                     {dataCriacao && !isPending && (
                       <p className={cn(
                         "text-[9px] font-black uppercase tracking-widest opacity-80",
-                        palette.sub
+                        theme.sub
                       )}>
                         Criada em {dataCriacao}
                       </p>
