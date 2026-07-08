@@ -911,10 +911,10 @@ export default function Dashboard() {
 
       {/* ── TURMA E MÓDULOS DE ACESSO RÁPIDO ── */}
       {turmas.length > 0 && (
-        <div className="px-4 mt-2 animate-fade-in">
+        <div className="mt-2 animate-fade-in">
 
           {/* ── SELETOR DE TURMA COMPACTO COM MOLDURA ── */}
-          <div className="p-1 rounded-[18px] bg-blue-50 border-2 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 shadow-md shadow-blue-500/10 mb-4 relative z-10">
+          <div className="mx-4 p-1 rounded-[18px] bg-blue-50 border-2 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 shadow-md shadow-blue-500/10 mb-4 relative z-10">
             <button
               onClick={() => setTurmaPickerOpen(true)}
               className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-[14px] bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-700 shadow-sm hover:border-blue-300 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
@@ -948,7 +948,7 @@ export default function Dashboard() {
 
 
           {/* ── SEÇÃO: MÓDULOS DA TURMA SELECIONADA ── */}
-          <div className="mb-3 relative">
+          <div className="mb-3 relative -mx-4 sm:mx-0">
 
             {/* Linha conectora vertical: sai do seletor e aponta para os módulos da turma */}
             <div className="absolute left-1/2 -translate-x-1/2 -top-4 flex flex-col items-center pointer-events-none" style={{ zIndex: 0 }}>
@@ -957,7 +957,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card da seção com fundo colorido */}
-            <div className="rounded-3xl bg-blue-100/70 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 p-4 relative shadow-sm" style={{ zIndex: 1 }}>
+            <div className="sm:rounded-3xl bg-blue-100/70 dark:bg-blue-900/20 sm:border border-blue-200 dark:border-blue-700/30 px-4 py-4 relative shadow-sm" style={{ zIndex: 1 }}>
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-blue-200/70" />
@@ -996,9 +996,9 @@ export default function Dashboard() {
           </div>
 
           {/* ── SEÇÃO: MÓDULOS GERAIS ── */}
-          <div className="mb-3">
+          <div className="mb-3 -mx-4 sm:mx-0">
             {/* Card da seção com fundo colorido */}
-            <div className="rounded-3xl bg-emerald-100/70 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700/30 p-4 shadow-sm">
+            <div className="sm:rounded-3xl bg-emerald-100/70 dark:bg-emerald-900/20 sm:border border-emerald-200 dark:border-emerald-700/30 px-4 py-4 shadow-sm">
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-emerald-200/70" />
@@ -1029,7 +1029,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── CARD CENTRAL DE RELATÓRIOS (abaixo dos módulos gerais) ── */}
-          <div className="pb-6">
+          <div className="pb-6 px-4">
             <button
               onClick={() => {
                 const activeTurma = localStorage.getItem("ivc_selected_turma");
