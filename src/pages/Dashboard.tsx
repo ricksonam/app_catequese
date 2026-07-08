@@ -109,6 +109,8 @@ export default function Dashboard() {
       '/icone_oracoes.png',
       '/icone_liturgia.png',
       '/acesso_jogos.jpg',
+      '/icone_agenda.png',
+      '/icone_material.png',
     ];
     preloadImages.forEach(src => {
       const img = new window.Image();
@@ -616,6 +618,16 @@ export default function Dashboard() {
       title: "Jogos",
       image: "/acesso_jogos.jpg",
       onClick: () => navigate("/jogos")
+    },
+    {
+      title: "Agenda",
+      image: "/icone_agenda.png",
+      onClick: () => navigate("/modulos/calendario")
+    },
+    {
+      title: "Material",
+      image: "/icone_material.png",
+      onClick: () => navigate("/modulos/material")
     },
   ], [navigate]);
   if (loading) {
