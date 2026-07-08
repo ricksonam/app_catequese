@@ -973,7 +973,7 @@ export default function Dashboard() {
             </div>
 
             {/* Card da seção com fundo colorido */}
-            <div className="sm:rounded-3xl bg-blue-100/70 dark:bg-blue-900/20 border-x-[6px] border-white sm:border-blue-200 dark:border-zinc-900 sm:dark:border-blue-700/30 px-4 py-4 relative shadow-sm" style={{ zIndex: 1 }}>
+            <div className="rounded-2xl sm:rounded-3xl bg-blue-100/70 dark:bg-blue-900/20 border-x-[12px] border-white sm:border-blue-200 dark:border-zinc-900 sm:dark:border-blue-700/30 px-4 py-4 relative shadow-sm" style={{ zIndex: 1 }}>
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-blue-200/70" />
@@ -1014,7 +1014,7 @@ export default function Dashboard() {
           {/* ── SEÇÃO: MÓDULOS GERAIS ── */}
           <div className="mb-3 -mx-4 sm:mx-0">
             {/* Card da seção com fundo colorido */}
-            <div className="sm:rounded-3xl bg-emerald-100/70 dark:bg-emerald-900/20 border-x-[6px] border-white sm:border-emerald-200 dark:border-zinc-900 sm:dark:border-emerald-700/30 px-4 py-4 shadow-sm">
+            <div className="rounded-2xl sm:rounded-3xl bg-emerald-100/70 dark:bg-emerald-900/20 border-x-[12px] border-white sm:border-emerald-200 dark:border-zinc-900 sm:dark:border-emerald-700/30 px-4 py-4 shadow-sm">
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-emerald-200/70" />
