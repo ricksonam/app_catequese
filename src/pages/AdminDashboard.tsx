@@ -199,7 +199,12 @@ export default function AdminDashboard() {
     try {
       const ext = catalogFile.name.split(".").pop()?.toLowerCase() || "pdf";
       const tipo = ["jpg","jpeg","png","webp","gif"].includes(ext) ? "image" : "pdf";
-      const fileName = `${Date.now()}_${catalogFile.name.replace(/\s+/g, "_")}`;
+      const sanitizedName = catalogFile.name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9.\-]/g, "_")
+        .replace(/_+/g, "_");
+      const fileName = `${Date.now()}_${sanitizedName}`;
       const { error: upErr } = await supabase.storage
         .from("materiais-apoio")
         .upload(fileName, catalogFile, { contentType: catalogFile.type, upsert: false });
