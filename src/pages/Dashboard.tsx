@@ -739,12 +739,12 @@ export default function Dashboard() {
                   }
                 }}
                 id="btn-agenda-dashboard"
-                className="group relative flex items-center gap-1.5 pl-2 pr-2.5 py-1.5 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-sm border border-emerald-400/80 overflow-hidden"
+                className="group relative flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-md border border-emerald-400/80 overflow-hidden"
               >
                 {/* shimmer */}
                 <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                <CalendarDays className="h-3.5 w-3.5 text-white shrink-0 relative z-10" />
-                <span className="text-[10px] font-black tracking-wide relative z-10">Agenda</span>
+                <CalendarDays className="h-4 w-4 text-white shrink-0 relative z-10" />
+                <span className="text-xs font-black tracking-wide relative z-10">Agenda</span>
               </button>
 
               {/* Ícone de mensagens */}
@@ -757,8 +757,9 @@ export default function Dashboard() {
                   <>
                     <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-[#8b5cf6] animate-pulse" />
                     {showNovaMensagem && (
-                      <div className="absolute right-12 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-right-2">
+                      <div className="absolute -top-10 right-0 bg-red-500 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 shadow-md">
                         Nova Mensagem
+                        <div className="absolute -bottom-1 right-4 w-2 h-2 bg-red-500 rotate-45" />
                       </div>
                     )}
                   </>
