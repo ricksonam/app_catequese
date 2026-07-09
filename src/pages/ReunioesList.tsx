@@ -593,7 +593,7 @@ export default function ReunioesList() {
                         <Book className="h-5 w-5" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-black text-zinc-900 uppercase tracking-tight leading-none">Roteiro da Reunião</h3>
+                        <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight leading-none">Roteiro da Reunião</h3>
                         <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Oração e Tópicos de Pauta</p>
                       </div>
                     </div>
@@ -607,7 +607,7 @@ export default function ReunioesList() {
                         <select 
                           value={form.oracaoTipo || ""} 
                           onChange={(e) => updateField("oracaoTipo", e.target.value as any)}
-                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
+                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-base font-bold focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
                         >
                           <option value="">Escolher...</option>
                           {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
@@ -621,7 +621,7 @@ export default function ReunioesList() {
                           value={form.oracaoInicial || ""} 
                           onChange={(e) => updateField("oracaoInicial", e.target.value)}
                           placeholder="Ex: Mt 5, 1-12"
-                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
+                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-base font-bold focus:ring-2 focus:ring-primary/20 outline-none"
                         />
                       </div>
                     </div>
@@ -630,7 +630,7 @@ export default function ReunioesList() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between px-1">
                           <div className="flex flex-col">
-                            <label className="text-[10px] font-black text-zinc-700 uppercase tracking-widest leading-none">Tópicos da Reunião</label>
+                            <label className="text-sm font-black text-zinc-700 uppercase tracking-widest leading-none">Tópicos da Reunião</label>
                             <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">Pautas e horários previstos</p>
                           </div>
                           <button 
@@ -669,7 +669,7 @@ export default function ReunioesList() {
                                           next[idx] = { ...p, titulo: e.target.value };
                                           updateField("pautas", next);
                                         }}
-                                        className="w-full bg-transparent border-none focus:ring-0 text-base font-black p-0 text-zinc-900 placeholder:text-zinc-200"
+                                        className="w-full bg-transparent border-none focus:ring-0 text-xl font-black p-0 text-zinc-900 placeholder:text-zinc-200"
                                       />
                                     </div>
                                     <button 
@@ -692,7 +692,7 @@ export default function ReunioesList() {
                                       next[idx] = { ...p, descricao: e.target.value };
                                       updateField("pautas", next);
                                     }}
-                                    className="w-full bg-zinc-50 border-none focus:ring-2 focus:ring-zinc-900 rounded-xl text-sm font-medium text-zinc-700 p-3 min-h-[80px] resize-none placeholder:text-zinc-300 leading-relaxed transition-all shadow-inner"
+                                    className="w-full bg-zinc-50 border-none focus:ring-2 focus:ring-zinc-900 rounded-xl text-base font-medium text-zinc-700 p-3 min-h-[80px] resize-none placeholder:text-zinc-300 leading-relaxed transition-all shadow-inner"
                                   />
 
                                   <div className="flex items-center gap-2 pt-1">
