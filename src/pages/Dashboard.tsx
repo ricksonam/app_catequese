@@ -104,11 +104,11 @@ export default function Dashboard() {
       '/icone-eventos.png?v=2',
       '/icone-reunioes.png?v=2',
       '/icone_trilha.png',
-      '/icone_diario.png',
+      '/icone_diario.png?v=2',
       '/card_biblia.jpg',
       '/icone_oracoes.png',
-      '/icone_liturgia.png',
-      '/acesso_jogos.jpg',
+      '/icone_liturgia.png?v=2',
+      '/icone_jogos.png?v=2',
       '/icone_agenda.png',
       '/icone_material.png',
     ];
@@ -583,7 +583,7 @@ export default function Dashboard() {
     },
     {
       title: "Diário",
-      image: "/icone_diario.png",
+      image: "/icone_diario.png?v=2",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/diario`);
@@ -611,12 +611,12 @@ export default function Dashboard() {
     },
     {
       title: "Liturgia Diária",
-      image: "/icone_liturgia.png",
+      image: "/icone_liturgia.png?v=2",
       onClick: () => navigate("/modulos/liturgia")
     },
     {
       title: "Jogos",
-      image: "/acesso_jogos.jpg",
+      image: "/icone_jogos.png?v=2",
       onClick: () => navigate("/jogos")
     },
     {
