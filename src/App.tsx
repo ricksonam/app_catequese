@@ -17,54 +17,74 @@ import SplashScreen from "@/components/SplashScreen";
 
 
 // ===== LAZY IMPORTS (carregados apenas quando a rota é acessada) =====
-const ResetPasswordPage       = lazy(() => import("@/pages/ResetPasswordPage"));
-const Dashboard               = lazy(() => import("@/pages/Dashboard"));
-const TurmasList              = lazy(() => import("@/pages/TurmasList"));
-const TurmaForm               = lazy(() => import("@/pages/TurmaForm"));
-const TurmaDetail             = lazy(() => import("@/pages/TurmaDetail"));
-const EncontrosList           = lazy(() => import("@/pages/EncontrosList"));
-const EncontroForm            = lazy(() => import("@/pages/EncontroForm"));
-const EncontroDetail          = lazy(() => import("@/pages/EncontroDetail"));
-const EncontroPresentation    = lazy(() => import("@/pages/EncontroPresentation"));
-const CatequizandosList       = lazy(() => import("@/pages/CatequizandosList"));
-const EventosList             = lazy(() => import("@/pages/EventosList"));
-const ReunioesList            = lazy(() => import("@/pages/ReunioesList"));
-const ReuniaoPresentation     = lazy(() => import("@/pages/ReuniaoPresentation"));
-const PlanoTurma              = lazy(() => import("@/pages/PlanoTurma"));
-const RelatoriosTurma         = lazy(() => import("@/pages/RelatoriosTurma"));
-const TrilhaSacramental       = lazy(() => import("@/pages/TrilhaSacramental"));
-const DiarioEspiritualList    = lazy(() => import("@/pages/DiarioEspiritualList"));
-const DiarioEspiritualForm    = lazy(() => import("@/pages/DiarioEspiritualForm"));
-const BibliotecaModelos       = lazy(() => import("@/pages/BibliotecaModelos"));
-const OracoesList             = lazy(() => import("@/pages/OracoesList"));
-const OracaoView              = lazy(() => import("@/pages/OracaoView"));
-const ModulosGlobais          = lazy(() => import("@/pages/ModulosGlobais"));
-const MuralFotos              = lazy(() => import("@/pages/MuralFotos"));
-const JogosHub                = lazy(() => import("@/pages/JogosHub"));
-const SorteioNomes            = lazy(() => import("@/pages/SorteioNomes"));
-const QuizBiblico             = lazy(() => import("@/pages/QuizBiblico"));
-const QuemSouBiblico          = lazy(() => import("@/pages/QuemSouBiblico"));
-const PerguntasRespostas      = lazy(() => import("@/pages/PerguntasRespostas"));
-const CitacaoSorteio          = lazy(() => import("@/pages/CitacaoSorteio"));
-const SorteioGrupos           = lazy(() => import("@/pages/SorteioGrupos"));
-const Mimica                  = lazy(() => import("@/pages/Mimica"));
-const PacienciaBiblica        = lazy(() => import("@/pages/PacienciaBiblica"));
-const BibliaPage              = lazy(() => import("@/pages/BibliaPage"));
-const MaterialApoio           = lazy(() => import("@/pages/MaterialApoio"));
-const ParoquiaComunidadeCadastro = lazy(() => import("@/pages/ParoquiaComunidadeCadastro"));
-const CatequistasCadastro     = lazy(() => import("@/pages/CatequistasCadastro"));
-const CalendarioLiturgico     = lazy(() => import("@/pages/CalendarioLiturgico"));
-const LiturgiaDiaria          = lazy(() => import("@/pages/LiturgiaDiaria"));
-const AdminDashboard          = lazy(() => import("@/pages/AdminDashboard"));
-const AdminLogin              = lazy(() => import("@/pages/AdminLogin"));
-const PlaceholderPage         = lazy(() => import("@/pages/PlaceholderPage"));
-const PublicPlano             = lazy(() => import("@/pages/PublicPlano"));
-const PublicRitoSacramental   = lazy(() => import("@/pages/PublicRitoSacramental"));
-const PublicInscricao         = lazy(() => import("@/pages/PublicInscricao"));
-const MapaPanoramico          = lazy(() => import("@/pages/MapaPanoramico"));
-const NotFound                = lazy(() => import("@/pages/NotFound"));
-const LandingPage             = lazy(() => import("@/pages/LandingPage"));
-const OnboardingPage          = lazy(() => import("@/pages/OnboardingPage"));
+// Helper para recarregar automaticamente a página se o chunk falhar (ex: nova versão deployada)
+const lazyWithRetry = (componentImport: () => Promise<any>) => {
+  return lazy(async () => {
+    const reloaded = sessionStorage.getItem("ivc_chunk_reload");
+    try {
+      const component = await componentImport();
+      sessionStorage.removeItem("ivc_chunk_reload");
+      return component;
+    } catch (error: any) {
+      if (!reloaded && (error?.message?.includes("Failed to fetch dynamically imported module") || error?.message?.includes("Importing a module script failed") || error?.name === "ChunkLoadError")) {
+        sessionStorage.setItem("ivc_chunk_reload", "true");
+        window.location.reload();
+        // Retorna uma promise que nunca resolve para evitar erro na tela enquanto a página recarrega
+        return new Promise<any>(() => {});
+      }
+      throw error;
+    }
+  });
+};
+
+const ResetPasswordPage       = lazyWithRetry(() => import("@/pages/ResetPasswordPage"));
+const Dashboard               = lazyWithRetry(() => import("@/pages/Dashboard"));
+const TurmasList              = lazyWithRetry(() => import("@/pages/TurmasList"));
+const TurmaForm               = lazyWithRetry(() => import("@/pages/TurmaForm"));
+const TurmaDetail             = lazyWithRetry(() => import("@/pages/TurmaDetail"));
+const EncontrosList           = lazyWithRetry(() => import("@/pages/EncontrosList"));
+const EncontroForm            = lazyWithRetry(() => import("@/pages/EncontroForm"));
+const EncontroDetail          = lazyWithRetry(() => import("@/pages/EncontroDetail"));
+const EncontroPresentation    = lazyWithRetry(() => import("@/pages/EncontroPresentation"));
+const CatequizandosList       = lazyWithRetry(() => import("@/pages/CatequizandosList"));
+const EventosList             = lazyWithRetry(() => import("@/pages/EventosList"));
+const ReunioesList            = lazyWithRetry(() => import("@/pages/ReunioesList"));
+const ReuniaoPresentation     = lazyWithRetry(() => import("@/pages/ReuniaoPresentation"));
+const PlanoTurma              = lazyWithRetry(() => import("@/pages/PlanoTurma"));
+const RelatoriosTurma         = lazyWithRetry(() => import("@/pages/RelatoriosTurma"));
+const TrilhaSacramental       = lazyWithRetry(() => import("@/pages/TrilhaSacramental"));
+const DiarioEspiritualList    = lazyWithRetry(() => import("@/pages/DiarioEspiritualList"));
+const DiarioEspiritualForm    = lazyWithRetry(() => import("@/pages/DiarioEspiritualForm"));
+const BibliotecaModelos       = lazyWithRetry(() => import("@/pages/BibliotecaModelos"));
+const OracoesList             = lazyWithRetry(() => import("@/pages/OracoesList"));
+const OracaoView              = lazyWithRetry(() => import("@/pages/OracaoView"));
+const ModulosGlobais          = lazyWithRetry(() => import("@/pages/ModulosGlobais"));
+const MuralFotos              = lazyWithRetry(() => import("@/pages/MuralFotos"));
+const JogosHub                = lazyWithRetry(() => import("@/pages/JogosHub"));
+const SorteioNomes            = lazyWithRetry(() => import("@/pages/SorteioNomes"));
+const QuizBiblico             = lazyWithRetry(() => import("@/pages/QuizBiblico"));
+const QuemSouBiblico          = lazyWithRetry(() => import("@/pages/QuemSouBiblico"));
+const PerguntasRespostas      = lazyWithRetry(() => import("@/pages/PerguntasRespostas"));
+const CitacaoSorteio          = lazyWithRetry(() => import("@/pages/CitacaoSorteio"));
+const SorteioGrupos           = lazyWithRetry(() => import("@/pages/SorteioGrupos"));
+const Mimica                  = lazyWithRetry(() => import("@/pages/Mimica"));
+const PacienciaBiblica        = lazyWithRetry(() => import("@/pages/PacienciaBiblica"));
+const BibliaPage              = lazyWithRetry(() => import("@/pages/BibliaPage"));
+const MaterialApoio           = lazyWithRetry(() => import("@/pages/MaterialApoio"));
+const ParoquiaComunidadeCadastro = lazyWithRetry(() => import("@/pages/ParoquiaComunidadeCadastro"));
+const CatequistasCadastro     = lazyWithRetry(() => import("@/pages/CatequistasCadastro"));
+const CalendarioLiturgico     = lazyWithRetry(() => import("@/pages/CalendarioLiturgico"));
+const LiturgiaDiaria          = lazyWithRetry(() => import("@/pages/LiturgiaDiaria"));
+const AdminDashboard          = lazyWithRetry(() => import("@/pages/AdminDashboard"));
+const AdminLogin              = lazyWithRetry(() => import("@/pages/AdminLogin"));
+const PlaceholderPage         = lazyWithRetry(() => import("@/pages/PlaceholderPage"));
+const PublicPlano             = lazyWithRetry(() => import("@/pages/PublicPlano"));
+const PublicRitoSacramental   = lazyWithRetry(() => import("@/pages/PublicRitoSacramental"));
+const PublicInscricao         = lazyWithRetry(() => import("@/pages/PublicInscricao"));
+const MapaPanoramico          = lazyWithRetry(() => import("@/pages/MapaPanoramico"));
+const NotFound                = lazyWithRetry(() => import("@/pages/NotFound"));
+const LandingPage             = lazyWithRetry(() => import("@/pages/LandingPage"));
+const OnboardingPage          = lazyWithRetry(() => import("@/pages/OnboardingPage"));
 
 // ===== FALLBACK DE LOADING =====
 function PageLoader() {
