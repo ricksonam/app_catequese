@@ -101,8 +101,8 @@ export default function Dashboard() {
     const preloadImages = [
       '/card_catequizandos.jpg',
       '/card_encontros.jpg',
-      '/icone-eventos.png',
-      '/icone-reunioes.png',
+      '/icone-eventos.png?v=2',
+      '/icone-reunioes.png?v=2',
       '/icone_trilha.png',
       '/icone_diario.png',
       '/card_biblia.jpg',
@@ -541,7 +541,7 @@ export default function Dashboard() {
     },
     {
       title: "Eventos",
-      image: "/icone-eventos.png",
+      image: "/icone-eventos.png?v=2",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/eventos`);
@@ -555,7 +555,7 @@ export default function Dashboard() {
     },
     {
       title: "Reuniões",
-      image: "/icone-reunioes.png",
+      image: "/icone-reunioes.png?v=2",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/reunioes`);
