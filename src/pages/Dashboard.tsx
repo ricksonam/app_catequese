@@ -628,7 +628,7 @@ export default function Dashboard() {
     },
     {
       title: "Loja",
-      image: "/icone_material.png",
+      image: "/icone_loja.png",
       onClick: () => navigate("/modulos/loja"),
       alert: showMaterialBanner,
       alertText: "Novo"
