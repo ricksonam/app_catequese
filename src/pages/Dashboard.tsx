@@ -989,20 +989,23 @@ export default function Dashboard() {
               <div className="grid grid-cols-3 gap-3">
                 {turmaModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                    <button
-                      onClick={item.onClick}
-                      className={`module-icon-btn animate-module-float-${index % 6} relative aspect-square w-full rounded-[20px] overflow-hidden shadow-md border-2 border-white hover:border-blue-400 hover:shadow-xl hover:shadow-blue-400/30 focus:outline-none transition-[border-color,box-shadow] duration-300`}
-                    >
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                      {/* Overlay indicando que precisa de turma */}
-                      {selectedTurmaId === 'all' && (
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                          <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
-                            <Users className="h-3 w-3 text-blue-600" />
+                    {/* Moldura flutuante */}
+                    <div className="module-frame-wrapper w-full aspect-square">
+                      <button
+                        onClick={item.onClick}
+                        className="relative w-full h-full rounded-[22px] overflow-hidden focus:outline-none active:scale-95 transition-transform duration-150"
+                      >
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                        {/* Overlay indicando que precisa de turma */}
+                        {selectedTurmaId === 'all' && (
+                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+                              <Users className="h-3 w-3 text-blue-600" />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </button>
+                        )}
+                      </button>
+                    </div>
                     <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
                       {item.title}
                     </span>
@@ -1030,22 +1033,25 @@ export default function Dashboard() {
               <div className="grid grid-cols-3 gap-3">
                 {globalModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                    <button
-                      onClick={item.onClick}
-                      className={`module-icon-btn animate-module-float-${index % 6} relative aspect-square w-full rounded-[20px] overflow-hidden shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-400/30 focus:outline-none transition-[border-color,box-shadow] duration-300`}
-                    >
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                      
-                      {/* Selo Animado Pulsante */}
-                      {item.alert && (
-                        <div className="absolute top-1.5 right-1.5 flex items-center justify-center">
-                          <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
-                          <span className="relative inline-flex rounded-full bg-red-500 px-1.5 py-0.5 text-[8px] font-black text-white uppercase tracking-wider shadow-md border border-white/20">
-                            {item.alertText}
-                          </span>
-                        </div>
-                      )}
-                    </button>
+                    {/* Moldura flutuante */}
+                    <div className="module-frame-wrapper w-full aspect-square">
+                      <button
+                        onClick={item.onClick}
+                        className="relative w-full h-full rounded-[22px] overflow-hidden focus:outline-none active:scale-95 transition-transform duration-150"
+                      >
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                        
+                        {/* Selo Animado Pulsante */}
+                        {item.alert && (
+                          <div className="absolute top-1.5 right-1.5 flex items-center justify-center">
+                            <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
+                            <span className="relative inline-flex rounded-full bg-red-500 px-1.5 py-0.5 text-[8px] font-black text-white uppercase tracking-wider shadow-md border border-white/20">
+                              {item.alertText}
+                            </span>
+                          </div>
+                        )}
+                      </button>
+                    </div>
                     <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
                       {item.title}
                     </span>
