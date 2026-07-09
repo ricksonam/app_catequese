@@ -992,7 +992,7 @@ export default function Dashboard() {
                       onClick={item.onClick}
                       className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03] focus:outline-none"
                     >
-                      <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                       {/* Overlay indicando que precisa de turma */}
                       {selectedTurmaId === 'all' && (
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -1033,7 +1033,7 @@ export default function Dashboard() {
                       onClick={item.onClick}
                       className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03] focus:outline-none focus:border-white"
                     >
-                      <img src={item.image} alt={item.title} fetchPriority="high" loading="eager" decoding="async" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                       
                       {/* Selo Animado Pulsante */}
                       {item.alert && (

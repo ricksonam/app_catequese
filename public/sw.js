@@ -2,6 +2,7 @@
 // iCatequese Service Worker
 // IMPORTANTE: Altere o CACHE_VERSION a cada deploy para
 // garantir que os usuários recebam a versão mais recente.
+// Atualizado em: 2026-07-08T19:40:00-03:00
 // ============================================================
 
 const CACHE_VERSION = 'v' + Date.now(); // auto-increments on each SW install
