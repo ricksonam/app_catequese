@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Sparkles, Church, X, Users, Dices, Share2, MessageSquare, CheckCircle2, CalendarDays, Gift, Image, ListChecks } from "lucide-react";
+import { Mail, Sparkles, Church, X, Users, Dices, Share2, MessageSquare, CheckCircle2, CalendarDays, Gift, Image, ListChecks, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -55,9 +55,9 @@ const steps = [
     bgColor: "bg-sky-500/10",
   },
   {
-    title: "Catequese em Família",
-    description: "Crie enquetes e missões familiares incríveis para manter as famílias engajadas na fé.",
-    icon: MessageSquare,
+    title: "Bíblia Online",
+    description: "Acesse as sagradas escrituras diretamente pelo aplicativo de forma rápida e prática.",
+    icon: BookOpen,
     color: "text-purple-600 dark:text-purple-400",
     bgColor: "bg-purple-500/10",
   }
