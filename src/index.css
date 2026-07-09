@@ -575,3 +575,40 @@
     bottom: 24px !important;
   }
 }
+
+/* ── MODULE ICON FLOAT ANIMATION ── */
+@keyframes module-float {
+  0%   { transform: translateY(0px) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12)); }
+  50%  { transform: translateY(-6px) scale(1.02); filter: drop-shadow(0 12px 20px rgba(0,0,0,0.18)); }
+  100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12)); }
+}
+
+@keyframes module-tap {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.88); }
+  65%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.animate-module-float {
+  animation: module-float 3s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Staggered delays so each icon floats at a different phase */
+.animate-module-float-0 { animation: module-float 3.2s ease-in-out 0.0s infinite; will-change: transform; }
+.animate-module-float-1 { animation: module-float 3.4s ease-in-out 0.3s infinite; will-change: transform; }
+.animate-module-float-2 { animation: module-float 3.0s ease-in-out 0.6s infinite; will-change: transform; }
+.animate-module-float-3 { animation: module-float 3.6s ease-in-out 0.2s infinite; will-change: transform; }
+.animate-module-float-4 { animation: module-float 3.2s ease-in-out 0.5s infinite; will-change: transform; }
+.animate-module-float-5 { animation: module-float 3.4s ease-in-out 0.8s infinite; will-change: transform; }
+
+/* Click / tap ripple burst */
+.module-icon-btn {
+  position: relative;
+  overflow: visible;
+}
+.module-icon-btn:active {
+  animation: module-tap 0.35s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+

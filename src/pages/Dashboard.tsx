@@ -991,7 +991,7 @@ export default function Dashboard() {
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     <button
                       onClick={item.onClick}
-                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-blue-400 hover:shadow-lg hover:shadow-blue-400/20 hover:scale-[1.03] focus:outline-none"
+                      className={`module-icon-btn animate-module-float-${index % 6} relative aspect-square w-full rounded-[20px] overflow-hidden shadow-md border-2 border-white hover:border-blue-400 hover:shadow-xl hover:shadow-blue-400/30 focus:outline-none transition-[border-color,box-shadow] duration-300`}
                     >
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                       {/* Overlay indicando que precisa de turma */}
@@ -1032,7 +1032,7 @@ export default function Dashboard() {
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     <button
                       onClick={item.onClick}
-                      className="relative aspect-square w-full rounded-[20px] overflow-hidden active:scale-95 transition-all duration-300 shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-400/20 hover:scale-[1.03] focus:outline-none focus:border-white"
+                      className={`module-icon-btn animate-module-float-${index % 6} relative aspect-square w-full rounded-[20px] overflow-hidden shadow-md border-2 border-white hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-400/30 focus:outline-none transition-[border-color,box-shadow] duration-300`}
                     >
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                       
