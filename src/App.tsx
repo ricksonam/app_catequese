@@ -37,6 +37,7 @@ const lazyWithRetry = (componentImport: () => Promise<any>) => {
   });
 };
 
+const OnboardingPage          = lazyWithRetry(() => import("@/pages/OnboardingPage"));
 const ResetPasswordPage       = lazyWithRetry(() => import("@/pages/ResetPasswordPage"));
 const Dashboard               = lazyWithRetry(() => import("@/pages/Dashboard"));
 const TurmasList              = lazyWithRetry(() => import("@/pages/TurmasList"));
