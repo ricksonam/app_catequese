@@ -11,7 +11,7 @@ export default function PlaceholderPage() {
     "/cadastros/catequistas": "Catequistas",
     "/modulos/mural": "Mural de Fotos",
     "/modulos/biblia": "Bíblia",
-    "/modulos/material": "Material de Apoio",
+    "/modulos/loja": "Loja de Materiais",
     "/modulos/biblioteca": "Biblioteca de Encontros",
   };
 

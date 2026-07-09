@@ -14,6 +14,7 @@ import {
   ChevronRight,
   X,
   BookHeart,
+  ShoppingBag,
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { ApoieModal } from "./ApoieModal";
@@ -218,7 +219,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
                   { label: "Orações", path: "/modulos/oracoes", icon: PrayingHands, color: "bg-liturgical/15 text-liturgical" },
                   { label: "Mural de Fotos", path: "/modulos/mural", icon: Image, color: "bg-rose-500/15 text-rose-500" },
                   { label: "Bíblia Online", path: "/modulos/biblia", icon: Book, color: "bg-blue-500/15 text-blue-500" },
-                  { label: "Material de Apoio", path: "/modulos/material", icon: FileText, color: "bg-emerald-500/15 text-emerald-600" },
+                  { label: "Loja", path: "/modulos/loja", icon: ShoppingBag, color: "bg-blue-500/15 text-blue-600" },
                   { label: "Biblioteca de Encontros", path: "/modulos/biblioteca", icon: Library, color: "bg-violet-500/15 text-violet-600" },
                   { label: "Mapa IVC", path: "/mapa-panoramico", icon: Map, color: "bg-pink-500/15 text-pink-600" },
                 ].map((item, i) => {

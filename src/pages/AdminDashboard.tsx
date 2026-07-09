@@ -173,7 +173,7 @@ export default function AdminDashboard() {
   const [catalogMateriais, setCatalogMateriais] = useState<any[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogUploading, setCatalogUploading] = useState(false);
-  const [catalogForm, setCatalogForm] = useState({ titulo: "", descricao: "", categoria: "" });
+  const [catalogForm, setCatalogForm] = useState({ titulo: "", descricao: "", categoria: "", preco: 0, gratuito: false, destaque: false, tags: "" });
   const [catalogFile, setCatalogFile] = useState<File | null>(null);
 
   const [atendimentoSearch, setAtendimentoSearch] = useState("");
@@ -210,6 +210,10 @@ export default function AdminDashboard() {
         titulo: catalogForm.titulo.trim(),
         descricao: catalogForm.descricao.trim() || null,
         categoria: catalogForm.categoria.trim() || null,
+        preco: catalogForm.gratuito ? 0 : catalogForm.preco,
+        gratuito: catalogForm.gratuito,
+        destaque: catalogForm.destaque,
+        tags: catalogForm.tags ? catalogForm.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
         arquivo_url,
         arquivo_tipo: tipo,
         tamanho_bytes: catalogFile.size,
@@ -223,7 +227,7 @@ export default function AdminDashboard() {
       });
       if (dbErr) throw dbErr;
       toast.success("Material publicado com sucesso!");
-      setCatalogForm({ titulo: "", descricao: "", categoria: "" });
+      setCatalogForm({ titulo: "", descricao: "", categoria: "", preco: 0, gratuito: false, destaque: false, tags: "" });
       setCatalogFile(null);
       if (catalogFileRef.current) catalogFileRef.current.value = "";
       fetchCatalogMateriais();
@@ -1418,6 +1422,49 @@ export default function AdminDashboard() {
                       />
                     </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Preço (R$)</label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Ex: 19.90"
+                          value={catalogForm.preco}
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, preco: parseFloat(e.target.value) || 0 }))}
+                          disabled={catalogForm.gratuito}
+                          className="rounded-xl h-10 border-border/50"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tags</label>
+                        <Input
+                          placeholder="Ex: quaresma, infantil, jogos..."
+                          value={catalogForm.tags}
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, tags: e.target.value }))}
+                          className="rounded-xl h-10 border-border/50"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-4 p-3 bg-muted/30 rounded-xl border border-border/50">
+                      <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={catalogForm.gratuito} 
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, gratuito: e.target.checked }))} 
+                          className="w-4 h-4 rounded border-border"
+                        /> Gratuito
+                      </label>
+                      <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={catalogForm.destaque} 
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, destaque: e.target.checked }))} 
+                          className="w-4 h-4 rounded border-border text-amber-500"
+                        /> Destaque na Loja
+                      </label>
+                    </div>
+
                     {/* File Picker */}
                     <div
                       onClick={() => catalogFileRef.current?.click()}
@@ -1533,17 +1580,22 @@ export default function AdminDashboard() {
                               {mat.descricao && (
                                 <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{mat.descricao}</p>
                               )}
-                              <div className="flex items-center gap-3 mt-1">
-                                {mat.tamanho_bytes && (
-                                  <span className="text-[10px] text-muted-foreground/60">
-                                    {mat.tamanho_bytes > 1024*1024 ? `${(mat.tamanho_bytes/1024/1024).toFixed(1)} MB` : `${Math.round(mat.tamanho_bytes/1024)} KB`}
-                                  </span>
-                                )}
-                                {mat.publicado_em && (
-                                  <span className="text-[10px] text-muted-foreground/60">
-                                    {new Date(mat.publicado_em).toLocaleDateString("pt-BR")}
-                                  </span>
-                                )}
+                              <div className="flex items-center justify-between mt-1 pt-1 border-t border-border/40">
+                                <span className={cn("text-xs font-black", mat.gratuito || mat.preco === 0 ? "text-blue-600" : "text-primary")}>
+                                  {mat.gratuito || mat.preco === 0 ? "Grátis" : mat.preco?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                                </span>
+                                <div className="flex gap-2">
+                                  {mat.tamanho_bytes && (
+                                    <span className="text-[10px] text-muted-foreground/60">
+                                      {mat.tamanho_bytes > 1024*1024 ? `${(mat.tamanho_bytes/1024/1024).toFixed(1)} MB` : `${Math.round(mat.tamanho_bytes/1024)} KB`}
+                                    </span>
+                                  )}
+                                  {mat.publicado_em && (
+                                    <span className="text-[10px] text-muted-foreground/60">
+                                      {new Date(mat.publicado_em).toLocaleDateString("pt-BR")}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
 

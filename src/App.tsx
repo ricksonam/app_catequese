@@ -84,7 +84,9 @@ const PublicInscricao         = lazyWithRetry(() => import("@/pages/PublicInscri
 const MapaPanoramico          = lazyWithRetry(() => import("@/pages/MapaPanoramico"));
 const NotFound                = lazyWithRetry(() => import("@/pages/NotFound"));
 const LandingPage             = lazyWithRetry(() => import("@/pages/LandingPage"));
-const OnboardingPage          = lazyWithRetry(() => import("@/pages/OnboardingPage"));
+const PublicFormResponder     = lazyWithRetry(() => import("@/pages/PublicFormResponder"));
+const StoreCheckoutSuccess    = lazyWithRetry(() => import("@/pages/StoreCheckoutSuccess"));
+const StoreCheckoutPending    = lazyWithRetry(() => import("@/pages/StoreCheckoutPending"));
 
 // ===== FALLBACK DE LOADING =====
 function PageLoader() {
@@ -258,7 +260,11 @@ const AppRoutes = () => (
         <Route path="/modulos" element={<ModulosGlobais />} />
         <Route path="/modulos/mural" element={<MuralFotos />} />
         <Route path="/modulos/biblia" element={<BibliaPage />} />
-        <Route path="/modulos/material" element={<MaterialApoio />} />
+        <Route path="/modulos/loja" element={<MaterialApoio />} />
+        <Route path="/modulos/loja/sucesso" element={<StoreCheckoutSuccess />} />
+        <Route path="/modulos/loja/pendente" element={<StoreCheckoutPending />} />
+        <Route path="/modulos/material/sucesso" element={<StoreCheckoutSuccess />} />
+        <Route path="/modulos/material/pendente" element={<StoreCheckoutPending />} />
         <Route path="/modulos/biblioteca" element={<BibliotecaModelos />} />
         <Route path="/modulos/oracoes" element={<OracoesList />} />
         <Route path="/modulos/oracoes/:id" element={<OracaoView />} />

@@ -3,7 +3,7 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, HeadphonesIcon
+  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, HeadphonesIcon, ShoppingBag
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -45,7 +45,7 @@ const modulosGlobais = [
   { label: "Liturgia Diária", icon: BookOpen, path: "/modulos/liturgia", color: "bg-amber-500/10 text-amber-500" },
   { label: "Mural de Fotos", icon: Image, path: "/modulos/mural", color: "bg-success/10 text-success" },
   { label: "Bíblia", icon: BookOpen, path: "/modulos/biblia", color: "bg-primary/10 text-primary" },
-  { label: "Material de Apoio", icon: FileText, path: "/modulos/material", color: "bg-liturgical/10 text-liturgical" },
+  { label: "Loja", icon: ShoppingBag, path: "/modulos/loja", color: "bg-blue-500/15 text-blue-600" },
   { label: "Biblioteca de Encontros", icon: Library, path: "/modulos/biblioteca", color: "bg-success/10 text-success" },
   { label: "Orações", icon: PrayingHands, path: "/modulos/oracoes", color: "bg-liturgical/10 text-liturgical" },
   { label: "Mapa Panorâmico IVC", icon: Map, path: "/mapa-panoramico", color: "bg-rose-500/10 text-rose-500" },

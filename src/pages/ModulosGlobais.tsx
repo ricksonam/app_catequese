@@ -1,4 +1,4 @@
-import { Image, BookOpen, FileText, Library, Dices, CalendarDays, Heart } from "lucide-react";
+import { Image, BookOpen, FileText, Library, Dices, CalendarDays, Heart, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const modulos = [
@@ -7,7 +7,7 @@ const modulos = [
   { label: "Jogos", desc: "Sorteios, quiz e jogos bíblicos", icon: Dices, color: "bg-gold/15 text-gold", path: "/jogos" },
   { label: "Mural de Fotos", desc: "Compartilhe momentos da catequese", icon: Image, color: "bg-primary/10 text-primary", path: "/modulos/mural" },
   { label: "Bíblia", desc: "Consulte passagens bíblicas", icon: BookOpen, color: "bg-primary/10 text-primary", path: "/modulos/biblia" },
-  { label: "Material de Apoio", desc: "Recursos e documentos", icon: FileText, color: "bg-liturgical/10 text-liturgical", path: "/modulos/material" },
+  { label: "Loja", desc: "Materiais e recursos premium", icon: ShoppingBag, color: "bg-blue-500/10 text-blue-600", path: "/modulos/loja" },
   { label: "Biblioteca de Encontros", desc: "Modelos de encontros prontos", icon: Library, color: "bg-success/10 text-success", path: "/modulos/biblioteca" },
   { label: "Orações", desc: "Devocionário católico completo", icon: Heart, color: "bg-liturgical/10 text-liturgical", path: "/modulos/oracoes" },
 ];
