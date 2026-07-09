@@ -97,12 +97,12 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               <button
                 onClick={() => setApoieOpen(true)}
                 id="btn-apoie"
-                className="group relative flex items-center gap-1 pl-2 pr-2.5 py-1.5 rounded-full bg-gradient-to-br from-rose-500 via-pink-500 to-fuchsia-600 text-white hover:from-rose-600 hover:to-fuchsia-700 active:scale-95 transition-all shadow-sm shadow-rose-500/30 border border-rose-400/80 overflow-hidden"
+                className="group relative flex items-center gap-1 pl-2 pr-2.5 py-1.5 rounded-full bg-white text-red-600 hover:bg-red-50 active:scale-95 transition-all shadow-sm shadow-red-500/20 border-2 border-red-500 overflow-hidden"
               >
                 {/* Shimmer ao hover */}
-                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
+                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-red-500/10 to-transparent pointer-events-none" />
                 {/* Pulso sutil de fundo */}
-                <span className="absolute inset-0 rounded-full animate-ping bg-rose-500/20 pointer-events-none" style={{ animationDuration: '3.5s' }} />
+                <span className="absolute inset-0 rounded-full animate-ping bg-red-500/20 pointer-events-none" style={{ animationDuration: '3.5s' }} />
                 {/* Coração com heartbeat */}
                 <span className="relative z-10 text-sm leading-none" style={{ animation: 'heartbeat 1.4s ease-in-out infinite' }}>❤️</span>
                 <span className="text-[10px] font-black tracking-wide relative z-10 hidden xs:inline">Apoie</span>
