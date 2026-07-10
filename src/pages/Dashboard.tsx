@@ -732,15 +732,15 @@ export default function Dashboard() {
               {/* Chip Loja */}
               <button
                 onClick={() => navigate("/modulos/loja")}
-                className="group relative flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700 active:scale-95 transition-all shadow-md border border-violet-400/80 overflow-hidden"
+                className="group relative flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white hover:from-amber-500 hover:to-amber-700 active:scale-95 transition-all shadow-md border border-amber-300/80 overflow-hidden"
               >
                 <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                <ShoppingCart className="h-4 w-4 text-white shrink-0 relative z-10" />
-                <span className="text-xs font-black tracking-wide relative z-10">Loja</span>
+                <ShoppingCart className="h-4 w-4 text-white shrink-0 relative z-10 drop-shadow-sm" />
+                <span className="text-xs font-black tracking-wide relative z-10 drop-shadow-sm">Loja</span>
                 {showMaterialBanner && (
                   <span className="absolute top-0 right-0 flex h-3 w-3 z-20 translate-x-1 -translate-y-1">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-purple-600"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-amber-600"></span>
                   </span>
                 )}
               </button>
