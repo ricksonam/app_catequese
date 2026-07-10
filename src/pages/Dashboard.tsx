@@ -1059,8 +1059,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* ── CARD CENTRAL DE RELATÓRIOS (abaixo dos módulos gerais) ── */}
-          <div className="pb-6 px-4">
+          {/* ── CARD CENTRAL DE RELATÓRIOS PREMIUM ── */}
+          <div className="pb-6 px-4 relative z-10">
             <button
               onClick={() => {
                 const activeTurma = localStorage.getItem("ivc_selected_turma");
@@ -1075,18 +1075,39 @@ export default function Dashboard() {
                   toast.info("Crie uma turma para acessar os relatórios.");
                 }
               }}
-              className="w-full group flex items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 transition-all border-2 border-violet-500/40 dark:border-violet-400/20 shadow-md hover:shadow-lg hover:border-violet-500 active:scale-[0.98] text-left"
+              className="w-full relative group rounded-[28px] p-[2px] transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] text-left overflow-hidden shadow-xl shadow-violet-500/20"
             >
-              <div className="w-12 h-12 rounded-xl bg-violet-500/15 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                <BarChart2 className="h-6 w-6" />
+              {/* Borda Gradiente Animada */}
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-600 opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              {/* Efeito de brilho giratório */}
+              <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,transparent_60deg,rgba(255,255,255,0.8)_120deg,transparent_180deg)] group-hover:animate-spin-slow opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+              {/* Fundo interno Glassmorphism */}
+              <div className="relative h-full w-full bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl rounded-[26px] p-5 flex items-center gap-4 overflow-hidden border border-white/50 dark:border-white/10">
+                
+                {/* Ícone flutuante Premium */}
+                <div className="relative shrink-0 w-14 h-14 rounded-[18px] bg-gradient-to-br from-violet-500 to-fuchsia-600 p-[1px] shadow-lg shadow-violet-500/30 group-hover:shadow-violet-500/50 transition-all duration-300">
+                  <div className="w-full h-full rounded-[17px] bg-white/10 dark:bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-105 group-hover:rotate-6 transition-transform duration-500">
+                    <BarChart2 className="h-7 w-7 text-white drop-shadow-md" />
+                  </div>
+                </div>
+
+                {/* Conteúdo textual */}
+                <div className="flex-1 min-w-0 z-10">
+                  <span className="block text-[13px] font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400 uppercase tracking-[0.15em] mb-1">
+                    Central de Relatórios
+                  </span>
+                  <span className="block text-[11px] text-muted-foreground font-bold truncate group-hover:text-foreground transition-colors duration-300">
+                    {selectedTurmaId !== 'all' && selectedTurma ? `Desempenho: ${selectedTurma.nome}` : "Selecione uma turma para ver métricas"}
+                  </span>
+                </div>
+
+                {/* Seta indicativa */}
+                <div className="shrink-0 w-8 h-8 rounded-full bg-violet-50 dark:bg-violet-500/10 flex items-center justify-center group-hover:bg-violet-100 dark:group-hover:bg-violet-500/20 transition-colors duration-300">
+                  <ChevronRight className="h-5 w-5 text-violet-600 dark:text-violet-400 group-hover:translate-x-0.5 transition-transform duration-300" />
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <span className="block text-xs font-black text-foreground uppercase tracking-wider">Central de Relatórios</span>
-                <span className="block text-[10px] text-muted-foreground font-bold mt-0.5 truncate">
-                  {selectedTurmaId !== 'all' && selectedTurma ? `Turma: ${selectedTurma.nome}` : "Selecione uma turma para ver relatórios"}
-                </span>
-              </div>
-              <ChevronRight className="h-5 w-5 text-violet-400 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
             </button>
           </div>
         </div>
