@@ -31,6 +31,7 @@ interface Produto {
   destaque: boolean;
   tags: string[] | null;
   gallery_urls?: string[] | null;
+  paginas?: number | null;
 }
 
 interface CartItem {
@@ -516,7 +517,7 @@ function CartDrawer({
         </div>
 
         {cart.length > 0 && (
-          <div className="p-4 border-t border-border/50 space-y-3">
+          <div className="p-4 pb-24 sm:pb-4 border-t border-border/50 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-muted-foreground">Total</span>
               <span className="text-xl font-black text-foreground">{formatPrice(total)}</span>
@@ -524,19 +525,100 @@ function CartDrawer({
             <button
               onClick={onCheckout}
               disabled={checkingOut}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-black text-sm uppercase tracking-wider active:scale-[0.98] transition-all shadow-lg shadow-primary/30 disabled:opacity-70"
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm uppercase tracking-wider active:scale-[0.98] transition-all shadow-lg shadow-primary/30 disabled:opacity-70 hover:bg-primary/90"
             >
               {checkingOut ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Aguarde...</>
               ) : (
-                <><CreditCard className="w-4 h-4" /> Pagar via Mercado Pago</>
+                <>Finalizar compra</>
               )}
             </button>
-            <p className="text-[10px] text-muted-foreground text-center">🔒 Pagamento 100% seguro via Mercado Pago</p>
+            <button
+              onClick={onClose}
+              className="w-full flex items-center justify-center py-2.5 rounded-xl bg-muted text-muted-foreground font-bold text-xs hover:bg-muted/80 transition-colors"
+            >
+              Adicionar mais produtos
+            </button>
+            <p className="text-[10px] text-muted-foreground text-center">🔒 Ambiente 100% seguro</p>
           </div>
         )}
       </div>
     </>
+  );
+}
+
+function CheckoutConfirmModal({
+  open, cart, userName, total, onClose, onConfirm, checkingOut
+}: {
+  open: boolean; cart: CartItem[]; userName: string; total: number; onClose: () => void; onConfirm: () => void; checkingOut: boolean;
+}) {
+  if (!open) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-zinc-900 rounded-[28px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col border border-border/50 animate-in zoom-in-95 duration-200">
+        <div className="p-6 border-b border-border/50 flex justify-between items-center bg-slate-50/50">
+          <div>
+            <h3 className="text-xl font-black text-foreground">Confira seu pedido</h3>
+            <p className="text-sm text-muted-foreground mt-1">Quase lá! Revise os itens abaixo.</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Comprador</p>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{userName || "Cliente"}</p>
+                <p className="text-xs text-muted-foreground">O acesso será liberado para esta conta.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Resumo ({cart.length} itens)</p>
+            <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
+              {cart.map(item => (
+                <div key={item.produto.id} className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <span className="font-bold text-primary">{item.quantidade}x</span>
+                    <span className="truncate text-foreground/80">{item.produto.titulo}</span>
+                  </div>
+                  <span className="font-bold shrink-0">{formatPrice(item.produto.preco * item.quantidade)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between items-center pt-3 border-t border-border/50">
+              <span className="font-bold text-foreground">Total a pagar:</span>
+              <span className="text-xl font-black text-primary">{formatPrice(total)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 bg-slate-50/50 border-t border-border/50 space-y-3">
+          <button
+            onClick={onConfirm}
+            disabled={checkingOut}
+            className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-[#009EE3] hover:bg-[#008ACA] text-white font-black text-sm uppercase tracking-wider transition-all shadow-lg shadow-blue-500/20 disabled:opacity-70"
+          >
+            {checkingOut ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Processando...</>
+            ) : (
+              <><CreditCard className="w-5 h-5" /> Pagar com Mercado Pago</>
+            )}
+          </button>
+          <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1">
+            <Lock className="w-3 h-3" /> Transação 100% segura
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -557,6 +639,20 @@ export default function MaterialApoio() {
   const [purchasedIds, setPurchasedIds] = useState<Set<string>>(new Set());
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [galleryProduto, setGalleryProduto] = useState<Produto | null>(null);
+  const [userName, setUserName] = useState<string>("");
+  const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
+
+  // Fetch user name
+  useEffect(() => {
+    if (!user) return;
+    const fetchProfile = async () => {
+      const { data } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
+      if (data) {
+        setUserName(data.nome || user.email || "Cliente");
+      }
+    };
+    fetchProfile();
+  }, [user]);
 
   // Mock products for display when DB is empty
   const MOCK_PRODUCTS: Produto[] = [
@@ -1007,7 +1103,17 @@ export default function MaterialApoio() {
         onClose={() => setCartOpen(false)}
         onRemove={removeFromCart}
         onChangeQty={changeQty}
-        onCheckout={handleCheckout}
+        onCheckout={() => setShowCheckoutConfirm(true)}
+        checkingOut={checkingOut}
+      />
+      
+      <CheckoutConfirmModal
+        open={showCheckoutConfirm}
+        cart={cart}
+        userName={userName}
+        total={cart.reduce((s, i) => s + i.produto.preco * i.quantidade, 0)}
+        onClose={() => setShowCheckoutConfirm(false)}
+        onConfirm={handleCheckout}
         checkingOut={checkingOut}
       />
     </>

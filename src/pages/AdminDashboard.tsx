@@ -173,11 +173,13 @@ export default function AdminDashboard() {
   const [catalogMateriais, setCatalogMateriais] = useState<any[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogUploading, setCatalogUploading] = useState(false);
-  const [catalogForm, setCatalogForm] = useState({ titulo: "", descricao: "", categoria: "", preco: 0, gratuito: false, destaque: false, tags: "" });
+  const [catalogForm, setCatalogForm] = useState<{ titulo: string; descricao: string; categoria: string; preco: number; gratuito: boolean; destaque: boolean; tags: string; paginas: number | "" }>({ titulo: "", descricao: "", categoria: "", preco: 0, gratuito: false, destaque: false, tags: "", paginas: "" });
   const [catalogFile, setCatalogFile] = useState<File | null>(null);
+  const [catalogGalleryFiles, setCatalogGalleryFiles] = useState<File[]>([]);
 
   const [atendimentoSearch, setAtendimentoSearch] = useState("");
   const catalogFileRef = useRef<HTMLInputElement>(null);
+  const catalogGalleryInputRef = useRef<HTMLInputElement>(null);
 
   const fetchCatalogMateriais = async () => {
     setCatalogLoading(true);
@@ -194,7 +196,7 @@ export default function AdminDashboard() {
 
   const handleCatalogUpload = async () => {
     if (!catalogForm.titulo.trim()) { toast.error("Informe o nome do material."); return; }
-    if (!catalogFile) { toast.error("Selecione um arquivo PDF ou imagem."); return; }
+    if (!catalogFile) { toast.error("Selecione um arquivo principal (PDF ou imagem)."); return; }
     setCatalogUploading(true);
     try {
       const ext = catalogFile.name.split(".").pop()?.toLowerCase() || "pdf";
@@ -211,6 +213,23 @@ export default function AdminDashboard() {
       if (upErr) throw upErr;
       const { data: urlData } = supabase.storage.from("materiais-apoio").getPublicUrl(fileName);
       const arquivo_url = urlData.publicUrl;
+
+      let gallery_urls: string[] = [];
+      if (catalogGalleryFiles.length > 0) {
+        for (let i = 0; i < catalogGalleryFiles.length; i++) {
+          const gFile = catalogGalleryFiles[i];
+          const gSanitized = gFile.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9.\-]/g, "_").replace(/_+/g, "_");
+          const gFileName = `gallery_${Date.now()}_${i}_${gSanitized}`;
+          const { error: gErr } = await supabase.storage
+            .from("materiais-apoio")
+            .upload(gFileName, gFile, { contentType: gFile.type, upsert: false });
+          if (!gErr) {
+            const { data: gUrl } = supabase.storage.from("materiais-apoio").getPublicUrl(gFileName);
+            gallery_urls.push(gUrl.publicUrl);
+          }
+        }
+      }
+
       const { error: dbErr } = await supabase.from("material_apoio").insert({
         titulo: catalogForm.titulo.trim(),
         descricao: catalogForm.descricao.trim() || null,
@@ -219,6 +238,8 @@ export default function AdminDashboard() {
         gratuito: catalogForm.gratuito,
         destaque: catalogForm.destaque,
         tags: catalogForm.tags ? catalogForm.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+        paginas: catalogForm.paginas === "" ? null : Number(catalogForm.paginas),
+        gallery_urls: gallery_urls.length > 0 ? gallery_urls : null,
         arquivo_url,
         arquivo_tipo: tipo,
         tamanho_bytes: catalogFile.size,
@@ -232,9 +253,11 @@ export default function AdminDashboard() {
       });
       if (dbErr) throw dbErr;
       toast.success("Material publicado com sucesso!");
-      setCatalogForm({ titulo: "", descricao: "", categoria: "", preco: 0, gratuito: false, destaque: false, tags: "" });
+      setCatalogForm({ titulo: "", descricao: "", categoria: "", preco: 0, gratuito: false, destaque: false, tags: "", paginas: "" });
       setCatalogFile(null);
+      setCatalogGalleryFiles([]);
       if (catalogFileRef.current) catalogFileRef.current.value = "";
+      if (catalogGalleryInputRef.current) catalogGalleryInputRef.current.value = "";
       fetchCatalogMateriais();
     } catch (err: any) {
       toast.error(err.message || "Erro ao fazer upload.");
@@ -595,7 +618,7 @@ export default function AdminDashboard() {
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 ml-2">Navegação</p>
             <TabButton active={activeTab === "users"} onClick={() => setActiveTab("users")} icon={Users} label="Usuários" />
             <TabButton active={activeTab === "subscriptions"} onClick={() => setActiveTab("subscriptions")} icon={Crown} label="Assinaturas" />
-            <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Catálogo" />
+            <TabButton active={activeTab === "catalog"} onClick={() => { setActiveTab("catalog"); fetchCatalogMateriais(); }} icon={BookOpen} label="Loja" />
             <TabButton active={activeTab === "safety"} onClick={() => setActiveTab("safety")} icon={ShieldAlert} label="Segurança" />
             <TabButton active={activeTab === "lixeira"} onClick={() => setActiveTab("lixeira")} icon={Trash2} label="Lixeira" />
             <TabButton active={activeTab === "churn"} onClick={() => setActiveTab("churn")} icon={UserX} label="Deserção" />
@@ -1378,7 +1401,7 @@ export default function AdminDashboard() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-xl font-bold text-foreground">Catálogo de Materiais</h2>
+                    <h2 className="text-xl font-bold text-foreground">Loja de Materiais</h2>
                     <p className="text-sm text-muted-foreground">Publique PDFs e imagens para os usuários</p>
                   </div>
                 </div>
@@ -1449,6 +1472,16 @@ export default function AdminDashboard() {
                           className="rounded-xl h-10 border-border/50"
                         />
                       </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Páginas (opcional)</label>
+                        <Input
+                          type="number"
+                          placeholder="Ex: 45"
+                          value={catalogForm.paginas}
+                          onChange={(e) => setCatalogForm(prev => ({ ...prev, paginas: e.target.value === "" ? "" : Number(e.target.value) }))}
+                          className="rounded-xl h-10 border-border/50"
+                        />
+                      </div>
                     </div>
                     
                     <div className="flex gap-4 p-3 bg-muted/30 rounded-xl border border-border/50">
@@ -1509,6 +1542,47 @@ export default function AdminDashboard() {
                           </div>
                           <p className="text-sm font-bold text-foreground">Clique para selecionar o arquivo</p>
                           <p className="text-xs text-muted-foreground">PDF, JPG, PNG, WEBP ou GIF</p>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Multiple Gallery Images Picker */}
+                    <div
+                      onClick={() => catalogGalleryInputRef.current?.click()}
+                      className="relative border-2 border-dashed border-border/50 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-primary/3 transition-all group"
+                    >
+                      <input
+                        ref={catalogGalleryInputRef}
+                        type="file"
+                        multiple
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        className="hidden"
+                        onChange={(e) => setCatalogGalleryFiles(Array.from(e.target.files || []))}
+                      />
+                      {catalogGalleryFiles.length > 0 ? (
+                        <>
+                          <div className="flex flex-wrap gap-2 justify-center">
+                            {catalogGalleryFiles.map((file, i) => (
+                              <div key={i} className="flex items-center gap-2 bg-muted p-2 rounded-xl">
+                                <Image className="h-5 w-5 text-violet-500 shrink-0" />
+                                <span className="text-xs font-bold truncate max-w-[100px]">{file.name}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setCatalogGalleryFiles([]); if (catalogGalleryInputRef.current) catalogGalleryInputRef.current.value = ""; }}
+                            className="text-[10px] font-bold text-destructive hover:text-destructive/80 flex items-center gap-1 mt-2"
+                          >
+                            <X className="h-3 w-3" /> Limpar galeria
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-12 h-12 rounded-2xl bg-violet-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Image className="h-6 w-6 text-violet-500" />
+                          </div>
+                          <p className="text-sm font-bold text-foreground">Imagens de Galeria / Demonstração (Opcional)</p>
+                          <p className="text-xs text-muted-foreground">Adicione múltiplas imagens do produto</p>
                         </>
                       )}
                     </div>
