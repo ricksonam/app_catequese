@@ -582,7 +582,7 @@
 .module-frame-wrapper {
   padding: 3px;
   border-radius: 26px;
-  background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.6));
+  background: linear-gradient(145deg, #a855f7, #6b21a8);
   box-shadow:
     0 2px 0 rgba(255,255,255,0.9),          /* highlight top */
     0 8px 16px rgba(0,0,0,0.18),            /* sombra principal */
@@ -612,7 +612,7 @@
 }
 
 .dark .module-frame-wrapper {
-  background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  background: linear-gradient(145deg, #9333ea, #4c1d95);
   box-shadow:
     0 2px 0 rgba(255,255,255,0.08),
     0 8px 16px rgba(0,0,0,0.45),
