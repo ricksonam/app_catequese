@@ -457,13 +457,13 @@ function CartDrawer({
     <>
       {open && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] animate-in fade-in duration-200"
           onClick={onClose}
         />
       )}
       <div
         className={cn(
-          "fixed right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-zinc-900 z-50 shadow-2xl flex flex-col transition-transform duration-300",
+          "fixed right-0 top-0 h-full w-full max-w-sm bg-white dark:bg-zinc-900 z-[110] shadow-2xl flex flex-col transition-transform duration-300",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -517,7 +517,7 @@ function CartDrawer({
         </div>
 
         {cart.length > 0 && (
-          <div className="p-4 pb-24 sm:pb-4 border-t border-border/50 space-y-3">
+          <div className="p-4 pb-8 sm:pb-4 border-t border-border/50 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-muted-foreground">Total</span>
               <span className="text-xl font-black text-foreground">{formatPrice(total)}</span>
