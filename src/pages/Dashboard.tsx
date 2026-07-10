@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { upsertCatequista } from "@/lib/supabaseStore";
@@ -729,22 +729,20 @@ export default function Dashboard() {
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              {/* Chip Agenda */}
+              {/* Chip Loja */}
               <button
-                onClick={() => {
-                  if (location.pathname === "/modulos/calendario") {
-                    navigate("/");
-                  } else {
-                    navigate("/modulos/calendario");
-                  }
-                }}
-                id="btn-agenda-dashboard"
-                className="group relative flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white hover:from-emerald-600 hover:to-teal-700 active:scale-95 transition-all shadow-md border border-emerald-400/80 overflow-hidden"
+                onClick={() => navigate("/modulos/loja")}
+                className="group relative flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700 active:scale-95 transition-all shadow-md border border-violet-400/80 overflow-hidden"
               >
-                {/* shimmer */}
                 <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                <CalendarDays className="h-4 w-4 text-white shrink-0 relative z-10" />
-                <span className="text-xs font-black tracking-wide relative z-10">Agenda</span>
+                <ShoppingCart className="h-4 w-4 text-white shrink-0 relative z-10" />
+                <span className="text-xs font-black tracking-wide relative z-10">Loja</span>
+                {showMaterialBanner && (
+                  <span className="absolute top-0 right-0 flex h-3 w-3 z-20 translate-x-1 -translate-y-1">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-purple-600"></span>
+                  </span>
+                )}
               </button>
 
               {/* Ícone de mensagens */}
