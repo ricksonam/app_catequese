@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 import { toast } from "sonner";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useParoquias, useComunidades, useReunioes } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line } from "recharts";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, Legend } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
 
@@ -106,7 +106,7 @@ export default function RelatoriosTurma() {
       </div>
 
       {tab === "inteligente" ? (
-        <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} turma={turma} diarios={diarios} />
+        <DashboardInteligente encontros={encontros} catequizandos={catequizandos} atividades={atividades} reunioes={reunioes} turma={turma} diarios={diarios} />
       ) : (
           <GeradorDocumentos encontros={encontros} catequizandos={catequizandos} atividades={atividades} reunioes={reunioes} turma={turma} org={orgNomes} />
       )}
@@ -119,7 +119,7 @@ export default function RelatoriosTurma() {
 // ==========================================
 // TAB 1: VISÃO INTELIGENTE (RECHARTS)
 // ==========================================
-function DashboardInteligente({ encontros, catequizandos, atividades, turma, diarios }: any) {
+function DashboardInteligente({ encontros, catequizandos, atividades, reunioes, turma, diarios }: any) {
   // --- Cálculos ---
   const statusData = useMemo(() => {
     let ativos = 0, desistentes = 0, afastados = 0;
@@ -177,6 +177,30 @@ function DashboardInteligente({ encontros, catequizandos, atividades, turma, dia
 
   const encontrosRealizados = encontros.filter((e:any) => e.status === 'realizado').length;
   const planoCompleto = encontros.length > 0 ? Math.round((encontrosRealizados / encontros.length) * 100) : 0;
+
+  const participacaoEventos = useMemo(() => {
+    const eventosRealizados = atividades.filter((a: any) => a.status === 'realizado');
+    if (eventosRealizados.length === 0) return 0;
+    const totalAlunos = catequizandos.filter((c: any) => c.status === 'ativo').length || 1;
+    let somaTaxas = 0;
+    eventosRealizados.forEach((ev: any) => {
+      const pres = ev.presencas?.length || 0;
+      somaTaxas += (pres / totalAlunos);
+    });
+    return Math.round((somaTaxas / eventosRealizados.length) * 100);
+  }, [atividades, catequizandos]);
+
+  const participacaoReunioes = useMemo(() => {
+    const reunioesRealizadas = reunioes.filter((r: any) => r.status === 'realizado');
+    if (reunioesRealizadas.length === 0) return 0;
+    const totalAlunos = catequizandos.filter((c: any) => c.status === 'ativo').length || 1;
+    let somaTaxas = 0;
+    reunioesRealizadas.forEach((r: any) => {
+      const pres = r.presencas?.length || 0;
+      somaTaxas += (pres / totalAlunos);
+    });
+    return Math.round((somaTaxas / reunioesRealizadas.length) * 100);
+  }, [reunioes, catequizandos]);
 
   // --- Cálculos Caminhada Pastoral (Estrelas) ---
   const pastoralStats = useMemo(() => {
@@ -240,23 +264,33 @@ function DashboardInteligente({ encontros, catequizandos, atividades, turma, dia
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="float-card p-4 space-y-1 border-b-4 border-b-primary/50">
           <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Matriculados</p>
           <div className="text-2xl font-black">{catequizandos.length}</div>
           <p className="text-xs text-muted-foreground">{statusData[0].value} Ativos</p>
         </div>
         <div className="float-card p-4 space-y-1 border-b-4 border-b-success/50">
-          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Encontros Feitos</p>
+          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Encontros</p>
           <div className="text-2xl font-black">{encontrosRealizados}</div>
           <p className="text-xs text-muted-foreground">de {encontros.length} planejados</p>
         </div>
         <div className="float-card p-4 space-y-1 border-b-4 border-b-blue-500/50">
-          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Média de Presença</p>
+          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Média Encontros</p>
           <div className="text-2xl font-black">
             {frequenciaData.length > 0 ? Math.round(frequenciaData.reduce((acc: number, curr: any) => acc + curr.taxa, 0) / frequenciaData.length) : 0}%
           </div>
-          <p className="text-xs text-muted-foreground">Histórico recente</p>
+          <p className="text-xs text-muted-foreground">Presença histórica</p>
+        </div>
+        <div className="float-card p-4 space-y-1 border-b-4 border-b-fuchsia-500/50">
+          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Eventos</p>
+          <div className="text-2xl font-black">{participacaoEventos}%</div>
+          <p className="text-xs text-muted-foreground">Participação média</p>
+        </div>
+        <div className="float-card p-4 space-y-1 border-b-4 border-b-orange-500/50">
+          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Reuniões (Pais)</p>
+          <div className="text-2xl font-black">{participacaoReunioes}%</div>
+          <p className="text-xs text-muted-foreground">Presença média</p>
         </div>
         <div className="float-card p-4 space-y-1 border-b-4 border-b-accent/50">
           <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Progresso do Ano</p>
@@ -348,10 +382,11 @@ function DashboardInteligente({ encontros, catequizandos, atividades, turma, dia
             {catequizandos.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={sacramentosData} cx="50%" cy="50%" outerRadius={100} label={({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)`} labelLine={false} dataKey="value">
+                  <Pie data={sacramentosData} cx="50%" cy="45%" innerRadius={40} outerRadius={80} paddingAngle={5} dataKey="value">
                     {sacramentosData.map((entry, index) => <Cell key={`cell-${index}`} fill={S_COLORS[index % S_COLORS.length]} />)}
                   </Pie>
-                  <RechartsTooltip />
+                  <RechartsTooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }} />
+                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : <NoData />}
