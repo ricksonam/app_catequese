@@ -610,7 +610,7 @@ function CheckoutConfirmModal({
             {checkingOut ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> Processando...</>
             ) : (
-              <><CreditCard className="w-5 h-5" /> Pagar com Mercado Pago</>
+              <><CreditCard className="w-5 h-5" /> Fazer pagamento</>
             )}
           </button>
           <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1">
