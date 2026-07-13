@@ -704,15 +704,30 @@ export default function PainelIVC() {
               {modeloInfo.emoji}
             </div>
             <div className="flex-1">
-              <div className="inline-block px-2.5 py-1 bg-muted/80 rounded-md mb-1.5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Turma: {turma.nome}</p>
-              </div>
-              <h2 className="font-black text-xl leading-tight text-foreground">{modeloInfo.label}</h2>
-              <p className="text-xs text-muted-foreground mt-0.5 font-medium">Modelo de processo de catequese atual</p>
+              <h2 className="font-black text-2xl leading-tight text-foreground">{turma.nome}</h2>
+              {turma.ano && (
+                <p className="text-sm font-bold text-muted-foreground mt-0.5">{turma.ano}</p>
+              )}
             </div>
           </div>
 
           <div className="h-px bg-border/50 w-full" />
+
+          {/* Current Stage Indicator */}
+          {etapas[posicaoAtual] && (
+            <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white dark:bg-card shadow-sm border border-border/50 flex items-center justify-center text-2xl shrink-0">
+                {etapas[posicaoAtual].emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-0.5">Posição Atual da Turma</p>
+                <p className="font-black text-sm text-foreground truncate">{etapas[posicaoAtual].label}</p>
+                {etapas[posicaoAtual].sublabel && (
+                  <p className="text-xs font-medium text-muted-foreground truncate mt-0.5">{etapas[posicaoAtual].sublabel}</p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Progress Section */}
           <div className="space-y-3">
