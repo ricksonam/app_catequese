@@ -1,11 +1,10 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTurmas, useCatequizandos, useEncontros, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { useState, useMemo, useCallback } from "react";
-import {
-  ArrowLeft, Share2, AlertTriangle, CheckCircle2, Clock, Users,
-  BookOpen, Heart, Flame, Send, MapPin, Calendar, ChevronRight,
-  TrendingUp, Star, Flag, AlertCircle, Info, RefreshCw,
-  BookHeart, Cross, Sparkles, Award, Gift, Compass, Zap, Eye
+import { 
+  ArrowLeft, Share2, AlertTriangle, CheckCircle2, Calendar, ChevronRight, 
+  BookOpen, Users, TrendingUp, MapPin, Gift, Sparkles,
+  Route, ListTodo, LineChart, RefreshCw
 } from "lucide-react";
 import { cn, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
@@ -270,7 +269,7 @@ function RiscoBadge({ nivel, mensagem }: { nivel: RiscoNivel; mensagem: string }
   const cfg = {
     em_dia: { dot: 'bg-emerald-400', bg: 'bg-emerald-500/10 border-emerald-400/30', text: 'text-emerald-600', icon: CheckCircle2 },
     atencao: { dot: 'bg-amber-400 animate-pulse', bg: 'bg-amber-500/10 border-amber-400/30', text: 'text-amber-600', icon: AlertTriangle },
-    atrasado: { dot: 'bg-red-500 animate-pulse', bg: 'bg-red-500/10 border-red-400/30', text: 'text-red-600', icon: AlertCircle },
+    atrasado: { dot: 'bg-red-500 animate-pulse', bg: 'bg-red-500/10 border-red-400/30', text: 'text-red-600', icon: AlertTriangle },
   }[nivel];
 
   const Icon = cfg.icon;
@@ -776,24 +775,24 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── TAB NAVIGATION ─── */}
-      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-1">
+      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-1 overflow-x-auto hide-scrollbar">
         {([
-          { id: 'mapa',         label: 'Mapa IVC',     icon: Compass },
-          { id: 'pendencias',   label: 'Pendências',   icon: AlertCircle },
-          { id: 'estatisticas', label: 'Estatísticas', icon: TrendingUp },
+          { id: 'mapa',         label: 'Posição Atual', icon: Route },
+          { id: 'pendencias',   label: 'O Que Falta',   icon: ListTodo },
+          { id: 'estatisticas', label: 'Estatísticas',  icon: LineChart },
         ] as const).map(aba => (
           <button
             key={aba.id}
             onClick={() => setAbaAtiva(aba.id)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+              "flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all min-w-[110px]",
               abaAtiva === aba.id
                 ? "bg-white dark:bg-card shadow-md text-foreground border border-border/50"
                 : "text-muted-foreground hover:bg-white/50 dark:hover:bg-card/50 hover:text-foreground"
             )}
           >
-            <aba.icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{aba.label}</span>
+            <aba.icon className="w-4 h-4 shrink-0" />
+            <span className="truncate">{aba.label}</span>
           </button>
         ))}
       </div>
@@ -840,7 +839,7 @@ export default function PainelIVC() {
       {abaAtiva === 'pendencias' && (
         <div className="bg-white dark:bg-card rounded-2xl border-2 border-border/60 p-4 shadow-sm animate-fade-in">
           <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-500" /> O que ainda falta
+            <ListTodo className="w-4 h-4 text-amber-500" /> O que ainda falta
           </p>
           <PendenciasPanel
             etapas={etapas}
