@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from "react";
 import { 
   ArrowLeft, Share2, AlertTriangle, CheckCircle2, Calendar, ChevronRight, 
   BookOpen, Users, TrendingUp, MapPin, Gift, Sparkles,
-  Route, ListTodo, LineChart, RefreshCw
+  Route, ListTodo, LineChart, RefreshCw, Compass, AlertCircle, BarChart3, Info, Eye, Clock, Heart, Flame, Send, Star, Flag, BookHeart, Cross, Award, Zap
 } from "lucide-react";
 import { cn, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
@@ -775,24 +775,25 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── TAB NAVIGATION ─── */}
-      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-1 overflow-x-auto hide-scrollbar">
+      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-2">
         {([
-          { id: 'mapa',         label: 'Posição Atual', icon: Route },
-          { id: 'pendencias',   label: 'O Que Falta',   icon: ListTodo },
-          { id: 'estatisticas', label: 'Estatísticas',  icon: LineChart },
+          { id: 'mapa',         color: 'text-indigo-500',  bg: 'bg-indigo-500/10',  icon: Route },
+          { id: 'pendencias',   color: 'text-amber-500',   bg: 'bg-amber-500/10',   icon: ListTodo },
+          { id: 'estatisticas', color: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: LineChart },
         ] as const).map(aba => (
           <button
             key={aba.id}
             onClick={() => setAbaAtiva(aba.id)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all min-w-[110px]",
+              "flex-1 flex items-center justify-center py-3 rounded-xl transition-all border",
               abaAtiva === aba.id
-                ? "bg-white dark:bg-card shadow-md text-foreground border border-border/50"
-                : "text-muted-foreground hover:bg-white/50 dark:hover:bg-card/50 hover:text-foreground"
+                ? cn("bg-white dark:bg-card shadow-md border-border/50", aba.color)
+                : "border-transparent text-muted-foreground hover:bg-white/50 dark:hover:bg-card/50 hover:text-foreground"
             )}
           >
-            <aba.icon className="w-4 h-4 shrink-0" />
-            <span className="truncate">{aba.label}</span>
+            <div className={cn("p-2 rounded-xl transition-colors", abaAtiva === aba.id ? aba.bg : "bg-transparent")}>
+              <aba.icon className="w-6 h-6 shrink-0" />
+            </div>
           </button>
         ))}
       </div>
