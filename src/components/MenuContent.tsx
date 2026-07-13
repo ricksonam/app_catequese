@@ -54,13 +54,14 @@ const modulosGlobais = [
 const DiarioIcon = (props: any) => <img src="/icone_diario.png" alt="Diário" className={props.className} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
 
 const classModules = [
+  { label: "Painel IVC", icon: Map, getPath: (id: string) => `/turmas/${id}/painel-ivc`, color: "bg-rose-500/10 text-rose-500", badge: "Novo" },
   { label: "Encontros", icon: CalendarDays, getPath: (id: string) => `/turmas/${id}/encontros`, color: "bg-blue-500/10 text-blue-500" },
   { label: "Catequizandos", icon: Users, getPath: (id: string) => `/turmas/${id}/catequizandos`, color: "bg-success/10 text-success" },
   { label: "Trilha Sacramental", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/trilha-sacramental`, color: "bg-violet-500/10 text-violet-500" },
   { label: "Eventos", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/eventos`, color: "bg-amber-500/10 text-amber-500" },
   { label: "Reuniões", icon: Users, getPath: (id: string) => `/turmas/${id}/reunioes`, color: "bg-blue-500/10 text-blue-500" },
   { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
-];
+] as const;
 
 
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
@@ -352,7 +353,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${m.color} shadow-sm border border-black/5`}>
                         <m.icon className="h-5 w-5" />
                       </div>
-                      <span className="text-sm font-bold text-foreground/80">{m.label}</span>
+                      <span className="text-sm font-bold text-foreground/80 flex-1 text-left">{m.label}</span>
+                      {'badge' in m && m.badge && (
+                        <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-rose-500 text-white shrink-0">
+                          {m.badge}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>

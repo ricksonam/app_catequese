@@ -54,6 +54,8 @@ const ReuniaoPresentation     = lazyWithRetry(() => import("@/pages/ReuniaoPrese
 const PlanoTurma              = lazyWithRetry(() => import("@/pages/PlanoTurma"));
 const RelatoriosTurma         = lazyWithRetry(() => import("@/pages/RelatoriosTurma"));
 const TrilhaSacramental       = lazyWithRetry(() => import("@/pages/TrilhaSacramental"));
+const PainelIVC               = lazyWithRetry(() => import("@/pages/PainelIVC"));
+const PublicPainelIVC         = lazyWithRetry(() => import("@/pages/PublicPainelIVC"));
 const DiarioEspiritualList    = lazyWithRetry(() => import("@/pages/DiarioEspiritualList"));
 const DiarioEspiritualForm    = lazyWithRetry(() => import("@/pages/DiarioEspiritualForm"));
 const BibliotecaModelos       = lazyWithRetry(() => import("@/pages/BibliotecaModelos"));
@@ -230,6 +232,7 @@ const AppRoutes = () => (
       <Route path="/plano-da-turma/:codigo" element={<PublicPlano />} />
       <Route path="/rito-sacramental/:codigo/:sacramento" element={<PublicRitoSacramental />} />
       <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
+      <Route path="/painel-ivc/:codigo" element={<PublicPainelIVC />} />
 
       <Route
         element={
@@ -253,6 +256,7 @@ const AppRoutes = () => (
         <Route path="/turmas/:id/reunioes/:reuniaoId/apresentacao" element={<ReuniaoPresentation />} />
         <Route path="/turmas/:id/plano" element={<PlanoTurma />} />
         <Route path="/turmas/:id/trilha-sacramental" element={<TrilhaSacramental />} />
+        <Route path="/turmas/:id/painel-ivc" element={<PainelIVC />} />
         <Route path="/turmas/:id/diario" element={<DiarioEspiritualList />} />
         <Route path="/turmas/:id/diario/novo" element={<DiarioEspiritualForm />} />
         <Route path="/turmas/:id/diario/:diarioId/editar" element={<DiarioEspiritualForm />} />

@@ -176,9 +176,47 @@ export interface RegistroOcorrencia {
   temaNome: string;
 }
 
-export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Gincana' | 'Passeios' | 'Eventos geral' | 'Outros';
+export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Gincana' | 'Passeios' | 'Eventos geral' | 'Outros' | 'Entrega de Símbolos' | 'Celebração de Passagem';
 export type AtividadeModalidade = 'interna' | 'externa';
 export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ônibus' | 'Trem' | 'Metrô' | 'Avião';
+
+// IVC Symbol types for 'Entrega de Símbolos' events
+export type SimboloIVCType =
+  | 'biblia'
+  | 'pai_nosso'
+  | 'creio'
+  | 'cruz'
+  | 'vela_batismal'
+  | 'mandamento_amor'
+  | 'vestidura_branca'
+  | 'outro';
+
+export const SIMBOLOS_IVC: { id: SimboloIVCType; label: string; emoji: string }[] = [
+  { id: 'biblia',           label: 'Bíblia Sagrada',         emoji: '📖' },
+  { id: 'pai_nosso',        label: 'Pai-Nosso',              emoji: '🙏' },
+  { id: 'creio',            label: 'Símbolo da Fé (Creio)',  emoji: '✝️' },
+  { id: 'cruz',             label: 'Cruz',                   emoji: '✚' },
+  { id: 'vela_batismal',    label: 'Vela Batismal',          emoji: '🕯️' },
+  { id: 'mandamento_amor',  label: 'Mandamento do Amor',     emoji: '❤️' },
+  { id: 'vestidura_branca', label: 'Vestidura Branca',       emoji: '👘' },
+  { id: 'outro',            label: 'Outro Símbolo',          emoji: '⭐' },
+];
+
+// IVC time/stage types for linking events to the journey
+export type EtapaIVCType =
+  | 'pre_catecumenato'
+  | 'entrada_catecumenato'
+  | 'catecumenato_fase1'
+  | 'catecumenato_fase2'
+  | 'catecumenato_fase3'
+  | 'catecumenato_fase4'
+  | 'catecumenato_fase5'
+  | 'catecumenato_fase6'
+  | 'eleicao'
+  | 'purificacao_iluminacao'
+  | 'sacramento'
+  | 'mistagogia'
+  | 'envio_missionario';
 
 export const CONDUCAO_TIPOS: ConducaoTipo[] = ['A pé', 'Carro', 'Carro aplicativo', 'Van', 'Ônibus', 'Trem', 'Metrô', 'Avião'];
 
@@ -196,6 +234,10 @@ export interface Atividade {
   observacao: string;
   presencas: string[];
   criadoEm: string;
+  // IVC fields — only used when tipo is 'Entrega de Símbolos' or 'Celebração de Passagem'
+  simboloIVC?: SimboloIVCType;
+  etapaIVC?: EtapaIVCType;
+  realizado?: boolean; // whether the event has been marked as completed
 }
 
 export type ReuniaoTipo = 'Reunião de catequistas' | 'Reunião de pais' | 'Reunião de preparação de sacramento' | 'Reunião de preparação de encontro' | 'Reunião de preparação de eventos' | 'Reunião geral';
@@ -359,6 +401,11 @@ export const ROTEIRO_STEPS: { tipo: RoteiroStepTipo; label: string }[] = [
 
 export const ATIVIDADE_TIPOS: AtividadeTipo[] = [
   'Momento Orante', 'Retiro', 'Celebração', 'Gincana', 'Passeios', 'Eventos geral', 'Outros',
+  'Entrega de Símbolos', 'Celebração de Passagem',
+];
+
+export const ATIVIDADE_TIPOS_IVC: AtividadeTipo[] = [
+  'Entrega de Símbolos', 'Celebração de Passagem',
 ];
 
 // ===== CONSTANTES =====

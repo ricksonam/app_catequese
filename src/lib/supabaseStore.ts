@@ -333,6 +333,10 @@ export async function fetchAtividades(turmaId?: string): Promise<Atividade[]> {
     tipo: a.tipo, modalidade: a.modalidade, conducao: a.conducao || undefined,
     data: a.data, local: a.local, horario: a.horario, observacao: a.observacao,
     presencas: a.presencas || [], criadoEm: a.criado_em,
+    // IVC fields
+    simboloIVC: a.simbolo_ivc || undefined,
+    etapaIVC: a.etapa_ivc || undefined,
+    realizado: a.realizado ?? undefined,
   }));
 }
 
@@ -342,6 +346,10 @@ export async function upsertAtividade(a: Atividade) {
     tipo: a.tipo, modalidade: a.modalidade, conducao: a.conducao || null,
     data: a.data, local: a.local, horario: a.horario, observacao: a.observacao,
     presencas: a.presencas as any, criado_em: a.criadoEm,
+    // IVC fields
+    simbolo_ivc: a.simboloIVC || null,
+    etapa_ivc: a.etapaIVC || null,
+    realizado: a.realizado ?? null,
   });
   if (error) throw error;
 }

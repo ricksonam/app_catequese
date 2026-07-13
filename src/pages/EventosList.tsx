@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
-import { ATIVIDADE_TIPOS, CONDUCAO_TIPOS, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo } from "@/lib/store";
-import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X } from "lucide-react";
+import { ATIVIDADE_TIPOS, SIMBOLOS_IVC, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo, type SimboloIVCType, CONDUCAO_TIPOS } from "@/lib/store";
+import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X, Map } from "lucide-react";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -32,12 +32,13 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
   );
 }
 
-interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade; conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string; }
-const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "" };
+interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade; conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string; simboloIVC?: SimboloIVCType; etapaIVC?: string; }
+const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "", simboloIVC: undefined, etapaIVC: undefined };
 
 const fillFormFromItem = (item: Atividade): FormData => ({
   nome: item.nome, descricao: item.descricao || '', tipo: item.tipo, modalidade: item.modalidade || 'interna',
   conducao: item.conducao || '', data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
+  simboloIVC: item.simboloIVC, etapaIVC: item.etapaIVC,
 });
 
 const tipoColors: Record<string, string> = {
@@ -45,6 +46,8 @@ const tipoColors: Record<string, string> = {
   'Gincana': 'bg-success/10 text-success',
   'Passeios': 'bg-gold/15 text-gold',
   'Eventos geral': 'bg-muted text-muted-foreground', 'Outros': 'bg-muted text-muted-foreground',
+  'Entrega de Símbolos': 'bg-amber-100 text-amber-700',
+  'Celebração de Passagem': 'bg-violet-100 text-violet-700',
 };
 
 const TIPO_ICONES: Record<string, string> = {
@@ -52,7 +55,11 @@ const TIPO_ICONES: Record<string, string> = {
   'Gincana': '🎯',
   'Passeios': '🚌',
   'Eventos geral': '📅', 'Outros': '📌',
+  'Entrega de Símbolos': '🎁',
+  'Celebração de Passagem': '✨',
 };
+
+const IVC_TIPOS: AtividadeTipo[] = ['Entrega de Símbolos', 'Celebração de Passagem'];
 
 export default function EventosList() {
   const { id } = useParams();
@@ -91,10 +98,10 @@ export default function EventosList() {
     try {
       if (editingId) {
         const existing = list.find(a => a.id === editingId);
-        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao });
+        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, simboloIVC: form.simboloIVC, etapaIVC: form.etapaIVC as any });
         setEditingId(null); setViewItem(null); toast.success("Evento atualizado!");
       } else {
-        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString() });
+        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString(), simboloIVC: form.simboloIVC, etapaIVC: form.etapaIVC as any });
         toast.success("Evento criado!");
       }
       setForm({ ...emptyForm }); setOpen(false);
@@ -191,6 +198,36 @@ export default function EventosList() {
                 <div className="grid grid-cols-2 gap-2"><FieldInput label="Data" type="date" value={form.data} onChange={(v) => updateField("data", v)} /><FieldInput label="Horário" type="time" value={form.horario} onChange={(v) => updateField("horario", v)} /></div>
                 <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} />
                 <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Observação</label><textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} className="form-input min-h-[60px] resize-none" /></div>
+                {/* IVC fields — shown only for IVC event types */}
+                {IVC_TIPOS.includes(form.tipo) && (
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4 space-y-3 animate-fade-in">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-700 flex items-center gap-1.5">
+                      <Map className="w-3 h-3" /> Dados do Painel IVC
+                    </p>
+                    {form.tipo === 'Entrega de Símbolos' && (
+                      <div>
+                        <label className="text-xs font-semibold text-zinc-900 mb-1 block">Símbolo Entregue</label>
+                        <select
+                          value={form.simboloIVC || ''}
+                          onChange={(e) => setForm(f => ({ ...f, simboloIVC: (e.target.value as SimboloIVCType) || undefined }))}
+                          className="form-input"
+                        >
+                          <option value="">Selecione o símbolo...</option>
+                          {SIMBOLOS_IVC.map(s => (
+                            <option key={s.id} value={s.id}>{s.emoji} {s.label}</option>
+                          ))}
+                        </select>
+                        <p className="text-[10px] text-amber-600 mt-1">Este símbolo será marcado como entregue no Painel IVC da turma.</p>
+                      </div>
+                    )}
+                    {form.tipo === 'Celebração de Passagem' && (
+                      <div className="rounded-xl bg-violet-50 border border-violet-200 p-3">
+                        <p className="text-xs font-bold text-violet-700">✨ Celebração de Passagem</p>
+                        <p className="text-[10px] text-violet-600 mt-0.5">Este evento será registrado como uma transição entre os Tempos do IVC no Painel da turma.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : editingId ? 'Salvar Alterações' : 'Criar Evento'}</button>
               </div>
             </DialogContent>
@@ -203,10 +240,6 @@ export default function EventosList() {
       ) : (
         <div className="space-y-6">
           {(() => {
-            const TIPO_ICONES: Record<string, string> = {
-              'Retiro': '⛺', 'Celebração': '✨',
-              'Gincana': '🎯', 'Passeios': '🌿', 'Eventos geral': '📅', 'Outros': '📌',
-            };
             const sorted = [...list].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
             const groups: Record<string, typeof sorted> = {};
             const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
