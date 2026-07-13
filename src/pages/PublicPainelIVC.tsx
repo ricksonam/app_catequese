@@ -143,12 +143,16 @@ function EtapaItem({ etapa, isLast }: { etapa: EtapaJornada; isLast: boolean }) 
           {etapa.status === 'concluido' && (
             <CheckCircle2 className={cn("w-4 h-4 shrink-0 mt-0.5", checkColor)} />
           )}
-          {etapa.status === 'em_andamento' && (
-            <div className="w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center shrink-0 mt-0.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            </div>
-          )}
         </div>
+        {etapa.status === 'em_andamento' && (
+          <div className="mt-3 flex items-center gap-2 animate-bounce">
+            <div className="h-px bg-primary w-4 opacity-50" />
+            <div className="bg-primary text-white px-3 py-1.5 rounded-full shadow-md shadow-primary/20 flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5" />
+              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sua Turma Aqui</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

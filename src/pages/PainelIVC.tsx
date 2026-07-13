@@ -362,17 +362,29 @@ function JornadaMap({
                 )}
               >
                 <span className={cn(ts.size, "filter drop-shadow-sm")}>{etapa.emoji}</span>
-                {isActive && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full shadow flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  </div>
-                )}
                 {etapa.status === 'concluido' && (
                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full shadow flex items-center justify-center">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                   </div>
                 )}
               </button>
+
+              {/* Floating Turma Indicator for Active Stage */}
+              {isActive && (
+                <div 
+                  className={cn(
+                    "absolute z-30 flex items-center animate-bounce",
+                    isLeft ? "left-[calc(50%+28px)] flex-row" : "right-[calc(50%+28px)] flex-row-reverse"
+                  )}
+                  style={{ top: '50%', transform: 'translateY(-50%)' }}
+                >
+                  <div className="h-[2px] w-6 bg-primary" />
+                  <div className="bg-primary text-white px-3 py-1.5 rounded-full shadow-lg shadow-primary/30 flex items-center gap-1.5 border-2 border-white dark:border-zinc-900">
+                    <Users className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sua Turma</span>
+                  </div>
+                </div>
+              )}
 
               {/* Label card — alternates left/right */}
               <div
