@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useDeleteTurma, useLeaveTurma, useTurmaMembros, useRemoveTurmaMembro, useApproveTurmaMembro, useComunidades } from "@/hooks/useSupabaseData";
-import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, QrCode, Shield, CheckCircle2, BellRing, X, Sparkles, ToggleLeft, ToggleRight, Link, Compass } from "lucide-react";
+import { ArrowLeft, CalendarDays, Users, ListChecks, GitBranch, Trash2, PieChart, Pencil, Copy, Link2, LogOut, Eye, EyeOff, UserMinus, QrCode, Shield, CheckCircle2, BellRing, X, Sparkles, ToggleLeft, ToggleRight, Link, Compass, BookOpen } from "lucide-react";
 
 import { QRCodeSVG } from "qrcode.react";
 import { cn } from "@/lib/utils";
@@ -224,13 +224,14 @@ export default function TurmaDetail() {
     );
   }
   const modulos = [
-    { label: "Painel IVC", desc: "Jornada e etapas", icon: Compass, count: null, unit: "", path: `/turmas/${id}/painel-ivc`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700", hasAlert: false },
     { label: "Encontros", desc: "Calendário e freq.", icon: CalendarDays, count: encontros.length, unit: "encontro", path: `/turmas/${id}/encontros`, color: "bg-primary text-white", bgGradient: "from-primary/60 via-primary/30 to-white", gradient: "from-primary/15 to-white", textColor: "text-blue-700", hasAlert: encontrosEmAlerta > 0, alertTitle: `${encontrosEmAlerta} encontro(s) pendente(s) de chamada` },
     { label: "Catequizandos", desc: "Perfis e acompanhamento", icon: Users, count: catequizandos.length, unit: "catequizando", path: `/turmas/${id}/catequizandos`, color: "bg-emerald-600 text-white", bgGradient: "from-emerald-500/60 via-emerald-500/30 to-white", gradient: "from-emerald-500/15 to-white", textColor: "text-emerald-700", hasAlert: catequizandosEmAlerta > 0, alertTitle: `${catequizandosEmAlerta} catequizando(s) com 3 ou mais faltas seguidas` },
     { label: "Eventos", desc: "Calendário e freq.", icon: ListChecks, count: atividades.length, unit: "evento", path: `/turmas/${id}/eventos`, color: "bg-amber-600 text-white", bgGradient: "from-amber-500/60 via-amber-500/30 to-white", gradient: "from-amber-500/15 to-white", textColor: "text-amber-700", hasAlert: false },
     { label: "Reuniões", desc: "Atas e pautas", icon: Users, count: reunioes.length, unit: "reunião", path: `/turmas/${id}/reunioes`, color: "bg-blue-600 text-white", bgGradient: "from-blue-500/60 via-blue-500/30 to-white", gradient: "from-blue-500/15 to-white", textColor: "text-blue-700", hasAlert: false },
     { label: "Plano da turma", desc: "Conteúdos e etapas", icon: GitBranch, count: null, unit: "", path: `/turmas/${id}/plano`, color: "bg-sky-600 text-white", bgGradient: "from-sky-500/60 via-sky-500/30 to-white", gradient: "from-sky-500/15 to-white", textColor: "text-sky-700", hasAlert: false },
     { label: "Trilha Sacramental", desc: "Preparação p/ sacramento", icon: Sparkles, count: null, unit: "", path: `/turmas/${id}/trilha-sacramental`, color: "bg-violet-600 text-white", bgGradient: "from-violet-500/60 via-violet-500/30 to-white", gradient: "from-violet-500/15 to-white", textColor: "text-violet-700", hasAlert: false, isTrilha: true },
+    { label: "Diário do Catequista", desc: "Anotações e registros", icon: BookOpen, count: null, unit: "", path: `/turmas/${id}/diario`, color: "bg-orange-600 text-white", bgGradient: "from-orange-500/60 via-orange-500/30 to-white", gradient: "from-orange-500/15 to-white", textColor: "text-orange-700", hasAlert: false },
+    { label: "Painel IVC", desc: "Jornada e etapas", icon: Compass, count: null, unit: "", path: `/turmas/${id}/painel-ivc`, color: "bg-rose-600 text-white", bgGradient: "from-rose-500/60 via-rose-500/30 to-white", gradient: "from-rose-500/15 to-white", textColor: "text-rose-700", hasAlert: false },
   ];
 
 
