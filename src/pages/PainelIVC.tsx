@@ -693,36 +693,54 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── MODELO CARD ─── */}
-      <div className="rounded-3xl p-5 bg-white dark:bg-card border border-border/40 shadow-lg animate-fade-in text-foreground">
-        <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-3xl shrink-0">
-            {modeloInfo.emoji}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Jornada da Turma</p>
-            <p className="font-black text-lg leading-tight text-foreground">{turma.nome}</p>
-            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{modeloInfo.label}</p>
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Progresso Geral</span>
-            <div className="flex items-center gap-2">
-              <RiscoBadge nivel={risco.nivel} mensagem={risco.mensagem} />
-              <span className="text-xl font-black text-primary">{percentualGeral}%</span>
+      <div className="rounded-3xl p-6 bg-white dark:bg-card border-2 border-border/60 shadow-md animate-fade-in text-foreground relative overflow-hidden">
+        {/* Decorative background circle */}
+        <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+        
+        <div className="flex flex-col gap-5 relative z-10">
+          {/* Header Info */}
+          <div className="flex gap-4 items-center">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center text-4xl shadow-sm shrink-0">
+              {modeloInfo.emoji}
+            </div>
+            <div className="flex-1">
+              <div className="inline-block px-2.5 py-1 bg-muted/80 rounded-md mb-1.5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Turma: {turma.nome}</p>
+              </div>
+              <h2 className="font-black text-xl leading-tight text-foreground">{modeloInfo.label}</h2>
+              <p className="text-xs text-muted-foreground mt-0.5 font-medium">Modelo de processo de catequese atual</p>
             </div>
           </div>
-          <div className="h-3 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full bg-primary transition-all duration-1000"
-              style={{ width: `${percentualGeral}%` }}
-            />
-          </div>
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-            <span>{etapas.filter(e => e.status === 'concluido').length} de {etapas.length} etapas concluídas</span>
-            {estimativa && <span>Previsão: {estimativa}</span>}
+
+          <div className="h-px bg-border/50 w-full" />
+
+          {/* Progress Section */}
+          <div className="space-y-3">
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mb-1.5">Evolução na Jornada</p>
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl font-black text-primary leading-none tracking-tighter">{percentualGeral}%</span>
+                  <RiscoBadge nivel={risco.nivel} mensagem={risco.mensagem} />
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-black text-foreground bg-muted px-2 py-1 rounded-md inline-block mb-1">
+                  {etapas.filter(e => e.status === 'concluido').length} de {etapas.length} etapas
+                </p>
+                {estimativa && <p className="text-[10px] font-black text-muted-foreground uppercase block">Término: {estimativa}</p>}
+              </div>
+            </div>
+            
+            <div className="h-4 bg-muted rounded-full overflow-hidden border border-border/50 shadow-inner">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-1000 relative"
+                style={{ width: `${percentualGeral}%` }}
+              >
+                {/* Shine effect */}
+                <div className="absolute top-0 inset-x-0 h-[40%] bg-white/20 rounded-t-full" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
