@@ -694,37 +694,34 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── MODELO CARD ─── */}
-      <div className={cn(
-        "rounded-3xl p-5 bg-gradient-to-br text-white shadow-lg animate-fade-in",
-        `from-violet-600 to-purple-700`
-      )}>
+      <div className="rounded-3xl p-5 bg-white dark:bg-card border border-border/40 shadow-lg animate-fade-in text-foreground">
         <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center text-3xl shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-3xl shrink-0">
             {modeloInfo.emoji}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-0.5">Modelo de Processo</p>
-            <p className="font-black text-sm leading-tight">{modeloInfo.label}</p>
-            <p className="text-[10px] text-white/70 mt-1 leading-tight">{modeloInfo.descricao}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Modelo de Processo</p>
+            <p className="font-black text-sm leading-tight text-foreground">{modeloInfo.label}</p>
+            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{modeloInfo.descricao}</p>
           </div>
         </div>
 
         {/* Progress bar */}
         <div className="mt-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black text-white/70 uppercase tracking-widest">Progresso Geral</span>
+            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Progresso Geral</span>
             <div className="flex items-center gap-2">
               <RiscoBadge nivel={risco.nivel} mensagem={risco.mensagem} />
-              <span className="text-xl font-black">{percentualGeral}%</span>
+              <span className="text-xl font-black text-primary">{percentualGeral}%</span>
             </div>
           </div>
-          <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-3 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-white/80 to-white transition-all duration-1000"
+              className="h-full rounded-full bg-primary transition-all duration-1000"
               style={{ width: `${percentualGeral}%` }}
             />
           </div>
-          <div className="flex items-center justify-between text-[10px] text-white/60">
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
             <span>{etapas.filter(e => e.status === 'concluido').length} de {etapas.length} etapas concluídas</span>
             {estimativa && <span>Previsão: {estimativa}</span>}
           </div>
