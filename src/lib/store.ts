@@ -182,23 +182,27 @@ export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ôn
 
 // IVC Symbol types for 'Entrega de Símbolos' events
 export type SimboloIVCType =
-  | 'biblia'
-  | 'pai_nosso'
-  | 'creio'
+  | 'menino_jesus'
+  | 'anjo_guarda'
   | 'cruz'
-  | 'vela_batismal'
+  | 'biblia'
+  | 'creio'
+  | 'pai_nosso'
   | 'mandamento_amor'
-  | 'vestidura_branca'
+  | 'terco'
+  | 'escapulario'
   | 'outro';
 
 export const SIMBOLOS_IVC: { id: SimboloIVCType; label: string; emoji: string }[] = [
-  { id: 'biblia',           label: 'Bíblia Sagrada',         emoji: '📖' },
-  { id: 'pai_nosso',        label: 'Pai-Nosso',              emoji: '🙏' },
-  { id: 'creio',            label: 'Símbolo da Fé (Creio)',  emoji: '✝️' },
+  { id: 'menino_jesus',     label: 'Menino Jesus',           emoji: '👶' },
+  { id: 'anjo_guarda',      label: 'Anjo da Guarda',         emoji: '👼' },
   { id: 'cruz',             label: 'Cruz',                   emoji: '✚' },
-  { id: 'vela_batismal',    label: 'Vela Batismal',          emoji: '🕯️' },
+  { id: 'biblia',           label: 'Bíblia Sagrada',         emoji: '📖' },
+  { id: 'creio',            label: 'Símbolo da Fé (Creio)',  emoji: '✝️' },
+  { id: 'pai_nosso',        label: 'Pai-Nosso',              emoji: '🙏' },
   { id: 'mandamento_amor',  label: 'Mandamento do Amor',     emoji: '❤️' },
-  { id: 'vestidura_branca', label: 'Vestidura Branca',       emoji: '👘' },
+  { id: 'terco',            label: 'Terço',                  emoji: '📿' },
+  { id: 'escapulario',      label: 'Escapulário',            emoji: '🎖️' },
   { id: 'outro',            label: 'Outro Símbolo',          emoji: '⭐' },
 ];
 
