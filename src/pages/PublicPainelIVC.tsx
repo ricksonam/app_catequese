@@ -278,38 +278,38 @@ export default function PublicPainelIVC() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-violet-900 to-indigo-950">
-        <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-        <p className="text-white/60 font-black text-xs uppercase tracking-widest">Carregando painel...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-zinc-950">
+        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        <p className="text-muted-foreground font-black text-xs uppercase tracking-widest">Carregando painel...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-violet-900 to-indigo-950 p-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
-          <AlertTriangle className="w-8 h-8 text-white/60" />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-zinc-950 p-6 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center">
+          <AlertTriangle className="w-8 h-8 text-amber-600" />
         </div>
-        <p className="text-white font-black text-lg">Link inválido</p>
-        <p className="text-white/60 text-sm">{error}</p>
+        <p className="text-foreground font-black text-lg">Link inválido</p>
+        <p className="text-muted-foreground text-sm">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-indigo-900 to-purple-950 pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 pb-16">
       {/* Hero Header */}
-      <div className="px-5 pt-10 pb-6 text-white">
+      <div className="px-5 pt-10 pb-6 text-foreground">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-xs font-black uppercase tracking-widest text-white/70 mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-black uppercase tracking-widest text-primary mb-4">
             <Sparkles className="w-3 h-3" />
             Iniciação à Vida Cristã
           </div>
-          <h1 className="text-3xl font-black leading-tight">Jornada da Turma</h1>
-          <p className="text-lg font-bold text-white/80">{turma?.nome}</p>
+          <h1 className="text-3xl font-black leading-tight text-foreground">Jornada da Turma</h1>
+          <p className="text-lg font-bold text-foreground/80">{turma?.nome}</p>
           {turma?.ano && (
-            <p className="text-sm text-white/50 font-semibold">{turma.ano}</p>
+            <p className="text-sm text-muted-foreground font-semibold">{turma.ano}</p>
           )}
         </div>
 
@@ -317,7 +317,7 @@ export default function PublicPainelIVC() {
         <div className="flex flex-col items-center mt-8 gap-3">
           <div className="relative w-32 h-32">
             <svg className="w-32 h-32 -rotate-90" viewBox="0 0 128 128">
-              <circle cx="64" cy="64" r="54" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="12" />
+              <circle cx="64" cy="64" r="54" fill="none" className="stroke-muted" strokeWidth="12" />
               <circle
                 cx="64" cy="64" r="54"
                 fill="none"
@@ -336,22 +336,22 @@ export default function PublicPainelIVC() {
               </defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-black text-white">{percentual}%</span>
-              <span className="text-[9px] font-black text-white/50 uppercase tracking-widest">concluído</span>
+              <span className="text-3xl font-black text-foreground">{percentual}%</span>
+              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">concluído</span>
             </div>
           </div>
 
           {/* Risk indicator */}
           <div className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold",
-            risco === 'em_dia' ? "bg-emerald-500/20 border-emerald-400/30 text-emerald-300" :
-            risco === 'atencao' ? "bg-amber-500/20 border-amber-400/30 text-amber-300" :
-            "bg-red-500/20 border-red-400/30 text-red-300"
+            risco === 'em_dia' ? "bg-emerald-50 border-emerald-200 text-emerald-700" :
+            risco === 'atencao' ? "bg-amber-50 border-amber-200 text-amber-700" :
+            "bg-red-50 border-red-200 text-red-700"
           )}>
             <div className={cn(
               "w-2 h-2 rounded-full",
-              risco === 'em_dia' ? 'bg-emerald-400' :
-              risco === 'atencao' ? 'bg-amber-400 animate-pulse' : 'bg-red-400 animate-pulse'
+              risco === 'em_dia' ? 'bg-emerald-500' :
+              risco === 'atencao' ? 'bg-amber-500 animate-pulse' : 'bg-red-500 animate-pulse'
             )} />
             {risco === 'em_dia' ? '✓ Caminhada em dia' :
              risco === 'atencao' ? '⚠ Requer atenção' : '● Caminhada atrasada'}
@@ -363,14 +363,14 @@ export default function PublicPainelIVC() {
       <div className="px-5 mb-6">
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Encontros', value: `${encontrosRealizados.length}/${encontros.length}`, sub: 'realizados', icon: BookOpen },
-            { label: 'Catequizandos', value: catequizandos.filter((c: any) => c.status === 'ativo').length, sub: 'ativos', icon: Users },
-            { label: 'Etapas IVC', value: `${concluidas}/${etapas.length}`, sub: 'concluídas', icon: TrendingUp },
+            { label: 'Encontros', value: `${encontrosRealizados.length}/${encontros.length}`, sub: 'realizados', icon: BookOpen, color: 'text-blue-500' },
+            { label: 'Catequizandos', value: catequizandos.filter((c: any) => c.status === 'ativo').length, sub: 'ativos', icon: Users, color: 'text-emerald-500' },
+            { label: 'Etapas IVC', value: `${concluidas}/${etapas.length}`, sub: 'concluídas', icon: TrendingUp, color: 'text-violet-500' },
           ].map(stat => (
-            <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 border border-white/10 text-center text-white">
-              <stat.icon className="w-4 h-4 mx-auto mb-1 text-white/50" />
-              <p className="text-lg font-black leading-none">{stat.value}</p>
-              <p className="text-[9px] font-bold text-white/50 uppercase tracking-wider mt-0.5">{stat.sub}</p>
+            <div key={stat.label} className="bg-white dark:bg-zinc-900 rounded-2xl p-3 border border-border shadow-sm text-center">
+              <stat.icon className={cn("w-4 h-4 mx-auto mb-1", stat.color)} />
+              <p className="text-lg font-black leading-none text-foreground">{stat.value}</p>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{stat.sub}</p>
             </div>
           ))}
         </div>
@@ -419,19 +419,19 @@ export default function PublicPainelIVC() {
       </div>
 
       {/* Info footer */}
-      <div className="mx-5 mt-5 flex items-start gap-3 bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-        <Info className="w-4 h-4 text-white/40 shrink-0 mt-0.5" />
-        <p className="text-[11px] text-white/40 leading-relaxed">
+      <div className="mx-5 mt-5 flex items-start gap-3 bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-border shadow-sm">
+        <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
           Este painel é atualizado automaticamente conforme os encontros são realizados e os eventos do IVC são registrados pela equipe de catequistas.
         </p>
       </div>
 
       {/* Footer */}
       <div className="text-center mt-8 px-5">
-        <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
+        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
           iCatequese · Painel IVC Público
         </p>
-        <p className="text-[9px] text-white/15 mt-1">
+        <p className="text-[9px] text-muted-foreground/60 mt-1">
           Atualizado automaticamente
         </p>
       </div>

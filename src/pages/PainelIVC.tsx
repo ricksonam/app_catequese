@@ -276,9 +276,9 @@ function RiscoBadge({ nivel, mensagem }: { nivel: RiscoNivel; mensagem: string }
   const Icon = cfg.icon;
 
   return (
-    <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold", cfg.bg, cfg.text)}>
+    <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full border-2 text-sm font-bold", cfg.bg, cfg.text)}>
       <div className={cn("w-2 h-2 rounded-full", cfg.dot)} />
-      <Icon className="h-3 w-3" />
+      <Icon className="h-4 w-4" />
       <span>{mensagem}</span>
     </div>
   );
@@ -291,12 +291,12 @@ function StatCard({ icon: Icon, label, value, sub, color }: {
   icon: any; label: string; value: string | number; sub?: string; color: string
 }) {
   return (
-    <div className={cn("relative overflow-hidden rounded-2xl p-4 border", color)}>
+    <div className={cn("relative overflow-hidden rounded-2xl p-4 border-2", color)}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">{label}</p>
-          <p className="text-2xl font-black leading-none">{value}</p>
-          {sub && <p className="text-[10px] mt-1 opacity-60 font-semibold">{sub}</p>}
+          <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">{label}</p>
+          <p className="text-3xl font-black leading-none">{value}</p>
+          {sub && <p className="text-xs mt-1 opacity-70 font-semibold">{sub}</p>}
         </div>
         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
           <Icon className="w-5 h-5" />
@@ -384,15 +384,15 @@ function JornadaMap({
               >
                 <div
                   className={cn(
-                    "rounded-2xl px-3 py-2 shadow-sm border transition-all duration-200 cursor-pointer",
+                    "rounded-2xl px-3 py-2 shadow-sm border-2 transition-all duration-200 cursor-pointer",
                     isExpanded
-                      ? "bg-white dark:bg-card border-primary/30 shadow-lg"
-                      : "bg-white/80 dark:bg-card/80 border-border/30 hover:border-primary/20"
+                      ? "bg-white dark:bg-card border-primary/50 shadow-lg"
+                      : "bg-white/90 dark:bg-card/90 border-border hover:border-primary/40"
                   )}
                   onClick={() => setExpandida(isExpanded ? null : etapa.id)}
                 >
                   <p className={cn(
-                    "text-[10px] sm:text-[11px] font-black leading-tight uppercase tracking-wide",
+                    "text-xs sm:text-sm font-black leading-tight uppercase tracking-wide",
                     etapa.status === 'concluido' ? "text-emerald-700" :
                     etapa.status === 'em_andamento' ? "text-primary" :
                     etapa.status === 'agendado' ? "text-amber-700" :
@@ -401,13 +401,13 @@ function JornadaMap({
                     {etapa.label}
                   </p>
                   {etapa.sublabel && (
-                    <p className="text-[8px] sm:text-[9px] text-muted-foreground/60 mt-0.5 font-semibold leading-tight">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 font-bold leading-tight">
                       {etapa.sublabel}
                     </p>
                   )}
                   {etapa.dataEvento && (
-                    <p className="text-[8px] font-black text-amber-600 mt-1 flex items-center gap-0.5">
-                      <Calendar className="w-2.5 h-2.5" />
+                    <p className="text-[10px] font-black text-amber-600 mt-1 flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
                       {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                     </p>
                   )}
@@ -494,8 +494,8 @@ function PendenciasPanel({
       {/* Missing IVC events */}
       {pendentes.filter(e => e.tipo === 'simbolo').length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 flex items-center gap-1.5">
-            <Gift className="w-3 h-3" /> Entregas de Símbolos Pendentes
+          <p className="text-xs font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
+            <Gift className="w-4 h-4" /> Entregas de Símbolos Pendentes
           </p>
           {pendentes.filter(e => e.tipo === 'simbolo').map(etapa => {
             const simbolo = SIMBOLOS_IVC.find(s => s.id === etapa.simboloId);
@@ -503,14 +503,14 @@ function PendenciasPanel({
               <button
                 key={etapa.id}
                 onClick={() => navigate(`/turmas/${turmaId}/eventos`)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors text-left group"
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-amber-50 border-2 border-amber-200 hover:bg-amber-100 transition-colors text-left group"
               >
-                <span className="text-2xl">{simbolo?.emoji ?? '📦'}</span>
+                <span className="text-3xl">{simbolo?.emoji ?? '📦'}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-amber-900 truncate">{etapa.label}</p>
-                  <p className="text-[10px] text-amber-600">Criar evento "Entrega de Símbolos" para registrar</p>
+                  <p className="text-sm font-black text-amber-900 truncate">{etapa.label}</p>
+                  <p className="text-xs font-bold text-amber-600">Criar evento "Entrega de Símbolos" para registrar</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-amber-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-amber-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </button>
             );
           })}
@@ -520,21 +520,21 @@ function PendenciasPanel({
       {/* Missing celebrations */}
       {pendentes.filter(e => e.tipo === 'passagem').length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-violet-600 flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3" /> Celebrações de Passagem Pendentes
+          <p className="text-xs font-black uppercase tracking-widest text-violet-600 flex items-center gap-2">
+            <Sparkles className="w-4 h-4" /> Celebrações de Passagem Pendentes
           </p>
           {pendentes.filter(e => e.tipo === 'passagem').map(etapa => (
             <button
               key={etapa.id}
               onClick={() => navigate(`/turmas/${turmaId}/eventos`)}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-violet-50 border border-violet-200 hover:bg-violet-100 transition-colors text-left group"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-violet-50 border-2 border-violet-200 hover:bg-violet-100 transition-colors text-left group"
             >
-              <span className="text-2xl">{etapa.emoji}</span>
+              <span className="text-3xl">{etapa.emoji}</span>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-violet-900 truncate">{etapa.label}</p>
-                <p className="text-[10px] text-violet-600">Criar evento "Celebração de Passagem" para registrar</p>
+                <p className="text-sm font-black text-violet-900 truncate">{etapa.label}</p>
+                <p className="text-xs font-bold text-violet-600">Criar evento "Celebração de Passagem" para registrar</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-violet-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-5 h-5 text-violet-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
             </button>
           ))}
         </div>
@@ -543,19 +543,19 @@ function PendenciasPanel({
       {/* Encounter pendencies */}
       {encontrosPendentes.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-1.5">
-            <BookOpen className="w-3 h-3" /> Encontros Pendentes ({encontrosPendentes.length})
+          <p className="text-xs font-black uppercase tracking-widest text-blue-600 flex items-center gap-2">
+            <BookOpen className="w-4 h-4" /> Encontros Pendentes ({encontrosPendentes.length})
           </p>
           <button
             onClick={() => navigate(`/turmas/${turmaId}/encontros`)}
-            className="w-full flex items-center gap-3 p-3 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors text-left group"
+            className="w-full flex items-center gap-3 p-3 rounded-xl bg-blue-50 border-2 border-blue-200 hover:bg-blue-100 transition-colors text-left group"
           >
-            <Calendar className="w-5 h-5 text-blue-500 shrink-0" />
+            <Calendar className="w-6 h-6 text-blue-500 shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-black text-blue-900">{encontrosPendentes.length} encontro(s) aguardando realização</p>
-              <p className="text-[10px] text-blue-600">Clique para acessar o módulo de Encontros</p>
+              <p className="text-sm font-black text-blue-900">{encontrosPendentes.length} encontro(s) aguardando realização</p>
+              <p className="text-xs font-bold text-blue-600">Clique para acessar o módulo de Encontros</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-5 h-5 text-blue-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       )}
@@ -592,15 +592,15 @@ function ManualControle({
             key={etapa.id}
             onClick={() => onChangePosicao(idx)}
             className={cn(
-              "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left",
+              "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left",
               posicaoAtual === idx
-                ? "bg-primary/10 border-primary/40 shadow-sm"
-                : "bg-muted/20 border-transparent hover:bg-muted/40"
+                ? "bg-primary/10 border-primary shadow-sm"
+                : "bg-muted/30 border-transparent hover:border-border hover:bg-muted/50"
             )}
           >
-            <span className="text-lg">{etapa.emoji}</span>
+            <span className="text-2xl">{etapa.emoji}</span>
             <div className="flex-1 min-w-0">
-              <p className={cn("text-xs font-black truncate", posicaoAtual === idx ? "text-primary" : "text-foreground/70")}>
+              <p className={cn("text-sm font-black truncate", posicaoAtual === idx ? "text-primary" : "text-foreground/80")}>
                 {etapa.label}
               </p>
             </div>
@@ -776,7 +776,7 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── TAB NAVIGATION ─── */}
-      <div className="flex bg-muted/30 rounded-2xl p-1 gap-1">
+      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-1">
         {([
           { id: 'mapa',         label: 'Mapa IVC',     icon: Compass },
           { id: 'pendencias',   label: 'Pendências',   icon: AlertCircle },
@@ -786,13 +786,13 @@ export default function PainelIVC() {
             key={aba.id}
             onClick={() => setAbaAtiva(aba.id)}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+              "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
               abaAtiva === aba.id
-                ? "bg-white dark:bg-card shadow-sm text-primary"
-                : "text-muted-foreground hover:text-foreground/70"
+                ? "bg-white dark:bg-card shadow-md text-foreground border border-border/50"
+                : "text-muted-foreground hover:bg-white/50 dark:hover:bg-card/50 hover:text-foreground"
             )}
           >
-            <aba.icon className="w-3.5 h-3.5" />
+            <aba.icon className="w-4 h-4" />
             <span className="hidden sm:inline">{aba.label}</span>
           </button>
         ))}
@@ -838,9 +838,9 @@ export default function PainelIVC() {
 
       {/* ─── TAB: PENDÊNCIAS ─── */}
       {abaAtiva === 'pendencias' && (
-        <div className="bg-white dark:bg-card rounded-2xl border border-border/30 p-4 shadow-sm animate-fade-in">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-1.5">
-            <AlertCircle className="w-3 h-3 text-amber-500" /> O que ainda falta
+        <div className="bg-white dark:bg-card rounded-2xl border-2 border-border/60 p-4 shadow-sm animate-fade-in">
+          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-500" /> O que ainda falta
           </p>
           <PendenciasPanel
             etapas={etapas}
