@@ -53,15 +53,15 @@ const modulosGlobais = [
 
 const DiarioIcon = (props: any) => <img src="/icone_diario.png" alt="Diário" className={props.className} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
 
-const classModules = [
-  { label: "Painel IVC", icon: Compass, getPath: (id: string) => `/turmas/${id}/painel-ivc`, color: "bg-rose-500/10 text-rose-500", badge: "Novo" },
-  { label: "Encontros", icon: CalendarDays, getPath: (id: string) => `/turmas/${id}/encontros`, color: "bg-blue-500/10 text-blue-500" },
-  { label: "Catequizandos", icon: Users, getPath: (id: string) => `/turmas/${id}/catequizandos`, color: "bg-success/10 text-success" },
-  { label: "Trilha Sacramental", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/trilha-sacramental`, color: "bg-violet-500/10 text-violet-500" },
-  { label: "Eventos", icon: Sparkles, getPath: (id: string) => `/turmas/${id}/eventos`, color: "bg-amber-500/10 text-amber-500" },
-  { label: "Reuniões", icon: Users, getPath: (id: string) => `/turmas/${id}/reunioes`, color: "bg-blue-500/10 text-blue-500" },
-  { label: "Plano da Turma", icon: BookOpen, getPath: (id: string) => `/turmas/${id}/plano`, color: "bg-primary/10 text-primary" },
-] as const;
+const classModules: { label: string; icon: React.ComponentType<{ className?: string }>; getPath: (id: string) => string; color: string; badge?: string }[] = [
+  { label: "Painel IVC",         icon: Compass,      getPath: (id) => `/turmas/${id}/painel-ivc`,       color: "bg-rose-500/10 text-rose-500",   badge: "Novo" },
+  { label: "Encontros",          icon: CalendarDays, getPath: (id) => `/turmas/${id}/encontros`,        color: "bg-blue-500/10 text-blue-500" },
+  { label: "Catequizandos",      icon: Users,        getPath: (id) => `/turmas/${id}/catequizandos`,    color: "bg-success/10 text-success" },
+  { label: "Trilha Sacramental", icon: Sparkles,     getPath: (id) => `/turmas/${id}/trilha-sacramental`, color: "bg-violet-500/10 text-violet-500" },
+  { label: "Eventos",            icon: Sparkles,     getPath: (id) => `/turmas/${id}/eventos`,          color: "bg-amber-500/10 text-amber-500" },
+  { label: "Reuniões",           icon: Users,        getPath: (id) => `/turmas/${id}/reunioes`,         color: "bg-blue-500/10 text-blue-500" },
+  { label: "Plano da Turma",     icon: BookOpen,     getPath: (id) => `/turmas/${id}/plano`,            color: "bg-primary/10 text-primary" },
+];
 
 
 export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
