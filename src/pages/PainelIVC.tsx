@@ -700,9 +700,9 @@ export default function PainelIVC() {
             {modeloInfo.emoji}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Modelo de Processo</p>
-            <p className="font-black text-sm leading-tight text-foreground">{modeloInfo.label}</p>
-            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{modeloInfo.descricao}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Jornada da Turma</p>
+            <p className="font-black text-lg leading-tight text-foreground">{turma.nome}</p>
+            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{modeloInfo.label}</p>
           </div>
         </div>
 
