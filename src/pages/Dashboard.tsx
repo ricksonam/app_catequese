@@ -570,6 +570,7 @@ export default function Dashboard() {
     {
       title: "Trilha Sacramental",
       image: "/icone_trilha.png",
+      imgClass: "object-cover object-top scale-[1.08]",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/trilha-sacramental`);
@@ -607,6 +608,7 @@ export default function Dashboard() {
     {
       title: "Orações",
       image: "/icone_oracoes.png",
+      imgClass: "object-cover object-top scale-[1.08]",
       onClick: () => navigate("/modulos/oracoes")
     },
     {
