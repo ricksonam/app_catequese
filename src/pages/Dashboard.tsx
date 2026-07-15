@@ -993,7 +993,7 @@ export default function Dashboard() {
                         onClick={item.onClick}
                         className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block"
                       >
-                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-cover transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
+                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-fill transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
                         {/* Overlay indicando que precisa de turma */}
                         {selectedTurmaId === 'all' && (
                           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -1037,7 +1037,7 @@ export default function Dashboard() {
                         onClick={item.onClick}
                         className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block"
                       >
-                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-cover transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
+                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-fill transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
                         
                         {/* Selo Animado Pulsante */}
                         {item.alert && (
