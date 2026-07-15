@@ -52,11 +52,11 @@ const jogos = [
     path: "/jogos/mimica",
   },
   {
-    label: "Cartas da Fé",
-    desc: "Organize as cartas sagradas",
-    icon: Book,
-    color: "bg-blue-500/10 text-blue-600",
-    path: "/jogos/paciencia",
+    label: "Sorteio de Dado",
+    desc: "Role o dado e veja o resultado!",
+    icon: Dices,
+    color: "bg-violet-500/10 text-violet-600",
+    path: "/jogos/dado",
   },
 ];
 

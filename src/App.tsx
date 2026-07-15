@@ -71,7 +71,7 @@ const PerguntasRespostas      = lazyWithRetry(() => import("@/pages/PerguntasRes
 const CitacaoSorteio          = lazyWithRetry(() => import("@/pages/CitacaoSorteio"));
 const SorteioGrupos           = lazyWithRetry(() => import("@/pages/SorteioGrupos"));
 const Mimica                  = lazyWithRetry(() => import("@/pages/Mimica"));
-const PacienciaBiblica        = lazyWithRetry(() => import("@/pages/PacienciaBiblica"));
+const SorteioDado             = lazyWithRetry(() => import("@/pages/SorteioDado"));
 const BibliaPage              = lazyWithRetry(() => import("@/pages/BibliaPage"));
 const MaterialApoio           = lazyWithRetry(() => import("@/pages/MaterialApoio"));
 const ParoquiaComunidadeCadastro = lazyWithRetry(() => import("@/pages/ParoquiaComunidadeCadastro"));
@@ -284,7 +284,7 @@ const AppRoutes = () => (
         <Route path="/jogos/citacao" element={<CitacaoSorteio />} />
         <Route path="/jogos/grupos" element={<SorteioGrupos />} />
         <Route path="/jogos/mimica" element={<Mimica />} />
-        <Route path="/jogos/paciencia" element={<PacienciaBiblica />} />
+        <Route path="/jogos/dado" element={<SorteioDado />} />
         <Route path="/cadastros/paroquia-comunidade" element={<ParoquiaComunidadeCadastro />} />
         <Route path="/cadastros/catequistas" element={<CatequistasCadastro />} />
         <Route path="/mapa-panoramico" element={<MapaPanoramico />} />
