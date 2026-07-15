@@ -570,7 +570,6 @@ export default function Dashboard() {
     {
       title: "Trilha Sacramental",
       image: "/icone_trilha.png",
-      imgClass: "object-contain scale-[0.75] object-center",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/trilha-sacramental`);
