@@ -988,11 +988,11 @@ export default function Dashboard() {
                 {turmaModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     {/* Moldura flutuante */}
-                    <div className="module-frame-wrapper w-full aspect-square">
-                      <button
-                        onClick={item.onClick}
-                        className="relative w-full h-full rounded-[22px] overflow-hidden focus:outline-none active:scale-95 transition-transform duration-150"
-                      >
+                    <button
+                      onClick={item.onClick}
+                      className="module-frame-wrapper w-full aspect-square focus:outline-none flex"
+                    >
+                      <div className="relative w-full h-full rounded-[23px] overflow-hidden">
                         <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                         {/* Overlay indicando que precisa de turma */}
                         {selectedTurmaId === 'all' && (
@@ -1002,8 +1002,8 @@ export default function Dashboard() {
                             </div>
                           </div>
                         )}
-                      </button>
-                    </div>
+                      </div>
+                    </button>
                     <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
                       {item.title}
                     </span>
@@ -1032,11 +1032,11 @@ export default function Dashboard() {
                 {globalModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
                     {/* Moldura flutuante */}
-                    <div className="module-frame-wrapper w-full aspect-square">
-                      <button
-                        onClick={item.onClick}
-                        className="relative w-full h-full rounded-[22px] overflow-hidden focus:outline-none active:scale-95 transition-transform duration-150"
-                      >
+                    <button
+                      onClick={item.onClick}
+                      className="module-frame-wrapper w-full aspect-square focus:outline-none flex"
+                    >
+                      <div className="relative w-full h-full rounded-[23px] overflow-hidden">
                         <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                         
                         {/* Selo Animado Pulsante */}
@@ -1048,8 +1048,8 @@ export default function Dashboard() {
                             </span>
                           </div>
                         )}
-                      </button>
-                    </div>
+                      </div>
+                    </button>
                     <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
                       {item.title}
                     </span>
