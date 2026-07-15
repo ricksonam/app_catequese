@@ -570,6 +570,7 @@ export default function Dashboard() {
     {
       title: "Trilha Sacramental",
       image: "/icone_trilha.png",
+      imgClass: "scale-[0.85]",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/trilha-sacramental`);
@@ -992,8 +993,8 @@ export default function Dashboard() {
                       onClick={item.onClick}
                       className="module-frame-wrapper w-full aspect-square focus:outline-none flex"
                     >
-                      <div className="relative w-full h-full rounded-[23px] overflow-hidden">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      <div className="relative w-full h-full rounded-[23px] overflow-hidden flex items-center justify-center">
+                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-cover transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
                         {/* Overlay indicando que precisa de turma */}
                         {selectedTurmaId === 'all' && (
                           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -1036,8 +1037,8 @@ export default function Dashboard() {
                       onClick={item.onClick}
                       className="module-frame-wrapper w-full aspect-square focus:outline-none flex"
                     >
-                      <div className="relative w-full h-full rounded-[23px] overflow-hidden">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                      <div className="relative w-full h-full rounded-[23px] overflow-hidden flex items-center justify-center">
+                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-cover transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
                         
                         {/* Selo Animado Pulsante */}
                         {item.alert && (
