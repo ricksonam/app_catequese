@@ -60,7 +60,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const currentPath = location.pathname;
 
   const tabs = baseTabs;
-  const isPresentationMode = currentPath.endsWith("/apresentacao");
+  const isPresentationMode = currentPath.endsWith("/apresentacao") || currentPath.endsWith("/jogos/dado");
 
   return (
     <div className="min-h-screen bg-background flex flex-col print:block print:min-h-0 print:bg-white">
