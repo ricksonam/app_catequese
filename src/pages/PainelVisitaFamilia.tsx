@@ -718,9 +718,6 @@ export function PainelVisitaFamilia() {
                   </div>
                 </button>
 
-                  </div>
-                </button>
-
                 <button onClick={() => setActiveView("relatorio")} className="bg-amber-50/50 hover:bg-amber-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-amber-100/50 shadow-sm">
                   <div className="w-12 h-12 rounded-2xl bg-white border border-amber-100 flex items-center justify-center shrink-0 shadow-sm">
                     <BarChart3 className="w-6 h-6 text-amber-500" />
