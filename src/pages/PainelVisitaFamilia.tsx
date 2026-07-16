@@ -6,8 +6,9 @@ import {
   ChevronDown, ChevronRight, Ban, CalendarDays, Timer,
   BarChart3, BookOpen, PlusCircle, ArrowRight, Star,
   CheckSquare, FileText, Sparkles, TrendingUp, Activity,
-  Info, ChevronLeft, Bell, MoreVertical, Home
+  Info, ChevronLeft, ArrowLeft, Bell, MoreVertical, Home
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   fetchTurmas, fetchVisitaConfigByTurma, upsertVisitaConfig,
   fetchAgendamentosByConfig, removeVisitaAgendamento, updateVisitaAgendamento
@@ -560,8 +561,8 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/agenda')} className="p-2 hover:bg-slate-200/50 rounded-full transition-colors shrink-0">
-            <ChevronLeft className="w-6 h-6 text-indigo-900" />
+          <button onClick={() => navigate(-1)} className="back-btn shrink-0">
+            <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
             <Home className="w-6 h-6" />
@@ -572,14 +573,45 @@ export function PainelVisitaFamilia() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => { setActiveView("visitas"); setFiltroVisitas("abertas"); }} className="relative p-2.5 text-indigo-900/70 hover:bg-indigo-100 rounded-full transition-colors focus:ring-2 focus:ring-indigo-300">
-            <Bell className="w-7 h-7" />
-            {totalConfirmadas > 0 && (
-              <span className="absolute top-1 right-1.5 min-w-[20px] h-[20px] rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-50 shadow-sm animate-pulse">
-                {totalConfirmadas}
-              </span>
-            )}
-          </button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="relative p-2.5 text-indigo-900/70 hover:bg-indigo-100 rounded-full transition-colors focus:ring-2 focus:ring-indigo-300">
+                <Bell className="w-7 h-7" />
+                {totalConfirmadas > 0 && (
+                  <span className="absolute top-1 right-1.5 min-w-[20px] h-[20px] rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-slate-50 shadow-sm animate-pulse">
+                    {totalConfirmadas}
+                  </span>
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0 rounded-2xl overflow-hidden shadow-xl" align="end">
+              <div className="bg-indigo-600 p-4 text-white">
+                <h3 className="font-bold text-lg">Visitas Agendadas</h3>
+                <p className="text-xs text-indigo-100 opacity-90">Famílias aguardando visita</p>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {(agendamentos || []).filter(a => !a.status || a.status === "confirmada").length === 0 ? (
+                  <div className="p-6 text-center text-slate-500 text-sm">
+                    Nenhuma visita aguardando no momento.
+                  </div>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {(agendamentos || []).filter(a => !a.status || a.status === "confirmada").map(ag => (
+                      <div key={ag.id} className="p-3 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => { setActiveView("visitas"); setFiltroVisitas("abertas"); }}>
+                        <p className="text-sm font-bold text-slate-800">Família {ag.nome_crianca}</p>
+                        <p className="text-[11px] text-slate-500">{ag.data_visita ? fmtDateFull(ag.data_visita) : ''} às {ag.horario_visita}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="p-2 border-t border-slate-100 bg-slate-50">
+                <button onClick={() => { setActiveView("visitas"); setFiltroVisitas("abertas"); }} className="w-full text-center text-xs font-bold text-indigo-600 py-2 hover:bg-indigo-50 rounded-lg transition-colors">
+                  Ver todas as visitas
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
