@@ -561,7 +561,7 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="back-btn shrink-0">
+          <button onClick={() => navigate('/modulos/calendario')} className="back-btn shrink-0">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
@@ -639,29 +639,29 @@ export function PainelVisitaFamilia() {
               {/* Resumo do painel */}
               <div>
                 <h3 className="text-base font-bold text-slate-800 mb-4 px-1">Resumo do painel</h3>
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                  <div className="bg-white rounded-2xl p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-blue-500 hover:shadow-md transition-shadow">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                      <Users className="w-5 h-5 text-blue-600" />
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <div className="bg-white rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-blue-500 hover:shadow-md transition-shadow">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center mb-1.5 sm:mb-2">
+                      <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                     </div>
-                    <span className="text-3xl font-black text-slate-800 leading-none mb-1.5">{totalAll}</span>
-                    <span className="text-xs font-bold text-slate-500 leading-tight">Solicitações recebidas</span>
+                    <span className="text-xl sm:text-3xl font-black text-slate-800 leading-none mb-1 sm:mb-1.5">{totalAll}</span>
+                    <span className="text-[9px] sm:text-xs font-bold text-slate-500 leading-tight">Recebidas</span>
                   </div>
                   
-                  <div className="bg-white rounded-2xl p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-emerald-500 hover:shadow-md transition-shadow">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mb-2">
-                      <CalendarDays className="w-5 h-5 text-emerald-600" />
+                  <div className="bg-white rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-emerald-500 hover:shadow-md transition-shadow">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-100 flex items-center justify-center mb-1.5 sm:mb-2">
+                      <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
                     </div>
-                    <span className="text-3xl font-black text-slate-800 leading-none mb-1.5">{totalConfirmadas}</span>
-                    <span className="text-xs font-bold text-slate-500 leading-tight">Visitas agendadas</span>
+                    <span className="text-xl sm:text-3xl font-black text-slate-800 leading-none mb-1 sm:mb-1.5">{totalConfirmadas}</span>
+                    <span className="text-[9px] sm:text-xs font-bold text-slate-500 leading-tight">Agendadas</span>
                   </div>
 
-                  <div className="bg-white rounded-2xl p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-amber-500 hover:shadow-md transition-shadow">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-2">
-                      <Home className="w-5 h-5 text-amber-600" />
+                  <div className="bg-white rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-amber-500 hover:shadow-md transition-shadow">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-100 flex items-center justify-center mb-1.5 sm:mb-2">
+                      <Home className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                     </div>
-                    <span className="text-3xl font-black text-slate-800 leading-none mb-1.5">{totalRealizadas}</span>
-                    <span className="text-xs font-bold text-slate-500 leading-tight">Visitas realizadas</span>
+                    <span className="text-xl sm:text-3xl font-black text-slate-800 leading-none mb-1 sm:mb-1.5">{totalRealizadas}</span>
+                    <span className="text-[9px] sm:text-xs font-bold text-slate-500 leading-tight">Realizadas</span>
                   </div>
                 </div>
               </div>
@@ -729,34 +729,34 @@ export function PainelVisitaFamilia() {
               </div>
 
               {/* Botões de Ação */}
-              <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-2">
-                <button onClick={() => setActiveView("nova")} className="bg-blue-50/50 hover:bg-blue-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-blue-100/50 shadow-sm">
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <PlusCircle className="w-6 h-6 text-blue-600" />
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-2">
+                <button onClick={() => setActiveView("nova")} className="bg-blue-50/50 hover:bg-blue-50 rounded-[1rem] sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-colors text-center sm:text-left sm:flex-row border border-blue-100/50 shadow-sm h-full">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-blue-950 leading-tight">Novo agendamento</h4>
-                    <p className="text-xs text-slate-600 mt-1 leading-tight">Abrir novas vagas para visitas</p>
-                  </div>
-                </button>
-
-                <button onClick={() => setActiveView("visitas")} className="bg-emerald-50/50 hover:bg-emerald-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-emerald-100/50 shadow-sm">
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-emerald-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <CalendarDays className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-emerald-950 leading-tight">Minhas visitas</h4>
-                    <p className="text-xs text-slate-600 mt-1 leading-tight">Acompanhar visitas realizadas</p>
+                  <div className="flex flex-col items-center sm:items-start">
+                    <h4 className="text-[10px] sm:text-sm font-bold text-blue-950 leading-tight">Novo agend.</h4>
+                    <p className="hidden sm:block text-xs text-slate-600 mt-1 leading-tight">Abrir vagas</p>
                   </div>
                 </button>
 
-                <button onClick={() => setActiveView("relatorio")} className="bg-amber-50/50 hover:bg-amber-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-amber-100/50 shadow-sm">
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-amber-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <BarChart3 className="w-6 h-6 text-amber-500" />
+                <button onClick={() => setActiveView("visitas")} className="bg-emerald-50/50 hover:bg-emerald-50 rounded-[1rem] sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-colors text-center sm:text-left sm:flex-row border border-emerald-100/50 shadow-sm h-full">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white border border-emerald-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-amber-950 leading-tight">Relatórios</h4>
-                    <p className="text-xs text-slate-600 mt-1 leading-tight">Acompanhe estatísticas</p>
+                  <div className="flex flex-col items-center sm:items-start">
+                    <h4 className="text-[10px] sm:text-sm font-bold text-emerald-950 leading-tight">Visitas</h4>
+                    <p className="hidden sm:block text-xs text-slate-600 mt-1 leading-tight">Acompanhar</p>
+                  </div>
+                </button>
+
+                <button onClick={() => setActiveView("relatorio")} className="bg-amber-50/50 hover:bg-amber-50 rounded-[1rem] sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-colors text-center sm:text-left sm:flex-row border border-amber-100/50 shadow-sm h-full">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white border border-amber-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
+                  </div>
+                  <div className="flex flex-col items-center sm:items-start">
+                    <h4 className="text-[10px] sm:text-sm font-bold text-amber-950 leading-tight">Relatórios</h4>
+                    <p className="hidden sm:block text-xs text-slate-600 mt-1 leading-tight">Estatísticas</p>
                   </div>
                 </button>
               </div>
