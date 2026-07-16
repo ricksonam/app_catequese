@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPublicVisitaConfig, publicAgendarVisita } from "@/lib/supabaseStore";
 import { Calendar, Clock, UserPlus, Phone, CheckCircle2, AlertCircle, ArrowRight, Home, Heart } from "lucide-react";
+import { Calendar as CalendarUI } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
 import { mascaraTelefone, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Spinner from "@/components/ui/spinner";
@@ -28,6 +30,7 @@ export default function PublicAgendaVisita() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   
+  const [date, setDate] = useState<Date | undefined>(undefined);
   const [selectedData, setSelectedData] = useState<string | null>(null);
   const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
 
@@ -197,28 +200,50 @@ export default function PublicAgendaVisita() {
                  Escolha um Horário
               </div>
               
-              <div className="space-y-6">
-                {diasDisponiveis.map((dia: any) => (
-                  <div key={dia.data} className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-foreground flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                      {new Date(dia.data + "T12:00:00").toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'short' })}
+              <div className="flex flex-col items-center gap-6 pt-2">
+                <CalendarUI
+                  mode="single"
+                  selected={date}
+                  locale={ptBR}
+                  onSelect={(d) => {
+                    setDate(d);
+                    if (d) {
+                      const str = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                      setSelectedData(str);
+                      setSelectedHorario(null);
+                    } else {
+                      setSelectedData(null);
+                      setSelectedHorario(null);
+                    }
+                  }}
+                  disabled={(day) => {
+                    // Ignora hora local, usa string UTC like
+                    const str = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+                    return !diasDisponiveis.some((d: any) => d.data === str);
+                  }}
+                  className="rounded-2xl border-2 border-black/5 bg-white shadow-sm mx-auto scale-105"
+                  classNames={{
+                     day_selected: "bg-indigo-600 text-white hover:bg-indigo-600 hover:text-white focus:bg-indigo-600 focus:text-white",
+                  }}
+                />
+
+                {selectedData && (
+                  <div className="w-full space-y-3 bg-muted/20 p-4 rounded-2xl border border-black/5">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-indigo-900/60 text-center flex items-center justify-center gap-2">
+                      <Clock className="w-3.5 h-3.5" /> Horários
                     </h4>
                     <div className="grid grid-cols-3 gap-2">
-                      {dia.horariosLivres.map((h: string) => {
-                        const isSelected = selectedData === dia.data && selectedHorario === h;
+                      {diasDisponiveis.find((d: any) => d.data === selectedData)?.horariosLivres.map((h: string) => {
+                        const isSelected = selectedHorario === h;
                         return (
                           <button
                             key={h}
                             type="button"
-                            onClick={() => {
-                              setSelectedData(dia.data);
-                              setSelectedHorario(h);
-                            }}
+                            onClick={() => setSelectedHorario(h)}
                             className={cn(
                               "py-3 rounded-xl font-black text-sm uppercase tracking-wider transition-all border-2",
                               isSelected 
-                                ? "bg-indigo-500 border-indigo-500 text-white shadow-md shadow-indigo-500/20" 
+                                ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20" 
                                 : "bg-white border-black/10 text-muted-foreground hover:border-indigo-300 hover:text-indigo-600"
                             )}
                           >
@@ -228,7 +253,7 @@ export default function PublicAgendaVisita() {
                       })}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
