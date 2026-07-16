@@ -494,7 +494,7 @@ export interface VisitaFamiliasConfig {
   criado_em?: string;
 }
 
-export type VisitaAgendamentoStatus = 'confirmada' | 'cancelada' | 'adiada';
+export type VisitaAgendamentoStatus = 'confirmada' | 'cancelada' | 'adiada' | 'realizada';
 
 export interface VisitaAgendamento {
   id: string;
@@ -511,6 +511,7 @@ export interface VisitaAgendamento {
   motivo_cancelamento?: string;
   data_reagendada?: string;
   horario_reagendado?: string;
+  notas_catequista?: string;
   criado_em?: string;
 }
 
