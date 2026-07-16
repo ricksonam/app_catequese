@@ -473,3 +473,37 @@ export interface ComunicacaoResposta {
   pontuacao?: number;
   criado_em?: string;
 }
+
+// ========== AGENDAMENTO DE VISITAS ÀS FAMÍLIAS ==========
+
+export interface VisitaDiaHorarios {
+  data: string;
+  horarios: string[];
+}
+
+export interface VisitaFamiliasConfig {
+  id: string;
+  turma_id: string;
+  user_id?: string;
+  token?: string;
+  ativo: boolean;
+  titulo: string;
+  tema?: string;
+  dias_horarios: VisitaDiaHorarios[];
+  criado_em?: string;
+}
+
+export interface VisitaAgendamento {
+  id: string;
+  turma_id: string;
+  config_id: string;
+  user_id?: string;
+  data_visita: string;
+  horario_visita: string;
+  nome_responsavel: string;
+  nome_crianca: string;
+  telefone: string;
+  observacao?: string;
+  criado_em?: string;
+}
+

@@ -2,6 +2,8 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Star, Sun, Cross, Heart, Flame, C
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { useCatequizandos, useCatequistas, useCalendarioNotas, useCalendarioNotaMutation, useDeleteCalendarioNota, useEncontros, useAtividades, useTurmas, useReunioes } from "@/hooks/useSupabaseData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAgendamentosByConfig, fetchVisitaConfigByTurma } from "@/lib/supabaseStore";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { formatarDataVigente } from "@/lib/utils";
@@ -495,6 +497,16 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
   const { data: atividades = [] } = useAtividades();
   const { data: reunioes = [] } = useReunioes();
   const { data: turmas = [] } = useTurmas();
+
+  // Buscar todos os agendamentos de visita de todas as turmas (simplificado via Supabase)
+  const { data: todosAgendamentos = [] } = useQuery({
+    queryKey: ["all_visita_agendamentos"],
+    queryFn: async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data } = await supabase.from("visita_agendamentos").select("*");
+      return data || [];
+    }
+  });
   
   const notaMutation = useCalendarioNotaMutation();
   const notaDelete = useDeleteCalendarioNota();
@@ -525,15 +537,15 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
     return notas.filter(n => n.data.startsWith(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`));
   }, [notas, currentMonth, currentYear]);
 
-  // Map Encontros, Atividades and Reunioes to the current month days
   const currentMonthEvents = useMemo(() => {
     const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
     return {
       encontros: encontros.filter(e => e.data && e.data.startsWith(prefix)),
       atividades: atividades.filter(a => a.data && a.data.startsWith(prefix)),
-      reunioes: reunioes.filter(r => r.data && r.data.startsWith(prefix))
+      reunioes: reunioes.filter(r => r.data && r.data.startsWith(prefix)),
+      visitas: todosAgendamentos.filter((v: any) => v.data_visita && v.data_visita.startsWith(prefix))
     };
-  }, [encontros, atividades, reunioes, currentMonth, currentYear]);
+  }, [encontros, atividades, reunioes, todosAgendamentos, currentMonth, currentYear]);
 
   const getDayColor = (day: number) => {
     const evt = EVENTS.find(e => e.month === currentMonth + 1 && e.day === day);
@@ -623,6 +635,15 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
             </div>
           </div>
         </div>
+        
+        <div className="flex items-center gap-2">
+           <button 
+             onClick={() => navigate('/modulos/visitas')}
+             className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 border border-indigo-200"
+           >
+             <Heart className="w-4 h-4" /> Visitas às Famílias
+           </button>
+        </div>
       </div>
 
       {/* Calendar Card */}
@@ -667,6 +688,7 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
                 currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) ||
                 currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) ||
                 currentMonthEvents.reunioes.some(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)) ||
+                currentMonthEvents.visitas.some((v: any) => v.data_visita.endsWith(`-${String(day).padStart(2, '0')}`)) ||
                 !!dayNote;
 
               return (
@@ -690,6 +712,7 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
                       {currentMonthEvents.encontros.some(e => e.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <BookOpen className="h-2.5 w-2.5 text-blue-500" />}
                       {currentMonthEvents.atividades.some(a => a.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Lightbulb className="h-2.5 w-2.5 text-emerald-500" />}
                       {currentMonthEvents.reunioes.some(r => r.data.endsWith(`-${String(day).padStart(2, '0')}`)) && <Users className="h-2.5 w-2.5 text-violet-500" />}
+                      {currentMonthEvents.visitas.some((v: any) => v.data_visita.endsWith(`-${String(day).padStart(2, '0')}`)) && <Heart className="h-2.5 w-2.5 text-indigo-500" />}
                       {dayNote && <StickyNote className="h-2.5 w-2.5 text-amber-500" />}
                     </div>
                   )}
@@ -725,6 +748,12 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
                         <div key={idx} className="flex items-center gap-1.5 bg-violet-500/10 rounded-lg px-2 py-1 border border-violet-200/20 text-violet-700 dark:text-violet-400">
                           <Users className="h-2.5 w-2.5 shrink-0" />
                           <span className="text-[9px] font-bold truncate leading-none">{r.nome}</span>
+                        </div>
+                      ))}
+                      {currentMonthEvents.visitas.filter((v: any) => v.data_visita.endsWith(`-${String(day).padStart(2, '0')}`)).map((v: any, idx: number) => (
+                        <div key={`vis-${idx}`} className="flex items-center gap-1.5 bg-indigo-500/10 rounded-lg px-2 py-1 border border-indigo-200/20 text-indigo-700 dark:text-indigo-400">
+                          <Heart className="h-2.5 w-2.5 shrink-0" />
+                          <span className="text-[9px] font-bold truncate leading-none">Visita: {v.nome_crianca}</span>
                         </div>
                       ))}
                       {dayNote && (
@@ -919,6 +948,27 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold truncate">{r.nome}</p>
                     <p className="text-[10px] uppercase font-bold opacity-70 truncate block">Reunião · {r.tipo}{turma ? ` · ${turma.nome}` : ''}</p>
+                  </div>
+                  <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
+                </button>
+              );
+            })}
+
+            {/* Visitas às Famílias - CLICKABLE */}
+            {currentMonthEvents.visitas.filter((v: any) => v.data_visita.endsWith(`-${String(selectedDay).padStart(2, '0')}`)).map((v: any, idx: number) => {
+              const turma = turmas.find(t => t.id === v.turma_id);
+              return (
+                <button
+                  key={`vis-btn-${idx}`}
+                  onClick={() => navigate('/modulos/visitas')}
+                  className="w-full p-3 rounded-2xl bg-indigo-500/10 border border-indigo-200/30 text-indigo-700 dark:text-indigo-400 flex items-center gap-3 hover:bg-indigo-500/20 transition-all active:scale-[0.98] group text-left"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/40 flex items-center justify-center shrink-0">
+                    <Heart className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">Visita: {v.nome_crianca}</p>
+                    <p className="text-[10px] uppercase font-bold opacity-70 truncate block">{v.horario_visita} · {turma?.nome || 'Turma'}</p>
                   </div>
                   <ChevronRightIcon className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>

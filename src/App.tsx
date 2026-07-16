@@ -90,6 +90,8 @@ const LandingPage             = lazyWithRetry(() => import("@/pages/LandingPage"
 const PublicFormResponder     = lazyWithRetry(() => import("@/pages/PublicFormResponder"));
 const StoreCheckoutSuccess    = lazyWithRetry(() => import("@/pages/StoreCheckoutSuccess"));
 const StoreCheckoutPending    = lazyWithRetry(() => import("@/pages/StoreCheckoutPending"));
+const PublicAgendaVisita      = lazyWithRetry(() => import("@/pages/PublicAgendaVisita"));
+const PainelVisitaFamilia     = lazyWithRetry(() => import("@/pages/PainelVisitaFamilia").then(m => ({ default: m.PainelVisitaFamilia })));
 
 // ===== FALLBACK DE LOADING =====
 function PageLoader() {
@@ -233,6 +235,7 @@ const AppRoutes = () => (
       <Route path="/rito-sacramental/:codigo/:sacramento" element={<PublicRitoSacramental />} />
       <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
       <Route path="/painel-ivc/:codigo" element={<PublicPainelIVC />} />
+      <Route path="/visita-familia/:token" element={<PublicAgendaVisita />} />
 
       <Route
         element={
@@ -275,6 +278,7 @@ const AppRoutes = () => (
         <Route path="/modulos/oracoes/:id" element={<OracaoView />} />
         <Route path="/modulos/calendario" element={<CalendarioLiturgico />} />
         <Route path="/modulos/liturgia" element={<LiturgiaDiaria />} />
+        <Route path="/modulos/visitas" element={<PainelVisitaFamilia />} />
         <Route path="/modulos/*" element={<PlaceholderPage />} />
         <Route path="/jogos" element={<JogosHub />} />
         <Route path="/jogos/sorteio" element={<SorteioNomes />} />

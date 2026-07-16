@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "./store";
+import type { Turma, Catequizando, Encontro, Atividade, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta, VisitaFamiliasConfig, VisitaAgendamento } from "./store";
 
 // ========== TURMAS ==========
 
@@ -800,6 +800,65 @@ export async function removeComunicacaoForm(id: string) {
   const { error } = await supabase.from("comunicacao_forms").delete().eq("id", id);
   if (error) throw error;
 }
+
+// ========== AGENDAMENTO DE VISITAS ÀS FAMÍLIAS ==========
+
+export async function fetchVisitaConfigByTurma(turmaId: string): Promise<VisitaFamiliasConfig | null> {
+  const { data, error } = await supabase.from("visita_familias_config")
+    .select("*")
+    .eq("turma_id", turmaId)
+    .maybeSingle();
+    
+  if (error) throw error;
+  return data as VisitaFamiliasConfig | null;
+}
+
+export async function upsertVisitaConfig(config: Partial<VisitaFamiliasConfig> & { turma_id: string }) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+
+  const payload = {
+    ...config,
+    user_id: user.id
+  };
+
+  const { data, error } = await supabase.from("visita_familias_config")
+    .upsert(payload, { onConflict: 'turma_id' })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data as VisitaFamiliasConfig;
+}
+
+export async function fetchAgendamentosByConfig(configId: string): Promise<VisitaAgendamento[]> {
+  const { data, error } = await supabase.from("visita_agendamentos")
+    .select("*")
+    .eq("config_id", configId)
+    .order("data_visita", { ascending: true })
+    .order("horario_visita", { ascending: true });
+    
+  if (error) throw error;
+  return data as VisitaAgendamento[];
+}
+
+export async function removeVisitaAgendamento(id: string) {
+  const { error } = await supabase.from("visita_agendamentos").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function fetchPublicVisitaConfig(token: string) {
+  const { data, error } = await supabase.rpc('get_public_visita_config', { p_token: token });
+  if (error) throw error;
+  return data;
+}
+
+export async function publicAgendarVisita(payload: any) {
+  const { data, error } = await supabase.rpc('public_agendar_visita', { p_payload: payload });
+  if (error) throw error;
+  return data;
+}
+
 
 export async function fetchComunicacaoRespostas(formId: string): Promise<ComunicacaoResposta[]> {
   const { data, error } = await supabase.from("comunicacao_respostas")
