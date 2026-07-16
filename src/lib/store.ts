@@ -490,8 +490,11 @@ export interface VisitaFamiliasConfig {
   titulo: string;
   tema?: string;
   dias_horarios: VisitaDiaHorarios[];
+  data_validade?: string; // Data de expiração do link (YYYY-MM-DD)
   criado_em?: string;
 }
+
+export type VisitaAgendamentoStatus = 'confirmada' | 'cancelada' | 'adiada';
 
 export interface VisitaAgendamento {
   id: string;
@@ -504,6 +507,10 @@ export interface VisitaAgendamento {
   nome_crianca: string;
   telefone: string;
   observacao?: string;
+  status?: VisitaAgendamentoStatus;
+  motivo_cancelamento?: string;
+  data_reagendada?: string;
+  horario_reagendado?: string;
   criado_em?: string;
 }
 

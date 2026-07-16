@@ -819,7 +819,8 @@ export async function upsertVisitaConfig(config: Partial<VisitaFamiliasConfig> &
 
   const payload = {
     ...config,
-    user_id: user.id
+    user_id: user.id,
+    data_validade: config.data_validade || null,
   };
 
   const { data, error } = await supabase.from("visita_familias_config")
@@ -844,6 +845,24 @@ export async function fetchAgendamentosByConfig(configId: string): Promise<Visit
 
 export async function removeVisitaAgendamento(id: string) {
   const { error } = await supabase.from("visita_agendamentos").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function updateVisitaAgendamento(
+  id: string,
+  payload: {
+    status?: 'confirmada' | 'cancelada' | 'adiada';
+    motivo_cancelamento?: string | null;
+    data_reagendada?: string | null;
+    horario_reagendado?: string | null;
+    data_visita?: string;
+    horario_visita?: string;
+  }
+) {
+  const { error } = await supabase
+    .from("visita_agendamentos")
+    .update(payload)
+    .eq("id", id);
   if (error) throw error;
 }
 
