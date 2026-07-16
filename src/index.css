@@ -580,6 +580,9 @@
 
 /* Moldura que cria o efeito visual de "flutuação" estático */
 .module-frame-wrapper {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   padding: 3px;
   border-radius: 26px;
   background: linear-gradient(145deg, #a855f7, #6b21a8);
@@ -590,6 +593,7 @@
     0 1px 3px rgba(0,0,0,0.12),             /* sombra fina */
     inset 0 1px 0 rgba(255,255,255,1);      /* brilho interno */
   transition: box-shadow 0.25s ease, transform 0.25s ease;
+  flex-shrink: 0;
 }
 
 .module-frame-wrapper:hover {

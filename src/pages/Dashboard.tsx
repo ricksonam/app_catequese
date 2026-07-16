@@ -984,16 +984,16 @@ export default function Dashboard() {
               </div>
 
               {/* Grid módulos da turma */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3 items-start">
                 {turmaModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                    {/* Moldura flutuante */}
-                    <div className="module-frame-wrapper w-full aspect-square flex">
+                    {/* Moldura flutuante — sempre quadrada */}
+                    <div className="module-frame-wrapper w-full" style={{ aspectRatio: '1 / 1' }}>
                       <button
                         onClick={item.onClick}
                         className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block"
                       >
-                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-cover transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                         {/* Overlay indicando que precisa de turma */}
                         {selectedTurmaId === 'all' && (
                           <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -1004,9 +1004,11 @@ export default function Dashboard() {
                         )}
                       </button>
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
-                      {item.title}
-                    </span>
+                    <div className="h-8 flex items-start justify-center mt-1.5 w-full px-1">
+                      <span className="text-[9px] sm:text-[10px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
+                        {item.title}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1028,16 +1030,16 @@ export default function Dashboard() {
               </div>
 
               {/* Grid módulos gerais */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3 items-start">
                 {globalModules.map((item, index) => (
                   <div key={index} className="w-full flex flex-col items-center group animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                    {/* Moldura flutuante */}
-                    <div className="module-frame-wrapper w-full aspect-square flex">
+                    {/* Moldura flutuante — sempre quadrada */}
+                    <div className="module-frame-wrapper w-full" style={{ aspectRatio: '1 / 1' }}>
                       <button
                         onClick={item.onClick}
                         className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block"
                       >
-                        <img src={item.image} alt={item.title} className={cn("w-full h-full object-cover transition-transform duration-300 group-hover:scale-110", (item as any).imgClass)} />
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
                         
                         {/* Selo Animado Pulsante */}
                         {item.alert && (
@@ -1050,9 +1052,11 @@ export default function Dashboard() {
                         )}
                       </button>
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-black text-center mt-2 uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 truncate w-full px-1">
-                      {item.title}
-                    </span>
+                    <div className="h-8 flex items-start justify-center mt-1.5 w-full px-1">
+                      <span className="text-[9px] sm:text-[10px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
+                        {item.title}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
