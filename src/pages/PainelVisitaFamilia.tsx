@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronRight, Ban, CalendarDays, Timer,
   BarChart3, BookOpen, PlusCircle, ArrowRight, Star,
   CheckSquare, FileText, Sparkles, TrendingUp, Activity,
-  Info, ChevronLeft
+  Info, ChevronLeft, Bell, MoreVertical, Home
 } from "lucide-react";
 import {
   fetchTurmas, fetchVisitaConfigByTurma, upsertVisitaConfig,
@@ -574,88 +574,214 @@ export function PainelVisitaFamilia() {
 
       {selectedTurma && !loadingConfig && (
         <>
-          {/* ── HOME: 3 CARDS ─────────────────────────────────────────────── */}
+          {/* ── HOME: NOVO DESIGN PREMIUM ─────────────────────────────────────────────── */}
           {activeView === "home" && (
-            <div className="space-y-4">
-              {/* Link rápido se existir */}
-              {config && (
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl p-5 flex items-center gap-4 shadow-xl shadow-purple-600/20">
-                  <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                    <Link className="w-5 h-5 text-white" />
+            <div className="space-y-6 max-w-md mx-auto sm:max-w-none bg-slate-50/50 -mx-4 px-4 sm:mx-0 sm:px-0 pt-4 sm:pt-0 sm:bg-transparent min-h-screen sm:min-h-0">
+              
+              {/* Header do App (estilo mobile) */}
+              <div className="flex items-center justify-between px-2 mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md">
+                    <Home className="w-5 h-5" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-indigo-200 text-[9px] font-black uppercase tracking-[0.2em]">Link das famílias</p>
-                    <p className="text-white font-black text-sm truncate">{config.titulo}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <div className={cn("w-1.5 h-1.5 rounded-full", config.ativo ? "bg-green-400 animate-pulse" : "bg-red-400")} />
-                      <span className="text-indigo-200 text-[10px] font-bold">{config.ativo ? "Ativo" : "Inativo"}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
-                    <button onClick={copyLink} className="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center transition-all" title="Copiar link">
-                      {copied ? <CheckCircle2 className="w-4 h-4 text-green-300" /> : <Copy className="w-4 h-4 text-white" />}
-                    </button>
-                    <button onClick={() => { const url = `${window.location.origin}/visita-familia/${config.token}`; if (navigator.share) navigator.share({ title: config.titulo || "", url }); else copyLink(); }}
-                      className="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center transition-all" title="Compartilhar">
-                      <Share2 className="w-4 h-4 text-white" />
-                    </button>
+                  <div>
+                    <h2 className="font-bold text-indigo-950 text-lg leading-tight">Painel de Visitas</h2>
+                    <p className="text-[10px] text-indigo-900/60 font-medium">Acolher • Escutar • Evangelizar</p>
                   </div>
                 </div>
-              )}
-
-              {/* 3 Cards principais */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Card: Abrir novas visitas */}
-                <button onClick={() => setActiveView("nova")}
-                  className="group bg-white rounded-3xl p-6 border-2 border-black/5 shadow-sm hover:shadow-xl hover:border-indigo-200 hover:-translate-y-1 transition-all duration-300 text-left space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-                    <PlusCircle className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-black text-foreground text-base leading-tight">Abrir Novas Visitas</h3>
-                    <p className="text-xs text-muted-foreground font-medium mt-1 leading-relaxed">Configure datas, horários e gere o link para as famílias agendarem</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-indigo-600 font-black text-xs uppercase tracking-widest">
-                    Configurar <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </button>
-
-                {/* Card: Visitas criadas */}
-                <button onClick={() => setActiveView("visitas")}
-                  className="group bg-white rounded-3xl p-6 border-2 border-black/5 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 text-left space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-105 transition-transform relative">
-                    <Users className="w-7 h-7 text-white" />
-                    {totalAll > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 min-w-[22px] h-[22px] rounded-full bg-white border-2 border-green-500 text-green-700 text-[10px] font-black flex items-center justify-center px-1">
-                        {totalAll}
+                <div className="flex items-center gap-2">
+                  <button className="relative p-2 text-indigo-900/70 hover:bg-indigo-100 rounded-full transition-colors">
+                    <Bell className="w-6 h-6" />
+                    {totalConfirmadas > 0 && (
+                      <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center border-2 border-slate-50">
+                        {totalConfirmadas}
                       </span>
                     )}
+                  </button>
+                  <button className="p-2 text-indigo-900/70 hover:bg-indigo-100 rounded-full transition-colors">
+                    <MoreVertical className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Hero Banner */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[28px] overflow-hidden relative shadow-lg shadow-indigo-600/20 h-[220px]">
+                <div className="absolute inset-0 bg-[url('/images/visita_hero.png')] bg-cover bg-right sm:bg-center opacity-90 mix-blend-luminosity"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-700/95 via-indigo-700/80 to-transparent"></div>
+                
+                <div className="relative z-10 p-6 h-full flex flex-col justify-between max-w-[65%]">
+                  <div>
+                    <h3 className="font-black text-white text-xl leading-tight mb-2">A visita do catequista</h3>
+                    <p className="text-xs text-indigo-100/90 font-medium leading-relaxed">
+                      fortalece os laços da comunidade e leva a Palavra de Deus às famílias.
+                    </p>
+                  </div>
+                  <button onClick={() => setActiveView("nova")} className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl self-start shadow-md transition-colors">
+                    Configurar visitas
+                  </button>
+                </div>
+              </div>
+
+              {/* Resumo do painel */}
+              <div>
+                <h3 className="text-sm font-bold text-slate-800 mb-3 px-1">Resumo do painel</h3>
+                <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                  <div className="bg-blue-50/80 rounded-2xl p-3 flex flex-col items-center justify-center text-center border border-blue-100/50">
+                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mb-1.5">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-xl font-black text-slate-800 leading-none mb-1">{totalAll}</span>
+                    <span className="text-[9px] font-medium text-slate-500 leading-tight">Solicitações recebidas</span>
+                  </div>
+                  
+                  <div className="bg-emerald-50/80 rounded-2xl p-3 flex flex-col items-center justify-center text-center border border-emerald-100/50">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center mb-1.5">
+                      <CalendarDays className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-xl font-black text-slate-800 leading-none mb-1">{totalConfirmadas}</span>
+                    <span className="text-[9px] font-medium text-slate-500 leading-tight">Visitas agendadas</span>
+                  </div>
+
+                  <div className="bg-amber-50/80 rounded-2xl p-3 flex flex-col items-center justify-center text-center border border-amber-100/50">
+                    <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center mb-1.5">
+                      <Home className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-xl font-black text-slate-800 leading-none mb-1">{totalRealizadas}</span>
+                    <span className="text-[9px] font-medium text-slate-500 leading-tight">Visitas realizadas</span>
+                  </div>
+
+                  <div className="bg-purple-50/80 rounded-2xl p-3 flex flex-col items-center justify-center text-center border border-purple-100/50">
+                    <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center mb-1.5">
+                      <Heart className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-xl font-black text-slate-800 leading-none mb-1">{totalAdiadas}</span>
+                    <span className="text-[9px] font-medium text-slate-500 leading-tight">Em acompanhamento</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Próximas visitas agendadas */}
+              <div className="bg-white rounded-[24px] p-4 sm:p-5 shadow-sm border border-slate-100">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-bold text-slate-800">Próximas visitas agendadas</h3>
+                  <button onClick={() => { setActiveView("visitas"); setFiltroVisitas("abertas"); }} className="text-xs font-bold text-blue-600 hover:underline">
+                    Ver todas
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {agendamentosFiltrados.filter(a => a.status !== "cancelada" && a.status !== "realizada").slice(0, 3).length === 0 ? (
+                    <p className="text-xs text-center text-slate-400 py-4">Nenhuma visita agendada no momento.</p>
+                  ) : (
+                    agendamentosFiltrados
+                      .filter(a => a.status !== "cancelada" && a.status !== "realizada")
+                      .sort((a, b) => new Date(a.data_visita).getTime() - new Date(b.data_visita).getTime())
+                      .slice(0, 3)
+                      .map(ag => {
+                        const date = new Date(ag.data_visita + "T12:00:00");
+                        const dia = date.getDate().toString().padStart(2, '0');
+                        const mes = date.toLocaleString('pt-BR', { month: 'short' }).toUpperCase();
+                        const diaSemana = date.toLocaleString('pt-BR', { weekday: 'long' });
+                        
+                        return (
+                          <div key={ag.id} className="flex items-center gap-3 pb-3 border-b border-slate-100 last:border-0 last:pb-0">
+                            {/* Ícone de Calendário */}
+                            <div className="w-12 h-14 rounded-xl bg-blue-50 border border-blue-100 flex flex-col items-center overflow-hidden shrink-0">
+                              <div className="bg-blue-600 w-full py-0.5 text-center text-[8px] font-black text-white uppercase tracking-wider flex items-center justify-center gap-0.5">
+                                <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+                                <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+                              </div>
+                              <div className="flex-1 flex flex-col items-center justify-center">
+                                <span className="text-lg font-black text-blue-900 leading-none">{dia}</span>
+                                <span className="text-[9px] font-bold text-blue-600">{mes}</span>
+                              </div>
+                            </div>
+                            
+                            {/* Detalhes */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-slate-800 truncate">Família {ag.nome_crianca}</p>
+                              <p className="text-[10px] text-slate-500 truncate mt-0.5">{ag.nome_responsavel}{ag.telefone ? ` • ${ag.telefone}` : ''}</p>
+                              <p className="text-[10px] text-slate-700 font-medium mt-0.5 capitalize">{diaSemana} • {ag.horario_visita}</p>
+                            </div>
+                            
+                            {/* Status */}
+                            <div className="flex flex-col items-end gap-1">
+                              {ag.status === "adiada" ? (
+                                <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700">Pendente</span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700">Confirmada</span>
+                              )}
+                              <button onClick={() => { setActiveView("visitas"); }} className="text-slate-400">
+                                <ChevronRight className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                  )}
+                </div>
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <button onClick={() => { if (config) copyLink(); else setActiveView("nova"); }} className="bg-blue-50/50 hover:bg-blue-50 rounded-2xl p-4 flex items-start gap-3 transition-colors text-left border border-blue-100/50">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center shrink-0">
+                    <PlusCircle className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-black text-foreground text-base leading-tight">Visitas Criadas</h3>
-                    <p className="text-xs text-muted-foreground font-medium mt-1 leading-relaxed">Gerencie, registre e acompanhe todas as visitas agendadas pelas famílias</p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[10px] font-black bg-green-100 text-green-700 rounded-full px-2 py-0.5">{totalConfirmadas} abertas</span>
-                    <span className="text-[10px] font-black bg-indigo-100 text-indigo-700 rounded-full px-2 py-0.5">{totalRealizadas} realizadas</span>
+                    <h4 className="text-xs font-bold text-blue-950 leading-tight">Novo agendamento</h4>
+                    <p className="text-[9px] text-slate-500 mt-1 leading-tight">Copiar link para a família agendar visita</p>
                   </div>
                 </button>
 
-                {/* Card: Relatório */}
-                <button onClick={() => setActiveView("relatorio")}
-                  className="group bg-white rounded-3xl p-6 border-2 border-black/5 shadow-sm hover:shadow-xl hover:border-amber-200 hover:-translate-y-1 transition-all duration-300 text-left space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-105 transition-transform">
-                    <BarChart3 className="w-7 h-7 text-white" />
+                <button onClick={() => setActiveView("visitas")} className="bg-emerald-50/50 hover:bg-emerald-50 rounded-2xl p-4 flex items-start gap-3 transition-colors text-left border border-emerald-100/50">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 flex items-center justify-center shrink-0">
+                    <CalendarDays className="w-5 h-5 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="font-black text-foreground text-base leading-tight">Relatório de Visitas</h3>
-                    <p className="text-xs text-muted-foreground font-medium mt-1 leading-relaxed">Análise completa: adesão das famílias, dias mais agendados e progresso</p>
+                    <h4 className="text-xs font-bold text-emerald-950 leading-tight">Minhas visitas</h4>
+                    <p className="text-[9px] text-slate-500 mt-1 leading-tight">Acompanhe todas as visitas realizadas</p>
                   </div>
-                  <div className="flex items-center gap-1 text-amber-600 font-black text-xs uppercase tracking-widest">
-                    Ver análise <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                <button className="bg-purple-50/50 hover:bg-purple-50 rounded-2xl p-4 flex items-start gap-3 transition-colors text-left border border-purple-100/50">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-purple-100 flex items-center justify-center shrink-0">
+                    <BookOpen className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-purple-950 leading-tight">Materiais de apoio</h4>
+                    <p className="text-[9px] text-slate-500 mt-1 leading-tight">Roteiros e orientações para a visita</p>
+                  </div>
+                </button>
+
+                <button onClick={() => setActiveView("relatorio")} className="bg-amber-50/50 hover:bg-amber-50 rounded-2xl p-4 flex items-start gap-3 transition-colors text-left border border-amber-100/50">
+                  <div className="w-10 h-10 rounded-xl bg-white border border-amber-100 flex items-center justify-center shrink-0">
+                    <BarChart3 className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-950 leading-tight">Relatórios</h4>
+                    <p className="text-[9px] text-slate-500 mt-1 leading-tight">Veja relatórios e acompanhe os dados</p>
                   </div>
                 </button>
               </div>
+
+              {/* Dica para a visita */}
+              <div className="bg-emerald-50 rounded-2xl p-4 flex gap-4 border border-emerald-100 relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-100 rounded-full opacity-50 blur-xl"></div>
+                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 z-10 shadow-sm">
+                  <Heart className="w-6 h-6 text-emerald-500 fill-emerald-100" />
+                </div>
+                <div className="z-10">
+                  <h4 className="text-xs font-bold text-emerald-900 mb-1">Dica para a visita</h4>
+                  <p className="text-[10px] text-emerald-800/80 font-medium leading-relaxed mb-2">
+                    Escute com atenção, leve esperança e reze com a família. Você é sinal do amor de Deus!
+                  </p>
+                  <p className="text-[9px] font-bold text-emerald-600 italic">
+                    "Ide! Eu estarei com vocês." - Mt 28,20
+                  </p>
+                </div>
+              </div>
+
             </div>
           )}
 
