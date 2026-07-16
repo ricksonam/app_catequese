@@ -612,38 +612,50 @@ export default function CalendarioLiturgico({ onClose }: { onClose?: () => void 
 
   return (
     <div className={`flex flex-col gap-4 transition-all duration-500 ${isFullscreen ? 'fixed inset-0 z-[100] bg-background p-6 overflow-y-auto' : ''}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between animate-fade-in">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              if (isFullscreen) setIsFullscreen(false);
-              else if (onClose) onClose();
-              else navigate("/");
-            }}
-            className="back-btn"
-          >
-            <ArrowLeft className="h-5 w-5 text-foreground" />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center">
-              <Church className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Agenda catequética</h1>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Ano {currentYear}</p>
+      {/* Header e Card Visitas */}
+      <div className="flex flex-col gap-4 animate-fade-in">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                if (isFullscreen) setIsFullscreen(false);
+                else if (onClose) onClose();
+                else navigate("/");
+              }}
+              className="back-btn shrink-0"
+            >
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-primary/12 flex items-center justify-center shrink-0">
+                <Church className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 whitespace-nowrap overflow-hidden">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">Agenda catequética</h1>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Ano {currentYear}</p>
+              </div>
             </div>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-           <button 
-             onClick={() => navigate('/modulos/visitas')}
-             className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 border border-indigo-200"
-           >
-             <Heart className="w-4 h-4" /> Visitas às Famílias
-           </button>
-        </div>
+        {/* Card Premium de Visitas */}
+        <button 
+          onClick={() => navigate('/modulos/visitas')}
+          className="w-full bg-gradient-to-br from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 rounded-[20px] p-4 flex items-center justify-between text-white shadow-lg shadow-indigo-600/20 transition-all border border-indigo-500/50 group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+              <Heart className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-left overflow-hidden">
+              <h3 className="font-bold text-base sm:text-lg leading-tight truncate">Visitas às Famílias</h3>
+              <p className="text-xs text-indigo-100 font-medium truncate mt-0.5">Agende e acompanhe as visitas</p>
+            </div>
+          </div>
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1 transition-transform shrink-0">
+            <ChevronRightIcon className="w-5 h-5 text-white" />
+          </div>
+        </button>
       </div>
 
       {/* Calendar Card */}

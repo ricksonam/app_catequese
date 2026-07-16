@@ -560,7 +560,10 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md">
+          <button onClick={() => navigate('/agenda')} className="p-2 hover:bg-slate-200/50 rounded-full transition-colors shrink-0">
+            <ChevronLeft className="w-6 h-6 text-indigo-900" />
+          </button>
+          <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
             <Home className="w-6 h-6" />
           </div>
           <div>
@@ -604,7 +607,7 @@ export function PainelVisitaFamilia() {
               {/* Resumo do painel */}
               <div>
                 <h3 className="text-base font-bold text-slate-800 mb-4 px-1">Resumo do painel</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <div className="bg-white rounded-2xl p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-blue-500 hover:shadow-md transition-shadow">
                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-2">
                       <Users className="w-5 h-5 text-blue-600" />
@@ -627,14 +630,6 @@ export function PainelVisitaFamilia() {
                     </div>
                     <span className="text-3xl font-black text-slate-800 leading-none mb-1.5">{totalRealizadas}</span>
                     <span className="text-xs font-bold text-slate-500 leading-tight">Visitas realizadas</span>
-                  </div>
-
-                  <div className="bg-white rounded-2xl p-5 flex flex-col items-center justify-center text-center shadow-sm border border-slate-100 border-t-4 border-t-purple-500 hover:shadow-md transition-shadow">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                      <Heart className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <span className="text-3xl font-black text-slate-800 leading-none mb-1.5">{totalAdiadas}</span>
-                    <span className="text-xs font-bold text-slate-500 leading-tight">Em acompanhamento</span>
                   </div>
                 </div>
               </div>
@@ -702,14 +697,14 @@ export function PainelVisitaFamilia() {
               </div>
 
               {/* Botões de Ação */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mt-2">
-                <button onClick={() => { if (config) copyLink(); else setActiveView("nova"); }} className="bg-blue-50/50 hover:bg-blue-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-blue-100/50 shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-2">
+                <button onClick={() => setActiveView("nova")} className="bg-blue-50/50 hover:bg-blue-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-blue-100/50 shadow-sm">
                   <div className="w-12 h-12 rounded-2xl bg-white border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
                     <PlusCircle className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-blue-950 leading-tight">Novo agendamento</h4>
-                    <p className="text-xs text-slate-600 mt-1 leading-tight">Copiar link para agendamento</p>
+                    <p className="text-xs text-slate-600 mt-1 leading-tight">Abrir novas vagas para visitas</p>
                   </div>
                 </button>
 
@@ -723,13 +718,6 @@ export function PainelVisitaFamilia() {
                   </div>
                 </button>
 
-                <button className="bg-purple-50/50 hover:bg-purple-50 rounded-3xl p-5 flex items-center gap-4 transition-colors text-left border border-purple-100/50 shadow-sm">
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-purple-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <BookOpen className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-purple-950 leading-tight">Materiais de apoio</h4>
-                    <p className="text-xs text-slate-600 mt-1 leading-tight">Roteiros para a visita</p>
                   </div>
                 </button>
 
