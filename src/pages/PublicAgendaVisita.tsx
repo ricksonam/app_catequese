@@ -234,71 +234,26 @@ export default function PublicAgendaVisita() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/40 to-purple-50/30 pb-20">
 
-      {/* ── HERO ──────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden">
-        {/* Fundo com gradiente animado */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700" />
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-purple-400/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
-        </div>
-
-        <div className="relative px-6 pt-10 pb-14 max-w-lg mx-auto text-center">
-          {/* Ícone */}
-          <div className="relative inline-block mb-5">
-            <div className="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-xl mx-auto">
-              <Heart className="h-10 w-10 text-white" fill="currentColor" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-yellow-800" />
-            </div>
+      {/* ── HERO (Compacto) ─────────────────────────────────────────── */}
+      <div className="relative overflow-hidden mb-6 shadow-sm">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-700" />
+        <div className="relative px-5 py-6 max-w-lg mx-auto flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/30 shadow-md">
+            <Heart className="h-7 w-7 text-white" fill="currentColor" />
           </div>
-
-          {/* Textos */}
-          <p className="text-indigo-200 text-[11px] font-black uppercase tracking-[0.4em] mb-2">Agendamento de</p>
-          <h1 className="text-3xl font-black text-white tracking-tight leading-tight">
-            {config.titulo}
-          </h1>
-          <p className="text-indigo-200 font-bold mt-2 text-sm">
-            Turma {config.turma_nome}
-          </p>
-
-          {/* Badge de vagas */}
-          {diasDisponiveis.length > 0 && (
-            <div className="mt-4 inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-2">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-white text-xs font-bold">
-                {totalVagasRestantes} horário{totalVagasRestantes !== 1 ? "s" : ""} disponível{totalVagasRestantes !== 1 ? "is" : ""}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── STEPS ─────────────────────────────────────────────────────── */}
-      <div className="max-w-lg mx-auto px-4 -mt-5 mb-6">
-        <div className="bg-white rounded-3xl shadow-xl border border-black/5 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all", currentStep >= 1 ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400")}>
-                {currentStep > 1 ? <CheckCircle2 className="w-4 h-4" /> : "1"}
+          <div className="flex-1 min-w-0">
+            <p className="text-indigo-200 text-[9px] font-black uppercase tracking-[0.2em] mb-1">Agendamento · {config.turma_nome}</p>
+            <h1 className="text-xl font-black text-white tracking-tight leading-tight truncate">
+              {config.titulo}
+            </h1>
+            {diasDisponiveis.length > 0 && (
+              <div className="mt-2 inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-2.5 py-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                <span className="text-white text-[10px] font-bold">
+                  {totalVagasRestantes} vagas
+                </span>
               </div>
-              <span className={cn("text-xs font-black uppercase tracking-widest", currentStep >= 1 ? "text-indigo-600" : "text-slate-400")}>Escolher dia</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-slate-300" />
-            <div className="flex items-center gap-3">
-              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all", currentStep >= 2 ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400")}>
-                {currentStep > 2 ? <CheckCircle2 className="w-4 h-4" /> : "2"}
-              </div>
-              <span className={cn("text-xs font-black uppercase tracking-widest", currentStep >= 2 ? "text-indigo-600" : "text-slate-400")}>Seus dados</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-slate-300" />
-            <div className="flex items-center gap-3">
-              <div className={cn("w-8 h-8 rounded-full flex items-center justify-center font-black text-sm transition-all", currentStep >= 3 ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400")}>
-                "3"
-              </div>
-              <span className={cn("text-xs font-black uppercase tracking-widest", currentStep >= 3 ? "text-indigo-600" : "text-slate-400")}>Confirmar</span>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -378,13 +333,17 @@ export default function PublicAgendaVisita() {
                         return !diasDisponiveis.some((d: any) => d.data === str);
                       }}
                       className={cn(
-                        "rounded-2xl border-2 border-slate-100 bg-white shadow-sm w-full",
+                        "rounded-2xl border-2 border-slate-100 bg-white shadow-sm w-full p-2 sm:p-4",
+                        "[&_.rdp]:w-full [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_table]:w-full",
+                        "[&_.rdp-cell]:p-0.5",
+                        "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-14 [&_.rdp-day_button]:text-base sm:[&_.rdp-day_button]:text-lg",
                         "[&_.rdp-day_button:not(.rdp-day_disabled):not(.rdp-day_outside)]:hover:bg-indigo-100",
                         "[&_.rdp-day_button:not(.rdp-day_disabled):not(.rdp-day_outside)]:hover:text-indigo-800",
                       )}
                       classNames={{
-                        day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white rounded-xl shadow-lg shadow-indigo-600/30",
+                        day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white rounded-xl shadow-lg shadow-indigo-600/30 scale-105 transition-transform",
                         day_disabled: "text-slate-200 opacity-50",
+                        head_cell: "text-slate-400 font-bold text-xs sm:text-sm uppercase pb-2",
                       }}
                       components={{
                         DayContent: ({ date }) => {
