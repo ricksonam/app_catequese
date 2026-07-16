@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronRight, Ban, CalendarDays, Timer,
   BarChart3, BookOpen, PlusCircle, ArrowRight, Star,
   CheckSquare, FileText, Sparkles, TrendingUp, Activity,
-  Info, ChevronLeft, ArrowLeft, Bell, MoreVertical, Home
+  Info, ChevronLeft, ArrowLeft, Bell, MoreVertical, Home, X
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -289,7 +289,10 @@ function AgendamentoCard({ agendamento, diasConfig, onCancel, onAdiar, onDelete,
       isRealizada ? "bg-indigo-50/50 border-indigo-100" :
       isAdiada ? "bg-amber-50/50 border-amber-100" : "bg-white border-black/5 shadow-sm"
     )}>
-      <div className="p-4 flex items-start gap-3">
+      <div className="p-4 flex items-start gap-3 relative">
+        <button onClick={() => onDelete(agendamento.id)} className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50/50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Excluir">
+          <Trash2 className="w-4 h-4" />
+        </button>
         <div className={cn(
           "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-black text-sm",
           isCanceled ? "bg-red-100 text-red-500" :
@@ -365,32 +368,30 @@ function AgendamentoCard({ agendamento, diasConfig, onCancel, onAdiar, onDelete,
 
       {/* Ações */}
       {/* Ações */}
-      <div className={cn("border-t px-4 py-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end",
-        isCanceled ? "border-red-100 bg-red-50/30" : isRealizada ? "border-indigo-100 bg-indigo-50/30" : "border-black/5 bg-slate-50/50"
-      )}>
-        {!isCanceled && (
-          <button onClick={() => onDiario(agendamento)}
-            className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
-            <BookOpen className="w-3.5 h-3.5" /> {isRealizada ? "Ver Diário" : "Registrar Visita"}
-          </button>
-        )}
-        {!isCanceled && !isAdiada && !isRealizada && (
-          <button onClick={() => onAdiar(agendamento)}
-            className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
-            <CalendarClock className="w-3.5 h-3.5" /> Adiar
-          </button>
-        )}
-        {!isCanceled && !isRealizada && (
-          <button onClick={() => onCancel(agendamento)}
-            className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
-            <Ban className="w-3.5 h-3.5" /> Cancelar
-          </button>
-        )}
-        <button onClick={() => onDelete(agendamento.id)}
-          className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-white text-muted-foreground border border-black/10 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
-          <Trash2 className="w-3.5 h-3.5" /> Excluir
-        </button>
-      </div>
+      {!isCanceled && (
+        <div className={cn("border-t px-4 py-3 flex gap-2 sm:gap-3 w-full",
+          isCanceled ? "border-red-100 bg-red-50/30" : isRealizada ? "border-indigo-100 bg-indigo-50/30" : "border-black/5 bg-slate-50/50"
+        )}>
+          {!isCanceled && (
+            <button onClick={() => onDiario(agendamento)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
+              <BookOpen className="w-4 h-4" /> {isRealizada ? "Ver Diário" : "Registrar"}
+            </button>
+          )}
+          {!isCanceled && !isAdiada && !isRealizada && (
+            <button onClick={() => onAdiar(agendamento)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
+              <CalendarClock className="w-4 h-4" /> Adiar
+            </button>
+          )}
+          {!isCanceled && !isRealizada && (
+            <button onClick={() => onCancel(agendamento)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:scale-[1.02] active:scale-95 transition-all shadow-sm">
+              <Ban className="w-4 h-4" /> Cancelar
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -572,8 +573,8 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => window.location.href = '/modulos/calendario'} className="back-btn shrink-0">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
+          <button onClick={() => navigate('/modulos/calendario')} className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-black/5 bg-white text-slate-500 hover:bg-slate-50 shrink-0">
+            <X className="h-5 w-5 text-foreground" />
           </button>
           <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
             <Home className="w-6 h-6" />
