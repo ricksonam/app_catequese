@@ -8,7 +8,8 @@ import Spinner from "@/components/ui/spinner";
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar as CalendarUI } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
 
 export function PainelVisitaFamilia() {
   const queryClient = useQueryClient();
@@ -88,14 +89,21 @@ export function PainelVisitaFamilia() {
     mutationSave.mutate(form);
   };
 
-  const addDia = (dataStr: string) => {
-    if (!dataStr) return;
+  const handleSelectDates = (dates: Date[] | undefined) => {
+    if (!dates) {
+      setForm(prev => ({ ...prev, dias_horarios: [] }));
+      return;
+    }
     setForm(prev => {
-      if (prev.dias_horarios?.find(d => d.data === dataStr)) return prev;
-      return {
-        ...prev,
-        dias_horarios: [...(prev.dias_horarios || []), { data: dataStr, horarios: [] }].sort((a, b) => a.data.localeCompare(b.data))
-      };
+      const current = prev.dias_horarios || [];
+      const newStr = dates.map(d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+      const nextDias = current.filter(d => newStr.includes(d.data));
+      newStr.forEach(str => {
+        if (!nextDias.find(d => d.data === str)) {
+          nextDias.push({ data: str, horarios: [] });
+        }
+      });
+      return { ...prev, dias_horarios: nextDias.sort((a,b) => a.data.localeCompare(b.data)) };
     });
   };
 
@@ -228,28 +236,25 @@ export function PainelVisitaFamilia() {
               </div>
 
               {/* DIAS E HORÁRIOS */}
-              <div className="pt-4 border-t border-black/5 space-y-4">
+              <div className="pt-4 border-t border-black/5 space-y-6">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black uppercase tracking-widest text-foreground">Dias Disponíveis</h4>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <button className="text-[10px] font-black uppercase text-primary bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5">
-                        <Plus className="w-3 h-3" /> Adicionar Dia
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[400px]">
-                      <DialogHeader>
-                        <DialogTitle>Escolha um Dia</DialogTitle>
-                      </DialogHeader>
-                      <div className="py-6">
-                        <CustomDatePicker
-                          label="Data da Visita"
-                          value={""}
-                          onChange={(v) => addDia(v)}
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <div>
+                    <h4 className="text-sm font-black uppercase tracking-widest text-foreground">Dias Disponíveis</h4>
+                    <p className="text-xs text-muted-foreground font-medium">Selecione os dias no calendário</p>
+                  </div>
+                </div>
+
+                <div className="bg-muted/10 rounded-3xl p-4 border border-black/5 flex justify-center">
+                  <CalendarUI
+                    mode="multiple"
+                    selected={form.dias_horarios?.map(d => new Date(d.data + "T12:00:00")) || []}
+                    onSelect={handleSelectDates}
+                    locale={ptBR}
+                    className="bg-white rounded-2xl border-2 border-black/5 shadow-sm p-3"
+                    classNames={{
+                      day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                    }}
+                  />
                 </div>
 
                 {(!form.dias_horarios || form.dias_horarios.length === 0) && (
@@ -319,7 +324,7 @@ export function PainelVisitaFamilia() {
                 className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
               >
                 {mutationSave.isPending ? <Spinner size="sm" color="white" /> : <Save className="w-4 h-4" />}
-                {config ? "Salvar Alterações" : "Criar Painel de Visitas"}
+                {config ? "Salvar Alterações" : "Criar Agenda de Visitas"}
               </button>
             </div>
           </div>
