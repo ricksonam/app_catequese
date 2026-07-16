@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Calendar, Clock, Plus, Trash2, Link, Save, CheckCircle2, Copy, Heart, Settings, Users, ArrowLeft } from "lucide-react";
+import { Calendar, Clock, Plus, Trash2, Link, Save, CheckCircle2, Copy, Heart, Settings, Users, ArrowLeft, Share2 } from "lucide-react";
 import { fetchTurmas, fetchVisitaConfigByTurma, upsertVisitaConfig, fetchAgendamentosByConfig, removeVisitaAgendamento } from "@/lib/supabaseStore";
 import { type Turma, type VisitaFamiliasConfig, type VisitaAgendamento, type VisitaDiaHorarios } from "@/lib/store";
 import { toast } from "sonner";
@@ -342,13 +342,34 @@ export function PainelVisitaFamilia() {
                   Envie este link no grupo do WhatsApp. Os pais poderão escolher um dos horários disponíveis.
                 </p>
                 
-                <button 
-                  onClick={copyLink}
-                  className="w-full py-3 bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 backdrop-blur-sm"
-                >
-                  {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  {copied ? "Link Copiado!" : "Copiar Link"}
-                </button>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={copyLink}
+                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 backdrop-blur-sm"
+                  >
+                    {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copied ? "Copiado!" : "Copiar"}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const url = `${window.location.origin}/visita-familia/${config.token}`;
+                      if (navigator.share) {
+                        navigator.share({
+                          title: config.titulo || 'Agendamento de Visita',
+                          text: `Agende sua visita comigo! ${config.tema ? `Assunto: ${config.tema}. ` : ''}Acesse o link:`,
+                          url: url
+                        }).catch((err) => {
+                          console.error("Erro no share", err);
+                        });
+                      } else {
+                        copyLink();
+                      }
+                    }}
+                    className="flex-[2] py-3 bg-white text-indigo-600 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10 hover:scale-[1.02]"
+                  >
+                    <Share2 className="w-4 h-4" /> Compartilhar
+                  </button>
+                </div>
               </div>
             )}
 
