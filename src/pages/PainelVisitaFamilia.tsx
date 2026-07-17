@@ -285,12 +285,12 @@ function AgendamentoCard({ agendamento, diasConfig, onCancel, onAdiar, onDelete,
   return (
     <div className={cn(
       "rounded-2xl border-2 transition-all duration-200 overflow-hidden",
-      isCanceled ? "bg-red-50/50 border-red-100" :
-      isRealizada ? "bg-indigo-50/50 border-indigo-100" :
-      isAdiada ? "bg-amber-50/50 border-amber-100" : "bg-white border-black/5 shadow-sm"
+      isCanceled ? "bg-red-50/50 border-red-200" :
+      isRealizada ? "bg-indigo-50/50 border-indigo-200" :
+      isAdiada ? "bg-amber-50/50 border-amber-200" : "bg-white border-slate-300 shadow-md"
     )}>
       <div className="p-4 flex items-start gap-3 relative">
-        <button onClick={() => onDelete(agendamento.id)} className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50/50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Excluir">
+        <button onClick={() => onDelete(agendamento.id)} className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-600 shadow-sm transition-colors" title="Excluir">
           <Trash2 className="w-4 h-4" />
         </button>
         <div className={cn(
@@ -648,6 +648,30 @@ export function PainelVisitaFamilia() {
           {activeView === "home" && (
             <div className="space-y-6">
 
+              {/* Botões de Ação */}
+              <div className="flex flex-col gap-3 pt-2">
+                <div className="flex justify-center">
+                  <button onClick={() => setActiveView("nova")} className="w-full bg-blue-600 hover:bg-blue-700 rounded-2xl p-4 flex items-center justify-center gap-3 transition-all text-center border border-blue-600 shadow-md group">
+                    <PlusCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                    <h4 className="text-sm font-black text-white uppercase tracking-widest">Novo Agendamento</h4>
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-3 w-full">
+                  <button onClick={() => setActiveView("visitas")} className="bg-emerald-50 hover:bg-emerald-100 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all text-center border border-emerald-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mb-1">
+                      <CalendarDays className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <h4 className="text-[11px] sm:text-xs font-black text-emerald-950 uppercase tracking-wide">Visitas Agendadas</h4>
+                  </button>
+                  <button onClick={() => setActiveView("relatorio")} className="bg-amber-50 hover:bg-amber-100 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all text-center border border-amber-200 shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-1">
+                      <BarChart3 className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <h4 className="text-[11px] sm:text-xs font-black text-amber-950 uppercase tracking-wide">Relatórios</h4>
+                  </button>
+                </div>
+              </div>
+
               {/* Resumo do painel */}
               <div>
                 <h3 className="text-base font-bold text-slate-800 mb-4 px-1">Resumo do painel</h3>
@@ -740,38 +764,7 @@ export function PainelVisitaFamilia() {
                 </div>
               </div>
 
-              {/* Botões de Ação */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-2">
-                <button onClick={() => setActiveView("nova")} className="bg-blue-50/50 hover:bg-blue-50 rounded-[1rem] sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-colors text-center sm:text-left sm:flex-row border border-blue-100/50 shadow-sm h-full">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                  </div>
-                  <div className="flex flex-col items-center sm:items-start">
-                    <h4 className="text-[10px] sm:text-sm font-bold text-blue-950 leading-tight">Novo agend.</h4>
-                    <p className="hidden sm:block text-xs text-slate-600 mt-1 leading-tight">Abrir vagas</p>
-                  </div>
-                </button>
-
-                <button onClick={() => setActiveView("visitas")} className="bg-emerald-50/50 hover:bg-emerald-50 rounded-[1rem] sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-colors text-center sm:text-left sm:flex-row border border-emerald-100/50 shadow-sm h-full">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white border border-emerald-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
-                  </div>
-                  <div className="flex flex-col items-center sm:items-start">
-                    <h4 className="text-[10px] sm:text-sm font-bold text-emerald-950 leading-tight">Visitas</h4>
-                    <p className="hidden sm:block text-xs text-slate-600 mt-1 leading-tight">Acompanhar</p>
-                  </div>
-                </button>
-
-                <button onClick={() => setActiveView("relatorio")} className="bg-amber-50/50 hover:bg-amber-50 rounded-[1rem] sm:rounded-3xl p-3 sm:p-5 flex flex-col items-center justify-center gap-2 sm:gap-4 transition-colors text-center sm:text-left sm:flex-row border border-amber-100/50 shadow-sm h-full">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white border border-amber-100 flex items-center justify-center shrink-0 shadow-sm">
-                    <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
-                  </div>
-                  <div className="flex flex-col items-center sm:items-start">
-                    <h4 className="text-[10px] sm:text-sm font-bold text-amber-950 leading-tight">Relatórios</h4>
-                    <p className="hidden sm:block text-xs text-slate-600 mt-1 leading-tight">Estatísticas</p>
-                  </div>
-                </button>
-              </div>
+              {/* Botões de Ação Removidos Daqui */}
 
               {/* Dica para a visita */}
               <div className="bg-emerald-50 rounded-2xl p-4 flex gap-4 border border-emerald-100 relative overflow-hidden">
