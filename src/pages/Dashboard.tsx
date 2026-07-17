@@ -99,7 +99,7 @@ export default function Dashboard() {
   // Pré-carrega todas as imagens dos módulos para exibição imediata
   useEffect(() => {
     const preloadImages = [
-      '/card_catequizandos.jpg',
+      '/icone_catequizandos.png',
       '/icone_encontros.png',
       '/icone-eventos.png?v=2',
       '/icone-reunioes.png?v=2',
@@ -513,7 +513,7 @@ export default function Dashboard() {
   const turmaModules = useMemo(() => [
     {
       title: "Catequizandos",
-      image: "/card_catequizandos.jpg",
+      image: "/icone_catequizandos.png",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/catequizandos`);
