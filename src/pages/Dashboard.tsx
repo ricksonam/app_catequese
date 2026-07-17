@@ -100,7 +100,7 @@ export default function Dashboard() {
   useEffect(() => {
     const preloadImages = [
       '/card_catequizandos.jpg',
-      '/card_encontros.jpg',
+      '/icone_encontros.png',
       '/icone-eventos.png?v=2',
       '/icone-reunioes.png?v=2',
       '/icone_trilha.png',
@@ -527,7 +527,7 @@ export default function Dashboard() {
     },
     {
       title: "Encontros",
-      image: "/card_encontros.jpg",
+      image: "/icone_encontros.png",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/encontros`);
