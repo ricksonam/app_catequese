@@ -575,8 +575,8 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/modulos/calendario')} className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-black/5 bg-white text-slate-500 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all shrink-0 group" title="Fechar">
-            <X className="h-5 w-5 text-slate-400 group-hover:text-red-500 transition-colors" />
+          <button onClick={() => navigate('/modulos/calendario')} className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-red-200 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 shadow-sm transition-all shrink-0" title="Fechar Painel">
+            <X className="h-6 w-6 stroke-[2.5]" />
           </button>
           <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
             <Home className="w-6 h-6" />
