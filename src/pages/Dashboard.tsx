@@ -101,7 +101,11 @@ export default function Dashboard() {
     const preloadImages = [
       '/icone_catequizandos.png',
       '/icone_encontros.png',
-      '/icone-eventos.png?v=2',
+      '/icone_eventos_new.png',
+      '/icone_reunioes_new.png',
+      '/icone_trilha_new.png',
+      '/icone_diario_new.png',
+      '/icone_biblia_new.png',
       '/icone-reunioes.png?v=2',
       '/icone_trilha.png',
       '/icone_diario.png?v=2',
@@ -541,7 +545,7 @@ export default function Dashboard() {
     },
     {
       title: "Eventos",
-      image: "/icone-eventos.png?v=2",
+      image: "/icone_eventos_new.png",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/eventos`);
@@ -555,7 +559,7 @@ export default function Dashboard() {
     },
     {
       title: "Reuniões",
-      image: "/icone-reunioes.png?v=2",
+      image: "/icone_reunioes_new.png",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/reunioes`);
@@ -569,7 +573,7 @@ export default function Dashboard() {
     },
     {
       title: "Trilha Sacramental",
-      image: "/icone_trilha.png",
+      image: "/icone_trilha_new.png",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/trilha-sacramental`);
@@ -583,7 +587,7 @@ export default function Dashboard() {
     },
     {
       title: "Diário",
-      image: "/icone_diario.png?v=2",
+      image: "/icone_diario_new.png",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/diario`);
@@ -601,7 +605,7 @@ export default function Dashboard() {
   const globalModules = useMemo(() => [
     {
       title: "Bíblia",
-      image: "/card_biblia.jpg",
+      image: "/icone_biblia_new.png",
       onClick: () => navigate("/modulos/biblia")
     },
     {
