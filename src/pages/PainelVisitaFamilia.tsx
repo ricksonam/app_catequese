@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   Calendar, Clock, Plus, Trash2, Link, Save, CheckCircle2, Copy,
   Heart, Users, Share2, XCircle, CalendarClock,
@@ -399,6 +400,7 @@ function AgendamentoCard({ agendamento, diasConfig, onCancel, onAdiar, onDelete,
 // ─── Componente Principal ─────────────────────────────────────────────────────
 export function PainelVisitaFamilia() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedTurma, setSelectedTurma] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
@@ -573,8 +575,8 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/modulos/calendario')} className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-black/5 bg-white text-slate-500 hover:bg-slate-50 shrink-0">
-            <X className="h-5 w-5 text-foreground" />
+          <button onClick={() => navigate('/modulos/calendario')} className="w-10 h-10 flex items-center justify-center rounded-2xl border-2 border-black/5 bg-white text-slate-500 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all shrink-0 group" title="Fechar">
+            <X className="h-5 w-5 text-slate-400 group-hover:text-red-500 transition-colors" />
           </button>
           <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
             <Home className="w-6 h-6" />
