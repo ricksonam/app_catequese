@@ -47,23 +47,47 @@ export function ModuleIcon({ type, className }: ModuleIconProps) {
         <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="bg-enc" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#15803d" />
-              <stop offset="100%" stopColor="#4ade80" />
+              <stop offset="0%" stopColor="#064e3b" />
+              <stop offset="100%" stopColor="#10b981" />
+            </linearGradient>
+            <linearGradient id="flame-enc" x1="0%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stopColor="#fbbf24" />
+              <stop offset="100%" stopColor="#fef3c7" />
             </linearGradient>
           </defs>
           <rect width="100" height="100" fill="url(#bg-enc)" />
-          {/* Livro aberto */}
-          <path d="M20 65 L20 35 Q50 28 50 35 L50 65 Q50 60 20 65Z" fill="white" fillOpacity="0.9" />
-          <path d="M80 65 L80 35 Q50 28 50 35 L50 65 Q50 60 80 65Z" fill="white" fillOpacity="0.75" />
-          <line x1="50" y1="35" x2="50" y2="65" stroke="#15803d" strokeWidth="2" />
-          {/* Cruz no livro */}
-          <rect x="47" y="41" width="6" height="18" rx="1.5" fill="#15803d" fillOpacity="0.5" />
-          <rect x="41" y="47" width="18" height="6" rx="1.5" fill="#15803d" fillOpacity="0.5" />
-          {/* 4 pessoas em volta */}
-          <circle cx="50" cy="20" r="7" fill="white" />
-          <circle cx="20" cy="50" r="7" fill="white" />
-          <circle cx="80" cy="50" r="7" fill="white" />
-          <circle cx="50" cy="82" r="7" fill="white" />
+          {/* Brilho central suave */}
+          <circle cx="50" cy="50" r="28" fill="white" fillOpacity="0.07" />
+          {/* Pomba central */}
+          <ellipse cx="50" cy="46" rx="11" ry="7" fill="white" fillOpacity="0.95" />
+          <path d="M57 43 L68 36 L60 46" fill="white" fillOpacity="0.95" />
+          <circle cx="53" cy="42" r="2.5" fill="white" />
+          <circle cx="54" cy="41.5" r="1" fill="#064e3b" />
+          {/* Asa inferior */}
+          <path d="M43 48 Q36 56 44 54" fill="white" fillOpacity="0.7" />
+          {/* 5 velas ao redor */}
+          {/* vela topo */}
+          <rect x="47" y="14" width="6" height="14" rx="3" fill="white" fillOpacity="0.9" />
+          <ellipse cx="50" cy="13" rx="3" ry="4" fill="url(#flame-enc)" fillOpacity="0.95" />
+          <rect x="49" y="28" width="2" height="4" rx="1" fill="white" fillOpacity="0.5" />
+          {/* vela dir-cima */}
+          <rect x="72" y="25" width="6" height="14" rx="3" fill="white" fillOpacity="0.9" transform="rotate(30 75 32)" />
+          <ellipse cx="75" cy="23" rx="3" ry="4" fill="url(#flame-enc)" fillOpacity="0.95" transform="rotate(30 75 23)" />
+          {/* vela dir-baixo */}
+          <rect x="72" y="60" width="6" height="14" rx="3" fill="white" fillOpacity="0.9" transform="rotate(-30 75 67)" />
+          <ellipse cx="75" cy="58" rx="3" ry="4" fill="url(#flame-enc)" fillOpacity="0.95" transform="rotate(-30 75 58)" />
+          {/* vela esq-cima */}
+          <rect x="22" y="25" width="6" height="14" rx="3" fill="white" fillOpacity="0.9" transform="rotate(-30 25 32)" />
+          <ellipse cx="25" cy="23" rx="3" ry="4" fill="url(#flame-enc)" fillOpacity="0.95" transform="rotate(-30 25 23)" />
+          {/* vela esq-baixo */}
+          <rect x="22" y="60" width="6" height="14" rx="3" fill="white" fillOpacity="0.9" transform="rotate(30 25 67)" />
+          <ellipse cx="25" cy="58" rx="3" ry="4" fill="url(#flame-enc)" fillOpacity="0.95" transform="rotate(30 25 58)" />
+          {/* vela baixo */}
+          <rect x="47" y="72" width="6" height="14" rx="3" fill="white" fillOpacity="0.9" />
+          <ellipse cx="50" cy="71" rx="3" ry="4" fill="url(#flame-enc)" fillOpacity="0.95" />
+          {/* Ramo de oliveira no bico da pomba */}
+          <path d="M60 46 Q64 50 62 54" stroke="#6ee7b7" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+          <ellipse cx="63" cy="52" rx="3" ry="2" fill="#6ee7b7" fillOpacity="0.9" transform="rotate(-30 63 52)" />
         </svg>
       );
 
@@ -126,25 +150,42 @@ export function ModuleIcon({ type, className }: ModuleIconProps) {
         <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="bg-tri" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#6d28d9" />
-              <stop offset="100%" stopColor="#c084fc" />
+              <stop offset="0%" stopColor="#4c1d95" />
+              <stop offset="100%" stopColor="#7c3aed" />
+            </linearGradient>
+            <linearGradient id="gold-tri" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fbbf24" />
+              <stop offset="100%" stopColor="#f59e0b" />
             </linearGradient>
           </defs>
           <rect width="100" height="100" fill="url(#bg-tri)" />
-          {/* Estrada sinuosa */}
-          <path d="M50 85 Q35 70 45 55 Q55 40 40 25" stroke="white" strokeOpacity="0.9" strokeWidth="8" fill="none" strokeLinecap="round" />
-          <path d="M50 85 Q35 70 45 55 Q55 40 40 25" stroke="white" strokeOpacity="0.2" strokeWidth="12" fill="none" strokeLinecap="round" />
-          {/* Marcadores da trilha */}
-          <circle cx="50" cy="85" r="5" fill="white" />
-          <circle cx="45" cy="62" r="5" fill="white" fillOpacity="0.8" />
-          <circle cx="40" cy="25" r="6" fill="#fbbf24" />
-          {/* Cruz dourada no topo */}
-          <rect x="37" y="12" width="6" height="18" rx="2" fill="#fbbf24" />
-          <rect x="31" y="17" width="18" height="6" rx="2" fill="#fbbf24" />
-          {/* Pomba */}
-          <ellipse cx="72" cy="30" rx="10" ry="6" fill="white" fillOpacity="0.85" transform="rotate(-20 72 30)" />
-          <path d="M78 28 L86 22 L80 30" fill="white" fillOpacity="0.85" />
-          <circle cx="74" cy="25" r="3" fill="white" fillOpacity="0.9" />
+          {/* Caminho dourado central */}
+          <path d="M50 92 L50 18" stroke="url(#gold-tri)" strokeWidth="4" strokeLinecap="round" strokeDasharray="3 4" />
+          {/* === BATISMO (base) === */}
+          <circle cx="50" cy="82" r="10" fill="white" fillOpacity="0.2" />
+          <circle cx="50" cy="82" r="10" fill="none" stroke="white" strokeOpacity="0.6" strokeWidth="1.5" />
+          {/* gota de água */}
+          <path d="M50 75 Q46 80 46 83 Q46 87 50 87 Q54 87 54 83 Q54 80 50 75Z" fill="white" fillOpacity="0.9" />
+          {/* === EUCARISTIA (meio) === */}
+          <circle cx="50" cy="50" r="11" fill="white" fillOpacity="0.2" />
+          <circle cx="50" cy="50" r="11" fill="none" stroke="#fbbf24" strokeOpacity="0.8" strokeWidth="1.5" />
+          {/* hóstia */}
+          <circle cx="50" cy="50" r="7" fill="white" fillOpacity="0.9" />
+          <rect x="47.5" y="45" width="5" height="10" rx="1" fill="#4c1d95" fillOpacity="0.4" />
+          <rect x="45" y="48" width="10" height="4" rx="1" fill="#4c1d95" fillOpacity="0.4" />
+          {/* === CRISMA (topo) === */}
+          <circle cx="50" cy="22" r="10" fill="white" fillOpacity="0.2" />
+          <circle cx="50" cy="22" r="10" fill="none" stroke="#fb923c" strokeOpacity="0.8" strokeWidth="1.5" />
+          {/* chama */}
+          <path d="M50 14 Q46 18 47 22 Q48 26 50 27 Q52 26 53 22 Q54 18 50 14Z" fill="#fbbf24" fillOpacity="0.95" />
+          <path d="M50 17 Q48 20 48 22 Q49 25 50 26 Q51 25 52 22 Q52 20 50 17Z" fill="white" fillOpacity="0.6" />
+          {/* Rótulos laterais — pontos decorativos */}
+          <circle cx="30" cy="82" r="3" fill="#7dd3fc" fillOpacity="0.7" />
+          <circle cx="30" cy="50" r="3" fill="#fbbf24" fillOpacity="0.7" />
+          <circle cx="30" cy="22" r="3" fill="#fb923c" fillOpacity="0.7" />
+          <circle cx="70" cy="82" r="3" fill="#7dd3fc" fillOpacity="0.7" />
+          <circle cx="70" cy="50" r="3" fill="#fbbf24" fillOpacity="0.7" />
+          <circle cx="70" cy="22" r="3" fill="#fb923c" fillOpacity="0.7" />
         </svg>
       );
 
@@ -210,30 +251,40 @@ export function ModuleIcon({ type, className }: ModuleIconProps) {
       return (
         <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="bg-ora" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4c1d95" />
-              <stop offset="100%" stopColor="#a78bfa" />
+            <linearGradient id="bg-ora" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#1e1b4b" />
+              <stop offset="100%" stopColor="#4f46e5" />
             </linearGradient>
-            <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#fbbf24" />
-              <stop offset="100%" stopColor="#fde68a" />
-            </linearGradient>
+            <radialGradient id="divlight" cx="50%" cy="30%" r="50%">
+              <stop offset="0%" stopColor="#fef3c7" stopOpacity="0.8" />
+              <stop offset="60%" stopColor="#fbbf24" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+            </radialGradient>
           </defs>
           <rect width="100" height="100" fill="url(#bg-ora)" />
-          {/* Auréola dourada */}
-          <circle cx="50" cy="30" r="22" fill="url(#glow)" fillOpacity="0.3" />
-          <circle cx="50" cy="30" r="18" fill="url(#glow)" fillOpacity="0.15" />
-          {/* Cruz no centro da auréola */}
-          <rect x="47" y="15" width="6" height="22" rx="2" fill="white" fillOpacity="0.9" />
-          <rect x="39" y="22" width="22" height="6" rx="2" fill="white" fillOpacity="0.9" />
-          {/* Mãos em oração */}
-          <ellipse cx="43" cy="66" rx="9" ry="20" rx2="8" fill="white" fillOpacity="0.9" transform="rotate(-10 43 66)" />
-          <ellipse cx="57" cy="66" rx="9" ry="20" fill="white" fillOpacity="0.85" transform="rotate(10 57 66)" />
-          {/* Rosário */}
-          <circle cx="24" cy="58" r="3" fill="#fbbf24" />
-          <circle cx="20" cy="66" r="3" fill="#fbbf24" />
-          <circle cx="19" cy="75" r="3" fill="#fbbf24" />
-          <path d="M24 58 Q20 62 20 66 Q19 70 19 75" stroke="#fbbf24" strokeOpacity="0.5" strokeWidth="1.5" fill="none" />
+          {/* Luz divina irradiando do alto */}
+          <ellipse cx="50" cy="18" rx="30" ry="20" fill="url(#divlight)" />
+          {/* Raios de luz */}
+          <line x1="50" y1="8" x2="20" y2="55" stroke="#fde68a" strokeOpacity="0.25" strokeWidth="6" strokeLinecap="round" />
+          <line x1="50" y1="8" x2="50" y2="60" stroke="#fde68a" strokeOpacity="0.3" strokeWidth="6" strokeLinecap="round" />
+          <line x1="50" y1="8" x2="80" y2="55" stroke="#fde68a" strokeOpacity="0.25" strokeWidth="6" strokeLinecap="round" />
+          <line x1="50" y1="8" x2="10" y2="40" stroke="#fde68a" strokeOpacity="0.15" strokeWidth="4" strokeLinecap="round" />
+          <line x1="50" y1="8" x2="90" y2="40" stroke="#fde68a" strokeOpacity="0.15" strokeWidth="4" strokeLinecap="round" />
+          {/* Símbolo IHS / pomba no centro da luz */}
+          <circle cx="50" cy="22" r="10" fill="#fbbf24" fillOpacity="0.9" />
+          <circle cx="50" cy="22" r="7" fill="white" fillOpacity="0.95" />
+          {/* Cruz na bolinha */}
+          <rect x="48.5" y="17" width="3" height="10" rx="1" fill="#4f46e5" fillOpacity="0.7" />
+          <rect x="45" y="20.5" width="10" height="3" rx="1" fill="#4f46e5" fillOpacity="0.7" />
+          {/* Mão esquerda aberta, voltada para cima */}
+          <path d="M18 88 Q18 68 26 62 Q30 60 33 62 Q36 60 38 63 Q40 60 42 63 Q44 60 46 64 L46 75 Q44 76 42 75 Q40 76 38 75 Q35 76 33 75 Q30 76 28 78 Q26 82 26 88 Z"
+            fill="white" fillOpacity="0.9" />
+          {/* Mão direita aberta, voltada para cima */}
+          <path d="M82 88 Q82 68 74 62 Q70 60 67 62 Q64 60 62 63 Q60 60 58 63 Q56 60 54 64 L54 75 Q56 76 58 75 Q60 76 62 75 Q65 76 67 75 Q70 76 72 78 Q74 82 74 88 Z"
+            fill="white" fillOpacity="0.85" />
+          {/* Brilhinho nas palmas */}
+          <circle cx="36" cy="72" r="2.5" fill="#fbbf24" fillOpacity="0.6" />
+          <circle cx="64" cy="72" r="2.5" fill="#fbbf24" fillOpacity="0.6" />
         </svg>
       );
 
@@ -242,30 +293,42 @@ export function ModuleIcon({ type, className }: ModuleIconProps) {
         <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="bg-lit" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#b45309" />
-              <stop offset="100%" stopColor="#fbbf24" />
+              <stop offset="0%" stopColor="#92400e" />
+              <stop offset="100%" stopColor="#d97706" />
             </linearGradient>
+            <radialGradient id="sunlit" cx="50%" cy="0%" r="80%">
+              <stop offset="0%" stopColor="#fef9c3" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#fbbf24" stopOpacity="0" />
+            </radialGradient>
           </defs>
           <rect width="100" height="100" fill="url(#bg-lit)" />
-          {/* Sol litúrgico ao fundo */}
-          <circle cx="50" cy="42" r="22" fill="white" fillOpacity="0.15" />
+          {/* Luz solar nascente ao fundo */}
+          <rect width="100" height="100" fill="url(#sunlit)" />
+          {/* Semicírculo do sol nascendo */}
+          <path d="M10 58 A40 40 0 0 1 90 58" fill="#fef3c7" fillOpacity="0.25" />
+          <path d="M10 58 A40 40 0 0 1 90 58" fill="none" stroke="#fef3c7" strokeOpacity="0.5" strokeWidth="2" />
           {/* Raios do sol */}
-          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
-            const r = Math.PI * angle / 180;
-            const x1 = 50 + 26 * Math.cos(r);
-            const y1 = 42 + 26 * Math.sin(r);
-            const x2 = 50 + 34 * Math.cos(r);
-            const y2 = 42 + 34 * Math.sin(r);
-            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="white" strokeOpacity="0.5" strokeWidth="2.5" strokeLinecap="round" />;
-          })}
-          {/* Cálice litúrgico */}
-          <path d="M35 30 Q38 50 50 58 Q62 50 65 30 Z" fill="white" fillOpacity="0.9" />
-          <rect x="46" y="58" width="8" height="18" rx="2" fill="white" fillOpacity="0.9" />
-          <rect x="36" y="74" width="28" height="5" rx="2.5" fill="white" fillOpacity="0.9" />
-          {/* Hóstia */}
-          <circle cx="50" cy="26" r="8" fill="white" />
-          <rect x="47" y="20" width="6" height="12" rx="1.5" fill="#b45309" fillOpacity="0.5" />
-          <rect x="44" y="23" width="12" height="6" rx="1.5" fill="#b45309" fillOpacity="0.5" />
+          <line x1="50" y1="14" x2="50" y2="6"  stroke="white" strokeOpacity="0.7" strokeWidth="3" strokeLinecap="round" />
+          <line x1="68" y1="20" x2="73" y2="13" stroke="white" strokeOpacity="0.6" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="32" y1="20" x2="27" y2="13" stroke="white" strokeOpacity="0.6" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="80" y1="36" x2="87" y2="32" stroke="white" strokeOpacity="0.5" strokeWidth="2" strokeLinecap="round" />
+          <line x1="20" y1="36" x2="13" y2="32" stroke="white" strokeOpacity="0.5" strokeWidth="2" strokeLinecap="round" />
+          <line x1="86" y1="56" x2="94" y2="56" stroke="white" strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
+          <line x1="14" y1="56" x2="6"  y2="56" stroke="white" strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
+          {/* Livro aberto */}
+          <path d="M14 62 L14 88 Q50 80 50 84 L50 62 Q50 56 14 62Z" fill="white" fillOpacity="0.95" />
+          <path d="M86 62 L86 88 Q50 80 50 84 L50 62 Q50 56 86 62Z" fill="white" fillOpacity="0.8" />
+          {/* Lombada */}
+          <path d="M50 56 Q50 60 50 84" stroke="#92400e" strokeOpacity="0.3" strokeWidth="2" fill="none" />
+          {/* Linhas de texto - página esquerda */}
+          <line x1="20" y1="72" x2="44" y2="70" stroke="#92400e" strokeOpacity="0.35" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="20" y1="77" x2="44" y2="75" stroke="#92400e" strokeOpacity="0.35" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="20" y1="82" x2="38" y2="80" stroke="#92400e" strokeOpacity="0.35" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Cruz decorativa - página direita */}
+          <rect x="63" y="66" width="4" height="14" rx="1.5" fill="#92400e" fillOpacity="0.3" />
+          <rect x="58" y="71" width="14" height="4" rx="1.5" fill="#92400e" fillOpacity="0.3" />
+          {/* Marcador de página dourado */}
+          <rect x="76" y="62" width="4" height="14" rx="2" fill="#fbbf24" fillOpacity="0.8" />
         </svg>
       );
 
