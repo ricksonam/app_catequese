@@ -64,11 +64,15 @@ export function useApproveTurmaMembro() {
 }
 
 // ===== CATEQUIZANDOS =====
-export function useCatequizandos(turmaId?: string) {
+export function useCatequizandos(turmaId?: string, includeInactive = false) {
   const { user } = useAuth();
   return useQuery({ 
-    queryKey: ["catequizandos", user?.id, turmaId], 
-    queryFn: () => fetchCatequizandos(turmaId),
+    queryKey: ["catequizandos", user?.id, turmaId, includeInactive], 
+    queryFn: async () => {
+      const data = await fetchCatequizandos(turmaId);
+      if (includeInactive) return data;
+      return data.filter(c => c.status === 'ativo');
+    },
     enabled: !!user,
     staleTime: 0,
     refetchOnWindowFocus: true,
