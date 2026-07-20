@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PWAInstallChip } from "@/components/Onboarding/PWAInstallChip";
 import { TurmaStep } from "@/components/Onboarding/TurmaStep";
 import { MapaTimeline } from "@/components/MapaTimeline";
+import { ModuleIcon } from "@/components/ModuleIcon";
 
 import confetti from "canvas-confetti";
 import CalendarioLiturgico from "@/pages/CalendarioLiturgico";
@@ -517,7 +518,7 @@ export default function Dashboard() {
   const turmaModules = useMemo(() => [
     {
       title: "Catequizandos",
-      image: "/icone_catequizandos.png",
+      iconType: "catequizandos",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/catequizandos`);
@@ -531,7 +532,7 @@ export default function Dashboard() {
     },
     {
       title: "Encontros",
-      image: "/icone_encontros.png",
+      iconType: "encontros",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/encontros`);
@@ -545,7 +546,7 @@ export default function Dashboard() {
     },
     {
       title: "Eventos",
-      image: "/icone_eventos_new.png",
+      iconType: "eventos",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/eventos`);
@@ -559,7 +560,7 @@ export default function Dashboard() {
     },
     {
       title: "Reuniões",
-      image: "/icone_reunioes_new.png",
+      iconType: "reunioes",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/reunioes`);
@@ -573,7 +574,7 @@ export default function Dashboard() {
     },
     {
       title: "Trilha Sacramental",
-      image: "/icone_trilha_new.png",
+      iconType: "trilha",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/trilha-sacramental`);
@@ -587,7 +588,7 @@ export default function Dashboard() {
     },
     {
       title: "Diário",
-      image: "/icone_diario_new.png",
+      iconType: "diario",
       onClick: () => {
         if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
           navigate(`/turmas/${selectedTurmaId}/diario`);
@@ -605,34 +606,34 @@ export default function Dashboard() {
   const globalModules = useMemo(() => [
     {
       title: "Bíblia",
-      image: "/icone_biblia_new.png",
+      iconType: "biblia",
       onClick: () => navigate("/modulos/biblia")
     },
     {
       title: "Orações",
-      image: "/icone_oracoes.png",
+      iconType: "oracoes",
       onClick: () => navigate("/modulos/oracoes")
     },
     {
       title: "Liturgia Diária",
-      image: "/icone_liturgia.png?v=2",
+      iconType: "liturgia",
       onClick: () => navigate("/modulos/liturgia")
     },
     {
       title: "Jogos",
-      image: "/icone_jogos.png?v=2",
+      iconType: "jogos",
       onClick: () => navigate("/jogos")
     },
     {
       title: "Agenda",
-      image: "/icone_agenda.png",
+      iconType: "agenda",
       onClick: () => navigate("/modulos/calendario"),
       alert: temAtividadeHoje,
       alertText: "Hoje"
     },
     {
       title: "Loja",
-      image: "/icone_loja.png?v=2",
+      iconType: "loja",
       onClick: () => navigate("/modulos/loja"),
       alert: showMaterialBanner,
       alertText: "Novo"
@@ -995,12 +996,12 @@ export default function Dashboard() {
                     <div className="module-frame-wrapper w-full" style={{ aspectRatio: '1 / 1' }}>
                       <button
                         onClick={item.onClick}
-                        className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block"
+                        className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block transition-transform duration-300 group-hover:scale-105 active:scale-95 shadow-md"
                       >
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                        <ModuleIcon type={item.iconType} className="w-full h-full" />
                         {/* Overlay indicando que precisa de turma */}
                         {selectedTurmaId === 'all' && (
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
                             <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
                               <Users className="h-3 w-3 text-blue-600" />
                             </div>
@@ -1041,9 +1042,9 @@ export default function Dashboard() {
                     <div className="module-frame-wrapper w-full" style={{ aspectRatio: '1 / 1' }}>
                       <button
                         onClick={item.onClick}
-                        className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block"
+                        className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block transition-transform duration-300 group-hover:scale-105 active:scale-95 shadow-md"
                       >
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                        <ModuleIcon type={item.iconType} className="w-full h-full" />
                         
                         {/* Selo Animado Pulsante */}
                         {item.alert && (
