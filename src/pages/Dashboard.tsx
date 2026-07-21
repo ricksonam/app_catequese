@@ -981,9 +981,9 @@ export default function Dashboard() {
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-blue-200/70" />
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700/40 shadow-sm">
-                  <Users className="h-3 w-3 text-blue-500" />
-                  <span className="text-[9px] font-black text-foreground uppercase tracking-widest">Módulos da Turma Selecionada</span>
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-blue-900/40 border-2 border-blue-400/80 dark:border-blue-500/60 shadow-md">
+                  <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-[11px] sm:text-xs font-black text-foreground uppercase tracking-widest">Módulos da Turma Selecionada</span>
                 </div>
                 <div className="h-px flex-1 bg-blue-200/70" />
               </div>
@@ -1027,9 +1027,9 @@ export default function Dashboard() {
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-emerald-200/70" />
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700/40 shadow-sm">
-                  <Compass className="h-3 w-3 text-emerald-600" />
-                  <span className="text-[9px] font-black text-foreground uppercase tracking-widest">Módulos Gerais</span>
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-emerald-900/40 border-2 border-emerald-400/80 dark:border-emerald-500/60 shadow-md">
+                  <Compass className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-[11px] sm:text-xs font-black text-foreground uppercase tracking-widest">Módulos Gerais</span>
                 </div>
                 <div className="h-px flex-1 bg-emerald-200/70" />
               </div>
