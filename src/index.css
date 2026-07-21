@@ -585,7 +585,7 @@
   aspect-ratio: 1 / 1;
   padding: 3px;
   border-radius: 26px;
-  background: linear-gradient(145deg, #a855f7, #6b21a8);
+  background: linear-gradient(145deg, #fde047, #d97706);
   box-shadow:
     0 2px 0 rgba(255,255,255,0.9),          /* highlight top */
     0 8px 16px rgba(0,0,0,0.18),            /* sombra principal */
@@ -616,7 +616,7 @@
 }
 
 .dark .module-frame-wrapper {
-  background: linear-gradient(145deg, #9333ea, #4c1d95);
+  background: linear-gradient(145deg, #facc15, #b45309);
   box-shadow:
     0 2px 0 rgba(255,255,255,0.08),
     0 8px 16px rgba(0,0,0,0.45),
