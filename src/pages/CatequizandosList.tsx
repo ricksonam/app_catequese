@@ -139,26 +139,17 @@ const statusConfig: Record<CatequizandoStatus, { label: string; color: string; b
   ativo: { 
     label: "Ativo", color: "bg-emerald-500 text-white", bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200", icon: CheckCircle2, activeClasses: "bg-emerald-600 text-white border-emerald-700 shadow-emerald-200" 
   },
-  inativo: { 
-    label: "Inativo", color: "bg-gray-500 text-white", bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-200", icon: AlertCircle, activeClasses: "bg-gray-600 text-white border-gray-700 shadow-gray-200" 
-  },
   transferido: { 
     label: "Transferido", color: "bg-blue-500 text-white", bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200", icon: ArrowRight, activeClasses: "bg-blue-600 text-white border-blue-700 shadow-blue-200" 
   },
   desistente: { 
     label: "Desistente", color: "bg-orange-500 text-white", bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200", icon: X, activeClasses: "bg-orange-600 text-white border-orange-700 shadow-orange-200" 
   },
-  confirmado: { 
-    label: "Confirmado", color: "bg-purple-500 text-white", bg: "bg-purple-50", text: "text-purple-600", border: "border-purple-200", icon: CheckCircle2, activeClasses: "bg-purple-600 text-white border-purple-700 shadow-purple-200" 
-  },
   afastado: { 
     label: "Afastado", color: "bg-red-500 text-white", bg: "bg-red-50", text: "text-red-600", border: "border-red-200", icon: AlertCircle, activeClasses: "bg-red-600 text-white border-red-700 shadow-red-200" 
   },
   mudou_se: { 
     label: "Mudou-se", color: "bg-cyan-500 text-white", bg: "bg-cyan-50", text: "text-cyan-600", border: "border-cyan-200", icon: ArrowRight, activeClasses: "bg-cyan-600 text-white border-cyan-700 shadow-cyan-200" 
-  },
-  falecido: { 
-    label: "Falecido", color: "bg-slate-700 text-white", bg: "bg-slate-100", text: "text-slate-800", border: "border-slate-300", icon: X, activeClasses: "bg-slate-800 text-white border-slate-900 shadow-slate-300" 
   },
   outro: { 
     label: "Outro", color: "bg-zinc-500 text-white", bg: "bg-zinc-50", text: "text-zinc-600", border: "border-zinc-200", icon: AlertCircle, activeClasses: "bg-zinc-600 text-white border-zinc-700 shadow-zinc-200" 

@@ -90,7 +90,7 @@ export interface DadosPastoraisInfo {
   participacaoPastoral: string;
 }
 
-export type CatequizandoStatus = 'ativo' | 'inativo' | 'transferido' | 'desistente' | 'confirmado' | 'afastado' | 'mudou_se' | 'falecido' | 'outro';
+export type CatequizandoStatus = 'ativo' | 'transferido' | 'desistente' | 'afastado' | 'mudou_se' | 'outro';
 
 export interface Catequizando {
   id: string;
