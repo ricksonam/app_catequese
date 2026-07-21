@@ -1009,8 +1009,8 @@ export default function Dashboard() {
                         )}
                       </button>
                     </div>
-                    <div className="h-8 flex items-start justify-center mt-1.5 w-full px-1">
-                      <span className="text-[9px] sm:text-[10px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
+                    <div className="min-h-[2.5rem] flex items-start justify-center mt-1.5 w-full px-1">
+                      <span className="text-xs sm:text-[13px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
                         {item.title}
                       </span>
                     </div>
@@ -1057,8 +1057,8 @@ export default function Dashboard() {
                         )}
                       </button>
                     </div>
-                    <div className="h-8 flex items-start justify-center mt-1.5 w-full px-1">
-                      <span className="text-[9px] sm:text-[10px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
+                    <div className="min-h-[2.5rem] flex items-start justify-center mt-1.5 w-full px-1">
+                      <span className="text-xs sm:text-[13px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
                         {item.title}
                       </span>
                     </div>
