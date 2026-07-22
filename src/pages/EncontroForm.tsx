@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { type Encontro, type RoteiroStep, ORACAO_TIPOS, ROTEIRO_STEPS } from "@/lib/store";
 import { MODELOS_ENCONTROS, type ModeloEncontro } from "@/lib/modelosEncontros";
 import { useTurmas, useEncontros, useCatequistas, useEncontroMutation } from "@/hooks/useSupabaseData";
-import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer, ArrowUpCircle, ArrowDownCircle, BookOpen, ScrollText } from "lucide-react";
+import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer, ArrowUpCircle, ArrowDownCircle, BookOpen, ScrollText, Save } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -278,7 +278,14 @@ export default function EncontroForm() {
           )}
         </div>
 
-        <button onClick={handleSave} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : existing ? "Salvar Alterações" : "Criar Encontro"}</button>
+        <button 
+          onClick={handleSave} 
+          disabled={mutation.isPending} 
+          className="w-full mt-6 py-4 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-lg shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-70 disabled:pointer-events-none"
+        >
+          <Save className="w-5 h-5" />
+          {mutation.isPending ? "Salvando..." : existing ? "Salvar Alterações" : "Criar Encontro"}
+        </button>
 
         <Dialog open={showModelos} onOpenChange={setShowModelos}>
           <DialogContent className="rounded-2xl max-h-[85vh] overflow-y-auto border-border/30">
