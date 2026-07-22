@@ -734,21 +734,6 @@ export default function Dashboard() {
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              {/* Chip Loja */}
-              <button
-                onClick={() => navigate("/modulos/loja")}
-                className="group relative flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-white hover:from-amber-500 hover:to-amber-700 active:scale-95 transition-all shadow-md border border-amber-300/80 overflow-hidden"
-              >
-                <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                <ShoppingCart className="h-4 w-4 text-white shrink-0 relative z-10 drop-shadow-sm" />
-                <span className="text-xs font-black tracking-wide relative z-10 drop-shadow-sm">Loja</span>
-                {showMaterialBanner && (
-                  <span className="absolute top-0 right-0 flex h-3 w-3 z-20 translate-x-1 -translate-y-1">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-amber-600"></span>
-                  </span>
-                )}
-              </button>
 
               {/* Ícone de mensagens */}
               <button
@@ -857,33 +842,33 @@ export default function Dashboard() {
                   >
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
                     <div className={cn(
-                      "bg-white p-1.5 shadow-md border-2 relative overflow-hidden transition-colors rounded-sm w-[64px]",
+                      "bg-white p-1.5 shadow-md border-2 relative overflow-hidden transition-colors rounded-sm w-[76px]",
                       isHoje ? "border-red-500 ring-1 ring-red-500/20" : "border-blue-400"
                     )}>
-                      <div className="w-9 h-9 overflow-hidden bg-muted relative mx-auto">
+                      <div className="w-11 h-11 overflow-hidden bg-muted relative mx-auto">
                         {c.foto ? (
                           <img src={c.foto} alt={c.nome} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-lg font-black">
+                          <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/30 text-xl font-black">
                             {c.nome.charAt(0)}
                           </div>
                         )}
                         {c.hasBoth && (
                           <div className="absolute top-0 right-0 bg-amber-400 text-white p-0.5 rounded-bl-lg shadow-sm">
-                            <Sparkles className="w-2.5 h-2.5" />
+                            <Sparkles className="w-3 h-3" />
                           </div>
                         )}
                       </div>
-                      <div className="mt-1 text-center px-0.5">
-                        <p className="text-[9px] font-black text-black leading-tight uppercase tracking-tighter whitespace-nowrap overflow-hidden text-clip w-full px-1">
+                      <div className="mt-1.5 text-center px-0.5">
+                        <p className="text-[10px] font-black text-black leading-tight uppercase tracking-tighter whitespace-nowrap overflow-hidden text-clip w-full px-1">
                           {c.nome.split(' ')[0]}
                         </p>
                         <div className="flex flex-col items-center mt-0.5">
-                          <span className="text-[11px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
+                          <span className="text-[12px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
                           {isHoje ? (
-                            <span className="text-[7px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-0.5 uppercase">HOJE</span>
+                            <span className="text-[8px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">HOJE</span>
                           ) : (
-                            <p className={cn("text-[7px] font-black uppercase tracking-tighter mt-0.5 truncate w-full text-center", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
+                            <p className={cn("text-[8px] font-black uppercase tracking-tighter mt-1 truncate w-full text-center", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
                               {c.hasBoth ? "🎉 Nasc. & Bat." : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo")}
                             </p>
                           )}
