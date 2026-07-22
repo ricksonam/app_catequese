@@ -134,34 +134,43 @@ export default function TurmasList() {
         <h1 className="text-3xl font-black text-foreground tracking-tight font-liturgical">Turmas</h1>
       </div>
 
-      <div className="flex flex-row items-stretch justify-between gap-3">
-        {/* Join with Code Button */}
+      <div className="flex flex-row items-stretch gap-3">
+        {/* Join with Code Card */}
         <button
           onClick={() => setJoinModalOpen(true)}
-          className="group relative overflow-hidden flex flex-row items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-blue-600 text-white cursor-pointer active:scale-95 transition-all duration-300 shadow-md hover:bg-blue-700 shrink-0"
+          className="flex-1 sm:flex-none group relative overflow-hidden flex flex-row items-center justify-center gap-3 px-4 py-3 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
         >
-          <Link2 className="h-4 w-4 animate-pulse" />
-          <div className="flex flex-col text-left">
-            <span className="font-black text-xs uppercase tracking-wider leading-none">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10 w-12 h-12 shrink-0 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
+            <Link2 className="h-6 w-6 text-blue-600 animate-pulse" />
+          </div>
+          <div className="relative z-10 flex flex-col items-center justify-center text-center">
+            <span className="font-black text-sm uppercase tracking-widest text-blue-950 group-hover:text-blue-800 transition-colors leading-tight">
               Entrar na Turma
             </span>
-            <span className="text-[9px] text-blue-200 uppercase tracking-widest leading-none mt-0.5">
+            <span className="font-bold text-[10px] text-blue-600 uppercase tracking-widest leading-tight mt-0.5">
               com código
             </span>
           </div>
+          <div className="absolute inset-0 bg-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         </button>
 
         {/* Nova Turma Button */}
         <button
           onClick={() => navigate("/turmas/nova")}
-          className="flex-1 group relative overflow-hidden flex flex-row items-center justify-center gap-2 px-3 py-2.5 rounded-2xl text-white shadow-md active:scale-95 transition-all duration-300 font-bold text-xs uppercase tracking-widest border border-blue-400/40"
-          style={{ background: "linear-gradient(135deg, #3B82F6, #1D4ED8)" }}
+          className="group relative overflow-hidden flex flex-col items-center justify-center gap-0 px-3 py-2 rounded-[1.2rem] text-white shadow-lg active:scale-95 transition-all duration-500 font-bold text-[9px] uppercase tracking-[0.15em] border border-blue-400/40 shrink-0"
+          style={{ background: "linear-gradient(135deg, #3B82F6, #1D4ED8, #1E3A8A)" }}
         >
-          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <Plus className="h-4 w-4 text-white drop-shadow-md group-hover:scale-110 transition-transform" />
-          <span className="relative z-10 whitespace-nowrap drop-shadow-md group-hover:text-blue-50 transition-colors">
+          <div className="absolute top-0 right-0 w-12 h-12 rounded-full bg-blue-300/20 blur-2xl pointer-events-none group-hover:bg-blue-300/40 transition-colors duration-700 -mr-2 -mt-2" />
+          <div className="absolute bottom-0 left-0 w-10 h-10 rounded-full bg-indigo-500/20 blur-xl pointer-events-none group-hover:bg-indigo-500/40 transition-colors duration-700 -ml-2 -mb-2" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-30 pointer-events-none group-hover:opacity-50 transition-opacity" />
+          <div className="relative z-10 w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center shadow-md group-hover:scale-110 group-hover:rotate-12 group-hover:bg-white/20 transition-all duration-500">
+            <Plus className="h-5 w-5 text-white animate-pulse drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+          </div>
+          <span className="relative z-10 whitespace-nowrap mt-1.5 drop-shadow-md group-hover:text-blue-100 transition-colors">
             Nova Turma
           </span>
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
       </div>
 
