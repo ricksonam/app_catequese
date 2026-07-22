@@ -134,22 +134,14 @@ export default function TurmasList() {
         <h1 className="text-3xl font-black text-foreground tracking-tight font-liturgical">Turmas</h1>
       </div>
 
-      <div className="flex flex-row items-stretch gap-3">
-        {/* Join with Code Card */}
+      <div className="flex flex-row items-center justify-between gap-3 w-full">
+        {/* Join with Code Button Novo Formato */}
         <button
           onClick={() => setJoinModalOpen(true)}
-          className="flex-none group relative overflow-hidden flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
+          className="flex items-center gap-2 px-5 py-2.5 bg-white text-blue-700 hover:bg-blue-50 hover:-translate-y-0.5 active:scale-95 rounded-full font-black text-[10px] sm:text-[11px] uppercase tracking-widest transition-all duration-300 border-2 border-blue-200 shadow-sm"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10 flex flex-col items-center justify-center text-center">
-            <span className="font-black text-sm uppercase tracking-widest text-blue-950 group-hover:text-blue-800 transition-colors leading-tight">
-              Entrar na Turma
-            </span>
-            <span className="font-bold text-[10px] text-blue-600 uppercase tracking-widest leading-tight mt-0.5">
-              com código
-            </span>
-          </div>
-          <div className="absolute inset-0 bg-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          <Link2 className="w-4 h-4" />
+          <span>Entrar com Código</span>
         </button>
 
         {/* Nova Turma Button */}
