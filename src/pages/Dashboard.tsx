@@ -728,9 +728,9 @@ export default function Dashboard() {
           </div>
           <div className="relative z-10 flex items-center justify-between px-4 py-2">
             <div>
-              <h1 className="text-base font-black text-white uppercase tracking-tight flex flex-wrap items-center gap-1.5 drop-shadow-md">
+              <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight flex flex-wrap items-center gap-1.5 drop-shadow-md">
                 Olá, Catequista!
-                <span className="inline-block animate-waving-hand text-sm">👋</span>
+                <span className="inline-block animate-waving-hand text-lg sm:text-xl">👋</span>
               </h1>
             </div>
             <div className="flex items-center gap-2">
