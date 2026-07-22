@@ -138,12 +138,9 @@ export default function TurmasList() {
         {/* Join with Code Card */}
         <button
           onClick={() => setJoinModalOpen(true)}
-          className="flex-1 sm:flex-none group relative overflow-hidden flex flex-row items-center justify-center gap-3 px-4 py-3 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
+          className="flex-none group relative overflow-hidden flex flex-row items-center justify-center gap-2 px-4 py-3 rounded-[1.2rem] bg-white cursor-pointer active:scale-95 transition-all duration-500 shadow-sm border-2 border-blue-400 hover:border-blue-500 shrink-0"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10 w-12 h-12 shrink-0 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:-rotate-12 group-hover:bg-blue-100 transition-all duration-500">
-            <Link2 className="h-6 w-6 text-blue-600 animate-pulse" />
-          </div>
           <div className="relative z-10 flex flex-col items-center justify-center text-center">
             <span className="font-black text-sm uppercase tracking-widest text-blue-950 group-hover:text-blue-800 transition-colors leading-tight">
               Entrar na Turma
