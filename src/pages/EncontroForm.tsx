@@ -276,6 +276,8 @@ export default function EncontroForm() {
               )}
             </div>
           )}
+        </div>
+
         <div className="flex justify-center w-full mt-8 mb-4">
           <button 
             onClick={handleSave} 
