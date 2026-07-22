@@ -293,22 +293,33 @@ export async function fetchEncontros(turmaId?: string): Promise<Encontro[]> {
   if (turmaId) q = q.eq("turma_id", turmaId);
   const { data, error } = await q;
   if (error) throw error;
-  return (data || []).map((e: any) => ({
-    id: e.id, turmaId: e.turma_id, tema: e.tema, data: e.data,
-    leituraBiblica: e.leitura_biblica, materialApoio: e.material_apoio,
-    roteiro: e.roteiro || [], status: e.status, presencas: e.presencas || [],
-    justificativas: e.justificativas || {},
-    criadoEm: e.criado_em, motivoCancelamento: e.motivo_cancelamento || undefined,
-    dataTransferida: e.data_transferida || undefined,
-    avaliacao: e.avaliacao || undefined,
-  }));
+  return (data || []).map((e: any) => {
+    const roteiroRaw = e.roteiro;
+    let steps = roteiroRaw || [];
+    let horario: string | undefined;
+    if (roteiroRaw && !Array.isArray(roteiroRaw) && roteiroRaw.steps) {
+      steps = roteiroRaw.steps || [];
+      horario = roteiroRaw.horario || undefined;
+    }
+    return {
+      id: e.id, turmaId: e.turma_id, tema: e.tema, data: e.data,
+      horario,
+      leituraBiblica: e.leitura_biblica, materialApoio: e.material_apoio,
+      roteiro: steps, status: e.status, presencas: e.presencas || [],
+      justificativas: e.justificativas || {},
+      criadoEm: e.criado_em, motivoCancelamento: e.motivo_cancelamento || undefined,
+      dataTransferida: e.data_transferida || undefined,
+      avaliacao: e.avaliacao || undefined,
+    };
+  });
 }
 
 export async function upsertEncontro(e: Encontro) {
   const { error } = await (supabase.from as any)("encontros").upsert({
     id: e.id, turma_id: e.turmaId, tema: e.tema, data: e.data,
     leitura_biblica: e.leituraBiblica, material_apoio: e.materialApoio,
-    roteiro: e.roteiro as any, status: e.status, presencas: e.presencas as any,
+    roteiro: { horario: e.horario || "", steps: e.roteiro } as any,
+    status: e.status, presencas: e.presencas as any,
     justificativas: e.justificativas || {},
     criado_em: e.criadoEm, motivo_cancelamento: e.motivoCancelamento || null,
     data_transferida: e.dataTransferida || null,

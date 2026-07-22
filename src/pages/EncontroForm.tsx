@@ -2,8 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { type Encontro, type RoteiroStep, ORACAO_TIPOS, ROTEIRO_STEPS } from "@/lib/store";
 import { MODELOS_ENCONTROS, type ModeloEncontro } from "@/lib/modelosEncontros";
 import { useTurmas, useEncontros, useCatequistas, useEncontroMutation } from "@/hooks/useSupabaseData";
-import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer, ArrowUpCircle, ArrowDownCircle, BookOpen } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Clock, User, ChevronDown, ChevronUp, Library, Search, Trash2, Plus, Timer, ArrowUpCircle, ArrowDownCircle, BookOpen, ScrollText } from "lucide-react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -18,6 +18,14 @@ function modeloToRoteiro(modelo: ModeloEncontro): RoteiroStep[] {
   return modelo.roteiro.map((s) => ({ ...s, id: crypto.randomUUID() }));
 }
 
+/** Returns true if the given date string (YYYY-MM-DD) falls on a Saturday */
+function isSaturday(dateStr: string): boolean {
+  if (!dateStr) return false;
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const d = new Date(year, month - 1, day);
+  return d.getDay() === 6;
+}
+
 export default function EncontroForm() {
   const { id, encontroId } = useParams();
   const navigate = useNavigate();
@@ -28,8 +36,15 @@ export default function EncontroForm() {
   const turma = turmas.find((t) => t.id === id);
   const existing = encontroId ? encontros.find((e) => e.id === encontroId) : null;
 
+  // Determine default horario: use existing value, or turma's horario if Saturday
+  const defaultHorario = useMemo(() => {
+    if (existing?.horario) return existing.horario;
+    return turma?.horario || "";
+  }, [existing, turma]);
+
   const [tema, setTema] = useState(existing?.tema || "");
   const [data, setData] = useState(existing?.data || "");
+  const [horario, setHorario] = useState(defaultHorario);
   const [leituraBiblica, setLeituraBiblica] = useState(existing?.leituraBiblica || "");
   const [materialApoio, setMaterialApoio] = useState(existing?.materialApoio || "");
   const [roteiro, setRoteiro] = useState<RoteiroStep[]>(existing?.roteiro || createEmptyRoteiro());
@@ -39,8 +54,17 @@ export default function EncontroForm() {
   const [newStepLabel, setNewStepLabel] = useState("");
   const [showAddStep, setShowAddStep] = useState(false);
   const [newStepPosition, setNewStepPosition] = useState<number>(-1);
+  const [roteiroExpanded, setRoteiroExpanded] = useState(false);
 
   const totalTempo = roteiro.reduce((sum, s) => sum + (s.tempo || 0), 0);
+
+  /** When date changes, auto-fill horario with turma's schedule if Saturday and horario is empty */
+  const handleDataChange = (newDate: string) => {
+    setData(newDate);
+    if (isSaturday(newDate) && turma?.horario && !horario) {
+      setHorario(turma.horario);
+    }
+  };
 
   const updateStep = (stepId: string, field: keyof RoteiroStep, value: string | number) => {
     setRoteiro((prev) => prev.map((s) => (s.id === stepId ? { ...s, [field]: value } : s)));
@@ -79,14 +103,15 @@ export default function EncontroForm() {
   const handleSave = async () => {
     if (!tema || !data) { toast.error("Preencha o tema e a data"); return; }
     const encontro: Encontro = {
-      id: existing?.id || crypto.randomUUID(), 
-      turmaId: id!, 
-      tema, 
-      data, 
-      leituraBiblica, 
+      id: existing?.id || crypto.randomUUID(),
+      turmaId: id!,
+      tema,
+      data,
+      horario: horario || undefined,
+      leituraBiblica,
       materialApoio,
-      roteiro, 
-      status: existing?.status || "pendente", 
+      roteiro,
+      status: existing?.status || "pendente",
       presencas: existing?.presencas || [],
       criadoEm: existing?.criadoEm || new Date().toISOString(),
       avaliacao: existing?.avaliacao,
@@ -107,6 +132,8 @@ export default function EncontroForm() {
   const defaultCatequista = catequistas.length === 1 ? catequistas[0].nome : "";
   const formatTempo = (min: number) => { if (min < 60) return `${min}min`; const h = Math.floor(min / 60); const m = min % 60; return m > 0 ? `${h}h${m}min` : `${h}h`; };
 
+  const saturadayBadge = data && isSaturday(data) && turma?.horario && horario === turma.horario;
+
   return (
     <>
       <div className="space-y-5 pb-28">
@@ -124,83 +151,133 @@ export default function EncontroForm() {
           </button>
         )}
 
+        {/* ── Card: Tema, Data, Horário, Leitura, Material ── */}
         <div className="float-card p-5 space-y-4 animate-float-up" style={{ animationDelay: '60ms' }}>
           <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Tema <span className="text-red-500">*</span></label><input type="text" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex: O Batismo de Jesus" className="form-input" /></div>
-          <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Data <span className="text-red-500">*</span></label><input type="date" value={data} onChange={(e) => setData(e.target.value)} className="form-input" /></div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Data <span className="text-red-500">*</span></label>
+              <input type="date" value={data} onChange={(e) => handleDataChange(e.target.value)} className="form-input" />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-zinc-900 mb-1.5 flex items-center gap-1.5 block">
+                <Clock className="h-3 w-3 text-primary" />
+                Horário
+                {saturadayBadge && (
+                  <span className="ml-1 text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 rounded-full px-2 py-0.5">padrão</span>
+                )}
+              </label>
+              <input
+                type="time"
+                value={horario}
+                onChange={(e) => setHorario(e.target.value)}
+                className="form-input"
+              />
+            </div>
+          </div>
+
           <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Leitura Bíblica do Tema</label><input type="text" value={leituraBiblica} onChange={(e) => setLeituraBiblica(e.target.value)} placeholder="Ex: Mt 3,13-17" className="form-input" /></div>
           <div><label className="text-xs font-semibold text-zinc-900 mb-1.5 block">Material de Apoio</label><textarea value={materialApoio} onChange={(e) => setMaterialApoio(e.target.value)} placeholder="Materiais necessários..." className="form-input min-h-[100px] resize-y" /></div>
         </div>
 
+        {/* ── Encontro Detalhado (collapsible) ── */}
         <div className="animate-float-up" style={{ animationDelay: '120ms' }}>
-          <p className="section-title">Roteiro do Encontro</p>
-          <div className="space-y-2">
-            {roteiro.map((step, i) => {
-              const isExpanded = expandedStep === step.id;
-              return (
-                <div key={step.id} className="float-card overflow-hidden">
-                  <button onClick={() => setExpandedStep(isExpanded ? null : step.id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                      <span className="text-sm font-semibold text-foreground">{step.label}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {step.tempo > 0 && <span className="pill-btn pill-btn-inactive">{step.tempo}min</span>}
-                      {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-                    </div>
-                  </button>
-                  {isExpanded && (
-                    <div className="px-4 pb-4 space-y-3 border-t border-border/30 pt-3">
-                      <div className="flex items-center justify-center gap-3">
-                        <button onClick={() => moveStep(i, "up")} disabled={i === 0} className="flex items-center gap-1 text-xs font-semibold text-primary disabled:text-muted-foreground disabled:opacity-40 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"><ArrowUpCircle className="h-3.5 w-3.5" /> Mover acima</button>
-                        <button onClick={() => moveStep(i, "down")} disabled={i === roteiro.length - 1} className="flex items-center gap-1 text-xs font-semibold text-primary disabled:text-muted-foreground disabled:opacity-40 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"><ArrowDownCircle className="h-3.5 w-3.5" /> Mover abaixo</button>
-                      </div>
-                      {step.tipo === "oracao_inicial" && (
-                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Oração</label><select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">{ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
-                      )}
-                      {step.tipo === "desenvolvimento" && leituraBiblica && (
-                        <div className="mb-2 bg-primary/5 rounded-xl p-3 border border-primary/20 text-center shadow-sm">
-                           <BookOpen className="h-4 w-4 text-primary opacity-80 mx-auto mb-1" />
-                           <span className="text-[9px] font-black uppercase text-primary tracking-widest block mb-0.5">Leitura Bíblica do Encontro</span>
-                           <p className="text-sm font-bold text-foreground">{leituraBiblica}</p>
-                        </div>
-                      )}
-                      <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[150px] resize-y" /></div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 flex items-center gap-1"><Clock className="h-3 w-3" /> Tempo (min)</label><input type="number" min={0} value={step.tempo || ""} onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)} placeholder="0" className="form-input" /></div>
-                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 flex items-center gap-1"><User className="h-3 w-3" /> Catequista</label>
-                          {catequistas.length > 1 ? (
-                            <select value={step.catequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} className="form-input"><option value="">Selecione...</option>{catequistas.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}</select>
-                          ) : (
-                            <input type="text" value={step.catequista || defaultCatequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} placeholder="Responsável" className="form-input" />
-                          )}
-                        </div>
-                      </div>
-                      <button onClick={() => removeStep(step.id)} className="w-full flex items-center justify-center gap-2 py-2 mt-1 rounded-xl text-xs font-semibold text-destructive bg-destructive/10 hover:bg-destructive/20 transition-colors"><Trash2 className="h-3.5 w-3.5" /> Remover Tópico</button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {showAddStep ? (
-            <div className="float-card p-4 mt-2 space-y-3 animate-scale-in">
-              <label className="text-xs font-semibold text-zinc-900 block">Nome do novo tópico</label>
-              <input type="text" value={newStepLabel} onChange={(e) => setNewStepLabel(e.target.value)} placeholder="Ex: Dinâmica extra..." className="form-input" onKeyDown={(e) => e.key === "Enter" && addStep()} />
-              <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Inserir após</label>
-                <select value={newStepPosition} onChange={(e) => setNewStepPosition(parseInt(e.target.value))} className="form-input">
-                  <option value={-1}>No final da lista</option>
-                  {roteiro.map((s, i) => <option key={s.id} value={i}>Após {i + 1}. {s.label}</option>)}
-                </select>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={addStep} className="flex-1 action-btn text-sm py-2.5">Adicionar</button>
-                <button onClick={() => { setShowAddStep(false); setNewStepLabel(""); setNewStepPosition(-1); }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground bg-muted/50 hover:bg-muted transition-colors">Cancelar</button>
+          <button
+            onClick={() => setRoteiroExpanded((v) => !v)}
+            className="w-full float-card flex items-center justify-between px-5 py-4 text-left transition-colors hover:bg-primary/5"
+          >
+            <div className="flex items-center gap-3">
+              <span className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ScrollText className="h-4 w-4 text-primary" />
+              </span>
+              <div>
+                <p className="text-sm font-bold text-foreground">Encontro Detalhado</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {roteiroExpanded ? "Clique para fechar o roteiro" : `Roteiro do encontro · ${roteiro.length} tópicos${totalTempo > 0 ? ` · ${formatTempo(totalTempo)}` : ""}`}
+                </p>
               </div>
             </div>
-          ) : (
-            <button onClick={() => setShowAddStep(true)} className="w-full float-card flex items-center justify-center gap-2 py-3 mt-2 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"><Plus className="h-4 w-4" /> Adicionar Tópico</button>
+            <div className="flex items-center gap-2">
+              {totalTempo > 0 && !roteiroExpanded && (
+                <span className="pill-btn pill-btn-inactive">{formatTempo(totalTempo)}</span>
+              )}
+              {roteiroExpanded ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+            </div>
+          </button>
+
+          {roteiroExpanded && (
+            <div className="mt-2 space-y-2 animate-fade-in">
+              {roteiro.map((step, i) => {
+                const isExpanded = expandedStep === step.id;
+                return (
+                  <div key={step.id} className="float-card overflow-hidden">
+                    <button onClick={() => setExpandedStep(isExpanded ? null : step.id)} className="w-full flex items-center justify-between px-4 py-3.5 text-left">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                        <span className="text-sm font-semibold text-foreground">{step.label}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {step.tempo > 0 && <span className="pill-btn pill-btn-inactive">{step.tempo}min</span>}
+                        {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                      </div>
+                    </button>
+                    {isExpanded && (
+                      <div className="px-4 pb-4 space-y-3 border-t border-border/30 pt-3">
+                        <div className="flex items-center justify-center gap-3">
+                          <button onClick={() => moveStep(i, "up")} disabled={i === 0} className="flex items-center gap-1 text-xs font-semibold text-primary disabled:text-muted-foreground disabled:opacity-40 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"><ArrowUpCircle className="h-3.5 w-3.5" /> Mover acima</button>
+                          <button onClick={() => moveStep(i, "down")} disabled={i === roteiro.length - 1} className="flex items-center gap-1 text-xs font-semibold text-primary disabled:text-muted-foreground disabled:opacity-40 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"><ArrowDownCircle className="h-3.5 w-3.5" /> Mover abaixo</button>
+                        </div>
+                        {step.tipo === "oracao_inicial" && (
+                          <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Oração</label><select value={step.oracaoTipo || ""} onChange={(e) => updateStep(step.id, "oracaoTipo", e.target.value)} className="form-input">{ORACAO_TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+                        )}
+                        {step.tipo === "desenvolvimento" && leituraBiblica && (
+                          <div className="mb-2 bg-primary/5 rounded-xl p-3 border border-primary/20 text-center shadow-sm">
+                             <BookOpen className="h-4 w-4 text-primary opacity-80 mx-auto mb-1" />
+                             <span className="text-[9px] font-black uppercase text-primary tracking-widest block mb-0.5">Leitura Bíblica do Encontro</span>
+                             <p className="text-sm font-bold text-foreground">{leituraBiblica}</p>
+                          </div>
+                        )}
+                        <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Conteúdo</label><textarea value={step.conteudo} onChange={(e) => updateStep(step.id, "conteudo", e.target.value)} placeholder={`Descreva o conteúdo de ${step.label}...`} className="form-input min-h-[150px] resize-y" /></div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><label className="text-xs font-semibold text-zinc-900 mb-1 flex items-center gap-1"><Clock className="h-3 w-3" /> Tempo (min)</label><input type="number" min={0} value={step.tempo || ""} onChange={(e) => updateStep(step.id, "tempo", parseInt(e.target.value) || 0)} placeholder="0" className="form-input" /></div>
+                          <div><label className="text-xs font-semibold text-zinc-900 mb-1 flex items-center gap-1"><User className="h-3 w-3" /> Catequista</label>
+                            {catequistas.length > 1 ? (
+                              <select value={step.catequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} className="form-input"><option value="">Selecione...</option>{catequistas.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}</select>
+                            ) : (
+                              <input type="text" value={step.catequista || defaultCatequista} onChange={(e) => updateStep(step.id, "catequista", e.target.value)} placeholder="Responsável" className="form-input" />
+                            )}
+                          </div>
+                        </div>
+                        <button onClick={() => removeStep(step.id)} className="w-full flex items-center justify-center gap-2 py-2 mt-1 rounded-xl text-xs font-semibold text-destructive bg-destructive/10 hover:bg-destructive/20 transition-colors"><Trash2 className="h-3.5 w-3.5" /> Remover Tópico</button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {showAddStep ? (
+                <div className="float-card p-4 mt-2 space-y-3 animate-scale-in">
+                  <label className="text-xs font-semibold text-zinc-900 block">Nome do novo tópico</label>
+                  <input type="text" value={newStepLabel} onChange={(e) => setNewStepLabel(e.target.value)} placeholder="Ex: Dinâmica extra..." className="form-input" onKeyDown={(e) => e.key === "Enter" && addStep()} />
+                  <div><label className="text-xs font-semibold text-zinc-900 mb-1 block">Inserir após</label>
+                    <select value={newStepPosition} onChange={(e) => setNewStepPosition(parseInt(e.target.value))} className="form-input">
+                      <option value={-1}>No final da lista</option>
+                      {roteiro.map((s, i) => <option key={s.id} value={i}>Após {i + 1}. {s.label}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={addStep} className="flex-1 action-btn text-sm py-2.5">Adicionar</button>
+                    <button onClick={() => { setShowAddStep(false); setNewStepLabel(""); setNewStepPosition(-1); }} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground bg-muted/50 hover:bg-muted transition-colors">Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => setShowAddStep(true)} className="w-full float-card flex items-center justify-center gap-2 py-3 mt-2 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"><Plus className="h-4 w-4" /> Adicionar Tópico</button>
+              )}
+            </div>
           )}
         </div>
+
         <button onClick={handleSave} disabled={mutation.isPending} className="w-full action-btn">{mutation.isPending ? "Salvando..." : existing ? "Salvar Alterações" : "Criar Encontro"}</button>
 
         <Dialog open={showModelos} onOpenChange={setShowModelos}>
@@ -219,7 +296,7 @@ export default function EncontroForm() {
           </DialogContent>
         </Dialog>
       </div>
-      {totalTempo > 0 && (
+      {totalTempo > 0 && roteiroExpanded && (
         <div className="fixed bottom-24 right-5 z-[100] animate-scale-in pointer-events-none">
           <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/30 pointer-events-auto">
             <Timer className="h-4 w-4" /><span className="text-sm font-bold tabular-nums">{formatTempo(totalTempo)}</span>

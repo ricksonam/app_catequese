@@ -154,6 +154,7 @@ export interface Encontro {
   turmaId: string;
   tema: string;
   data: string;
+  horario?: string;
   leituraBiblica: string;
   materialApoio: string;
   roteiro: RoteiroStep[];
