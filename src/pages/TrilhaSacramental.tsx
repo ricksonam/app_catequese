@@ -1085,7 +1085,7 @@ export default function TrilhaSacramental() {
         </button>
         <div className="flex-1 text-center pr-10">
           {turma?.nome && <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-[-2px]">{turma.nome}</p>}
-          <h1 className="text-xl font-black text-foreground tracking-tight uppercase leading-tight">Mapa Panorâmico</h1>
+          <h1 className="text-xl font-black text-foreground tracking-tight uppercase leading-tight">Trilha Sacramental</h1>
         </div>
       </div>
 
@@ -1109,9 +1109,9 @@ export default function TrilhaSacramental() {
       <div className="px-4">
         <div className="flex flex-col sm:flex-row items-center justify-between bg-white rounded-3xl p-5 shadow-sm border border-border/50 gap-4">
            <div className="text-center sm:text-left flex-1 cursor-pointer" onClick={() => setEditandoData(true)}>
-              <p className="text-2xl font-black uppercase leading-none mb-1">{cfg.emoji} {cfg.label}</p>
-              <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground font-semibold bg-muted/30 px-3 py-1 rounded-lg">
-                <CalendarDays className="h-3.5 w-3.5 text-primary" /> 
+              <p className="text-2xl font-black uppercase leading-none mb-3">{cfg.emoji} {cfg.label}</p>
+              <div className="inline-flex items-center gap-2 text-sm font-black bg-primary text-white px-4 py-2 rounded-xl shadow-md hover:bg-primary/90 transition-colors animate-pulse">
+                <CalendarDays className="h-4 w-4" /> 
                 {dataCelebracao ? new Date(dataCelebracao + "T12:00:00").toLocaleDateString('pt-BR') : "Data a definir (Clique)"}
               </div>
            </div>
