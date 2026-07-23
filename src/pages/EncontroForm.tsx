@@ -185,7 +185,7 @@ export default function EncontroForm() {
         <div className="animate-float-up" style={{ animationDelay: '120ms' }}>
           <button
             onClick={() => setRoteiroExpanded((v) => !v)}
-            style={{ backgroundColor: 'lightsalmon' }}
+            style={{ backgroundColor: '#fef9c3' }}
             className="w-full float-card flex items-center justify-between px-5 py-4 text-left transition-colors hover:bg-primary/5"
           >
             <div className="flex items-center gap-3">
@@ -193,17 +193,17 @@ export default function EncontroForm() {
                 <ScrollText className="h-4 w-4 text-primary" />
               </span>
               <div>
-                <p className="text-sm font-bold text-foreground">Encontro Detalhado</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                <p className="text-sm font-bold text-zinc-900">Encontro Detalhado</p>
+                <p className="text-[11px] text-zinc-700 mt-0.5">
                   {roteiroExpanded ? "Clique para fechar o roteiro" : `Roteiro do encontro · ${roteiro.length} tópicos${totalTempo > 0 ? ` · ${formatTempo(totalTempo)}` : ""}`}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {totalTempo > 0 && !roteiroExpanded && (
-                <span className="pill-btn pill-btn-inactive">{formatTempo(totalTempo)}</span>
+                <span className="pill-btn pill-btn-inactive border-zinc-300 text-zinc-700 bg-white/50">{formatTempo(totalTempo)}</span>
               )}
-              {roteiroExpanded ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+              {roteiroExpanded ? <ChevronUp className="h-5 w-5 text-zinc-700" /> : <ChevronDown className="h-5 w-5 text-zinc-700" />}
             </div>
           </button>
 
