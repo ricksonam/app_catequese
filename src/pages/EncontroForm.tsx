@@ -146,8 +146,8 @@ export default function EncontroForm() {
         </div>
 
         {!existing && (
-          <button onClick={() => setShowModelos(true)} className="w-full float-card flex items-center justify-center gap-2 py-3.5 text-sm font-semibold text-foreground animate-float-up">
-            <Library className="h-4 w-4 text-primary" /> Usar Modelo da Biblioteca
+          <button onClick={() => setShowModelos(true)} style={{ backgroundColor: 'lightblue' }} className="w-full float-card flex items-center justify-center gap-2 py-3.5 text-sm font-semibold text-foreground animate-float-up">
+            <Library className="h-4 w-4 text-primary" /> Usar Encontro da biblioteca
           </button>
         )}
 
@@ -185,6 +185,7 @@ export default function EncontroForm() {
         <div className="animate-float-up" style={{ animationDelay: '120ms' }}>
           <button
             onClick={() => setRoteiroExpanded((v) => !v)}
+            style={{ backgroundColor: 'lightsalmon' }}
             className="w-full float-card flex items-center justify-between px-5 py-4 text-left transition-colors hover:bg-primary/5"
           >
             <div className="flex items-center gap-3">
