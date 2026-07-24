@@ -270,6 +270,7 @@ export interface Atividade {
   simboloIVC?: SimboloIVCType;
   etapaIVC?: EtapaIVCType;
   realizado?: boolean; // whether the event has been marked as completed
+  dispensado?: boolean; // whether the symbol was not delivered for pastoral reasons
   // Passage celebration sub-type (for 'Celebração de Passagem')
   celebracaoPassagemTipo?: CelebracaoPassagemTipo;
   // Symbol deliveries in the Rito de Admissão

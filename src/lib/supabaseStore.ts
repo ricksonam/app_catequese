@@ -339,23 +339,36 @@ export async function fetchAtividades(turmaId?: string): Promise<Atividade[]> {
   if (turmaId) q = q.eq("turma_id", turmaId);
   const { data, error } = await q;
   if (error) throw error;
-  return (data || []).map((a: any) => ({
-    id: a.id, turmaId: a.turma_id, nome: a.nome, descricao: a.descricao,
-    tipo: a.tipo, modalidade: a.modalidade, conducao: a.conducao || undefined,
-    data: a.data, local: a.local, horario: a.horario, observacao: a.observacao,
-    presencas: a.presencas || [], criadoEm: a.criado_em,
-    // IVC fields
-    simboloIVC: a.simbolo_ivc || undefined,
-    etapaIVC: a.etapa_ivc || undefined,
-    realizado: a.realizado ?? undefined,
-  }));
+  return (data || []).map((a: any) => {
+    const isDispensado = (a.observacao || '').includes('[DISPENSADO_IVC]');
+    const cleanObservacao = (a.observacao || '').replace('[DISPENSADO_IVC]', '').trim();
+    
+    return {
+      id: a.id, turmaId: a.turma_id, nome: a.nome, descricao: a.descricao,
+      tipo: a.tipo, modalidade: a.modalidade, conducao: a.conducao || undefined,
+      data: a.data, local: a.local, horario: a.horario, observacao: cleanObservacao,
+      presencas: a.presencas || [], criadoEm: a.criado_em,
+      // IVC fields
+      simboloIVC: a.simbolo_ivc || undefined,
+      etapaIVC: a.etapa_ivc || undefined,
+      realizado: a.realizado ?? undefined,
+      dispensado: isDispensado,
+    };
+  });
 }
 
 export async function upsertAtividade(a: Atividade) {
+  let obsFinal = a.observacao || '';
+  if (a.dispensado && !obsFinal.includes('[DISPENSADO_IVC]')) {
+    obsFinal = obsFinal ? `${obsFinal} [DISPENSADO_IVC]` : '[DISPENSADO_IVC]';
+  } else if (!a.dispensado && obsFinal.includes('[DISPENSADO_IVC]')) {
+    obsFinal = obsFinal.replace('[DISPENSADO_IVC]', '').trim();
+  }
+
   const { error } = await (supabase.from as any)("atividades").upsert({
     id: a.id, turma_id: a.turmaId, nome: a.nome, descricao: a.descricao,
     tipo: a.tipo, modalidade: a.modalidade, conducao: a.conducao || null,
-    data: a.data, local: a.local, horario: a.horario, observacao: a.observacao,
+    data: a.data, local: a.local, horario: a.horario, observacao: obsFinal,
     presencas: a.presencas as any, criado_em: a.criadoEm,
     // IVC fields
     simbolo_ivc: a.simboloIVC || null,

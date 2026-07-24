@@ -34,6 +34,7 @@ interface EtapaJornada {
   celebracaoTipo?: CelebracaoPassagemTipo;
   entregaCruz?: boolean;
   entregaBiblia?: boolean;
+  dispensado?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -168,6 +169,7 @@ function calcularProgressoJornada(
     let dataEvento: string | undefined;
     let entregaCruz: boolean | undefined;
     let entregaBiblia: boolean | undefined;
+    let dispensado = false;
 
     if (modoManual && overrideEtapaIdx !== undefined) {
       status = idx < overrideEtapaIdx ? 'concluido' : idx === overrideEtapaIdx ? 'em_andamento' : 'pendente';
@@ -184,6 +186,7 @@ function calcularProgressoJornada(
         }
         if (evSim) {
           dataEvento = evSim.data;
+          dispensado = evSim.dispensado || false;
           const dataEv = new Date(evSim.data + 'T23:59:59');
           if (evSim.realizado || dataEv < hoje) status = 'concluido';
           else status = 'agendado';
@@ -200,6 +203,7 @@ function calcularProgressoJornada(
           dataEvento = evPass.data;
           entregaCruz = evPass.entregaCruz;
           entregaBiblia = evPass.entregaBiblia;
+          dispensado = evPass.dispensado || false;
           const dataEv = new Date(evPass.data + 'T23:59:59');
           if (evPass.realizado || dataEv < hoje) status = 'concluido';
           else status = 'agendado';
@@ -231,7 +235,7 @@ function calcularProgressoJornada(
       }
     }
 
-    return { ...base, status, dataEvento, entregaCruz, entregaBiblia };
+    return { ...base, status, dataEvento, entregaCruz, entregaBiblia, dispensado };
   });
 
   // Find current position: last concluido or first em_andamento
@@ -354,6 +358,7 @@ function EtapaActionModal({
   onSave: (params: {
     data: string;
     realizado: boolean;
+    dispensado?: boolean;
     entregaCruz?: boolean;
     entregaBiblia?: boolean;
     simboloIVC?: string;
@@ -375,6 +380,7 @@ function EtapaActionModal({
 
   const [data, setData] = useState(existing?.data || '');
   const [realizado, setRealizado] = useState(existing?.realizado || false);
+  const [dispensado, setDispensado] = useState(existing?.dispensado || false);
   const [entregaCruz, setEntregaCruz] = useState(existing?.entregaCruz !== false);
   const [entregaBiblia, setEntregaBiblia] = useState(existing?.entregaBiblia || false);
   const [simboloSelecionado, setSimboloSelecionado] = useState<string>(existing?.simboloIVC || etapa?.simboloId || '');
@@ -385,13 +391,15 @@ function EtapaActionModal({
   const isAdmissao = etapa.celebracaoTipo === 'admissao_catecumenato';
   const isPassagem = etapa.tipo === 'passagem';
   const isSimboloSemId = etapa.tipo === 'simbolo' && !etapa.simboloId;
+  const isSimbolo = etapa.tipo === 'simbolo';
 
   const handleSave = async () => {
     setSaving(true);
     try {
       await onSave({
         data,
-        realizado,
+        realizado: dispensado ? true : realizado,
+        dispensado,
         entregaCruz: isAdmissao ? entregaCruz : undefined,
         entregaBiblia: isAdmissao ? entregaBiblia : undefined,
         simboloIVC: isSimboloSemId ? simboloSelecionado : etapa.simboloId,
@@ -510,30 +518,69 @@ function EtapaActionModal({
           )}
 
           {/* Realizado toggle */}
-          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/40">
-            <div>
-              <p className="font-black text-sm text-foreground">Já foi realizada</p>
-              <p className="text-[10px] text-muted-foreground">Marque se esta celebração já aconteceu</p>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/40">
+              <div>
+                <p className="font-black text-sm text-foreground">Já foi realizada</p>
+                <p className="text-[10px] text-muted-foreground">Marque se esta celebração já aconteceu</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRealizado(!realizado)}
+                disabled={dispensado}
+                className={cn(
+                  "relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0",
+                  realizado && !dispensado ? "bg-emerald-500" : "bg-muted",
+                  dispensado && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <div className={cn(
+                  "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
+                  realizado && !dispensado ? "left-7" : "left-1"
+                )} />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setRealizado(!realizado)}
-              className={cn(
-                "relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0",
-                realizado ? "bg-emerald-500" : "bg-muted"
-              )}
-            >
-              <div className={cn(
-                "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
-                realizado ? "left-7" : "left-1"
-              )} />
-            </button>
+
+            {isSimbolo && (
+              <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/30">
+                <div>
+                  <p className="font-black text-sm text-red-700 dark:text-red-400">Não será entregue</p>
+                  <p className="text-[10px] text-red-600/80 dark:text-red-400/80">Motivos pastorais (não bloqueia a turma)</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextVal = !dispensado;
+                    setDispensado(nextVal);
+                    if (nextVal) setRealizado(false);
+                  }}
+                  className={cn(
+                    "relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0",
+                    dispensado ? "bg-red-500" : "bg-muted"
+                  )}
+                >
+                  <div className={cn(
+                    "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
+                    dispensado ? "left-7" : "left-1"
+                  )} />
+                </button>
+              </div>
+            )}
           </div>
 
-          {realizado && (
-            <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl border border-emerald-200/50 animate-fade-in">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <p className="text-xs font-bold text-emerald-700">O card ficará verde no painel — posição da turma será atualizada!</p>
+          {(realizado || dispensado) && (
+            <div className={cn(
+              "flex items-center gap-2 p-3 rounded-xl border animate-fade-in",
+              dispensado 
+                ? "bg-red-50 dark:bg-red-950/20 border-red-200/50" 
+                : "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200/50"
+            )}>
+              <CheckCircle2 className={cn("w-4 h-4 shrink-0", dispensado ? "text-red-600" : "text-emerald-600")} />
+              <p className={cn("text-xs font-bold", dispensado ? "text-red-700" : "text-emerald-700")}>
+                {dispensado 
+                  ? "Este símbolo será ignorado e não travará o progresso da turma."
+                  : "O card ficará verde no painel — posição da turma será atualizada!"}
+              </p>
             </div>
           )}
 
@@ -738,7 +785,14 @@ function JornadaMap({
                     </p>
                   )}
 
-                  {etapa.dataEvento && (
+                  {etapa.dispensado && (
+                    <p className="text-[9px] font-black text-red-600 mt-1 flex items-center gap-1 bg-red-50 w-fit px-1.5 py-0.5 rounded border border-red-100">
+                      <X className="w-2.5 h-2.5" />
+                      Não será entregue
+                    </p>
+                  )}
+
+                  {!etapa.dispensado && etapa.dataEvento && (
                     <p className="text-[9px] font-black text-amber-600 mt-1 flex items-center gap-1">
                       <Calendar className="w-2.5 h-2.5" />
                       {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
@@ -1045,6 +1099,7 @@ export default function PainelIVC() {
   const handleEtapaSave = useCallback(async (params: {
     data: string;
     realizado: boolean;
+    dispensado?: boolean;
     entregaCruz?: boolean;
     entregaBiblia?: boolean;
     simboloIVC?: string;
@@ -1087,6 +1142,7 @@ export default function PainelIVC() {
       entregaCruz: params.entregaCruz,
       entregaBiblia: params.entregaBiblia,
       realizado: params.realizado,
+      dispensado: params.dispensado,
     };
 
     await mutation.mutateAsync(eventData);
