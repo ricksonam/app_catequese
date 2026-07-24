@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useAtividades, useAtividadeMutation, useDeleteAtividade, useCatequizandos } from "@/hooks/useSupabaseData";
-import { ATIVIDADE_TIPOS, SIMBOLOS_IVC, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo, type SimboloIVCType, CONDUCAO_TIPOS } from "@/lib/store";
+import { ATIVIDADE_TIPOS, SIMBOLOS_IVC, CELEBRACOES_PASSAGEM, type Atividade, type AtividadeTipo, type AtividadeModalidade, type ConducaoTipo, type SimboloIVCType, type CelebracaoPassagemTipo, CONDUCAO_TIPOS } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Printer, Users, ChevronRight, CheckCircle2, Pencil, X, Map } from "lucide-react";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -32,13 +32,16 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
   );
 }
 
-interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade; conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string; simboloIVC?: SimboloIVCType; etapaIVC?: string; }
-const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "", simboloIVC: undefined, etapaIVC: undefined };
+interface FormData { nome: string; descricao: string; tipo: AtividadeTipo; modalidade: AtividadeModalidade; conducao: ConducaoTipo | ''; data: string; local: string; horario: string; observacao: string; simboloIVC?: SimboloIVCType; etapaIVC?: string; celebracaoPassagemTipo?: CelebracaoPassagemTipo; entregaCruz?: boolean; entregaBiblia?: boolean; }
+const emptyForm: FormData = { nome: "", descricao: "", tipo: "Eventos geral", modalidade: "interna", conducao: "", data: "", local: "", horario: "", observacao: "", simboloIVC: undefined, etapaIVC: undefined, celebracaoPassagemTipo: undefined, entregaCruz: true, entregaBiblia: false };
 
 const fillFormFromItem = (item: Atividade): FormData => ({
   nome: item.nome, descricao: item.descricao || '', tipo: item.tipo, modalidade: item.modalidade || 'interna',
   conducao: item.conducao || '', data: item.data || '', local: item.local || '', horario: item.horario || '', observacao: item.observacao || '',
   simboloIVC: item.simboloIVC, etapaIVC: item.etapaIVC,
+  celebracaoPassagemTipo: item.celebracaoPassagemTipo,
+  entregaCruz: item.entregaCruz !== false, // defaults to true for new ones
+  entregaBiblia: item.entregaBiblia || false,
 });
 
 const tipoColors: Record<string, string> = {
@@ -98,10 +101,10 @@ export default function EventosList() {
     try {
       if (editingId) {
         const existing = list.find(a => a.id === editingId);
-        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, simboloIVC: form.simboloIVC, etapaIVC: form.etapaIVC as any });
+        await mutation.mutateAsync({ ...existing!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, simboloIVC: form.simboloIVC, etapaIVC: form.etapaIVC as any, celebracaoPassagemTipo: form.celebracaoPassagemTipo, entregaCruz: form.celebracaoPassagemTipo === 'admissao_catecumenato' ? form.entregaCruz : undefined, entregaBiblia: form.celebracaoPassagemTipo === 'admissao_catecumenato' ? form.entregaBiblia : undefined });
         setEditingId(null); setViewItem(null); toast.success("Evento atualizado!");
       } else {
-        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString(), simboloIVC: form.simboloIVC, etapaIVC: form.etapaIVC as any });
+        await mutation.mutateAsync({ id: crypto.randomUUID(), turmaId: id!, nome: form.nome, descricao: form.descricao, tipo: form.tipo, modalidade: form.modalidade, conducao: form.modalidade === 'externa' ? (form.conducao as ConducaoTipo) : undefined, data: form.data, local: form.local, horario: form.horario, observacao: form.observacao, presencas: [], criadoEm: new Date().toISOString(), simboloIVC: form.simboloIVC, etapaIVC: form.etapaIVC as any, celebracaoPassagemTipo: form.celebracaoPassagemTipo, entregaCruz: form.celebracaoPassagemTipo === 'admissao_catecumenato' ? form.entregaCruz : undefined, entregaBiblia: form.celebracaoPassagemTipo === 'admissao_catecumenato' ? form.entregaBiblia : undefined });
         toast.success("Evento criado!");
       }
       setForm({ ...emptyForm }); setOpen(false);
@@ -221,9 +224,52 @@ export default function EventosList() {
                       </div>
                     )}
                     {form.tipo === 'Celebração de Passagem' && (
-                      <div className="rounded-xl bg-violet-50 border border-violet-200 p-3">
-                        <p className="text-xs font-bold text-violet-700">✨ Celebração de Passagem</p>
-                        <p className="text-[10px] text-violet-600 mt-0.5">Este evento será registrado como uma transição entre os Tempos do IVC no Painel da turma.</p>
+                      <div className="rounded-xl bg-violet-50 border border-violet-200 p-3 space-y-3">
+                        <div>
+                          <label className="text-xs font-semibold text-violet-900 mb-1 block">Qual a Celebração de Passagem?</label>
+                          <select
+                            value={form.celebracaoPassagemTipo || ''}
+                            onChange={(e) => setForm(f => ({ ...f, celebracaoPassagemTipo: (e.target.value as CelebracaoPassagemTipo) || undefined }))}
+                            className="form-input border-violet-300 text-violet-900"
+                          >
+                            <option value="">Selecione...</option>
+                            {CELEBRACOES_PASSAGEM.map(c => (
+                              <option key={c.id} value={c.id}>{c.emoji} {c.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        {form.celebracaoPassagemTipo === 'admissao_catecumenato' && (
+                          <div className="pt-2 border-t border-violet-200 space-y-2">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-violet-600 mb-1">
+                              Símbolos a serem entregues
+                            </p>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={form.entregaCruz} 
+                                onChange={(e) => setForm(f => ({...f, entregaCruz: e.target.checked}))}
+                                className="w-4 h-4 rounded border-violet-300 text-violet-600 focus:ring-violet-500"
+                              />
+                              <span className="text-xs font-bold text-violet-900">✚ Entrega da Cruz <span className="font-normal opacity-70">(Padrão)</span></span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={form.entregaBiblia} 
+                                onChange={(e) => setForm(f => ({...f, entregaBiblia: e.target.checked}))}
+                                className="w-4 h-4 rounded border-violet-300 text-violet-600 focus:ring-violet-500"
+                              />
+                              <span className="text-xs font-bold text-violet-900">📖 Entrega da Bíblia <span className="font-normal opacity-70">(Opcional nesta etapa)</span></span>
+                            </label>
+                          </div>
+                        )}
+                        
+                        {form.celebracaoPassagemTipo && (
+                          <p className="text-[10px] text-violet-600 mt-2 bg-white/50 p-2 rounded-lg border border-violet-100">
+                            {CELEBRACOES_PASSAGEM.find(c => c.id === form.celebracaoPassagemTipo)?.descricao}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

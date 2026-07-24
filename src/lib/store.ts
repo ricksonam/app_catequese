@@ -178,6 +178,33 @@ export interface RegistroOcorrencia {
 }
 
 export type AtividadeTipo = 'Momento Orante' | 'Retiro' | 'Celebração' | 'Gincana' | 'Passeios' | 'Eventos geral' | 'Outros' | 'Entrega de Símbolos' | 'Celebração de Passagem';
+
+// Types for the 3 canonical IVC passage celebrations
+export type CelebracaoPassagemTipo =
+  | 'admissao_catecumenato'
+  | 'eleicao_preparacao'
+  | 'recepcao_sacramentos';
+
+export const CELEBRACOES_PASSAGEM: { id: CelebracaoPassagemTipo; label: string; emoji: string; descricao: string }[] = [
+  {
+    id: 'admissao_catecumenato',
+    label: 'Rito de Admissão ao Catecumenato',
+    emoji: '⛪',
+    descricao: 'Celebração de entrada no Catecumenato. Inclui a entrega da Cruz e, em algumas comunidades, da Bíblia.',
+  },
+  {
+    id: 'eleicao_preparacao',
+    label: 'Eleição — Preparação para os Sacramentos',
+    emoji: '🗳️',
+    descricao: 'Celebração de eleição e inscrição do nome dos eleitos para receberem os sacramentos da iniciação.',
+  },
+  {
+    id: 'recepcao_sacramentos',
+    label: 'Recepção dos Sacramentos',
+    emoji: '👑',
+    descricao: 'Celebração solene da recepção dos sacramentos da iniciação cristã.',
+  },
+];
 export type AtividadeModalidade = 'interna' | 'externa';
 export type ConducaoTipo = 'A pé' | 'Carro' | 'Carro aplicativo' | 'Van' | 'Ônibus' | 'Trem' | 'Metrô' | 'Avião';
 
@@ -243,6 +270,11 @@ export interface Atividade {
   simboloIVC?: SimboloIVCType;
   etapaIVC?: EtapaIVCType;
   realizado?: boolean; // whether the event has been marked as completed
+  // Passage celebration sub-type (for 'Celebração de Passagem')
+  celebracaoPassagemTipo?: CelebracaoPassagemTipo;
+  // Symbol deliveries in the Rito de Admissão
+  entregaCruz?: boolean;
+  entregaBiblia?: boolean;
 }
 
 export type ReuniaoTipo = 'Reunião de catequistas' | 'Reunião de pais' | 'Reunião de preparação de sacramento' | 'Reunião de preparação de encontro' | 'Reunião de preparação de eventos' | 'Reunião geral';

@@ -1,16 +1,17 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { useTurmas, useCatequizandos, useEncontros, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTurmas, useCatequizandos, useEncontros, useAtividades, useReunioes, useAtividadeMutation } from "@/hooks/useSupabaseData";
 import { useState, useMemo, useCallback } from "react";
-import { 
-  ArrowLeft, Share2, AlertTriangle, CheckCircle2, Calendar, ChevronRight, 
+import {
+  ArrowLeft, Share2, AlertTriangle, CheckCircle2, Calendar, ChevronRight,
   BookOpen, Users, TrendingUp, MapPin, Gift, Sparkles,
-  Route, ListTodo, LineChart, RefreshCw, Compass, AlertCircle, BarChart3, Info, Eye, Clock, Heart, Flame, Send, Star, Flag, BookHeart, Cross, Award, Zap
+  Route, ListTodo, LineChart, RefreshCw, Eye, X, Star,
 } from "lucide-react";
 import { cn, getAppUrl } from "@/lib/utils";
 import { toast } from "sonner";
-import type { Turma, Atividade } from "@/lib/store";
-import { SIMBOLOS_IVC } from "@/lib/store";
+import type { Atividade } from "@/lib/store";
+import { SIMBOLOS_IVC, CELEBRACOES_PASSAGEM, type CelebracaoPassagemTipo } from "@/lib/store";
 import { QRShareModal } from "@/components/QRShareModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -30,6 +31,9 @@ interface EtapaJornada {
   dataEvento?: string;
   percentual?: number;
   simboloId?: string;
+  celebracaoTipo?: CelebracaoPassagemTipo;
+  entregaCruz?: boolean;
+  entregaBiblia?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -73,54 +77,65 @@ const MODELO_INFO: Record<ModeloIVC, { label: string; emoji: string; cor: string
 // ─────────────────────────────────────────────────────────────
 // IVC JOURNEY DEFINITIONS (per model)
 // ─────────────────────────────────────────────────────────────
-const ETAPAS_SEMENTINHAS: Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual'>[] = [
-  { id: 'acolhida',          label: 'Acolhida e Inscrição',           emoji: '🌱',  tipo: 'inicio' },
-  { id: 'pre_cat',           label: 'Pré-Catecumenato',               sublabel: 'Tempo de Iniciação Lúdica', emoji: '🎈', tipo: 'tempo', tempoId: 'tempo1' },
-  { id: 'encontros_seed',    label: 'Encontros Formativos',           emoji: '📚',  tipo: 'simbolo' },
-  { id: 'pass_catec',        label: 'Celebração de Acolhida',         emoji: '🎉',  tipo: 'passagem' },
-  { id: 'catec_seed',        label: 'Catecumenato Infantil',          sublabel: 'Aprofundamento da Fé', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_biblia',    label: 'Bíblia das Crianças',            emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia' },
-  { id: 'pass_ilum_seed',    label: 'Celebração da Família',          emoji: '🎊',  tipo: 'passagem' },
-  { id: 'ilum_seed',         label: 'Purificação e Alegria',          sublabel: 'Preparação Final', emoji: '✨', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'mis_seed',          label: 'Missão das Sementinhas',         sublabel: 'Mistagogia', emoji: '🌿', tipo: 'fim' },
+type EtapaBase = Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual' | 'entregaCruz' | 'entregaBiblia'>;
+
+const ETAPAS_SEMENTINHAS: EtapaBase[] = [
+  { id: 'acolhida',       label: 'Acolhida e Inscrição',              emoji: '🌱', tipo: 'inicio' },
+  { id: 'pre_cat',        label: 'Pré-Catecumenato',                  sublabel: 'Tempo de Iniciação Lúdica', emoji: '🎈', tipo: 'tempo', tempoId: 'tempo1' },
+  { id: 'encontros_seed', label: 'Encontros Formativos',              emoji: '📚', tipo: 'simbolo' },
+  { id: 'pass_catec',     label: 'Celebração de Início da Catequese', emoji: '🎉', tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato' },
+  { id: 'catec_seed',     label: 'Catecumenato Infantil',             sublabel: 'Aprofundamento da Fé', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_biblia', label: 'Bíblia das Crianças',              emoji: '📖', tipo: 'simbolo', simboloId: 'biblia' },
+  { id: 'pass_ilum_seed', label: 'Celebração da Família',             emoji: '🎊', tipo: 'passagem' },
+  { id: 'ilum_seed',      label: 'Purificação e Alegria',             sublabel: 'Preparação Final', emoji: '✨', tipo: 'tempo', tempoId: 'tempo3' },
+  { id: 'mis_seed',       label: 'Missão das Sementinhas',            sublabel: 'Mistagogia', emoji: '🌿', tipo: 'fim' },
 ];
 
-const ETAPAS_EUC_CRISMA: Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual'>[] = [
-  { id: 'preparacao',        label: 'Preparação / Convite',           emoji: '📣',  tipo: 'inicio' },
-  { id: 'pass_entrada',      label: 'Celebração de Entrada',          emoji: '🎉',  tipo: 'passagem' },
-  { id: 'pre_cat',           label: 'Pré-Catecumenato',               sublabel: '1º Tempo — Querigma (mín. 3 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
-  { id: 'pass_cat',          label: 'Celebração de Entrada p/ Catecumenato', emoji: '✨', tipo: 'passagem' },
-  { id: 'cat_biblia',        label: 'Catecumenato — Palavra de Deus', sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_biblia',    label: 'Entrega da Bíblia',              emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia' },
-  { id: 'cat_pessoa',        label: 'Catecumenato — Pessoa Humana',   sublabel: 'Fase 2', emoji: '👤', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'celebracao_vida',   label: 'Celebração da Vida',             emoji: '🎊',  tipo: 'passagem' },
-  { id: 'cat_jesus',         label: 'Catecumenato — Jesus Cristo',    sublabel: 'Fase 3', emoji: '✝️', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'jornada_disc',      label: 'Jornada do Discipulado',         emoji: '🤝',  tipo: 'passagem' },
-  { id: 'cat_oracao',        label: 'Catecumenato — Vida de Oração',  sublabel: 'Fase 4', emoji: '🙏', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',           emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso' },
-  { id: 'cat_comunidade',    label: 'Catecumenato — Comunidade de Fé',sublabel: 'Fase 5', emoji: '⛪', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',       emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio' },
-  { id: 'cat_sacramental',   label: 'Catecumenato — Vida Sacramental',sublabel: 'Fase 6', emoji: '💧', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'eleicao',           label: 'Eleição / Jornada da Eleição',   emoji: '🗳️',  tipo: 'passagem' },
-  { id: 'purificacao',       label: 'Purificação e Iluminação',       sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'sacramento',        label: 'Celebração do Sacramento',       emoji: '👑',  tipo: 'sacramento' },
-  { id: 'mistagogia',        label: 'Mistagogia',                     sublabel: '4º Tempo — Envio Missionário', emoji: '🕊️', tipo: 'fim', tempoId: 'tempo4' },
+const ETAPAS_EUC_CRISMA: EtapaBase[] = [
+  { id: 'preparacao',        label: 'Preparação / Convite',                        emoji: '📣',  tipo: 'inicio' },
+  // ✅ Celebração de Início da Catequese — NÃO é passagem de etapa, é o início
+  { id: 'pass_entrada',      label: 'Celebração de Início da Catequese',           emoji: '🎉',  tipo: 'inicio' },
+  { id: 'pre_cat',           label: 'Pré-Catecumenato',                            sublabel: '1º Tempo — Querigma (mín. 3 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
+  // ✅ 1ª PASSAGEM DE ETAPA: Rito de Admissão ao Catecumenato (entrega Cruz + opcional Bíblia)
+  { id: 'pass_cat',          label: 'Rito de Admissão ao Catecumenato',            emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato' },
+  { id: 'cat_biblia',        label: 'Catecumenato — Palavra de Deus',              sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                           emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia' },
+  { id: 'cat_pessoa',        label: 'Catecumenato — Pessoa Humana',                sublabel: 'Fase 2', emoji: '👤', tipo: 'tempo', tempoId: 'tempo2' },
+  // ✅ Celebração da Vida — celebração interna do catecumenato, símbolo opcional pela tradição da comunidade
+  { id: 'celebracao_vida',   label: 'Celebração da Vida',                          sublabel: 'Celebração interna — símbolo opcional', emoji: '🎊', tipo: 'simbolo' },
+  { id: 'cat_jesus',         label: 'Catecumenato — Jesus Cristo',                 sublabel: 'Fase 3', emoji: '✝️',  tipo: 'tempo', tempoId: 'tempo2' },
+  // ✅ Jornada do Discipulado — atividade externa dentro do Catecumenato, não é passagem
+  { id: 'jornada_disc',      label: 'Jornada do Discipulado',                      sublabel: 'Atividade externa no Catecumenato', emoji: '🤝',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_oracao',        label: 'Catecumenato — Vida de Oração',               sublabel: 'Fase 4', emoji: '🙏',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                        emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso' },
+  { id: 'cat_comunidade',    label: 'Catecumenato — Comunidade de Fé',             sublabel: 'Fase 5', emoji: '⛪', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                    emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio' },
+  { id: 'cat_sacramental',   label: 'Catecumenato — Vida Sacramental',             sublabel: 'Fase 6', emoji: '💧', tipo: 'tempo', tempoId: 'tempo2' },
+  // ✅ 2ª PASSAGEM DE ETAPA: Eleição — Preparação para os Sacramentos
+  { id: 'eleicao',           label: 'Eleição — Preparação para os Sacramentos',   emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao' },
+  { id: 'purificacao',       label: 'Purificação e Iluminação',                   sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
+  // ✅ 3ª PASSAGEM DE ETAPA: Recepção dos Sacramentos
+  { id: 'recepcao_sac',      label: 'Recepção dos Sacramentos',                   emoji: '👑',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos' },
+  { id: 'mistagogia',        label: 'Mistagogia',                                  sublabel: '4º Tempo — Envio Missionário', emoji: '🕊️', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
-const ETAPAS_ADULTOS: Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual'>[] = [
-  { id: 'pre_cat',           label: 'Pré-Catecumenato',               sublabel: '1º Tempo — Querigma', emoji: '🔥', tipo: 'inicio' },
-  { id: 'pass_entrada',      label: 'Admissão ao Catecumenato',       emoji: '✨',  tipo: 'passagem' },
-  { id: 'catecumenato',      label: 'Catecumenato',                   sublabel: '2º Tempo — Aprofundamento', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_biblia',    label: 'Entrega da Bíblia',              emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia' },
-  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',       emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio' },
-  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',           emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso' },
-  { id: 'eleicao',           label: 'Eleição',                        sublabel: '1º Dom. da Quaresma', emoji: '🗳️', tipo: 'passagem' },
-  { id: 'escrutinios',       label: 'Purificação / Escrutínios',      sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'sacramentos',       label: 'Sacramentos da Iniciação',       emoji: '🕊️',  tipo: 'sacramento' },
-  { id: 'mistagogia',        label: 'Mistagogia',                     sublabel: '4º Tempo — Envio Missionário', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
+const ETAPAS_ADULTOS: EtapaBase[] = [
+  { id: 'pre_cat',       label: 'Pré-Catecumenato',                              sublabel: '1º Tempo — Querigma', emoji: '🔥', tipo: 'inicio' },
+  // ✅ 1ª PASSAGEM DE ETAPA: Rito de Admissão (entrega Cruz + opcional Bíblia)
+  { id: 'pass_entrada',  label: 'Rito de Admissão ao Catecumenato',              emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato' },
+  { id: 'catecumenato',  label: 'Catecumenato',                                  sublabel: '2º Tempo — Aprofundamento', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                         emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia' },
+  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                  emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio' },
+  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                      emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso' },
+  // ✅ 2ª PASSAGEM DE ETAPA: Eleição — Preparação para os Sacramentos
+  { id: 'eleicao',       label: 'Eleição — Preparação para os Sacramentos',     emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao' },
+  { id: 'escrutinios',   label: 'Purificação / Escrutínios',                    sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
+  // ✅ 3ª PASSAGEM DE ETAPA: Recepção dos Sacramentos
+  { id: 'recepcao_sac',  label: 'Recepção dos Sacramentos',                     emoji: '👑',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos' },
+  { id: 'mistagogia',    label: 'Mistagogia',                                    sublabel: '4º Tempo — Envio Missionário', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
-const ETAPAS_POR_MODELO: Record<ModeloIVC, Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual'>[]> = {
+const ETAPAS_POR_MODELO: Record<ModeloIVC, EtapaBase[]> = {
   sementinhas: ETAPAS_SEMENTINHAS,
   eucaristia_crisma: ETAPAS_EUC_CRISMA,
   adultos: ETAPAS_ADULTOS,
@@ -130,7 +145,7 @@ const ETAPAS_POR_MODELO: Record<ModeloIVC, Omit<EtapaJornada, 'status' | 'dataEv
 // CALCULATION ENGINE
 // ─────────────────────────────────────────────────────────────
 function calcularProgressoJornada(
-  etapasBase: Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual'>[],
+  etapasBase: EtapaBase[],
   encontros: any[],
   atividades: Atividade[],
   modoManual: boolean,
@@ -138,12 +153,10 @@ function calcularProgressoJornada(
 ): { etapas: EtapaJornada[]; posicaoAtual: number; percentualGeral: number } {
   const hoje = new Date();
 
-  // Get IVC events
   const eventosIVC = atividades.filter(a =>
     a.tipo === 'Entrega de Símbolos' || a.tipo === 'Celebração de Passagem'
   );
 
-  // Encontros realizados
   const encontrosRealizados = encontros.filter(e => e.status === 'realizado');
   const totalEncontros = encontros.length;
   const percFreq = totalEncontros > 0 ? encontrosRealizados.length / totalEncontros : 0;
@@ -151,50 +164,61 @@ function calcularProgressoJornada(
   const etapas: EtapaJornada[] = etapasBase.map((base, idx) => {
     let status: EtapaStatus = 'pendente';
     let dataEvento: string | undefined;
+    let entregaCruz: boolean | undefined;
+    let entregaBiblia: boolean | undefined;
 
     if (modoManual && overrideEtapaIdx !== undefined) {
       status = idx < overrideEtapaIdx ? 'concluido' : idx === overrideEtapaIdx ? 'em_andamento' : 'pendente';
     } else {
-      // Auto mode: calculate from data
-      if (base.tipo === 'simbolo' && base.simboloId) {
-        const evSim = eventosIVC.find(a =>
-          a.simboloIVC === base.simboloId || a.etapaIVC === base.id
-        );
+      if (base.tipo === 'simbolo') {
+        let evSim: Atividade | undefined;
+        if (base.simboloId) {
+          evSim = eventosIVC.find(a =>
+            a.simboloIVC === base.simboloId || a.etapaIVC === base.id
+          );
+        } else {
+          // No fixed symbol (e.g. Celebração da Vida) — match by etapaIVC
+          evSim = eventosIVC.find(a => (a.etapaIVC as string) === base.id);
+        }
         if (evSim) {
           dataEvento = evSim.data;
           const dataEv = new Date(evSim.data + 'T23:59:59');
-          if (dataEv < hoje) status = 'concluido';
+          if (evSim.realizado || dataEv < hoje) status = 'concluido';
           else status = 'agendado';
         }
       } else if (base.tipo === 'passagem') {
         const evPass = eventosIVC.find(a =>
-          a.tipo === 'Celebração de Passagem' && (a.etapaIVC === base.id || a.nome.toLowerCase().includes(base.label.toLowerCase().slice(0, 8)))
+          a.tipo === 'Celebração de Passagem' && (
+            (a.etapaIVC as string) === base.id ||
+            (base.celebracaoTipo && a.celebracaoPassagemTipo === base.celebracaoTipo) ||
+            a.nome.toLowerCase().includes(base.label.toLowerCase().slice(0, 8))
+          )
         );
         if (evPass) {
           dataEvento = evPass.data;
+          entregaCruz = evPass.entregaCruz;
+          entregaBiblia = evPass.entregaBiblia;
           const dataEv = new Date(evPass.data + 'T23:59:59');
-          if (dataEv < hoje) status = 'concluido';
+          if (evPass.realizado || dataEv < hoje) status = 'concluido';
           else status = 'agendado';
         }
       } else if (base.tipo === 'tempo') {
-        // Progress based on encounter frequency
         if (percFreq >= 0.75) status = 'concluido';
         else if (percFreq >= 0.25) status = 'em_andamento';
         else status = 'pendente';
       } else if (base.tipo === 'inicio') {
         status = totalEncontros > 0 ? 'concluido' : 'em_andamento';
       } else if (base.tipo === 'sacramento') {
-        // Check if any catequizando received the sacrament
         status = 'pendente';
       } else if (base.tipo === 'fim') {
         status = percFreq >= 0.9 && encontrosRealizados.length > 0 ? 'concluido' : 'pendente';
       }
     }
 
-    return { ...base, status, dataEvento };
+    return { ...base, status, dataEvento, entregaCruz, entregaBiblia };
   });
 
-  // Find current position (last completed or first in-progress)
+  // Find current position: last concluido or first em_andamento
   let posicaoAtual = 0;
   for (let i = etapas.length - 1; i >= 0; i--) {
     if (etapas[i].status === 'concluido' || etapas[i].status === 'em_andamento') {
@@ -217,14 +241,12 @@ function calcularRisco(
   const hoje = new Date();
   const eventosIVC = atividades.filter(a => a.tipo === 'Entrega de Símbolos' || a.tipo === 'Celebração de Passagem');
 
-  // Check for overdue IVC events
   const eventosAtrasados = eventosIVC.filter(a => {
     if (!a.data) return false;
     const dataEv = new Date(a.data + 'T23:59:59');
     return dataEv < hoje && !a.realizado;
   });
 
-  // Calculate encounter gap
   const realizados = encontros.filter(e => e.status === 'realizado');
   const pendentes = encontros.filter(e => e.status === 'pendente' && new Date(e.data) < hoje);
 
@@ -235,7 +257,7 @@ function calcularRisco(
       detalhes: `${eventosAtrasados.length} evento(s) IVC atrasado(s) e ${pendentes.length} encontro(s) pendente(s) passados.`,
     };
   }
-  if (pendentes.length > 0 || percentual < 30 && realizados.length > 5) {
+  if (pendentes.length > 0 || (percentual < 30 && realizados.length > 5)) {
     return {
       nivel: 'atencao',
       mensagem: 'Requer atenção',
@@ -253,27 +275,23 @@ function estimarDataConclusao(encontros: any[], percentual: number): string | nu
   if (percentual >= 100) return null;
   const realizados = encontros.filter(e => e.status === 'realizado');
   if (realizados.length < 2) return null;
-
   const futuros = encontros.filter(e => e.status === 'pendente' && e.data);
   if (futuros.length === 0) return null;
-
   const lastFuturo = futuros[futuros.length - 1];
   const d = new Date(lastFuturo.data + 'T12:00:00');
   return d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 }
 
 // ─────────────────────────────────────────────────────────────
-// RISK BADGE COMPONENT
+// RISK BADGE
 // ─────────────────────────────────────────────────────────────
 function RiscoBadge({ nivel, mensagem }: { nivel: RiscoNivel; mensagem: string }) {
   const cfg = {
-    em_dia: { dot: 'bg-emerald-400', bg: 'bg-emerald-500/10 border-emerald-400/30', text: 'text-emerald-600', icon: CheckCircle2 },
-    atencao: { dot: 'bg-amber-400 animate-pulse', bg: 'bg-amber-500/10 border-amber-400/30', text: 'text-amber-600', icon: AlertTriangle },
+    em_dia:   { dot: 'bg-emerald-400', bg: 'bg-emerald-500/10 border-emerald-400/30', text: 'text-emerald-600', icon: CheckCircle2 },
+    atencao:  { dot: 'bg-amber-400 animate-pulse', bg: 'bg-amber-500/10 border-amber-400/30', text: 'text-amber-600', icon: AlertTriangle },
     atrasado: { dot: 'bg-red-500 animate-pulse', bg: 'bg-red-500/10 border-red-400/30', text: 'text-red-600', icon: AlertTriangle },
   }[nivel];
-
   const Icon = cfg.icon;
-
   return (
     <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-full border-2 text-sm font-bold", cfg.bg, cfg.text)}>
       <div className={cn("w-2 h-2 rounded-full", cfg.dot)} />
@@ -284,7 +302,7 @@ function RiscoBadge({ nivel, mensagem }: { nivel: RiscoNivel; mensagem: string }
 }
 
 // ─────────────────────────────────────────────────────────────
-// STAT CARD COMPONENT
+// STAT CARD
 // ─────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, sub, color }: {
   icon: any; label: string; value: string | number; sub?: string; color: string
@@ -306,33 +324,246 @@ function StatCard({ icon: Icon, label, value, sub, color }: {
 }
 
 // ─────────────────────────────────────────────────────────────
-// JOURNEY MAP COMPONENT
+// ETAPA ACTION MODAL — opens when clicking passagem/simbolo cards
+// ─────────────────────────────────────────────────────────────
+function EtapaActionModal({
+  etapa,
+  atividades,
+  onClose,
+  onSave,
+}: {
+  etapa: EtapaJornada | null;
+  atividades: Atividade[];
+  onClose: () => void;
+  onSave: (params: {
+    data: string;
+    realizado: boolean;
+    entregaCruz?: boolean;
+    entregaBiblia?: boolean;
+    simboloIVC?: string;
+  }) => Promise<void>;
+}) {
+  const existing = useMemo(() => {
+    if (!etapa) return null;
+    return atividades.find(a =>
+      (a.tipo === 'Celebração de Passagem' && (
+        (a.etapaIVC as string) === etapa.id ||
+        (etapa.celebracaoTipo && a.celebracaoPassagemTipo === etapa.celebracaoTipo)
+      )) ||
+      (a.tipo === 'Entrega de Símbolos' && (
+        a.simboloIVC === etapa.simboloId ||
+        (a.etapaIVC as string) === etapa.id
+      ))
+    );
+  }, [etapa, atividades]);
+
+  const [data, setData] = useState(existing?.data || '');
+  const [realizado, setRealizado] = useState(existing?.realizado || false);
+  const [entregaCruz, setEntregaCruz] = useState(existing?.entregaCruz !== false);
+  const [entregaBiblia, setEntregaBiblia] = useState(existing?.entregaBiblia || false);
+  const [simboloSelecionado, setSimboloSelecionado] = useState<string>(existing?.simboloIVC || etapa?.simboloId || '');
+  const [saving, setSaving] = useState(false);
+
+  if (!etapa) return null;
+
+  const isAdmissao = etapa.celebracaoTipo === 'admissao_catecumenato';
+  const isPassagem = etapa.tipo === 'passagem';
+  const isSimboloSemId = etapa.tipo === 'simbolo' && !etapa.simboloId;
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave({
+        data,
+        realizado,
+        entregaCruz: isAdmissao ? entregaCruz : undefined,
+        entregaBiblia: isAdmissao ? entregaBiblia : undefined,
+        simboloIVC: isSimboloSemId ? simboloSelecionado : etapa.simboloId,
+      });
+      onClose();
+    } catch {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="rounded-3xl border-border/30 max-w-sm">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">{etapa.emoji}</span>
+            <div className="flex-1 min-w-0">
+              <p className={cn(
+                "text-[10px] font-black uppercase tracking-widest mb-0.5",
+                isPassagem ? "text-violet-600" : "text-amber-600"
+              )}>
+                {isPassagem ? '✦ Celebração de Passagem de Etapa' : '🎁 Entrega de Símbolo'}
+              </p>
+              <DialogTitle className="text-sm font-black text-foreground leading-tight text-left">
+                {etapa.label}
+              </DialogTitle>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-4 mt-1">
+          {/* Date input */}
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
+              Data da Celebração
+            </label>
+            <input
+              type="date"
+              value={data}
+              onChange={e => setData(e.target.value)}
+              className="form-input"
+            />
+          </div>
+
+          {/* Symbol selector for Celebração da Vida (no fixed symbol) */}
+          {isSimboloSemId && (
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
+                Símbolo Entregue <span className="text-muted-foreground/60 normal-case font-semibold">(opcional, de acordo com a tradição da comunidade)</span>
+              </label>
+              <select
+                value={simboloSelecionado}
+                onChange={e => setSimboloSelecionado(e.target.value)}
+                className="form-input"
+              >
+                <option value="">Nenhum símbolo específico</option>
+                {SIMBOLOS_IVC.map(s => (
+                  <option key={s.id} value={s.id}>{s.emoji} {s.label}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Cruz & Bíblia for Rito de Admissão */}
+          {isAdmissao && (
+            <div className="space-y-3 p-4 bg-violet-50 dark:bg-violet-950/20 rounded-2xl border border-violet-200/50">
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-700 flex items-center gap-1.5">
+                <Star className="w-3 h-3 fill-violet-600 text-violet-600" />
+                Símbolos Entregues nesta Celebração
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setEntregaCruz(!entregaCruz)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left",
+                  entregaCruz
+                    ? "border-violet-400 bg-violet-100 dark:bg-violet-900/30"
+                    : "border-border bg-transparent hover:border-violet-300"
+                )}
+              >
+                <div className={cn(
+                  "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0",
+                  entregaCruz ? "bg-violet-600 border-violet-600" : "border-border"
+                )}>
+                  {entregaCruz && <CheckCircle2 className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-black text-sm text-foreground">✚ Cruz</p>
+                  <p className="text-[10px] text-muted-foreground">Padrão do Rito de Admissão ao Catecumenato</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setEntregaBiblia(!entregaBiblia)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left",
+                  entregaBiblia
+                    ? "border-blue-400 bg-blue-50 dark:bg-blue-900/30"
+                    : "border-border bg-transparent hover:border-blue-300"
+                )}
+              >
+                <div className={cn(
+                  "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0",
+                  entregaBiblia ? "bg-blue-600 border-blue-600" : "border-border"
+                )}>
+                  {entregaBiblia && <CheckCircle2 className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-black text-sm text-foreground">📖 Bíblia</p>
+                  <p className="text-[10px] text-muted-foreground">Opcional — algumas comunidades entregam a Bíblia nesta celebração</p>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Realizado toggle */}
+          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/40">
+            <div>
+              <p className="font-black text-sm text-foreground">Já foi realizada</p>
+              <p className="text-[10px] text-muted-foreground">Marque se esta celebração já aconteceu</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setRealizado(!realizado)}
+              className={cn(
+                "relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0",
+                realizado ? "bg-emerald-500" : "bg-muted"
+              )}
+            >
+              <div className={cn(
+                "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
+                realizado ? "left-7" : "left-1"
+              )} />
+            </button>
+          </div>
+
+          {realizado && (
+            <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl border border-emerald-200/50 animate-fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <p className="text-xs font-bold text-emerald-700">O card ficará verde no painel — posição da turma será atualizada!</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-95 transition-transform disabled:opacity-70"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            {saving ? 'Salvando...' : existing ? 'Salvar Alterações' : 'Salvar e Criar Evento'}
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// JOURNEY MAP — enhanced visual for passagem + clickable cards
 // ─────────────────────────────────────────────────────────────
 function JornadaMap({
   etapas,
   posicaoAtual,
-  modelo,
+  onEtapaClick,
 }: {
   etapas: EtapaJornada[];
   posicaoAtual: number;
   modelo: ModeloIVC;
+  onEtapaClick: (etapa: EtapaJornada) => void;
 }) {
   const [expandida, setExpandida] = useState<string | null>(null);
 
-  const statusStyle: Record<EtapaStatus, { ring: string; bg: string; text: string; connector: string }> = {
-    concluido:    { ring: 'ring-4 ring-emerald-400/40', bg: 'bg-emerald-500', text: 'text-white', connector: 'bg-emerald-400' },
-    em_andamento: { ring: 'ring-4 ring-primary/30', bg: 'bg-primary', text: 'text-white', connector: 'bg-primary/40' },
-    agendado:     { ring: 'ring-4 ring-amber-400/30', bg: 'bg-amber-400', text: 'text-white', connector: 'bg-amber-200' },
-    pendente:     { ring: '', bg: 'bg-muted/50 border-2 border-muted-foreground/20', text: 'text-muted-foreground/50', connector: 'bg-muted/40' },
+  const statusStyle: Record<EtapaStatus, { ring: string; bg: string; connector: string }> = {
+    concluido:    { ring: 'ring-4 ring-emerald-400/50', bg: 'bg-emerald-500', connector: 'bg-emerald-400' },
+    em_andamento: { ring: 'ring-4 ring-primary/30',     bg: 'bg-primary',     connector: 'bg-primary/40' },
+    agendado:     { ring: 'ring-4 ring-amber-400/40',   bg: 'bg-amber-400',   connector: 'bg-amber-300' },
+    pendente:     { ring: '',                            bg: 'bg-muted/50 border-2 border-muted-foreground/20', connector: 'bg-muted/40' },
   };
 
-  const tipoStyle: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
-    inicio:    { size: 'text-3xl', nodeSize: 'w-16 h-16' },
-    tempo:     { size: 'text-2xl', nodeSize: 'w-14 h-14' },
-    passagem:  { size: 'text-3xl', nodeSize: 'w-16 h-16' },
-    simbolo:   { size: 'text-2xl', nodeSize: 'w-12 h-12' },
+  const tipoNodeSize: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
+    inicio:    { size: 'text-2xl', nodeSize: 'w-14 h-14' },
+    tempo:     { size: 'text-xl',  nodeSize: 'w-12 h-12' },
+    passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' }, // ★ Biggest nodes for passagem
+    simbolo:   { size: 'text-xl',  nodeSize: 'w-12 h-12' },
     sacramento:{ size: 'text-4xl', nodeSize: 'w-20 h-20' },
-    fim:       { size: 'text-3xl', nodeSize: 'w-16 h-16' },
+    fim:       { size: 'text-2xl', nodeSize: 'w-14 h-14' },
   };
 
   return (
@@ -343,42 +574,81 @@ function JornadaMap({
       <div className="space-y-4">
         {etapas.map((etapa, idx) => {
           const st = statusStyle[etapa.status];
-          const ts = tipoStyle[etapa.tipo];
+          const ts = tipoNodeSize[etapa.tipo];
           const isLeft = idx % 2 === 0;
           const isActive = posicaoAtual === idx;
           const isExpanded = expandida === etapa.id;
+          const isPassagem = etapa.tipo === 'passagem';
+          const isClickable = etapa.tipo === 'passagem' || etapa.tipo === 'simbolo';
+
+          // Passagem ring override by status
+          const passagemRing =
+            etapa.status === 'concluido' ? 'ring-4 ring-emerald-400/60 shadow-xl shadow-emerald-500/20' :
+            etapa.status === 'agendado'  ? 'ring-4 ring-amber-400/60 shadow-xl shadow-amber-500/20' :
+                                           'ring-4 ring-violet-400/60 shadow-xl shadow-violet-500/30';
 
           return (
             <div key={etapa.id} className="relative flex items-center justify-center">
-              {/* Node */}
+
+              {/* Animated glow behind passagem nodes */}
+              {isPassagem && (
+                <div className={cn(
+                  "absolute left-1/2 -translate-x-1/2 rounded-full blur-2xl opacity-20 pointer-events-none transition-all duration-500",
+                  "w-16 h-16",
+                  etapa.status === 'concluido' ? 'bg-emerald-500' :
+                  etapa.status === 'agendado'  ? 'bg-amber-400' : 'bg-violet-500'
+                )} />
+              )}
+
+              {/* Node button */}
               <button
-                onClick={() => setExpandida(isExpanded ? null : etapa.id)}
+                onClick={() => {
+                  if (isClickable) {
+                    onEtapaClick(etapa);
+                  } else {
+                    setExpandida(isExpanded ? null : etapa.id);
+                  }
+                }}
                 className={cn(
-                  "relative z-10 flex items-center justify-center rounded-full shadow-lg transition-all duration-300",
+                  "relative z-10 flex items-center justify-center rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95",
                   ts.nodeSize,
-                  st.bg, st.ring,
+                  st.bg,
+                  isPassagem ? passagemRing : st.ring,
                   isActive && "scale-110 shadow-2xl shadow-primary/30",
-                  "hover:scale-105 active:scale-95"
                 )}
               >
-                <span className={cn(ts.size, "filter drop-shadow-sm")}>{etapa.emoji}</span>
+                <span className={cn(ts.size, "filter drop-shadow-sm select-none")}>{etapa.emoji}</span>
+
+                {/* Concluido check */}
                 {etapa.status === 'concluido' && (
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full shadow flex items-center justify-center">
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full shadow flex items-center justify-center z-10">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                   </div>
                 )}
+
+                {/* Star badge for pending passagem */}
+                {isPassagem && etapa.status === 'pendente' && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 rounded-full shadow flex items-center justify-center z-10">
+                    <Star className="w-3 h-3 text-white fill-white" />
+                  </div>
+                )}
+
+                {/* Agendado pulse ring for passagem */}
+                {isPassagem && etapa.status === 'agendado' && (
+                  <div className="absolute inset-0 rounded-full ring-4 ring-amber-400/30 animate-ping pointer-events-none" />
+                )}
               </button>
 
-              {/* Floating Turma Indicator for Active Stage */}
+              {/* Active "Sua Turma" chip */}
               {isActive && (
-                <div 
+                <div
                   className={cn(
                     "absolute z-30 flex items-center animate-bounce",
-                    isLeft ? "left-[calc(50%+28px)] flex-row" : "right-[calc(50%+28px)] flex-row-reverse"
+                    isLeft ? "left-[calc(50%+36px)] flex-row" : "right-[calc(50%+36px)] flex-row-reverse"
                   )}
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <div className="h-[2px] w-6 bg-primary" />
+                  <div className="h-[2px] w-5 bg-primary" />
                   <div className="bg-primary text-white px-3 py-1.5 rounded-full shadow-lg shadow-primary/30 flex items-center gap-1.5 border-2 border-white dark:border-zinc-900">
                     <Users className="w-3.5 h-3.5" />
                     <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sua Turma</span>
@@ -386,46 +656,117 @@ function JornadaMap({
                 </div>
               )}
 
-              {/* Label card — alternates left/right */}
+              {/* Label card */}
               <div
                 className={cn(
-                  "absolute max-w-[120px] sm:max-w-[150px]",
-                  isLeft ? "right-[calc(50%+44px)]" : "left-[calc(50%+44px)]"
+                  "absolute max-w-[130px] sm:max-w-[155px]",
+                  isLeft ? "right-[calc(50%+48px)]" : "left-[calc(50%+48px)]"
                 )}
               >
                 <div
+                  onClick={() => {
+                    if (isClickable) onEtapaClick(etapa);
+                    else setExpandida(isExpanded ? null : etapa.id);
+                  }}
                   className={cn(
-                    "rounded-2xl px-3 py-2 shadow-sm border-2 transition-all duration-200 cursor-pointer",
-                    isExpanded
+                    "rounded-2xl px-3 py-2.5 shadow-sm border-2 transition-all duration-200 cursor-pointer",
+                    // ★ Passagem: strong visual emphasis
+                    isPassagem && etapa.status === 'concluido'
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 shadow-emerald-500/10 shadow-md"
+                    : isPassagem && etapa.status === 'agendado'
+                      ? "bg-amber-50 dark:bg-amber-950/30 border-amber-300 shadow-amber-500/10 shadow-md"
+                    : isPassagem
+                      ? "bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/40 border-violet-300 shadow-violet-500/15 shadow-md hover:shadow-violet-500/25"
+                    // Simbolo: amber emphasis
+                    : etapa.tipo === 'simbolo'
+                      ? (etapa.status === 'concluido'
+                          ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 shadow-sm"
+                          : "bg-white/90 dark:bg-card/90 border-amber-200/60 hover:border-amber-300")
+                    // Normal
+                    : isExpanded
                       ? "bg-white dark:bg-card border-primary/50 shadow-lg"
                       : "bg-white/90 dark:bg-card/90 border-border hover:border-primary/40"
                   )}
-                  onClick={() => setExpandida(isExpanded ? null : etapa.id)}
                 >
+                  {/* Passagem de Etapa badge */}
+                  {isPassagem && (
+                    <p className={cn(
+                      "text-[8px] font-black uppercase tracking-widest mb-1.5 flex items-center gap-1",
+                      etapa.status === 'concluido' ? "text-emerald-600" :
+                      etapa.status === 'agendado'  ? "text-amber-600" : "text-violet-600"
+                    )}>
+                      <Star className={cn(
+                        "w-2.5 h-2.5",
+                        etapa.status === 'concluido' ? "fill-emerald-500 text-emerald-500" :
+                        etapa.status === 'agendado'  ? "fill-amber-500 text-amber-500" : "fill-violet-500 text-violet-500"
+                      )} />
+                      Passagem de Etapa
+                    </p>
+                  )}
+
                   <p className={cn(
-                    "text-xs sm:text-sm font-black leading-tight uppercase tracking-wide",
-                    etapa.status === 'concluido' ? "text-emerald-700" :
+                    "text-xs font-black leading-tight uppercase tracking-wide",
+                    etapa.status === 'concluido' ? "text-emerald-700 dark:text-emerald-400" :
                     etapa.status === 'em_andamento' ? "text-primary" :
                     etapa.status === 'agendado' ? "text-amber-700" :
+                    isPassagem ? "text-violet-700 dark:text-violet-400" :
+                    etapa.tipo === 'simbolo' ? "text-amber-700 dark:text-amber-400" :
                     "text-muted-foreground"
                   )}>
                     {etapa.label}
                   </p>
+
                   {etapa.sublabel && (
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 font-bold leading-tight">
+                    <p className="text-[10px] text-muted-foreground mt-0.5 font-bold leading-tight">
                       {etapa.sublabel}
                     </p>
                   )}
+
                   {etapa.dataEvento && (
-                    <p className="text-[10px] font-black text-amber-600 mt-1 flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
+                    <p className="text-[9px] font-black text-amber-600 mt-1 flex items-center gap-1">
+                      <Calendar className="w-2.5 h-2.5" />
                       {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                    </p>
+                  )}
+
+                  {/* Cruz & Bíblia badges shown when Rito de Admissão is concluido */}
+                  {etapa.celebracaoTipo === 'admissao_catecumenato' && etapa.status === 'concluido' && (
+                    <div className="flex gap-1 mt-1.5 flex-wrap">
+                      {etapa.entregaCruz !== false && (
+                        <span className="text-[8px] font-black bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full border border-violet-200">✚ Cruz</span>
+                      )}
+                      {etapa.entregaBiblia && (
+                        <span className="text-[8px] font-black bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full border border-blue-200">📖 Bíblia</span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* "Toque para registrar" hint on clickable pending cards */}
+                  {isClickable && etapa.status === 'pendente' && (
+                    <p className={cn(
+                      "text-[8px] font-bold mt-1.5 flex items-center gap-0.5",
+                      isPassagem ? "text-violet-500" : "text-amber-500"
+                    )}>
+                      <Calendar className="w-2.5 h-2.5" />
+                      Toque para registrar
+                    </p>
+                  )}
+                  {isClickable && etapa.status === 'concluido' && (
+                    <p className="text-[8px] font-bold text-emerald-600 mt-1 flex items-center gap-0.5">
+                      <CheckCircle2 className="w-2.5 h-2.5" />
+                      Realizada — toque para editar
+                    </p>
+                  )}
+                  {isClickable && etapa.status === 'agendado' && (
+                    <p className="text-[8px] font-bold text-amber-600 mt-1 flex items-center gap-0.5">
+                      <Calendar className="w-2.5 h-2.5" />
+                      Agendada — toque para marcar
                     </p>
                   )}
                 </div>
 
-                {/* Expanded content */}
-                {isExpanded && (
+                {/* Expanded info for non-clickable types */}
+                {isExpanded && !isClickable && (
                   <div className="mt-2 bg-white dark:bg-card rounded-xl p-3 border border-primary/10 shadow-lg text-[10px] space-y-1.5 animate-in slide-in-from-top-2 duration-200">
                     <div className="flex items-center gap-1.5">
                       <div className={cn(
@@ -440,15 +781,8 @@ function JornadaMap({
                          etapa.status === 'agendado' ? 'Agendado' : 'Pendente'}
                       </span>
                     </div>
-                    {etapa.tipo === 'simbolo' && (
-                      <p className="text-muted-foreground font-medium">
-                        Entrega registrada via evento no módulo de Eventos.
-                      </p>
-                    )}
-                    {etapa.tipo === 'passagem' && (
-                      <p className="text-muted-foreground font-medium">
-                        Celebração de passagem entre os Tempos do IVC.
-                      </p>
+                    {etapa.tipo === 'tempo' && (
+                      <p className="text-muted-foreground font-medium">Período formativo do IVC.</p>
                     )}
                   </div>
                 )}
@@ -470,18 +804,20 @@ function JornadaMap({
 }
 
 // ─────────────────────────────────────────────────────────────
-// PENDENCIAS PANEL COMPONENT
+// PENDENCIAS PANEL
 // ─────────────────────────────────────────────────────────────
 function PendenciasPanel({
   etapas,
   turmaId,
   atividades,
   encontros,
+  onEtapaClick,
 }: {
   etapas: EtapaJornada[];
   turmaId: string;
   atividades: Atividade[];
   encontros: any[];
+  onEtapaClick: (etapa: EtapaJornada) => void;
 }) {
   const navigate = useNavigate();
   const pendentes = etapas.filter(e => e.status === 'pendente' || e.status === 'agendado');
@@ -501,53 +837,65 @@ function PendenciasPanel({
   }
 
   return (
-    <div className="space-y-3">
-      {/* Missing IVC events */}
-      {pendentes.filter(e => e.tipo === 'simbolo').length > 0 && (
+    <div className="space-y-4">
+      {/* Missing passagem celebrations */}
+      {pendentes.filter(e => e.tipo === 'passagem').length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
-            <Gift className="w-4 h-4" /> Entregas de Símbolos Pendentes
+          <p className="text-xs font-black uppercase tracking-widest text-violet-600 flex items-center gap-2">
+            <Star className="w-4 h-4 fill-violet-500 text-violet-500" /> Celebrações de Passagem de Etapa Pendentes
           </p>
-          {pendentes.filter(e => e.tipo === 'simbolo').map(etapa => {
-            const simbolo = SIMBOLOS_IVC.find(s => s.id === etapa.simboloId);
+          {pendentes.filter(e => e.tipo === 'passagem').map(etapa => {
+            const celInfo = etapa.celebracaoTipo
+              ? CELEBRACOES_PASSAGEM.find(c => c.id === etapa.celebracaoTipo)
+              : null;
             return (
               <button
                 key={etapa.id}
-                onClick={() => navigate(`/turmas/${turmaId}/eventos`)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-amber-50 border-2 border-amber-200 hover:bg-amber-100 transition-colors text-left group"
+                onClick={() => onEtapaClick(etapa)}
+                className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-violet-50 to-purple-50 border-2 border-violet-200 hover:border-violet-400 hover:shadow-md hover:shadow-violet-500/10 transition-all text-left group"
               >
-                <span className="text-3xl">{simbolo?.emoji ?? '📦'}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-amber-900 truncate">{etapa.label}</p>
-                  <p className="text-xs font-bold text-amber-600">Criar evento "Entrega de Símbolos" para registrar</p>
+                <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="text-2xl">{etapa.emoji}</span>
                 </div>
-                <ChevronRight className="w-5 h-5 text-amber-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-violet-500 mb-0.5 flex items-center gap-1">
+                    <Star className="w-2.5 h-2.5 fill-violet-500" />
+                    Passagem de Etapa
+                  </p>
+                  <p className="text-sm font-black text-violet-900 dark:text-violet-300 truncate">{etapa.label}</p>
+                  {celInfo && <p className="text-[10px] font-bold text-violet-600 mt-0.5">{celInfo.descricao}</p>}
+                  <p className="text-[10px] font-bold text-violet-500 mt-1">Toque para registrar a data e marcar como realizada</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-violet-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
               </button>
             );
           })}
         </div>
       )}
 
-      {/* Missing celebrations */}
-      {pendentes.filter(e => e.tipo === 'passagem').length > 0 && (
+      {/* Missing symbol deliveries */}
+      {pendentes.filter(e => e.tipo === 'simbolo').length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-black uppercase tracking-widest text-violet-600 flex items-center gap-2">
-            <Sparkles className="w-4 h-4" /> Celebrações de Passagem Pendentes
+          <p className="text-xs font-black uppercase tracking-widest text-amber-600 flex items-center gap-2">
+            <Gift className="w-4 h-4" /> Entregas de Símbolos Pendentes
           </p>
-          {pendentes.filter(e => e.tipo === 'passagem').map(etapa => (
-            <button
-              key={etapa.id}
-              onClick={() => navigate(`/turmas/${turmaId}/eventos`)}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-violet-50 border-2 border-violet-200 hover:bg-violet-100 transition-colors text-left group"
-            >
-              <span className="text-3xl">{etapa.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-black text-violet-900 truncate">{etapa.label}</p>
-                <p className="text-xs font-bold text-violet-600">Criar evento "Celebração de Passagem" para registrar</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-violet-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-          ))}
+          {pendentes.filter(e => e.tipo === 'simbolo').map(etapa => {
+            const simbolo = etapa.simboloId ? SIMBOLOS_IVC.find(s => s.id === etapa.simboloId) : null;
+            return (
+              <button
+                key={etapa.id}
+                onClick={() => onEtapaClick(etapa)}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-amber-50 border-2 border-amber-200 hover:bg-amber-100 hover:border-amber-300 transition-all text-left group"
+              >
+                <span className="text-3xl">{simbolo?.emoji ?? etapa.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-amber-900 truncate">{etapa.label}</p>
+                  <p className="text-[10px] font-bold text-amber-600">Toque para registrar a data da entrega</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-amber-500 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -615,9 +963,7 @@ function ManualControle({
                 {etapa.label}
               </p>
             </div>
-            {posicaoAtual === idx && (
-              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-            )}
+            {posicaoAtual === idx && <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />}
           </button>
         ))}
       </div>
@@ -637,6 +983,7 @@ export default function PainelIVC() {
   const { data: encontros = [] } = useEncontros(id);
   const { data: atividades = [] } = useAtividades(id);
   const { data: reunioes = [] } = useReunioes(id);
+  const mutation = useAtividadeMutation();
 
   const turma = turmas.find(t => t.id === id);
 
@@ -644,6 +991,7 @@ export default function PainelIVC() {
   const [overrideIdx, setOverrideIdx] = useState<number | undefined>(undefined);
   const [abaAtiva, setAbaAtiva] = useState<'mapa' | 'pendencias' | 'estatisticas'>('mapa');
   const [showQR, setShowQR] = useState(false);
+  const [etapaModal, setEtapaModal] = useState<EtapaJornada | null>(null);
 
   const modelo = useMemo(() => detectarModelo(turma?.etapa ?? ''), [turma?.etapa]);
   const modeloInfo = MODELO_INFO[modelo];
@@ -674,6 +1022,61 @@ export default function PainelIVC() {
     }
   }, [turma]);
 
+  const handleEtapaClick = useCallback((etapa: EtapaJornada) => {
+    setEtapaModal(etapa);
+  }, []);
+
+  const handleEtapaSave = useCallback(async (params: {
+    data: string;
+    realizado: boolean;
+    entregaCruz?: boolean;
+    entregaBiblia?: boolean;
+    simboloIVC?: string;
+  }) => {
+    if (!id || !etapaModal) return;
+
+    const isPassagem = etapaModal.tipo === 'passagem';
+
+    // Find existing event for this etapa to update instead of duplicate
+    const existing = atividades.find(a =>
+      (a.tipo === 'Celebração de Passagem' && (
+        (a.etapaIVC as string) === etapaModal.id ||
+        (etapaModal.celebracaoTipo && a.celebracaoPassagemTipo === etapaModal.celebracaoTipo)
+      )) ||
+      (a.tipo === 'Entrega de Símbolos' && (
+        a.simboloIVC === etapaModal.simboloId ||
+        (a.etapaIVC as string) === etapaModal.id
+      ))
+    );
+
+    const eventData: Atividade = {
+      id: existing?.id ?? crypto.randomUUID(),
+      turmaId: id,
+      nome: etapaModal.label,
+      descricao: isPassagem
+        ? `Celebração de passagem: ${etapaModal.label}`
+        : `Entrega de símbolo: ${etapaModal.label}`,
+      tipo: (isPassagem ? 'Celebração de Passagem' : 'Entrega de Símbolos') as any,
+      modalidade: 'interna',
+      conducao: undefined,
+      data: params.data,
+      local: '',
+      horario: '',
+      observacao: '',
+      presencas: existing?.presencas ?? [],
+      criadoEm: existing?.criadoEm ?? new Date().toISOString(),
+      etapaIVC: etapaModal.id as any,
+      simboloIVC: params.simboloIVC as any,
+      celebracaoPassagemTipo: etapaModal.celebracaoTipo as any,
+      entregaCruz: params.entregaCruz,
+      entregaBiblia: params.entregaBiblia,
+      realizado: params.realizado,
+    };
+
+    await mutation.mutateAsync(eventData);
+    toast.success(existing ? '✅ Evento atualizado no painel!' : '✅ Celebração registrada e evento criado!');
+  }, [id, etapaModal, atividades, mutation]);
+
   if (!turma) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
@@ -682,6 +1085,10 @@ export default function PainelIVC() {
       </div>
     );
   }
+
+  // Count passage celebrations realized
+  const passagensRealizadas = etapas.filter(e => e.tipo === 'passagem' && e.status === 'concluido').length;
+  const totalPassagens = etapas.filter(e => e.tipo === 'passagem').length;
 
   return (
     <div className="space-y-5 pb-20">
@@ -695,7 +1102,7 @@ export default function PainelIVC() {
             <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">{turma.nome}</p>
             <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Painel IVC</h1>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
-              Itinerário Inteligente
+              Itinerário de Vida Cristã
             </p>
           </div>
           <button onClick={handleShare} className="absolute right-0 w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
@@ -706,33 +1113,62 @@ export default function PainelIVC() {
 
       {/* ─── MODELO CARD ─── */}
       <div className="rounded-3xl p-6 bg-white dark:bg-card border-2 border-border/60 shadow-md animate-fade-in text-foreground relative overflow-hidden">
-        {/* Decorative background circle */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
-        
+
         <div className="flex flex-col gap-5 relative z-10">
-          {/* Header Info */}
           <div className="flex gap-4 items-center">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center text-4xl shadow-sm shrink-0">
               {modeloInfo.emoji}
             </div>
             <div className="flex-1">
               <h2 className="font-black text-2xl leading-tight text-foreground">{turma.nome}</h2>
-              {turma.ano && (
-                <p className="text-sm font-bold text-muted-foreground mt-0.5">{turma.ano}</p>
-              )}
+              {turma.ano && <p className="text-sm font-bold text-muted-foreground mt-0.5">{turma.ano}</p>}
             </div>
           </div>
 
           <div className="h-px bg-border/50 w-full" />
 
+          {/* Passage celebrations summary */}
+          {totalPassagens > 0 && (
+            <div className="flex items-center gap-3 p-3 bg-violet-50 dark:bg-violet-950/20 rounded-2xl border border-violet-200/50">
+              <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                <Star className="w-5 h-5 text-violet-600 fill-violet-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-violet-600 mb-0.5">Celebrações de Passagem</p>
+                <p className="font-black text-sm text-violet-900 dark:text-violet-300">
+                  {passagensRealizadas} de {totalPassagens} realizadas
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className={cn(
+                  "text-2xl font-black",
+                  passagensRealizadas === totalPassagens ? "text-emerald-600" : "text-violet-600"
+                )}>
+                  {passagensRealizadas}/{totalPassagens}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Current Stage Indicator */}
           {etapas[posicaoAtual] && (
-            <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-center gap-4">
+            <div className={cn(
+              "rounded-2xl p-4 border flex items-center gap-4",
+              etapas[posicaoAtual].tipo === 'passagem'
+                ? "bg-violet-50 dark:bg-violet-950/20 border-violet-200/60"
+                : "bg-primary/5 border-primary/10"
+            )}>
               <div className="w-12 h-12 rounded-xl bg-white dark:bg-card shadow-sm border border-border/50 flex items-center justify-center text-2xl shrink-0">
                 {etapas[posicaoAtual].emoji}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-0.5">Posição Atual da Turma</p>
+                <p className={cn(
+                  "text-[10px] font-black uppercase tracking-widest mb-0.5",
+                  etapas[posicaoAtual].tipo === 'passagem' ? "text-violet-600" : "text-primary"
+                )}>
+                  {etapas[posicaoAtual].tipo === 'passagem' ? '★ Passagem de Etapa — Posição Atual' : 'Posição Atual da Turma'}
+                </p>
                 <p className="font-black text-sm text-foreground truncate">{etapas[posicaoAtual].label}</p>
                 {etapas[posicaoAtual].sublabel && (
                   <p className="text-xs font-medium text-muted-foreground truncate mt-0.5">{etapas[posicaoAtual].sublabel}</p>
@@ -758,13 +1194,12 @@ export default function PainelIVC() {
                 {estimativa && <p className="text-[10px] font-black text-muted-foreground uppercase block">Término: {estimativa}</p>}
               </div>
             </div>
-            
+
             <div className="h-4 bg-muted rounded-full overflow-hidden border border-border/50 shadow-inner">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-1000 relative"
                 style={{ width: `${percentualGeral}%` }}
               >
-                {/* Shine effect */}
                 <div className="absolute top-0 inset-x-0 h-[40%] bg-white/20 rounded-t-full" />
               </div>
             </div>
@@ -772,7 +1207,7 @@ export default function PainelIVC() {
         </div>
       </div>
 
-      {/* ─── RISK ALERT (if not ok) ─── */}
+      {/* ─── RISK ALERT ─── */}
       {risco.nivel !== 'em_dia' && (
         <div className={cn(
           "rounded-2xl p-4 border flex items-start gap-3 animate-fade-in",
@@ -797,7 +1232,7 @@ export default function PainelIVC() {
         </div>
       )}
 
-      {/* ─── MODO AUTOMATICO / MANUAL ─── */}
+      {/* ─── MODO AUTOMÁTICO / MANUAL ─── */}
       <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-card rounded-2xl border border-border/40 shadow-sm">
         <div className="flex-1">
           <p className="text-xs font-black text-foreground">Modo de Atualização</p>
@@ -860,7 +1295,12 @@ export default function PainelIVC() {
           )}
 
           {/* Etapa atual destacada */}
-          <div className="bg-white dark:bg-card rounded-2xl border border-primary/20 p-4 shadow-sm">
+          <div className={cn(
+            "rounded-2xl border p-4 shadow-sm",
+            etapas[posicaoAtual]?.tipo === 'passagem'
+              ? "bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20 border-violet-200"
+              : "bg-white dark:bg-card border-primary/20"
+          )}>
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 flex items-center gap-1.5">
               <MapPin className="w-3 h-3 text-primary" /> Posição Atual da Turma
             </p>
@@ -876,7 +1316,12 @@ export default function PainelIVC() {
           </div>
 
           <div className="bg-white dark:bg-card rounded-2xl border border-border/30 p-2 shadow-sm overflow-hidden">
-            <JornadaMap etapas={etapas} posicaoAtual={posicaoAtual} modelo={modelo} />
+            <JornadaMap
+              etapas={etapas}
+              posicaoAtual={posicaoAtual}
+              modelo={modelo}
+              onEtapaClick={handleEtapaClick}
+            />
           </div>
         </div>
       )}
@@ -892,6 +1337,7 @@ export default function PainelIVC() {
             turmaId={id!}
             atividades={atividades}
             encontros={encontros}
+            onEtapaClick={handleEtapaClick}
           />
         </div>
       )}
@@ -930,6 +1376,68 @@ export default function PainelIVC() {
             />
           </div>
 
+          {/* Passage Celebrations Card */}
+          <div className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20 rounded-2xl border border-violet-200/50 p-4 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-violet-700 mb-3 flex items-center gap-1.5">
+              <Star className="w-3 h-3 fill-violet-500 text-violet-500" /> Celebrações de Passagem de Etapa
+            </p>
+            <div className="space-y-2">
+              {etapas.filter(e => e.tipo === 'passagem').map(etapa => {
+                const celInfo = etapa.celebracaoTipo
+                  ? CELEBRACOES_PASSAGEM.find(c => c.id === etapa.celebracaoTipo)
+                  : null;
+                return (
+                  <button
+                    key={etapa.id}
+                    onClick={() => handleEtapaClick(etapa)}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left group",
+                      etapa.status === 'concluido'
+                        ? "bg-emerald-50 border-emerald-300 dark:bg-emerald-950/20"
+                        : etapa.status === 'agendado'
+                          ? "bg-amber-50 border-amber-300 dark:bg-amber-950/20"
+                          : "bg-white/80 dark:bg-card/80 border-violet-200 hover:border-violet-400"
+                    )}
+                  >
+                    <span className="text-2xl shrink-0">{etapa.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(
+                        "text-xs font-black truncate",
+                        etapa.status === 'concluido' ? "text-emerald-700" :
+                        etapa.status === 'agendado' ? "text-amber-700" : "text-violet-700"
+                      )}>
+                        {celInfo?.label ?? etapa.label}
+                      </p>
+                      {etapa.dataEvento && (
+                        <p className="text-[10px] font-bold text-muted-foreground mt-0.5 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR')}
+                        </p>
+                      )}
+                      {etapa.celebracaoTipo === 'admissao_catecumenato' && etapa.status === 'concluido' && (
+                        <div className="flex gap-1 mt-1 flex-wrap">
+                          {etapa.entregaCruz !== false && <span className="text-[8px] font-black bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full">✚ Cruz</span>}
+                          {etapa.entregaBiblia && <span className="text-[8px] font-black bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">📖 Bíblia</span>}
+                        </div>
+                      )}
+                    </div>
+                    <div className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
+                      etapa.status === 'concluido'
+                        ? "bg-emerald-100 text-emerald-600"
+                        : "bg-violet-100 text-violet-600"
+                    )}>
+                      {etapa.status === 'concluido'
+                        ? <CheckCircle2 className="w-4 h-4" />
+                        : <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                      }
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Símbolos entregues */}
           <div className="bg-white dark:bg-card rounded-2xl border border-border/30 p-4 shadow-sm">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
@@ -951,9 +1459,7 @@ export default function PainelIVC() {
                     <p className="text-[9px] font-black uppercase tracking-wide text-center leading-tight">
                       {simbolo.label}
                     </p>
-                    {entregue && (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                    )}
+                    {entregue && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
                   </div>
                 );
               })}
@@ -985,7 +1491,7 @@ export default function PainelIVC() {
             </div>
           </div>
 
-          {/* Public link info */}
+          {/* Public link */}
           <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 rounded-2xl border border-indigo-200/50 p-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
@@ -1009,7 +1515,17 @@ export default function PainelIVC() {
         </div>
       )}
 
-      {/* QR Share Modal */}
+      {/* ─── ETAPA ACTION MODAL ─── */}
+      {etapaModal && (
+        <EtapaActionModal
+          etapa={etapaModal}
+          atividades={atividades}
+          onClose={() => setEtapaModal(null)}
+          onSave={handleEtapaSave}
+        />
+      )}
+
+      {/* ─── QR SHARE MODAL ─── */}
       {showQR && turma?.codigoAcesso && (
         <QRShareModal
           open={showQR}
