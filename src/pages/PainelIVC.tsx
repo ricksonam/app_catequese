@@ -161,6 +161,8 @@ function calcularProgressoJornada(
   const totalEncontros = encontros.length;
   const percFreq = totalEncontros > 0 ? encontrosRealizados.length / totalEncontros : 0;
 
+  let bloqueado = false;
+
   const etapas: EtapaJornada[] = etapasBase.map((base, idx) => {
     let status: EtapaStatus = 'pendente';
     let dataEvento: string | undefined;
@@ -212,6 +214,20 @@ function calcularProgressoJornada(
         status = 'pendente';
       } else if (base.tipo === 'fim') {
         status = percFreq >= 0.9 && encontrosRealizados.length > 0 ? 'concluido' : 'pendente';
+      }
+
+      // LÓGICA DE BLOQUEIO SEQUENCIAL
+      // A jornada IVC é sequencial. Se uma passagem ou símbolo obrigatório anterior não foi concluído,
+      // a turma não pode estar 'em_andamento' ou 'concluída' nos tempos seguintes.
+      if (bloqueado) {
+        if (status === 'concluido' || status === 'em_andamento') {
+          status = 'pendente';
+        }
+      }
+
+      // Se um Rito de Passagem ou Símbolo não estiver concluído, bloqueia o avanço da jornada
+      if ((base.tipo === 'passagem' || base.tipo === 'simbolo') && status !== 'concluido') {
+        bloqueado = true;
       }
     }
 
