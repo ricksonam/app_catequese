@@ -789,8 +789,8 @@ export function JornadaMap({
                   )}
                   style={{ top: '50%', transform: 'translateY(-50%)' }}
                 >
-                  <div className="h-[2px] w-5 bg-primary" />
-                  <div className="bg-primary text-white px-3 py-1.5 rounded-full shadow-lg shadow-primary/30 flex items-center gap-1.5 border-2 border-white dark:border-zinc-900">
+                  <div className="h-[2px] w-5 bg-rose-500" />
+                  <div className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-3 py-1.5 rounded-full shadow-xl shadow-rose-500/40 flex items-center gap-1.5 border-2 border-white dark:border-zinc-900">
                     <Users className="w-3.5 h-3.5" />
                     <div className="flex flex-col leading-none">
                       <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
@@ -807,8 +807,8 @@ export function JornadaMap({
               {/* Label card */}
               <div
                 className={cn(
-                  "absolute max-w-[calc(50vw-52px)] sm:max-w-[160px]",
-                  isLeft ? "right-[calc(50%+48px)]" : "left-[calc(50%+48px)]"
+                  "absolute w-max max-w-[calc(50vw-64px)] sm:max-w-[160px]",
+                  isLeft ? "right-[calc(50%+44px)]" : "left-[calc(50%+44px)]"
                 )}
               >
                 <div
@@ -853,7 +853,7 @@ export function JornadaMap({
                   )}
 
                   <p className={cn(
-                    "text-xs font-black leading-tight uppercase tracking-wide",
+                    "text-xs font-black leading-tight uppercase tracking-wide break-words whitespace-normal",
                     etapa.status === 'concluido' ? "text-emerald-700 dark:text-emerald-400" :
                     etapa.status === 'em_andamento' ? "text-primary" :
                     etapa.status === 'agendado' ? "text-amber-700" :
@@ -1477,25 +1477,25 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── TAB NAVIGATION ─── */}
-      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-2">
+      <div className="flex bg-muted/40 p-1.5 rounded-2xl gap-2 max-w-sm mx-auto">
         {([
-          { id: 'mapa',         color: 'text-indigo-500',  bg: 'bg-indigo-500/10',  icon: Route },
-          { id: 'pendencias',   color: 'text-amber-500',   bg: 'bg-amber-500/10',   icon: ListTodo },
-          { id: 'estatisticas', color: 'text-emerald-500', bg: 'bg-emerald-500/10', icon: LineChart },
+          { id: 'mapa',         label: 'Mapa',       color: 'text-indigo-500',  bg: 'bg-indigo-500/10',  icon: Route },
+          { id: 'pendencias',   label: 'Pendências', color: 'text-amber-500',   bg: 'bg-amber-500/10',   icon: ListTodo },
         ] as const).map(aba => (
           <button
             key={aba.id}
-            onClick={() => setAbaAtiva(aba.id)}
+            onClick={() => setAbaAtiva(aba.id as any)}
             className={cn(
-              "flex-1 flex items-center justify-center py-3 rounded-xl transition-all border",
+              "flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl transition-all border gap-1",
               abaAtiva === aba.id
                 ? cn("bg-white dark:bg-card shadow-md border-border/50", aba.color)
                 : "border-transparent text-muted-foreground hover:bg-white/50 dark:hover:bg-card/50 hover:text-foreground"
             )}
           >
-            <div className={cn("p-2 rounded-xl transition-colors", abaAtiva === aba.id ? aba.bg : "bg-transparent")}>
-              <aba.icon className="w-6 h-6 shrink-0" />
+            <div className={cn("p-1.5 rounded-xl transition-colors", abaAtiva === aba.id ? aba.bg : "bg-transparent")}>
+              <aba.icon className="w-5 h-5 shrink-0" />
             </div>
+            <span className="text-[10px] font-black uppercase tracking-widest leading-none">{aba.label}</span>
           </button>
         ))}
       </div>
