@@ -622,23 +622,22 @@ function JornadaMap({
   };
 
   const tipoNodeSize: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
-    inicio:    { size: 'text-2xl', nodeSize: 'w-14 h-14' },
-    tempo:     { size: 'text-xl',  nodeSize: 'w-13 h-13' },
-    passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' }, // For cross shape, might need to be square and slightly larger visually
-    simbolo:   { size: 'text-xl',  nodeSize: 'w-12 h-12' },
+    inicio:    { size: 'text-2xl', nodeSize: 'w-16 h-16' },
+    tempo:     { size: 'text-4xl', nodeSize: 'w-20 h-20' },
+    passagem:  { size: 'text-3xl', nodeSize: 'w-16 h-16' },
+    simbolo:   { size: 'text-2xl', nodeSize: 'w-14 h-14' },
     sacramento:{ size: 'text-4xl', nodeSize: 'w-20 h-20' },
-    fim:       { size: 'text-2xl', nodeSize: 'w-14 h-14' },
+    fim:       { size: 'text-3xl', nodeSize: 'w-16 h-16' },
   };
 
-  // Cross clip-path for 'passagem'
-  const crossShape = "polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%)";
+  let currentScreenBg = 'bg-transparent';
 
   return (
-    <div className="relative py-4">
+    <div className="relative py-4 overflow-x-hidden">
       {/* Central spine */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-emerald-500/30 via-violet-500/30 to-rose-500/30 rounded-full" />
+      <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-emerald-500/30 via-violet-500/30 to-rose-500/30 rounded-full z-0" />
 
-      <div className="space-y-8">
+      <div className="space-y-8 flex flex-col items-center">
         {etapas.map((etapa, idx) => {
           const st = statusStyle[etapa.status];
           const ts = tipoNodeSize[etapa.tipo];
