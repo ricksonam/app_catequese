@@ -153,51 +153,6 @@ export default function PublicPainelIVC() {
             <p className="text-sm text-muted-foreground font-semibold">{turma.ano}</p>
           )}
         </div>
-
-        {/* Progress ring */}
-        <div className="flex flex-col items-center mt-8 gap-3">
-          <div className="relative w-32 h-32">
-            <svg className="w-32 h-32 -rotate-90" viewBox="0 0 128 128">
-              <circle cx="64" cy="64" r="54" fill="none" className="stroke-muted" strokeWidth="12" />
-              <circle
-                cx="64" cy="64" r="54"
-                fill="none"
-                stroke="url(#grad)"
-                strokeWidth="12"
-                strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 54}`}
-                strokeDashoffset={`${2 * Math.PI * 54 * (1 - percentual / 100)}`}
-                className="transition-all duration-1000"
-              />
-              <defs>
-                <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#a78bfa" />
-                  <stop offset="100%" stopColor="#818cf8" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-black text-foreground">{percentual}%</span>
-              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">concluído</span>
-            </div>
-          </div>
-
-          {/* Risk indicator */}
-          <div className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold",
-            risco === 'em_dia' ? "bg-emerald-50 border-emerald-200 text-emerald-700" :
-            risco === 'atencao' ? "bg-amber-50 border-amber-200 text-amber-700" :
-            "bg-red-50 border-red-200 text-red-700"
-          )}>
-            <div className={cn(
-              "w-2 h-2 rounded-full",
-              risco === 'em_dia' ? 'bg-emerald-500' :
-              risco === 'atencao' ? 'bg-amber-500 animate-pulse' : 'bg-red-500 animate-pulse'
-            )} />
-            {risco === 'em_dia' ? '✓ Caminhada em dia' :
-             risco === 'atencao' ? '⚠ Requer atenção' : '● Caminhada atrasada'}
-          </div>
-        </div>
       </div>
 
       {/* Stats row */}
@@ -210,6 +165,7 @@ export default function PublicPainelIVC() {
           ].map(stat => (
             <div key={stat.label} className="bg-white dark:bg-zinc-900 rounded-2xl p-3 border border-border shadow-sm text-center">
               <stat.icon className={cn("w-4 h-4 mx-auto mb-1", stat.color)} />
+              <p className="text-[10px] font-black uppercase tracking-widest text-foreground/80 mb-1">{stat.label}</p>
               <p className="text-lg font-black leading-none text-foreground">{stat.value}</p>
               <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">{stat.sub}</p>
             </div>
@@ -233,33 +189,6 @@ export default function PublicPainelIVC() {
         />
       </div>
 
-      {/* Symbols */}
-      <div className="mx-5 mt-5 bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-2xl">
-        <h2 className="text-sm font-black uppercase tracking-widest text-foreground mb-4 flex items-center gap-2">
-          <Gift className="w-4 h-4 text-amber-500" />
-          Símbolos da Fé
-        </h2>
-        <div className="grid grid-cols-4 gap-2">
-          {SIMBOLOS_IVC.filter(s => s.id !== 'outro').map(simbolo => {
-            const entregue = atividades.some(a =>
-              a.tipo === 'Entrega de Símbolos' && a.simboloIVC === simbolo.id
-            );
-            return (
-              <div key={simbolo.id} className={cn(
-                "flex flex-col items-center gap-1 p-2 rounded-xl border text-center transition-all",
-                entregue
-                  ? "bg-emerald-50 border-emerald-200"
-                  : "bg-muted/20 border-border/20 opacity-40"
-              )}>
-                <span className="text-xl">{simbolo.emoji}</span>
-                <p className="text-[8px] font-bold leading-tight text-center">
-                  {simbolo.label.split(' ').slice(0, 2).join(' ')}
-                </p>
-                {entregue && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {/* Info footer */}
