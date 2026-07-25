@@ -96,7 +96,7 @@ const ETAPAS_EUC_CRISMA: EtapaBase[] = [
   { id: 'preparacao',        label: 'Preparação / Convite',                        emoji: '📣',  tipo: 'inicio' },
   // ✅ Celebração de Início da Catequese — NÃO é passagem de etapa, é o início
   { id: 'pass_entrada',      label: 'Celebração de Início da Catequese',           emoji: '🎉',  tipo: 'inicio' },
-  { id: 'pre_cat',           label: 'Pré-Catecumenato',                            sublabel: '1º Tempo — Querigma (mín. 3 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
+  { id: 'pre_cat',           label: 'Pré-Catecumenato',                            sublabel: '1º Tempo — Querigma (mín. 6 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
   // ✅ 1ª PASSAGEM DE ETAPA: Rito de Admissão ao Catecumenato (entrega Cruz + opcional Bíblia)
   { id: 'pass_cat',          label: 'Rito de Admissão ao Catecumenato',            emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato' },
   { id: 'cat_biblia',        label: 'Catecumenato — Palavra de Deus',              sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
@@ -357,6 +357,7 @@ function EtapaActionModal({
   onClose: () => void;
   onSave: (params: {
     data: string;
+    dataFim?: string;
     realizado: boolean;
     dispensado?: boolean;
     entregaCruz?: boolean;
@@ -374,11 +375,13 @@ function EtapaActionModal({
       (a.tipo === 'Entrega de Símbolos' && (
         a.simboloIVC === etapa.simboloId ||
         (a.etapaIVC as string) === etapa.id
-      ))
+      )) ||
+      (a.tipo === 'Celebração' && (a.etapaIVC as string) === etapa.id)
     );
   }, [etapa, atividades]);
 
   const [data, setData] = useState(existing?.data || '');
+  const [dataFim, setDataFim] = useState((existing as any)?.dataFim || '');
   const [realizado, setRealizado] = useState(existing?.realizado || false);
   const [dispensado, setDispensado] = useState(existing?.dispensado || false);
   const [entregaCruz, setEntregaCruz] = useState(existing?.entregaCruz !== false);
@@ -392,13 +395,16 @@ function EtapaActionModal({
   const isPassagem = etapa.tipo === 'passagem';
   const isSimboloSemId = etapa.tipo === 'simbolo' && !etapa.simboloId;
   const isSimbolo = etapa.tipo === 'simbolo';
+  const isPreparacao = etapa.id === 'preparacao';
+  const isCelebracaoInicio = etapa.id === 'pass_entrada' || etapa.id === 'acolhida';
 
   const handleSave = async () => {
     setSaving(true);
     try {
       await onSave({
         data,
-        realizado: dispensado ? true : realizado,
+        dataFim: (isPreparacao && dataFim) ? dataFim : undefined,
+        realizado: dispensado ? true : (isCelebracaoInicio || isPreparacao ? !!data : realizado),
         dispensado,
         entregaCruz: isAdmissao ? entregaCruz : undefined,
         entregaBiblia: isAdmissao ? entregaBiblia : undefined,
@@ -431,18 +437,38 @@ function EtapaActionModal({
         </DialogHeader>
 
         <div className="space-y-4 mt-1">
-          {/* Date input */}
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
-              Data da Celebração
-            </label>
-            <input
-              type="date"
-              value={data}
-              onChange={e => setData(e.target.value)}
-              className="form-input"
-            />
-          </div>
+          {/* Date input(s) */}
+          {isPreparacao ? (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
+                  📅 Data de Início
+                </label>
+                <input type="date" value={data} onChange={e => setData(e.target.value)} className="form-input" />
+              </div>
+              <div>
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
+                  📅 Data de Término
+                </label>
+                <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} className="form-input" />
+              </div>
+            </div>
+          ) : isCelebracaoInicio ? (
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
+                📅 Data da Celebração
+              </label>
+              <input type="date" value={data} onChange={e => setData(e.target.value)} className="form-input" />
+              <p className="text-[10px] text-muted-foreground mt-1.5">Informe a data em que a celebração aconteceu ou está agendada.</p>
+            </div>
+          ) : (
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
+                Data da Celebração
+              </label>
+              <input type="date" value={data} onChange={e => setData(e.target.value)} className="form-input" />
+            </div>
+          )}
 
           {/* Symbol selector for Celebração da Vida (no fixed symbol) */}
           {isSimboloSemId && (
@@ -517,29 +543,31 @@ function EtapaActionModal({
             </div>
           )}
 
-          {/* Realizado toggle */}
+          {/* Realizado toggle — hidden for preparacao/celebracao inicio (auto from date) */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/40">
-              <div>
-                <p className="font-black text-sm text-foreground">Já foi realizada</p>
-                <p className="text-[10px] text-muted-foreground">Marque se esta celebração já aconteceu</p>
+            {!isPreparacao && !isCelebracaoInicio && (
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/40">
+                <div>
+                  <p className="font-black text-sm text-foreground">Já foi realizada</p>
+                  <p className="text-[10px] text-muted-foreground">Marque se esta celebração já aconteceu</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRealizado(!realizado)}
+                  disabled={dispensado}
+                  className={cn(
+                    "relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0",
+                    realizado && !dispensado ? "bg-emerald-500" : "bg-muted",
+                    dispensado && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  <div className={cn(
+                    "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
+                    realizado && !dispensado ? "left-7" : "left-1"
+                  )} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setRealizado(!realizado)}
-                disabled={dispensado}
-                className={cn(
-                  "relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0",
-                  realizado && !dispensado ? "bg-emerald-500" : "bg-muted",
-                  dispensado && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                <div className={cn(
-                  "absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all duration-200",
-                  realizado && !dispensado ? "left-7" : "left-1"
-                )} />
-              </button>
-            </div>
+            )}
 
             {isSimbolo && (
               <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/30">
@@ -607,12 +635,16 @@ export function JornadaMap({
   onEtapaClick,
   readonly = false,
   modelo,
+  turmaNome,
+  turmaAno,
 }: {
   etapas: EtapaJornada[];
   posicaoAtual: number;
   modelo: ModeloIVC;
   onEtapaClick?: (etapa: EtapaJornada) => void;
   readonly?: boolean;
+  turmaNome?: string;
+  turmaAno?: string;
 }) {
   const [expandida, setExpandida] = useState<string | null>(null);
 
@@ -650,7 +682,7 @@ export function JornadaMap({
           const isPassagem = etapa.tipo === 'passagem';
           const isSimbol = etapa.tipo === 'simbolo';
           const isTempo = etapa.tipo === 'tempo' || etapa.tipo === 'inicio' || etapa.tipo === 'fim';
-          const isClickable = !readonly && (etapa.tipo === 'passagem' || etapa.tipo === 'simbolo');
+          const isClickable = !readonly && (etapa.tipo === 'passagem' || etapa.tipo === 'simbolo' || etapa.id === 'preparacao' || etapa.id === 'pass_entrada' || etapa.id === 'acolhida');
 
           // Atualiza a cor de fundo da seção de acordo com o tempo
           if (etapa.tempoId === 'tempo1' || etapa.id === 'pre_cat' || etapa.id === 'acolhida') {
@@ -738,7 +770,7 @@ export function JornadaMap({
                 )}
               </div>
 
-              {/* Active "Sua Turma" chip */}
+              {/* Active turma chip */}
               {isActive && (
                 <div
                   className={cn(
@@ -750,7 +782,14 @@ export function JornadaMap({
                   <div className="h-[2px] w-5 bg-primary" />
                   <div className="bg-primary text-white px-3 py-1.5 rounded-full shadow-lg shadow-primary/30 flex items-center gap-1.5 border-2 border-white dark:border-zinc-900">
                     <Users className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sua Turma</span>
+                    <div className="flex flex-col leading-none">
+                      <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                        {turmaNome ?? 'Sua Turma'}
+                      </span>
+                      {turmaAno && (
+                        <span className="text-[8px] font-semibold opacity-80 whitespace-nowrap">{turmaAno}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -905,6 +944,186 @@ export function JornadaMap({
           );
         })}
       </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// CRONOGRAMA POR TEMPOS (Opção B — accordion cards na aba de Pendências)
+// ─────────────────────────────────────────────────────────────
+const TEMPOS_CONFIG = [
+  {
+    id: 'tempo_pre_cat',
+    label: 'Pré-Catecumenato',
+    emoji: '🔥',
+    cor: 'border-yellow-300 bg-yellow-50',
+    corHeader: 'bg-yellow-100 text-yellow-800',
+    corBadge: 'bg-yellow-200 text-yellow-900',
+    etapaIds: ['preparacao', 'pass_entrada', 'acolhida', 'pre_cat', 'pre_cat_seed', 'encontros_seed'],
+    descricao: '1º Tempo — Querigma (mín. 6 meses)',
+  },
+  {
+    id: 'tempo_catec',
+    label: 'Catecumenato',
+    emoji: '📖',
+    cor: 'border-sky-300 bg-sky-50',
+    corHeader: 'bg-sky-100 text-sky-800',
+    corBadge: 'bg-sky-200 text-sky-900',
+    etapaIds: ['pass_cat', 'pass_entrada_adultos', 'cat_biblia', 'entrega_biblia', 'cat_pessoa', 'celebracao_vida', 'cat_jesus', 'jornada_disc', 'cat_oracao', 'entrega_pai_nosso', 'cat_comunidade', 'entrega_creio', 'cat_sacramental', 'catecumenato', 'entrega_biblia_adultos', 'entrega_creio_adultos', 'entrega_pai_nosso_adultos', 'catec_seed'],
+    descricao: '2º Tempo — Aprofundamento da Fé',
+  },
+  {
+    id: 'tempo_purif',
+    label: 'Purificação e Iluminação',
+    emoji: '💜',
+    cor: 'border-purple-300 bg-purple-50',
+    corHeader: 'bg-purple-100 text-purple-800',
+    corBadge: 'bg-purple-200 text-purple-900',
+    etapaIds: ['eleicao', 'purificacao', 'escrutinios', 'pass_ilum_seed', 'ilum_seed'],
+    descricao: '3º Tempo — Quaresma',
+  },
+  {
+    id: 'tempo_mis',
+    label: 'Mistagogia',
+    emoji: '🕊️',
+    cor: 'border-emerald-300 bg-emerald-50',
+    corHeader: 'bg-emerald-100 text-emerald-800',
+    corBadge: 'bg-emerald-200 text-emerald-900',
+    etapaIds: ['recepcao_sac', 'mistagogia', 'mis_seed'],
+    descricao: '4º Tempo — Envio Missionário',
+  },
+];
+
+function CronogramaTempo({
+  etapas,
+  atividades,
+  onEtapaClick,
+}: {
+  etapas: EtapaJornada[];
+  atividades: Atividade[];
+  onEtapaClick: (etapa: EtapaJornada) => void;
+}) {
+  const [tempoAberto, setTempoAberto] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Calendar className="w-4 h-4 text-primary" />
+        <p className="text-xs font-black uppercase tracking-widest text-foreground">Cronograma por Tempo</p>
+      </div>
+      <p className="text-[11px] text-muted-foreground mb-3">Toque em um Tempo para ver e registrar as datas das etapas e celebrações daquele período.</p>
+
+      {TEMPOS_CONFIG.map(tempo => {
+        const etapasDeTempo = etapas.filter(e => tempo.etapaIds.includes(e.id));
+        if (etapasDeTempo.length === 0) return null;
+
+        const concluidas = etapasDeTempo.filter(e => e.status === 'concluido').length;
+        const isAberto = tempoAberto === tempo.id;
+        const progresso = Math.round((concluidas / etapasDeTempo.length) * 100);
+
+        return (
+          <div key={tempo.id} className={cn("rounded-2xl border-2 overflow-hidden transition-all", tempo.cor)}>
+            {/* Header accordion */}
+            <button
+              onClick={() => setTempoAberto(isAberto ? null : tempo.id)}
+              className={cn("w-full flex items-center gap-3 px-4 py-3.5 text-left", tempo.corHeader)}
+            >
+              <span className="text-2xl">{tempo.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-black text-sm">{tempo.label}</p>
+                <p className="text-[10px] font-semibold opacity-70">{tempo.descricao}</p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className={cn("text-[10px] font-black px-2 py-0.5 rounded-full", tempo.corBadge)}>
+                  {concluidas}/{etapasDeTempo.length}
+                </span>
+                <ChevronRight className={cn("w-4 h-4 transition-transform", isAberto && "rotate-90")} />
+              </div>
+            </button>
+
+            {/* Progress bar */}
+            <div className="h-1 bg-white/50">
+              <div
+                className="h-full bg-current opacity-40 transition-all duration-500 rounded-full"
+                style={{ width: `${progresso}%` }}
+              />
+            </div>
+
+            {/* Etapas do tempo */}
+            {isAberto && (
+              <div className="px-4 py-3 space-y-2 animate-fade-in">
+                {etapasDeTempo.map(etapa => {
+                  const dataEvento = etapa.dataEvento
+                    ? new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR')
+                    : null;
+                  const isClickable = etapa.tipo === 'passagem' || etapa.tipo === 'simbolo' || etapa.id === 'preparacao' || etapa.id === 'pass_entrada' || etapa.id === 'acolhida';
+
+                  // Decode dataFim from observacao if stored
+                  const atividadeEtapa = atividades.find(a => (a.etapaIVC as string) === etapa.id);
+                  const dataFimRaw = atividadeEtapa?.observacao?.match(/dataFim:(\d{4}-\d{2}-\d{2})/)?.[1];
+                  const dataFim = dataFimRaw
+                    ? new Date(dataFimRaw + 'T12:00:00').toLocaleDateString('pt-BR')
+                    : null;
+
+                  return (
+                    <button
+                      key={etapa.id}
+                      onClick={() => isClickable && onEtapaClick(etapa)}
+                      disabled={!isClickable}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all",
+                        etapa.status === 'concluido'
+                          ? "bg-white border-emerald-200"
+                          : etapa.status === 'agendado'
+                            ? "bg-white border-amber-200"
+                            : isClickable
+                              ? "bg-white/70 border-white hover:bg-white hover:border-primary/30 cursor-pointer"
+                              : "bg-white/40 border-white/40 cursor-default"
+                      )}
+                    >
+                      <span className="text-xl shrink-0">{etapa.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          "text-xs font-black truncate",
+                          etapa.status === 'concluido' ? "text-emerald-700" :
+                          etapa.status === 'agendado' ? "text-amber-700" : "text-foreground/80"
+                        )}>
+                          {etapa.label}
+                        </p>
+                        {dataEvento && (
+                          <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <Calendar className="w-3 h-3" />
+                            {etapa.id === 'preparacao' && dataFim
+                              ? `${dataEvento} → ${dataFim}`
+                              : dataEvento}
+                          </p>
+                        )}
+                        {!dataEvento && isClickable && (
+                          <p className="text-[10px] text-primary/60 mt-0.5">Toque para registrar a data</p>
+                        )}
+                      </div>
+                      <div className={cn(
+                        "w-6 h-6 rounded-full flex items-center justify-center shrink-0",
+                        etapa.status === 'concluido' ? "bg-emerald-100" :
+                        etapa.status === 'agendado' ? "bg-amber-100" :
+                        isClickable ? "bg-muted/50" : "bg-transparent"
+                      )}>
+                        {etapa.status === 'concluido'
+                          ? <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                          : etapa.status === 'agendado'
+                            ? <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                            : isClickable
+                              ? <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                              : null}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1134,6 +1353,7 @@ export default function PainelIVC() {
 
   const handleEtapaSave = useCallback(async (params: {
     data: string;
+    dataFim?: string;
     realizado: boolean;
     dispensado?: boolean;
     entregaCruz?: boolean;
@@ -1143,6 +1363,7 @@ export default function PainelIVC() {
     if (!id || !etapaModal) return;
 
     const isPassagem = etapaModal.tipo === 'passagem';
+    const isInicio = etapaModal.tipo === 'inicio';
 
     // Find existing event for this etapa to update instead of duplicate
     const existing = atividades.find(a =>
@@ -1153,8 +1374,15 @@ export default function PainelIVC() {
       (a.tipo === 'Entrega de Símbolos' && (
         a.simboloIVC === etapaModal.simboloId ||
         (a.etapaIVC as string) === etapaModal.id
-      ))
+      )) ||
+      (a.tipo === 'Celebração' && (a.etapaIVC as string) === etapaModal.id)
     );
+
+    const tipoEvento = isPassagem
+      ? 'Celebração de Passagem'
+      : isInicio
+        ? 'Celebração'
+        : 'Entrega de Símbolos';
 
     const eventData: Atividade = {
       id: existing?.id ?? crypto.randomUUID(),
@@ -1162,14 +1390,16 @@ export default function PainelIVC() {
       nome: etapaModal.label,
       descricao: isPassagem
         ? `Celebração de passagem: ${etapaModal.label}`
-        : `Entrega de símbolo: ${etapaModal.label}`,
-      tipo: (isPassagem ? 'Celebração de Passagem' : 'Entrega de Símbolos') as any,
+        : isInicio
+          ? `${etapaModal.label}`
+          : `Entrega de símbolo: ${etapaModal.label}`,
+      tipo: tipoEvento as any,
       modalidade: 'interna',
       conducao: undefined,
       data: params.data,
       local: '',
       horario: '',
-      observacao: '',
+      observacao: params.dataFim ? `dataFim:${params.dataFim}` : (existing?.observacao ?? ''),
       presencas: existing?.presencas ?? [],
       criadoEm: existing?.criadoEm ?? new Date().toISOString(),
       etapaIVC: etapaModal.id as any,
@@ -1308,6 +1538,8 @@ export default function PainelIVC() {
               posicaoAtual={posicaoAtual}
               modelo={modelo}
               onEtapaClick={handleEtapaClick}
+              turmaNome={turma?.nome}
+              turmaAno={turma?.ano}
             />
           </div>
         </div>
@@ -1315,17 +1547,29 @@ export default function PainelIVC() {
 
       {/* ─── TAB: PENDÊNCIAS ─── */}
       {abaAtiva === 'pendencias' && (
-        <div className="bg-white dark:bg-card rounded-2xl border-2 border-border/60 p-4 shadow-sm animate-fade-in">
-          <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
-            <ListTodo className="w-4 h-4 text-amber-500" /> O que ainda falta
-          </p>
-          <PendenciasPanel
-            etapas={etapas}
-            turmaId={id!}
-            atividades={atividades}
-            encontros={encontros}
-            onEtapaClick={handleEtapaClick}
-          />
+        <div className="space-y-4 animate-fade-in">
+          {/* Cronograma por Tempos */}
+          <div className="bg-white dark:bg-card rounded-2xl border-2 border-border/60 p-4 shadow-sm">
+            <CronogramaTempo
+              etapas={etapas}
+              atividades={atividades}
+              onEtapaClick={handleEtapaClick}
+            />
+          </div>
+
+          {/* Pendências tradicionais */}
+          <div className="bg-white dark:bg-card rounded-2xl border-2 border-border/60 p-4 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
+              <ListTodo className="w-4 h-4 text-amber-500" /> O que ainda falta
+            </p>
+            <PendenciasPanel
+              etapas={etapas}
+              turmaId={id!}
+              atividades={atividades}
+              encontros={encontros}
+              onEtapaClick={handleEtapaClick}
+            />
+          </div>
         </div>
       )}
 
