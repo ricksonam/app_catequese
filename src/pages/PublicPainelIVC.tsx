@@ -9,154 +9,17 @@ import { cn } from "@/lib/utils";
 import { SIMBOLOS_IVC } from "@/lib/store";
 import type { Atividade } from "@/lib/store";
 
-// ─────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────
-type ModeloIVC = 'sementinhas' | 'eucaristia_crisma' | 'adultos';
-type RiscoNivel = 'em_dia' | 'atencao' | 'atrasado';
-type EtapaStatus = 'concluido' | 'em_andamento' | 'pendente' | 'agendado';
-
-interface EtapaJornada {
-  id: string;
-  label: string;
-  sublabel?: string;
-  emoji: string;
-  tipo: 'inicio' | 'tempo' | 'passagem' | 'simbolo' | 'sacramento' | 'fim';
-  status: EtapaStatus;
-  dataEvento?: string;
-}
-
-// ─────────────────────────────────────────────────────────────
-// HELPERS (duplicated light version for public page)
-// ─────────────────────────────────────────────────────────────
-function detectarModelo(etapa: string): ModeloIVC {
-  const e = etapa?.toLowerCase() ?? '';
-  if (e.includes('sement') || e.includes('pré-cat') || e.includes('pre-cat')) return 'sementinhas';
-  if (e.includes('adult')) return 'adultos';
-  return 'eucaristia_crisma';
-}
-
-const ETAPAS_RESUMIDAS: Record<ModeloIVC, Omit<EtapaJornada, 'status' | 'dataEvento'>[]> = {
-  sementinhas: [
-    { id: 'acolhida',     label: 'Acolhida',            emoji: '🌱', tipo: 'inicio' },
-    { id: 'pre_cat',      label: 'Iniciação Lúdica',     emoji: '🎈', tipo: 'tempo' },
-    { id: 'pass_catec',   label: 'Celebração de Acolhida', emoji: '🎉', tipo: 'passagem' },
-    { id: 'catec_seed',   label: 'Aprofundamento da Fé', emoji: '📖', tipo: 'tempo' },
-    { id: 'entrega_bib',  label: 'Bíblia das Crianças',  emoji: '📖', tipo: 'simbolo' },
-    { id: 'pass_ilum',    label: 'Celebração da Família', emoji: '🎊', tipo: 'passagem' },
-    { id: 'mis',          label: 'Missão',               emoji: '🌿', tipo: 'fim' },
-  ],
-  eucaristia_crisma: [
-    { id: 'preparacao',   label: 'Preparação',          emoji: '📣', tipo: 'inicio' },
-    { id: 'pass_ent',     label: 'Celebração de Entrada', emoji: '🎉', tipo: 'passagem' },
-    { id: 'pre_cat',      label: 'Pré-Catecumenato',    emoji: '🔥', tipo: 'tempo', sublabel: '1º Tempo' },
-    { id: 'pass_cat',     label: 'Entrada no Catecumenato', emoji: '✨', tipo: 'passagem' },
-    { id: 'catecumenato', label: 'Catecumenato',        emoji: '📖', tipo: 'tempo', sublabel: '2º Tempo — 6 Fases' },
-    { id: 'bib',          label: 'Entrega da Bíblia',   emoji: '📖', tipo: 'simbolo' },
-    { id: 'pn',           label: 'Entrega do Pai-Nosso',emoji: '🙏', tipo: 'simbolo' },
-    { id: 'creio',        label: 'Entrega do Creio',    emoji: '✝️', tipo: 'simbolo' },
-    { id: 'eleicao',      label: 'Eleição',             emoji: '🗳️', tipo: 'passagem' },
-    { id: 'purif',        label: 'Purificação',         emoji: '💜', tipo: 'tempo', sublabel: '3º Tempo' },
-    { id: 'sacramento',   label: 'Sacramento',          emoji: '👑', tipo: 'sacramento' },
-    { id: 'mistagogia',   label: 'Mistagogia',          emoji: '🕊️', tipo: 'fim', sublabel: '4º Tempo' },
-  ],
-  adultos: [
-    { id: 'pre_cat',      label: 'Pré-Catecumenato',    emoji: '🔥', tipo: 'inicio', sublabel: '1º Tempo' },
-    { id: 'admissao',     label: 'Admissão',            emoji: '✨', tipo: 'passagem' },
-    { id: 'catecumenato', label: 'Catecumenato',        emoji: '📖', tipo: 'tempo', sublabel: '2º Tempo' },
-    { id: 'eleicao',      label: 'Eleição',             emoji: '🗳️', tipo: 'passagem' },
-    { id: 'escrutinios',  label: 'Escrutínios',         emoji: '💜', tipo: 'tempo', sublabel: '3º Tempo' },
-    { id: 'sacramentos',  label: 'Sacramentos',         emoji: '🕊️', tipo: 'sacramento' },
-    { id: 'mistagogia',   label: 'Mistagogia',          emoji: '🌿', tipo: 'fim', sublabel: '4º Tempo' },
-  ],
-};
-
-// ─────────────────────────────────────────────────────────────
-// COMPONENTS
-// ─────────────────────────────────────────────────────────────
-function ProgressoBar({ percent, color = 'bg-violet-500' }: { percent: number; color?: string }) {
-  return (
-    <div className="h-3 bg-white/20 rounded-full overflow-hidden">
-      <div
-        className={cn("h-full rounded-full transition-all duration-1000", color)}
-        style={{ width: `${percent}%` }}
-      />
-    </div>
-  );
-}
-
-function EtapaItem({ etapa, isLast }: { etapa: EtapaJornada; isLast: boolean }) {
-  const statusColor = {
-    concluido:    'border-emerald-400 bg-emerald-50',
-    em_andamento: 'border-primary bg-primary/5 ring-2 ring-primary/20',
-    agendado:     'border-amber-400 bg-amber-50',
-    pendente:     'border-muted-foreground/20 bg-white',
-  }[etapa.status];
-
-  const checkColor = {
-    concluido:    'text-emerald-500',
-    em_andamento: 'text-primary',
-    agendado:     'text-amber-500',
-    pendente:     'text-muted-foreground/30',
-  }[etapa.status];
-
-  return (
-    <div className="flex items-stretch gap-3">
-      {/* Timeline */}
-      <div className="flex flex-col items-center">
-        <div className={cn(
-          "w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 shadow-sm",
-          statusColor
-        )}>
-          <span className={cn("text-lg", etapa.status === 'pendente' && "opacity-40")}>
-            {etapa.emoji}
-          </span>
-        </div>
-        {!isLast && (
-          <div className={cn(
-            "w-0.5 flex-1 mt-1 min-h-[16px]",
-            etapa.status === 'concluido' ? 'bg-emerald-300' : 'bg-muted/40'
-          )} />
-        )}
-      </div>
-
-      {/* Content */}
-      <div className={cn("flex-1 min-w-0 pb-4", isLast && "pb-0")}>
-        <div className="flex items-start gap-2 justify-between">
-          <div className="min-w-0 flex-1">
-            <p className={cn(
-              "font-bold text-sm leading-tight",
-              etapa.status === 'pendente' ? "text-muted-foreground/50" : "text-foreground"
-            )}>
-              {etapa.label}
-            </p>
-            {etapa.sublabel && (
-              <p className="text-[10px] text-muted-foreground mt-0.5">{etapa.sublabel}</p>
-            )}
-            {etapa.dataEvento && (
-              <p className="text-[10px] font-bold text-amber-600 mt-1 flex items-center gap-1">
-                <Calendar className="w-2.5 h-2.5" />
-                {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
-              </p>
-            )}
-          </div>
-          {etapa.status === 'concluido' && (
-            <CheckCircle2 className={cn("w-4 h-4 shrink-0 mt-0.5", checkColor)} />
-          )}
-        </div>
-        {etapa.status === 'em_andamento' && (
-          <div className="mt-3 flex items-center gap-2 animate-bounce">
-            <div className="h-px bg-primary w-4 opacity-50" />
-            <div className="bg-primary text-white px-3 py-1.5 rounded-full shadow-md shadow-primary/20 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Sua Turma Aqui</span>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+import { 
+  ETAPAS_POR_MODELO, 
+  calcularProgressoJornada, 
+  calcularRisco, 
+  detectarModelo,
+  JornadaMap,
+  type ModeloIVC,
+  type RiscoNivel,
+  type EtapaStatus,
+  type EtapaJornada
+} from "./PainelIVC";
 
 // ─────────────────────────────────────────────────────────────
 // MAIN PUBLIC PAGE
@@ -238,47 +101,21 @@ export default function PublicPainelIVC() {
   }, [codigo]);
 
   const modelo = detectarModelo(turma?.etapa ?? '');
-  const etapasBase = ETAPAS_RESUMIDAS[modelo];
+  const etapasBase = ETAPAS_POR_MODELO[modelo];
 
   const encontrosRealizados = encontros.filter(e => e.status === 'realizado');
   const percFreq = encontros.length > 0 ? encontrosRealizados.length / encontros.length : 0;
-  const eventosIVC = atividades.filter(a => a.tipo === 'Entrega de Símbolos' || a.tipo === 'Celebração de Passagem');
-
-  const hoje = new Date();
-
-  // Build etapas with status
-  const etapas: EtapaJornada[] = etapasBase.map(base => {
-    let status: EtapaStatus = 'pendente';
-    let dataEvento: string | undefined;
-
-    if (base.tipo === 'simbolo') {
-      const simboloMap: Record<string, string> = { 'bib': 'biblia', 'pn': 'pai_nosso', 'creio': 'creio', 'entrega_bib': 'biblia' };
-      const mapId = simboloMap[base.id];
-      const evSim = eventosIVC.find(a => a.simboloIVC === mapId);
-      if (evSim) {
-        dataEvento = evSim.data;
-        status = new Date(evSim.data + 'T23:59:59') < hoje ? 'concluido' : 'agendado';
-      }
-    } else if (base.tipo === 'passagem') {
-      const ev = eventosIVC.find(a => a.tipo === 'Celebração de Passagem');
-      if (ev) {
-        dataEvento = ev.data;
-        status = new Date(ev.data + 'T23:59:59') < hoje ? 'concluido' : 'agendado';
-      }
-    } else if (base.tipo === 'tempo') {
-      if (percFreq >= 0.75) status = 'concluido';
-      else if (percFreq >= 0.2) status = 'em_andamento';
-    } else if (base.tipo === 'inicio') {
-      status = encontros.length > 0 ? 'concluido' : 'em_andamento';
-    }
-
-    return { ...base, status, dataEvento };
-  });
+  
+  const { etapas, posicaoAtual, percentualGeral: percentual } = calcularProgressoJornada(
+    etapasBase,
+    encontros,
+    atividades,
+    false,
+    undefined
+  );
 
   const concluidas = etapas.filter(e => e.status === 'concluido').length;
-  const percentual = Math.round((concluidas / etapas.length) * 100);
-
-  const risco: RiscoNivel = percFreq >= 0.6 ? 'em_dia' : percFreq >= 0.3 ? 'atencao' : 'atrasado';
+  const { nivel: risco } = calcularRisco(encontros, atividades, percentual);
 
   if (loading) {
     return (
@@ -381,16 +218,19 @@ export default function PublicPainelIVC() {
       </div>
 
       {/* Journey Timeline */}
-      <div className="mx-5 bg-white dark:bg-zinc-900 rounded-3xl p-5 shadow-2xl">
-        <h2 className="text-sm font-black uppercase tracking-widest text-foreground mb-5 flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-primary" />
-          Mapa da Jornada
-        </h2>
-        <div className="space-y-0">
-          {etapas.map((etapa, idx) => (
-            <EtapaItem key={etapa.id} etapa={etapa} isLast={idx === etapas.length - 1} />
-          ))}
+      <div className="mx-0 sm:mx-5 bg-white dark:bg-zinc-900 rounded-none sm:rounded-3xl shadow-2xl relative z-10">
+        <div className="p-5 pb-0">
+          <h2 className="text-sm font-black uppercase tracking-widest text-foreground flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-primary" />
+            Mapa da Jornada
+          </h2>
         </div>
+        <JornadaMap 
+          etapas={etapas}
+          posicaoAtual={posicaoAtual}
+          modelo={modelo}
+          readonly={true}
+        />
       </div>
 
       {/* Symbols */}

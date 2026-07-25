@@ -16,11 +16,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 // ─────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────
-type ModeloIVC = 'sementinhas' | 'eucaristia_crisma' | 'adultos';
-type RiscoNivel = 'em_dia' | 'atencao' | 'atrasado';
-type EtapaStatus = 'concluido' | 'em_andamento' | 'pendente' | 'agendado';
+export type ModeloIVC = 'sementinhas' | 'eucaristia_crisma' | 'adultos';
+export type RiscoNivel = 'em_dia' | 'atencao' | 'atrasado';
+export type EtapaStatus = 'concluido' | 'em_andamento' | 'pendente' | 'agendado';
 
-interface EtapaJornada {
+export interface EtapaJornada {
   id: string;
   label: string;
   sublabel?: string;
@@ -40,7 +40,7 @@ interface EtapaJornada {
 // ─────────────────────────────────────────────────────────────
 // MODEL DETECTION
 // ─────────────────────────────────────────────────────────────
-function detectarModelo(etapa: string): ModeloIVC {
+export function detectarModelo(etapa: string): ModeloIVC {
   const e = etapa?.toLowerCase() ?? '';
   if (e.includes('sement') || e.includes('pré-cat') || e.includes('pre-cat') || e.includes('pre cat')) {
     return 'sementinhas';
@@ -78,7 +78,7 @@ const MODELO_INFO: Record<ModeloIVC, { label: string; emoji: string; cor: string
 // ─────────────────────────────────────────────────────────────
 // IVC JOURNEY DEFINITIONS (per model)
 // ─────────────────────────────────────────────────────────────
-type EtapaBase = Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual' | 'entregaCruz' | 'entregaBiblia'>;
+export type EtapaBase = Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual' | 'entregaCruz' | 'entregaBiblia'>;
 
 const ETAPAS_SEMENTINHAS: EtapaBase[] = [
   { id: 'acolhida',       label: 'Acolhida e Inscrição',              emoji: '🌱', tipo: 'inicio' },
@@ -136,7 +136,7 @@ const ETAPAS_ADULTOS: EtapaBase[] = [
   { id: 'mistagogia',    label: 'Mistagogia',                                    sublabel: '4º Tempo — Envio Missionário', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
-const ETAPAS_POR_MODELO: Record<ModeloIVC, EtapaBase[]> = {
+export const ETAPAS_POR_MODELO: Record<ModeloIVC, EtapaBase[]> = {
   sementinhas: ETAPAS_SEMENTINHAS,
   eucaristia_crisma: ETAPAS_EUC_CRISMA,
   adultos: ETAPAS_ADULTOS,
@@ -145,7 +145,7 @@ const ETAPAS_POR_MODELO: Record<ModeloIVC, EtapaBase[]> = {
 // ─────────────────────────────────────────────────────────────
 // CALCULATION ENGINE
 // ─────────────────────────────────────────────────────────────
-function calcularProgressoJornada(
+export function calcularProgressoJornada(
   etapasBase: EtapaBase[],
   encontros: any[],
   atividades: Atividade[],
@@ -253,7 +253,7 @@ function calcularProgressoJornada(
   return { etapas, posicaoAtual, percentualGeral };
 }
 
-function calcularRisco(
+export function calcularRisco(
   encontros: any[],
   atividades: Atividade[],
   percentual: number
@@ -601,7 +601,7 @@ function EtapaActionModal({
 // ─────────────────────────────────────────────────────────────
 // JOURNEY MAP — enhanced visual for passagem + clickable cards
 // ─────────────────────────────────────────────────────────────
-function JornadaMap({
+export function JornadaMap({
   etapas,
   posicaoAtual,
   onEtapaClick,
@@ -609,7 +609,8 @@ function JornadaMap({
   etapas: EtapaJornada[];
   posicaoAtual: number;
   modelo: ModeloIVC;
-  onEtapaClick: (etapa: EtapaJornada) => void;
+  onEtapaClick?: (etapa: EtapaJornada) => void;
+  readonly?: boolean;
 }) {
   const [expandida, setExpandida] = useState<string | null>(null);
 
@@ -647,7 +648,7 @@ function JornadaMap({
           const isPassagem = etapa.tipo === 'passagem';
           const isSimbol = etapa.tipo === 'simbolo';
           const isTempo = etapa.tipo === 'tempo' || etapa.tipo === 'inicio' || etapa.tipo === 'fim';
-          const isClickable = etapa.tipo === 'passagem' || etapa.tipo === 'simbolo';
+          const isClickable = !readonly && (etapa.tipo === 'passagem' || etapa.tipo === 'simbolo');
 
           // Atualiza a cor de fundo da seção de acordo com o tempo
           if (etapa.tempoId === 'tempo1' || etapa.id === 'pre_cat' || etapa.id === 'acolhida') {
@@ -699,7 +700,7 @@ function JornadaMap({
                 {/* Node button */}
                 <button
                   onClick={() => {
-                    if (isClickable) {
+                    if (isClickable && onEtapaClick) {
                       onEtapaClick(etapa);
                     } else {
                       setExpandida(isExpanded ? null : etapa.id);
@@ -761,7 +762,7 @@ function JornadaMap({
               >
                 <div
                   onClick={() => {
-                    if (isClickable) onEtapaClick(etapa);
+                    if (isClickable && onEtapaClick) onEtapaClick(etapa);
                     else setExpandida(isExpanded ? null : etapa.id);
                   }}
                   className={cn(
