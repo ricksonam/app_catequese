@@ -633,15 +633,6 @@ function JornadaMap({
   // Cross clip-path for 'passagem'
   const crossShape = "polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%)";
 
-  const tipoNodeSize: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
-    inicio:    { size: 'text-2xl', nodeSize: 'w-14 h-14' },
-    tempo:     { size: 'text-xl',  nodeSize: 'w-13 h-13' },
-    passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' },
-    simbolo:   { size: 'text-xl',  nodeSize: 'w-12 h-12' },
-    sacramento:{ size: 'text-4xl', nodeSize: 'w-20 h-20' },
-    fim:       { size: 'text-2xl', nodeSize: 'w-14 h-14' },
-  };
-
   return (
     <div className="relative py-4">
       {/* Central spine */}
