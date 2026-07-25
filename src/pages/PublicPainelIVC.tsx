@@ -189,7 +189,6 @@ export default function PublicPainelIVC() {
         />
       </div>
 
-      </div>
 
       {/* Info footer */}
       <div className="mx-5 mt-5 flex items-start gap-3 bg-white dark:bg-zinc-900 rounded-2xl p-4 border border-border shadow-sm">
