@@ -613,6 +613,7 @@ function JornadaMap({
 }) {
   const [expandida, setExpandida] = useState<string | null>(null);
 
+  // Status styles affect only ring/connector; bg is now overridden per tipo below
   const statusStyle: Record<EtapaStatus, { ring: string; bg: string; connector: string }> = {
     concluido:    { ring: 'ring-4 ring-emerald-400/50', bg: 'bg-emerald-500', connector: 'bg-emerald-400' },
     em_andamento: { ring: 'ring-4 ring-primary/30',     bg: 'bg-primary',     connector: 'bg-primary/40' },
@@ -622,8 +623,8 @@ function JornadaMap({
 
   const tipoNodeSize: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
     inicio:    { size: 'text-2xl', nodeSize: 'w-14 h-14' },
-    tempo:     { size: 'text-xl',  nodeSize: 'w-12 h-12' },
-    passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' }, // ★ Biggest nodes for passagem
+    tempo:     { size: 'text-xl',  nodeSize: 'w-13 h-13' },
+    passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' },
     simbolo:   { size: 'text-xl',  nodeSize: 'w-12 h-12' },
     sacramento:{ size: 'text-4xl', nodeSize: 'w-20 h-20' },
     fim:       { size: 'text-2xl', nodeSize: 'w-14 h-14' },
@@ -634,7 +635,7 @@ function JornadaMap({
       {/* Central spine */}
       <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-emerald-500/30 via-violet-500/30 to-rose-500/30 rounded-full" />
 
-      <div className="space-y-4">
+      <div className="space-y-8">
         {etapas.map((etapa, idx) => {
           const st = statusStyle[etapa.status];
           const ts = tipoNodeSize[etapa.tipo];
@@ -642,13 +643,33 @@ function JornadaMap({
           const isActive = posicaoAtual === idx;
           const isExpanded = expandida === etapa.id;
           const isPassagem = etapa.tipo === 'passagem';
+          const isSimbol = etapa.tipo === 'simbolo';
+          const isTempo = etapa.tipo === 'tempo';
           const isClickable = etapa.tipo === 'passagem' || etapa.tipo === 'simbolo';
 
-          // Passagem ring override by status
-          const passagemRing =
-            etapa.status === 'concluido' ? 'ring-4 ring-emerald-400/60 shadow-xl shadow-emerald-500/20' :
-            etapa.status === 'agendado'  ? 'ring-4 ring-amber-400/60 shadow-xl shadow-amber-500/20' :
-                                           'ring-4 ring-violet-400/60 shadow-xl shadow-violet-500/30';
+          // Compute node background by tipo + status
+          const nodeBg = etapa.status === 'concluido'
+            ? 'bg-emerald-500'
+            : etapa.status === 'agendado'
+              ? (isPassagem ? 'bg-yellow-200 border-2 border-yellow-400' : isTempo ? 'bg-sky-200 border-2 border-sky-300' : 'bg-white border-2 border-gray-200')
+              : isTempo
+                ? 'bg-sky-100 border-2 border-sky-300'
+                : isPassagem
+                  ? 'bg-yellow-100 border-2 border-yellow-400'
+                  : isSimbol
+                    ? 'bg-white border-2 border-gray-200 shadow-md'
+                    : st.bg;
+
+          // Ring per tipo
+          const nodeRing = isPassagem
+            ? (etapa.status === 'concluido' ? 'ring-4 ring-emerald-400/60 shadow-xl shadow-emerald-500/20'
+              : etapa.status === 'agendado'  ? 'ring-4 ring-yellow-400/60 shadow-xl shadow-yellow-400/20'
+              : 'ring-4 ring-yellow-400/60 shadow-xl shadow-yellow-500/20')
+            : isTempo
+              ? 'ring-2 ring-sky-300/60'
+              : isSimbol
+                ? 'ring-2 ring-gray-200'
+                : st.ring;
 
           return (
             <div key={etapa.id} className="relative flex items-center justify-center">
@@ -659,7 +680,7 @@ function JornadaMap({
                   "absolute left-1/2 -translate-x-1/2 rounded-full blur-2xl opacity-20 pointer-events-none transition-all duration-500",
                   "w-16 h-16",
                   etapa.status === 'concluido' ? 'bg-emerald-500' :
-                  etapa.status === 'agendado'  ? 'bg-amber-400' : 'bg-violet-500'
+                  etapa.status === 'agendado'  ? 'bg-yellow-400' : 'bg-yellow-400'
                 )} />
               )}
 
@@ -675,8 +696,8 @@ function JornadaMap({
                 className={cn(
                   "relative z-10 flex items-center justify-center rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95",
                   ts.nodeSize,
-                  st.bg,
-                  isPassagem ? passagemRing : st.ring,
+                  nodeBg,
+                  nodeRing,
                   isActive && "scale-110 shadow-2xl shadow-primary/30",
                 )}
               >
@@ -861,7 +882,7 @@ function JornadaMap({
               {/* Connector to next */}
               {idx < etapas.length - 1 && (
                 <div className={cn(
-                  "absolute top-full left-1/2 -translate-x-1/2 w-1 h-4 rounded-full",
+                  "absolute top-full left-1/2 -translate-x-1/2 w-1 h-8 rounded-full",
                   etapa.status === 'concluido' ? 'bg-emerald-400' : 'bg-muted/40'
                 )} />
               )}
@@ -1184,7 +1205,7 @@ export default function PainelIVC() {
       </div>
 
       {/* ─── MODELO CARD ─── */}
-      <div className="rounded-3xl p-6 bg-white dark:bg-card border-2 border-border/60 shadow-md animate-fade-in text-foreground relative overflow-hidden">
+      <div className="rounded-3xl p-4 bg-white dark:bg-card border-2 border-border/60 shadow-md animate-fade-in text-foreground relative overflow-hidden">
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
 
         <div className="flex flex-col gap-5 relative z-10">
