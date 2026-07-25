@@ -605,6 +605,8 @@ export function JornadaMap({
   etapas,
   posicaoAtual,
   onEtapaClick,
+  readonly = false,
+  modelo,
 }: {
   etapas: EtapaJornada[];
   posicaoAtual: number;
