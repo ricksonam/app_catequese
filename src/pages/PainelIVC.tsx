@@ -755,7 +755,7 @@ function JornadaMap({
               {/* Label card */}
               <div
                 className={cn(
-                  "absolute max-w-[130px] sm:max-w-[155px]",
+                  "absolute max-w-[calc(50vw-52px)] sm:max-w-[160px]",
                   isLeft ? "right-[calc(50%+48px)]" : "left-[calc(50%+48px)]"
                 )}
               >
@@ -1213,25 +1213,6 @@ export default function PainelIVC() {
           <button onClick={handleShare} className="absolute right-0 w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
             <Share2 className="h-4 w-4 text-foreground/60" />
           </button>
-        </div>
-      </div>
-
-      {/* ─── MODELO CARD ─── */}
-      <div className="rounded-3xl p-4 bg-white dark:bg-card border-2 border-border/60 shadow-md animate-fade-in text-foreground relative overflow-hidden">
-        <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
-
-        <div className="flex flex-col gap-5 relative z-10">
-          <div className="flex gap-4 items-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center text-4xl shadow-sm shrink-0">
-              {modeloInfo.emoji}
-            </div>
-            <div className="flex-1">
-              <h2 className="font-black text-2xl leading-tight text-foreground">{turma.nome}</h2>
-              {turma.ano && <p className="text-sm font-bold text-muted-foreground mt-0.5">{turma.ano}</p>}
-            </div>
-          </div>
-
-          <div className="h-px bg-border/50 w-full" />
         </div>
       </div>
 
