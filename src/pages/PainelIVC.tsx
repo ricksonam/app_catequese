@@ -624,6 +624,18 @@ function JornadaMap({
   const tipoNodeSize: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
     inicio:    { size: 'text-2xl', nodeSize: 'w-14 h-14' },
     tempo:     { size: 'text-xl',  nodeSize: 'w-13 h-13' },
+    passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' }, // For cross shape, might need to be square and slightly larger visually
+    simbolo:   { size: 'text-xl',  nodeSize: 'w-12 h-12' },
+    sacramento:{ size: 'text-4xl', nodeSize: 'w-20 h-20' },
+    fim:       { size: 'text-2xl', nodeSize: 'w-14 h-14' },
+  };
+
+  // Cross clip-path for 'passagem'
+  const crossShape = "polygon(33% 0%, 67% 0%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 100%, 33% 100%, 33% 67%, 0% 67%, 0% 33%, 33% 33%)";
+
+  const tipoNodeSize: Record<EtapaJornada['tipo'], { size: string; nodeSize: string }> = {
+    inicio:    { size: 'text-2xl', nodeSize: 'w-14 h-14' },
+    tempo:     { size: 'text-xl',  nodeSize: 'w-13 h-13' },
     passagem:  { size: 'text-3xl', nodeSize: 'w-20 h-20' },
     simbolo:   { size: 'text-xl',  nodeSize: 'w-12 h-12' },
     sacramento:{ size: 'text-4xl', nodeSize: 'w-20 h-20' },
@@ -644,29 +656,46 @@ function JornadaMap({
           const isExpanded = expandida === etapa.id;
           const isPassagem = etapa.tipo === 'passagem';
           const isSimbol = etapa.tipo === 'simbolo';
-          const isTempo = etapa.tipo === 'tempo';
+          const isTempo = etapa.tipo === 'tempo' || etapa.tipo === 'inicio' || etapa.tipo === 'fim';
           const isClickable = etapa.tipo === 'passagem' || etapa.tipo === 'simbolo';
+
+          // Get specific color for tempo based on tempoId or id
+          let tempoColor = 'bg-gray-100 border-2 border-gray-300';
+          let tempoRing = 'ring-2 ring-gray-300/60';
+          if (etapa.tempoId === 'tempo1' || etapa.id === 'pre_cat' || etapa.id === 'acolhida') {
+            tempoColor = 'bg-yellow-100 border-2 border-yellow-300';
+            tempoRing = 'ring-2 ring-yellow-300/60';
+          } else if (etapa.tempoId === 'tempo2' || etapa.id === 'catecumenato') {
+            tempoColor = 'bg-sky-100 border-2 border-sky-300';
+            tempoRing = 'ring-2 ring-sky-300/60';
+          } else if (etapa.tempoId === 'tempo3' || etapa.id === 'purificacao' || etapa.id === 'escrutinios') {
+            tempoColor = 'bg-purple-100 border-2 border-purple-300';
+            tempoRing = 'ring-2 ring-purple-300/60';
+          } else if (etapa.tempoId === 'tempo4' || etapa.id === 'mistagogia' || etapa.id === 'mis_seed') {
+            tempoColor = 'bg-emerald-100 border-2 border-emerald-300';
+            tempoRing = 'ring-2 ring-emerald-300/60';
+          }
 
           // Compute node background by tipo + status
           const nodeBg = etapa.status === 'concluido'
-            ? 'bg-emerald-500'
+            ? (isPassagem ? 'bg-emerald-500' : 'bg-emerald-500 text-white')
             : etapa.status === 'agendado'
-              ? (isPassagem ? 'bg-yellow-200 border-2 border-yellow-400' : isTempo ? 'bg-sky-200 border-2 border-sky-300' : 'bg-white border-2 border-gray-200')
+              ? (isPassagem ? 'bg-amber-400' : isTempo ? tempoColor : 'bg-white border-2 border-gray-200')
               : isTempo
-                ? 'bg-sky-100 border-2 border-sky-300'
+                ? tempoColor
                 : isPassagem
-                  ? 'bg-yellow-100 border-2 border-yellow-400'
+                  ? 'bg-amber-200' // Cross shape doesn't show borders well with clip-path, so solid color
                   : isSimbol
                     ? 'bg-white border-2 border-gray-200 shadow-md'
                     : st.bg;
 
           // Ring per tipo
           const nodeRing = isPassagem
-            ? (etapa.status === 'concluido' ? 'ring-4 ring-emerald-400/60 shadow-xl shadow-emerald-500/20'
-              : etapa.status === 'agendado'  ? 'ring-4 ring-yellow-400/60 shadow-xl shadow-yellow-400/20'
-              : 'ring-4 ring-yellow-400/60 shadow-xl shadow-yellow-500/20')
+            ? (etapa.status === 'concluido' ? 'shadow-emerald-500/50'
+              : etapa.status === 'agendado'  ? 'shadow-yellow-400/50'
+              : 'shadow-amber-500/30')
             : isTempo
-              ? 'ring-2 ring-sky-300/60'
+              ? tempoRing
               : isSimbol
                 ? 'ring-2 ring-gray-200'
                 : st.ring;
@@ -677,51 +706,70 @@ function JornadaMap({
               {/* Animated glow behind passagem nodes */}
               {isPassagem && (
                 <div className={cn(
-                  "absolute left-1/2 -translate-x-1/2 rounded-full blur-2xl opacity-20 pointer-events-none transition-all duration-500",
-                  "w-16 h-16",
+                  "absolute left-1/2 -translate-x-1/2 rounded-full blur-2xl opacity-30 pointer-events-none transition-all duration-500",
+                  "w-20 h-20",
                   etapa.status === 'concluido' ? 'bg-emerald-500' :
-                  etapa.status === 'agendado'  ? 'bg-yellow-400' : 'bg-yellow-400'
+                  etapa.status === 'agendado'  ? 'bg-yellow-400' : 'bg-amber-400'
                 )} />
               )}
 
-              {/* Node button */}
-              <button
-                onClick={() => {
-                  if (isClickable) {
-                    onEtapaClick(etapa);
-                  } else {
-                    setExpandida(isExpanded ? null : etapa.id);
-                  }
-                }}
-                className={cn(
-                  "relative z-10 flex items-center justify-center rounded-full shadow-md transition-all duration-300 hover:scale-105 active:scale-95",
-                  ts.nodeSize,
-                  nodeBg,
-                  nodeRing,
-                  isActive && "scale-110 shadow-2xl shadow-primary/30",
-                )}
-              >
-                <span className={cn(ts.size, "filter drop-shadow-sm select-none")}>{etapa.emoji}</span>
+              {/* Drop-shadow wrapper for passagem since clip-path cuts off box-shadow */}
+              <div className={cn(
+                "relative z-10 flex items-center justify-center transition-all duration-300",
+                isPassagem ? "drop-shadow-lg" : "shadow-md rounded-full hover:scale-105 active:scale-95",
+                isActive && !isPassagem && "scale-110 shadow-2xl shadow-primary/30",
+                isPassagem && isActive && "drop-shadow-2xl scale-110"
+              )}>
+                
+                {/* Node button */}
+                <button
+                  onClick={() => {
+                    if (isClickable) {
+                      onEtapaClick(etapa);
+                    } else {
+                      setExpandida(isExpanded ? null : etapa.id);
+                    }
+                  }}
+                  className={cn(
+                    "relative flex items-center justify-center transition-all duration-300",
+                    ts.nodeSize,
+                    nodeBg,
+                    !isPassagem && nodeRing,
+                    !isPassagem && "rounded-full"
+                  )}
+                  style={{
+                    clipPath: isPassagem ? crossShape : undefined
+                  }}
+                >
+                  {/* For Passagem, maybe the emoji is too big or we don't want it, but user said "as etapas uma cruz". 
+                      Wait, if the shape is a cross, the emoji still shows. Let's keep the emoji. */}
+                  <span className={cn(ts.size, "filter drop-shadow-sm select-none", isPassagem && "z-20 scale-75")}>{etapa.emoji}</span>
+                </button>
 
                 {/* Concluido check */}
-                {etapa.status === 'concluido' && (
+                {etapa.status === 'concluido' && !isPassagem && (
                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full shadow flex items-center justify-center z-10">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  </div>
+                )}
+                {etapa.status === 'concluido' && isPassagem && (
+                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-white rounded-full shadow flex items-center justify-center z-10">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   </div>
                 )}
 
                 {/* Star badge for pending passagem */}
                 {isPassagem && etapa.status === 'pendente' && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 rounded-full shadow flex items-center justify-center z-10">
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-violet-500 rounded-full shadow flex items-center justify-center z-10">
                     <Star className="w-3 h-3 text-white fill-white" />
                   </div>
                 )}
 
                 {/* Agendado pulse ring for passagem */}
                 {isPassagem && etapa.status === 'agendado' && (
-                  <div className="absolute inset-0 rounded-full ring-4 ring-amber-400/30 animate-ping pointer-events-none" />
+                  <div className="absolute inset-0 ring-4 ring-amber-400/30 animate-ping pointer-events-none" style={{ clipPath: crossShape }} />
                 )}
-              </button>
+              </div>
 
               {/* Active "Sua Turma" chip */}
               {isActive && (
