@@ -1537,7 +1537,7 @@ export default function PainelIVC() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-card rounded-2xl border border-border/30 p-2 shadow-sm overflow-hidden">
+          <div className="mt-2">
             <JornadaMap
               etapas={etapas}
               posicaoAtual={posicaoAtual}
