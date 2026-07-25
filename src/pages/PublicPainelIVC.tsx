@@ -72,16 +72,22 @@ export default function PublicPainelIVC() {
           .eq('turma_id', turmaData.id);
 
         // Parse the activities to match our type
-        const parsed = (atvsData ?? []).map((a: any) => ({
-          ...a,
-          turmaId: a.turma_id,
-          criadoEm: a.criado_em,
-          tipo: a.tipo || 'Eventos geral',
-          presencas: a.presencas || [],
-          simboloIVC: a.dados_extras?.simboloIVC,
-          etapaIVC: a.dados_extras?.etapaIVC,
-          realizado: a.dados_extras?.realizado,
-        }));
+        const parsed = (atvsData ?? []).map((a: any) => {
+          const isDispensado = (a.observacao || '').includes('[DISPENSADO_IVC]');
+          const cleanObservacao = (a.observacao || '').replace('[DISPENSADO_IVC]', '').trim();
+          return {
+            ...a,
+            turmaId: a.turma_id,
+            criadoEm: a.criado_em,
+            tipo: a.tipo || 'Eventos geral',
+            presencas: a.presencas || [],
+            simboloIVC: a.simbolo_ivc || a.dados_extras?.simboloIVC,
+            etapaIVC: a.etapa_ivc || a.dados_extras?.etapaIVC,
+            realizado: a.realizado ?? a.dados_extras?.realizado,
+            dispensado: isDispensado,
+            observacao: cleanObservacao,
+          };
+        });
         setAtividades(parsed);
 
         // Load catequizandos (only count)

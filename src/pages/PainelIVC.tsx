@@ -35,6 +35,7 @@ export interface EtapaJornada {
   entregaCruz?: boolean;
   entregaBiblia?: boolean;
   dispensado?: boolean;
+  dataFim?: string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -213,7 +214,16 @@ export function calcularProgressoJornada(
         else if (percFreq >= 0.25) status = 'em_andamento';
         else status = 'pendente';
       } else if (base.tipo === 'inicio') {
-        status = totalEncontros > 0 ? 'concluido' : 'em_andamento';
+        const evInicio = atividades.find(a => a.tipo === 'Celebração' && (a.etapaIVC as string) === base.id);
+        let dataFim: string | undefined;
+        if (evInicio) {
+          dataEvento = evInicio.data;
+          dispensado = evInicio.dispensado || false;
+          const dataFimRaw = evInicio.observacao?.match(/dataFim:(\d{4}-\d{2}-\d{2})/)?.[1];
+          if (dataFimRaw) dataFim = dataFimRaw;
+        }
+        status = totalEncontros > 0 || (evInicio && evInicio.realizado) ? 'concluido' : 'em_andamento';
+        return { ...base, status, dataEvento, dataFim, dispensado };
       } else if (base.tipo === 'sacramento') {
         status = 'pendente';
       } else if (base.tipo === 'fim') {
@@ -673,11 +683,11 @@ export function JornadaMap({
       <div className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 bg-gradient-to-b from-emerald-500/30 via-violet-500/30 to-rose-500/30 rounded-full z-0" />
 
       <div className="space-y-8 flex flex-col items-center">
-        {etapas.map((etapa, idx) => {
+        {etapas.filter(e => !e.dispensado).map((etapa, idx) => {
           const st = statusStyle[etapa.status];
           const ts = tipoNodeSize[etapa.tipo];
           const isLeft = idx % 2 === 0;
-          const isActive = posicaoAtual === idx;
+          const isActive = posicaoAtual === etapas.findIndex(e => e.id === etapa.id);
           const isExpanded = expandida === etapa.id;
           const isPassagem = etapa.tipo === 'passagem';
           const isSimbol = etapa.tipo === 'simbolo';
@@ -860,17 +870,16 @@ export function JornadaMap({
                     </p>
                   )}
 
-                  {etapa.dispensado && (
-                    <p className="text-[9px] font-black text-red-600 mt-1 flex items-center gap-1 bg-red-50 w-fit px-1.5 py-0.5 rounded border border-red-100">
-                      <X className="w-2.5 h-2.5" />
-                      Não será entregue
-                    </p>
-                  )}
-
-                  {!etapa.dispensado && etapa.dataEvento && (
-                    <p className="text-[9px] font-black text-amber-600 mt-1 flex items-center gap-1">
+                  {/* Display Data for all stages that have it */}
+                  {etapa.dataEvento && (
+                    <p className={cn(
+                      "text-[9px] font-black mt-1 flex items-center gap-1",
+                      isPassagem ? "text-violet-600" : etapa.tipo === 'simbolo' ? "text-amber-600" : "text-primary"
+                    )}>
                       <Calendar className="w-2.5 h-2.5" />
-                      {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                      {etapa.id === 'preparacao' && etapa.dataFim
+                        ? `${new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} → ${new Date(etapa.dataFim + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`
+                        : new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                     </p>
                   )}
 
@@ -887,25 +896,25 @@ export function JornadaMap({
                   )}
 
                   {/* "Toque para registrar" hint on clickable pending cards */}
-                  {isClickable && etapa.status === 'pendente' && (
+                  {isClickable && !etapa.dataEvento && etapa.status === 'pendente' && (
                     <p className={cn(
                       "text-[8px] font-bold mt-1.5 flex items-center gap-0.5",
-                      isPassagem ? "text-violet-500" : "text-amber-500"
+                      isPassagem ? "text-violet-500" : "text-primary/60"
                     )}>
                       <Calendar className="w-2.5 h-2.5" />
                       Toque para registrar
                     </p>
                   )}
-                  {isClickable && etapa.status === 'concluido' && (
-                    <p className="text-[8px] font-bold text-emerald-600 mt-1 flex items-center gap-0.5">
+                  {isClickable && etapa.dataEvento && etapa.status === 'concluido' && (
+                    <p className="text-[8px] font-bold text-emerald-600 mt-1 flex items-center gap-0.5 opacity-70">
                       <CheckCircle2 className="w-2.5 h-2.5" />
-                      Realizada — toque para editar
+                      Realizada — toque p/ editar
                     </p>
                   )}
-                  {isClickable && etapa.status === 'agendado' && (
-                    <p className="text-[8px] font-bold text-amber-600 mt-1 flex items-center gap-0.5">
+                  {isClickable && etapa.dataEvento && etapa.status === 'agendado' && (
+                    <p className="text-[8px] font-bold text-amber-600 mt-1 flex items-center gap-0.5 opacity-70">
                       <Calendar className="w-2.5 h-2.5" />
-                      Agendada — toque para marcar
+                      Agendada — toque p/ marcar
                     </p>
                   )}
                 </div>
@@ -1424,10 +1433,6 @@ export default function PainelIVC() {
     );
   }
 
-  // Count passage celebrations realized
-  const passagensRealizadas = etapas.filter(e => e.tipo === 'passagem' && e.status === 'concluido').length;
-  const totalPassagens = etapas.filter(e => e.tipo === 'passagem').length;
-
   return (
     <div className="space-y-5 pb-20">
       {/* ─── HEADER ─── */}
@@ -1569,179 +1574,6 @@ export default function PainelIVC() {
               encontros={encontros}
               onEtapaClick={handleEtapaClick}
             />
-          </div>
-        </div>
-      )}
-
-      {/* ─── TAB: ESTATÍSTICAS ─── */}
-      {abaAtiva === 'estatisticas' && (
-        <div className="space-y-4 animate-fade-in">
-          <div className="grid grid-cols-2 gap-3">
-            <StatCard
-              icon={BookOpen}
-              label="Encontros"
-              value={`${encontrosRealizados.length}/${encontros.length}`}
-              sub="realizados / total"
-              color="bg-blue-50 border-blue-200 text-blue-700"
-            />
-            <StatCard
-              icon={Users}
-              label="Catequizandos"
-              value={catequizandos.filter(c => c.status === 'ativo').length}
-              sub="ativos na turma"
-              color="bg-emerald-50 border-emerald-200 text-emerald-700"
-            />
-            <StatCard
-              icon={TrendingUp}
-              label="Frequência Média"
-              value={`${freqMedia}%`}
-              sub="média de presença"
-              color={freqMedia >= 75 ? "bg-emerald-50 border-emerald-200 text-emerald-700" : freqMedia >= 50 ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-red-50 border-red-200 text-red-700"}
-            />
-            <StatCard
-              icon={Sparkles}
-              label="Etapas IVC"
-              value={`${etapas.filter(e => e.status === 'concluido').length}/${etapas.length}`}
-              sub="concluídas / total"
-              color="bg-violet-50 border-violet-200 text-violet-700"
-            />
-          </div>
-
-          {/* Passage Celebrations Card */}
-          <div className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/20 dark:to-purple-950/20 rounded-2xl border border-violet-200/50 p-4 shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-violet-700 mb-3 flex items-center gap-1.5">
-              <Star className="w-3 h-3 fill-violet-500 text-violet-500" /> Celebrações de Passagem de Etapa
-            </p>
-            <div className="space-y-2">
-              {etapas.filter(e => e.tipo === 'passagem').map(etapa => {
-                const celInfo = etapa.celebracaoTipo
-                  ? CELEBRACOES_PASSAGEM.find(c => c.id === etapa.celebracaoTipo)
-                  : null;
-                return (
-                  <button
-                    key={etapa.id}
-                    onClick={() => handleEtapaClick(etapa)}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left group",
-                      etapa.status === 'concluido'
-                        ? "bg-emerald-50 border-emerald-300 dark:bg-emerald-950/20"
-                        : etapa.status === 'agendado'
-                          ? "bg-amber-50 border-amber-300 dark:bg-amber-950/20"
-                          : "bg-white/80 dark:bg-card/80 border-violet-200 hover:border-violet-400"
-                    )}
-                  >
-                    <span className="text-2xl shrink-0">{etapa.emoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(
-                        "text-xs font-black truncate",
-                        etapa.status === 'concluido' ? "text-emerald-700" :
-                        etapa.status === 'agendado' ? "text-amber-700" : "text-violet-700"
-                      )}>
-                        {celInfo?.label ?? etapa.label}
-                      </p>
-                      {etapa.dataEvento && (
-                        <p className="text-[10px] font-bold text-muted-foreground mt-0.5 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR')}
-                        </p>
-                      )}
-                      {etapa.celebracaoTipo === 'admissao_catecumenato' && etapa.status === 'concluido' && (
-                        <div className="flex gap-1 mt-1 flex-wrap">
-                          {etapa.entregaCruz !== false && <span className="text-[8px] font-black bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full">✚ Cruz</span>}
-                          {etapa.entregaBiblia && <span className="text-[8px] font-black bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">📖 Bíblia</span>}
-                        </div>
-                      )}
-                    </div>
-                    <div className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
-                      etapa.status === 'concluido'
-                        ? "bg-emerald-100 text-emerald-600"
-                        : "bg-violet-100 text-violet-600"
-                    )}>
-                      {etapa.status === 'concluido'
-                        ? <CheckCircle2 className="w-4 h-4" />
-                        : <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                      }
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Símbolos entregues */}
-          <div className="bg-white dark:bg-card rounded-2xl border border-border/30 p-4 shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
-              <Gift className="w-3 h-3" /> Símbolos Entregues
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {SIMBOLOS_IVC.filter(s => s.id !== 'outro').map(simbolo => {
-                const entregue = atividades.some(a =>
-                  a.tipo === 'Entrega de Símbolos' && a.simboloIVC === simbolo.id
-                );
-                return (
-                  <div key={simbolo.id} className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all",
-                    entregue
-                      ? "bg-emerald-50 border-emerald-200"
-                      : "bg-muted/20 border-border/30 opacity-50"
-                  )}>
-                    <span className="text-2xl">{simbolo.emoji}</span>
-                    <p className="text-[9px] font-black uppercase tracking-wide text-center leading-tight">
-                      {simbolo.label}
-                    </p>
-                    {entregue && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Quick access */}
-          <div className="bg-white dark:bg-card rounded-2xl border border-border/30 p-4 shadow-sm">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
-              Acesso Rápido aos Módulos
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: 'Encontros', emoji: '📅', path: `/turmas/${id}/encontros`, color: 'bg-blue-50 border-blue-200 text-blue-700' },
-                { label: 'Eventos', emoji: '🎉', path: `/turmas/${id}/eventos`, color: 'bg-amber-50 border-amber-200 text-amber-700' },
-                { label: 'Reuniões', emoji: '👥', path: `/turmas/${id}/reunioes`, color: 'bg-violet-50 border-violet-200 text-violet-700' },
-                { label: 'Catequizandos', emoji: '👤', path: `/turmas/${id}/catequizandos`, color: 'bg-emerald-50 border-emerald-200 text-emerald-700' },
-              ].map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={cn("flex items-center gap-2 p-3 rounded-xl border font-bold text-xs transition-all hover:opacity-90 active:scale-95", item.color)}
-                >
-                  <span className="text-lg">{item.emoji}</span>
-                  {item.label}
-                  <ChevronRight className="w-3 h-3 ml-auto" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Public link */}
-          <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/30 dark:to-violet-950/30 rounded-2xl border border-indigo-200/50 p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                <Eye className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-black text-sm text-indigo-800">Versão Pública para Pais</p>
-                <p className="text-[10px] text-indigo-600 mt-0.5">
-                  Compartilhe o painel com pais, coordenador e padre via link ou QR Code.
-                </p>
-                <button
-                  onClick={handleShare}
-                  className="mt-2 flex items-center gap-1.5 text-[10px] font-black text-indigo-700 hover:text-indigo-900 transition-colors"
-                >
-                  <Share2 className="w-3 h-3" />
-                  Compartilhar link público
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}
