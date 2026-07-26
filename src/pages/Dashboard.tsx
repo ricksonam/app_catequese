@@ -963,8 +963,18 @@ export default function Dashboard() {
 
             {/* Seção de Módulos da Turma (sem fundo) */}
             <div className="px-4 py-4 relative" style={{ zIndex: 1 }}>
+              {/* Label da seção */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-px flex-1 bg-blue-200/70" />
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-blue-900/40 border-2 border-blue-400/80 dark:border-blue-500/60 shadow-md">
+                  <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-[11px] sm:text-xs font-black text-foreground uppercase tracking-widest">Módulos da Turma Selecionada</span>
+                </div>
+                <div className="h-px flex-1 bg-blue-200/70" />
+              </div>
+
               {/* ── CARD BARRA PAINEL IVC ── */}
-              <div className="pb-4 relative z-10 max-w-sm mx-auto w-full px-1 sm:px-0">
+              <div className="pb-4 relative z-10 max-w-[260px] mx-auto w-full px-1 sm:px-0">
                 <button
                   onClick={() => {
                     if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
@@ -1010,16 +1020,6 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </button>
-              </div>
-
-              {/* Label da seção */}
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-px flex-1 bg-blue-200/70" />
-                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-blue-900/40 border-2 border-blue-400/80 dark:border-blue-500/60 shadow-md">
-                  <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span className="text-[11px] sm:text-xs font-black text-foreground uppercase tracking-widest">Módulos da Turma Selecionada</span>
-                </div>
-                <div className="h-px flex-1 bg-blue-200/70" />
               </div>
 
               {/* Grid módulos da turma */}
