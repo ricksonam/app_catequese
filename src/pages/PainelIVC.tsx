@@ -100,19 +100,19 @@ const ETAPAS_EUC_CRISMA: EtapaBase[] = [
   { id: 'pre_cat',           label: 'Pré-Catecumenato',                            sublabel: '1º Tempo — Querigma (mín. 6 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
   // ✅ 1ª PASSAGEM DE ETAPA: Rito de Admissão ao Catecumenato (entrega Cruz + opcional Bíblia)
   { id: 'pass_cat',          label: 'Rito de Admissão ao Catecumenato',            emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato' },
-  { id: 'cat_biblia',        label: 'Catecumenato — Palavra de Deus',              sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_biblia',        label: 'Catecumenato — Catequeses',                   sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
   { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                           emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia' },
-  { id: 'cat_pessoa',        label: 'Catecumenato — Pessoa Humana',                sublabel: 'Fase 2', emoji: '👤', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_pessoa',        label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 2', emoji: '👤', tipo: 'tempo', tempoId: 'tempo2' },
   // ✅ Celebração da Vida — celebração interna do catecumenato, símbolo opcional pela tradição da comunidade
   { id: 'celebracao_vida',   label: 'Celebração da Vida',                          sublabel: 'Celebração interna — símbolo opcional', emoji: '🎊', tipo: 'simbolo' },
-  { id: 'cat_jesus',         label: 'Catecumenato — Jesus Cristo',                 sublabel: 'Fase 3', emoji: '✝️',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_jesus',         label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 3', emoji: '✝️',  tipo: 'tempo', tempoId: 'tempo2' },
   // ✅ Jornada do Discipulado — atividade externa dentro do Catecumenato, não é passagem
   { id: 'jornada_disc',      label: 'Jornada do Discipulado',                      sublabel: 'Atividade externa no Catecumenato', emoji: '🤝',  tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'cat_oracao',        label: 'Catecumenato — Vida de Oração',               sublabel: 'Fase 4', emoji: '🙏',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_oracao',        label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 4', emoji: '🙏',  tipo: 'tempo', tempoId: 'tempo2' },
   { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                        emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso' },
-  { id: 'cat_comunidade',    label: 'Catecumenato — Comunidade de Fé',             sublabel: 'Fase 5', emoji: '⛪', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_comunidade',    label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 5', emoji: '⛪', tipo: 'tempo', tempoId: 'tempo2' },
   { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                    emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio' },
-  { id: 'cat_sacramental',   label: 'Catecumenato — Vida Sacramental',             sublabel: 'Fase 6', emoji: '💧', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_sacramental',   label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 6', emoji: '💧', tipo: 'tempo', tempoId: 'tempo2' },
   // ✅ 2ª PASSAGEM DE ETAPA: Eleição — Preparação para os Sacramentos
   { id: 'eleicao',           label: 'Eleição — Preparação para os Sacramentos',   emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao' },
   { id: 'purificacao',       label: 'Purificação e Iluminação',                   sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },

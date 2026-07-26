@@ -192,6 +192,8 @@ export default function PublicPainelIVC() {
           posicaoAtual={posicaoAtual}
           modelo={modelo}
           readonly={true}
+          turmaNome={turma?.nome}
+          turmaAno={turma?.ano}
         />
       </div>
 
