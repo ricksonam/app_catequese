@@ -1002,6 +1002,42 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
+
+              {/* ── PAINEL IVC — centralizado abaixo dos módulos da turma ── */}
+              <div className="mt-4 flex flex-col items-center">
+                <div className="w-1/3 max-w-[110px] flex flex-col items-center group animate-fade-in">
+                  <div className="module-frame-wrapper w-full" style={{ aspectRatio: '1 / 1' }}>
+                    <button
+                      onClick={() => {
+                        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                          navigate(`/turmas/${selectedTurmaId}/painel-ivc`);
+                        } else if (selectedTurmaId === "all") {
+                          toast.info("Selecione uma turma para acessar este módulo.");
+                          setTurmaPickerOpen(true);
+                        } else {
+                          toast.info("Aguarde a aprovação do acesso.");
+                        }
+                      }}
+                      className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block transition-transform duration-300 group-hover:scale-105 active:scale-95 shadow-md"
+                    >
+                      <ModuleIcon type="painel-ivc" className="w-full h-full" />
+                      {/* Overlay indicando que precisa de turma */}
+                      {selectedTurmaId === 'all' && (
+                        <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+                            <Users className="h-3 w-3 text-blue-600" />
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                  <div className="min-h-[2.5rem] flex items-start justify-center mt-1.5 w-full px-1">
+                    <span className="text-xs sm:text-[13px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
+                      Painel IVC
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

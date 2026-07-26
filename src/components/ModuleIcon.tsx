@@ -430,6 +430,42 @@ export function ModuleIcon({ type, className }: ModuleIconProps) {
         </svg>
       );
 
+    case "painel-ivc":
+      return (
+        <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg-ivc" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#065f46" />
+              <stop offset="100%" stopColor="#10b981" />
+            </linearGradient>
+            <radialGradient id="glow-ivc" cx="50%" cy="30%" r="60%">
+              <stop offset="0%" stopColor="#6ee7b7" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#065f46" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="100" height="100" rx="16" fill="url(#bg-ivc)" />
+          <rect width="100" height="100" rx="16" fill="url(#glow-ivc)" />
+          {/* Escudo de vigilância / painel */}
+          <path d="M50 12 L75 22 L75 48 Q75 68 50 78 Q25 68 25 48 L25 22 Z"
+            fill="white" fillOpacity="0.15" stroke="white" strokeOpacity="0.5" strokeWidth="2" />
+          {/* Gráfico de barras interno */}
+          <rect x="34" y="56" width="7" height="14" rx="2" fill="white" fillOpacity="0.9" />
+          <rect x="46" y="46" width="7" height="24" rx="2" fill="white" fillOpacity="0.9" />
+          <rect x="58" y="38" width="7" height="32" rx="2" fill="white" fillOpacity="0.9" />
+          {/* Linha de tendência ascendente */}
+          <polyline points="37,55 50,45 62,36" fill="none" stroke="#6ee7b7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Bolinha de destaque na tendência */}
+          <circle cx="62" cy="36" r="3.5" fill="#fbbf24" fillOpacity="0.95" />
+          {/* Cruz pequena no topo do escudo */}
+          <rect x="47.5" y="18" width="5" height="14" rx="2" fill="white" fillOpacity="0.95" />
+          <rect x="41" y="23" width="18" height="5" rx="2" fill="white" fillOpacity="0.95" />
+          {/* Olho de vigilância abaixo */}
+          <ellipse cx="50" cy="86" rx="12" ry="7" fill="white" fillOpacity="0.2" stroke="white" strokeOpacity="0.5" strokeWidth="1.5" />
+          <circle cx="50" cy="86" r="4" fill="white" fillOpacity="0.9" />
+          <circle cx="51.5" cy="84.5" r="1.5" fill="#065f46" fillOpacity="0.7" />
+        </svg>
+      );
+
     default:
       return (
         <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
