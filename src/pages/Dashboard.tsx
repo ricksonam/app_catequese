@@ -963,6 +963,55 @@ export default function Dashboard() {
 
             {/* Seção de Módulos da Turma (sem fundo) */}
             <div className="px-4 py-4 relative" style={{ zIndex: 1 }}>
+              {/* ── CARD BARRA PAINEL IVC ── */}
+              <div className="pb-6 relative z-10">
+                <button
+                  onClick={() => {
+                    if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
+                      navigate(`/turmas/${selectedTurmaId}/painel-ivc`);
+                    } else if (selectedTurmaId === "all") {
+                      toast.info("Selecione uma turma para acessar este painel.");
+                      setTurmaPickerOpen(true);
+                    } else {
+                      toast.info("Aguarde a aprovação do acesso.");
+                    }
+                  }}
+                  className="w-full relative group rounded-[28px] p-[2px] transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] text-left overflow-hidden shadow-xl shadow-emerald-500/20"
+                >
+                  {/* Borda Gradiente Animada */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-500 to-green-600 opacity-70 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Efeito de brilho giratório */}
+                  <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,transparent_60deg,rgba(255,255,255,0.8)_120deg,transparent_180deg)] group-hover:animate-spin-slow opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                  {/* Fundo interno Glassmorphism */}
+                  <div className="relative h-full w-full bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl rounded-[26px] p-4 sm:p-5 flex items-center gap-4 overflow-hidden border border-white/50 dark:border-white/10">
+                    
+                    {/* Ícone flutuante */}
+                    <div className="relative shrink-0 w-14 h-14 rounded-[18px] bg-gradient-to-br from-emerald-500 to-teal-600 p-[1px] shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-all duration-300">
+                      <div className="w-full h-full rounded-[17px] bg-white/10 dark:bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-105 group-hover:rotate-6 transition-transform duration-500 overflow-hidden">
+                        <ModuleIcon type="painel-ivc" className="w-[120%] h-[120%] -ml-1 -mt-1" />
+                      </div>
+                    </div>
+
+                    {/* Conteúdo textual */}
+                    <div className="flex-1 min-w-0 z-10">
+                      <span className="block text-[13px] font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 uppercase tracking-[0.15em] mb-1">
+                        Painel IVC
+                      </span>
+                      <span className="block text-[11px] text-muted-foreground font-bold truncate group-hover:text-foreground transition-colors duration-300">
+                        {selectedTurmaId !== 'all' && selectedTurma ? `Acompanhamento de ${selectedTurma.nome}` : "Selecione uma turma para acessar"}
+                      </span>
+                    </div>
+
+                    {/* Seta indicativa */}
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-500/20 transition-colors duration-300">
+                      <ChevronRight className="h-5 w-5 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform duration-300" />
+                    </div>
+                  </div>
+                </button>
+              </div>
+
               {/* Label da seção */}
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-blue-200/70" />
@@ -1001,42 +1050,6 @@ export default function Dashboard() {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* ── PAINEL IVC — centralizado abaixo dos módulos da turma ── */}
-              <div className="mt-4 flex flex-col items-center">
-                <div className="w-1/3 max-w-[110px] flex flex-col items-center group animate-fade-in">
-                  <div className="module-frame-wrapper w-full" style={{ aspectRatio: '1 / 1' }}>
-                    <button
-                      onClick={() => {
-                        if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                          navigate(`/turmas/${selectedTurmaId}/painel-ivc`);
-                        } else if (selectedTurmaId === "all") {
-                          toast.info("Selecione uma turma para acessar este módulo.");
-                          setTurmaPickerOpen(true);
-                        } else {
-                          toast.info("Aguarde a aprovação do acesso.");
-                        }
-                      }}
-                      className="relative w-full h-full rounded-[23px] overflow-hidden focus:outline-none block transition-transform duration-300 group-hover:scale-105 active:scale-95 shadow-md"
-                    >
-                      <ModuleIcon type="painel-ivc" className="w-full h-full" />
-                      {/* Overlay indicando que precisa de turma */}
-                      {selectedTurmaId === 'all' && (
-                        <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                          <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
-                            <Users className="h-3 w-3 text-blue-600" />
-                          </div>
-                        </div>
-                      )}
-                    </button>
-                  </div>
-                  <div className="min-h-[2.5rem] flex items-start justify-center mt-1.5 w-full px-1">
-                    <span className="text-xs sm:text-[13px] font-black text-center uppercase tracking-wider text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full text-center">
-                      Painel IVC
-                    </span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
