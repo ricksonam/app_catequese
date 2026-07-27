@@ -10,7 +10,8 @@ import {
   Calendar, Users, FileText, BookOpen, Music,
   Heart, Baby, Star, Plus, Trash2, Save, Share2,
   UserPlus, X, Check, Sparkles, Cross,
-  Trophy, Map, CalendarDays, PartyPopper, Flag, Ban
+  Trophy, Map, CalendarDays, PartyPopper, Flag, Ban,
+  ChevronDown, ChevronUp
 } from "lucide-react";
 import type { Catequizando, TrilhaSacramental as TrilhaSacramentalType, Turma, EtapaCustom } from "@/lib/store";
 import { cn, getAppUrl } from "@/lib/utils";
@@ -38,19 +39,19 @@ const SAC_CFG = {
     label: "Batismo", gradient: "from-sky-400 to-indigo-500",
     gradientLight: "from-sky-50 to-indigo-50",
     accent: "text-sky-600", accentBg: "bg-sky-500", border: "border-sky-200",
-    color: "#0284c7", emoji: "🕊️", icon: Baby,
+    color: "#0284c7", emoji: "🕯️", icon: Baby,
   },
   eucaristia: {
     label: "Eucaristia", gradient: "from-amber-400 to-orange-500",
     gradientLight: "from-amber-50 to-orange-50",
     accent: "text-amber-600", accentBg: "bg-amber-500", border: "border-amber-200",
-    color: "#d97706", emoji: "✨", icon: Star,
+    color: "#d97706", emoji: "🍷", icon: Star,
   },
   crisma: {
     label: "Crisma", gradient: "from-violet-500 to-fuchsia-600",
     gradientLight: "from-violet-50 to-fuchsia-50",
     accent: "text-violet-600", accentBg: "bg-violet-600", border: "border-violet-200",
-    color: "#7c3aed", emoji: "👑", icon: Sparkles,
+    color: "#7c3aed", emoji: "🕊️", icon: Sparkles,
   },
 } as const;
 
@@ -83,9 +84,9 @@ function buildNodes(sac: SacramentoType, etapasCustom: EtapaCustom[], removidas:
 
   const condicionais: NodeDef[] = [];
   if (sac === "eucaristia" || sac === "crisma")
-    condicionais.push({ id: "bat_check", label: "Batismo Prévio", tipo: "condicional", icon: Baby, condicional: "batismo", emoji: "🕊️" });
+    condicionais.push({ id: "bat_check", label: "Batismo Prévio", tipo: "condicional", icon: Baby, condicional: "batismo", emoji: "🕯️" });
   if (sac === "crisma")
-    condicionais.push({ id: "euc_check", label: "Eucaristia Prévia", tipo: "condicional", icon: Star, condicional: "eucaristia", emoji: "✨" });
+    condicionais.push({ id: "euc_check", label: "Eucaristia Prévia", tipo: "condicional", icon: Star, condicional: "eucaristia", emoji: "🍷" });
 
   const freq: NodeDef = { id: "encontros", label: "Frequência nos Encontros", tipo: "frequencia", icon: BookOpen, emoji: "📖" };
 
@@ -96,7 +97,7 @@ function buildNodes(sac: SacramentoType, etapasCustom: EtapaCustom[], removidas:
     .map(e => ({ id: e.id, label: e.label, tipo: (e.incluirCatequizandos ? "comum" : "rito") as NodeTipo, icon: Star, isCustom: true, emoji: "⭐", dataAgendada: e.incluirData ? e.dataAgendada : undefined }));
 
   const celebLabel = sac === "batismo" ? "Celebração do Batismo" : sac === "eucaristia" ? "Celebração da Eucaristia" : "Celebração do Crisma";
-  const celebEmoji = { batismo: "🕊️", eucaristia: "✨", crisma: "👑" }[sac];
+  const celebEmoji = { batismo: "🕯️", eucaristia: "🍷", crisma: "🕊️" }[sac];
   const celebracao: NodeDef = { id: "celebracao", label: celebLabel, tipo: "celebracao", icon: Trophy, emoji: celebEmoji };
 
   return [inicio, ...condicionais, freq, ...defaultRitos, ...customNodes, celebracao];
@@ -260,7 +261,7 @@ function TrilhaNode({
         <div className={cn("absolute top-12 bottom-[-24px] w-2 sm:w-3 z-0 rounded-full", expanded ? style.light : style.light)} />
       )}
 
-      <button onClick={onToggle}
+      <button onClick={onToggle} title="Clique para abrir e gerenciar"
         className={cn(
           "relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 shadow-lg flex flex-col items-center justify-center transition-all duration-300 group hover:scale-105 active:scale-95",
           style.bg, style.border, expanded ? "scale-110 shadow-xl ring-4 ring-primary/20 border-primary" : ""
@@ -270,7 +271,20 @@ function TrilhaNode({
         ) : (
           <Icon className={cn("w-7 h-7 sm:w-9 sm:h-9", style.text, "group-hover:scale-110 transition-transform")} />
         )}
+        {/* Indicador de interação */}
+        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white rounded-full shadow-sm px-1 border border-muted/20 z-20">
+          {expanded
+            ? <ChevronUp className="w-3 h-3 text-primary" />
+            : <ChevronDown className="w-3 h-3 text-muted-foreground/60 animate-bounce" />
+          }
+        </div>
       </button>
+      {/* Dica textual de clique (apenas quando recolhido) */}
+      {!expanded && (
+        <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground/40 mt-2 -mb-1 flex items-center gap-0.5">
+          <ChevronDown className="w-2.5 h-2.5" />Toque para gerenciar
+        </p>
+      )}
 
       <div className={cn(
         "relative w-full max-w-xl mx-auto mt-4 rounded-3xl border-2 shadow-sm transition-all duration-300 overflow-hidden",
@@ -855,9 +869,15 @@ export default function TrilhaSacramental() {
     catequizandos.filter(c => c.status === "ativo" || c.status === "inscrito" || !c.status),
     [catequizandos]);
 
-  const catDaTrilha = useMemo(() =>
-    catequizandosTrilhaIds.length === 0 ? [] : todosOsCatequizandos.filter(c => catequizandosTrilhaIds.includes(c.id)),
-    [todosOsCatequizandos, catequizandosTrilhaIds]);
+  const catDaTrilha = useMemo(() => {
+    if (catequizandosTrilhaIds.length === 0) return [];
+    return todosOsCatequizandos.filter(c => {
+      if (!catequizandosTrilhaIds.includes(c.id)) return false;
+      // Exclui quem já recebeu o sacramento — não precisa mais da trilha
+      const sacs = c.dadosPastorais?.sacramentos ?? c.sacramentos ?? {};
+      return sacs[selectedSacramento]?.recebido !== true;
+    });
+  }, [todosOsCatequizandos, catequizandosTrilhaIds, selectedSacramento]);
 
   const catNodeStatusMap = useMemo(() => {
     const map: Record<string, Record<string, NodeStatus>> = {};
@@ -871,7 +891,7 @@ export default function TrilhaSacramental() {
     const stats: Record<string, { catCount: number, status: NodeStatus }> = {};
     for (const node of nodes) {
       let doneCount = 0;
-      let refList = node.tipo === "inicio" ? todosOsCatequizandos : catDaTrilha;
+      let refList = catDaTrilha;
       
       for (const cat of refList) {
         const s = catNodeStatusMap[cat.id]?.[node.id];
@@ -882,8 +902,6 @@ export default function TrilhaSacramental() {
       if (refList.length > 0) {
         if (doneCount === refList.length) status = node.tipo === "condicional" ? "skipped" : "done";
         else if (doneCount > 0) status = "partial";
-      } else if (node.tipo === "inicio") {
-        status = "done";
       }
       stats[node.id] = { catCount: doneCount, status };
     }
@@ -1050,24 +1068,28 @@ export default function TrilhaSacramental() {
     setSavingSelecao(true);
     try {
       const sacAlvo = modalCondicionalOpen.sac;
+      // Apenas registra como recebido quem foi selecionado no modal (quem ainda não tinha)
+      const updates: Promise<void>[] = [];
       for (const cat of catDaTrilha) {
-        const hasIt = ids.includes(cat.id);
+        if (!ids.includes(cat.id)) continue;
         const sacramentos = cat.dadosPastorais?.sacramentos ?? cat.sacramentos ?? {};
         const currentSac = sacramentos[sacAlvo] ?? { recebido: false };
-        if (currentSac.recebido !== hasIt) {
+        if (!currentSac.recebido) {
           const updated = {
             ...cat,
+            sacramentos: { ...sacramentos, [sacAlvo]: { ...currentSac, recebido: true } },
             dadosPastorais: {
                ...(cat.dadosPastorais || {}),
-               sacramentos: { ...sacramentos, [sacAlvo]: { ...currentSac, recebido: hasIt } }
+               sacramentos: { ...sacramentos, [sacAlvo]: { ...currentSac, recebido: true } }
             }
           };
-          await upsertCatequizando(updated);
+          updates.push(upsertCatequizando(updated));
         }
       }
+      await Promise.all(updates);
       await queryClient.invalidateQueries({ queryKey: ["catequizandos"] });
       setModalCondicionalOpen(null);
-      toast.success("Status sacramentais atualizados!");
+      toast.success(updates.length > 0 ? `${updates.length} sacramento(s) registrado(s)!` : "Nenhuma alteração necessária.");
     } catch (e: any) { toast.error("Erro ao salvar sacramentos: " + e.message); }
     finally { setSavingSelecao(false); }
   };
@@ -1143,7 +1165,6 @@ export default function TrilhaSacramental() {
          
          {nodes.map((node, i) => {
            let refList = catDaTrilha;
-           if (node.tipo === "inicio") refList = todosOsCatequizandos;
            
            const concluidos = refList
              .filter(c => {
@@ -1242,16 +1263,17 @@ export default function TrilhaSacramental() {
         <ModalSelecaoCatequizandos
           open={true}
           onClose={() => setModalCondicionalOpen(null)}
-          todos={catDaTrilha}
-          selecionados={catDaTrilha.filter(c => {
+          todos={catDaTrilha.filter(c => {
+            // Mostra apenas quem ainda NÃO possui o sacramento condicional
             const s = c.dadosPastorais?.sacramentos ?? c.sacramentos ?? {};
-            return s[modalCondicionalOpen.sac]?.recebido === true;
-          }).map(c => c.id)}
+            return s[modalCondicionalOpen.sac]?.recebido !== true;
+          })}
+          selecionados={[]}
           onSave={handleSaveCondicional}
           saving={savingSelecao}
           sac={modalCondicionalOpen.sac}
           titulo={modalCondicionalOpen.title}
-          descricao={`Marque quem já possui este sacramento`}
+          descricao={`Selecione quem recebeu o sacramento de ${modalCondicionalOpen.sac}`}
         />
       )}
 
