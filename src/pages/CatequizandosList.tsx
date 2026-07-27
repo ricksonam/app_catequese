@@ -221,6 +221,7 @@ export default function CatequizandosList() {
   const [showEditSacramentos, setShowEditSacramentos] = useState(false);
   const [filterAniversarios, setFilterAniversarios] = useState(false);
   const [filterBatismos, setFilterBatismos] = useState(false);
+  const [filterAtivos, setFilterAtivos] = useState<'ativos' | 'inativos'>('ativos');
   const [evolutionPeriod, setEvolutionPeriod] = useState<"mes" | "semestre" | "ano">("ano");
   const [showEvolucao, setShowEvolucao] = useState(false);
   const [evolucaoSelectedId, setEvolucaoSelectedId] = useState<string>("");
@@ -648,15 +649,17 @@ export default function CatequizandosList() {
 
   
   const filteredList = useMemo(() => {
+    let baseList = list.filter(c => filterAtivos === 'ativos' ? (!c.status || c.status === 'ativo') : (c.status && c.status !== 'ativo'));
+
     if (filterAniversarios) {
       const hoje = new Date();
-      return list.filter(c => isAniversarianteMes(c.dataNascimento));
+      return baseList.filter(c => isAniversarianteMes(c.dataNascimento));
     }
     if (filterBatismos) {
-      return list.filter(c => isAniversarianteMesBatismo(c.sacramentos?.batismo?.data));
+      return baseList.filter(c => isAniversarianteMesBatismo(c.sacramentos?.batismo?.data));
     }
-    return list;
-  }, [filterAniversarios, filterBatismos, list]);
+    return baseList;
+  }, [filterAniversarios, filterBatismos, list, filterAtivos]);
 
 
   if (isLoading || tLoading) {
@@ -1094,6 +1097,21 @@ export default function CatequizandosList() {
 
 
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 mb-4 bg-white p-1 rounded-xl shadow-sm border border-black/5 w-fit">
+        <button 
+          onClick={() => setFilterAtivos('ativos')}
+          className={cn("px-4 py-1.5 text-xs font-bold rounded-lg transition-all", filterAtivos === 'ativos' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-black/5")}
+        >
+          Ativos ({list.filter(c => !c.status || c.status === 'ativo').length})
+        </button>
+        <button 
+          onClick={() => setFilterAtivos('inativos')}
+          className={cn("px-4 py-1.5 text-xs font-bold rounded-lg transition-all", filterAtivos === 'inativos' ? "bg-zinc-600 text-white shadow-sm" : "text-muted-foreground hover:bg-black/5")}
+        >
+          Inativos ({list.filter(c => c.status && c.status !== 'ativo').length})
+        </button>
       </div>
 
       {filteredList.length === 0 ? (
