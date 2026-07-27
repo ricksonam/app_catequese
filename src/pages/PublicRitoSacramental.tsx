@@ -1,3 +1,4 @@
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPublicPlanoByCode } from "@/lib/supabaseStore";
@@ -185,18 +186,39 @@ export default function PublicRitoSacramental() {
                 const numero = index + 1;
 
                 return (
-                  <div
-                    key={etapa.key}
-                    className={`relative flex items-start gap-3 p-3 rounded-2xl border-2 transition-all ${
-                      today
-                        ? "bg-amber-50 dark:bg-amber-900/20 border-amber-300 shadow-md"
-                        : done
-                        ? "bg-emerald-50/60 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800"
-                        : dateVal
-                        ? `${etapa.cardBg} ${etapa.border} shadow-sm`
-                        : "bg-white dark:bg-zinc-900 border-border/40"
-                    }`}
-                  >
+                  <React.Fragment key={etapa.key}>
+                    {etapa.key === "confraternizacao" && dataCelebracao && (
+                      <div className="relative flex items-start gap-3 p-3 rounded-2xl border-2 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/10 border-amber-300 shadow-md mb-3">
+                        {/* Coluna: número + ícone */}
+                        <div className="flex flex-col items-center gap-1 shrink-0 mt-0.5">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black text-white shadow-sm z-10 bg-amber-500">
+                            🎉
+                          </div>
+                          <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm border bg-amber-100 dark:bg-amber-900/30 border-amber-300">
+                            <Calendar className="h-5 w-5 text-amber-500" />
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0 pt-0.5">
+                          <p className="text-sm font-black text-amber-800 dark:text-amber-300 uppercase tracking-wide leading-tight">
+                            Celebração — {sacInfo.label}
+                          </p>
+                          <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mt-1 capitalize">
+                            {formatData(dataCelebracao)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <div
+                      className={`relative flex items-start gap-3 p-3 rounded-2xl border-2 transition-all ${
+                        today
+                          ? "bg-amber-50 dark:bg-amber-900/20 border-amber-300 shadow-md"
+                          : done
+                          ? "bg-emerald-50/60 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800"
+                          : dateVal
+                          ? `${etapa.cardBg} ${etapa.border} shadow-sm`
+                          : "bg-white dark:bg-zinc-900 border-border/40"
+                      }`}
+                    >
                     {/* Coluna: número + ícone */}
                     <div className="flex flex-col items-center gap-1 shrink-0 mt-0.5">
                       {/* Número sequencial */}
@@ -255,31 +277,9 @@ export default function PublicRitoSacramental() {
                       </span>
                     )}
                   </div>
+                  </React.Fragment>
                 );
               })}
-
-              {/* Data da Celebração — ÚLTIMA da lista */}
-              {dataCelebracao && (
-                <div className="relative flex items-start gap-3 p-3 rounded-2xl border-2 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/10 border-amber-300 shadow-md">
-                  {/* Coluna: número + ícone */}
-                  <div className="flex flex-col items-center gap-1 shrink-0 mt-0.5">
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black text-white shadow-sm z-10 bg-amber-500">
-                      🎉
-                    </div>
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm border bg-amber-100 dark:bg-amber-900/30 border-amber-300">
-                      <Calendar className="h-5 w-5 text-amber-500" />
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0 pt-0.5">
-                    <p className="text-sm font-black text-amber-800 dark:text-amber-300 uppercase tracking-wide leading-tight">
-                      Celebração — {sacInfo.label}
-                    </p>
-                    <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mt-1 capitalize">
-                      {formatData(dataCelebracao)}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

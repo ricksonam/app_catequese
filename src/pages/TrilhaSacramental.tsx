@@ -379,11 +379,11 @@ function TrilhaNode({
                    </div>
                  ) : (
                    <>
-                     {catsConcluidos.length > 0 && (
+                     {catsConcluidos.length > 0 && node.tipo !== "condicional" && (
                        <div className="animate-fade-in">
                          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-3 flex items-center gap-1.5 border-b border-emerald-100 pb-1">
                            <CheckCircle2 className="h-3.5 w-3.5" /> 
-                           {node.tipo === "celebracao" ? "Aptos para Celebrar" : node.tipo === "condicional" ? "Possuem o Sacramento" : "Concluídos"} ({catsConcluidos.length})
+                           {node.tipo === "celebracao" ? "Aptos para Celebrar" : "Concluídos"} ({catsConcluidos.length})
                          </p>
                          <div className="flex flex-wrap gap-4 sm:gap-5 justify-center sm:justify-start">
                            {catsConcluidos.map(({cat, status}) => <BonecoCatequizando key={cat.id} cat={cat} status={status} onClick={() => onClickCat(cat)} />)}
