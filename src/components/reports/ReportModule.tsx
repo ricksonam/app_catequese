@@ -441,7 +441,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       </Dialog>
 
       {/* Preview Overlay */}
-      {isPreviewOpen && (
+      {isPreviewOpen && createPortal(
         <div className="preview-overlay print:hidden">
           <div className="preview-actions">
             <button onClick={resetFlow} className="back-btn shrink-0">
@@ -495,7 +495,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
                {renderPreviewContent()}
              </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Hidden Portal for System Print — renderizado no body, fora do overlay */}

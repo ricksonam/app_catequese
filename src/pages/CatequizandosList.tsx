@@ -4,7 +4,7 @@ import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequiz
 import ReportModule from "@/components/reports/ReportModule";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2, Info } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2, Info, Share2 } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -1759,14 +1759,11 @@ export default function CatequizandosList() {
                      initialDocId={viewItem.id}
                      instantReport="cat_individual"
                      trigger={
-                       <button className="flex items-center gap-2.5 px-4 py-2 rounded-full border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-95 group shadow-sm">
-                         <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 shadow-sm group-hover:bg-slate-200 transition-colors">
-                           <Printer className="w-3.5 h-3.5 text-slate-600" />
-                         </div>
-                         <div className="flex flex-col items-start leading-tight">
-                           <span className="text-[7px] font-black uppercase tracking-widest opacity-50">Gerar Ficha</span>
-                           <span className="text-[10px] font-black uppercase tracking-widest text-slate-700">Imprimir / Salvar</span>
-                         </div>
+                       <button 
+                         className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-95 shadow-sm text-slate-500 hover:text-slate-700" 
+                         title="Compartilhar Ficha"
+                       >
+                         <Share2 className="w-4 h-4" />
                        </button>
                      }
                    />
