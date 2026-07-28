@@ -13,6 +13,7 @@ import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, 
 import { cn } from "@/lib/utils";
 import * as Templates from "./ReportTemplates";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ReportModuleProps {
   context: "encontros" | "catequizandos" | "atividades" | "plano" | "reunioes";
@@ -415,23 +416,40 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
           {/* Body */}
           <div className="py-4">
             {step === 'list' ? (
-              <div className="px-4 space-y-2">
-                {config.reports.map((report: any) => (
-                  <button
-                    key={report.id}
-                    onClick={() => handleReportClick(report)}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/60 transition-all text-left group border border-transparent hover:border-black/5"
-                  >
-                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary")}>
-                      <report.icon className="h-5 w-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-foreground truncate">{report.label}</p>
-                      <p className="text-[10px] text-muted-foreground truncate">{report.desc}</p>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all" />
-                  </button>
-                ))}
+              <div className="px-6 space-y-4 mb-4 mt-2">
+                <div className="bg-white rounded-3xl shadow-sm border border-black/5 p-6 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                     <FileText className="w-5 h-5 text-primary" />
+                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Tipo de Documento</h3>
+                  </div>
+                  <Select onValueChange={(val) => {
+                    const report = config.reports.find((r: any) => r.id === val);
+                    if (report) handleReportClick(report);
+                  }}>
+                    <SelectTrigger className="w-full h-16 rounded-2xl border-2 border-black/5 bg-gray-50/50 hover:bg-gray-50 hover:border-black/10 focus:ring-primary/20 transition-all text-left">
+                      <SelectValue placeholder="Selecione um documento..." />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-black/5 shadow-xl max-h-80">
+                      {config.reports.map((report: any) => (
+                        <SelectItem 
+                          key={report.id} 
+                          value={report.id} 
+                          className="py-3 px-4 cursor-pointer focus:bg-primary/5 focus:text-primary transition-colors rounded-xl mx-1 my-0.5"
+                        >
+                          <div className="flex items-center gap-4 w-full">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                               <report.icon className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0 flex flex-col text-left">
+                              <span className="font-bold text-sm text-foreground">{report.label}</span>
+                              <span className="text-[10px] font-bold text-muted-foreground leading-tight mt-0.5 whitespace-normal line-clamp-1">{report.desc}</span>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             ) : (
               renderSelectionList()
