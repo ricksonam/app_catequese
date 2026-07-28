@@ -167,6 +167,21 @@ export default function EncontroDetail() {
     encontroMut.mutate({ ...encontro, presencas: newPresencas, justificativas: newJust });
   };
 
+  const marcarTodos = () => {
+    if (!encontro) return;
+    const todosIds = catequizandos.map(c => c.id);
+    const todosPresentes = todosIds.every(id => localPresencas.includes(id));
+    const newPresencas = todosPresentes ? [] : todosIds;
+    // Clear justificativas para todos que foram marcados presentes
+    const newJust = { ...localJustificativas };
+    if (!todosPresentes) {
+      todosIds.forEach(id => { delete newJust[id]; });
+    }
+    setLocalPresencas(newPresencas);
+    setLocalJustificativas(newJust);
+    encontroMut.mutate({ ...encontro, presencas: newPresencas, justificativas: newJust });
+  };
+
   const setJustificativa = (catId: string, motivo: any) => {
     if (!encontro) return;
     const currentJust = { ...localJustificativas };
@@ -660,7 +675,17 @@ export default function EncontroDetail() {
         <DialogContent className="rounded-2xl border-border/30 max-h-[85vh] flex flex-col">
           <div className="shrink-0 mb-4">
             <DialogTitle>Chamada do Encontro</DialogTitle>
-            <p className="text-xs text-muted-foreground mt-1">{localPresencas.length} de {catequizandos.length} catequizandos presentes</p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-muted-foreground">{localPresencas.length} de {catequizandos.length} catequizandos presentes</p>
+              <button
+                onClick={marcarTodos}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs font-black uppercase tracking-wide transition-all active:scale-95 border border-emerald-200"
+              >
+                {catequizandos.length > 0 && catequizandos.every(c => localPresencas.includes(c.id))
+                  ? "✗ Desmarcar Todos"
+                  : "✓ Marcar Todos"}
+              </button>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
             {catequizandos.map(cat => {

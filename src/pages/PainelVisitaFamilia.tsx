@@ -821,13 +821,7 @@ export function PainelVisitaFamilia() {
                 </div>
 
                 <div className="p-6 space-y-5">
-                  {/* Título */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-black uppercase tracking-widest text-zinc-800 block">Título do Painel</label>
-                    <input type="text" value={form.titulo} onChange={e => setForm(prev => ({ ...prev, titulo: e.target.value }))}
-                      className="w-full h-[52px] px-4 rounded-2xl border-2 border-slate-200 bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all font-semibold text-sm outline-none"
-                      placeholder="Ex: Visitas de Agosto" />
-                  </div>
+
 
                   {/* Tema */}
                   <div className="space-y-1.5">
@@ -852,56 +846,43 @@ export function PainelVisitaFamilia() {
                     )}
                   </div>
 
-                  {/* CALENDÁRIO */}
+                  {/* SELETOR DE DATAS PREMIUM */}
                   <div className="border-t border-black/5 pt-5 space-y-4">
                     <div>
                       <h4 className="text-sm font-black uppercase tracking-widest text-foreground">Dias Disponíveis</h4>
-                      <p className="text-xs text-muted-foreground font-medium mt-0.5">Clique para selecionar/desmarcar dias</p>
+                      <p className="text-xs text-muted-foreground font-medium mt-0.5">Adicione as datas e configure os horários</p>
                     </div>
 
-                    {agendamentos && agendamentos.length > 0 && (
-                      <div className="flex flex-wrap gap-3 text-[10px] font-bold">
-                        <span className="flex items-center gap-1 text-muted-foreground"><span className="w-3 h-3 rounded-full bg-primary/70 inline-block" /> Selecionado</span>
-                        <span className="flex items-center gap-1 text-green-700"><span className="w-3 h-3 rounded-full bg-green-400 inline-block" /> Com visitas</span>
-                        <span className="flex items-center gap-1 text-red-600"><span className="w-3 h-3 rounded-full bg-red-400 inline-block" /> Lotado</span>
-                      </div>
-                    )}
-
-                    <div className="bg-slate-50 rounded-3xl p-4 border border-black/5 flex justify-center">
-                      <CalendarUI
-                        mode="multiple"
-                        selected={form.dias_horarios?.map(d => new Date(d.data + "T12:00:00")) || []}
-                        onSelect={handleSelectDates}
-                        locale={ptBR}
-                        className="bg-white rounded-2xl border-2 border-black/5 shadow-sm p-3"
-                        classNames={{ day_selected: "bg-indigo-600 text-white hover:bg-indigo-600 hover:text-white focus:bg-indigo-600 focus:text-white" }}
-                        components={{
-                          DayContent: ({ date }) => {
-                            const str = toDateStr(date);
-                            const count = visitasPorData[str] || 0;
-                            const diaConfig = form.dias_horarios?.find(d => d.data === str);
-                            const totalVagas = diaConfig?.horarios.length || 0;
-                            const isLotado = totalVagas > 0 && count >= totalVagas;
-                            return (
-                              <div className="relative flex items-center justify-center w-full h-full">
-                                <span>{date.getDate()}</span>
-                                {count > 0 && (
-                                  <span className={cn("absolute -top-1 -right-1 min-w-[14px] h-[14px] rounded-full text-[8px] font-black flex items-center justify-center px-0.5",
-                                    isLotado ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                                  )}>{count}</span>
-                                )}
-                              </div>
-                            );
-                          },
-                        }}
+                    {/* Input para adicionar nova data */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        id="nova-data-input"
+                        min={new Date().toISOString().split("T")[0]}
+                        className="flex-1 h-12 px-4 rounded-2xl border-2 border-indigo-200 bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all font-semibold text-sm outline-none"
                       />
+                      <button
+                        onClick={() => {
+                          const input = document.getElementById("nova-data-input") as HTMLInputElement;
+                          if (input?.value) {
+                            handleSelectDates([
+                              ...(form.dias_horarios?.map(d => new Date(d.data + "T12:00:00")) || []),
+                              new Date(input.value + "T12:00:00")
+                            ]);
+                            input.value = "";
+                          }
+                        }}
+                        className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/30 active:scale-95 shrink-0"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
                     </div>
 
                     {(!form.dias_horarios || form.dias_horarios.length === 0) && (
                       <div className="text-center py-8 bg-muted/20 rounded-2xl border-2 border-dashed border-black/10">
                         <Calendar className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Nenhum dia configurado</p>
-                        <p className="text-[10px] text-muted-foreground mt-1">Clique nos dias no calendário acima</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Selecione uma data acima e clique em +</p>
                       </div>
                     )}
 
