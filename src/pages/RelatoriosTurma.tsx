@@ -779,69 +779,76 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
                       return acc;
                     }, {});
 
-                    return Object.entries(grouped).map(([monthKey, monthEncontros]: [string, any]) => {
-                      const isExpanded = expandedMonths[monthKey] ?? false;
-                      return (
-                        <div key={monthKey} className="flex flex-col">
-                          <button 
-                            onClick={() => toggleMonth(monthKey)}
-                            className="w-full flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-black/5 hover:bg-slate-100 transition-colors outline-none"
-                          >
-                            <span className="text-sm font-black text-slate-700 capitalize">{monthKey}</span>
-                            {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-                          </button>
-                          {isExpanded && (
-                            <div className="divide-y divide-black/5 bg-white">
-                              {monthEncontros.map((enc: any) => (
-                                <div
-                                  key={enc.id}
-                                  className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-4 hover:bg-sky-500/5 transition-colors gap-4"
-                                >
-                                  <div className="flex items-start gap-4 flex-1">
-                                    <div className="w-14 h-14 rounded-2xl bg-sky-50 flex flex-col items-center justify-center shrink-0 border-2 border-sky-100 shadow-sm">
-                                      <span className="text-[10px] font-black text-sky-600 uppercase leading-none mb-1">
-                                        {new Date(enc.data + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
-                                      </span>
-                                      <span className="text-lg font-black text-sky-950 leading-none">
-                                        {new Date(enc.data + 'T12:00:00').getDate().toString().padStart(2, '0')}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5 mt-0.5">
-                                      <p className="text-sm font-bold text-foreground leading-snug break-words">{enc.tema}</p>
-                                      <div className="flex items-center gap-2">
-                                        <span className={cn(
-                                          "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
-                                          enc.status === 'realizado' ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                                          enc.status === 'cancelado' ? "bg-red-50 text-red-600 border-red-200" :
-                                          "bg-blue-50 text-blue-600 border-blue-200"
-                                        )}>
-                                          {enc.status}
-                                        </span>
+                    return (
+                      <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                        {Object.entries(grouped).map(([monthKey, monthEncontros]: [string, any], index: number) => {
+                          const isExpanded = expandedMonths[monthKey] ?? false;
+                          return (
+                            <div key={monthKey} className="flex flex-col border-b border-slate-200 last:border-b-0">
+                              <button
+                                onClick={() => toggleMonth(monthKey)}
+                                className={cn(
+                                  "w-full flex items-center justify-between px-5 py-3.5 transition-colors outline-none",
+                                  index % 2 === 0 ? "bg-white hover:bg-slate-50" : "bg-slate-100/80 hover:bg-slate-200/80"
+                                )}
+                              >
+                                <span className="text-sm font-black text-slate-800 capitalize">{monthKey}</span>
+                                {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-600" /> : <ChevronDown className="w-5 h-5 text-slate-600" />}
+                              </button>
+                              {isExpanded && (
+                                <div className="divide-y divide-black/5 bg-white border-t border-slate-200">
+                                  {monthEncontros.map((enc: any) => (
+                                    <div
+                                      key={enc.id}
+                                      className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-4 hover:bg-sky-500/5 transition-colors gap-4"
+                                    >
+                                      <div className="flex items-start gap-4 flex-1">
+                                        <div className="w-14 h-14 rounded-2xl bg-sky-50 flex flex-col items-center justify-center shrink-0 border-2 border-sky-100 shadow-sm">
+                                          <span className="text-[10px] font-black text-sky-600 uppercase leading-none mb-1">
+                                            {new Date(enc.data + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                                          </span>
+                                          <span className="text-lg font-black text-sky-950 leading-none">
+                                            {new Date(enc.data + 'T12:00:00').getDate().toString().padStart(2, '0')}
+                                          </span>
+                                        </div>
+                                        <div className="flex flex-col gap-1.5 mt-0.5">
+                                          <p className="text-sm font-bold text-foreground leading-snug break-words">{enc.tema}</p>
+                                          <div className="flex items-center gap-2">
+                                            <span className={cn(
+                                              "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                                              enc.status === 'realizado' ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
+                                              enc.status === 'cancelado' ? "bg-red-50 text-red-600 border-red-200" :
+                                              "bg-blue-50 text-blue-600 border-blue-200"
+                                            )}>
+                                              {enc.status}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                                        <button onClick={() => handlePrint(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-500/10 px-3 py-2 rounded-xl border border-sky-500/20 hover:bg-sky-500/20 transition-colors active:scale-95">
+                                          <Printer className="h-3 w-3 shrink-0" /> Imprimir
+                                        </button>
+                                        {readyToShareParams?.id === enc.id ? (
+                                          <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                                            <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                                          </button>
+                                        ) : (
+                                          <button disabled={isGenerating} onClick={() => handleCompartilhar(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                                            <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === enc.id && "animate-spin")} />
+                                            {isGenerating && printTarget?.id === enc.id ? "Aguarde" : "Compartilhar"}
+                                          </button>
+                                        )}
                                       </div>
                                     </div>
-                                  </div>
-                                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                                    <button onClick={() => handlePrint(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-500/10 px-3 py-2 rounded-xl border border-sky-500/20 hover:bg-sky-500/20 transition-colors active:scale-95">
-                                      <Printer className="h-3 w-3 shrink-0" /> Imprimir
-                                    </button>
-                                    {readyToShareParams?.id === enc.id ? (
-                                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
-                                        <Share2 className="h-3 w-3 shrink-0" /> Enviar!
-                                      </button>
-                                    ) : (
-                                      <button disabled={isGenerating} onClick={() => handleCompartilhar(enc)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
-                                        <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === enc.id && "animate-spin")} /> 
-                                        {isGenerating && printTarget?.id === enc.id ? "Aguarde" : "Compartilhar"}
-                                      </button>
-                                    )}
-                                  </div>
+                                  ))}
                                 </div>
-                              ))}
+                              )}
                             </div>
-                          )}
-                        </div>
-                      );
-                    });
+                          );
+                        })}
+                      </div>
+                    );
                   })()
                 )
               )}
