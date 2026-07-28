@@ -98,9 +98,9 @@ function GraficoMensal({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-end gap-2 h-32 px-1">
+      <div className="relative flex items-end gap-2 px-1" style={{ height: '128px' }}>
         {dados.map((d) => {
-          const altura = Math.round((d.perc / maxPerc) * 100);
+          const altura = Math.max(Math.round((d.perc / maxPerc) * 100), 4);
           const barColor =
             d.perc >= 75
               ? "bg-emerald-500"
@@ -110,18 +110,18 @@ function GraficoMensal({
           return (
             <div
               key={d.mes}
-              className="flex-1 flex flex-col items-center justify-end gap-1 group"
+              className="flex-1 h-full flex flex-col items-center justify-end group cursor-default"
               title={`${formatarMesAno(d.mes)}: ${d.perc}%`}
             >
-              <span className="text-[9px] font-black text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                {d.perc}%
+              <span className="text-[9px] font-black text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+                {d.perc > 0 ? `${d.perc}%` : ""}
               </span>
               <div
                 className={cn(
                   "w-full rounded-t-lg transition-all duration-700",
                   barColor
                 )}
-                style={{ height: `${Math.max(altura, 4)}%` }}
+                style={{ height: `${altura}%` }}
               />
             </div>
           );
@@ -263,15 +263,6 @@ function QuadroAnaliticoTotal({
 
   return (
     <div className="space-y-3">
-      {/* Cabeçalho */}
-      <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-2 px-4 py-2 bg-slate-100 dark:bg-zinc-800 rounded-xl text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-        <span>Catequizando</span>
-        <span className="text-emerald-600 text-center w-10">Pres</span>
-        <span className="text-red-500 text-center w-10">Falta</span>
-        <span className="text-amber-600 text-center w-10">Just</span>
-        <span className="text-indigo-600 text-center w-12">%</span>
-        <span className="text-slate-500 text-center w-16">Status</span>
-      </div>
       {/* Linhas */}
       <div className="space-y-2">
         {rows.map((row, idx) => {
