@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   AlertTriangle, Users, BookOpen, TrendingUp, Calendar,
   CheckCircle2, X, FileSignature, BarChart3, Info, Sparkles,
-  ChevronDown
+  ChevronDown, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -187,14 +187,6 @@ function ResumoMensalTabela({
 
   return (
     <div className="space-y-3">
-      {/* Cabeçalho */}
-      <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 px-4 py-2 bg-slate-100 dark:bg-zinc-800 rounded-xl text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-        <span>Catequizando</span>
-        <span className="text-emerald-600 text-center w-10">Pres</span>
-        <span className="text-red-500 text-center w-10">Falta</span>
-        <span className="text-amber-600 text-center w-10">Just</span>
-        <span className="text-indigo-600 text-center w-12">%</span>
-      </div>
       {/* Linhas */}
       <div className="space-y-2">
         {rows.map((row) => (
@@ -619,19 +611,30 @@ export default function PublicFrequencia() {
             {/* Seletor de Mês */}
             {mesesDisponiveis.length > 0 ? (
               <>
-                <div className="relative">
-                  <select
-                    value={mesSelecionado}
-                    onChange={(e) => setMesSelecionado(e.target.value)}
-                    className="w-full h-12 px-4 pr-10 bg-white dark:bg-zinc-900 border-2 border-indigo-200 dark:border-indigo-800 rounded-2xl text-sm font-bold text-foreground shadow-sm appearance-none focus:outline-none focus:border-indigo-400 capitalize"
+                <div className="flex items-center justify-between bg-white dark:bg-zinc-900 border-2 border-indigo-200 dark:border-indigo-800 rounded-2xl p-2 shadow-sm">
+                  <button 
+                    onClick={() => {
+                      const idx = mesesDisponiveis.indexOf(mesSelecionado);
+                      if (idx < mesesDisponiveis.length - 1) setMesSelecionado(mesesDisponiveis[idx + 1]);
+                    }}
+                    disabled={mesesDisponiveis.indexOf(mesSelecionado) >= mesesDisponiveis.length - 1}
+                    className="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 disabled:opacity-30 transition-all"
                   >
-                    {mesesDisponiveis.map((m) => (
-                      <option key={m} value={m} className="capitalize">
-                        {formatarMesAno(m)}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <p className="text-sm font-black text-foreground capitalize tracking-wide">
+                    {formatarMesAno(mesSelecionado)}
+                  </p>
+                  <button 
+                    onClick={() => {
+                      const idx = mesesDisponiveis.indexOf(mesSelecionado);
+                      if (idx > 0) setMesSelecionado(mesesDisponiveis[idx - 1]);
+                    }}
+                    disabled={mesesDisponiveis.indexOf(mesSelecionado) <= 0}
+                    className="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 disabled:opacity-30 transition-all"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </div>
                 <ResumoMensalTabela
                   mesSelecionado={mesSelecionado}
