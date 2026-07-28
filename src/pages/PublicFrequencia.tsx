@@ -79,7 +79,7 @@ function GraficoMensal({
   const dados = useMemo(() => {
     return meses.map((m) => {
       const enc = encontros.filter(
-        (e) => e.status !== "cancelado" && getMesAno(e.data) === m
+        (e) => e.status === "realizado" && getMesAno(e.data) === m
       );
       if (enc.length === 0) return { mes: m, perc: 0, presencas: 0, total: 0 };
       let totalPresencas = 0;
@@ -127,15 +127,15 @@ function GraficoMensal({
           );
         })}
       </div>
-      <div className="flex gap-2">
-        {dados.map((d) => (
-          <div key={d.mes} className="flex-1 text-center">
-            <p className="text-[8px] font-black text-muted-foreground uppercase leading-none">
-              {MESES[Number(d.mes.split("-")[1]) - 1]?.slice(0, 3)}
-            </p>
-          </div>
-        ))}
-      </div>
+        <div className="flex flex-col sm:flex-row sm:gap-2 gap-1 w-full text-center sm:text-left">
+          {dados.map((d) => (
+            <div key={d.mes} className="flex-1">
+              <p className="text-[10px] sm:text-xs font-black text-muted-foreground uppercase leading-none truncate">
+                {MESES[Number(d.mes.split("-")[1]) - 1]?.slice(0, 3)}
+              </p>
+            </div>
+          ))}
+        </div>
     </div>
   );
 }
@@ -156,7 +156,7 @@ function ResumoMensalTabela({
     () =>
       encontros.filter(
         (e) =>
-          e.status !== "cancelado" && getMesAno(e.data) === mesSelecionado
+          e.status === "realizado" && getMesAno(e.data) === mesSelecionado
       ),
     [encontros, mesSelecionado]
   );
@@ -196,31 +196,41 @@ function ResumoMensalTabela({
         <span className="text-indigo-600 text-center w-12">%</span>
       </div>
       {/* Linhas */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {rows.map((row) => (
           <div
             key={row.cat.id}
-            className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 items-center px-4 py-3 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm"
+            className="flex flex-col gap-3 px-4 py-3 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm"
           >
+            {/* Nome do Catequizando */}
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shrink-0 text-xs font-black text-indigo-600">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shrink-0 text-sm font-black text-indigo-600">
                 {row.cat.nome.charAt(0).toUpperCase()}
               </div>
-              <p className="text-xs font-bold text-foreground truncate">
+              <p className="text-sm font-bold text-foreground truncate">
                 {row.cat.nome}
               </p>
             </div>
-            <div className="flex flex-col items-center justify-center w-10 py-1 rounded-lg bg-emerald-50 border border-emerald-100">
-              <span className="text-xs font-black text-emerald-600">{row.presencas}</span>
-            </div>
-            <div className="flex flex-col items-center justify-center w-10 py-1 rounded-lg bg-red-50 border border-red-100">
-              <span className="text-xs font-black text-red-500">{row.faltas}</span>
-            </div>
-            <div className="flex flex-col items-center justify-center w-10 py-1 rounded-lg bg-amber-50 border border-amber-100">
-              <span className="text-xs font-black text-amber-600">{row.justificadas}</span>
-            </div>
-            <div className={cn("flex items-center justify-center w-12 py-1.5 rounded-lg border text-sm font-black", getPorcentagemBg(row.perc), getPorcentagemColor(row.perc))}>
-              {row.perc}%
+
+            {/* Status do Mês */}
+            <div className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-zinc-800/50 p-2 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col items-center justify-center w-12 py-1 rounded-md bg-emerald-50 border border-emerald-100">
+                  <span className="text-sm font-black text-emerald-600">{row.presencas}</span>
+                  <span className="text-[8px] font-bold text-emerald-600/70 uppercase">Pres</span>
+                </div>
+                <div className="flex flex-col items-center justify-center w-12 py-1 rounded-md bg-red-50 border border-red-100">
+                  <span className="text-sm font-black text-red-500">{row.faltas}</span>
+                  <span className="text-[8px] font-bold text-red-500/70 uppercase">Falta</span>
+                </div>
+                <div className="flex flex-col items-center justify-center w-12 py-1 rounded-md bg-amber-50 border border-amber-100">
+                  <span className="text-sm font-black text-amber-600">{row.justificadas}</span>
+                  <span className="text-[8px] font-bold text-amber-600/70 uppercase">Just</span>
+                </div>
+              </div>
+              <div className={cn("flex items-center justify-center px-3 py-1.5 rounded-lg border text-base font-black", getPorcentagemBg(row.perc), getPorcentagemColor(row.perc))}>
+                {row.perc}%
+              </div>
             </div>
           </div>
         ))}
@@ -243,7 +253,7 @@ function QuadroAnaliticoTotal({
   catequizandos: Catequizando[];
 }) {
   const rows = useMemo(() => {
-    const enc = encontros.filter((e) => e.status !== "cancelado");
+    const enc = encontros.filter((e) => e.status === "realizado");
     return catequizandos
       .map((c) => {
         let presencas = 0, justificadas = 0, faltas = 0;
@@ -271,40 +281,52 @@ function QuadroAnaliticoTotal({
         <span className="text-slate-500 text-center w-16">Status</span>
       </div>
       {/* Linhas */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {rows.map((row, idx) => {
           const badge = getBadge(row.perc);
           return (
             <div
               key={row.cat.id}
-              className="grid grid-cols-[1fr_auto_auto_auto_auto_auto] gap-2 items-center px-4 py-3 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm"
+              className="flex flex-col gap-3 px-4 py-3 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm"
             >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-[10px] font-black text-muted-foreground w-4 shrink-0">
-                  {idx + 1}
-                </span>
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center shrink-0 text-xs font-black text-violet-600">
-                  {row.cat.nome.charAt(0).toUpperCase()}
+              {/* Nome do Catequizando e Badge */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="text-xs font-black text-muted-foreground w-4 shrink-0 text-center">
+                    {idx + 1}
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center shrink-0 text-sm font-black text-violet-600">
+                    {row.cat.nome.charAt(0).toUpperCase()}
+                  </div>
+                  <p className="text-sm font-bold text-foreground truncate">
+                    {row.cat.nome}
+                  </p>
                 </div>
-                <p className="text-xs font-bold text-foreground truncate">
-                  {row.cat.nome}
-                </p>
+                <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide shrink-0", badge.color)}>
+                  <span className={cn("w-2 h-2 rounded-full shrink-0", badge.dot)} />
+                  {badge.label}
+                </div>
               </div>
-              <div className="flex flex-col items-center justify-center w-10 py-1 rounded-lg bg-emerald-50 border border-emerald-100">
-                <span className="text-xs font-black text-emerald-600">{row.presencas}</span>
-              </div>
-              <div className="flex flex-col items-center justify-center w-10 py-1 rounded-lg bg-red-50 border border-red-100">
-                <span className="text-xs font-black text-red-500">{row.faltas}</span>
-              </div>
-              <div className="flex flex-col items-center justify-center w-10 py-1 rounded-lg bg-amber-50 border border-amber-100">
-                <span className="text-xs font-black text-amber-600">{row.justificadas}</span>
-              </div>
-              <div className={cn("flex items-center justify-center w-12 py-1.5 rounded-lg border text-sm font-black", getPorcentagemBg(row.perc), getPorcentagemColor(row.perc))}>
-                {row.perc}%
-              </div>
-              <div className={cn("flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wide w-16 justify-center", badge.color)}>
-                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", badge.dot)} />
-                {badge.label}
+
+              {/* Status Total */}
+              <div className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-zinc-800/50 p-2 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-center justify-center w-12 py-1 rounded-md bg-emerald-50 border border-emerald-100">
+                    <span className="text-sm font-black text-emerald-600">{row.presencas}</span>
+                    <span className="text-[8px] font-bold text-emerald-600/70 uppercase">Pres</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center w-12 py-1 rounded-md bg-red-50 border border-red-100">
+                    <span className="text-sm font-black text-red-500">{row.faltas}</span>
+                    <span className="text-[8px] font-bold text-red-500/70 uppercase">Falta</span>
+                  </div>
+                  <div className="flex flex-col items-center justify-center w-12 py-1 rounded-md bg-amber-50 border border-amber-100">
+                    <span className="text-sm font-black text-amber-600">{row.justificadas}</span>
+                    <span className="text-[8px] font-bold text-amber-600/70 uppercase">Just</span>
+                  </div>
+                </div>
+                <div className={cn("flex items-center justify-center px-3 py-1.5 rounded-lg border text-base font-black", getPorcentagemBg(row.perc), getPorcentagemColor(row.perc))}>
+                  {row.perc}%
+                </div>
               </div>
             </div>
           );
@@ -377,7 +399,7 @@ export default function PublicFrequencia() {
         setEncontros(encFormatados);
 
         // Definir mês padrão como o mais recente
-        const realizados = encFormatados.filter((e) => e.status !== "cancelado");
+        const realizados = encFormatados.filter((e) => e.status === "realizado");
         if (realizados.length > 0) {
           const mesesSet = new Set<string>();
           realizados.forEach((e) => mesesSet.add(getMesAno(e.data)));
@@ -412,7 +434,7 @@ export default function PublicFrequencia() {
   );
 
   const taxaGeralPresenca = useMemo(() => {
-    const enc = encontros.filter((e) => e.status !== "cancelado");
+    const enc = encontros.filter((e) => e.status === "realizado");
     if (enc.length === 0 || catequizandos.length === 0) return 0;
     let total = 0;
     let presentes = 0;
@@ -428,7 +450,7 @@ export default function PublicFrequencia() {
   const mesesDisponiveis = useMemo(() => {
     const s = new Set<string>();
     encontros
-      .filter((e) => e.status !== "cancelado")
+      .filter((e) => e.status === "realizado")
       .forEach((e) => s.add(getMesAno(e.data)));
     return Array.from(s).sort((a, b) => b.localeCompare(a));
   }, [encontros]);
@@ -486,7 +508,7 @@ export default function PublicFrequencia() {
       </div>
 
       {/* ── STATS GERAIS ── */}
-      <div className="px-4 -mt-5 mb-6">
+      <div className="px-4 -mt-5 mb-6 relative z-10">
         <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto">
           {[
             {
@@ -540,7 +562,7 @@ export default function PublicFrequencia() {
       </div>
 
       {/* ── GRÁFICO MENSAL ── */}
-      {mesesDisponiveis.length > 1 && (
+      {mesesDisponiveis.length > 0 && (
         <div className="px-4 mb-6 max-w-xl mx-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-border shadow-md p-5">
             <div className="flex items-center gap-2 mb-4">
