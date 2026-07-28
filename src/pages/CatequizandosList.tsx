@@ -210,6 +210,19 @@ export default function CatequizandosList() {
     }
   };
 
+  const handleCopyFrequenciaLink = async () => {
+    const url = `${getAppUrl()}/frequencia-turma/${turma?.codigoAcesso}`;
+
+    const success = await copyToClipboardOrShare(url, {
+      title: 'Resumo Público de Frequência',
+      text: `Acompanhe a frequência da turma ${turma?.nome || ''}`
+    });
+
+    if (success) {
+      toast.success("Link copiado! Envie para os catequizandos/pais.");
+    }
+  };
+
 
 
 
@@ -933,23 +946,32 @@ export default function CatequizandosList() {
                <LayoutDashboard className="w-4 h-4 text-slate-400" />
                Painel de Gestão
             </div>
-            <div className="flex flex-row gap-3">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-row gap-3">
+                <button 
+                  onClick={() => setShowFrequencia(true)} 
+                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-amber-100 border-2 border-amber-300 text-amber-800 hover:bg-amber-200 transition-all group active:scale-95 shadow-sm"
+                >
+                  <CalendarDays className="h-5 w-5 group-hover:animate-bounce" />
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Frequência</span>
+                </button>
+                <button 
+                  onClick={() => setShowCelebracoes(true)} 
+                  className="relative flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-blue-100 border-2 border-blue-300 text-blue-800 hover:bg-blue-200 transition-all group active:scale-95 shadow-sm"
+                >
+                  <Cake className="h-5 w-5 group-hover:animate-bounce" />
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Aniversários</span>
+                  {hasQualquerCelebracao && (
+                    <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
+                  )}
+                </button>
+              </div>
               <button 
-                onClick={() => setShowFrequencia(true)} 
-                className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-amber-100 border-2 border-amber-300 text-amber-800 hover:bg-amber-200 transition-all group active:scale-95 shadow-sm"
+                onClick={handleCopyFrequenciaLink} 
+                className="w-full flex flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm"
               >
-                <CalendarDays className="h-5 w-5 group-hover:animate-bounce" />
-                <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Frequência</span>
-              </button>
-              <button 
-                onClick={() => setShowCelebracoes(true)} 
-                className="relative flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-blue-100 border-2 border-blue-300 text-blue-800 hover:bg-blue-200 transition-all group active:scale-95 shadow-sm"
-              >
-                <Cake className="h-5 w-5 group-hover:animate-bounce" />
-                <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Aniversários</span>
-                {hasQualquerCelebracao && (
-                  <span className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse shadow-sm" />
-                )}
+                <Share2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Compartilhar Frequência Pública</span>
               </button>
             </div>
             <button 
@@ -1386,9 +1408,17 @@ export default function CatequizandosList() {
                 <Printer className="w-4 h-4" /> Gerar Relatório
               </button>
             ) : (
-              <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
-                Fechar
-              </button>
+              <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+                <button 
+                  onClick={handleCopyFrequenciaLink} 
+                  className="action-btn-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 w-full sm:w-auto font-bold px-4 py-2 rounded-xl flex items-center justify-center gap-2"
+                >
+                  <Share2 className="w-4 h-4" /> Compartilhar Resumo Público
+                </button>
+                <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
+                  Fechar
+                </button>
+              </div>
             )}
           </div>
         </DialogContent>

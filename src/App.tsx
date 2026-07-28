@@ -82,6 +82,7 @@ const AdminDashboard          = lazyWithRetry(() => import("@/pages/AdminDashboa
 const AdminLogin              = lazyWithRetry(() => import("@/pages/AdminLogin"));
 const PlaceholderPage         = lazyWithRetry(() => import("@/pages/PlaceholderPage"));
 const PublicPlano             = lazyWithRetry(() => import("@/pages/PublicPlano"));
+const PublicFrequencia        = lazyWithRetry(() => import("@/pages/PublicFrequencia"));
 const PublicRitoSacramental   = lazyWithRetry(() => import("@/pages/PublicRitoSacramental"));
 const PublicInscricao         = lazyWithRetry(() => import("@/pages/PublicInscricao"));
 const MapaPanoramico          = lazyWithRetry(() => import("@/pages/MapaPanoramico"));
@@ -235,6 +236,7 @@ const AppRoutes = () => (
       <Route path="/rito-sacramental/:codigo/:sacramento" element={<PublicRitoSacramental />} />
       <Route path="/inscricao-catequizando/:codigo" element={<PublicInscricao />} />
       <Route path="/painel-ivc/:codigo" element={<PublicPainelIVC />} />
+      <Route path="/frequencia-turma/:codigo" element={<PublicFrequencia />} />
       <Route path="/visita-familia/:token" element={<PublicAgendaVisita />} />
 
       <Route
