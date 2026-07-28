@@ -376,6 +376,8 @@ export default function CatequizandosList() {
     };
   }, [evolucaoSelectedId, diarios, evolutionPeriod]);
 
+  const activeList = useMemo(() => list.filter(c => !c.status || c.status === 'ativo'), [list]);
+
   const pastEncontros = useMemo(() => {
     const limit = alertConfig.moduloCatequizandos?.faltas ?? 3;
     return encontros
@@ -390,7 +392,7 @@ export default function CatequizandosList() {
     if (!cfg?.ativo) return alertas;
 
     const limit = cfg.faltas ?? 3;
-    list.forEach(c => {
+    activeList.forEach(c => {
       // Check if alert is muted for this catequizando
       const isMuted = (c.dadosPastorais as any)?.alertaFaltasConfig?.mutado === true;
       if (isMuted) return;
@@ -403,7 +405,7 @@ export default function CatequizandosList() {
       }
     });
     return alertas;
-  }, [list, pastEncontros, alertConfig.moduloCatequizandos]);
+  }, [activeList, pastEncontros, alertConfig.moduloCatequizandos]);
 
   // --- Lógica de Frequência ---
   // Exibe todos os encontros (realizados e pendentes) no card de frequência
@@ -445,7 +447,7 @@ export default function CatequizandosList() {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === freqMes;
     });
     
-    return list.map(c => {
+    return activeList.map(c => {
       let presencas = 0;
       let justificadas = 0;
       let faltas = 0;
@@ -465,7 +467,7 @@ export default function CatequizandosList() {
       
       return { catequizando: c, presencas, justificadas, faltas, total, perc };
     }).sort((a, b) => a.catequizando.nome.localeCompare(b.catequizando.nome));
-  }, [freqMes, encontrosRealizados, list]);
+  }, [freqMes, encontrosRealizados, activeList]);
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
   const updateSacramento = useCallback((sac: 'batismo' | 'eucaristia' | 'crisma', field: string, value: string | boolean) => { setForm((f) => ({ ...f, [sac]: { ...f[sac], [field]: value } })); }, []);
@@ -574,7 +576,7 @@ export default function CatequizandosList() {
     const diaAtual = hoje.getDate();
     const mesAtual = hoje.getMonth();
     
-    return list
+    return activeList
       .filter(c => {
         if (!c.dataNascimento) return false;
         const nasc = new Date(c.dataNascimento + (c.dataNascimento.includes('T') ? '' : 'T12:00:00'));
@@ -602,14 +604,14 @@ export default function CatequizandosList() {
           return dateA.getDate() - dateB.getDate();
         }
       });
-  }, [list, periodoCelebracao, mesCelebracao]);
+  }, [activeList, periodoCelebracao, mesCelebracao]);
 
   const batismosFiltrados = useMemo(() => {
     const hoje = new Date();
     const diaAtual = hoje.getDate();
     const mesAtual = hoje.getMonth();
     
-    return list
+    return activeList
       .filter(c => {
         const dataB = c.sacramentos?.batismo?.data || c.dadosPastorais?.sacramentos?.batismo?.data;
         if (!dataB) return false;
@@ -640,12 +642,12 @@ export default function CatequizandosList() {
           return dateA.getDate() - dateB.getDate();
         }
       });
-  }, [list, periodoCelebracao, mesCelebracao]);
+  }, [activeList, periodoCelebracao, mesCelebracao]);
 
   const hasQualquerCelebracao = useMemo(() => {
     const hoje = new Date();
-    return list.some(c => isAniversarianteMes(c.dataNascimento) || isAniversarianteMesBatismo(c.sacramentos?.batismo?.data));
-  }, [list]);
+    return activeList.some(c => isAniversarianteMes(c.dataNascimento) || isAniversarianteMesBatismo(c.sacramentos?.batismo?.data));
+  }, [activeList]);
 
   
   const filteredList = useMemo(() => {
@@ -1241,13 +1243,13 @@ export default function CatequizandosList() {
                     </div>
 
                     <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm mt-4">
-                      {list.map((c, i) => {
+                      {activeList.map((c, i) => {
                         const isPresent = selectedEncontroObj?.presencas?.includes(c.id);
                         const justificativa = selectedEncontroObj?.justificativas?.[c.id];
                         const isFalta = !isPresent && !justificativa;
                         
                         return (
-                          <div key={c.id} className={cn("flex items-center justify-between p-3.5", i !== list.length - 1 && "border-b border-black/5")}>
+                          <div key={c.id} className={cn("flex items-center justify-between p-3.5", i !== activeList.length - 1 && "border-b border-black/5")}>
                             <p className="text-sm font-bold text-foreground truncate mr-4">{c.nome}</p>
                             <div className="shrink-0 flex items-center justify-end w-28">
                               {isPresent && (
@@ -1524,7 +1526,7 @@ export default function CatequizandosList() {
                     <SelectValue placeholder="Escolha um catequizando" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60 rounded-2xl">
-                    {list.map(c => (
+                    {activeList.map(c => (
                       <SelectItem key={c.id} value={c.id} className="font-bold cursor-pointer py-3">{c.nome}</SelectItem>
                     ))}
                   </SelectContent>

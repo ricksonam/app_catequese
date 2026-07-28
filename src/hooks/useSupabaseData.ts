@@ -71,7 +71,7 @@ export function useCatequizandos(turmaId?: string, includeInactive = false) {
     queryFn: async () => {
       const data = await fetchCatequizandos(turmaId);
       if (includeInactive) return data;
-      return data.filter(c => c.status === 'ativo');
+      return data.filter(c => !c.status || c.status === 'ativo');
     },
     enabled: !!user,
     staleTime: 0,
