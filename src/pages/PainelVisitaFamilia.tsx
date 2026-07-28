@@ -525,9 +525,22 @@ export function PainelVisitaFamilia() {
     });
   };
 
-  const copyLink = () => {
+  const shareLink = async () => {
     if (!config?.token) return;
-    navigator.clipboard.writeText(`${window.location.origin}/visita-familia/${config.token}`);
+    const url = `${window.location.origin}/visita-familia/${config.token}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Agendamento de Visitas às Famílias",
+          text: "Acesse o link para agendar a visita da catequese em sua casa:",
+          url: url,
+        });
+        return;
+      } catch (e) {
+        console.log("Erro ao compartilhar", e);
+      }
+    }
+    navigator.clipboard.writeText(url);
     setCopied(true); toast.success("Link copiado!"); setTimeout(() => setCopied(false), 2000);
   };
 
@@ -579,9 +592,6 @@ export function PainelVisitaFamilia() {
       {/* Header do App (estilo mobile, visível em todas as telas) */}
       <div className="flex items-center justify-between px-2 pt-4 sm:pt-0">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/modulos/calendario')} className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-red-200 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 shadow-sm transition-all shrink-0" title="Fechar Painel">
-            <X className="h-6 w-6 stroke-[2.5]" />
-          </button>
           <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
             <Home className="w-6 h-6" />
           </div>
@@ -630,6 +640,9 @@ export function PainelVisitaFamilia() {
               </div>
             </PopoverContent>
           </Popover>
+          <button onClick={() => navigate('/modulos/calendario')} className="w-8 h-8 flex items-center justify-center rounded-xl border border-red-200 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shrink-0 ml-2" title="Fechar Painel">
+            <X className="h-4 w-4 stroke-[2.5]" />
+          </button>
         </div>
       </div>
 
@@ -771,15 +784,6 @@ export function PainelVisitaFamilia() {
               </div>
 
               {/* Botões de Ação */}
-              {config?.token && (
-                <button
-                  onClick={copyLink}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl p-4 flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-600/30 font-black uppercase tracking-widest text-sm"
-                >
-                  <Share2 className="w-5 h-5" />
-                  {copied ? "Link Copiado!" : "Compartilhar Link com as Famílias"}
-                </button>
-              )}
 
               {/* Dica para a visita */}
               <div className="bg-emerald-50 rounded-2xl p-4 flex gap-4 border border-emerald-100 relative overflow-hidden">
@@ -806,8 +810,8 @@ export function PainelVisitaFamilia() {
             <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* Back + header */}
               <div className="flex items-center gap-3">
-                <button onClick={() => setActiveView("home")} className="w-10 h-10 rounded-2xl bg-white border-2 border-black/5 flex items-center justify-center hover:bg-muted/20 transition-all shadow-sm">
-                  <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+                <button onClick={() => setActiveView("home")} className="p-2 -ml-2 rounded-full hover:bg-black/5 transition-colors text-muted-foreground flex items-center justify-center">
+                  <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
                   <h2 className="font-black text-foreground text-lg uppercase tracking-tight">Configurar Visitas</h2>
@@ -960,6 +964,17 @@ export function PainelVisitaFamilia() {
                     {mutationSave.isPending ? <Spinner size="sm" color="white" /> : <Save className="w-4 h-4" />}
                     {config ? "Salvar Alterações" : "Criar Agenda de Visitas"}
                   </button>
+
+                  {/* Compartilhar Link */}
+                  {config?.token && (
+                    <button
+                      onClick={shareLink}
+                      className="w-full py-4 mt-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-emerald-600/30 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      {copied ? "Link Copiado!" : "Compartilhar Link com as Famílias"}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
