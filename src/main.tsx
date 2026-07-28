@@ -33,13 +33,21 @@ if ('serviceWorker' in navigator) {
         console.log('[SW] Falha ao registrar:', err);
       });
 
-    // Quando um novo SW tomar controle, recarrega a página
+    // Quando um novo SW tomar controle, recarrega a página (com proteção anti-loop)
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!refreshing) {
-        refreshing = true;
-        console.log('[SW] Controller mudou. Recarregando para aplicar nova versão...');
-        window.location.reload();
+        // Garante que não haverá reload em loop: só recarrega se passaram mais de 5s desde o último reload
+        const lastReload = parseInt(sessionStorage.getItem('sw_last_reload') || '0', 10);
+        const now = Date.now();
+        if (now - lastReload > 5000) {
+          refreshing = true;
+          sessionStorage.setItem('sw_last_reload', String(now));
+          console.log('[SW] Controller mudou. Recarregando para aplicar nova versão...');
+          window.location.reload();
+        } else {
+          console.log('[SW] Controller mudou mas reload recente detectado, ignorando para evitar loop.');
+        }
       }
     });
   });

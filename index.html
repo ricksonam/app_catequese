@@ -8,16 +8,8 @@
     <meta name="description" content="iCatequese – Gestão inteligente para catequistas. Sistema completo para gestão de turmas, encontros e catequizandos.">
     <meta name="author" content="iCatequese" />
 
-    <!-- Preload Dashboard Images -->
-    <link rel="preload" as="image" href="/card_catequizandos.jpg" fetchpriority="high">
-    <link rel="preload" as="image" href="/card_encontros.jpg" fetchpriority="high">
-    <link rel="preload" as="image" href="/card_biblia.jpg" fetchpriority="high">
-    <link rel="preload" as="image" href="/icone-eventos.png?v=2" fetchpriority="high">
-    <link rel="preload" as="image" href="/icone-reunioes.png?v=2" fetchpriority="high">
-    <link rel="preload" as="image" href="/icone_diario.png?v=2" fetchpriority="high">
-    <link rel="preload" as="image" href="/icone_liturgia.png?v=2" fetchpriority="high">
-    <link rel="preload" as="image" href="/icone_jogos.png?v=2" fetchpriority="high">
-    <link rel="preload" as="image" href="/icone_trilha.png" fetchpriority="high">
+    <!-- Preload apenas ícones PWA essenciais (imagens do dashboard carregam sob demanda) -->
+    <link rel="preload" as="image" href="/icon-192.png" fetchpriority="high">
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website" />
@@ -37,10 +29,45 @@
     <meta name="apple-mobile-web-app-title" content="iCatequese">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#2a4bd1">
+    <style>
+      #initial-loader {
+        position: fixed; inset: 0; background: #ffffff;
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; z-index: 9999; gap: 16px;
+      }
+      #initial-loader img { width: 72px; height: 72px; border-radius: 18px; object-fit: contain; }
+      #initial-loader .bar-wrap { width: 160px; height: 4px; background: #e8eeff; border-radius: 99px; overflow: hidden; }
+      #initial-loader .bar {
+        height: 100%; width: 40%; background: #2a4bd1; border-radius: 99px;
+        animation: bar-slide 1.2s ease-in-out infinite;
+      }
+      @keyframes bar-slide {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(400%); }
+      }
+    </style>
   </head>
 
   <body>
+    <div id="initial-loader">
+      <img src="/icon-192.png" alt="iCatequese" />
+      <div class="bar-wrap"><div class="bar"></div></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Remove o loader assim que o React montar
+      document.addEventListener('DOMContentLoaded', function() {
+        var observer = new MutationObserver(function() {
+          var root = document.getElementById('root');
+          if (root && root.children.length > 0) {
+            var loader = document.getElementById('initial-loader');
+            if (loader) { loader.style.opacity = '0'; loader.style.transition = 'opacity 0.3s'; setTimeout(function(){ loader.remove(); }, 300); }
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.getElementById('root'), { childList: true });
+      });
+    </script>
   </body>
 </html>
