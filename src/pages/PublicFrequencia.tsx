@@ -113,7 +113,7 @@ function GraficoMensal({
               className="flex-1 h-full flex flex-col items-center justify-end group cursor-default"
               title={`${formatarMesAno(d.mes)}: ${d.perc}%`}
             >
-              <span className="text-[9px] font-black text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
+              <span className="text-xs font-black text-muted-foreground mb-1 group-hover:text-foreground transition-colors">
                 {d.perc > 0 ? `${d.perc}%` : ""}
               </span>
               <div
@@ -127,15 +127,16 @@ function GraficoMensal({
           );
         })}
       </div>
-        <div className="flex flex-col sm:flex-row sm:gap-2 gap-1 w-full text-center sm:text-left">
-          {dados.map((d) => (
-            <div key={d.mes} className="flex-1">
-              <p className="text-[10px] sm:text-xs font-black text-muted-foreground uppercase leading-none truncate">
-                {MESES[Number(d.mes.split("-")[1]) - 1]?.slice(0, 3)}
-              </p>
-            </div>
-          ))}
-        </div>
+      {/* Labels dos meses abaixo */}
+      <div className="flex gap-2 px-1">
+        {dados.map((d) => (
+          <div key={d.mes} className="flex-1 text-center pt-1">
+            <p className="text-xs font-black text-foreground uppercase leading-none">
+              {MESES[Number(d.mes.split("-")[1]) - 1]?.slice(0, 3)}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
