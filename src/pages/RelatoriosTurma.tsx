@@ -67,7 +67,7 @@ export default function RelatoriosTurma() {
 
       <div className="space-y-6 print:m-0 print:p-0 print:space-y-0 pb-10">
       <div className="space-y-4 animate-fade-in flex flex-col pt-4 print:hidden">
-        {/* Row 1: Back Button + Título (Centralizado) */}
+        {/* Row 1: Back Button + Título (Centralizado) + Toggle */}
         <div className="flex items-center justify-center min-h-[44px] relative">
           <button onClick={() => navigate("/")} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border-2 border-black/5 shadow-sm active:scale-90 transition-all absolute left-0">
             <X className="h-5 w-5 text-foreground" />
@@ -80,29 +80,17 @@ export default function RelatoriosTurma() {
             </h1>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">{turma.etapa}</p>
           </div>
+
+          <button 
+            onClick={() => setTab(tab === "inteligente" ? "documentos" : "inteligente")}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20 rounded-full border border-primary-foreground/20 absolute right-0 active:scale-95 transition-all hover:brightness-110"
+          >
+            {tab === "inteligente" ? <FileText className="w-4 h-4" /> : <PieChartIcon className="w-4 h-4" />}
+            <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">
+              {tab === "inteligente" ? "Documentos" : "Visão Inteligente"}
+            </span>
+          </button>
         </div>
-      </div>
-
-
-      <div className="grid grid-cols-2 gap-3 print:hidden">
-        <button 
-          onClick={() => setTab("inteligente")}
-          className={cn("flex flex-col items-center justify-center gap-3 p-4 rounded-[24px] transition-all border-2", tab === "inteligente" ? "bg-primary/10 border-primary text-primary shadow-md scale-[1.02]" : "bg-white border-black/5 text-muted-foreground hover:bg-muted/50 hover:scale-[1.02]")}
-        >
-          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", tab === "inteligente" ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/10 text-primary")}>
-            <PieChartIcon className="h-6 w-6" />
-          </div>
-          <span className="text-[11px] font-black uppercase tracking-widest text-center leading-tight">Visão<br/>Inteligente</span>
-        </button>
-        <button 
-          onClick={() => setTab("documentos")}
-          className={cn("flex flex-col items-center justify-center gap-3 p-4 rounded-[24px] transition-all border-2", tab === "documentos" ? "bg-primary/10 border-primary text-primary shadow-md scale-[1.02]" : "bg-white border-black/5 text-muted-foreground hover:bg-muted/50 hover:scale-[1.02]")}
-        >
-          <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", tab === "documentos" ? "bg-primary text-white shadow-lg shadow-primary/20" : "bg-primary/10 text-primary")}>
-            <FileText className="h-6 w-6" />
-          </div>
-          <span className="text-[11px] font-black uppercase tracking-widest text-center leading-tight">Documentos<br/>e Fichas</span>
-        </button>
       </div>
 
       {tab === "inteligente" ? (
@@ -656,14 +644,13 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
       </div>
       
       {/* Cabeçalho */}
-      <div className="relative p-[2px] rounded-2xl bg-gradient-to-br from-primary/40 via-primary/20 to-primary/10 print:hidden">
-        <div className="flex items-center gap-4 p-5 rounded-[14px] bg-card">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/25 shrink-0">
-            <Printer className="h-6 w-6 text-primary-foreground" />
+      <div className="flex justify-center print:hidden">
+        <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-inner shrink-0">
+            <Printer className="h-4 w-4 text-primary-foreground" />
           </div>
-          <div>
-            <h2 className="text-base font-black text-foreground">Documentos & Fichas</h2>
-            <p className="text-xs text-muted-foreground">Selecione o tipo de documento e clique para imprimir diretamente.</p>
+          <div className="flex flex-col text-left">
+            <h2 className="text-sm font-black text-primary uppercase tracking-widest leading-tight">Documentos & Fichas</h2>
           </div>
         </div>
       </div>
