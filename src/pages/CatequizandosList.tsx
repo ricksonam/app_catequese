@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
-import ReportModule from "@/components/reports/ReportModule";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
 import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2, Info, Share2 } from "lucide-react";
@@ -1752,21 +1751,6 @@ export default function CatequizandosList() {
                          })}
                       </DropdownMenuContent>
                    </DropdownMenu>
-
-                   <ReportModule
-                     context="catequizandos"
-                     turmaId={id!}
-                     initialDocId={viewItem.id}
-                     instantReport="cat_individual"
-                     trigger={
-                       <button 
-                         className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-95 shadow-sm text-slate-500 hover:text-slate-700" 
-                         title="Compartilhar Ficha"
-                       >
-                         <Share2 className="w-4 h-4" />
-                       </button>
-                     }
-                   />
 
                    <div className="h-8 w-px bg-zinc-100 mx-1" />
 
