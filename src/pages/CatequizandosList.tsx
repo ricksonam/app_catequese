@@ -222,6 +222,8 @@ export default function CatequizandosList() {
   const [filterAniversarios, setFilterAniversarios] = useState(false);
   const [filterBatismos, setFilterBatismos] = useState(false);
   const [filterAtivos, setFilterAtivos] = useState<'ativos' | 'inativos'>('ativos');
+  const [catPage, setCatPage] = useState(0);
+  const CAT_PAGE_SIZE = 20;
   const [evolutionPeriod, setEvolutionPeriod] = useState<"mes" | "semestre" | "ano">("ano");
   const [showEvolucao, setShowEvolucao] = useState(false);
   const [evolucaoSelectedId, setEvolucaoSelectedId] = useState<string>("");
@@ -663,6 +665,11 @@ export default function CatequizandosList() {
     return baseList;
   }, [filterAniversarios, filterBatismos, list, filterAtivos]);
 
+  // Reset page when filters change
+  const handleSetFilterAtivos = (v: 'ativos' | 'inativos') => { setFilterAtivos(v); setCatPage(0); };
+  const pagedList = useMemo(() => filteredList.slice(catPage * CAT_PAGE_SIZE, (catPage + 1) * CAT_PAGE_SIZE), [filteredList, catPage]);
+  const totalPages = Math.ceil(filteredList.length / CAT_PAGE_SIZE);
+
 
   if (isLoading || tLoading) {
     return (
@@ -1103,13 +1110,13 @@ export default function CatequizandosList() {
 
       <div className="flex items-center gap-2 mb-4 bg-white p-1 rounded-xl shadow-sm border border-black/5 w-fit">
         <button 
-          onClick={() => setFilterAtivos('ativos')}
+          onClick={() => handleSetFilterAtivos('ativos')}
           className={cn("px-4 py-1.5 text-xs font-bold rounded-lg transition-all", filterAtivos === 'ativos' ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-black/5")}
         >
           Ativos ({list.filter(c => !c.status || c.status === 'ativo').length})
         </button>
         <button 
-          onClick={() => setFilterAtivos('inativos')}
+          onClick={() => handleSetFilterAtivos('inativos')}
           className={cn("px-4 py-1.5 text-xs font-bold rounded-lg transition-all", filterAtivos === 'inativos' ? "bg-zinc-600 text-white shadow-sm" : "text-muted-foreground hover:bg-black/5")}
         >
           Inativos ({list.filter(c => c.status && c.status !== 'ativo').length})
@@ -1119,11 +1126,12 @@ export default function CatequizandosList() {
       {filteredList.length === 0 ? (
         <div className="empty-state animate-float-up"><div className="icon-box bg-accent/15 text-accent-foreground mx-auto mb-3"><UserPlus className="h-6 w-6" /></div><p className="text-sm font-medium text-muted-foreground">{filterAniversarios ? "Nenhum aniversariante encontrado" : "Nenhum catequizando cadastrado"}</p></div>
       ) : (
-        <div className="space-y-2">{filteredList.map((c, i) => {
+        <div className="space-y-2">{pagedList.map((c, i) => {
           const st = statusConfig[c.status || 'ativo'];
           const emAlerta = catequizandosEmAlerta.has(c.id);
+          const globalIndex = catPage * CAT_PAGE_SIZE + i;
           return (
-            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 50}ms` }}>
+            <button key={c.id} onClick={() => { setViewItem(c); setEditMode(false); }} className="relative w-full group animate-float-up text-left" style={{ animationDelay: `${i * 30}ms` }}>
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className={cn("relative flex flex-col bg-card rounded-2xl border shadow-sm transition-all active:scale-[0.98] overflow-hidden", emAlerta ? "border-destructive group-hover:shadow-md" : "border-zinc-800 group-hover:shadow-md group-hover:border-primary")}>
                 {/* Sinalização de Status Lateral */}
@@ -1136,7 +1144,7 @@ export default function CatequizandosList() {
                   </div>
                 )}
                 <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 w-full">
-                <div className="flex items-center justify-center w-6 text-sm font-bold text-muted-foreground">{i + 1}</div>
+                <div className="flex items-center justify-center w-6 text-sm font-bold text-muted-foreground">{globalIndex + 1}</div>
                 <div className="relative shrink-0 ml-1.5">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden shadow-inner ring-2 ring-background">
                     {c.foto ? <img src={c.foto} className="w-full h-full object-cover" alt="" /> : <span className="text-lg font-black text-primary/70">{c.nome.charAt(0).toUpperCase()}</span>}
@@ -1178,6 +1186,29 @@ export default function CatequizandosList() {
             </button>
           );
         })}</div>
+      )}
+
+      {/* Paginação */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2 pb-4">
+          <button
+            onClick={() => { setCatPage(p => Math.max(0, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            disabled={catPage === 0}
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl border border-black/10 bg-white shadow-sm hover:bg-primary/5 hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Anterior
+          </button>
+          <span className="text-xs font-black text-muted-foreground">
+            {catPage + 1} / {totalPages} &nbsp;·&nbsp; {filteredList.length} total
+          </span>
+          <button
+            onClick={() => { setCatPage(p => Math.min(totalPages - 1, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            disabled={catPage >= totalPages - 1}
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl border border-black/10 bg-white shadow-sm hover:bg-primary/5 hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            Próxima <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       )}
 
       {/* Modal Frequencia */}
