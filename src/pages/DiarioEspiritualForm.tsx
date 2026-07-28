@@ -15,6 +15,33 @@ const tiposRegistro: { value: TipoRegistro; label: string; icon: React.ElementTy
   { value: "evolucao", label: "Evolução", icon: TrendingUp, cor: "bg-emerald-600 text-white ring-emerald-600/50 border-emerald-600", iconColor: "text-emerald-500", animation: "animate-[pulse_2s_ease-in-out_infinite]", descricao: "Registro de evolução espiritual e comportamental" },
 ];
 
+const agruparPorMes = (items: any[]) => {
+  const grupos: Record<string, any[]> = {};
+  
+  const ordenados = [...items].sort((a, b) => {
+    const dateA = new Date(a.data ? (a.data.includes('T') ? a.data : `${a.data}T12:00:00`) : 0).getTime();
+    const dateB = new Date(b.data ? (b.data.includes('T') ? b.data : `${b.data}T12:00:00`) : 0).getTime();
+    return dateB - dateA;
+  });
+
+  ordenados.forEach(item => {
+    if (!item.data) {
+      if (!grupos["Sem data definida"]) grupos["Sem data definida"] = [];
+      grupos["Sem data definida"].push(item);
+      return;
+    }
+    const date = new Date(item.data.includes('T') ? item.data : `${item.data}T12:00:00`);
+    const monthYear = date.toLocaleDateString("pt-BR", { month: 'long', year: 'numeric' });
+    const capitalized = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+    
+    if (!grupos[capitalized]) {
+      grupos[capitalized] = [];
+    }
+    grupos[capitalized].push(item);
+  });
+  return grupos;
+};
+
 export default function DiarioEspiritualForm() {
   const { id, diarioId } = useParams();
   const navigate = useNavigate();
@@ -249,29 +276,44 @@ export default function DiarioEspiritualForm() {
                   <button 
                     type="button"
                     onClick={() => { setEncontroId(""); setOpenEncontro(false); }}
-                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-sm font-bold text-indigo-900/70 transition-colors border border-transparent hover:border-indigo-500/20"
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-sm font-bold text-indigo-900/70 transition-colors border border-transparent hover:border-indigo-500/20 flex items-center"
                   >
+                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mr-3 transition-colors", !encontroId ? "border-indigo-600" : "border-indigo-300 dark:border-indigo-700")}>
+                      {!encontroId && <div className="w-2.5 h-2.5 rounded-full bg-indigo-600" />}
+                    </div>
                     Nenhum (Registro Geral)
                   </button>
-                  {encontros.map((enc: any) => (
-                    <button
-                      key={enc.id}
-                      type="button"
-                      onClick={() => { setEncontroId(enc.id); setOpenEncontro(false); }}
-                      className={cn(
-                        "w-full text-left px-4 py-3 rounded-xl transition-all border",
-                        encontroId === enc.id 
-                          ? "bg-indigo-500 text-white border-indigo-600 shadow-md" 
-                          : "bg-white dark:bg-zinc-900 border-black/5 hover:border-indigo-500/30 hover:bg-indigo-50"
-                      )}
-                    >
-                      <div className={cn("font-bold", encontroId === enc.id ? "text-white" : "text-indigo-900 dark:text-indigo-100")}>{enc.tema}</div>
-                      {enc.data && (
-                        <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", encontroId === enc.id ? "text-indigo-100" : "text-indigo-600/70")}>
-                          {formatarDataVigente(enc.data)}
-                        </div>
-                      )}
-                    </button>
+                  {Object.entries(agruparPorMes(encontros)).map(([mes, lista]) => (
+                    <div key={mes} className="pt-2">
+                      <div className="px-3 pb-1 text-[11px] font-black uppercase tracking-widest text-indigo-500/80 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm z-10">{mes}</div>
+                      <div className="space-y-1">
+                        {lista.map((enc: any) => (
+                          <button
+                            key={enc.id}
+                            type="button"
+                            onClick={() => { setEncontroId(enc.id); setOpenEncontro(false); }}
+                            className={cn(
+                              "w-full text-left px-4 py-3 rounded-xl transition-all border flex items-center",
+                              encontroId === enc.id 
+                                ? "bg-indigo-500 text-white border-indigo-600 shadow-md" 
+                                : "bg-white dark:bg-zinc-900 border-black/5 hover:border-indigo-500/30 hover:bg-indigo-50"
+                            )}
+                          >
+                            <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mr-3 transition-colors", encontroId === enc.id ? "border-white bg-indigo-600" : "border-indigo-300 dark:border-indigo-700")}>
+                              {encontroId === enc.id && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className={cn("font-bold truncate text-base", encontroId === enc.id ? "text-white" : "text-indigo-900 dark:text-indigo-100")}>{enc.tema}</div>
+                              {enc.data && (
+                                <div className={cn("text-xs font-bold mt-0.5", encontroId === enc.id ? "text-indigo-100" : "text-indigo-600/70")}>
+                                  {formatarDataVigente(enc.data)}
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -309,29 +351,44 @@ export default function DiarioEspiritualForm() {
                   <button 
                     type="button"
                     onClick={() => { setEventoId(""); setOpenEvento(false); }}
-                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-500/10 text-sm font-bold text-amber-900/70 transition-colors border border-transparent hover:border-amber-500/20"
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-500/10 text-sm font-bold text-amber-900/70 transition-colors border border-transparent hover:border-amber-500/20 flex items-center"
                   >
+                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mr-3 transition-colors", !eventoId ? "border-amber-500" : "border-amber-300 dark:border-amber-700")}>
+                      {!eventoId && <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />}
+                    </div>
                     Nenhum (Registro Geral)
                   </button>
-                  {eventos.map((ev: any) => (
-                    <button
-                      key={ev.id}
-                      type="button"
-                      onClick={() => { setEventoId(ev.id); setOpenEvento(false); }}
-                      className={cn(
-                        "w-full text-left px-4 py-3 rounded-xl transition-all border",
-                        eventoId === ev.id 
-                          ? "bg-amber-500 text-white border-amber-600 shadow-md" 
-                          : "bg-white dark:bg-zinc-900 border-black/5 hover:border-amber-500/30 hover:bg-amber-50"
-                      )}
-                    >
-                      <div className={cn("font-bold", eventoId === ev.id ? "text-white" : "text-amber-900 dark:text-amber-100")}>{ev.nome}</div>
-                      {ev.data && (
-                        <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", eventoId === ev.id ? "text-amber-100" : "text-amber-600/70")}>
-                          {formatarDataVigente(ev.data)}
-                        </div>
-                      )}
-                    </button>
+                  {Object.entries(agruparPorMes(eventos)).map(([mes, lista]) => (
+                    <div key={mes} className="pt-2">
+                      <div className="px-3 pb-1 text-[11px] font-black uppercase tracking-widest text-amber-500/80 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm z-10">{mes}</div>
+                      <div className="space-y-1">
+                        {lista.map((ev: any) => (
+                          <button
+                            key={ev.id}
+                            type="button"
+                            onClick={() => { setEventoId(ev.id); setOpenEvento(false); }}
+                            className={cn(
+                              "w-full text-left px-4 py-3 rounded-xl transition-all border flex items-center",
+                              eventoId === ev.id 
+                                ? "bg-amber-500 text-white border-amber-600 shadow-md" 
+                                : "bg-white dark:bg-zinc-900 border-black/5 hover:border-amber-500/30 hover:bg-amber-50"
+                            )}
+                          >
+                            <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mr-3 transition-colors", eventoId === ev.id ? "border-white bg-amber-500" : "border-amber-300 dark:border-amber-700")}>
+                              {eventoId === ev.id && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className={cn("font-bold truncate text-base", eventoId === ev.id ? "text-white" : "text-amber-900 dark:text-amber-100")}>{ev.nome}</div>
+                              {ev.data && (
+                                <div className={cn("text-xs font-bold mt-0.5", eventoId === ev.id ? "text-amber-100" : "text-amber-600/70")}>
+                                  {formatarDataVigente(ev.data)}
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -369,29 +426,44 @@ export default function DiarioEspiritualForm() {
                   <button 
                     type="button"
                     onClick={() => { setReuniaoId(""); setOpenReuniao(false); }}
-                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-sm font-bold text-blue-900/70 transition-colors border border-transparent hover:border-blue-500/20"
+                    className="w-full text-left px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 text-sm font-bold text-blue-900/70 transition-colors border border-transparent hover:border-blue-500/20 flex items-center"
                   >
+                    <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mr-3 transition-colors", !reuniaoId ? "border-blue-600" : "border-blue-300 dark:border-blue-700")}>
+                      {!reuniaoId && <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />}
+                    </div>
                     Nenhuma (Registro Geral)
                   </button>
-                  {reunioes.map((re: any) => (
-                    <button
-                      key={re.id}
-                      type="button"
-                      onClick={() => { setReuniaoId(re.id); setOpenReuniao(false); }}
-                      className={cn(
-                        "w-full text-left px-4 py-3 rounded-xl transition-all border",
-                        reuniaoId === re.id 
-                          ? "bg-blue-500 text-white border-blue-600 shadow-md" 
-                          : "bg-white dark:bg-zinc-900 border-black/5 hover:border-blue-500/30 hover:bg-blue-50"
-                      )}
-                    >
-                      <div className={cn("font-bold", reuniaoId === re.id ? "text-white" : "text-blue-900 dark:text-blue-100")}>{re.nome}</div>
-                      {re.data && (
-                        <div className={cn("text-[10px] font-black uppercase tracking-widest mt-1", reuniaoId === re.id ? "text-blue-100" : "text-blue-600/70")}>
-                          {formatarDataVigente(re.data)}
-                        </div>
-                      )}
-                    </button>
+                  {Object.entries(agruparPorMes(reunioes)).map(([mes, lista]) => (
+                    <div key={mes} className="pt-2">
+                      <div className="px-3 pb-1 text-[11px] font-black uppercase tracking-widest text-blue-500/80 sticky top-0 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm z-10">{mes}</div>
+                      <div className="space-y-1">
+                        {lista.map((re: any) => (
+                          <button
+                            key={re.id}
+                            type="button"
+                            onClick={() => { setReuniaoId(re.id); setOpenReuniao(false); }}
+                            className={cn(
+                              "w-full text-left px-4 py-3 rounded-xl transition-all border flex items-center",
+                              reuniaoId === re.id 
+                                ? "bg-blue-500 text-white border-blue-600 shadow-md" 
+                                : "bg-white dark:bg-zinc-900 border-black/5 hover:border-blue-500/30 hover:bg-blue-50"
+                            )}
+                          >
+                            <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mr-3 transition-colors", reuniaoId === re.id ? "border-white bg-blue-600" : "border-blue-300 dark:border-blue-700")}>
+                              {reuniaoId === re.id && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className={cn("font-bold truncate text-base", reuniaoId === re.id ? "text-white" : "text-blue-900 dark:text-blue-100")}>{re.nome}</div>
+                              {re.data && (
+                                <div className={cn("text-xs font-bold mt-0.5", reuniaoId === re.id ? "text-blue-100" : "text-blue-600/70")}>
+                                  {formatarDataVigente(re.data)}
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
