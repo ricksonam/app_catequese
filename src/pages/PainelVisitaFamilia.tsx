@@ -505,18 +505,22 @@ export function PainelVisitaFamilia() {
   const addHorario = (dataStr: string, horario: string) => {
     if (!horario.match(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/)) { toast.error("Horário inválido. Use HH:MM"); return; }
     setForm(prev => {
-      const dias = [...(prev.dias_horarios || [])];
-      const idx = dias.findIndex(d => d.data === dataStr);
-      if (idx >= 0 && !dias[idx].horarios.includes(horario)) dias[idx].horarios = [...dias[idx].horarios, horario].sort();
+      const dias = prev.dias_horarios?.map(d => 
+        d.data === dataStr && !d.horarios.includes(horario)
+          ? { ...d, horarios: [...d.horarios, horario].sort() }
+          : d
+      ) || [];
       return { ...prev, dias_horarios: dias };
     });
   };
 
   const removeHorario = (dataStr: string, horario: string) => {
     setForm(prev => {
-      const dias = [...(prev.dias_horarios || [])];
-      const idx = dias.findIndex(d => d.data === dataStr);
-      if (idx >= 0) dias[idx].horarios = dias[idx].horarios.filter(h => h !== horario);
+      const dias = prev.dias_horarios?.map(d => 
+        d.data === dataStr
+          ? { ...d, horarios: d.horarios.filter(h => h !== horario) }
+          : d
+      ) || [];
       return { ...prev, dias_horarios: dias };
     });
   };
@@ -766,7 +770,16 @@ export function PainelVisitaFamilia() {
                 </div>
               </div>
 
-              {/* Botões de Ação Removidos Daqui */}
+              {/* Botões de Ação */}
+              {config?.token && (
+                <button
+                  onClick={copyLink}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl p-4 flex items-center justify-center gap-3 transition-all shadow-lg shadow-indigo-600/30 font-black uppercase tracking-widest text-sm"
+                >
+                  <Share2 className="w-5 h-5" />
+                  {copied ? "Link Copiado!" : "Compartilhar Link com as Famílias"}
+                </button>
+              )}
 
               {/* Dica para a visita */}
               <div className="bg-emerald-50 rounded-2xl p-4 flex gap-4 border border-emerald-100 relative overflow-hidden">
