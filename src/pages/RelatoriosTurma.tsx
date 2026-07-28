@@ -10,7 +10,7 @@ import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, Legend } from "recharts";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
 const S_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899'];
@@ -668,31 +668,39 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
         </div>
       </div>
 
-      {/* Chips de tipo de documento */}
+      {/* Lista Suspensa de Documentos (Premium) */}
       <div className="print:hidden">
-        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">Tipo de Documento</p>
-        <div className="grid grid-cols-2 gap-2.5">
-          {DOC_TYPES.map(dt => {
-            const Icon = dt.icon;
-            const isActive = docTipo === dt.id;
-            return (
-              <button
-                key={dt.id}
-                onClick={() => setDocTipo(dt.id)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3.5 rounded-2xl border-2 transition-all text-left font-bold text-sm active:scale-[0.97]",
-                  isActive
-                    ? `${dt.bg} ${dt.border} ${dt.text} shadow-sm scale-[1.02]`
-                    : "border-black/10 bg-card text-muted-foreground hover:border-black/25"
-                )}
-              >
-                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all", isActive ? `bg-gradient-to-br ${dt.color}` : "bg-muted/50")}>
-                  <Icon className={cn("h-4.5 w-4.5", isActive ? "text-white" : "text-muted-foreground")} />
-                </div>
-                <span className="leading-tight text-xs">{dt.label}</span>
-              </button>
-            );
-          })}
+        <div className="bg-white rounded-[24px] shadow-sm border border-black/5 p-6 space-y-4">
+          <div className="flex items-center gap-2 mb-1">
+             <FileText className="w-5 h-5 text-primary" />
+             <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Tipo de Documento</h3>
+          </div>
+          <Select value={docTipo} onValueChange={setDocTipo}>
+            <SelectTrigger className="w-full h-16 rounded-2xl border-2 border-black/5 bg-gray-50/50 hover:bg-gray-50 hover:border-black/10 focus:ring-primary/20 transition-all text-left outline-none ring-0">
+              <SelectValue placeholder="Selecione um documento..." />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-black/5 shadow-xl max-h-[60vh] z-[99999]">
+              {DOC_TYPES.map((dt) => {
+                const Icon = dt.icon;
+                return (
+                  <SelectItem 
+                    key={dt.id} 
+                    value={dt.id} 
+                    className="py-3 px-4 cursor-pointer focus:bg-primary/5 focus:text-primary transition-colors rounded-xl mx-1 my-0.5 outline-none"
+                  >
+                    <div className="flex items-center gap-4 w-full">
+                      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", dt.bg)}>
+                         <Icon className={cn("w-5 h-5", dt.text)} />
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col text-left">
+                        <span className="font-bold text-sm text-foreground">{dt.label}</span>
+                      </div>
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
