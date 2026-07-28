@@ -18,7 +18,7 @@ const S_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899'];
 export default function RelatoriosTurma() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"inteligente" | "documentos">("inteligente");
+  const [tab, setTab] = useState<"inteligente" | "documentos">("documentos");
 
   const { data: turmas = [], isLoading: loadingT } = useTurmas();
   const { data: encontros = [], isLoading: loadingE } = useEncontros(id);
@@ -83,12 +83,28 @@ export default function RelatoriosTurma() {
 
           <button 
             onClick={() => setTab(tab === "inteligente" ? "documentos" : "inteligente")}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20 rounded-full border border-primary-foreground/20 absolute right-0 active:scale-95 transition-all hover:brightness-110"
+            className={cn(
+              "flex items-center justify-center gap-2 px-4 py-2.5 shadow-lg rounded-full border absolute right-0 active:scale-95 transition-all hover:scale-105",
+              tab === "documentos" 
+                ? "bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 text-white border-purple-500/30 shadow-purple-500/25" 
+                : "bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-blue-500/30 shadow-blue-500/25"
+            )}
           >
-            {tab === "inteligente" ? <FileText className="w-4 h-4" /> : <PieChartIcon className="w-4 h-4" />}
-            <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">
-              {tab === "inteligente" ? "Documentos" : "Visão Inteligente"}
-            </span>
+            {tab === "documentos" ? (
+              <>
+                <PieChartIcon className="w-4 h-4 animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">
+                  Visão Inteligente
+                </span>
+              </>
+            ) : (
+              <>
+                <FileText className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">
+                  Documentos & Fichas
+                </span>
+              </>
+            )}
           </button>
         </div>
       </div>
