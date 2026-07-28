@@ -769,15 +769,29 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
                   [...encontros].sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()).map((enc: any) => (
                     <div
                       key={enc.id}
-                      className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-4 hover:bg-sky-500/5 transition-colors gap-3 border-b border-black/5 last:border-0"
+                      className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-4 hover:bg-sky-500/5 transition-colors gap-4 border-b border-black/5 last:border-0"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center shrink-0">
-                          <CalendarDays className="h-4 w-4 text-sky-600" />
+                      <div className="flex items-start gap-4 flex-1">
+                        <div className="w-14 h-14 rounded-2xl bg-sky-50 flex flex-col items-center justify-center shrink-0 border-2 border-sky-100 shadow-sm">
+                          <span className="text-[10px] font-black text-sky-600 uppercase leading-none mb-1">
+                            {new Date(enc.data + 'T12:00:00').toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                          </span>
+                          <span className="text-lg font-black text-sky-950 leading-none">
+                            {new Date(enc.data + 'T12:00:00').getDate().toString().padStart(2, '0')}
+                          </span>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-foreground truncate max-w-[180px]">{enc.tema}</p>
-                          <p className="text-[11px] text-muted-foreground">{formatarDataVigente(enc.data)} • {enc.status}</p>
+                        <div className="flex flex-col gap-1.5 mt-0.5">
+                          <p className="text-sm font-bold text-foreground leading-snug break-words">{enc.tema}</p>
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              "text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider",
+                              enc.status === 'realizado' ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
+                              enc.status === 'cancelado' ? "bg-red-50 text-red-600 border-red-200" :
+                              "bg-blue-50 text-blue-600 border-blue-200"
+                            )}>
+                              {enc.status}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 w-full sm:w-auto">
