@@ -1279,20 +1279,50 @@ export default function CatequizandosList() {
                   <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhum encontro realizado encontrado.</div>
                 ) : (
                   <>
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Selecionar Encontro</label>
-                      <Select value={freqEncontroId} onValueChange={setFreqEncontroId}>
-                        <SelectTrigger className="w-full h-12 bg-white rounded-xl shadow-sm border-2">
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {encontrosRealizados.map(e => (
-                            <SelectItem key={e.id} value={e.id}>
-                              {new Date(e.data + 'T12:00:00').toLocaleDateString('pt-BR')} - {e.tema}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between px-1">
+                        <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Selecionar Encontro</label>
+                      </div>
+                      <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar -mx-5 px-5">
+                        {encontrosRealizados.map(e => {
+                          const isSelected = freqEncontroId === e.id;
+                          const d = new Date(e.data + 'T12:00:00');
+                          return (
+                            <button
+                              key={e.id}
+                              onClick={() => setFreqEncontroId(e.id)}
+                              className={cn(
+                                "snap-center shrink-0 w-[260px] text-left p-4 rounded-3xl border-2 transition-all duration-300 relative overflow-hidden group",
+                                isSelected 
+                                  ? "border-indigo-500 bg-indigo-50 shadow-md scale-[1.02]" 
+                                  : "border-black/5 bg-white hover:border-indigo-200 hover:bg-indigo-50/50"
+                              )}
+                            >
+                              {isSelected && (
+                                <div className="absolute -right-4 -top-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-2xl" />
+                              )}
+                              <div className="flex items-start gap-3.5 relative z-10">
+                                <div className={cn(
+                                  "w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0 transition-all shadow-inner",
+                                  isSelected ? "bg-indigo-500 text-white shadow-indigo-500/30" : "bg-black/5 text-muted-foreground group-hover:bg-indigo-100 group-hover:text-indigo-600"
+                                )}>
+                                  <span className="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 mt-1">{d.toLocaleDateString('pt-BR', { month: 'short' }).substring(0,3)}</span>
+                                  <span className="text-2xl font-black leading-none tracking-tighter">{String(d.getDate()).padStart(2,'0')}</span>
+                                </div>
+                                <div className="flex-1 min-w-0 pt-0.5">
+                                  <div className="flex items-center gap-1 mb-1">
+                                    <CalendarDays className={cn("w-3 h-3", isSelected ? "text-indigo-500" : "text-muted-foreground")} />
+                                    <p className={cn("text-[10px] font-black uppercase tracking-widest", isSelected ? "text-indigo-600" : "text-muted-foreground")}>
+                                      Encontro
+                                    </p>
+                                  </div>
+                                  <p className="text-sm font-bold text-foreground line-clamp-2 leading-tight">{e.tema}</p>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm mt-4">
@@ -1334,24 +1364,48 @@ export default function CatequizandosList() {
                   <div className="py-12 text-center text-muted-foreground text-sm font-medium">Nenhum dado de encontro disponível.</div>
                 ) : (
                   <>
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Filtrar por Mês</label>
-                      <Select value={freqMes} onValueChange={setFreqMes}>
-                        <SelectTrigger className="w-full h-12 bg-white rounded-xl shadow-sm border-2">
-                          <SelectValue placeholder="Selecione..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {mesesDisponiveis.map(m => {
-                            const [year, month] = m.split('-');
-                            const nomeMes = new Date(Number(year), Number(month)-1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-                            return (
-                              <SelectItem key={m} value={m} className="capitalize">
-                                {nomeMes}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center justify-between px-1">
+                        <label className="text-xs font-black text-zinc-900 uppercase tracking-widest">Filtrar por Mês</label>
+                      </div>
+                      <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar -mx-5 px-5">
+                        {mesesDisponiveis.map(m => {
+                          const isSelected = freqMes === m;
+                          const [year, month] = m.split('-');
+                          const date = new Date(Number(year), Number(month)-1, 1);
+                          return (
+                            <button
+                              key={m}
+                              onClick={() => setFreqMes(m)}
+                              className={cn(
+                                "snap-center shrink-0 w-[200px] text-left p-4 rounded-3xl border-2 transition-all duration-300 relative overflow-hidden group",
+                                isSelected 
+                                  ? "border-indigo-500 bg-indigo-50 shadow-md scale-[1.02]" 
+                                  : "border-black/5 bg-white hover:border-indigo-200 hover:bg-indigo-50/50"
+                              )}
+                            >
+                              {isSelected && (
+                                <div className="absolute -right-4 -top-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-2xl" />
+                              )}
+                              <div className="flex items-start gap-3.5 relative z-10">
+                                <div className={cn(
+                                  "w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0 transition-all shadow-inner",
+                                  isSelected ? "bg-indigo-500 text-white shadow-indigo-500/30" : "bg-black/5 text-muted-foreground group-hover:bg-indigo-100 group-hover:text-indigo-600"
+                                )}>
+                                  <span className="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 mt-1">{year}</span>
+                                  <span className="text-xl font-black leading-none tracking-tighter capitalize">{date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.','')}</span>
+                                </div>
+                                <div className="flex-1 min-w-0 pt-1.5">
+                                  <p className={cn("text-[10px] font-black uppercase tracking-widest mb-0.5", isSelected ? "text-indigo-600" : "text-muted-foreground")}>
+                                    Resumo de
+                                  </p>
+                                  <p className="text-sm font-bold text-foreground capitalize truncate">{date.toLocaleDateString('pt-BR', { month: 'long' })}</p>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="bg-white rounded-2xl border border-black/10 overflow-hidden shadow-sm mt-4">
