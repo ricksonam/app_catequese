@@ -584,144 +584,7 @@ export default function ReunioesList() {
                   </div>
                 )}
 
-                {/* --- SEÇÃO UNIFICADA: ROTEIRO (Para TODOS os tipos) --- */}
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500 delay-150">
-                  {/* Card Único: Roteiro da Reunião */}
-                  <div className="p-5 rounded-2xl bg-white border-2 border-zinc-200 shadow-sm space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-lg">
-                        <Book className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-black text-zinc-900 uppercase tracking-tight leading-none">Roteiro da Reunião</h3>
-                        <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Oração e Tópicos de Pauta</p>
-                      </div>
-                    </div>
 
-                    <div className="h-px bg-zinc-100" />
-
-                    {/* Momento de Oração Unificado (Lado a Lado) */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Tipo de Oração</label>
-                        <select 
-                          value={form.oracaoTipo || ""} 
-                          onChange={(e) => updateField("oracaoTipo", e.target.value as any)}
-                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-base font-bold focus:ring-2 focus:ring-primary/20 outline-none cursor-pointer"
-                        >
-                          <option value="">Escolher...</option>
-                          {ORACAO_TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">Leitura Bíblica</label>
-                        <input 
-                          type="text" 
-                          value={form.oracaoInicial || ""} 
-                          onChange={(e) => updateField("oracaoInicial", e.target.value)}
-                          placeholder="Ex: Mt 5, 1-12"
-                          className="w-full h-10 px-3 rounded-xl border border-black/10 bg-white text-base font-bold focus:ring-2 focus:ring-primary/20 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    {form.tipo !== 'Reunião de preparação de encontro' && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between px-1">
-                          <div className="flex flex-col">
-                            <label className="text-sm font-black text-zinc-700 uppercase tracking-widest leading-none">Tópicos da Reunião</label>
-                            <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">Pautas e horários previstos</p>
-                          </div>
-                          <button 
-                            type="button" 
-                            onClick={() => {
-                              const next = [...(form.pautas || []), { id: crypto.randomUUID(), titulo: "", descricao: "", tempo: 0 }];
-                              updateField("pautas", next);
-                            }}
-                            className="text-[9px] font-black text-white bg-zinc-900 px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 hover:bg-zinc-800 transition-all border-2 border-zinc-900 shadow-sm active:scale-95"
-                          >
-                            <Plus className="h-3.5 w-3.5" /> Adicionar Pauta
-                          </button>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 gap-4">
-                          {(form.pautas || []).length === 0 ? (
-                            <div className="py-8 px-4 border-2 border-dashed border-zinc-100 rounded-2xl flex flex-col items-center justify-center gap-2">
-                              <ListChecks className="h-8 w-8 text-zinc-200" />
-                              <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">Nenhuma pauta adicionada</p>
-                            </div>
-                          ) : (
-                            (form.pautas || []).map((p, idx) => (
-                              <div key={p.id} className="relative group animate-in slide-in-from-right-4 duration-300" style={{ animationDelay: `${idx * 50}ms` }}>
-                                <div className="absolute -left-1 top-0 bottom-0 w-1 bg-zinc-900 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                                <div className="bg-white rounded-[1.5rem] p-4 sm:p-5 border-2 border-zinc-900 shadow-sm group-hover:shadow-md transition-all space-y-3.5">
-                                  <div className="flex items-start gap-3">
-                                    <div className="w-6 h-6 rounded-lg bg-zinc-900 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm">
-                                      {idx + 1}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <input 
-                                        placeholder="Título da pauta..." 
-                                        value={p.titulo} 
-                                        onChange={(e) => {
-                                          const next = [...(form.pautas || [])];
-                                          next[idx] = { ...p, titulo: e.target.value };
-                                          updateField("pautas", next);
-                                        }}
-                                        className="w-full bg-transparent border-none focus:ring-0 text-xl font-black p-0 text-zinc-900 placeholder:text-zinc-200"
-                                      />
-                                    </div>
-                                    <button 
-                                      type="button"
-                                      onClick={() => {
-                                        const next = (form.pautas || []).filter(x => x.id !== p.id);
-                                        updateField("pautas", next);
-                                      }}
-                                      className="p-1.5 rounded-lg text-zinc-300 hover:text-red-500 hover:bg-red-50 transition-all"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </button>
-                                  </div>
-
-                                  <textarea 
-                                    placeholder="O que será discutido neste tópico?" 
-                                    value={p.descricao}
-                                    onChange={(e) => {
-                                      const next = [...(form.pautas || [])];
-                                      next[idx] = { ...p, descricao: e.target.value };
-                                      updateField("pautas", next);
-                                    }}
-                                    className="w-full bg-zinc-50 border-none focus:ring-2 focus:ring-zinc-900 rounded-xl text-base font-medium text-zinc-700 p-3 min-h-[80px] resize-none placeholder:text-zinc-300 leading-relaxed transition-all shadow-inner"
-                                  />
-
-                                  <div className="flex items-center gap-2 pt-1">
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 rounded-lg border border-zinc-200">
-                                      <Clock className="h-3 w-3 text-zinc-900" />
-                                      <span className="text-[10px] font-black text-zinc-900 uppercase">Tempo:</span>
-                                      <input 
-                                        type="number"
-                                        value={p.tempo || 0}
-                                        onChange={(e) => {
-                                          const next = [...(form.pautas || [])];
-                                          next[idx] = { ...p, tempo: parseInt(e.target.value) || 0 };
-                                          updateField("pautas", next);
-                                        }}
-                                        className="w-12 bg-transparent border-none focus:ring-0 text-xs font-black p-0 text-zinc-900"
-                                        min="0"
-                                      />
-                                      <span className="text-[9px] font-bold text-zinc-500">min</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
 
                 {/* --- SEÇÃO EXCLUSIVA: PREPARAÇÃO DE SACRAMENTO / LITURGIA --- */}
                 {form.tipo === 'Reunião de preparação de sacramento' && (
@@ -779,7 +642,7 @@ export default function ReunioesList() {
                   <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
                   
                   <div>
-                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Observações Finais</label>
+                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Pautas da Reunião</label>
                     <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} placeholder="Anotações gerais..." className="form-input min-h-[80px] resize-y" />
                   </div>
 
