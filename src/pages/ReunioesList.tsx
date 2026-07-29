@@ -20,7 +20,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
 
   return (
     <div>
-      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
+      <label className="text-sm font-bold text-zinc-900 mb-1.5 block">{labelWithRedAsterisk}</label>
       <input 
         type={type} 
         value={value} 
@@ -205,14 +205,69 @@ export default function ReunioesList() {
 
   const updateField = useCallback((field: string, value: string) => { setForm((f) => ({ ...f, [field]: value })); }, []);
 
+  const handlePautasKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      const target = e.target as HTMLTextAreaElement;
+      const cursor = target.selectionStart;
+      const value = target.value;
+      const textBefore = value.substring(0, cursor);
+      
+      const lines = textBefore.split('\n');
+      const currentLine = lines[lines.length - 1];
+      
+      const match = currentLine.match(/^(\s*)(\d+\. |- |• )/);
+      
+      if (match) {
+        e.preventDefault();
+        const prefix = match[1];
+        const listToken = match[2];
+        
+        if (currentLine === match[0]) {
+          const newValue = value.substring(0, cursor - currentLine.length) + '\n' + value.substring(target.selectionEnd);
+          updateField("observacao", newValue);
+          setTimeout(() => {
+            if (target) {
+              target.selectionStart = target.selectionEnd = cursor - currentLine.length + 1;
+            }
+          }, 0);
+          return;
+        }
+
+        let nextToken = '• ';
+        if (/\d+\./.test(listToken)) {
+          const num = parseInt(listToken, 10);
+          nextToken = `${num + 1}. `;
+        } else if (listToken === '- ') {
+          nextToken = '- ';
+        }
+        
+        const insertText = `\n${prefix}${nextToken}`;
+        const newValue = textBefore + insertText + value.substring(target.selectionEnd);
+        updateField("observacao", newValue);
+        
+        setTimeout(() => {
+          if (target) {
+            target.selectionStart = target.selectionEnd = cursor + insertText.length;
+          }
+        }, 0);
+      }
+    }
+  }, [updateField]);
+
+  const handlePautasFocus = useCallback((e: React.FocusEvent<HTMLTextAreaElement>) => {
+    if (!e.target.value || !e.target.value.trim()) {
+      updateField("observacao", "1. ");
+    }
+  }, [updateField]);
+
   const handleAdd = async () => {
-    if (!form.nome) { toast.error("Nome é obrigatório"); return; }
+    const finalNome = form.nome?.trim() || `${form.tipo}${form.data ? ' - ' + formatarDataVigente(form.data) : ''}`;
     try {
       if (editingId) {
         const existing = list.find(a => a.id === editingId);
         await mutation.mutateAsync({ 
           ...existing!, 
-          nome: form.nome, 
+          nome: finalNome, 
           descricao: form.descricao,
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
@@ -233,7 +288,7 @@ export default function ReunioesList() {
         await mutation.mutateAsync({ 
           id: crypto.randomUUID(), 
           turmaId: id!, 
-          nome: form.nome, 
+          nome: finalNome, 
           descricao: form.descricao,
           pautas: form.pautas,
           oracaoInicial: form.oracaoInicial,
@@ -319,7 +374,7 @@ export default function ReunioesList() {
                   </div>
                   <div className="flex-1 overflow-y-auto p-6 pt-2 sm:p-0 sm:mt-4 space-y-4 pr-2 custom-scrollbar">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-900 mb-1 block">Tipo de Reunião *</label>
+                  <label className="text-sm font-bold text-zinc-900 mb-1.5 block">Tipo de Reunião *</label>
                   <select 
                     value={form.tipo} 
                     onChange={(e) => {
@@ -333,7 +388,7 @@ export default function ReunioesList() {
                 </div>
 
                   <FieldInput 
-                    label={form.tipo === 'Reunião de preparação de sacramento' ? "Sacramento/Rito/Etapa *" : "Nome da Reunião *"} 
+                    label={form.tipo === 'Reunião de preparação de sacramento' ? "Sacramento/Rito/Etapa" : "Nome da Reunião"} 
                     value={form.nome} 
                     onChange={(v) => updateField("nome", v)} 
                     placeholder={
@@ -642,8 +697,8 @@ export default function ReunioesList() {
                   <FieldInput label="Local" value={form.local} onChange={(v) => updateField("local", v)} placeholder="Sala de Catequese" />
                   
                   <div>
-                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Pautas da Reunião</label>
-                    <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} placeholder="Anotações gerais..." className="form-input min-h-[80px] resize-y" />
+                    <label className="text-sm font-bold text-zinc-900 mb-1.5 block">Pautas da Reunião</label>
+                    <textarea value={form.observacao} onChange={(e) => updateField("observacao", e.target.value)} onKeyDown={handlePautasKeyDown} onFocus={handlePautasFocus} placeholder="1. Anotações gerais..." className="form-input min-h-[80px] resize-y" />
                   </div>
 
                   <button onClick={handleAdd} disabled={mutation.isPending} className="w-full action-btn">
