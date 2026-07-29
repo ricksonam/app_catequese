@@ -966,21 +966,24 @@ export default function CatequizandosList() {
                   )}
                 </button>
               </div>
-              <button 
-                onClick={handleCopyFrequenciaLink} 
-                className="w-full flex flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm"
-              >
-                <Share2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Compartilhar Frequência Pública</span>
-              </button>
+              </div>
+              <div className="flex flex-row gap-3">
+                <button 
+                  onClick={handleCopyFrequenciaLink} 
+                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm"
+                >
+                  <Share2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-center">Compartilhar frequência</span>
+                </button>
+                <button 
+                  onClick={() => setShowEvolucao(true)} 
+                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 hover:bg-emerald-200 transition-all group active:scale-95 shadow-sm"
+                >
+                  <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-center">Painel de Evolução</span>
+                </button>
+              </div>
             </div>
-            <button 
-              onClick={() => setShowEvolucao(true)} 
-              className="w-full flex flex-row items-center justify-center gap-2 py-3.5 rounded-xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 hover:bg-emerald-200 transition-all group active:scale-95 shadow-sm"
-            >
-              <TrendingUp className="h-5 w-5 group-hover:animate-pulse" />
-              <span className="text-xs sm:text-sm font-black uppercase tracking-tight">Painel de Evolução</span>
-            </button>
           </div>
 
           {/* Modal Inscrição Online */}
