@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart, ShoppingCart, Activity } from "lucide-react";
+import { BookOpen, Users, CalendarDays, ChevronRight, Cake, X, BellRing, Trophy, Book, AlertTriangle, Heart, Link2, Loader2, RefreshCw, Flame, Sparkles, Mail, Code, Plus, Compass, Star, BarChart2, BookHeart, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useParoquias, useComunidades, useCatequistas, useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes } from "@/hooks/useSupabaseData";
 import { upsertCatequista } from "@/lib/supabaseStore";
@@ -632,9 +632,9 @@ export default function Dashboard() {
       alertText: "Hoje"
     },
     {
-      title: "Loja",
-      iconType: "loja",
-      onClick: () => navigate("/modulos/loja"),
+      title: "Biblioteca",
+      iconType: "biblioteca",
+      onClick: () => navigate("/modulos/biblioteca"),
       alert: showMaterialBanner,
       alertText: "Novo"
     },
@@ -973,54 +973,6 @@ export default function Dashboard() {
                 <div className="h-px flex-1 bg-blue-200/70" />
               </div>
 
-              {/* ── CARD BARRA PAINEL IVC ── */}
-              <div className="pb-4 relative z-10 max-w-[260px] mx-auto w-full px-1 sm:px-0">
-                <button
-                  onClick={() => {
-                    if (selectedTurmaId !== "all" && selectedTurma?.status !== 'pending') {
-                      navigate(`/turmas/${selectedTurmaId}/painel-ivc`);
-                    } else if (selectedTurmaId === "all") {
-                      toast.info("Selecione uma turma para acessar este painel.");
-                      setTurmaPickerOpen(true);
-                    } else {
-                      toast.info("Aguarde a aprovação do acesso.");
-                    }
-                  }}
-                  className="w-full relative group rounded-[22px] p-[2px] transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] text-left overflow-hidden shadow-lg shadow-emerald-500/15"
-                >
-                  {/* Borda Gradiente Animada */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-400 to-green-500 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  {/* Efeito de brilho giratório */}
-                  <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,transparent_60deg,rgba(255,255,255,0.8)_120deg,transparent_180deg)] group-hover:animate-spin-slow opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                  {/* Fundo interno Glassmorphism */}
-                  <div className="relative h-full w-full bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl rounded-[20px] p-2.5 sm:p-3 flex items-center gap-3 overflow-hidden border border-white/50 dark:border-white/10">
-                    
-                    {/* Ícone flutuante */}
-                    <div className="relative shrink-0 w-10 h-10 rounded-[12px] bg-gradient-to-br from-emerald-500 to-teal-600 p-[1px] shadow-sm group-hover:shadow-emerald-500/30 transition-all duration-300">
-                      <div className="w-full h-full rounded-[11px] bg-white/10 dark:bg-black/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-105 transition-transform duration-500 overflow-hidden">
-                        <Activity className="h-5 w-5 text-white drop-shadow-sm" />
-                      </div>
-                    </div>
-
-                    {/* Conteúdo textual */}
-                    <div className="flex-1 min-w-0 z-10">
-                      <span className="block text-[12px] sm:text-[13px] font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 uppercase tracking-widest leading-none mb-0.5">
-                        Painel IVC
-                      </span>
-                      <span className="block text-[9px] sm:text-[10px] text-muted-foreground font-bold truncate group-hover:text-foreground transition-colors duration-300">
-                        {selectedTurmaId !== 'all' && selectedTurma ? `Acompanhamento: ${selectedTurma.nome}` : "Selecione uma turma"}
-                      </span>
-                    </div>
-
-                    {/* Seta indicativa */}
-                    <div className="shrink-0 w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-500/20 transition-colors duration-300">
-                      <ChevronRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform duration-300" />
-                    </div>
-                  </div>
-                </button>
-              </div>
 
               {/* Grid módulos da turma */}
               <div className="grid grid-cols-3 gap-3 items-start">

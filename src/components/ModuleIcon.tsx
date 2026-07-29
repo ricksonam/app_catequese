@@ -466,6 +466,47 @@ export function ModuleIcon({ type, className }: ModuleIconProps) {
         </svg>
       );
 
+    case "biblioteca":
+      return (
+        <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg-bib2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#065f46" />
+              <stop offset="100%" stopColor="#34d399" />
+            </linearGradient>
+            <radialGradient id="glow-bib2" cx="50%" cy="30%" r="60%">
+              <stop offset="0%" stopColor="#a7f3d0" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#065f46" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="100" height="100" rx="16" fill="url(#bg-bib2)" />
+          <rect width="100" height="100" rx="16" fill="url(#glow-bib2)" />
+          {/* Prateleira */}
+          <rect x="10" y="74" width="80" height="6" rx="3" fill="white" fillOpacity="0.4" />
+          {/* Livro 1 (fino, azulado) */}
+          <rect x="15" y="34" width="10" height="40" rx="3" fill="white" fillOpacity="0.9" />
+          <rect x="15" y="34" width="4" height="40" rx="2" fill="white" fillOpacity="0.4" />
+          {/* Livro 2 (largo, creme) */}
+          <rect x="27" y="28" width="15" height="46" rx="3" fill="#fef3c7" fillOpacity="0.9" />
+          <rect x="27" y="28" width="5" height="46" rx="2" fill="#fbbf24" fillOpacity="0.5" />
+          {/* Cruz no livro 2 */}
+          <rect x="36" y="38" width="3" height="14" rx="1" fill="#065f46" fillOpacity="0.5" />
+          <rect x="32" y="43" width="11" height="3" rx="1" fill="#065f46" fillOpacity="0.5" />
+          {/* Livro 3 (médio, branco) */}
+          <rect x="44" y="38" width="12" height="36" rx="3" fill="white" fillOpacity="0.85" />
+          <rect x="44" y="38" width="4" height="36" rx="2" fill="white" fillOpacity="0.3" />
+          {/* Livro 4 (fino, inclinado) */}
+          <rect x="58" y="40" width="9" height="34" rx="3" fill="white" fillOpacity="0.75" transform="rotate(-5 62 57)" />
+          {/* Livro 5 (largo, à direita) */}
+          <rect x="68" y="30" width="14" height="44" rx="3" fill="#a7f3d0" fillOpacity="0.85" />
+          <rect x="68" y="30" width="5" height="44" rx="2" fill="white" fillOpacity="0.3" />
+          {/* Estrelinhas decorativas */}
+          <circle cx="18" cy="20" r="2.5" fill="white" fillOpacity="0.5" />
+          <circle cx="82" cy="18" r="2" fill="white" fillOpacity="0.4" />
+          <circle cx="50" cy="14" r="3" fill="#fbbf24" fillOpacity="0.7" />
+        </svg>
+      );
+
     default:
       return (
         <svg viewBox="0 0 100 100" className={className || base} xmlns="http://www.w3.org/2000/svg">
