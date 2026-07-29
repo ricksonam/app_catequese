@@ -966,7 +966,6 @@ export default function CatequizandosList() {
                   )}
                 </button>
               </div>
-              </div>
               <div className="flex flex-row gap-3">
                 <button 
                   onClick={handleCopyFrequenciaLink} 
