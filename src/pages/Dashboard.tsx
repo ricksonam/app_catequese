@@ -890,8 +890,8 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Espaço entre aniversariantes e módulos */}
-      <div className="mb-3" />
+      {/* Espaço entre aniversariantes e o card da turma */}
+      <div className="mb-8" />
 
 
 
@@ -968,7 +968,7 @@ export default function Dashboard() {
                 <div className="h-px flex-1 bg-blue-200/70" />
                 <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-blue-900/40 border-2 border-blue-400/80 dark:border-blue-500/60 shadow-md">
                   <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <span className="text-[11px] sm:text-xs font-black text-foreground uppercase tracking-widest">Módulos da Turma Selecionada</span>
+                  <span className="text-[11px] sm:text-xs font-black text-foreground uppercase tracking-widest">Módulos da Turma</span>
                 </div>
                 <div className="h-px flex-1 bg-blue-200/70" />
               </div>
