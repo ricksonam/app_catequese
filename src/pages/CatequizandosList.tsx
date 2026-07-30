@@ -36,7 +36,7 @@ function FieldInput({ label, type = "text", value, onChange, placeholder }: { la
 
   return (
     <div>
-      <label className="text-xs font-semibold text-zinc-900 mb-1 block">{labelWithRedAsterisk}</label>
+      <label className="text-sm font-black text-zinc-900 mb-1.5 block uppercase tracking-wide">{labelWithRedAsterisk}</label>
       <input 
         type={type} 
         value={value} 
@@ -768,7 +768,7 @@ export default function CatequizandosList() {
                         onChange={(v) => updateField("dataNascimento", v)} 
                       />
                       <div>
-                        <label className="text-xs font-semibold text-zinc-900 mb-1 block">Idade</label>
+                        <label className="text-sm font-black text-zinc-900 mb-1.5 block uppercase tracking-wide">Idade</label>
                         <div className="h-10 flex items-center px-3 bg-muted/30 rounded-md border border-input font-bold text-primary">
                           {calcularIdade(form.dataNascimento) || "—"}
                         </div>
@@ -825,7 +825,7 @@ export default function CatequizandosList() {
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-zinc-900 mb-1 block">Participa de alguma Pastoral ou Grupo?</label>
+                    <label className="text-sm font-black text-zinc-900 mb-1.5 block uppercase tracking-wide">Participa de alguma Pastoral ou Grupo?</label>
                     <textarea 
                       value={form.participacaoPastoral} 
                       onChange={(e) => setForm(f => ({ ...f, participacaoPastoral: e.target.value }))} 
@@ -969,17 +969,17 @@ export default function CatequizandosList() {
               <div className="flex flex-row gap-3">
                 <button 
                   onClick={handleCopyFrequenciaLink} 
-                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm"
+                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm"
                 >
                   <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight text-center">Compartilhar frequência</span>
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-center">Frequência</span>
                 </button>
                 <button 
                   onClick={() => setShowEvolucao(true)} 
-                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 hover:bg-emerald-200 transition-all group active:scale-95 shadow-sm"
+                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 hover:bg-emerald-200 transition-all group active:scale-95 shadow-sm"
                 >
                   <TrendingUp className="h-4 w-4 group-hover:animate-pulse" />
-                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-tight text-center">Painel de Evolução</span>
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-center">Painel de Evolução</span>
                 </button>
               </div>
             </div>
@@ -1511,34 +1511,37 @@ export default function CatequizandosList() {
 
                   return (
                     <div key={c.id} className={cn("flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 shadow-sm", eHoje && "ring-2 ring-amber-500 bg-amber-50/30")}>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
                          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0">
-                           {c.foto ? <img src={c.foto} className="w-full h-full object-cover" /> : <span className="text-xs font-bold">{c.nome.charAt(0)}</span>}
+                           {c.foto ? <img src={c.foto} className="w-full h-full object-cover" /> : <span className="text-sm font-bold">{c.nome.charAt(0)}</span>}
                          </div>
-                         <div>
-                            <p className="text-sm font-bold text-foreground truncate max-w-[150px]">{c.nome}</p>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                         <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-foreground leading-snug">{c.nome}</p>
+                            <p className="text-sm font-black text-amber-600 mt-0.5">
                               {periodoCelebracao === 'anual' ? (
                                 `${data.getDate()} de ${MESES[data.getMonth()]}`
                               ) : (
                                 `${jaPassou ? 'Celebrou dia ' : 'Dia '} ${data.getDate()}`
                               )}
                             </p>
+                            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-widest">
+                              {celebracoesTab === 'nascimento' ? `Nasc. ${data.getFullYear()}` : `Batismo ${data.getFullYear()}`}
+                            </p>
                          </div>
                       </div>
                       
-                      <div className="text-right">
+                      <div className="text-right shrink-0 ml-2">
                         {celebracoesTab === 'nascimento' ? (
-                          <span className="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-1 rounded-lg">
+                          <span className="text-sm font-black text-amber-600 bg-amber-100 px-3 py-1.5 rounded-lg">
                             {calcularIdade(c.dataNascimento)}
                           </span>
                         ) : (
-                          <div className="flex flex-col items-end">
-                            <span className="text-xs font-black text-blue-600 bg-blue-100 px-2.5 py-1 rounded-lg">
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-sm font-black text-blue-600 bg-blue-100 px-3 py-1.5 rounded-lg">
                                Batismo
                             </span>
-                            <span className="text-[9px] font-bold text-muted-foreground mt-1 italic">
-                              {data.getFullYear()}
+                            <span className="text-xs font-bold text-blue-500">
+                              {data.toLocaleDateString('pt-BR')}
                             </span>
                           </div>
                         )}
@@ -1903,38 +1906,38 @@ export default function CatequizandosList() {
                 <div className="grid grid-cols-1 gap-6">
                    {/* Personal Info Section */}
                    <section className="bg-white rounded-3xl p-6 border-2 border-zinc-100 shadow-xl">
-                      <h3 className="text-sm font-black text-black uppercase tracking-widest mb-6 text-center">Dados de Identificação</h3>
+                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Dados de Identificação</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 px-4">
                          <div className="space-y-4 text-left">
                             <div className="flex flex-col gap-1">
-                               <span className="text-[9px] font-black text-primary uppercase tracking-widest">Nascimento</span>
-                               <p className="text-sm font-bold text-zinc-900">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T12:00').toLocaleDateString("pt-BR") : "—"}</p>
+                               <span className="text-xs font-black text-primary uppercase tracking-widest">Nascimento</span>
+                               <p className="text-base font-bold text-zinc-900">{viewItem.dataNascimento ? new Date(viewItem.dataNascimento + 'T12:00').toLocaleDateString("pt-BR") : "—"}</p>
                             </div>
                             <div className="flex flex-col gap-1">
-                               <span className="text-[9px] font-black text-primary uppercase tracking-widest">Celular</span>
-                               <p className="text-sm font-bold text-zinc-900">{viewItem.telefone || "—"}</p>
+                               <span className="text-xs font-black text-primary uppercase tracking-widest">Celular</span>
+                               <p className="text-base font-bold text-zinc-900">{viewItem.telefone || "—"}</p>
                             </div>
                             <div className="flex flex-col gap-1">
-                               <span className="text-[9px] font-black text-primary uppercase tracking-widest">E-mail</span>
-                               <p className="text-sm font-bold text-zinc-900 break-all">{viewItem.email || "—"}</p>
+                               <span className="text-xs font-black text-primary uppercase tracking-widest">E-mail</span>
+                               <p className="text-base font-bold text-zinc-900 break-all">{viewItem.email || "—"}</p>
                             </div>
                          </div>
                          <div className="space-y-4 text-left">
                             <div className="flex flex-col gap-1">
-                               <span className="text-[9px] font-black text-primary uppercase tracking-widest">Residência</span>
+                               <span className="text-xs font-black text-primary uppercase tracking-widest">Residência</span>
                                {viewItem.endereco || viewItem.bairro || viewItem.numero ? (
-                                 <p className="text-sm font-bold text-zinc-900 leading-relaxed">
+                                 <p className="text-base font-bold text-zinc-900 leading-relaxed">
                                     {viewItem.endereco}{viewItem.numero ? `, ${viewItem.numero}` : ""}<br/>
-                                    <span className="text-primary font-black uppercase text-[10px]">{viewItem.bairro}{viewItem.complemento ? ` (${viewItem.complemento})` : ""}</span>
+                                    <span className="text-primary font-black uppercase text-xs">{viewItem.bairro}{viewItem.complemento ? ` (${viewItem.complemento})` : ""}</span>
                                  </p>
-                               ) : <p className="text-sm font-bold text-zinc-300 italic">—</p>}
+                               ) : <p className="text-base font-bold text-zinc-300 italic">—</p>}
                             </div>
                             {viewItem.necessidadeEspecial && viewItem.necessidadeEspecial !== 'nenhuma' && (
                                <div className="flex flex-col gap-1">
-                                  <span className="text-[9px] font-black text-destructive uppercase tracking-widest">Necessidade Especial</span>
+                                  <span className="text-xs font-black text-destructive uppercase tracking-widest">Necessidade Especial</span>
                                   <div className="flex items-center gap-2">
-                                     <div className={cn("w-2 h-2 rounded-full", NECESSIDADES_ESPECIAIS.find(n => n.id === viewItem.necessidadeEspecial)?.color)} />
-                                     <p className="text-sm font-black text-zinc-900">{NECESSIDADES_ESPECIAIS.find(n => n.id === viewItem.necessidadeEspecial)?.label}</p>
+                                     <div className={cn("w-2.5 h-2.5 rounded-full", NECESSIDADES_ESPECIAIS.find(n => n.id === viewItem.necessidadeEspecial)?.color)} />
+                                     <p className="text-base font-black text-zinc-900">{NECESSIDADES_ESPECIAIS.find(n => n.id === viewItem.necessidadeEspecial)?.label}</p>
                                   </div>
                                </div>
                             )}
@@ -1944,7 +1947,7 @@ export default function CatequizandosList() {
 
                    {/* Family Section */}
                    <section className="bg-white rounded-3xl p-6 border-2 border-blue-100 shadow-xl shadow-blue-200/50">
-                      <h3 className="text-sm font-black text-black uppercase tracking-widest mb-6 text-center">Responsáveis Legais</h3>
+                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Responsáveis Legais</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                          {viewItem.responsaveis?.length ? (
                            viewItem.responsaveis.map(resp => (
@@ -1972,7 +1975,7 @@ export default function CatequizandosList() {
 
                    {/* Sacramental Section */}
                    <section className="bg-white rounded-3xl p-6 border-2 border-orange-100 shadow-xl shadow-orange-200/50">
-                      <h3 className="text-sm font-black text-black uppercase tracking-widest mb-6 text-center">Caminhada Sacramental</h3>
+                      <h3 className="text-base font-black text-black uppercase tracking-widest mb-6 text-center">Caminhada Sacramental</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                          {(["batismo", "eucaristia", "crisma"] as const).map(sac => { 
                            const s = viewItem.dadosPastorais?.sacramentos?.[sac] || viewItem.sacramentos?.[sac]; 
@@ -1980,19 +1983,19 @@ export default function CatequizandosList() {
                            const label = sac === 'eucaristia' ? '1ª Eucaristia' : sac;
                            return (
                              <div key={sac} className={cn("p-4 rounded-2xl border-2 transition-all text-center", isOk ? "bg-orange-50/30 border-orange-200" : "bg-zinc-50 border-zinc-100 opacity-60")}>
-                                <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md", isOk ? "bg-orange-500 text-white" : "bg-zinc-200 text-zinc-400")}>
-                                   {isOk ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md", isOk ? "bg-orange-500 text-white" : "bg-zinc-200 text-zinc-400")}>
+                                   {isOk ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
                                 </div>
-                                <p className={cn("text-[9px] font-black uppercase tracking-widest", isOk ? "text-orange-600" : "text-zinc-500")}>{label}</p>
-                                {isOk && s.paroquia && <p className="text-[9px] font-black text-orange-400 mt-1 uppercase tracking-tight leading-tight">{s.paroquia}</p>}
-                                {isOk && s.data && <p className="text-xs font-black text-zinc-900 mt-1">{new Date(s.data + 'T12:00').toLocaleDateString("pt-BR")}</p>}
+                                <p className={cn("text-sm font-black uppercase tracking-widest", isOk ? "text-orange-600" : "text-zinc-500")}>{label}</p>
+                                {isOk && s.paroquia && <p className="text-xs font-black text-orange-400 mt-1 uppercase tracking-tight leading-tight">{s.paroquia}</p>}
+                                {isOk && s.data && <p className="text-sm font-black text-zinc-900 mt-1">{new Date(s.data + 'T12:00').toLocaleDateString("pt-BR")}</p>}
                              </div>
                            );
                          })}
                       </div>
                       {viewItem.dadosPastorais?.participacaoPastoral && (
                         <div className="mt-4 p-4 bg-orange-50/20 rounded-2xl border border-orange-100 italic text-center">
-                           <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest block mb-1">Engajamento Comunitário</span>
+                           <span className="text-xs font-black text-orange-400 uppercase tracking-widest block mb-1">Engajamento Comunitário</span>
                            <p className="text-sm font-bold text-zinc-800">"{viewItem.dadosPastorais.participacaoPastoral}"</p>
                         </div>
                       )}
