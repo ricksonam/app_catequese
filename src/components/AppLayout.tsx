@@ -15,6 +15,7 @@ import {
   X,
   BookHeart,
   ShoppingBag,
+  Heart,
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { useState, useMemo } from "react";
@@ -22,6 +23,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MenuContent } from "./MenuContent";
 import { ObjectiveModal } from "./ObjectiveModal";
+import { ApoieModal } from "./ApoieModal";
 import { useTurmas } from "@/hooks/useSupabaseData";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +48,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showObjective, setShowObjective] = useState(false);
+  const [showApoie, setShowApoie] = useState(false);
 
   const [maisOpen, setMaisOpen] = useState(false);
   const [turmaPickerOpen, setTurmaPickerOpen] = useState(false);
@@ -89,11 +92,23 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
             >
               <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
             </button>
+
+            <button 
+              onClick={() => setShowApoie(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 border border-pink-400 z-10"
+            >
+              <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse fill-white" />
+              <span>Apoie</span>
+            </button>
           </div>
           
           <ObjectiveModal 
             open={showObjective} 
             onOpenChange={setShowObjective} 
+          />
+          <ApoieModal 
+            open={showApoie} 
+            onOpenChange={setShowApoie} 
           />
         </header>
       )}
