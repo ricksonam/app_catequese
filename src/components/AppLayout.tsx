@@ -90,7 +90,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               onClick={() => setShowObjective(true)}
               className="absolute left-1/2 -translate-x-1/2 flex items-center group hover:opacity-80 transition-all active:scale-[0.98]"
             >
-              <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
+              <span className="text-2xl sm:text-3xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
             </button>
 
             <button 

@@ -20,7 +20,7 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md rounded-3xl border-none bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 shadow-2xl overflow-hidden p-0">
+      <DialogContent className="w-[92vw] sm:w-full sm:max-w-md rounded-3xl border-none bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 shadow-2xl overflow-hidden p-0">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-pink-500 via-rose-500 to-red-500"></div>
         <div className="p-6 sm:p-8">
           <div className="flex flex-col items-center text-center space-y-5">
@@ -53,8 +53,8 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
                     <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
                     Chave PIX (E-mail)
                   </div>
-                  <div className="flex items-center justify-between bg-white dark:bg-zinc-900 rounded-lg p-2.5 border border-pink-100 dark:border-pink-900/30 shadow-sm transition-all hover:border-pink-300 dark:hover:border-pink-700/50 group">
-                    <span className="font-mono text-[15px] font-bold text-slate-700 dark:text-slate-200 select-all truncate pr-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{pixKey}</span>
+                  <div className="flex items-center justify-between w-full min-w-0 bg-white dark:bg-zinc-900 rounded-lg p-2.5 border border-pink-100 dark:border-pink-900/30 shadow-sm transition-all hover:border-pink-300 dark:hover:border-pink-700/50 group">
+                    <span className="flex-1 min-w-0 text-left font-mono text-[14px] sm:text-[15px] font-bold text-slate-700 dark:text-slate-200 select-all truncate pr-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">{pixKey}</span>
                     <Button 
                       size="sm" 
                       variant="ghost" 
