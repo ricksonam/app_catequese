@@ -20,7 +20,7 @@ export function ApoieModal({ open, onOpenChange }: ApoieModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md w-[90vw] rounded-3xl border-none bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 shadow-2xl overflow-hidden p-0">
+      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md rounded-3xl border-none bg-gradient-to-br from-rose-50 via-white to-pink-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 shadow-2xl overflow-hidden p-0">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-pink-500 via-rose-500 to-red-500"></div>
         <div className="p-6 sm:p-8">
           <div className="flex flex-col items-center text-center space-y-5">
