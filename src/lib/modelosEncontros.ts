@@ -41,6 +41,7 @@ export const CATEGORIAS_MODELOS = [
   "Solenidades e Festas",
   "Vocações",
   "Mandamentos da Igreja",
+  "Mês da Bíblia",
 ];
 
 export const MODELOS_ENCONTROS: ModeloEncontro[] = [
@@ -849,6 +850,76 @@ export const MODELOS_ENCONTROS: ModeloEncontro[] = [
       step("compromisso", "Compromisso", "Identificar uma forma concreta de contribuir para a Igreja esta semana: dízimo, voluntariado, ou ajuda em alguma atividade da paróquia.", 5),
       step("avisos", "Avisos", "Avisos.", 3),
       step("oracao_final", "Oração Final", "Oração pela missão da Igreja no mundo.", 5),
+    ],
+  },
+
+  // =====================================================================
+  // MÊS DA BÍBLIA 2026 – LIVRO DE DANIEL
+  // Tema: "Seu reino jamais será destruído" (Dn 7,14)
+  // Proposta da CNBB / Comissão Episcopal para a Animação Bíblico-Catequética
+  // =====================================================================
+  {
+    id: "m58",
+    tema: "Mês da Bíblia 2026 – 1º Encontro: Fiéis na Fornalha Ardente",
+    categoria: "Mês da Bíblia",
+    leituraBiblica: "Dn 3,1-30 – Sadraque, Mesaque e Abede-Nego na fornalha ardente",
+    materialApoio: "Subsídio oficial da CNBB – Mês da Bíblia 2026 (Edições CNBB / Paulinas); Texto-base do SAB (Serviço de Animação Bíblica)",
+    roteiro: [
+      step("acolhida", "Acolhida e Ambientação", "Receber os participantes com música de louvor. Apresentar o cartaz oficial do Mês da Bíblia 2026 e o lema: 'Seu reino jamais será destruído' (Dn 7,14). Introduzir brevemente o Livro de Daniel: um livro escrito para fortalecer o povo em tempos de perseguição e exílio, lembrando que a fidelidade a Deus é mais forte que qualquer poder humano.", 10),
+      step("oracao_inicial", "Oração Inicial", "Oração ao Espírito Santo pedindo luz para compreender a Palavra. Acender uma vela no centro do grupo como símbolo da presença de Deus que não se apaga.", 5, "Oração Simples"),
+      step("desenvolvimento", "Desenvolvimento do Tema", "Narrar a história de Dn 3: O rei Nabucodonosor mandou erguer uma estátua de ouro e exigiu que todos a adorassem. Sadraque, Mesaque e Abede-Nego se recusaram. Condenados à fornalha ardente, responderam ao rei: 'Mesmo que Deus não nos salve, não adoraremos os teus deuses.' A fidelidade vai além do resultado! Na fornalha, o rei viu quatro pessoas — a quarta era como um 'filho de Deus' (Dn 3,25). Eles não foram sozinhos. Contextualizar: quais são as 'estátuas de ouro' de hoje? Consumismo, idolatria digital, pressão social, relativismo moral. Como a fé nos sustenta quando somos pressionados a abandonar nossos valores?", 25),
+      step("dinamica", "Dinâmica: Minha Fornalha Hoje", "Em pequenos grupos, cada participante responde: 'Quando me sinto pressionado(a) a trair minha fé ou meus valores cristãos?' Cada grupo compartilha uma situação e o grupo todo sugere como Deus pode estar presente nessa 'fornalha' atual.", 15),
+      step("compromisso", "Compromisso da Semana", "Identificar um momento desta semana em que será difícil testemunhar a fé (em família, no trabalho, escola) e preparar mentalmente uma resposta corajosa. Escrever o lema 'Seu reino jamais será destruído' em algum lugar visível.", 5),
+      step("avisos", "Avisos", "Informes sobre as atividades do Mês da Bíblia na paróquia e comunidade.", 3),
+      step("oracao_final", "Oração Final", "Rezar o Salmo 23 juntos: 'Ainda que eu caminhe pelo vale das sombras e da morte, não temerei mal algum, porque estás comigo.' Bênção final.", 5),
+    ],
+  },
+  {
+    id: "m59",
+    tema: "Mês da Bíblia 2026 – 2º Encontro: O Reino que Não Passa",
+    categoria: "Mês da Bíblia",
+    leituraBiblica: "Dn 2,31-45; Dn 7,9-14 – A estátua dos reinos e a visão do Filho do Homem",
+    materialApoio: "Subsídio oficial da CNBB – Mês da Bíblia 2026 (Edições CNBB / Paulinas); Texto-base do SAB",
+    roteiro: [
+      step("acolhida", "Acolhida e Retomada", "Retomar o lema do Mês da Bíblia: 'Seu reino jamais será destruído' (Dn 7,14). Perguntar: alguém viveu sua 'fornalha' esta semana (compromisso do 1º encontro)? Partilha breve em duplas.", 10),
+      step("oracao_inicial", "Oração Inicial", "Leitura orante de Dn 7,13-14: 'E lhe foi dado o poder, a honra e o reino... Seu poder é eterno, nunca passará, e seu reino jamais será destruído.' Momento de silêncio contemplativo.", 5, "Leitura Orante"),
+      step("desenvolvimento", "Desenvolvimento do Tema", "Apresentar os dois textos centrais do encontro. Em Dn 2, o rei Nabucodonosor sonha com uma estátua gigante de diferentes metais (ouro, prata, bronze, ferro e barro), que representa os grandes impérios da história — todos poderosos, mas temporários. Uma pedra, sem mão humana, golpeia a estátua e se torna uma grande montanha que enche a terra inteira: é o Reino de Deus. Em Dn 7, Daniel tem a visão do 'Filho do Homem' recebendo um reino eterno de Deus. Para os cristãos, esse Filho do Homem é Jesus Cristo! (Cf. Mc 14,62 e Mt 26,64). Reflexão: os impérios passam — Roma, Babilônia, os grandes poderes. O que realmente dura? Que tipo de 'reino' estamos construindo com nossas escolhas diárias?", 25),
+      step("dinamica", "Dinâmica: Construindo o Reino", "Distribuir blocos ou cartões coloridos. Cada participante escreve uma ação concreta que representa 'construir o Reino de Deus' em seu ambiente (família, trabalho, escola, bairro). Montar uma 'torre' com os cartões no centro e ler em voz alta. Reflexão: nossa construção coletiva é parte do Reino eterno.", 15),
+      step("compromisso", "Compromisso da Semana", "Escolher uma atitude concreta de construção do Reino: gesto de paz em uma relação difícil, ato de justiça, defesa de um colega injustiçado. Anotar e trazer o resultado no próximo encontro.", 5),
+      step("avisos", "Avisos", "Avisos da comunidade e agenda do Mês da Bíblia.", 3),
+      step("oracao_final", "Oração Final", "Pai Nosso rezado com ênfase em 'Venha a nós o Teu Reino' — pausar e contemplar o significado desta frase. Bênção final.", 5),
+    ],
+  },
+  {
+    id: "m60",
+    tema: "Mês da Bíblia 2026 – 3º Encontro: Coragem contra a Injustiça – Susana",
+    categoria: "Mês da Bíblia",
+    leituraBiblica: "Dn 13,1-64 – A história de Susana: inocência, calúnia e justiça de Deus",
+    materialApoio: "Subsídio oficial da CNBB – Mês da Bíblia 2026 (Edições CNBB / Paulinas); Texto-base do SAB (livro deuterocanônico)",
+    roteiro: [
+      step("acolhida", "Acolhida e Introdução", "Receber os participantes. Notar que hoje abordaremos um capítulo do Livro de Daniel presente na Bíblia Católica (deuterocanônico), mas ausente em outras versões — e explicar brevemente o que são livros deuterocanônicos. Perguntar: vocês já sofreram uma injustiça ou conhecem alguém que sofreu?", 10),
+      step("oracao_inicial", "Oração Inicial", "Oração pelos que sofrem injustiça. Aclamar: 'Senhor, tu conheces meu coração. Não me deixa sucumbir à calúnia e ao mal.'", 5, "Oração Simples"),
+      step("desenvolvimento", "Desenvolvimento do Tema", "Narrar a história de Susana (Dn 13): Susana era uma mulher justa e bela, casada com um homem rico. Dois anciãos (juízes) passaram a desejá-la e, ao serem rejeitados, a acusaram falsamente de adultério. Condenada à morte, Susana orou: 'Senhor, tu sabes que é falso o que eles testemunharam contra mim.' Deus ouviu e enviou Daniel, jovem ainda, que interrogou os acusadores separadamente e descobriu a contradição em seus testemunhos. Os caluniatores foram condenados. Reflexão: A história denuncia o abuso de poder, a corrupção, o assédio e a calúnia — pecados que ainda existem. Daniel representa a coragem profética de denunciar a injustiça. A oração de Susana é o grito de todo inocente que confia em Deus. Como a fé nos dá coragem para enfrentar situações de injustiça?", 25),
+      step("dinamica", "Dinâmica: Voz pelos Inocentes", "Em grupos, refletir sobre: (1) Situações de injustiça presentes na nossa realidade local, nacional ou global. (2) Como posso ser 'Daniel' — alguém que tem coragem de falar a verdade? (3) Elaborar uma oração coletiva pelos que sofrem injustiça hoje. Cada grupo apresenta sua oração.", 15),
+      step("compromisso", "Compromisso da Semana", "Agir com coragem diante de uma situação injusta esta semana: defender quem está sendo prejudicado, recusar-se a participar de fofoca ou calúnia, ou orar especificamente por alguém que sofre injustiça.", 5),
+      step("avisos", "Avisos", "Avisos da paróquia e atividades do Mês da Bíblia.", 3),
+      step("oracao_final", "Oração Final", "Rezar o Salmo 82: 'Fazei justiça ao fraco e ao órfão, amparai o necessitado e o pobre.' Bênção final.", 5),
+    ],
+  },
+  {
+    id: "m61",
+    tema: "Mês da Bíblia 2026 – 4º Encontro: Esperança que Vence a Morte",
+    categoria: "Mês da Bíblia",
+    leituraBiblica: "Dn 12,1-4; Dn 7,14 – A ressurreição e a vitória final do Reino de Deus",
+    materialApoio: "Subsídio oficial da CNBB – Mês da Bíblia 2026 (Edições CNBB / Paulinas); Texto-base do SAB; Lumen Gentium §48-51",
+    roteiro: [
+      step("acolhida", "Acolhida e Retomada do Percurso", "Retomar o percurso dos quatro encontros: 1º – Fidelidade na fornalha; 2º – O reino eterno de Deus; 3º – Coragem contra a injustiça. Perguntar: o que ficou marcado neste mês de estudo do Livro de Daniel? Partilha livre.", 10),
+      step("oracao_inicial", "Oração Inicial", "Leitura orante de Dn 12,1-3: 'Muitos dos que dormem no pó da terra se hão de despertar... Os sábios resplandecerão como o fulgor do firmamento.' Momento de silêncio e meditação.", 5, "Leitura Orante"),
+      step("desenvolvimento", "Desenvolvimento do Tema", "Dn 12 é um dos textos mais importantes do Antigo Testamento: anuncia claramente a ressurreição dos mortos — a primeira vez que esse tema aparece de forma tão explícita no AT. Em tempos de perseguição (dominação selêucida, séc. II a.C.), o livro proclama que nem a morte tem a última palavra. Deus recompensará os justos e os que sofreram por fidelidade à aliança. Para os cristãos, essa esperança se cumpre plenamente em Jesus Cristo ressuscitado (1Cor 15). O lema do Mês da Bíblia — 'Seu reino jamais será destruído' (Dn 7,14) — é a síntese de toda a mensagem: a história humana, com suas crises, perseguições e injustiças, caminha para a vitória definitiva de Deus. Nossa fidelidade hoje não é em vão. Reflexão final: Como vivo a esperança cristã diante das provações da vida? O que significa para mim saber que Deus tem a última palavra?", 25),
+      step("dinamica", "Dinâmica: Carta de Esperança", "Cada participante escreve uma 'Carta de Esperança' para si mesmo, como se fosse o Daniel escrevendo para um povo perseguido: quais são as suas 'perseguições' atuais? Qual palavra de Deus você leva do Livro de Daniel? As cartas podem ser lacradas e abertas daqui a um ano, ou compartilhadas voluntariamente com o grupo.", 15),
+      step("compromisso", "Compromisso Final do Mês da Bíblia", "Levar o Livro de Daniel para casa e ler ao menos mais um capítulo. Partilhar com alguém de casa o que aprendeu neste Mês da Bíblia. Manter o lema 'Seu reino jamais será destruído' como âncora espiritual nos próximos meses.", 5),
+      step("avisos", "Avisos", "Celebração de encerramento do Mês da Bíblia na paróquia. Avisos gerais.", 3),
+      step("oracao_final", "Oração Final Solene", "Agradecimento por todo o mês de setembro dedicado à Palavra de Deus. Cantar um hino bíblico (sugestão: 'Tua Palavra é Lâmpada para os meus pés'). Bênção bíblica final: 'Que o Senhor te abençoe e te proteja... e te dê a paz.' (Nm 6,24-26)", 7),
     ],
   },
 ];
