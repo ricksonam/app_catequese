@@ -742,11 +742,11 @@ export default function MaterialApoio() {
           .order("publicado_em", { ascending: false });
         if (error) throw error;
         const fetched = (data as Produto[]) || [];
-        setProdutos(fetched.length > 0 ? fetched : MOCK_PRODUCTS);
+        setProdutos(fetched);
         localStorage.setItem("ivc_materiais_ultimo_visto", new Date().toISOString());
       } catch (err) {
         console.error(err);
-        setProdutos(MOCK_PRODUCTS);
+        setProdutos([]);
       } finally {
         setLoading(false);
       }
@@ -945,30 +945,7 @@ export default function MaterialApoio() {
             </button>
           </div>
 
-          {/* ── CATEGORY ICONS ── */}
-          <div className="grid grid-cols-6 gap-2 mb-5">
-            {CATEGORIAS_VISUAIS.map(cat => (
-              <button
-                key={cat.value}
-                onClick={() => setFiltroCategoria(filtroCategoria === cat.value ? null : cat.value)}
-                className="flex flex-col items-center gap-1.5"
-              >
-                <div
-                  className={cn(
-                    "w-full aspect-square rounded-[18px] flex items-center justify-center text-xl border-2 transition-all",
-                    cat.bg, cat.border,
-                    filtroCategoria === cat.value && "ring-2 ring-primary scale-95"
-                  )}
-                  style={{ minWidth: 0 }}
-                >
-                  <span style={{ fontSize: "1.4rem" }}>{cat.emoji}</span>
-                </div>
-                <span className="text-[8px] font-bold text-center leading-tight text-gray-600 dark:text-gray-400 whitespace-pre-line">
-                  {cat.label}
-                </span>
-              </button>
-            ))}
-          </div>
+
 
           {/* ── DESTAQUES SECTION ── */}
           <div className="mb-4">
