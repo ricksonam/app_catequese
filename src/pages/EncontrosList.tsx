@@ -198,33 +198,34 @@ export default function EncontrosList() {
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-2">
           {groups.map(([monthKey, { monthLabel, items }], gi) => {
             const expanded = isExpanded(monthKey);
-            const isDefault = monthKey === defaultExpandedKey;
+            const now = new Date();
+            const currentMonthKey = `${now.getFullYear()}-${now.getMonth()}`;
+            const isCurrentMonth = monthKey === currentMonthKey;
             return (
-              <div key={monthKey} className="space-y-3">
+              <div key={monthKey} className="space-y-1">
                 <button
                   onClick={() => toggleMonth(monthKey)}
-                  className="w-full flex items-center gap-2 my-1 group"
+                  className="w-full flex items-center gap-2 my-0.5 group"
                 >
-                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/20 to-primary/30" />
+                  <div className={cn("h-px flex-1", isCurrentMonth ? "bg-primary/40" : "bg-border/60")} />
                   <div className={cn(
-                    "relative flex items-center gap-2 px-4 py-2 rounded-2xl shadow-lg border overflow-hidden transition-all duration-300",
-                    isDefault && expanded
-                      ? "bg-gradient-to-r from-primary/90 to-primary/70 border-primary/20"
-                      : "bg-gradient-to-r from-primary/55 to-primary/40 border-primary/15 group-hover:from-primary/70 group-hover:to-primary/55"
+                    "relative flex items-center gap-2 px-4 py-2.5 rounded-2xl shadow-md border overflow-hidden transition-all duration-300 min-w-[220px]",
+                    isCurrentMonth
+                      ? "bg-primary border-primary/30 shadow-primary/25"
+                      : "bg-muted/60 border-border/60 hover:bg-muted"
                   )}>
-                    <div className="absolute -left-2 -top-2 w-8 h-8 rounded-full bg-white/10 pointer-events-none" />
-                    <div className="absolute -right-1 -bottom-2 w-6 h-6 rounded-full bg-white/10 pointer-events-none" />
-                    <Feather className="w-5 h-5 text-white/90 relative z-10 shrink-0" />
-                    <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-[0.1em] relative z-10 flex-1 text-left">{monthLabel}</h3>
-                    <span className="text-xs sm:text-sm font-black bg-white text-primary px-3 py-1 rounded-xl shadow-sm relative z-10 shrink-0">
-                      {items.length} {items.length === 1 ? 'encontro' : 'encontros'}
+                    <Feather className={cn("w-4 h-4 relative z-10 shrink-0", isCurrentMonth ? "text-white/90" : "text-foreground/50")} />
+                    <h3 className={cn("text-sm font-black uppercase tracking-[0.1em] relative z-10 flex-1 text-left", isCurrentMonth ? "text-white" : "text-foreground/70")}>{monthLabel}</h3>
+                    <span className={cn("text-xs font-black px-2.5 py-0.5 rounded-full relative z-10 shrink-0", isCurrentMonth ? "bg-white text-primary" : "bg-foreground/10 text-foreground/60")}>
+                      {items.length}
                     </span>
                     <ChevronDown
                       className={cn(
-                        "w-5 h-5 text-white relative z-10 shrink-0 transition-all duration-300 ml-1 group-hover:scale-125",
+                        "w-4 h-4 relative z-10 shrink-0 transition-all duration-300 group-hover:scale-110",
+                        isCurrentMonth ? "text-white" : "text-foreground/50",
                         expanded ? "rotate-180" : "rotate-0 animate-bounce"
                       )}
                     />
