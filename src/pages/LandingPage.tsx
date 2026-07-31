@@ -845,8 +845,8 @@ export default function LandingPage() {
             </h2>
             <p className="text-stone-600 text-lg leading-relaxed mb-8">
               A catequese não é apenas o ensino de uma doutrina, mas um{" "}
-              <strong className="text-stone-900 font-bold">itinerário existencial</strong>. O paradigma catecumenal
-              nos convida a mergulhar no mistério de Cristo através da liturgia, da palavra e da comunidade.
+              <strong className="text-stone-900 font-bold">itinerário que deve levar o catequizando a mergulhar</strong>
+              {" "}no mistério de Cristo através da liturgia, da palavra e da comunidade.
             </p>
             <ul className="space-y-4">
               {[
