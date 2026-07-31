@@ -139,6 +139,23 @@ export async function upsertTurma(turma: Turma) {
   }
 }
 
+/**
+ * Garante que a turma tenha um codigo_acesso válido.
+ * Se não tiver, gera um novo e salva no banco.
+ * Retorna o código válido.
+ */
+export async function garantirCodigoAcesso(turmaId: string, turmaAtual: Turma): Promise<string> {
+  if (turmaAtual.codigoAcesso) return turmaAtual.codigoAcesso;
+
+  const novoCodigo = gerarCodigoTurma(turmaAtual.nome);
+  const { error } = await (supabase.from as any)("turmas")
+    .update({ codigo_acesso: novoCodigo })
+    .eq("id", turmaId);
+
+  if (error) throw error;
+  return novoCodigo;
+}
+
 export async function removeTurma(id: string) {
   const { error } = await (supabase.from as any)("turmas").delete().eq("id", id);
   if (error) throw error;

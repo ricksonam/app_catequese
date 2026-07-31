@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { generateUUID, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
-import { toggleInscricoesAbertas } from "@/lib/supabaseStore";
+import { toggleInscricoesAbertas, garantirCodigoAcesso } from "@/lib/supabaseStore";
 import { useQueryClient } from "@tanstack/react-query";
 
 // --- Helpers ---
@@ -173,6 +173,7 @@ export default function CatequizandosList() {
 
   const [showInscricaoModal, setShowInscricaoModal] = useState(false);
   const [isTogglingInscricoes, setIsTogglingInscricoes] = useState(false);
+  const [isSharingFrequencia, setIsSharingFrequencia] = useState(false);
   const queryClient = useQueryClient();
 
   const handleToggleInscricoes = async (novoEstado: boolean) => {
@@ -211,15 +212,31 @@ export default function CatequizandosList() {
   };
 
   const handleCopyFrequenciaLink = async () => {
-    const url = `${getAppUrl()}/frequencia-turma/${turma?.codigoAcesso}`;
-
-    const success = await copyToClipboardOrShare(url, {
-      title: 'Resumo Público de Frequência',
-      text: `Acompanhe a frequência da turma ${turma?.nome || ''}`
-    });
-
-    if (success) {
-      toast.success("Link copiado! Envie para os catequizandos/pais.");
+    if (!turma?.id) {
+      toast.error("Turma não encontrada.");
+      return;
+    }
+    setIsSharingFrequencia(true);
+    try {
+      // Garante que a turma tenha um codigo_acesso válido (gera e salva se necessário)
+      const codigo = await garantirCodigoAcesso(turma.id, turma);
+      if (!codigo) {
+        toast.error("Não foi possível gerar o link. Tente novamente.");
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["turmas"] });
+      const url = `${getAppUrl()}/frequencia-turma/${codigo}`;
+      const success = await copyToClipboardOrShare(url, {
+        title: 'Resumo Público de Frequência',
+        text: `Acompanhe a frequência da turma ${turma?.nome || ''}`
+      });
+      if (success) {
+        toast.success("Link copiado! Envie para os catequizandos/pais.");
+      }
+    } catch (err: any) {
+      toast.error("Erro ao gerar link: " + err.message);
+    } finally {
+      setIsSharingFrequencia(false);
     }
   };
 
@@ -969,10 +986,16 @@ export default function CatequizandosList() {
               <div className="flex flex-row gap-3">
                 <button 
                   onClick={handleCopyFrequenciaLink} 
-                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm"
+                  disabled={isSharingFrequencia}
+                  className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl bg-indigo-100 border-2 border-indigo-300 text-indigo-800 hover:bg-indigo-200 transition-all group active:scale-95 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-center">Frequência</span>
+                  {isSharingFrequencia
+                    ? <Loader2 className="h-4 w-4 animate-spin" />
+                    : <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  }
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-tight text-center">
+                    {isSharingFrequencia ? 'Gerando...' : 'Frequência'}
+                  </span>
                 </button>
                 <button 
                   onClick={() => setShowEvolucao(true)} 
@@ -1414,9 +1437,14 @@ export default function CatequizandosList() {
               <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
                 <button 
                   onClick={handleCopyFrequenciaLink} 
-                  className="action-btn-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 w-full sm:w-auto font-bold px-4 py-2 rounded-xl flex items-center justify-center gap-2"
+                  disabled={isSharingFrequencia}
+                  className="action-btn-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 w-full sm:w-auto font-bold px-4 py-2 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Share2 className="w-4 h-4" /> Compartilhar Resumo Público
+                  {isSharingFrequencia
+                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                    : <Share2 className="w-4 h-4" />
+                  }
+                  {isSharingFrequencia ? 'Gerando link...' : 'Compartilhar Resumo Público'}
                 </button>
                 <button onClick={() => setShowFrequencia(false)} className="action-btn-sm bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto">
                   Fechar
