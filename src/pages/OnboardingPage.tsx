@@ -87,15 +87,17 @@ function QuestionCard({
 }
 
 // ── Componente assistente bubble ──
-function AssistantBubble({ text, emoji }: { text: string; emoji?: string }) {
+function AssistantBubble({ text }: { text: string; emoji?: string }) {
   return (
     <QuestionCard className="flex items-start gap-3 mb-6">
       {/* Avatar do assistente */}
-      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-violet-500/30 text-lg">
-        {emoji || "🕊️"}
+      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-violet-500/30">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-7 h-7">
+          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+        </svg>
       </div>
-      <div className="flex-1 bg-violet-50 border border-violet-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-        <p className="text-sm text-zinc-800 leading-relaxed font-medium">{text}</p>
+      <div className="flex-1 bg-violet-50 border border-violet-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+        <p className="text-base text-zinc-800 leading-relaxed font-semibold">{text}</p>
       </div>
     </QuestionCard>
   );
@@ -398,7 +400,7 @@ export default function OnboardingPage() {
               </h1>
             </div>
             <p className="text-sm text-zinc-500 leading-relaxed mb-10 max-w-xs">
-              Vou te guiar por <strong className="text-zinc-700">3 perguntas rápidas</strong> para configurar seu perfil e sua turma. Leva menos de 2 minutos!
+              Para usar o aplicativo vamos configurar o seu perfil e sua turma, leva menos de <strong className="text-zinc-700">2 minutos!</strong>
             </p>
             <button
               onClick={() => setStep("cat_usedata")}
@@ -422,8 +424,7 @@ export default function OnboardingPage() {
             </div>
 
             <AssistantBubble
-              emoji="🕊️"
-              text="Olá! Primeiro, vamos criar seu perfil de catequista. Posso usar seus dados de cadastro para preencher automaticamente?"
+              text="Vamos cadastrar o catequista responsavel. Posso usar seus dados de usuario como catequista?"
             />
 
             <QuestionCard className="space-y-3 ml-12">
@@ -467,8 +468,7 @@ export default function OnboardingPage() {
             </div>
 
             <AssistantBubble
-              emoji="🕊️"
-              text="Perfeito! Preciso apenas do seu nome completo e data de nascimento."
+              text="Perfeito! confirme os seus dados!"
             />
 
             <QuestionCard className="ml-0 space-y-4">
@@ -507,6 +507,18 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
+              {/* Balão de dica sobre outros catequistas */}
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-violet-500/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-7 h-7">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                  </svg>
+                </div>
+                <div className="flex-1 bg-amber-50 border border-amber-200 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                  <p className="text-sm text-amber-800 leading-relaxed font-semibold">💡 Se houver mais catequistas que fazem parte da turma, você pode cadastrar depois no menu <strong>Cadastro</strong>!</p>
+                </div>
+              </div>
+
               <button
                 onClick={() => saveCatequista(catForm.nome, catForm.dataNascimento)}
                 disabled={!catForm.nome.trim() || step === "cat_saving"}
@@ -532,7 +544,6 @@ export default function OnboardingPage() {
               <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Perfil criado!</span>
             </div>
             <AssistantBubble
-              emoji="✅"
               text={`Ótimo, ${catForm.nome.split(" ")[0]}! Seu perfil foi criado. Agora me conta sobre sua paróquia...`}
             />
           </div>
@@ -555,8 +566,7 @@ export default function OnboardingPage() {
             </div>
 
             <AssistantBubble
-              emoji="⛪"
-              text="Onde você realiza a catequese? Me informe o nome da sua paróquia e, se quiser, da comunidade."
+              text="Onde voce realiza a catequese? Me informe o nome da sua paroquia e da comunidade."
             />
 
             <QuestionCard className="space-y-4">
@@ -637,7 +647,6 @@ export default function OnboardingPage() {
               <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Paróquia salva!</span>
             </div>
             <AssistantBubble
-              emoji="✅"
               text="Perfeito! Agora a última etapa: sua turma de catequese."
             />
           </div>
@@ -662,7 +671,6 @@ export default function OnboardingPage() {
             </div>
 
             <AssistantBubble
-              emoji="📚"
               text="Quase lá! Você quer criar uma nova turma de catequese ou entrar em uma turma já existente de outro catequista?"
             />
 
@@ -725,7 +733,6 @@ export default function OnboardingPage() {
             </div>
 
             <AssistantBubble
-              emoji="📚"
               text="Ótimo! Me diga o nome da turma, o dia da semana e o horário dos encontros."
             />
 
@@ -860,7 +867,6 @@ export default function OnboardingPage() {
             </div>
 
             <AssistantBubble
-              emoji="🔑"
               text="Peça ao catequista responsável o código de acesso da turma e digite abaixo."
             />
 
