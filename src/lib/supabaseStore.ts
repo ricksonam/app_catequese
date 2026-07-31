@@ -1001,3 +1001,9 @@ export async function fetchPublicTurmaByCode(code: string) {
   if (error) throw error;
   return data;
 }
+
+export async function fetchPublicFrequenciaData(codigoAcesso: string) {
+  const { data, error } = await supabase.rpc('get_public_frequencia_data', { p_codigo: codigoAcesso.trim().toUpperCase() });
+  if (error) throw error;
+  return data;
+}

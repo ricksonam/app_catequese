@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchPublicFrequenciaData } from "@/lib/supabaseStore";
 import {
   AlertTriangle, Users, BookOpen, TrendingUp, Calendar,
   CheckCircle2, X, FileSignature, BarChart3, Info, Sparkles,
@@ -350,29 +351,18 @@ export default function PublicFrequencia() {
     if (!codigo) return;
     const load = async () => {
       try {
-        // Buscar turma pelo codigo de acesso
-        const { data: turmaData, error: tErr } = await supabase
-          .from("turmas")
-          .select("*")
-          .eq("codigo_acesso", codigo)
-          .single();
-
-        if (tErr || !turmaData) {
+        // Buscar todos os dados da frequência usando a RPC pública
+        const data = await fetchPublicFrequenciaData(codigo);
+        
+        if (!data || !data.turma) {
           setError("Turma não encontrada ou link inválido.");
           setLoading(false);
           return;
         }
 
-        setTurma(turmaData);
+        setTurma(data.turma);
 
-        // Buscar encontros
-        const { data: encontrosData } = await supabase
-          .from("encontros")
-          .select("id, data, tema, status, presencas, justificativas")
-          .eq("turma_id", turmaData.id)
-          .order("data", { ascending: true });
-
-        const encFormatados: Encontro[] = (encontrosData ?? []).map((e: any) => ({
+        const encFormatados: Encontro[] = (data.encontros ?? []).map((e: any) => ({
           id: e.id,
           data: e.data,
           tema: e.tema || "",
@@ -391,19 +381,9 @@ export default function PublicFrequencia() {
           setMesSelecionado(mesesArr[0]);
         }
 
-        // Buscar catequizandos ativos
-        const { data: catsData } = await supabase
-          .from("catequizandos")
-          .select("id, nome, status, foto")
-          .eq("turma_id", turmaData.id)
-          .or("status.is.null,status.eq.ativo");
-
-        const catsAtivos: Catequizando[] = (catsData ?? []).filter(
-          (c: any) => !c.status || c.status === "ativo"
-        );
-        setCatequizandos(catsAtivos);
+        setCatequizandos(data.catequizandos ?? []);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || "Erro ao carregar dados.");
       } finally {
         setLoading(false);
       }
