@@ -151,3 +151,24 @@ export async function copyToClipboardOrShare(url: string, shareData?: { title: s
     return false;
   }
 }
+
+/**
+ * Abrevia nomes para segurança em áreas públicas:
+ * Mantém o 1º e 2º nome integrais e abrevia os restantes.
+ * Exemplo: "João Batista da Silva Oliveira" -> "João Batista S. O."
+ */
+export function abreviarNome(nome: string): string {
+  if (!nome) return "";
+  const partes = nome.trim().split(/\s+/);
+  if (partes.length <= 2) return nome;
+
+  const primeiro = partes[0];
+  const segundo = partes[1];
+
+  const restante = partes.slice(2)
+    .filter(p => !['de', 'da', 'do', 'dos', 'das'].includes(p.toLowerCase()))
+    .map(p => p[0].toUpperCase() + ".");
+
+  if (restante.length === 0) return `${primeiro} ${segundo}`;
+  return `${primeiro} ${segundo} ${restante.join(" ")}`;
+}

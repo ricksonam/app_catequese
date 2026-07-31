@@ -7,7 +7,7 @@ import {
   CheckCircle2, X, FileSignature, BarChart3, Info, Sparkles,
   ChevronDown, ChevronLeft, ChevronRight
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, abreviarNome } from "@/lib/utils";
 
 // ─────────────────────────────────────────────────────────────
 // TIPOS
@@ -381,7 +381,11 @@ export default function PublicFrequencia() {
           setMesSelecionado(mesesArr[0]);
         }
 
-        setCatequizandos(data.catequizandos ?? []);
+        const catsAbreviados = (data.catequizandos ?? []).map((c: any) => ({
+          ...c,
+          nome: abreviarNome(c.nome)
+        }));
+        setCatequizandos(catsAbreviados);
       } catch (err: any) {
         setError(err.message || "Erro ao carregar dados.");
       } finally {
