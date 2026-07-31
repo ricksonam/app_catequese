@@ -154,37 +154,23 @@ export default function EncontrosList() {
 
       {encontros.length > 0 && (
         <div className="space-y-3 animate-float-up" style={{ animationDelay: "80ms" }}>
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por tema, data ou leitura bíblica..."
-              className="w-full h-11 pl-10 pr-10 rounded-2xl border border-black/15 bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all"
-            />
-            {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                <XIcon className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+
           {availableMonths.length > 0 && (
-            <div className="flex items-center">
-              <div className="relative inline-flex items-center bg-white border border-slate-200 rounded-full transition-all shadow-sm">
-                <span className="pl-4 pr-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground pointer-events-none">Filtro:</span>
+            <div className="flex items-center w-full">
+              <div className="relative w-full inline-flex items-center bg-white border-2 border-primary/20 rounded-2xl hover:border-primary/40 transition-all shadow-md group">
+                <span className="pl-4 pr-2 text-xs font-black uppercase tracking-widest text-primary/70 pointer-events-none">Filtro:</span>
                 <select
                   value={filterMonth}
                   onChange={(e) => setFilterMonth(e.target.value)}
-                  className="appearance-none bg-transparent font-bold text-xs text-primary pr-9 py-2 outline-none cursor-pointer"
+                  className="appearance-none w-full bg-transparent font-black text-sm sm:text-base text-primary pr-12 py-3.5 outline-none cursor-pointer"
                 >
                   <option value="todos">Todos os Meses</option>
                   {availableMonths.map((m) => (
                     <option key={m.key} value={m.key} className="capitalize">{m.label}</option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute right-3 flex items-center text-muted-foreground">
-                  <ChevronRight className="h-3.5 w-3.5 rotate-90" />
+                <div className="pointer-events-none absolute right-4 flex items-center text-primary group-hover:translate-y-0.5 transition-transform">
+                  <ChevronRight className="h-5 w-5 rotate-90" />
                 </div>
               </div>
             </div>
@@ -231,13 +217,15 @@ export default function EncontrosList() {
                   )}>
                     <div className="absolute -left-2 -top-2 w-8 h-8 rounded-full bg-white/10 pointer-events-none" />
                     <div className="absolute -right-1 -bottom-2 w-6 h-6 rounded-full bg-white/10 pointer-events-none" />
-                    <Feather className="w-3.5 h-3.5 text-white/80 relative z-10 shrink-0" />
-                    <h3 className="text-sm font-black text-white uppercase tracking-[0.15em] relative z-10">{monthLabel}</h3>
-                    <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full border border-white/20 relative z-10 shrink-0">{items.length}</span>
+                    <Feather className="w-5 h-5 text-white/90 relative z-10 shrink-0" />
+                    <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-[0.1em] relative z-10 flex-1 text-left">{monthLabel}</h3>
+                    <span className="text-xs sm:text-sm font-black bg-white text-primary px-3 py-1 rounded-xl shadow-sm relative z-10 shrink-0">
+                      {items.length} {items.length === 1 ? 'encontro' : 'encontros'}
+                    </span>
                     <ChevronDown
                       className={cn(
-                        "w-4 h-4 text-white/80 relative z-10 shrink-0 transition-transform duration-300 ml-0.5",
-                        expanded ? "rotate-180" : "rotate-0"
+                        "w-5 h-5 text-white relative z-10 shrink-0 transition-all duration-300 ml-1 group-hover:scale-125",
+                        expanded ? "rotate-180" : "rotate-0 animate-bounce"
                       )}
                     />
                   </div>
