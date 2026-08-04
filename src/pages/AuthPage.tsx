@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import {
   Eye,
   EyeOff,
@@ -15,7 +16,8 @@ import {
   X as XIcon,
   ChevronRight,
   Check,
-  ChevronLeft
+  ChevronLeft,
+  AlertTriangle
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
 
@@ -172,6 +174,21 @@ export default function AuthPage() {
   // Location
   const [cities, setCities] = useState<IBGECity[]>([]);
   const [loadingCities, setLoadingCities] = useState(false);
+
+  // Verificar bloqueio global de inscrições
+  const { data: inscricoesBloqueadas, isLoading: checkingBloqueio } = useQuery({
+    queryKey: ["app_settings", "inscricoes_bloqueadas"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "inscricoes_bloqueadas")
+        .maybeSingle();
+      return data?.value === "true";
+    },
+    staleTime: 30000,
+    enabled: view === "signup",
+  });
 
   useEffect(() => {
     const saved = localStorage.getItem(SAVED_EMAIL_KEY);
@@ -429,6 +446,61 @@ export default function AuthPage() {
      SIGNUP VIEW - DARK MODE ELEGANTE (MULTI-STEP)
   ────────────────────────────────────────────── */
   if (view === "signup") {
+    // Mostrar loading enquanto verifica o bloqueio
+    if (checkingBloqueio) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        </div>
+      );
+    }
+
+    // Tela de inscrições suspensas
+    if (inscricoesBloqueadas) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center px-6 text-center">
+          <div className="max-w-sm w-full">
+            {/* Ícone */}
+            <div className="w-24 h-24 rounded-full bg-amber-500/10 border-2 border-amber-500/30 flex items-center justify-center mx-auto mb-6 animate-pulse">
+              <AlertTriangle className="w-12 h-12 text-amber-400" />
+            </div>
+
+            {/* Logo */}
+            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white/10 mx-auto mb-6 flex items-center justify-center p-2">
+              <img src="/Logo_sem_fundo.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
+
+            <h1 className="text-2xl font-black text-white mb-3 leading-tight">
+              Cadastros Temporariamente Suspensos
+            </h1>
+
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              O sistema de cadastros do <strong className="text-white">iCatequese</strong> está
+              temporariamente suspenso. Em breve as inscrições serão reabertas.
+            </p>
+
+            {/* Card de contato */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-8">
+              <p className="text-slate-400 text-xs uppercase tracking-widest font-bold mb-2">Entre em contato</p>
+              <a
+                href="mailto:icatequese2026@gmail.com"
+                className="text-primary font-bold text-base hover:text-primary/80 transition-colors break-all"
+              >
+                icatequese2026@gmail.com
+              </a>
+            </div>
+
+            <button
+              onClick={() => setView("login")}
+              className="w-full py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white font-bold text-sm hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" /> Voltar ao Login
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-white text-slate-800 flex flex-col relative overflow-hidden">
 
