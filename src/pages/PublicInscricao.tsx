@@ -66,6 +66,21 @@ export default function PublicInscricao() {
     enabled: !!codigo,
   });
 
+  // Verificar bloqueio global de inscrições (definido pelo admin)
+  const { data: sistemaBloqueado = false, isLoading: loadingBloqueio } = useQuery({
+    queryKey: ["sistema_inscricoes_bloqueadas"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "inscricoes_bloqueadas")
+        .single();
+      if (error) return false;
+      return data?.value === "true";
+    },
+    staleTime: 1000 * 30, // re-verifica a cada 30s
+  });
+
 
   const [form, setForm] = useState<any>({
     nome: "",
@@ -157,7 +172,65 @@ export default function PublicInscricao() {
     }
   };
 
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center"><Spinner size="lg" text="Carregando formulário..." /></div>;
+  if (isLoading || loadingBloqueio) return <div className="min-h-screen flex items-center justify-center"><Spinner size="lg" text="Carregando formulário..." /></div>;
+
+  // Tela de sistema suspenso globalmente (bloqueio pelo admin)
+  if (sistemaBloqueado) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 flex items-center justify-center p-6">
+        <div className="max-w-sm w-full space-y-6 text-center animate-in zoom-in-95 duration-500">
+          {/* Ícone central */}
+          <div className="relative mx-auto w-28 h-28">
+            <div className="absolute inset-0 rounded-full bg-rose-500/20 animate-ping" />
+            <div className="relative w-28 h-28 rounded-full bg-gradient-to-br from-rose-700 to-red-800 flex items-center justify-center shadow-2xl shadow-rose-900/50 border-2 border-rose-500/30">
+              <Lock className="h-14 w-14 text-white/90" />
+            </div>
+          </div>
+
+          {/* Textos */}
+          <div className="space-y-3">
+            <p className="text-[10px] font-black text-rose-300 uppercase tracking-[0.4em]">iCatequese Digital</p>
+            <h1 className="text-2xl font-black text-white tracking-tight uppercase leading-tight">
+              Inscrições
+              <br />
+              <span className="text-rose-300">Suspensas</span>
+            </h1>
+          </div>
+
+          {/* Card de mensagem */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div className="w-10 h-10 rounded-2xl bg-rose-500/20 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-5 h-5 text-rose-300" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-sm font-black text-white uppercase tracking-wide">
+                Sistema temporariamente suspenso
+              </h2>
+              <p className="text-xs text-white/60 font-medium leading-relaxed">
+                O sistema de inscrições está temporariamente suspenso. Em breve as inscrições serão reabertas.
+              </p>
+            </div>
+            <div className="border-t border-white/10 pt-4 space-y-2">
+              <p className="text-[10px] font-black text-rose-300 uppercase tracking-widest">Para mais informações, entre em contato:</p>
+              <a
+                href="mailto:icatequese2026@gmail.com"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/15 transition-colors border border-white/10 group"
+              >
+                <Mail className="w-4 h-4 text-rose-300 group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-black text-white">icatequese2026@gmail.com</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Branding */}
+          <div className="flex items-center justify-center gap-2 opacity-40">
+            <img src="/app-logo.png" className="w-5 h-5 object-contain" alt="iCatequese" />
+            <span className="text-[10px] font-black text-white uppercase tracking-tight italic">iCatequese Digital</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (error || !turma) {
     return (

@@ -432,6 +432,20 @@ export default function AdminDashboard() {
     }
   });
 
+  // Query: bloqueio global de inscrições
+  const { data: inscricoesBloqueadas = false, isLoading: loadingBloqueio, refetch: refetchBloqueio } = useQuery({
+    queryKey: ["admin_inscricoes_bloqueadas"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "inscricoes_bloqueadas")
+        .single();
+      if (error) return false;
+      return data?.value === "true";
+    }
+  });
+
 
   // Mutations
   const toggleBlockMutation = useMutation({
@@ -463,6 +477,23 @@ export default function AdminDashboard() {
       toast.success("Senha do administrador atualizada!");
       setIsPasswordDialogOpen(false);
       setNewPassword("");
+    }
+  });
+
+  const toggleInscricoesBloqueadasMutation = useMutation({
+    mutationFn: async (bloquear: boolean) => {
+      const { error } = await supabase
+        .from("app_settings")
+        .update({ value: bloquear ? "true" : "false", updated_at: new Date().toISOString(), updated_by: user?.id })
+        .eq("key", "inscricoes_bloqueadas");
+      if (error) throw error;
+    },
+    onSuccess: (_, bloquear) => {
+      refetchBloqueio();
+      toast.success(bloquear ? "⛔ Inscrições bloqueadas para todo o sistema!" : "✅ Inscrições liberadas!");
+    },
+    onError: () => {
+      toast.error("Erro ao alterar status das inscrições. Tente novamente.");
     }
   });
 
@@ -1755,12 +1786,115 @@ export default function AdminDashboard() {
             )}
 
             {activeTab === "settings" && (
-              <div className="space-y-6 max-w-md">
+              <div className="space-y-6 max-w-2xl">
                 <div>
                   <h2 className="text-xl font-bold text-foreground">Configurações do Sistema</h2>
-                  <p className="text-sm text-muted-foreground">Gerencie o acesso administrativo e segurança</p>
+                  <p className="text-sm text-muted-foreground">Gerencie o acesso administrativo, inscrições e segurança</p>
                 </div>
 
+                {/* ── Bloqueio Global de Inscrições ── */}
+                <Card className={cn(
+                  "rounded-[24px] border-2 shadow-sm overflow-hidden transition-all duration-300",
+                  inscricoesBloqueadas
+                    ? "border-destructive/40 shadow-destructive/10"
+                    : "border-emerald-400/40 shadow-emerald-500/10"
+                )}>
+                  <div className={cn(
+                    "p-6 border-b flex items-center gap-4 transition-colors duration-300",
+                    inscricoesBloqueadas ? "bg-destructive/5 border-destructive/20" : "bg-emerald-50 border-emerald-200/60"
+                  )}>
+                    <div className={cn(
+                      "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300",
+                      inscricoesBloqueadas ? "bg-destructive/15 text-destructive" : "bg-emerald-100 text-emerald-600"
+                    )}>
+                      {inscricoesBloqueadas ? <Lock className="h-6 w-6" /> : <Unlock className="h-6 w-6" />}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className={cn(
+                        "font-black text-base uppercase tracking-wide transition-colors duration-300",
+                        inscricoesBloqueadas ? "text-destructive" : "text-emerald-700"
+                      )}>
+                        {inscricoesBloqueadas ? "Inscrições Bloqueadas" : "Inscrições Abertas"}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {inscricoesBloqueadas
+                          ? "Nenhum novo aluno consegue se inscrever pelo app"
+                          : "Alunos podem se inscrever normalmente pelo link da turma"}
+                      </p>
+                    </div>
+                    {/* Toggle Switch */}
+                    <button
+                      id="toggle-inscricoes-bloqueadas"
+                      onClick={() => toggleInscricoesBloqueadasMutation.mutate(!inscricoesBloqueadas)}
+                      disabled={toggleInscricoesBloqueadasMutation.isPending || loadingBloqueio}
+                      className={cn(
+                        "relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+                        inscricoesBloqueadas
+                          ? "bg-destructive focus:ring-destructive"
+                          : "bg-emerald-500 focus:ring-emerald-500"
+                      )}
+                      aria-label="Bloquear ou liberar inscrições"
+                    >
+                      <span className={cn(
+                        "absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300",
+                        inscricoesBloqueadas ? "translate-x-7" : "translate-x-0"
+                      )} />
+                    </button>
+                  </div>
+
+                  <CardContent className="p-6 space-y-4">
+                    {inscricoesBloqueadas ? (
+                      <div className="flex items-start gap-3 p-4 rounded-2xl bg-destructive/5 border border-destructive/15">
+                        <ShieldAlert className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="text-sm font-black text-destructive uppercase tracking-wide">Sistema de inscrições suspenso</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Quando um usuário tentar se cadastrar, verá uma tela informando que o sistema está temporariamente suspenso
+                            e o redirecionará para o e-mail de contato.
+                          </p>
+                          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-destructive/10">
+                            <Mail className="h-3.5 w-3.5 text-destructive" />
+                            <span className="text-xs font-bold text-destructive">icatequese2026@gmail.com</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/60">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="text-sm font-black text-emerald-700 uppercase tracking-wide">Sistema funcionando normalmente</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Alunos podem acessar o link da turma e realizar inscrições. Ative o bloqueio para
+                            suspender temporariamente todas as novas inscrições do sistema.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    <Button
+                      onClick={() => toggleInscricoesBloqueadasMutation.mutate(!inscricoesBloqueadas)}
+                      disabled={toggleInscricoesBloqueadasMutation.isPending || loadingBloqueio}
+                      className={cn(
+                        "w-full rounded-xl font-bold h-12 gap-2 transition-all",
+                        inscricoesBloqueadas
+                          ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                          : "bg-destructive hover:bg-destructive/90 text-white"
+                      )}
+                    >
+                      {toggleInscricoesBloqueadasMutation.isPending ? (
+                        <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+                      ) : inscricoesBloqueadas ? (
+                        <><Unlock className="h-4 w-4" /> Liberar Inscrições
+                        </>
+                      ) : (
+                        <><Lock className="h-4 w-4" /> Bloquear Inscrições
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* ── Segurança Administrativa ── */}
                 <Card className="rounded-[24px] border-border/50 shadow-sm overflow-hidden">
                   <div className="bg-primary/5 p-6 border-b border-border/50 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
