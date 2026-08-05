@@ -232,15 +232,17 @@ export default function AuthPage() {
       });
 
       if (error) {
+        let title = "Não foi possível entrar";
         let msg = error.message;
         if (msg === "Failed to fetch") {
-          msg = "Servidor não respondeu.";
+          msg = "Servidor não respondeu. Verifique sua conexão.";
         } else if (msg.includes("Invalid login credentials") || msg.includes("Invalid credentials")) {
-          msg = "Credenciais inválidas. Verifique seu e-mail e senha.";
+          msg = "E-mail não encontrado ou senha incorreta. Se você excluiu sua conta anteriormente, este e-mail não existe mais na base de dados. Crie uma nova conta ou verifique o e-mail digitado.";
+          title = "E-mail ou senha incorretos";
         } else if (msg.includes("Email not confirmed")) {
           msg = "E-mail não confirmado. Verifique sua caixa de entrada.";
         }
-        toast({ title: "Não foi possível entrar", description: msg, variant: "destructive" });
+        toast({ title, description: msg, variant: "destructive" });
         setLoading(false);
       } else {
         localStorage.setItem(SAVED_EMAIL_KEY, loginEmail);
@@ -316,7 +318,16 @@ export default function AuthPage() {
     setLoading(false);
 
     if (error) {
-      toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
+      let title = "Erro ao cadastrar";
+      let msg = error.message;
+      if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("User already registered")) {
+        title = "E-mail já cadastrado";
+        msg = "Este e-mail já está em uso. Se esqueceu sua senha, volte à tela de login e clique em 'Esqueci minha senha' para redefini-la.";
+      } else if (msg.includes("duplicate key") || msg.includes("unique constraint")) {
+        title = "E-mail já cadastrado";
+        msg = "Este e-mail já existe na base de dados. Use a opção 'Esqueci minha senha' para recuperar o acesso.";
+      }
+      toast({ title, description: msg, variant: "destructive" });
     } else {
       setShowVerificationNotice(true);
     }
@@ -640,7 +651,7 @@ export default function AuthPage() {
           {signupStep === 2 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <h2 className="text-3xl font-black text-slate-800 mb-2">Sua senha</h2>
-              <p className="text-slate-500 mb-8 text-sm">Crie uma senha forte. Obrigatório: 8+ caracteres, maiúscula, minúscula, número e caractere especial.</p>
+              <p className="text-slate-500 mb-8 text-sm">Crie uma senha com no mínimo 6 caracteres e pelo menos 1 caractere especial (!@#$%^&*).</p>
 
               <InputLine
                 label="Senha"
@@ -653,17 +664,17 @@ export default function AuthPage() {
 
               {signupPassword.length > 0 && (() => {
                 const v = validatePassword(signupPassword);
-                const strengthColors = ["bg-red-500", "bg-red-400", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
-                const strengthColor = strengthColors[v.strength] || "bg-slate-200";
                 return (
                   <div className="mb-4 -mt-2 space-y-2">
                     {/* Barra de força */}
                     <div className="flex gap-1.5">
-                      {[...Array(4)].map((_, i) => (
+                      {[...Array(2)].map((_, i) => (
                         <div
                           key={i}
-                          className={`h-1 flex-1 rounded-full transition-all ${
-                            i < v.strength ? strengthColor : "bg-slate-200"
+                          className={`h-1.5 flex-1 rounded-full transition-all ${
+                            i < v.strength
+                              ? v.strength === 1 ? "bg-yellow-500" : "bg-green-500"
+                              : "bg-slate-200"
                           }`}
                         />
                       ))}

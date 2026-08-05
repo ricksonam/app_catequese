@@ -52,8 +52,6 @@ export default function ResetPasswordPage() {
   };
 
   const validation = validatePassword(password);
-  const strengthColors = ["bg-red-500", "bg-red-400", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
-  const strengthColor = strengthColors[validation.strength] || "bg-slate-200";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
@@ -64,7 +62,7 @@ export default function ResetPasswordPage() {
           </div>
           <CardTitle className="text-xl">Nova Senha</CardTitle>
           <CardDescription>
-            Mínimo 8 caracteres com maiúscula, minúscula, número e caractere especial.
+            Mínimo 6 caracteres e pelo menos 1 caractere especial (!@#$%^&*).
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,11 +81,13 @@ export default function ResetPasswordPage() {
               {password.length > 0 && (
                 <div className="space-y-2 pt-1">
                   <div className="flex gap-1.5">
-                    {[...Array(4)].map((_, i) => (
+                    {[...Array(2)].map((_, i) => (
                       <div
                         key={i}
-                        className={`h-1 flex-1 rounded-full transition-all ${
-                          i < validation.strength ? strengthColor : "bg-slate-200"
+                        className={`h-1.5 flex-1 rounded-full transition-all ${
+                          i < validation.strength
+                            ? validation.strength === 1 ? "bg-yellow-500" : "bg-green-500"
+                            : "bg-slate-200"
                         }`}
                       />
                     ))}
