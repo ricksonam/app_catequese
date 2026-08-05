@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { validatePassword, PASSWORD_REQUIREMENTS } from "@/lib/passwordValidation";
 import {
   Eye,
   EyeOff,
@@ -265,12 +266,17 @@ export default function AuthPage() {
   };
 
   const handleSignupNextStep2 = () => {
-    if (signupPassword !== signupConfirm) {
-      toast({ title: "Erro", description: "As senhas não coincidem.", variant: "destructive" });
+    const validation = validatePassword(signupPassword);
+    if (!validation.isValid) {
+      toast({
+        title: "Senha não atende aos requisitos",
+        description: `A senha precisa ter: ${validation.errors.join(", ")}.`,
+        variant: "destructive"
+      });
       return;
     }
-    if (signupPassword.length < 6) {
-      toast({ title: "Senha fraca", description: "A senha deve ter pelo menos 6 caracteres.", variant: "destructive" });
+    if (signupPassword !== signupConfirm) {
+      toast({ title: "Erro", description: "As senhas não coincidem.", variant: "destructive" });
       return;
     }
     setSignupStep(3);
@@ -634,43 +640,54 @@ export default function AuthPage() {
           {signupStep === 2 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <h2 className="text-3xl font-black text-slate-800 mb-2">Sua senha</h2>
-              <p className="text-slate-500 mb-8 text-sm">Crie uma senha forte para proteger sua conta. Mínimo de 6 caracteres.</p>
+              <p className="text-slate-500 mb-8 text-sm">Crie uma senha forte. Obrigatório: 8+ caracteres, maiúscula, minúscula, número e caractere especial.</p>
 
               <InputLine
                 label="Senha"
                 value={signupPassword}
                 onChange={setSignupPassword}
-                valid={signupPassword.length >= 6}
+                valid={validatePassword(signupPassword).isValid}
                 type="password"
                 placeholder="••••••••"
               />
 
-              {signupPassword.length > 0 && (
-                <div className="mb-4 -mt-2 flex gap-1.5">
-                  {[...Array(4)].map((_, i) => {
-                    const strength = Math.min(Math.floor(signupPassword.length / 2), 4);
-                    return (
-                      <div
-                        key={i}
-                        className={`h-1 flex-1 rounded-full transition-all ${
-                          i < strength
-                            ? strength <= 1 ? "bg-red-500"
-                              : strength <= 2 ? "bg-yellow-500"
-                              : strength <= 3 ? "bg-blue-500"
-                              : "bg-green-500"
-                            : "bg-slate-200"
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-              )}
+              {signupPassword.length > 0 && (() => {
+                const v = validatePassword(signupPassword);
+                const strengthColors = ["bg-red-500", "bg-red-400", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
+                const strengthColor = strengthColors[v.strength] || "bg-slate-200";
+                return (
+                  <div className="mb-4 -mt-2 space-y-2">
+                    {/* Barra de força */}
+                    <div className="flex gap-1.5">
+                      {[...Array(4)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-all ${
+                            i < v.strength ? strengthColor : "bg-slate-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {/* Checklist de requisitos */}
+                    <div className="grid grid-cols-1 gap-0.5">
+                      {PASSWORD_REQUIREMENTS.map(req => (
+                        <div key={req.key} className={`flex items-center gap-1.5 text-xs transition-colors ${
+                          v.checks[req.key] ? "text-green-600" : "text-slate-400"
+                        }`}>
+                          <span>{v.checks[req.key] ? "✓" : "○"}</span>
+                          <span>{req.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
 
               <InputLine
                 label="Confirme a senha"
                 value={signupConfirm}
                 onChange={setSignupConfirm}
-                valid={signupConfirm === signupPassword && signupConfirm.length >= 6}
+                valid={signupConfirm === signupPassword && validatePassword(signupPassword).isValid}
                 type="password"
                 placeholder="••••••••"
               />

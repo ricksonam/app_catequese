@@ -229,6 +229,49 @@ export function AuthProvider({ children, onAuthReady }: { children: ReactNode; o
     };
   }, [session?.user?.id]);
 
+  // Verificação periódica de saúde da sessão (a cada 5 minutos)
+  // e ao retornar à aba do navegador após inatividade
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const SESSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos
+
+    const checkSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session) {
+          // Tenta refresh automático antes de deslogar
+          const { error: refreshError } = await supabase.auth.refreshSession();
+          if (refreshError) {
+            console.warn("[iCatequese] Sessão expirada e refresh falhou. Deslogando.");
+            toast.error("Sua sessão expirou. Por favor, faça login novamente.");
+            signOut();
+          }
+        }
+      } catch (err) {
+        console.error("[iCatequese] Erro ao verificar sessão:", err);
+      }
+    };
+
+    // Verifica ao retornar à aba (usuário pode ter ficado inativo)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkSession();
+      }
+    };
+
+    const interval = setInterval(checkSession, SESSION_CHECK_INTERVAL);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [session?.user?.id]);
+
+
+
+
   return (
     <AuthContext.Provider value={{ session, user: session?.user ?? null, loading, isReady, isAdmin, isSuperAdmin, isSubAdmin, signOut }}>
       {children}

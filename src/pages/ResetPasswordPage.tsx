@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { KeyRound } from "lucide-react";
+import { validatePassword, PASSWORD_REQUIREMENTS } from "@/lib/passwordValidation";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -23,14 +24,22 @@ export default function ResetPasswordPage() {
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      toast({
+        title: "Senha não atende aos requisitos",
+        description: `A senha precisa ter: ${validation.errors.join(", ")}.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast({ title: "Erro", description: "As senhas não coincidem", variant: "destructive" });
       return;
     }
-    if (password.length < 6) {
-      toast({ title: "Erro", description: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
-      return;
-    }
+
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
@@ -42,6 +51,10 @@ export default function ResetPasswordPage() {
     }
   };
 
+  const validation = validatePassword(password);
+  const strengthColors = ["bg-red-500", "bg-red-400", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
+  const strengthColor = strengthColors[validation.strength] || "bg-slate-200";
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm border-border/60 shadow-xl animate-float-up">
@@ -50,7 +63,9 @@ export default function ResetPasswordPage() {
             <KeyRound className="h-7 w-7 text-primary-foreground" />
           </div>
           <CardTitle className="text-xl">Nova Senha</CardTitle>
-          <CardDescription>Digite sua nova senha</CardDescription>
+          <CardDescription>
+            Mínimo 8 caracteres com maiúscula, minúscula, número e caractere especial.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleReset} className="space-y-4">
@@ -64,7 +79,37 @@ export default function ResetPasswordPage() {
                 placeholder="••••••••"
                 required
               />
+              {/* Indicador de força */}
+              {password.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <div className="flex gap-1.5">
+                    {[...Array(4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-1 flex-1 rounded-full transition-all ${
+                          i < validation.strength ? strengthColor : "bg-slate-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  {/* Checklist */}
+                  <div className="grid grid-cols-1 gap-0.5">
+                    {PASSWORD_REQUIREMENTS.map(req => (
+                      <div
+                        key={req.key}
+                        className={`flex items-center gap-1.5 text-xs transition-colors ${
+                          validation.checks[req.key] ? "text-green-600" : "text-slate-400"
+                        }`}
+                      >
+                        <span>{validation.checks[req.key] ? "✓" : "○"}</span>
+                        <span>{req.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="confirm-new-password">Confirmar Nova Senha</Label>
               <Input
@@ -75,8 +120,12 @@ export default function ResetPasswordPage() {
                 placeholder="••••••••"
                 required
               />
+              {confirmPassword.length > 0 && confirmPassword !== password && (
+                <p className="text-xs text-red-500">As senhas não coincidem</p>
+              )}
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+
+            <Button type="submit" className="w-full" disabled={loading || !validation.isValid}>
               {loading ? "Salvando..." : "Salvar Nova Senha"}
             </Button>
           </form>
