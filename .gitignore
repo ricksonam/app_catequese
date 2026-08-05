@@ -25,10 +25,18 @@ dist-ssr
 
 # Variáveis de ambiente — NUNCA commitar chaves secretas
 .env
+.env.*
 .env.local
 .env.*.local
 .env.production
 .env.staging
+
+# Arquivos de teste com chaves (NUNCA commitar)
+test-auth.js
+test-*.js
+test-*.cjs
+scratch/test-*.mjs
+scratch/test-*.js
 
 # Arquivos de debug temporários
 check-divs*.mjs
