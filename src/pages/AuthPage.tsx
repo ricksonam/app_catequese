@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Check,
   ChevronLeft,
-  AlertTriangle
+  AlertTriangle,
+  Info
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
 
@@ -637,6 +638,13 @@ export default function AuthPage() {
               {signupState && loadingCities && (
                 <p className="text-slate-500 text-xs mb-4 -mt-4 animate-pulse">Carregando cidades...</p>
               )}
+
+              <div className="flex items-start gap-2 -mt-2 mb-4 bg-muted/30 p-3 rounded-xl border border-border/50">
+                <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                <p className="text-[11px] text-muted-foreground italic leading-snug">
+                  <strong className="font-semibold not-italic">Observação:</strong> O estado e a cidade informados devem ser de onde você atualmente reside.
+                </p>
+              </div>
 
               <button
                 type="button"

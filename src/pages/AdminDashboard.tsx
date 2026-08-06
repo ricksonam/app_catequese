@@ -7,7 +7,8 @@ import {
   Calendar, CheckCircle2, XCircle, ChevronRight, Lock, Unlock, Mail, Phone,
   BarChart3, PieChart, Activity, ExternalLink, Star, Sparkles, CircleDollarSign, Filter,
   BookOpen, Upload, FileText, Image, Eye, Download, X, Plus, Loader2, Tag, Gift,
-  CreditCard, Crown, BadgeCheck, Hash, RefreshCw, CalendarCheck, HeadphonesIcon, FileUp
+  CreditCard, Crown, BadgeCheck, Hash, RefreshCw, CalendarCheck, HeadphonesIcon, FileUp,
+  User, UserCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -43,6 +44,11 @@ interface Profile {
   created_at: string;
   cidade?: string;
   estado?: string;
+  nome?: string;
+  telefone?: string;
+  paroquia?: string;
+  diocese?: string;
+  data_nascimento?: string;
   motivo_bloqueio?: string | null;
   role?: string;
   sub_admin_status?: string;
@@ -144,6 +150,19 @@ export default function AdminDashboard() {
     "Usuário a mais de 1 ano inativo",
     "Usuário excluído por ordem judicial"
   ];
+
+  // User Detail Panel state
+  const [userDetailOpen, setUserDetailOpen] = useState(false);
+  const [userDetailId, setUserDetailId] = useState<string | null>(null);
+
+  // Advanced Filters state
+  const [filterEstado, setFilterEstado] = useState("Todos");
+  const [filterAno, setFilterAno] = useState("Todos");
+  const [filterMes, setFilterMes] = useState("Todos");
+  const [filterCidade, setFilterCidade] = useState("Todos");
+  const [filterIdade, setFilterIdade] = useState("Todos");
+  const [filterInatividade, setFilterInatividade] = useState("Todos");
+  const [showFilters, setShowFilters] = useState(false);
   
   // Sub-admin states
   const [adminEmail, setAdminEmail] = useState("");
@@ -497,15 +516,126 @@ export default function AdminDashboard() {
     }
   });
 
+  // User Detail Query
+  const { data: userDetail, isLoading: loadingUserDetail } = useQuery({
+    queryKey: ["admin_user_detail", userDetailId],
+    queryFn: async () => {
+      if (!userDetailId) return null;
+      // Fetch turmas
+      const { data: turmasData } = await supabase
+        .from("turmas")
+        .select("*")
+        .eq("user_id", userDetailId)
+        .order("criado_em", { ascending: false });
+      
+      // Fetch catequizandos
+      const { data: catequizandosData } = await supabase
+        .from("catequizandos")
+        .select("id, nome, turma_id, data_nascimento, responsavel, telefone")
+        .eq("user_id", userDetailId);
+      
+      // Fetch catequistas
+      const { data: catequistasData } = await supabase
+        .from("catequistas")
+        .select("id, nome, funcao, telefone, email")
+        .eq("user_id", userDetailId);
+      
+      // Fetch turma_catequistas junction
+      const turmaIds = turmasData?.map(t => t.id) || [];
+      let turmaCtqLinks: any[] = [];
+      if (turmaIds.length > 0) {
+        const { data } = await supabase
+          .from("turma_catequistas")
+          .select("turma_id, catequista_id")
+          .in("turma_id", turmaIds);
+        turmaCtqLinks = data || [];
+      }
+
+      // Fetch paroquias
+      const { data: paroquiasData } = await supabase
+        .from("paroquias")
+        .select("*")
+        .eq("user_id", userDetailId);
+      
+      return {
+        turmas: turmasData || [],
+        catequizandos: catequizandosData || [],
+        catequistas: catequistasData || [],
+        turmaCtqLinks,
+        paroquias: paroquiasData || []
+      };
+    },
+    enabled: !!userDetailId
+  });
+
   // Derived Data
+  const filterOptions = useMemo(() => {
+    const estados = [...new Set(profiles.map(p => p.estado).filter(Boolean))].sort();
+    const cidades = [...new Set(profiles.map(p => p.cidade).filter(Boolean))].sort();
+    const anos = [...new Set(profiles.map(p => new Date(p.created_at).getFullYear()).filter(Boolean))].sort((a, b) => b - a);
+    return { estados, cidades, anos };
+  }, [profiles]);
+
   const filteredProfiles = useMemo(() => {
-    return profiles.filter(p => 
-      !(p.is_blocked && p.motivo_bloqueio?.startsWith("EXCLUIDO:")) &&
-      ((p.email?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (p.cidade?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (p.estado?.toLowerCase() || "").includes(searchTerm.toLowerCase()))
-    );
-  }, [profiles, searchTerm]);
+    const now = new Date();
+    return profiles.filter(p => {
+      // Exclude deleted
+      if (p.is_blocked && p.motivo_bloqueio?.startsWith("EXCLUIDO:")) return false;
+      
+      // Search term
+      if (searchTerm) {
+        const lower = searchTerm.toLowerCase();
+        if (!((p.email?.toLowerCase() || "").includes(lower) ||
+              (p.cidade?.toLowerCase() || "").includes(lower) ||
+              (p.estado?.toLowerCase() || "").includes(lower) ||
+              (p.nome?.toLowerCase() || "").includes(lower) ||
+              (p.paroquia?.toLowerCase() || "").includes(lower)))
+          return false;
+      }
+      
+      // Estado filter
+      if (filterEstado !== "Todos" && p.estado !== filterEstado) return false;
+      
+      // Ano filter
+      if (filterAno !== "Todos" && new Date(p.created_at).getFullYear() !== parseInt(filterAno)) return false;
+      
+      // Mês filter
+      if (filterMes !== "Todos" && (new Date(p.created_at).getMonth() + 1) !== parseInt(filterMes)) return false;
+      
+      // Cidade filter
+      if (filterCidade !== "Todos" && p.cidade !== filterCidade) return false;
+      
+      // Idade filter
+      if (filterIdade !== "Todos" && p.data_nascimento) {
+        const birth = new Date(p.data_nascimento);
+        const age = Math.floor((now.getTime() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        const [min, max] = filterIdade === "56+" ? [56, 999] : filterIdade.split("-").map(Number);
+        if (age < min || age > max) return false;
+      } else if (filterIdade !== "Todos" && !p.data_nascimento) {
+        return false;
+      }
+      
+      // Inatividade filter
+      if (filterInatividade !== "Todos") {
+        const lastLogin = p.last_login ? new Date(p.last_login) : null;
+        const monthsMap: Record<string, number> = {
+          "1 mês": 1,
+          "3 meses": 3,
+          "6 meses": 6,
+          "Mais de 1 ano": 12
+        };
+        const months = monthsMap[filterInatividade];
+        if (months) {
+          const cutoff = new Date(now);
+          cutoff.setMonth(cutoff.getMonth() - months);
+          if (lastLogin && lastLogin > cutoff) return false;
+          if (!lastLogin) return true; // Never logged in counts as inactive
+        }
+      }
+      
+      return true;
+    });
+  }, [profiles, searchTerm, filterEstado, filterAno, filterMes, filterCidade, filterIdade, filterInatividade]);
 
   const deletedProfiles = useMemo(() => {
     return profiles.filter(p => p.is_blocked && p.motivo_bloqueio?.startsWith("EXCLUIDO:"));
@@ -680,11 +810,118 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {/* Filter toggle */}
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={cn(
+                      "rounded-xl text-xs font-bold gap-1.5",
+                      [filterEstado, filterAno, filterMes, filterCidade, filterIdade, filterInatividade].filter(v => v !== "Todos").length > 0 && "border-primary text-primary"
+                    )}
+                  >
+                    <Filter className="h-3.5 w-3.5" />
+                    Filtros
+                    {[filterEstado, filterAno, filterMes, filterCidade, filterIdade, filterInatividade].filter(v => v !== "Todos").length > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded-full bg-primary text-white text-[9px] font-black">
+                        {[filterEstado, filterAno, filterMes, filterCidade, filterIdade, filterInatividade].filter(v => v !== "Todos").length}
+                      </span>
+                    )}
+                  </Button>
+                  {[filterEstado, filterAno, filterMes, filterCidade, filterIdade, filterInatividade].filter(v => v !== "Todos").length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFilterEstado("Todos");
+                        setFilterAno("Todos");
+                        setFilterMes("Todos");
+                        setFilterCidade("Todos");
+                        setFilterIdade("Todos");
+                        setFilterInatividade("Todos");
+                      }}
+                      className="rounded-xl text-xs font-bold text-destructive hover:text-destructive"
+                    >
+                      <X className="h-3 w-3 mr-1" /> Limpar
+                    </Button>
+                  )}
+                </div>
+
+                {/* Filter bar */}
+                {showFilters && (
+                  <div className="bg-slate-50 rounded-2xl p-4 space-y-3 border border-border/50 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                      {/* Estado */}
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">Estado</label>
+                        <select value={filterEstado} onChange={(e) => setFilterEstado(e.target.value)} className="w-full h-9 rounded-xl border border-border/50 bg-white text-xs font-bold px-2">
+                          <option value="Todos">Todos</option>
+                          {filterOptions.estados.map(e => <option key={e} value={e}>{e}</option>)}
+                        </select>
+                      </div>
+                      {/* Ano */}
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">Ano Cadastro</label>
+                        <select value={filterAno} onChange={(e) => setFilterAno(e.target.value)} className="w-full h-9 rounded-xl border border-border/50 bg-white text-xs font-bold px-2">
+                          <option value="Todos">Todos</option>
+                          {filterOptions.anos.map(a => <option key={a} value={String(a)}>{a}</option>)}
+                        </select>
+                      </div>
+                      {/* Mês */}
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">Mês Cadastro</label>
+                        <select value={filterMes} onChange={(e) => setFilterMes(e.target.value)} className="w-full h-9 rounded-xl border border-border/50 bg-white text-xs font-bold px-2">
+                          <option value="Todos">Todos</option>
+                          {["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"].map((m, i) => (
+                            <option key={i+1} value={String(i+1)}>{m}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {/* Cidade */}
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">Cidade</label>
+                        <select value={filterCidade} onChange={(e) => setFilterCidade(e.target.value)} className="w-full h-9 rounded-xl border border-border/50 bg-white text-xs font-bold px-2">
+                          <option value="Todos">Todas</option>
+                          {filterOptions.cidades.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      {/* Idade */}
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">Faixa Etária</label>
+                        <select value={filterIdade} onChange={(e) => setFilterIdade(e.target.value)} className="w-full h-9 rounded-xl border border-border/50 bg-white text-xs font-bold px-2">
+                          <option value="Todos">Todas</option>
+                          <option value="18-25">18-25 anos</option>
+                          <option value="26-35">26-35 anos</option>
+                          <option value="36-45">36-45 anos</option>
+                          <option value="46-55">46-55 anos</option>
+                          <option value="56+">56+ anos</option>
+                        </select>
+                      </div>
+                      {/* Inatividade */}
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">Inatividade</label>
+                        <select value={filterInatividade} onChange={(e) => setFilterInatividade(e.target.value)} className="w-full h-9 rounded-xl border border-border/50 bg-white text-xs font-bold px-2">
+                          <option value="Todos">Todos</option>
+                          <option value="1 mês">+1 mês</option>
+                          <option value="3 meses">+3 meses</option>
+                          <option value="6 meses">+6 meses</option>
+                          <option value="Mais de 1 ano">+1 ano</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-3">
                   {filteredProfiles.map((p) => (
                     <UserCard
                       key={p.id}
                       profile={p}
+                      onClick={() => {
+                        setUserDetailId(p.id);
+                        setUserDetailOpen(true);
+                      }}
                       onBlock={() => {
                         if (p.is_blocked) {
                           toggleBlockMutation.mutate({ id: p.id, is_blocked: false });
@@ -2196,6 +2433,156 @@ export default function AdminDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* User Detail Panel */}
+      <Dialog open={userDetailOpen} onOpenChange={(open) => { setUserDetailOpen(open); if (!open) setUserDetailId(null); }}>
+        <DialogContent className="w-[95%] max-w-[700px] max-h-[85vh] rounded-[32px] p-0 bg-white border-2 border-border/50 shadow-2xl overflow-hidden">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-r from-primary/10 via-purple-500/10 to-sky-500/10 p-6 border-b border-border/50">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-white shadow-lg flex items-center justify-center font-black text-lg text-primary">
+                {profiles.find(p => p.id === userDetailId)?.email?.slice(0,2).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-foreground">{profiles.find(p => p.id === userDetailId)?.nome || profiles.find(p => p.id === userDetailId)?.email}</h2>
+                <p className="text-sm text-muted-foreground">{profiles.find(p => p.id === userDetailId)?.email}</p>
+              </div>
+            </div>
+          </div>
+          
+          <ScrollArea className="max-h-[calc(85vh-120px)]">
+            <div className="p-6 space-y-6">
+              {loadingUserDetail ? (
+                <div className="space-y-4">
+                  {[1,2,3].map(i => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+                </div>
+              ) : (
+                <>
+                  {/* Ficha Cadastral */}
+                  <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                      <User className="h-4 w-4" /> Ficha Cadastral
+                    </h3>
+                    <div className="bg-slate-50 rounded-2xl p-4 space-y-2">
+                      {(() => {
+                        const u = profiles.find(p => p.id === userDetailId);
+                        if (!u) return null;
+                        const fields = [
+                          { label: "Nome", value: u.nome },
+                          { label: "Email", value: u.email },
+                          { label: "Telefone", value: u.telefone },
+                          { label: "Paróquia", value: u.paroquia },
+                          { label: "Diocese", value: u.diocese },
+                          { label: "Estado", value: u.estado },
+                          { label: "Cidade", value: u.cidade },
+                          { label: "Nascimento", value: u.data_nascimento },
+                          { label: "Cadastro", value: u.created_at ? new Date(u.created_at).toLocaleDateString("pt-BR") : "—" },
+                          { label: "Último Login", value: u.last_login ? new Date(u.last_login).toLocaleString("pt-BR") : "Nunca logou" },
+                        ];
+                        return fields.map((f, i) => (
+                          <div key={i} className="flex justify-between py-1.5 border-b border-black/5 last:border-0">
+                            <span className="text-xs font-bold text-muted-foreground uppercase">{f.label}</span>
+                            <span className="text-sm font-semibold text-foreground">{f.value || "—"}</span>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Turmas Criadas */}
+                  <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" /> Turmas Criadas ({userDetail?.turmas.length || 0})
+                    </h3>
+                    {userDetail?.turmas.length === 0 ? (
+                      <p className="text-sm text-muted-foreground bg-slate-50 rounded-2xl p-4 text-center">Nenhuma turma criada</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {userDetail?.turmas.map((turma: any) => {
+                          const ctqLinks = userDetail.turmaCtqLinks.filter((l: any) => l.turma_id === turma.id);
+                          const catequistasInTurma = userDetail.catequistas.filter((c: any) => 
+                            ctqLinks.some((l: any) => l.catequista_id === c.id)
+                          );
+                          const catequizandosInTurma = userDetail.catequizandos.filter((c: any) => c.turma_id === turma.id);
+                          
+                          return (
+                            <div key={turma.id} className="bg-slate-50 rounded-2xl p-4 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-black text-foreground">{turma.nome}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {turma.etapa && <Badge variant="secondary" className="mr-1 text-[9px] font-bold">{turma.etapa}</Badge>}
+                                    {turma.ano && <span className="mr-2">Ano: {turma.ano}</span>}
+                                    {turma.dia_catequese && <span className="mr-2">{turma.dia_catequese}</span>}
+                                    {turma.horario && <span>{turma.horario}</span>}
+                                  </p>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-bold">
+                                    {catequizandosInTurma.length} catequizandos
+                                  </Badge>
+                                </div>
+                              </div>
+                              
+                              {/* Catequistas */}
+                              {catequistasInTurma.length > 0 && (
+                                <div>
+                                  <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Catequistas</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {catequistasInTurma.map((c: any) => (
+                                      <span key={c.id} className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                                        <UserCheck className="h-2.5 w-2.5" /> {c.nome}{c.funcao ? ` (${c.funcao})` : ''}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Catequizandos */}
+                              {catequizandosInTurma.length > 0 && (
+                                <div>
+                                  <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Catequizandos</p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {catequizandosInTurma.map((c: any) => (
+                                      <span key={c.id} className="inline-flex items-center px-2 py-1 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold border border-sky-200">
+                                        {c.nome}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Resumo Geral */}
+                  <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" /> Resumo Geral
+                    </h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-primary/5 rounded-2xl p-4 text-center">
+                        <p className="text-2xl font-black text-primary">{userDetail?.turmas.length || 0}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">Turmas</p>
+                      </div>
+                      <div className="bg-emerald-50 rounded-2xl p-4 text-center">
+                        <p className="text-2xl font-black text-emerald-600">{userDetail?.catequistas.length || 0}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">Catequistas</p>
+                      </div>
+                      <div className="bg-sky-50 rounded-2xl p-4 text-center">
+                        <p className="text-2xl font-black text-sky-600">{userDetail?.catequizandos.length || 0}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">Catequizandos</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -2206,10 +2593,12 @@ function UserCard({
   profile: p,
   onBlock,
   onDelete,
+  onClick,
 }: {
   profile: Profile;
   onBlock: () => void;
   onDelete: () => void;
+  onClick: () => void;
 }) {
   const initials = p.email.slice(0, 2).toUpperCase();
   const avatarColors = [
@@ -2226,16 +2615,21 @@ function UserCard({
       "rounded-2xl border bg-white p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:shadow-md transition-all",
       p.is_blocked ? "border-destructive/30 bg-destructive/5" : "border-border/50"
     )}>
-      {/* Avatar */}
-      <div className={cn(
-        "w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm shrink-0",
-        avatarColors[colorIdx]
-      )}>
-        {initials}
-      </div>
+      {/* Clickable area for details */}
+      <div 
+        className="flex-1 flex flex-col sm:flex-row sm:items-center gap-4 cursor-pointer min-w-0 group"
+        onClick={onClick}
+      >
+        {/* Avatar */}
+        <div className={cn(
+          "w-11 h-11 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 transition-transform group-hover:scale-105",
+          avatarColors[colorIdx]
+        )}>
+          {initials}
+        </div>
 
-      {/* Main info */}
-      <div className="flex-1 min-w-0">
+        {/* Main info */}
+        <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <span className="text-sm font-black text-foreground truncate">{p.email}</span>
           {p.is_blocked && (
@@ -2267,6 +2661,8 @@ function UserCard({
         </div>
         <p className="text-[9px] text-muted-foreground/60 mt-0.5 font-mono">ID: {p.id}</p>
       </div>
+
+      <ChevronRight className="h-5 w-5 text-muted-foreground/50 shrink-0 hidden sm:block group-hover:text-primary transition-colors cursor-pointer" onClick={onClick} />
 
       {/* Action chips */}
       <div className="flex flex-wrap gap-2 shrink-0">

@@ -3,7 +3,8 @@ import {
   Church, Users, User, UserCheck, Image, BookOpen, FileText, Library, 
   CalendarDays, Dices, ChevronRight, ChevronDown, KeyRound, LogOut, Sparkles,
   Bell, MessageSquare, Trash, Settings, HelpCircle, AlertTriangle,
-  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, HeadphonesIcon, ShoppingBag, Compass
+  GraduationCap, ChevronLeft, BarChart2, X, Map, BookHeart, HeadphonesIcon, ShoppingBag, Compass,
+  Pencil, Lock, Save, MapPin
 } from "lucide-react";
 import { PrayingHands } from "./icons/PrayingHands";
 import { SubscriptionManager } from "./SubscriptionManager";
@@ -31,6 +32,19 @@ interface MenuContentProps {
   onShowObjective?: () => void;
   onShowGuide?: () => void;
 }
+
+const ESTADOS_BR = [
+  { sigla: "AC", nome: "Acre" }, { sigla: "AL", nome: "Alagoas" }, { sigla: "AP", nome: "Amapá" },
+  { sigla: "AM", nome: "Amazonas" }, { sigla: "BA", nome: "Bahia" }, { sigla: "CE", nome: "Ceará" },
+  { sigla: "DF", nome: "Distrito Federal" }, { sigla: "ES", nome: "Espírito Santo" }, { sigla: "GO", nome: "Goiás" },
+  { sigla: "MA", nome: "Maranhão" }, { sigla: "MT", nome: "Mato Grosso" }, { sigla: "MS", nome: "Mato Grosso do Sul" },
+  { sigla: "MG", nome: "Minas Gerais" }, { sigla: "PA", nome: "Pará" }, { sigla: "PB", nome: "Paraíba" },
+  { sigla: "PR", nome: "Paraná" }, { sigla: "PE", nome: "Pernambuco" }, { sigla: "PI", nome: "Piauí" },
+  { sigla: "RJ", nome: "Rio de Janeiro" }, { sigla: "RN", nome: "Rio Grande do Norte" },
+  { sigla: "RS", nome: "Rio Grande do Sul" }, { sigla: "RO", nome: "Rondônia" }, { sigla: "RR", nome: "Roraima" },
+  { sigla: "SC", nome: "Santa Catarina" }, { sigla: "SP", nome: "São Paulo" }, { sigla: "SE", nome: "Sergipe" },
+  { sigla: "TO", nome: "Tocantins" }
+];
 
 const cadastros = [
   { label: "Paróquia e Comunidade", icon: Church, path: "/cadastros/paroquia-comunidade", color: "bg-liturgical/10 text-liturgical" },
@@ -92,6 +106,97 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
       localStorage.setItem("ivc_selected_turma", turmas[0].id);
     }
   }, [turmas]);
+
+  // Edição de perfil
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editData, setEditData] = useState({
+    nome: '',
+    telefone: '',
+    data_nascimento: '',
+    paroquia: '',
+    diocese: '',
+    estado: '',
+    cidade: ''
+  });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [editCities, setEditCities] = useState<{id: number; nome: string}[]>([]);
+  const [loadingEditCities, setLoadingEditCities] = useState(false);
+
+  const fetchEditCities = async (estado: string) => {
+    const uf = ESTADOS_BR.find(s => s.nome === estado)?.sigla;
+    if (!uf) { setEditCities([]); return; }
+    setLoadingEditCities(true);
+    try {
+      const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+      const data = await res.json();
+      setEditCities(data.map((c: any) => ({ id: c.id, nome: c.nome })));
+    } catch {
+      setEditCities([]);
+    } finally {
+      setLoadingEditCities(false);
+    }
+  };
+
+  const startEditing = () => {
+    setEditData({
+      nome: user?.user_metadata?.full_name || user?.user_metadata?.nome || '',
+      telefone: user?.user_metadata?.telefone || user?.phone || '',
+      data_nascimento: user?.user_metadata?.data_nascimento || '',
+      paroquia: user?.user_metadata?.paroquia || '',
+      diocese: user?.user_metadata?.diocese || '',
+      estado: user?.user_metadata?.estado || '',
+      cidade: user?.user_metadata?.cidade || ''
+    });
+    setIsEditingProfile(true);
+    // Load cities if estado exists
+    if (user?.user_metadata?.estado) {
+      fetchEditCities(user.user_metadata.estado);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      // Update auth user metadata
+      const { error: authError } = await supabase.auth.updateUser({
+        data: {
+          full_name: editData.nome,
+          nome: editData.nome,
+          telefone: editData.telefone,
+          data_nascimento: editData.data_nascimento,
+          paroquia: editData.paroquia,
+          diocese: editData.diocese,
+          estado: editData.estado,
+          cidade: editData.cidade
+        }
+      });
+      if (authError) throw authError;
+
+      // Update profiles table
+      if (user?.id) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            nome: editData.nome,
+            telefone: editData.telefone,
+            data_nascimento: editData.data_nascimento,
+            paroquia: editData.paroquia,
+            diocese: editData.diocese,
+            estado: editData.estado,
+            cidade: editData.cidade
+          })
+          .eq('id', user.id);
+        if (profileError) console.warn('Erro ao atualizar perfil:', profileError);
+      }
+
+      toast({ title: "Dados atualizados!", description: "Suas informações foram salvas com sucesso." });
+      setIsEditingProfile(false);
+    } catch (err: any) {
+      toast({ title: "Erro ao salvar", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   // Senha
   const [newPassword, setNewPassword] = useState("");
@@ -519,7 +624,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
 
       {/* DIALOGS */}
       
-      <Dialog open={showMeusDadosDialog} onOpenChange={setShowMeusDadosDialog}>
+      <Dialog open={showMeusDadosDialog} onOpenChange={(open) => { setShowMeusDadosDialog(open); if (!open) setIsEditingProfile(false); }}>
         <DialogContent className="w-[90%] max-w-[400px] rounded-[32px] p-6 bg-white dark:bg-zinc-950 border-2 border-black/5 dark:border-white/5 shadow-2xl overflow-hidden gap-0">
           {/* Header */}
           <div className="flex flex-col items-center text-center mb-6 mt-2 relative z-10">
@@ -527,51 +632,159 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
               <User className="h-8 w-8" />
             </div>
             <h2 className="text-2xl font-black text-foreground mb-1 tracking-tight">Meus Dados</h2>
-            <p className="text-sm text-muted-foreground font-medium px-4">Informações do seu cadastro no iCatequese</p>
+            <p className="text-sm text-muted-foreground font-medium px-4">
+              {isEditingProfile ? 'Edite suas informações abaixo' : 'Informações do seu cadastro no iCatequese'}
+            </p>
           </div>
 
           <div className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                <span className="text-xs text-muted-foreground font-bold uppercase">Nome</span>
-                <span className="text-sm font-semibold">{user?.user_metadata?.full_name || user?.user_metadata?.nome || 'Não informado'}</span>
-              </div>
-              <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                <span className="text-xs text-muted-foreground font-bold uppercase">Email</span>
-                <span className="text-sm font-semibold">{user?.email || 'Não informado'}</span>
-              </div>
-              {user?.user_metadata?.cpf && (
-                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                  <span className="text-xs text-muted-foreground font-bold uppercase">CPF</span>
-                  <span className="text-sm font-semibold">{user.user_metadata.cpf}</span>
+            {isEditingProfile ? (
+              /* EDIT MODE */
+              <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nome</Label>
+                  <Input value={editData.nome} onChange={(e) => setEditData({...editData, nome: e.target.value})} className="rounded-xl h-10 border-border/50" placeholder="Seu nome completo" />
                 </div>
-              )}
-              {user?.user_metadata?.data_nascimento && (
-                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                  <span className="text-xs text-muted-foreground font-bold uppercase">Nascimento</span>
-                  <span className="text-sm font-semibold">{user.user_metadata.data_nascimento}</span>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1">Email <Lock className="h-3 w-3 text-muted-foreground" /></Label>
+                  <Input value={user?.email || ''} disabled className="rounded-xl h-10 border-border/50 bg-slate-50 opacity-60 cursor-not-allowed" />
                 </div>
-              )}
-              {user?.user_metadata?.cidade && user?.user_metadata?.estado && (
-                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                  <span className="text-xs text-muted-foreground font-bold uppercase">Local</span>
-                  <span className="text-sm font-semibold">{user.user_metadata.cidade} - {user.user_metadata.estado}</span>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Telefone</Label>
+                  <Input value={editData.telefone} onChange={(e) => setEditData({...editData, telefone: e.target.value})} className="rounded-xl h-10 border-border/50" placeholder="(00) 00000-0000" />
                 </div>
-              )}
-              <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
-                <span className="text-xs text-muted-foreground font-bold uppercase">Membro Desde</span>
-                <span className="text-sm font-semibold">
-                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : 'Não informado'}
-                </span>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Data de Nascimento</Label>
+                  <Input value={editData.data_nascimento} onChange={(e) => setEditData({...editData, data_nascimento: e.target.value})} className="rounded-xl h-10 border-border/50" placeholder="DD/MM/AAAA" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Estado</Label>
+                  <select
+                    value={editData.estado}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setEditData({...editData, estado: val, cidade: ''});
+                      if (val) fetchEditCities(val);
+                      else setEditCities([]);
+                    }}
+                    className="w-full h-10 rounded-xl border border-border/50 bg-white dark:bg-zinc-900 text-sm px-3"
+                  >
+                    <option value="">Selecione...</option>
+                    {ESTADOS_BR.map(s => <option key={s.sigla} value={s.nome}>{s.nome}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Cidade</Label>
+                  <select
+                    value={editData.cidade}
+                    onChange={(e) => setEditData({...editData, cidade: e.target.value})}
+                    disabled={!editData.estado || loadingEditCities}
+                    className="w-full h-10 rounded-xl border border-border/50 bg-white dark:bg-zinc-900 text-sm px-3 disabled:opacity-50"
+                  >
+                    <option value="">{loadingEditCities ? 'Carregando...' : 'Selecione...'}</option>
+                    {editCities.map(c => <option key={c.id} value={c.nome}>{c.nome}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Paróquia</Label>
+                  <Input value={editData.paroquia} onChange={(e) => setEditData({...editData, paroquia: e.target.value})} className="rounded-xl h-10 border-border/50" placeholder="Nome da paróquia" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Diocese</Label>
+                  <Input value={editData.diocese} onChange={(e) => setEditData({...editData, diocese: e.target.value})} className="rounded-xl h-10 border-border/50" placeholder="Nome da diocese" />
+                </div>
               </div>
-            </div>
+            ) : (
+              /* VIEW MODE */
+              <div className="space-y-3">
+                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                  <span className="text-xs text-muted-foreground font-bold uppercase">Nome</span>
+                  <span className="text-sm font-semibold">{user?.user_metadata?.full_name || user?.user_metadata?.nome || 'Não informado'}</span>
+                </div>
+                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                  <span className="text-xs text-muted-foreground font-bold uppercase">Email</span>
+                  <span className="text-sm font-semibold">{user?.email || 'Não informado'}</span>
+                </div>
+                {user?.user_metadata?.telefone && (
+                  <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                    <span className="text-xs text-muted-foreground font-bold uppercase">Telefone</span>
+                    <span className="text-sm font-semibold">{user.user_metadata.telefone}</span>
+                  </div>
+                )}
+                {user?.user_metadata?.cpf && (
+                  <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                    <span className="text-xs text-muted-foreground font-bold uppercase">CPF</span>
+                    <span className="text-sm font-semibold">{user.user_metadata.cpf}</span>
+                  </div>
+                )}
+                {user?.user_metadata?.data_nascimento && (
+                  <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                    <span className="text-xs text-muted-foreground font-bold uppercase">Nascimento</span>
+                    <span className="text-sm font-semibold">{user.user_metadata.data_nascimento}</span>
+                  </div>
+                )}
+                {user?.user_metadata?.estado && (
+                  <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                    <span className="text-xs text-muted-foreground font-bold uppercase">Local</span>
+                    <span className="text-sm font-semibold">{user.user_metadata.cidade || '—'} - {user.user_metadata.estado}</span>
+                  </div>
+                )}
+                {user?.user_metadata?.paroquia && (
+                  <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                    <span className="text-xs text-muted-foreground font-bold uppercase">Paróquia</span>
+                    <span className="text-sm font-semibold">{user.user_metadata.paroquia}</span>
+                  </div>
+                )}
+                {user?.user_metadata?.diocese && (
+                  <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                    <span className="text-xs text-muted-foreground font-bold uppercase">Diocese</span>
+                    <span className="text-sm font-semibold">{user.user_metadata.diocese}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                  <span className="text-xs text-muted-foreground font-bold uppercase">Membro Desde</span>
+                  <span className="text-sm font-semibold">
+                    {user?.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : 'Não informado'}
+                  </span>
+                </div>
+              </div>
+            )}
 
-            <Button
-              onClick={() => setShowMeusDadosDialog(false)}
-              className="w-full h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-sky-500 hover:bg-sky-600 text-white transition-all shadow-lg shadow-sky-500/20"
-            >
-              Fechar
-            </Button>
+            {/* Action Buttons */}
+            {isEditingProfile ? (
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setIsEditingProfile(false)}
+                  variant="outline"
+                  className="flex-1 h-12 rounded-2xl font-black text-xs uppercase tracking-widest"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleSaveProfile}
+                  disabled={savingProfile}
+                  className="flex-1 h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-emerald-500 hover:bg-emerald-600 text-white transition-all shadow-lg shadow-emerald-500/20"
+                >
+                  {savingProfile ? 'Salvando...' : 'Salvar'}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  onClick={startEditing}
+                  variant="outline"
+                  className="flex-1 h-12 rounded-2xl font-black text-xs uppercase tracking-widest border-primary/30 text-primary hover:bg-primary/5"
+                >
+                  ✏️ Editar Dados
+                </Button>
+                <Button
+                  onClick={() => setShowMeusDadosDialog(false)}
+                  className="flex-1 h-12 rounded-2xl font-black text-xs uppercase tracking-widest bg-sky-500 hover:bg-sky-600 text-white transition-all shadow-lg shadow-sky-500/20"
+                >
+                  Fechar
+                </Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
