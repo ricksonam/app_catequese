@@ -537,7 +537,7 @@ export default function AdminDashboard() {
       // Fetch catequistas
       const { data: catequistasData } = await supabase
         .from("catequistas")
-        .select("id, nome, funcao, telefone, email")
+        .select("id, nome, telefone, email")
         .eq("user_id", userDetailId);
       
       // Fetch turma_catequistas junction
@@ -2537,19 +2537,6 @@ export default function AdminDashboard() {
                                 </div>
                               )}
                               
-                              {/* Catequizandos */}
-                              {catequizandosInTurma.length > 0 && (
-                                <div>
-                                  <p className="text-[10px] font-black uppercase text-muted-foreground mb-1">Catequizandos</p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {catequizandosInTurma.map((c: any) => (
-                                      <span key={c.id} className="inline-flex items-center px-2 py-1 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold border border-sky-200">
-                                        {c.nome}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
                             </div>
                           );
                         })}
