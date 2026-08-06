@@ -189,6 +189,13 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
         if (profileError) console.warn('Erro ao atualizar perfil:', profileError);
       }
 
+      // Force session refresh so local user_metadata updates immediately
+      await supabase.auth.refreshSession();
+      
+      // Invalidate queries so admin dashboards or other places update immediately
+      queryClient.invalidateQueries({ queryKey: ["admin_profiles"] });
+      queryClient.invalidateQueries({ queryKey: ["admin_user_detail"] });
+
       toast({ title: "Dados atualizados!", description: "Suas informações foram salvas com sucesso." });
       setIsEditingProfile(false);
     } catch (err: any) {
