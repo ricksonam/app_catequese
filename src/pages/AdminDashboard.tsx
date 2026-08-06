@@ -2662,7 +2662,8 @@ function UserCard({
         <p className="text-[9px] text-muted-foreground/60 mt-0.5 font-mono">ID: {p.id}</p>
       </div>
 
-      <ChevronRight className="h-5 w-5 text-muted-foreground/50 shrink-0 hidden sm:block group-hover:text-primary transition-colors cursor-pointer" onClick={onClick} />
+      <ChevronRight className="h-5 w-5 text-muted-foreground/50 shrink-0 hidden sm:block group-hover:text-primary transition-colors cursor-pointer" />
+      </div>
 
       {/* Action chips */}
       <div className="flex flex-wrap gap-2 shrink-0">
