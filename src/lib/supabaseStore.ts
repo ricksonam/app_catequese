@@ -919,6 +919,27 @@ export async function publicAgendarVisita(payload: any) {
   return data;
 }
 
+export async function insertVisitaAgendamentoManual(payload: {
+  config_id: string;
+  turma_id: string;
+  data_visita: string;
+  horario_visita: string;
+  nome_responsavel: string;
+  nome_crianca: string;
+  telefone?: string;
+  observacao?: string;
+}): Promise<VisitaAgendamento> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Usuário não autenticado.");
+  const { data, error } = await supabase
+    .from("visita_agendamentos")
+    .insert({ ...payload, user_id: user.id, status: "confirmada" })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as VisitaAgendamento;
+}
+
 
 export async function fetchComunicacaoRespostas(formId: string): Promise<ComunicacaoResposta[]> {
   const { data, error } = await supabase.from("comunicacao_respostas")
