@@ -436,12 +436,17 @@ function CalendarioMultiplo({ diasHorarios, onChange, visitasPorData }: {
   return (
     <div className="space-y-4">
       {/* Calendário visual para seleção */}
-      <div className="bg-white rounded-2xl border-2 border-indigo-100 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-white" />
-          <p className="text-white font-black text-xs uppercase tracking-widest">Clique nos dias para adicionar</p>
+      <div className="bg-white rounded-3xl border-2 border-indigo-200 shadow-xl shadow-indigo-600/10 overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-4 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <Calendar className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <p className="text-white font-black text-sm uppercase tracking-widest leading-tight">Escolher Datas</p>
+            <p className="text-indigo-100 text-[10px] font-medium leading-tight mt-0.5">Clique nos dias disponíveis para as visitas</p>
+          </div>
         </div>
-        <div className="p-3 flex justify-center">
+        <div className="p-5 flex justify-center bg-indigo-50/30">
           <CalendarUI
             mode="multiple"
             selected={selectedDates}
@@ -468,29 +473,36 @@ function CalendarioMultiplo({ diasHorarios, onChange, visitasPorData }: {
             }}
             disabled={(day) => day < new Date(new Date().setHours(0, 0, 0, 0))}
             className={cn(
-              "rounded-2xl w-full",
+              "rounded-2xl w-full bg-white p-3 shadow-sm border border-indigo-100",
               "[&_.rdp]:w-full [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_table]:w-full",
-              "[&_.rdp-cell]:p-0.5",
-              "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-12 [&_.rdp-day_button]:text-sm",
+              "[&_.rdp-cell]:p-1",
+              "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-12 [&_.rdp-day_button]:text-sm [&_.rdp-day_button]:font-bold",
             )}
             classNames={{
-              day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white rounded-xl font-black",
-              day_disabled: "text-slate-200 opacity-40",
-              head_cell: "text-slate-400 font-bold text-xs uppercase pb-2",
+              day_selected: "bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 hover:text-white focus:from-indigo-600 focus:to-purple-700 focus:text-white rounded-xl font-black shadow-lg shadow-indigo-600/30 scale-105 transition-transform",
+              day_disabled: "text-slate-300 opacity-40 font-medium",
+              head_cell: "text-indigo-900/60 font-black text-xs uppercase pb-3",
+              day: "text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-xl transition-colors",
             }}
           />
         </div>
         {diasHorarios.length > 0 && (
-          <div className="px-4 pb-3">
-            <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3" /> {diasHorarios.length} dia(s) selecionado(s)
+          <div className="px-5 pb-5 bg-indigo-50/30 border-t border-indigo-100/50 pt-4">
+            <p className="text-xs font-black text-indigo-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-indigo-500" /> {diasHorarios.length} dia(s) selecionado(s)
             </p>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {diasHorarios.map(d => (
-                <span key={d.data} className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 rounded-full px-2.5 py-1 text-[10px] font-black">
-                  {fmtDate(d.data)}
-                  {d.horarios.length > 0 && <span className="bg-indigo-200 rounded-full px-1.5 text-[9px]">{d.horarios.length}h</span>}
-                </span>
+                <div key={d.data} className="flex items-center bg-white border border-indigo-200 shadow-sm rounded-xl overflow-hidden group">
+                  <div className="px-3 py-1.5 bg-indigo-50 text-indigo-800 font-black text-[11px] group-hover:bg-indigo-100 transition-colors">
+                    {fmtDate(d.data)}
+                  </div>
+                  {d.horarios.length > 0 && (
+                    <div className="px-2 py-1.5 bg-indigo-600 text-white font-bold text-[10px]">
+                      {d.horarios.length}h
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
@@ -797,11 +809,13 @@ export function PainelVisitaFamilia() {
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
-  // catequizandos filtrados pela busca
-  const catequizandosFiltrados = (catequizandos || []).filter(c =>
-    !manualBusca || c.nome.toLowerCase().includes(manualBusca.toLowerCase()) ||
-    (c.responsavel || "").toLowerCase().includes(manualBusca.toLowerCase())
-  );
+  // catequizandos filtrados pela busca e status ativo
+  const catequizandosFiltrados = (catequizandos || []).filter(c => {
+    const isAtivo = c.status === "ativo";
+    const matchBusca = !manualBusca || c.nome.toLowerCase().includes(manualBusca.toLowerCase()) ||
+      (c.responsavel || "").toLowerCase().includes(manualBusca.toLowerCase());
+    return isAtivo && matchBusca;
+  });
 
   if (loadingTurmas) return <div className="flex justify-center p-8"><Spinner size="md" /></div>;
 
@@ -887,6 +901,34 @@ export function PainelVisitaFamilia() {
           {/* ── HOME ─────────────────────────────────────────────────────────── */}
           {activeView === "home" && (
             <div className="space-y-6">
+
+              {/* Resumo do painel */}
+              <div>
+                <h3 className="text-base font-bold text-slate-800 mb-4 px-1">Resumo do painel</h3>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <div className="bg-blue-600 rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-lg shadow-blue-600/20 hover:scale-105 transition-transform">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5 sm:mb-2">
+                      <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <span className="text-xl sm:text-3xl font-black text-white leading-none mb-1 sm:mb-1.5">{totalAll}</span>
+                    <span className="text-[9px] sm:text-xs font-bold text-blue-100 leading-tight">Recebidas</span>
+                  </div>
+                  <div className="bg-emerald-600 rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-lg shadow-emerald-600/20 hover:scale-105 transition-transform">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5 sm:mb-2">
+                      <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <span className="text-xl sm:text-3xl font-black text-white leading-none mb-1 sm:mb-1.5">{totalConfirmadas}</span>
+                    <span className="text-[9px] sm:text-xs font-bold text-emerald-100 leading-tight">Agendadas</span>
+                  </div>
+                  <div className="bg-amber-500 rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-lg shadow-amber-500/20 hover:scale-105 transition-transform">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5 sm:mb-2">
+                      <Home className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    <span className="text-xl sm:text-3xl font-black text-white leading-none mb-1 sm:mb-1.5">{totalRealizadas}</span>
+                    <span className="text-[9px] sm:text-xs font-bold text-amber-100 leading-tight">Realizadas</span>
+                  </div>
+                </div>
+              </div>
 
               {/* ── DOIS CARDS PREMIUM DE MODALIDADE ─────────────────────────── */}
               <div className="space-y-3">
@@ -994,33 +1036,7 @@ export function PainelVisitaFamilia() {
                 </button>
               </div>
 
-              {/* Resumo do painel */}
-              <div>
-                <h3 className="text-base font-bold text-slate-800 mb-4 px-1">Resumo do painel</h3>
-                <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                  <div className="bg-blue-600 rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-lg shadow-blue-600/20 hover:scale-105 transition-transform">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5 sm:mb-2">
-                      <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </div>
-                    <span className="text-xl sm:text-3xl font-black text-white leading-none mb-1 sm:mb-1.5">{totalAll}</span>
-                    <span className="text-[9px] sm:text-xs font-bold text-blue-100 leading-tight">Recebidas</span>
-                  </div>
-                  <div className="bg-emerald-600 rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-lg shadow-emerald-600/20 hover:scale-105 transition-transform">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5 sm:mb-2">
-                      <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </div>
-                    <span className="text-xl sm:text-3xl font-black text-white leading-none mb-1 sm:mb-1.5">{totalConfirmadas}</span>
-                    <span className="text-[9px] sm:text-xs font-bold text-emerald-100 leading-tight">Agendadas</span>
-                  </div>
-                  <div className="bg-amber-500 rounded-[1rem] sm:rounded-2xl p-3 sm:p-5 flex flex-col items-center justify-center text-center shadow-lg shadow-amber-500/20 hover:scale-105 transition-transform">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5 sm:mb-2">
-                      <Home className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </div>
-                    <span className="text-xl sm:text-3xl font-black text-white leading-none mb-1 sm:mb-1.5">{totalRealizadas}</span>
-                    <span className="text-[9px] sm:text-xs font-bold text-amber-100 leading-tight">Realizadas</span>
-                  </div>
-                </div>
-              </div>
+
 
               {/* Próximas visitas agendadas */}
               <div className="bg-white rounded-[24px] p-4 sm:p-5 shadow-sm border border-slate-100">
