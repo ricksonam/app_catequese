@@ -321,11 +321,11 @@ export default function AdminDashboard() {
 
       // Map city/state to profiles
       return profilesData.map((p: any) => {
-        const paroquia = paroquiasData.find(pa => pa.user_id === p.id);
+        const paroquia = paroquiasData.find((pa: any) => pa.user_id === p.id);
         return {
           ...p,
-          cidade: paroquia?.cidade || "Não informado",
-          estado: paroquia?.estado || "—"
+          cidade: p.cidade || paroquia?.cidade || "Não informado",
+          estado: p.estado || paroquia?.estado || "—"
         };
       });
     }
@@ -531,7 +531,7 @@ export default function AdminDashboard() {
       // Fetch catequizandos
       const { data: catequizandosData } = await supabase
         .from("catequizandos")
-        .select("id, nome, turma_id, data_nascimento, responsavel, telefone")
+        .select("id, nome, turma_id, data_nascimento, responsavel, telefone, status")
         .eq("user_id", userDetailId);
       
       // Fetch catequistas
@@ -2517,8 +2517,11 @@ export default function AdminDashboard() {
                                   </p>
                                 </div>
                                 <div className="flex gap-2">
-                                  <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-bold">
-                                    {catequizandosInTurma.length} catequizandos
+                                  <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-bold">
+                                    {catequizandosInTurma.filter((c: any) => c.status !== 'inativo').length} ativos
+                                  </Badge>
+                                  <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px] font-bold">
+                                    {catequizandosInTurma.filter((c: any) => c.status === 'inativo').length} inativos
                                   </Badge>
                                 </div>
                               </div>
