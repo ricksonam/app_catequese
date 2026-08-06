@@ -141,15 +141,25 @@ function AdiamentoModal({ agendamento, diasDisponiveis, onClose, onConfirm }: {
         </div>
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-zinc-900 mb-2">Escolha a nova data</p>
-          <div className="flex justify-center">
+          <div className="flex justify-center bg-amber-50/30 rounded-3xl p-3 border border-amber-100">
             <CalendarUI
               mode="single"
               selected={selectedDate}
               locale={ptBR}
               onSelect={(d) => { setSelectedDate(d); setNovaData(d ? toDateStr(d) : null); setNovoHorario(null); }}
               disabled={(day) => { const str = toDateStr(day); return !diasStr.includes(str) || str === agendamento.data_visita; }}
-              className="rounded-2xl border-2 border-black/5 bg-white shadow-sm"
-              classNames={{ day_selected: "bg-amber-500 text-white hover:bg-amber-500 hover:text-white focus:bg-amber-500 focus:text-white" }}
+              className={cn(
+                "w-full bg-white p-3 rounded-2xl shadow-sm border border-amber-100",
+                "[&_.rdp]:w-full [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_table]:w-full",
+                "[&_.rdp-cell]:p-1",
+                "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-12 [&_.rdp-day_button]:text-sm [&_.rdp-day_button]:font-bold",
+              )}
+              classNames={{
+                day_selected: "bg-gradient-to-br from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:text-white focus:from-amber-600 focus:to-orange-600 focus:text-white rounded-2xl font-black shadow-lg shadow-amber-500/30 scale-105 transition-transform",
+                day_disabled: "text-slate-300 opacity-40 font-medium",
+                head_cell: "text-amber-900/60 font-black text-xs uppercase pb-3",
+                day: "text-slate-700 rounded-2xl border-2 border-transparent hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700 active:scale-95 transition-all flex items-center justify-center",
+              }}
             />
           </div>
         </div>
@@ -479,10 +489,10 @@ function CalendarioMultiplo({ diasHorarios, onChange, visitasPorData }: {
               "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-12 [&_.rdp-day_button]:text-sm [&_.rdp-day_button]:font-bold",
             )}
             classNames={{
-              day_selected: "bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 hover:text-white focus:from-indigo-600 focus:to-purple-700 focus:text-white rounded-xl font-black shadow-lg shadow-indigo-600/30 scale-105 transition-transform",
+              day_selected: "bg-gradient-to-br from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 hover:text-white focus:from-indigo-600 focus:to-purple-700 focus:text-white rounded-2xl font-black shadow-lg shadow-indigo-600/30 scale-105 transition-transform",
               day_disabled: "text-slate-300 opacity-40 font-medium",
               head_cell: "text-indigo-900/60 font-black text-xs uppercase pb-3",
-              day: "text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-xl transition-colors",
+              day: "text-slate-700 rounded-2xl border-2 border-transparent hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 active:scale-95 transition-all flex items-center justify-center",
             }}
           />
         </div>
@@ -1241,7 +1251,7 @@ export function PainelVisitaFamilia() {
                       </div>
                     </div>
 
-                    <div className="p-5 flex justify-center">
+                    <div className="p-5 flex justify-center bg-purple-50/30 border-t border-purple-100/50">
                       <CalendarUI
                         mode="single"
                         selected={manualData}
@@ -1254,15 +1264,16 @@ export function PainelVisitaFamilia() {
                         }}
                         disabled={(day) => day < new Date(new Date().setHours(0, 0, 0, 0))}
                         className={cn(
-                          "rounded-2xl w-full",
+                          "rounded-2xl w-full bg-white p-3 shadow-sm border border-purple-100",
                           "[&_.rdp]:w-full [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_table]:w-full",
-                          "[&_.rdp-cell]:p-0.5",
-                          "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-14 [&_.rdp-day_button]:text-base",
+                          "[&_.rdp-cell]:p-1",
+                          "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-14 [&_.rdp-day_button]:text-base [&_.rdp-day_button]:font-bold",
                         )}
                         classNames={{
-                          day_selected: "bg-purple-600 text-white hover:bg-purple-700 hover:text-white focus:bg-purple-600 focus:text-white rounded-xl font-black shadow-lg shadow-purple-600/30",
-                          day_disabled: "text-slate-200 opacity-40",
-                          head_cell: "text-slate-400 font-bold text-xs uppercase pb-2",
+                          day_selected: "bg-gradient-to-br from-purple-500 to-indigo-600 text-white hover:from-purple-600 hover:to-indigo-700 hover:text-white focus:from-purple-600 focus:to-indigo-700 focus:text-white rounded-2xl font-black shadow-lg shadow-purple-600/30 scale-105 transition-transform",
+                          day_disabled: "text-slate-300 opacity-40 font-medium",
+                          head_cell: "text-purple-900/60 font-black text-xs uppercase pb-3",
+                          day: "text-slate-700 rounded-2xl border-2 border-transparent hover:border-purple-200 hover:bg-purple-50 hover:text-purple-700 active:scale-95 transition-all flex items-center justify-center",
                         }}
                       />
                     </div>
