@@ -90,13 +90,10 @@ export default function BibliaPage() {
   const initialRef = searchParams.get("ref");
   
   const [search, setSearch] = useState(initialRef || "");
-  const [debouncedSearch, setDebouncedSearch] = useState(initialRef || "");
-  const [tab, setTab] = useState<"livros" | "passagens" | "estudo">(initialRef ? "passagens" : "livros");
-  const [translationId, setTranslationId] = useState("ave_maria");
+  const [tab, setTab] = useState<"livros" | "estudo">("livros");
   
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [readingMenuOpen, setReadingMenuOpen] = useState(false);
   const [showMetadataInfo, setShowMetadataInfo] = useState(false);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
@@ -177,67 +174,16 @@ export default function BibliaPage() {
       } else {
         toast.warning(`Livro encontrado, mas capítulo não disponível.`);
         setSearch(ref);
-        setTab("passagens");
+        setTab("livros");
       }
     } else {
-      toast.error(`Não conseguimos localizar "${ref}" automaticamente. Tente buscar pelo texto.`);
+      toast.error(`Não conseguimos localizar "${ref}" automaticamente.`);
       setSearch(ref);
-      setTab("passagens");
+      setTab("livros");
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
-    return () => clearTimeout(timer);
-  }, [search]);
-
   const copyText = (text: string) => { navigator.clipboard.writeText(text); toast.success("Copiado!"); };
-
-  const searchResults = useMemo(() => {
-    const term = debouncedSearch.trim().toLowerCase();
-    if (!term) return { passagens: PASSAGENS_POPULARES, full: [], livros: [], directMatch: null };
-
-    const directMatch = resolveReference(debouncedSearch.trim());
-
-    const libroMatches: Book[] = [];
-    if (biblia) {
-      const allBooks = [...biblia.antigoTestamento, ...biblia.novoTestamento];
-      allBooks.forEach(b => {
-        if (b.nome.toLowerCase().includes(term)) {
-          libroMatches.push(b);
-        }
-      });
-    }
-
-    const passagensMatches = PASSAGENS_POPULARES.filter((p) => 
-      p.ref.toLowerCase().includes(term) || p.texto.toLowerCase().includes(term)
-    );
-
-    const fullMatches: { ref: string; texto: string }[] = [];
-    if (biblia) {
-      let count = 0;
-      const searchInTestament = (testament: Book[]) => {
-        for (const book of testament) {
-          for (const chapter of book.capitulos) {
-            for (const verse of chapter.versiculos) {
-              if (verse.texto.toLowerCase().includes(term)) {
-                fullMatches.push({
-                  ref: `${book.nome} ${chapter.capitulo}, ${verse.versiculo}`,
-                  texto: verse.texto
-                });
-                count++;
-                if (count > 50) return;
-              }
-            }
-          }
-        }
-      }
-      searchInTestament(biblia.antigoTestamento);
-      if (count <= 50) searchInTestament(biblia.novoTestamento);
-    }
-
-    return { passagens: passagensMatches, full: fullMatches, livros: libroMatches, directMatch };
-  }, [debouncedSearch, biblia]);
 
   const renderBreadcrumbs = () => {
     return (
@@ -402,40 +348,12 @@ export default function BibliaPage() {
     ];
 
     return (
-      <div className="space-y-4 animate-fade-in">
-        <div className="grid grid-cols-2 gap-3">
-          {testamentos.map((t) => {
-            const isOpen = expandedSection === t.titulo;
-            return (
-              <button 
-                key={t.titulo}
-                onClick={() => {
-                  setExpandedSection(isOpen ? null : t.titulo);
-                  setActiveGroup(null);
-                }} 
-                className={cn(
-                  "p-4 rounded-2xl flex flex-col items-center justify-center text-center transition-all border-2",
-                  isOpen ? "border-primary shadow-md scale-[0.98]" : "border-transparent shadow-sm hover:-translate-y-1",
-                  `bg-gradient-to-br ${t.gradient}`
-                )}
-              >
-                <span className="text-2xl mb-1">{t.icon}</span>
-                <span className="font-liturgical font-bold text-white text-sm sm:text-base leading-tight mb-1 flex flex-col items-center">
-                  <span>{t.titulo.split(' ')[0]}</span>
-                  <span>{t.titulo.split(' ')[1]}</span>
-                </span>
-                <span className="text-[10px] uppercase font-bold text-white/80 bg-black/20 px-2 py-0.5 rounded-full">{t.livros.length} livros</span>
-              </button>
-            )
-          })}
-        </div>
-
+      <div className="space-y-8 animate-fade-in pb-8">
         {testamentos.map((t) => {
-          if (expandedSection !== t.titulo) return null;
           return (
-            <div key={`${t.titulo}-books`} className="animate-in fade-in slide-in-from-top-4 duration-300">
+            <div key={`${t.titulo}-books`} className="animate-in fade-in slide-in-from-top-4 duration-300 mb-2">
               <div className="p-4 float-card liturgical-border bg-liturgical-paper">
-                <h3 className="text-lg font-liturgical font-bold text-foreground mb-3 flex items-center gap-2">
+                <h3 className="text-xl font-liturgical font-bold text-foreground mb-4 flex items-center gap-2 border-b border-border/50 pb-3">
                   <span>{t.icon}</span> {t.titulo}
                 </h3>
 
@@ -560,15 +478,6 @@ export default function BibliaPage() {
           Leitura
         </button>
         <button 
-          onClick={() => setTab("passagens")} 
-          className={cn(
-            "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all",
-            tab === "passagens" ? "bg-white dark:bg-zinc-800 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          Busca
-        </button>
-        <button 
           onClick={() => setTab("estudo")} 
           className={cn(
             "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5",
@@ -673,166 +582,7 @@ export default function BibliaPage() {
         </div>
       )}
 
-      {tab === "passagens" && (
-        <div className="relative animate-float-up" style={{ animationDelay: '80ms' }}>
-          {!search && <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/30" />}
-          <input 
-            type="text" 
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
-            placeholder="Buscar por referência (Ex: Lucas 24, 35) ou texto" 
-            className={cn(
-              "form-input h-14 shadow-md border-2 focus:border-primary/50 transition-all text-sm sm:text-base font-medium",
-              search ? "pl-5" : "pl-12"
-            )}
-          />
-          {search && isLoading && (
-            <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40 animate-spin" />
-          )}
-        </div>
-      )}
-
-      {tab === "passagens" && search ? (
-        <div className="space-y-4 animate-fade-in">
-          {searchResults.directMatch && (
-            <div className="animate-float-up">
-              <p className="section-title mb-2 text-primary">Resultado Encontrado</p>
-              <button 
-                onClick={() => {
-                  setSelectedBook(searchResults.directMatch.book);
-                  if (searchResults.directMatch.chapter) {
-                    setSelectedChapter(searchResults.directMatch.chapter);
-                  }
-                  setTab("livros");
-                  setSearch("");
-                }}
-                className="w-full float-card p-4 flex items-center justify-between border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
-                    <BookIcon className="h-6 w-6" />
-                  </div>
-                  <div className="text-left">
-                    <h4 className="text-lg font-black text-foreground">
-                      {searchResults.directMatch.book.nome} {searchResults.directMatch.chapter?.capitulo || ""}
-                    </h4>
-                    <p className="text-xs text-muted-foreground font-medium">Toque para ler o capítulo</p>
-                  </div>
-                </div>
-                <ChevronRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
-              </button>
-              
-              {searchResults.directMatch.verse && (
-                <div className="mt-2 float-card p-4 border-l-4 border-l-primary bg-white shadow-sm font-liturgical">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1.5 font-sans">
-                    Versículo {searchResults.directMatch.verse.versiculo}
-                  </p>
-                  <p className="text-sm text-foreground leading-relaxed italic">
-                    "{searchResults.directMatch.verse.texto}"
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {searchResults.livros.length > 0 && (
-            <div>
-              <p className="section-title mb-2">Livros Encontrados</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {searchResults.livros.map((l) => (
-                  <button
-                    key={l.nome}
-                    onClick={() => { setSelectedBook(l); setTab("livros"); setSearch(""); }}
-                    className="float-card p-3 text-sm font-bold text-left hover:bg-primary/10 transition-colors flex items-center justify-between group"
-                  >
-                    <span className="group-hover:text-primary transition-colors">{l.nome}</span>
-                    <ChevronRight className="h-4 w-4 text-primary" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {searchResults.passagens.length > 0 && (
-            <div>
-              <p className="section-title mb-2">Passagens Populares</p>
-              <div className="space-y-2">
-                {searchResults.passagens.map((p, i) => (
-                  <div key={i} className="float-card p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-primary mb-1.5">{p.ref}</p>
-                        <p className="text-sm text-foreground leading-relaxed font-liturgical">{p.texto}</p>
-                      </div>
-                      <button onClick={() => copyText(`${p.ref} - ${p.texto}`)} className="back-btn shrink-0">
-                        <Copy className="h-4 w-4 text-muted-foreground" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {debouncedSearch && searchResults.full.length > 0 && (
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-2">
-                <p className="section-title !mb-0">Resultados na Bíblia</p>
-                <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                  {searchResults.full.length >= 50 ? 'Mais de 50' : searchResults.full.length}
-                </span>
-              </div>
-              <div className="space-y-2">
-                {searchResults.full.map((p, i) => (
-                  <div key={i} className="float-card p-4 border-l-2 border-l-primary/50">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-primary mb-1.5">{p.ref}</p>
-                        <p className="text-sm text-foreground leading-relaxed font-liturgical">
-                          {p.texto.split(new RegExp(`(${debouncedSearch})`, 'gi')).map((part, index) => 
-                            part.toLowerCase() === debouncedSearch.toLowerCase() ? (
-                              <span key={index} className="bg-primary/20 font-semibold">{part}</span>
-                            ) : (
-                              <span key={index}>{part}</span>
-                            )
-                          )}
-                        </p>
-                      </div>
-                      <button onClick={() => copyText(`${p.ref} - ${p.texto}`)} className="back-btn shrink-0">
-                        <Copy className="h-4 w-4 text-muted-foreground" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {debouncedSearch && searchResults.passagens.length === 0 && searchResults.full.length === 0 && searchResults.livros.length === 0 && (
-            <div className="empty-state">
-              <p className="text-sm text-muted-foreground">Nenhum resultado encontrado para "{debouncedSearch}"</p>
-            </div>
-          )}
-        </div>
-      ) : tab === "passagens" ? (
-        <div className="space-y-2">
-          {PASSAGENS_POPULARES.map((p, i) => (
-            <div key={i} className="float-card p-4 animate-float-up" style={{ animationDelay: `${(i + 2) * 40}ms` }}>
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1">
-                  <p className="text-xs font-bold text-primary mb-1.5">{p.ref}</p>
-                  <p className="text-sm text-foreground leading-relaxed font-liturgical">{p.texto}</p>
-                </div>
-                <button onClick={() => copyText(`${p.ref} - ${p.texto}`)} className="back-btn shrink-0">
-                  <Copy className="h-4 w-4 text-muted-foreground" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : tab === "livros" ? (
-        renderLivros()
-      ) : null}
+      {tab === "livros" ? renderLivros() : null}
     </div>
   );
 }
