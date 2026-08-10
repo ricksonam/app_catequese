@@ -107,7 +107,6 @@ const ETAPAS_EUC_CRISMA: EtapaBase[] = [
   { id: 'pre_cat',           label: 'Pré-Catecumenato',                            sublabel: '1º Tempo — Querigma (mín. 6 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
   { id: 'pass_cat',          label: 'Rito de Admissão ao Catecumenato',            emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
   { id: 'cat_biblia',        label: 'Catecumenato — Catequeses',                   sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_cruz',      label: 'Entrega da Cruz',                             emoji: '✚',  tipo: 'simbolo', simboloId: 'cruz', tempoId: 'tempo2' },
   { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                           emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
   { id: 'cat_pessoa',        label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 2', emoji: '👤', tipo: 'tempo', tempoId: 'tempo2' },
   { id: 'celebracao_vida',   label: 'Celebração da Vida',                          sublabel: 'Celebração interna — símbolo opcional', emoji: '🎊', tipo: 'simbolo', tempoId: 'tempo2' },
@@ -132,7 +131,6 @@ const ETAPAS_ADULTOS: EtapaBase[] = [
   { id: 'pre_cat',       label: 'Pré-Catecumenato',                              sublabel: '1º Tempo — Querigma', emoji: '🔥', tipo: 'inicio', tempoId: 'tempo1' },
   { id: 'pass_entrada',  label: 'Rito de Admissão ao Catecumenato',              emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
   { id: 'catecumenato',  label: 'Catecumenato',                                  sublabel: '2º Tempo — Aprofundamento', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_cruz',      label: 'Entrega da Cruz',                             emoji: '✚',  tipo: 'simbolo', simboloId: 'cruz', tempoId: 'tempo2' },
   { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                         emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
   { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                  emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
   { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                      emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
@@ -174,8 +172,13 @@ export function calcularProgressoJornada(
 ): { etapas: EtapaJornada[]; posicaoAtual: number; percentualGeral: number } {
   const hoje = new Date();
 
-  // Filtra as etapas removendo símbolos que não estão ativos
-  const etapasFiltradasBase = etapasBase.filter(e => e.tipo !== 'simbolo' || !e.simboloId || configuracao.simbolosAtivos.includes(e.simboloId));
+  // Filtra as etapas removendo símbolos que não estão ativos, e injeta o sublabel da cruz na admissão
+  const etapasFiltradasBase = etapasBase.map(e => {
+    if (e.celebracaoTipo === 'admissao_catecumenato' && configuracao.simbolosAtivos.includes('cruz')) {
+      return { ...e, sublabel: '✚ Com Entrega da Cruz' };
+    }
+    return e;
+  }).filter(e => e.tipo !== 'simbolo' || !e.simboloId || configuracao.simbolosAtivos.includes(e.simboloId));
 
   const eventosIVC = atividades.filter(a =>
     a.tipo === 'Entrega de Símbolos' || a.tipo === 'Celebração de Passagem'
@@ -1025,6 +1028,15 @@ export function JornadaMap({
                   )}>
                     {etapa.label}
                   </p>
+
+                  {etapa.sublabel && (
+                    <p className={cn(
+                      "text-[9px] font-bold mt-1 leading-tight",
+                      isPassagem ? "text-violet-600/80 dark:text-violet-400/80" : "text-muted-foreground"
+                    )}>
+                      {etapa.sublabel}
+                    </p>
+                  )}
 
                   {etapa.dataEvento && (
                     <p className={cn(
