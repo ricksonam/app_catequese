@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useCatequizandos, useEncontros, useAtividades, useAtividadeMutation } from "@/hooks/useSupabaseData";
+import { useTurmas, useCatequizandos, useEncontros, useAtividades, useAtividadeMutation, useTurmaMutation } from "@/hooks/useSupabaseData";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   ArrowLeft, Share2, CheckCircle2, Calendar, ChevronRight,
@@ -12,6 +12,7 @@ import { SIMBOLOS_IVC, CELEBRACOES_PASSAGEM, type CelebracaoPassagemTipo, type S
 import { QRShareModal } from "@/components/QRShareModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { CustomDatePicker } from "@/components/CustomDatePicker";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -801,7 +802,7 @@ const TEMPOS_CONFIG = [
     cor: 'border-purple-300 bg-purple-50',
     corHeader: 'bg-purple-100 text-purple-800',
     corBadge: 'bg-purple-200 text-purple-900',
-    descricao: '3º Tempo — Recepção dos Sacramentos',
+    descricao: 'Preparação para os sacramentos: Escrutínios, Entrega do símbolo, Entrega da Oração do Senhor, Práticas Quaresmais, Outros Ritos, Momentos Orantes.',
   },
   {
     id: 'tempo4',
@@ -810,7 +811,7 @@ const TEMPOS_CONFIG = [
     cor: 'border-emerald-300 bg-emerald-50',
     corHeader: 'bg-emerald-100 text-emerald-800',
     corBadge: 'bg-emerald-200 text-emerald-900',
-    descricao: '4º Tempo — Missionário',
+    descricao: 'Aprofundamento e mergulho no Mistério Celebrado, Vivência na comunidade Cristã, Vivência pastoral, Envio Missionário: Pentecostes (Data).',
   },
 ];
 
@@ -929,9 +930,7 @@ function BlocosTempos({
           titulo="3ª ETAPA - Celebração dos Sacramentos da Iniciação"
           descricao="Batismo, Confissão, Eucaristia e Crisma."
           onClick={() => {
-            const etapa = etapas.find(e => e.celebracaoTipo === 'recepcao_sacramentos' || e.id === 'pass_sacramentos');
-            if (etapa) onOpenEtapa(etapa);
-            else onOpenTempo('tempo3');
+            setShowModalSacramentos(true);
           }}
         />
       )}
@@ -1150,6 +1149,142 @@ export function JornadaMap({
 // ─────────────────────────────────────────────────────────────
 // MAIN PAGE COMPONENT
 // ─────────────────────────────────────────────────────────────
+function ModalDatasSacramentos({
+  isOpen,
+  onClose,
+  turma,
+  atividades,
+  updateTurma,
+  updateAtividade,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  turma: any;
+  atividades: Atividade[];
+  updateTurma: any;
+  updateAtividade: any;
+}) {
+  const [datas, setDatas] = useState({
+    confissao: '',
+    batismo: '',
+    eucaristia: '',
+    crisma: '',
+    matrimonio: ''
+  });
+  
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      const getAtivDate = (id: string) => atividades.find(a => a.etapaIVC === id)?.data || '';
+      
+      setDatas({
+        confissao: getAtivDate('sac_confissao'),
+        batismo: turma?.trilhasConfig?.batismo?.dataCelebracao || getAtivDate('sac_batismo'),
+        eucaristia: turma?.trilhasConfig?.eucaristia?.dataCelebracao || getAtivDate('sac_eucaristia'),
+        crisma: turma?.trilhasConfig?.crisma?.dataCelebracao || getAtivDate('sac_crisma'),
+        matrimonio: getAtivDate('sac_matrimonio')
+      });
+    }
+  }, [isOpen, turma, atividades]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    // 1. Update Turma Trilha config
+    const newTrilhasConfig = { ...(turma?.trilhasConfig || {}) };
+    
+    if (!newTrilhasConfig.batismo) newTrilhasConfig.batismo = {};
+    newTrilhasConfig.batismo.dataCelebracao = datas.batismo;
+    
+    if (!newTrilhasConfig.eucaristia) newTrilhasConfig.eucaristia = {};
+    newTrilhasConfig.eucaristia.dataCelebracao = datas.eucaristia;
+    
+    if (!newTrilhasConfig.crisma) newTrilhasConfig.crisma = {};
+    newTrilhasConfig.crisma.dataCelebracao = datas.crisma;
+    
+    await updateTurma.mutateAsync({
+      id: turma.id,
+      trilhasConfig: newTrilhasConfig
+    });
+    
+    // 2. Update Atividades for the IVC Panel
+    const saveAtiv = async (id: string, data: string) => {
+      const existing = atividades.find(a => a.etapaIVC === id);
+      if (data) {
+        await updateAtividade.mutateAsync({
+          id: existing?.id,
+          turmaId: turma.id,
+          etapaIVC: id,
+          tipo: 'Celebração',
+          data: data,
+          descricao: `Celebração do Sacramento`
+        });
+      }
+    };
+    
+    await Promise.all([
+      saveAtiv('sac_confissao', datas.confissao),
+      saveAtiv('sac_batismo', datas.batismo),
+      saveAtiv('sac_eucaristia', datas.eucaristia),
+      saveAtiv('sac_crisma', datas.crisma),
+      saveAtiv('sac_matrimonio', datas.matrimonio),
+      saveAtiv('pass_sacramentos', datas.batismo || datas.eucaristia || datas.crisma)
+    ]);
+    
+    setIsSaving(false);
+    toast.success('Datas dos sacramentos atualizadas com sucesso!');
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md w-[95vw] rounded-[2rem] p-6 max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-black text-violet-800 text-center flex flex-col items-center gap-2">
+            <span className="text-3xl">✨</span>
+            Datas dos Sacramentos
+          </DialogTitle>
+          <p className="text-center text-sm text-muted-foreground mt-2">
+            Defina as datas das celebrações para integrá-las à Trilha Sacramental.
+          </p>
+        </DialogHeader>
+
+        <div className="space-y-4 my-4">
+          <div>
+            <label className="text-xs font-bold text-slate-500 mb-1.5 block">Batismo 💧</label>
+            <CustomDatePicker date={datas.batismo} setDate={(d) => setDatas({...datas, batismo: d})} />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-500 mb-1.5 block">Confissão 🙏</label>
+            <CustomDatePicker date={datas.confissao} setDate={(d) => setDatas({...datas, confissao: d})} />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-500 mb-1.5 block">Eucaristia 🍞</label>
+            <CustomDatePicker date={datas.eucaristia} setDate={(d) => setDatas({...datas, eucaristia: d})} />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-500 mb-1.5 block">Crisma 🕊️</label>
+            <CustomDatePicker date={datas.crisma} setDate={(d) => setDatas({...datas, crisma: d})} />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-slate-500 mb-1.5 block">Matrimônio 💍 (Opcional)</label>
+            <CustomDatePicker date={datas.matrimonio} setDate={(d) => setDatas({...datas, matrimonio: d})} />
+          </div>
+        </div>
+
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="w-full mt-4 bg-violet-600 hover:bg-violet-700 text-white rounded-2xl py-3.5 font-bold transition-all shadow-md active:scale-[0.98] disabled:opacity-50"
+        >
+          {isSaving ? 'Salvando...' : 'Salvar Datas'}
+        </button>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function PainelIVC() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -1158,6 +1293,7 @@ export default function PainelIVC() {
   const { data: encontros = [] } = useEncontros(id);
   const { data: atividades = [] } = useAtividades(id);
   const mutation = useAtividadeMutation();
+  const turmaMutation = useTurmaMutation();
 
   const turma = turmas.find(t => t.id === id);
 
@@ -1177,6 +1313,7 @@ export default function PainelIVC() {
   const [tempoSelecionado, setTempoSelecionado] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
   const [etapaModal, setEtapaModal] = useState<EtapaJornada | null>(null);
+  const [showModalSacramentos, setShowModalSacramentos] = useState(false);
 
   const modeloInfo = MODELO_INFO[configuracao.modelo];
   const etapasBase = ETAPAS_POR_MODELO[configuracao.modelo];
