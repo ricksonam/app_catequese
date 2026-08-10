@@ -66,7 +66,7 @@ const MODELO_INFO: Record<ModeloIVC, { label: string; emoji: string; cor: string
     sacTipo: 'Iniciação',
   },
   eucaristia_crisma: {
-    label: 'Eucaristia / Crisma / Perseverança',
+    label: 'Eucaristia / Crisma',
     emoji: '✨',
     cor: 'from-violet-500 to-purple-600',
     descricao: 'Processo completo dos 4 Tempos do IVC para crianças, adolescentes e jovens.',
@@ -119,8 +119,12 @@ const ETAPAS_EUC_CRISMA: EtapaBase[] = [
   { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                    emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
   { id: 'cat_sacramental',   label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 6', emoji: '💧', tipo: 'tempo', tempoId: 'tempo2' },
   { id: 'eleicao',           label: 'Eleição — Preparação para os Sacramentos',   emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao', tempoId: 'tempo3' },
-  { id: 'purificacao',       label: 'Purificação e Iluminação',                   sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'recepcao_sac',      label: 'Recepção dos Sacramentos',                   emoji: '👑',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo4' },
+  { id: 'purificacao',       label: 'Purificação e Iluminação',                   sublabel: '3º Tempo', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
+  { id: 'sac_confissao',     label: 'Confissão',                                  emoji: '🙏',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_batismo',       label: 'Batismo',                                    emoji: '💧',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_eucaristia',    label: 'Eucaristia',                                 emoji: '🍞',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_crisma',        label: 'Crisma',                                     emoji: '🕊️',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_matrimonio',    label: 'Matrimônio (Opcional)',                      emoji: '💍',  tipo: 'sacramento', tempoId: 'tempo3' },
   { id: 'mistagogia',        label: 'Mistagogia',                                  sublabel: '4º Tempo — Envio Missionário', emoji: '🕊️', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
@@ -133,8 +137,12 @@ const ETAPAS_ADULTOS: EtapaBase[] = [
   { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                  emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
   { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                      emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
   { id: 'eleicao',       label: 'Eleição — Preparação para os Sacramentos',     emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao', tempoId: 'tempo3' },
-  { id: 'escrutinios',   label: 'Purificação / Escrutínios',                    sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'recepcao_sac',  label: 'Recepção dos Sacramentos',                     emoji: '👑',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo4' },
+  { id: 'escrutinios',   label: 'Purificação / Escrutínios',                    sublabel: '3º Tempo', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
+  { id: 'sac_confissao',     label: 'Confissão',                                  emoji: '🙏',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_batismo',       label: 'Batismo',                                    emoji: '💧',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_eucaristia',    label: 'Eucaristia',                                 emoji: '🍞',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_crisma',        label: 'Crisma',                                     emoji: '🕊️',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'sac_matrimonio',    label: 'Matrimônio (Opcional)',                      emoji: '💍',  tipo: 'sacramento', tempoId: 'tempo3' },
   { id: 'mistagogia',    label: 'Mistagogia',                                    sublabel: '4º Tempo — Envio Missionário', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
@@ -235,7 +243,14 @@ export function calcularProgressoJornada(
       status = totalEncontros > 0 || (evInicio && evInicio.realizado) ? 'concluido' : 'em_andamento';
       return { ...base, status, dataEvento, dataFim, dispensado };
     } else if (base.tipo === 'sacramento') {
-      status = 'pendente';
+      const evSac = atividades.find(a => (a.tipo === 'Celebração' || a.tipo === 'Celebração de Passagem') && (a.etapaIVC as string) === base.id);
+      if (evSac) {
+        dataEvento = evSac.data;
+        dispensado = evSac.dispensado || false;
+        const dataEv = new Date(evSac.data + 'T23:59:59');
+        if (evSac.realizado || dataEv < hoje) status = 'concluido';
+        else status = 'agendado';
+      }
     } else if (base.tipo === 'fim') {
       status = percFreq >= 0.9 && encontrosRealizados.length > 0 ? 'concluido' : 'pendente';
     }
@@ -342,6 +357,8 @@ function EtapaActionModal({
     );
   }, [etapa, atividades]);
 
+  const isSacramento = etapa?.tipo === 'sacramento';
+
   const [data, setData] = useState(existing?.data || '');
   const [dataFim, setDataFim] = useState((existing as any)?.dataFim || '');
   const [realizado, setRealizado] = useState(existing?.realizado || false);
@@ -387,9 +404,9 @@ function EtapaActionModal({
             <div className="flex-1 min-w-0">
               <p className={cn(
                 "text-[10px] font-black uppercase tracking-widest mb-0.5",
-                isPassagem ? "text-violet-600" : "text-amber-600"
+                isPassagem ? "text-violet-600" : isSacramento ? "text-blue-600" : "text-amber-600"
               )}>
-                {isPassagem ? '✦ Celebração de Passagem de Etapa' : '🎁 Entrega de Símbolo'}
+                {isPassagem ? '✦ Celebração de Passagem de Etapa' : isSacramento ? '🕊️ Recepção de Sacramento' : '🎁 Entrega de Símbolo'}
               </p>
               <DialogTitle className="text-sm font-black text-foreground leading-tight text-left">
                 {etapa.label}
@@ -531,10 +548,12 @@ function EtapaActionModal({
               </div>
             )}
 
-            {isSimbolo && (
+            {(isSimbolo || isSacramento) && (
               <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/30">
                 <div>
-                  <p className="font-black text-sm text-red-700 dark:text-red-400">Não será entregue</p>
+                  <p className="font-black text-sm text-red-700 dark:text-red-400">
+                    {isSacramento ? "Não será realizado" : "Não será entregue"}
+                  </p>
                   <p className="text-[10px] text-red-600/80 dark:text-red-400/80">Motivos pastorais (não bloqueia a turma)</p>
                 </div>
                 <button
@@ -568,7 +587,7 @@ function EtapaActionModal({
               <CheckCircle2 className={cn("w-4 h-4 shrink-0", dispensado ? "text-red-600" : "text-emerald-600")} />
               <p className={cn("text-xs font-bold", dispensado ? "text-red-700" : "text-emerald-700")}>
                 {dispensado 
-                  ? "Este símbolo será ignorado e não travará o progresso da turma."
+                  ? "Este evento será ignorado e não travará o progresso da turma."
                   : "O card ficará verde no painel — posição da turma será atualizada!"}
               </p>
             </div>
@@ -777,7 +796,7 @@ const TEMPOS_CONFIG = [
     cor: 'border-purple-300 bg-purple-50',
     corHeader: 'bg-purple-100 text-purple-800',
     corBadge: 'bg-purple-200 text-purple-900',
-    descricao: '3º Tempo — Quaresma',
+    descricao: '3º Tempo — Recepção dos Sacramentos',
   },
   {
     id: 'tempo4',
@@ -902,7 +921,7 @@ export function JornadaMap({
           const isActive = posicaoAtual === etapas.findIndex(e => e.id === etapa.id);
           const isExpanded = expandida === etapa.id;
           const isPassagem = etapa.tipo === 'passagem';
-          const isClickable = !readonly && (etapa.tipo === 'passagem' || etapa.tipo === 'simbolo' || etapa.id === 'preparacao' || etapa.id === 'pass_entrada' || etapa.id === 'acolhida');
+          const isClickable = !readonly && (etapa.tipo === 'passagem' || etapa.tipo === 'simbolo' || etapa.tipo === 'sacramento' || etapa.id === 'preparacao' || etapa.id === 'pass_entrada' || etapa.id === 'acolhida');
 
           const nodeBg = etapa.status === 'concluido' ? 'bg-emerald-500 text-white border-2 border-emerald-600' :
                          etapa.status === 'agendado'  ? 'bg-amber-400 text-amber-950 border-2 border-amber-500' :
@@ -977,6 +996,10 @@ export function JornadaMap({
                       ? (etapa.status === 'concluido'
                           ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 shadow-sm"
                           : "bg-white/90 dark:bg-card/90 border-amber-200/60")
+                    : etapa.tipo === 'sacramento'
+                      ? (etapa.status === 'concluido'
+                          ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 shadow-sm"
+                          : "bg-white/90 dark:bg-card/90 border-blue-200/60")
                     : "bg-white/90 dark:bg-card/90 border-border"
                   )}
                 >
@@ -997,6 +1020,7 @@ export function JornadaMap({
                     etapa.status === 'agendado' ? "text-amber-700" :
                     isPassagem ? "text-violet-700 dark:text-violet-400" :
                     etapa.tipo === 'simbolo' ? "text-amber-700 dark:text-amber-400" :
+                    etapa.tipo === 'sacramento' ? "text-blue-700 dark:text-blue-400" :
                     "text-muted-foreground"
                   )}>
                     {etapa.label}
@@ -1005,7 +1029,7 @@ export function JornadaMap({
                   {etapa.dataEvento && (
                     <p className={cn(
                       "text-[9px] font-black mt-1 flex items-center gap-1",
-                      isPassagem ? "text-violet-600" : etapa.tipo === 'simbolo' ? "text-amber-600" : "text-primary"
+                      isPassagem ? "text-violet-600" : etapa.tipo === 'simbolo' ? "text-amber-600" : etapa.tipo === 'sacramento' ? "text-blue-600" : "text-primary"
                     )}>
                       <Calendar className="w-2.5 h-2.5" />
                       {etapa.id === 'preparacao' && etapa.dataFim
@@ -1115,7 +1139,7 @@ export default function PainelIVC() {
 
     const tipoEvento = isPassagem
       ? 'Celebração de Passagem'
-      : isInicio
+      : isInicio || etapaModal.tipo === 'sacramento'
         ? 'Celebração'
         : 'Entrega de Símbolos';
 
@@ -1125,9 +1149,11 @@ export default function PainelIVC() {
       nome: etapaModal.label,
       descricao: isPassagem
         ? `Celebração de passagem: ${etapaModal.label}`
-        : isInicio
-          ? `${etapaModal.label}`
-          : `Entrega de símbolo: ${etapaModal.label}`,
+        : etapaModal.tipo === 'sacramento'
+          ? `Sacramento: ${etapaModal.label}`
+          : isInicio
+            ? `${etapaModal.label}`
+            : `Entrega de símbolo: ${etapaModal.label}`,
       tipo: tipoEvento as any,
       modalidade: 'interna',
       conducao: undefined,
