@@ -124,6 +124,7 @@ const ETAPAS_EUC_CRISMA: EtapaBase[] = [
   { id: 'sac_eucaristia',    label: 'Eucaristia',                                 emoji: '🍞',  tipo: 'sacramento', tempoId: 'tempo3' },
   { id: 'sac_crisma',        label: 'Crisma',                                     emoji: '🕊️',  tipo: 'sacramento', tempoId: 'tempo3' },
   { id: 'sac_matrimonio',    label: 'Matrimônio (Opcional)',                      emoji: '💍',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'pass_sacramentos',  label: 'Celebração dos Sacramentos da Iniciação',    emoji: '✨',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo3' },
   { id: 'mistagogia',        label: 'Mistagogia',                                  sublabel: '4º Tempo — Envio Missionário', emoji: '🕊️', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
@@ -141,6 +142,7 @@ const ETAPAS_ADULTOS: EtapaBase[] = [
   { id: 'sac_eucaristia',    label: 'Eucaristia',                                 emoji: '🍞',  tipo: 'sacramento', tempoId: 'tempo3' },
   { id: 'sac_crisma',        label: 'Crisma',                                     emoji: '🕊️',  tipo: 'sacramento', tempoId: 'tempo3' },
   { id: 'sac_matrimonio',    label: 'Matrimônio (Opcional)',                      emoji: '💍',  tipo: 'sacramento', tempoId: 'tempo3' },
+  { id: 'pass_sacramentos',  label: 'Celebração dos Sacramentos da Iniciação',    emoji: '✨',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo3' },
   { id: 'mistagogia',    label: 'Mistagogia',                                    sublabel: '4º Tempo — Envio Missionário', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
@@ -922,12 +924,14 @@ function BlocosTempos({
 
       {renderTempo('tempo3')}
 
-      {hasTempo('tempo3') && (
+      {hasTempo('tempo3') && configuracao.modelo !== 'sementinhas' && (
         <EtapaChip 
           titulo="3ª ETAPA - Celebração dos Sacramentos da Iniciação"
-          descricao={configuracao.modelo === 'sementinhas' ? 'Celebração com a Família.' : 'Batismo, Confissão, Eucaristia e Crisma.'}
+          descricao="Batismo, Confissão, Eucaristia e Crisma."
           onClick={() => {
-            onOpenTempo('tempo3');
+            const etapa = etapas.find(e => e.celebracaoTipo === 'recepcao_sacramentos' || e.id === 'pass_sacramentos');
+            if (etapa) onOpenEtapa(etapa);
+            else onOpenTempo('tempo3');
           }}
         />
       )}
