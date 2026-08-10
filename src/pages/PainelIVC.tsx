@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useEncontros, useAtividades, useAtividadeMutation } from "@/hooks/useSupabaseData";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import {
@@ -13,9 +13,9 @@ import { QRShareModal } from "@/components/QRShareModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // TYPES
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export type ModeloIVC = 'sementinhas' | 'eucaristia_crisma' | 'adultos';
 export type RiscoNivel = 'em_dia' | 'atencao' | 'atrasado';
 export type EtapaStatus = 'concluido' | 'em_andamento' | 'pendente' | 'agendado';
@@ -43,12 +43,12 @@ export interface ConfiguracaoTurma {
   simbolosAtivos: string[];
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // MODEL DETECTION
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export function detectarModelo(etapa: string): ModeloIVC {
   const e = etapa?.toLowerCase() ?? '';
-  if (e.includes('sement') || e.includes('prÃ©-cat') || e.includes('pre-cat') || e.includes('pre cat')) {
+  if (e.includes('sement') || e.includes('pré-cat') || e.includes('pre-cat') || e.includes('pre cat')) {
     return 'sementinhas';
   }
   if (e.includes('adult')) {
@@ -59,83 +59,83 @@ export function detectarModelo(etapa: string): ModeloIVC {
 
 const MODELO_INFO: Record<ModeloIVC, { label: string; emoji: string; cor: string; descricao: string; sacTipo: string }> = {
   sementinhas: {
-    label: 'Sementinhas / PrÃ©-Catequese',
-    emoji: 'ðŸŒ±',
+    label: 'Sementinhas / Pré-Catequese',
+    emoji: '🌱',
     cor: 'from-emerald-500 to-green-600',
-    descricao: 'Processo de iniciaÃ§Ã£o para crianÃ§as de 5 a 8 anos, focado em acolhida lÃºdica e primeiros passos na fÃ©.',
-    sacTipo: 'IniciaÃ§Ã£o',
+    descricao: 'Processo de iniciação para crianças de 5 a 8 anos, focado em acolhida lúdica e primeiros passos na fé.',
+    sacTipo: 'Iniciação',
   },
   eucaristia_crisma: {
-    label: 'Eucaristia / Crisma / PerseveranÃ§a',
-    emoji: 'âœ¨',
+    label: 'Eucaristia / Crisma / Perseverança',
+    emoji: '✨',
     cor: 'from-violet-500 to-purple-600',
-    descricao: 'Processo completo dos 4 Tempos do IVC para crianÃ§as, adolescentes e jovens.',
+    descricao: 'Processo completo dos 4 Tempos do IVC para crianças, adolescentes e jovens.',
     sacTipo: 'Eucaristia / Crisma',
   },
   adultos: {
     label: 'Adultos (RICA)',
-    emoji: 'ðŸ•Šï¸',
+    emoji: '🕊️',
     cor: 'from-sky-500 to-blue-600',
-    descricao: 'Rito de IniciaÃ§Ã£o CristÃ£ de Adultos â€” processo prÃ³prio com escrutÃ­nios e eleiÃ§Ã£o.',
+    descricao: 'Rito de Iniciação Cristã de Adultos — processo próprio com escrutínios e eleição.',
     sacTipo: 'Batismo / Crisma / Eucaristia',
   },
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // IVC JOURNEY DEFINITIONS (per model)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export type EtapaBase = Omit<EtapaJornada, 'status' | 'dataEvento' | 'percentual' | 'entregaCruz' | 'entregaBiblia'>;
 
 const ETAPAS_SEMENTINHAS: EtapaBase[] = [
-  { id: 'acolhida',       label: 'Acolhida e InscriÃ§Ã£o',              emoji: 'ðŸŒ±', tipo: 'inicio', tempoId: 'tempo1' },
-  { id: 'pre_cat',        label: 'PrÃ©-Catecumenato',                  sublabel: 'Tempo de IniciaÃ§Ã£o LÃºdica', emoji: 'ðŸŽˆ', tipo: 'tempo', tempoId: 'tempo1' },
-  { id: 'encontros_seed', label: 'Encontros Formativos',              emoji: 'ðŸ“š', tipo: 'simbolo', tempoId: 'tempo1' },
-  { id: 'pass_catec',     label: 'CelebraÃ§Ã£o de InÃ­cio da Catequese', emoji: 'ðŸŽ‰', tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
-  { id: 'catec_seed',     label: 'Catecumenato Infantil',             sublabel: 'Aprofundamento da FÃ©', emoji: 'ðŸ“–', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_menino_jesus', label: 'Menino Jesus',              emoji: 'ðŸ‘¶', tipo: 'simbolo', simboloId: 'menino_jesus', tempoId: 'tempo2' },
-  { id: 'entrega_biblia', label: 'BÃ­blia das CrianÃ§as',              emoji: 'ðŸ“–', tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
-  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                        emoji: 'ðŸ™',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
-  { id: 'entrega_creio',     label: 'Entrega do SÃ­mbolo da FÃ©',                    emoji: 'âœï¸',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
-  { id: 'pass_ilum_seed', label: 'CelebraÃ§Ã£o da FamÃ­lia',             emoji: 'ðŸŽŠ', tipo: 'passagem', tempoId: 'tempo3' },
-  { id: 'ilum_seed',      label: 'PurificaÃ§Ã£o e Alegria',             sublabel: 'PreparaÃ§Ã£o Final', emoji: 'âœ¨', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'mis_seed',       label: 'MissÃ£o das Sementinhas',            sublabel: 'Mistagogia', emoji: 'ðŸŒ¿', tipo: 'fim', tempoId: 'tempo4' },
+  { id: 'acolhida',       label: 'Acolhida e Inscrição',              emoji: '🌱', tipo: 'inicio', tempoId: 'tempo1' },
+  { id: 'pre_cat',        label: 'Pré-Catecumenato',                  sublabel: 'Tempo de Iniciação Lúdica', emoji: '🎈', tipo: 'tempo', tempoId: 'tempo1' },
+  { id: 'encontros_seed', label: 'Encontros Formativos',              emoji: '📚', tipo: 'simbolo', tempoId: 'tempo1' },
+  { id: 'pass_catec',     label: 'Celebração de Início da Catequese', emoji: '🎉', tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
+  { id: 'catec_seed',     label: 'Catecumenato Infantil',             sublabel: 'Aprofundamento da Fé', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_menino_jesus', label: 'Menino Jesus',              emoji: '👶', tipo: 'simbolo', simboloId: 'menino_jesus', tempoId: 'tempo2' },
+  { id: 'entrega_biblia', label: 'Bíblia das Crianças',              emoji: '📖', tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
+  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                        emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
+  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                    emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
+  { id: 'pass_ilum_seed', label: 'Celebração da Família',             emoji: '🎊', tipo: 'passagem', tempoId: 'tempo3' },
+  { id: 'ilum_seed',      label: 'Purificação e Alegria',             sublabel: 'Preparação Final', emoji: '✨', tipo: 'tempo', tempoId: 'tempo3' },
+  { id: 'mis_seed',       label: 'Missão das Sementinhas',            sublabel: 'Mistagogia', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
 const ETAPAS_EUC_CRISMA: EtapaBase[] = [
-  { id: 'preparacao',        label: 'PreparaÃ§Ã£o / Convite',                        emoji: 'ðŸ“£',  tipo: 'inicio', tempoId: 'tempo1' },
-  { id: 'pass_entrada',      label: 'CelebraÃ§Ã£o de InÃ­cio da Catequese',           emoji: 'ðŸŽ‰',  tipo: 'inicio', tempoId: 'tempo1' },
-  { id: 'pre_cat',           label: 'PrÃ©-Catecumenato',                            sublabel: '1Âº Tempo â€” Querigma (mÃ­n. 6 meses)', emoji: 'ðŸ”¥', tipo: 'tempo', tempoId: 'tempo1' },
-  { id: 'pass_cat',          label: 'Rito de AdmissÃ£o ao Catecumenato',            emoji: 'â›ª',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
-  { id: 'cat_biblia',        label: 'Catecumenato â€” Catequeses',                   sublabel: '2Âº Tempo â€” Fase 1', emoji: 'ðŸ“–', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_cruz',      label: 'Entrega da Cruz',                             emoji: 'âœš',  tipo: 'simbolo', simboloId: 'cruz', tempoId: 'tempo2' },
-  { id: 'entrega_biblia',    label: 'Entrega da BÃ­blia',                           emoji: 'ðŸ“–',  tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
-  { id: 'cat_pessoa',        label: 'Catecumenato â€” Catequeses',                   sublabel: 'Fase 2', emoji: 'ðŸ‘¤', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'celebracao_vida',   label: 'CelebraÃ§Ã£o da Vida',                          sublabel: 'CelebraÃ§Ã£o interna â€” sÃ­mbolo opcional', emoji: 'ðŸŽŠ', tipo: 'simbolo', tempoId: 'tempo2' },
-  { id: 'cat_jesus',         label: 'Catecumenato â€” Catequeses',                   sublabel: 'Fase 3', emoji: 'âœï¸',  tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'jornada_disc',      label: 'Jornada do Discipulado',                      sublabel: 'Atividade externa no Catecumenato', emoji: 'ðŸ¤',  tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'cat_oracao',        label: 'Catecumenato â€” Catequeses',                   sublabel: 'Fase 4', emoji: 'ðŸ™',  tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                        emoji: 'ðŸ™',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
-  { id: 'cat_comunidade',    label: 'Catecumenato â€” Catequeses',                   sublabel: 'Fase 5', emoji: 'â›ª', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_creio',     label: 'Entrega do SÃ­mbolo da FÃ©',                    emoji: 'âœï¸',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
-  { id: 'cat_sacramental',   label: 'Catecumenato â€” Catequeses',                   sublabel: 'Fase 6', emoji: 'ðŸ’§', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'eleicao',           label: 'EleiÃ§Ã£o â€” PreparaÃ§Ã£o para os Sacramentos',   emoji: 'ðŸ—³ï¸',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao', tempoId: 'tempo3' },
-  { id: 'purificacao',       label: 'PurificaÃ§Ã£o e IluminaÃ§Ã£o',                   sublabel: '3Âº Tempo â€” Quaresma', emoji: 'ðŸ’œ', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'recepcao_sac',      label: 'RecepÃ§Ã£o dos Sacramentos',                   emoji: 'ðŸ‘‘',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo4' },
-  { id: 'mistagogia',        label: 'Mistagogia',                                  sublabel: '4Âº Tempo â€” Envio MissionÃ¡rio', emoji: 'ðŸ•Šï¸', tipo: 'fim', tempoId: 'tempo4' },
+  { id: 'preparacao',        label: 'Preparação / Convite',                        emoji: '📣',  tipo: 'inicio', tempoId: 'tempo1' },
+  { id: 'pass_entrada',      label: 'Celebração de Início da Catequese',           emoji: '🎉',  tipo: 'inicio', tempoId: 'tempo1' },
+  { id: 'pre_cat',           label: 'Pré-Catecumenato',                            sublabel: '1º Tempo — Querigma (mín. 6 meses)', emoji: '🔥', tipo: 'tempo', tempoId: 'tempo1' },
+  { id: 'pass_cat',          label: 'Rito de Admissão ao Catecumenato',            emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
+  { id: 'cat_biblia',        label: 'Catecumenato — Catequeses',                   sublabel: '2º Tempo — Fase 1', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_cruz',      label: 'Entrega da Cruz',                             emoji: '✚',  tipo: 'simbolo', simboloId: 'cruz', tempoId: 'tempo2' },
+  { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                           emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
+  { id: 'cat_pessoa',        label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 2', emoji: '👤', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'celebracao_vida',   label: 'Celebração da Vida',                          sublabel: 'Celebração interna — símbolo opcional', emoji: '🎊', tipo: 'simbolo', tempoId: 'tempo2' },
+  { id: 'cat_jesus',         label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 3', emoji: '✝️',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'jornada_disc',      label: 'Jornada do Discipulado',                      sublabel: 'Atividade externa no Catecumenato', emoji: '🤝',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'cat_oracao',        label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 4', emoji: '🙏',  tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                        emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
+  { id: 'cat_comunidade',    label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 5', emoji: '⛪', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                    emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
+  { id: 'cat_sacramental',   label: 'Catecumenato — Catequeses',                   sublabel: 'Fase 6', emoji: '💧', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'eleicao',           label: 'Eleição — Preparação para os Sacramentos',   emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao', tempoId: 'tempo3' },
+  { id: 'purificacao',       label: 'Purificação e Iluminação',                   sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
+  { id: 'recepcao_sac',      label: 'Recepção dos Sacramentos',                   emoji: '👑',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo4' },
+  { id: 'mistagogia',        label: 'Mistagogia',                                  sublabel: '4º Tempo — Envio Missionário', emoji: '🕊️', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
 const ETAPAS_ADULTOS: EtapaBase[] = [
-  { id: 'pre_cat',       label: 'PrÃ©-Catecumenato',                              sublabel: '1Âº Tempo â€” Querigma', emoji: 'ðŸ”¥', tipo: 'inicio', tempoId: 'tempo1' },
-  { id: 'pass_entrada',  label: 'Rito de AdmissÃ£o ao Catecumenato',              emoji: 'â›ª',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
-  { id: 'catecumenato',  label: 'Catecumenato',                                  sublabel: '2Âº Tempo â€” Aprofundamento', emoji: 'ðŸ“–', tipo: 'tempo', tempoId: 'tempo2' },
-  { id: 'entrega_cruz',      label: 'Entrega da Cruz',                             emoji: 'âœš',  tipo: 'simbolo', simboloId: 'cruz', tempoId: 'tempo2' },
-  { id: 'entrega_biblia',    label: 'Entrega da BÃ­blia',                         emoji: 'ðŸ“–',  tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
-  { id: 'entrega_creio',     label: 'Entrega do SÃ­mbolo da FÃ©',                  emoji: 'âœï¸',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
-  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                      emoji: 'ðŸ™',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
-  { id: 'eleicao',       label: 'EleiÃ§Ã£o â€” PreparaÃ§Ã£o para os Sacramentos',     emoji: 'ðŸ—³ï¸',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao', tempoId: 'tempo3' },
-  { id: 'escrutinios',   label: 'PurificaÃ§Ã£o / EscrutÃ­nios',                    sublabel: '3Âº Tempo â€” Quaresma', emoji: 'ðŸ’œ', tipo: 'tempo', tempoId: 'tempo3' },
-  { id: 'recepcao_sac',  label: 'RecepÃ§Ã£o dos Sacramentos',                     emoji: 'ðŸ‘‘',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo4' },
-  { id: 'mistagogia',    label: 'Mistagogia',                                    sublabel: '4Âº Tempo â€” Envio MissionÃ¡rio', emoji: 'ðŸŒ¿', tipo: 'fim', tempoId: 'tempo4' },
+  { id: 'pre_cat',       label: 'Pré-Catecumenato',                              sublabel: '1º Tempo — Querigma', emoji: '🔥', tipo: 'inicio', tempoId: 'tempo1' },
+  { id: 'pass_entrada',  label: 'Rito de Admissão ao Catecumenato',              emoji: '⛪',  tipo: 'passagem', celebracaoTipo: 'admissao_catecumenato', tempoId: 'tempo2' },
+  { id: 'catecumenato',  label: 'Catecumenato',                                  sublabel: '2º Tempo — Aprofundamento', emoji: '📖', tipo: 'tempo', tempoId: 'tempo2' },
+  { id: 'entrega_cruz',      label: 'Entrega da Cruz',                             emoji: '✚',  tipo: 'simbolo', simboloId: 'cruz', tempoId: 'tempo2' },
+  { id: 'entrega_biblia',    label: 'Entrega da Bíblia',                         emoji: '📖',  tipo: 'simbolo', simboloId: 'biblia', tempoId: 'tempo2' },
+  { id: 'entrega_creio',     label: 'Entrega do Símbolo da Fé',                  emoji: '✝️',  tipo: 'simbolo', simboloId: 'creio', tempoId: 'tempo2' },
+  { id: 'entrega_pai_nosso', label: 'Entrega do Pai-Nosso',                      emoji: '🙏',  tipo: 'simbolo', simboloId: 'pai_nosso', tempoId: 'tempo2' },
+  { id: 'eleicao',       label: 'Eleição — Preparação para os Sacramentos',     emoji: '🗳️',  tipo: 'passagem', celebracaoTipo: 'eleicao_preparacao', tempoId: 'tempo3' },
+  { id: 'escrutinios',   label: 'Purificação / Escrutínios',                    sublabel: '3º Tempo — Quaresma', emoji: '💜', tipo: 'tempo', tempoId: 'tempo3' },
+  { id: 'recepcao_sac',  label: 'Recepção dos Sacramentos',                     emoji: '👑',  tipo: 'passagem', celebracaoTipo: 'recepcao_sacramentos', tempoId: 'tempo4' },
+  { id: 'mistagogia',    label: 'Mistagogia',                                    sublabel: '4º Tempo — Envio Missionário', emoji: '🌿', tipo: 'fim', tempoId: 'tempo4' },
 ];
 
 export const ETAPAS_POR_MODELO: Record<ModeloIVC, EtapaBase[]> = {
@@ -155,9 +155,9 @@ const getDefaultConfiguracao = (turmaEtapa?: string): ConfiguracaoTurma => {
   return { modelo, simbolosAtivos };
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // CALCULATION ENGINE
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export function calcularProgressoJornada(
   etapasBase: EtapaBase[],
   encontros: any[],
@@ -166,11 +166,11 @@ export function calcularProgressoJornada(
 ): { etapas: EtapaJornada[]; posicaoAtual: number; percentualGeral: number } {
   const hoje = new Date();
 
-  // Filtra as etapas removendo sÃ­mbolos que nÃ£o estÃ£o ativos
+  // Filtra as etapas removendo símbolos que não estão ativos
   const etapasFiltradasBase = etapasBase.filter(e => e.tipo !== 'simbolo' || !e.simboloId || configuracao.simbolosAtivos.includes(e.simboloId));
 
   const eventosIVC = atividades.filter(a =>
-    a.tipo === 'Entrega de SÃ­mbolos' || a.tipo === 'CelebraÃ§Ã£o de Passagem'
+    a.tipo === 'Entrega de Símbolos' || a.tipo === 'Celebração de Passagem'
   );
 
   const encontrosRealizados = encontros.filter(e => e.status === 'realizado');
@@ -204,7 +204,7 @@ export function calcularProgressoJornada(
       }
     } else if (base.tipo === 'passagem') {
       const evPass = eventosIVC.find(a =>
-        a.tipo === 'CelebraÃ§Ã£o de Passagem' && (
+        a.tipo === 'Celebração de Passagem' && (
           (a.etapaIVC as string) === base.id ||
           (base.celebracaoTipo && a.celebracaoPassagemTipo === base.celebracaoTipo) ||
           a.nome.toLowerCase().includes(base.label.toLowerCase().slice(0, 8))
@@ -224,7 +224,7 @@ export function calcularProgressoJornada(
       else if (percFreq >= 0.25) status = 'em_andamento';
       else status = 'pendente';
     } else if (base.tipo === 'inicio') {
-      const evInicio = atividades.find(a => a.tipo === 'CelebraÃ§Ã£o' && (a.etapaIVC as string) === base.id);
+      const evInicio = atividades.find(a => a.tipo === 'Celebração' && (a.etapaIVC as string) === base.id);
       let dataFim: string | undefined;
       if (evInicio) {
         dataEvento = evInicio.data;
@@ -273,7 +273,7 @@ export function calcularRisco(
   percentual: number
 ): { nivel: RiscoNivel; mensagem: string; detalhes: string } {
   const hoje = new Date();
-  const eventosIVC = atividades.filter(a => a.tipo === 'Entrega de SÃ­mbolos' || a.tipo === 'CelebraÃ§Ã£o de Passagem');
+  const eventosIVC = atividades.filter(a => a.tipo === 'Entrega de Símbolos' || a.tipo === 'Celebração de Passagem');
 
   const eventosAtrasados = eventosIVC.filter(a => {
     if (!a.data) return false;
@@ -294,20 +294,20 @@ export function calcularRisco(
   if (pendentes.length > 0 || (percentual < 30 && realizados.length > 5)) {
     return {
       nivel: 'atencao',
-      mensagem: 'Requer atenÃ§Ã£o',
-      detalhes: `${pendentes.length} encontro(s) com data passada ainda pendente(s). Verifique o calendÃ¡rio.`,
+      mensagem: 'Requer atenção',
+      detalhes: `${pendentes.length} encontro(s) com data passada ainda pendente(s). Verifique o calendário.`,
     };
   }
   return {
     nivel: 'em_dia',
     mensagem: 'Em dia',
-    detalhes: 'A caminhada estÃ¡ dentro do ritmo esperado.',
+    detalhes: 'A caminhada está dentro do ritmo esperado.',
   };
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // ETAPA ACTION MODAL
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 function EtapaActionModal({
   etapa,
   atividades,
@@ -330,15 +330,15 @@ function EtapaActionModal({
   const existing = useMemo(() => {
     if (!etapa) return null;
     return atividades.find(a =>
-      (a.tipo === 'CelebraÃ§Ã£o de Passagem' && (
+      (a.tipo === 'Celebração de Passagem' && (
         (a.etapaIVC as string) === etapa.id ||
         (etapa.celebracaoTipo && a.celebracaoPassagemTipo === etapa.celebracaoTipo)
       )) ||
-      (a.tipo === 'Entrega de SÃ­mbolos' && (
+      (a.tipo === 'Entrega de Símbolos' && (
         a.simboloIVC === etapa.simboloId ||
         (a.etapaIVC as string) === etapa.id
       )) ||
-      (a.tipo === 'CelebraÃ§Ã£o' && (a.etapaIVC as string) === etapa.id)
+      (a.tipo === 'Celebração' && (a.etapaIVC as string) === etapa.id)
     );
   }, [etapa, atividades]);
 
@@ -389,7 +389,7 @@ function EtapaActionModal({
                 "text-[10px] font-black uppercase tracking-widest mb-0.5",
                 isPassagem ? "text-violet-600" : "text-amber-600"
               )}>
-                {isPassagem ? 'âœ¦ CelebraÃ§Ã£o de Passagem de Etapa' : 'ðŸŽ Entrega de SÃ­mbolo'}
+                {isPassagem ? '✦ Celebração de Passagem de Etapa' : '🎁 Entrega de Símbolo'}
               </p>
               <DialogTitle className="text-sm font-black text-foreground leading-tight text-left">
                 {etapa.label}
@@ -404,13 +404,13 @@ function EtapaActionModal({
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
-                  ðŸ“… Data de InÃ­cio
+                  📅 Data de Início
                 </label>
                 <input type="date" value={data} onChange={e => setData(e.target.value)} className="form-input" />
               </div>
               <div>
                 <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
-                  ðŸ“… Data de TÃ©rmino
+                  📅 Data de Término
                 </label>
                 <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} className="form-input" />
               </div>
@@ -418,32 +418,32 @@ function EtapaActionModal({
           ) : isCelebracaoInicio ? (
             <div>
               <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
-                ðŸ“… Data da CelebraÃ§Ã£o
+                📅 Data da Celebração
               </label>
               <input type="date" value={data} onChange={e => setData(e.target.value)} className="form-input" />
-              <p className="text-[10px] text-muted-foreground mt-1.5">Informe a data em que a celebraÃ§Ã£o aconteceu ou estÃ¡ agendada.</p>
+              <p className="text-[10px] text-muted-foreground mt-1.5">Informe a data em que a celebração aconteceu ou está agendada.</p>
             </div>
           ) : (
             <div>
               <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
-                Data da CelebraÃ§Ã£o
+                Data da Celebração
               </label>
               <input type="date" value={data} onChange={e => setData(e.target.value)} className="form-input" />
             </div>
           )}
 
-          {/* Symbol selector for CelebraÃ§Ã£o da Vida (no fixed symbol) */}
+          {/* Symbol selector for Celebração da Vida (no fixed symbol) */}
           {isSimboloSemId && (
             <div>
               <label className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-1.5">
-                SÃ­mbolo Entregue <span className="text-muted-foreground/60 normal-case font-semibold">(opcional, de acordo com a tradiÃ§Ã£o da comunidade)</span>
+                Símbolo Entregue <span className="text-muted-foreground/60 normal-case font-semibold">(opcional, de acordo com a tradição da comunidade)</span>
               </label>
               <select
                 value={simboloSelecionado}
                 onChange={e => setSimboloSelecionado(e.target.value)}
                 className="form-input"
               >
-                <option value="">Nenhum sÃ­mbolo especÃ­fico</option>
+                <option value="">Nenhum símbolo específico</option>
                 {SIMBOLOS_IVC.map(s => (
                   <option key={s.id} value={s.id}>{s.emoji} {s.label}</option>
                 ))}
@@ -451,13 +451,67 @@ function EtapaActionModal({
             </div>
           )}
 
-          {/* Realizado toggle â€” hidden for preparacao/celebracao inicio (auto from date) */}
+          {/* Cruz & Bíblia for Rito de Admissão */}
+          {isAdmissao && (
+            <div className="space-y-3 p-4 bg-violet-50 dark:bg-violet-950/20 rounded-2xl border border-violet-200/50">
+              <p className="text-[10px] font-black uppercase tracking-widest text-violet-700 flex items-center gap-1.5">
+                <Star className="w-3 h-3 fill-violet-600 text-violet-600" />
+                Símbolos Entregues nesta Celebração
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setEntregaCruz(!entregaCruz)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left",
+                  entregaCruz
+                    ? "border-violet-400 bg-violet-100 dark:bg-violet-900/30"
+                    : "border-border bg-transparent hover:border-violet-300"
+                )}
+              >
+                <div className={cn(
+                  "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0",
+                  entregaCruz ? "bg-violet-600 border-violet-600" : "border-border"
+                )}>
+                  {entregaCruz && <CheckCircle2 className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-black text-sm text-foreground">✚ Cruz</p>
+                  <p className="text-[10px] text-muted-foreground">Padrão do Rito de Admissão ao Catecumenato</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setEntregaBiblia(!entregaBiblia)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left",
+                  entregaBiblia
+                    ? "border-blue-400 bg-blue-50 dark:bg-blue-900/30"
+                    : "border-border bg-transparent hover:border-blue-300"
+                )}
+              >
+                <div className={cn(
+                  "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shrink-0",
+                  entregaBiblia ? "bg-blue-600 border-blue-600" : "border-border"
+                )}>
+                  {entregaBiblia && <CheckCircle2 className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-black text-sm text-foreground">📖 Bíblia</p>
+                  <p className="text-[10px] text-muted-foreground">Opcional — algumas comunidades entregam a Bíblia nesta celebração</p>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Realizado toggle — hidden for preparacao/celebracao inicio (auto from date) */}
           <div className="flex flex-col gap-2">
             {!isPreparacao && !isCelebracaoInicio && (
               <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border/40">
                 <div>
-                  <p className="font-black text-sm text-foreground">JÃ¡ foi realizada</p>
-                  <p className="text-[10px] text-muted-foreground">Marque se esta celebraÃ§Ã£o jÃ¡ aconteceu</p>
+                  <p className="font-black text-sm text-foreground">Já foi realizada</p>
+                  <p className="text-[10px] text-muted-foreground">Marque se esta celebração já aconteceu</p>
                 </div>
                 <button
                   type="button"
@@ -480,8 +534,8 @@ function EtapaActionModal({
             {isSimbolo && (
               <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/30">
                 <div>
-                  <p className="font-black text-sm text-red-700 dark:text-red-400">NÃ£o serÃ¡ entregue</p>
-                  <p className="text-[10px] text-red-600/80 dark:text-red-400/80">Motivos pastorais (nÃ£o bloqueia a turma)</p>
+                  <p className="font-black text-sm text-red-700 dark:text-red-400">Não será entregue</p>
+                  <p className="text-[10px] text-red-600/80 dark:text-red-400/80">Motivos pastorais (não bloqueia a turma)</p>
                 </div>
                 <button
                   type="button"
@@ -514,8 +568,8 @@ function EtapaActionModal({
               <CheckCircle2 className={cn("w-4 h-4 shrink-0", dispensado ? "text-red-600" : "text-emerald-600")} />
               <p className={cn("text-xs font-bold", dispensado ? "text-red-700" : "text-emerald-700")}>
                 {dispensado 
-                  ? "Este sÃ­mbolo serÃ¡ ignorado e nÃ£o travarÃ¡ o progresso da turma."
-                  : "O card ficarÃ¡ verde no painel â€” posiÃ§Ã£o da turma serÃ¡ atualizada!"}
+                  ? "Este símbolo será ignorado e não travará o progresso da turma."
+                  : "O card ficará verde no painel — posição da turma será atualizada!"}
               </p>
             </div>
           )}
@@ -526,7 +580,7 @@ function EtapaActionModal({
             className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-95 transition-transform disabled:opacity-70"
           >
             <CheckCircle2 className="w-4 h-4" />
-            {saving ? 'Salvando...' : existing ? 'Salvar AlteraÃ§Ãµes' : 'Salvar e Criar Evento'}
+            {saving ? 'Salvando...' : existing ? 'Salvar Alterações' : 'Salvar e Criar Evento'}
           </button>
         </div>
       </DialogContent>
@@ -534,9 +588,9 @@ function EtapaActionModal({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // CHIP CONFIGURACAO INICIAL
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 function ChipConfiguracaoInicial({
   configuracao,
   onSave
@@ -593,7 +647,7 @@ function ChipConfiguracaoInicial({
           <DialogHeader>
             <DialogTitle className="text-xl font-black text-foreground flex items-center gap-2">
               <Settings className="w-5 h-5 text-primary" />
-              ConfiguraÃ§Ã£o da Turma
+              Configuração da Turma
             </DialogTitle>
           </DialogHeader>
 
@@ -638,10 +692,10 @@ function ChipConfiguracaoInicial({
             {/* Simbolos Selection */}
             <div className="space-y-3">
               <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                Quais sÃ­mbolos a turma vai receber?
+                Quais símbolos a turma vai receber?
               </p>
               <p className="text-[10px] text-muted-foreground leading-tight -mt-2 mb-2">
-                As etapas nÃ£o selecionadas ficarÃ£o ocultas do painel desta turma.
+                As etapas não selecionadas ficarão ocultas do painel desta turma.
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {SIMBOLOS_IVC.map(simbolo => {
@@ -685,7 +739,7 @@ function ChipConfiguracaoInicial({
               onClick={handleSave}
               className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition-transform"
             >
-              Salvar ConfiguraÃ§Ãµes
+              Salvar Configurações
             </button>
           </div>
         </DialogContent>
@@ -694,45 +748,45 @@ function ChipConfiguracaoInicial({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // BLOCOS TEMPOS
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 const TEMPOS_CONFIG = [
   {
     id: 'tempo1',
-    label: 'PrÃ©-Catecumenato',
-    emoji: 'ðŸ”¥',
+    label: 'Pré-Catecumenato',
+    emoji: '🔥',
     cor: 'border-yellow-300 bg-yellow-50',
     corHeader: 'bg-yellow-100 text-yellow-800',
     corBadge: 'bg-yellow-200 text-yellow-900',
-    descricao: '1Âº Tempo â€” Querigma',
+    descricao: '1º Tempo — Querigma',
   },
   {
     id: 'tempo2',
     label: 'Catecumenato',
-    emoji: 'ðŸ“–',
+    emoji: '📖',
     cor: 'border-sky-300 bg-sky-50',
     corHeader: 'bg-sky-100 text-sky-800',
     corBadge: 'bg-sky-200 text-sky-900',
-    descricao: '2Âº Tempo â€” Aprofundamento',
+    descricao: '2º Tempo — Aprofundamento',
   },
   {
     id: 'tempo3',
-    label: 'PurificaÃ§Ã£o e IluminaÃ§Ã£o',
-    emoji: 'ðŸ’œ',
+    label: 'Purificação e Iluminação',
+    emoji: '💜',
     cor: 'border-purple-300 bg-purple-50',
     corHeader: 'bg-purple-100 text-purple-800',
     corBadge: 'bg-purple-200 text-purple-900',
-    descricao: '3Âº Tempo â€” Quaresma',
+    descricao: '3º Tempo — Quaresma',
   },
   {
     id: 'tempo4',
     label: 'Mistagogia',
-    emoji: 'ðŸ•Šï¸',
+    emoji: '🕊️',
     cor: 'border-emerald-300 bg-emerald-50',
     corHeader: 'bg-emerald-100 text-emerald-800',
     corBadge: 'bg-emerald-200 text-emerald-900',
-    descricao: '4Âº Tempo â€” MissionÃ¡rio',
+    descricao: '4º Tempo — Missionário',
   },
 ];
 
@@ -785,7 +839,7 @@ function BlocosTempos({
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest flex items-center justify-between opacity-80">
                 <span>
-                  {todosConcluidos ? 'ConcluÃ­do' : algumAndamento ? 'Em andamento' : 'Pendente'}
+                  {todosConcluidos ? 'Concluído' : algumAndamento ? 'Em andamento' : 'Pendente'}
                 </span>
                 <span>{progresso}%</span>
               </p>
@@ -797,9 +851,9 @@ function BlocosTempos({
   );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // JOURNEY MAP (Filtered for Modal)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export function JornadaMap({
   etapas,
   posicaoAtual,
@@ -955,7 +1009,7 @@ export function JornadaMap({
                     )}>
                       <Calendar className="w-2.5 h-2.5" />
                       {etapa.id === 'preparacao' && etapa.dataFim
-                        ? `${new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} â†’ ${new Date(etapa.dataFim + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`
+                        ? `${new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} → ${new Date(etapa.dataFim + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`
                         : new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                     </p>
                   )}
@@ -983,9 +1037,9 @@ export function JornadaMap({
 }
 
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 // MAIN PAGE COMPONENT
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────
 export default function PainelIVC() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -1026,7 +1080,7 @@ export default function PainelIVC() {
 
   const handleShare = useCallback(() => {
     if (turma?.codigoAcesso) setShowQR(true);
-    else toast.info("Esta turma nÃ£o possui cÃ³digo de acesso pÃºblico ainda. Gere um na pÃ¡gina da turma.");
+    else toast.info("Esta turma não possui código de acesso público ainda. Gere um na página da turma.");
   }, [turma]);
 
   const handleEtapaClick = useCallback((etapa: EtapaJornada) => {
@@ -1048,32 +1102,32 @@ export default function PainelIVC() {
     const isInicio = etapaModal.tipo === 'inicio';
 
     const existing = atividades.find(a =>
-      (a.tipo === 'CelebraÃ§Ã£o de Passagem' && (
+      (a.tipo === 'Celebração de Passagem' && (
         (a.etapaIVC as string) === etapaModal.id ||
         (etapaModal.celebracaoTipo && a.celebracaoPassagemTipo === etapaModal.celebracaoTipo)
       )) ||
-      (a.tipo === 'Entrega de SÃ­mbolos' && (
+      (a.tipo === 'Entrega de Símbolos' && (
         a.simboloIVC === etapaModal.simboloId ||
         (a.etapaIVC as string) === etapaModal.id
       )) ||
-      (a.tipo === 'CelebraÃ§Ã£o' && (a.etapaIVC as string) === etapaModal.id)
+      (a.tipo === 'Celebração' && (a.etapaIVC as string) === etapaModal.id)
     );
 
     const tipoEvento = isPassagem
-      ? 'CelebraÃ§Ã£o de Passagem'
+      ? 'Celebração de Passagem'
       : isInicio
-        ? 'CelebraÃ§Ã£o'
-        : 'Entrega de SÃ­mbolos';
+        ? 'Celebração'
+        : 'Entrega de Símbolos';
 
     const eventData: Atividade = {
       id: existing?.id ?? crypto.randomUUID(),
       turmaId: id,
       nome: etapaModal.label,
       descricao: isPassagem
-        ? `CelebraÃ§Ã£o de passagem: ${etapaModal.label}`
+        ? `Celebração de passagem: ${etapaModal.label}`
         : isInicio
           ? `${etapaModal.label}`
-          : `Entrega de sÃ­mbolo: ${etapaModal.label}`,
+          : `Entrega de símbolo: ${etapaModal.label}`,
       tipo: tipoEvento as any,
       modalidade: 'interna',
       conducao: undefined,
@@ -1093,7 +1147,7 @@ export default function PainelIVC() {
     };
 
     await mutation.mutateAsync(eventData);
-    toast.success(existing ? 'âœ… Evento atualizado no painel!' : 'âœ… CelebraÃ§Ã£o registrada e evento criado!');
+    toast.success(existing ? '✅ Evento atualizado no painel!' : '✅ Celebração registrada e evento criado!');
   }, [id, etapaModal, atividades, mutation]);
 
   if (!turma) {
@@ -1111,7 +1165,7 @@ export default function PainelIVC() {
 
   return (
     <div className="space-y-6 pb-20">
-      {/* â”€â”€â”€ HEADER â”€â”€â”€ */}
+      {/* ─── HEADER ─── */}
       <div className="space-y-4 animate-fade-in flex flex-col pt-4">
         <div className="flex items-center justify-center min-h-[44px] relative">
           <button onClick={() => navigate(`/turmas/${id}`)} className="back-btn absolute left-0">
@@ -1121,7 +1175,7 @@ export default function PainelIVC() {
             <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">{turma.nome}</p>
             <h1 className="text-xl font-black text-foreground tracking-tight uppercase">Painel IVC</h1>
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest leading-none">
-              ItinerÃ¡rio de Vida CristÃ£
+              Itinerário de Vida Cristã
             </p>
           </div>
           <button onClick={handleShare} className="absolute right-0 w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors">
@@ -1130,7 +1184,7 @@ export default function PainelIVC() {
         </div>
       </div>
 
-      {/* â”€â”€â”€ CONFIGURAÃ‡ÃƒO INICIAL â”€â”€â”€ */}
+      {/* ─── CONFIGURAÇÃO INICIAL ─── */}
       <div className="px-4">
         <ChipConfiguracaoInicial 
           configuracao={configuracao}
@@ -1138,7 +1192,7 @@ export default function PainelIVC() {
         />
       </div>
 
-      {/* â”€â”€â”€ BLOCOS DE TEMPOS â”€â”€â”€ */}
+      {/* ─── BLOCOS DE TEMPOS ─── */}
       <div className="px-4">
         <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-primary" /> Tempos do IVC
@@ -1149,7 +1203,7 @@ export default function PainelIVC() {
         />
       </div>
 
-      {/* â”€â”€â”€ LINHA DO TEMPO MODAL (SHEET) â”€â”€â”€ */}
+      {/* ─── LINHA DO TEMPO MODAL (SHEET) ─── */}
       <Sheet open={!!tempoSelecionado} onOpenChange={(open) => !open && setTempoSelecionado(null)}>
         <SheetContent side="bottom" className="h-[85vh] rounded-t-[3rem] px-0 py-6 overflow-hidden flex flex-col">
           {tempoInfo && (
@@ -1177,7 +1231,7 @@ export default function PainelIVC() {
         </SheetContent>
       </Sheet>
 
-      {/* â”€â”€â”€ ETAPA ACTION MODAL â”€â”€â”€ */}
+      {/* ─── ETAPA ACTION MODAL ─── */}
       {etapaModal && (
         <EtapaActionModal
           etapa={etapaModal}
@@ -1187,13 +1241,13 @@ export default function PainelIVC() {
         />
       )}
 
-      {/* â”€â”€â”€ QR SHARE MODAL â”€â”€â”€ */}
+      {/* ─── QR SHARE MODAL ─── */}
       {showQR && turma?.codigoAcesso && (
         <QRShareModal
           open={showQR}
           onClose={() => setShowQR(false)}
           url={publicUrl}
-          title="Painel IVC â€” VersÃ£o PÃºblica"
+          title="Painel IVC — Versão Pública"
           description="Compartilhe com pais, coordenador e padre para acompanhar a jornada da turma."
         />
       )}
