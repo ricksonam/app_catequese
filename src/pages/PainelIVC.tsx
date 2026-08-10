@@ -810,7 +810,7 @@ const TEMPOS_CONFIG = [
     cor: 'border-purple-300 bg-purple-50',
     corHeader: 'bg-purple-100 text-purple-800',
     corBadge: 'bg-purple-200 text-purple-900',
-    descricao: 'Preparação para os sacramentos: Escrutínios, Entrega do símbolo, Entrega da Oração do Senhor, Práticas Quaresmais, Outros Ritos, Momentos Orantes.',
+    descricao: '3º Tempo — Preparação para os Sacramentos',
   },
   {
     id: 'tempo4',
@@ -819,7 +819,7 @@ const TEMPOS_CONFIG = [
     cor: 'border-emerald-300 bg-emerald-50',
     corHeader: 'bg-emerald-100 text-emerald-800',
     corBadge: 'bg-emerald-200 text-emerald-900',
-    descricao: 'Aprofundamento e mergulho no Mistério Celebrado, Vivência na comunidade Cristã, Vivência pastoral, Envio Missionário: Pentecostes (Data).',
+    descricao: '4º Tempo — Envio Missionário',
   },
 ];
 
@@ -842,11 +842,13 @@ function BlocosTempos({
   etapas,
   onOpenTempo,
   onOpenEtapa,
+  onOpenSacramentos,
   configuracao
 }: {
   etapas: EtapaJornada[];
   onOpenTempo: (tempoId: string) => void;
   onOpenEtapa: (etapa: EtapaJornada) => void;
+  onOpenSacramentos: () => void;
   configuracao: ConfiguracaoTurma;
 }) {
   const renderTempo = (id: string) => {
@@ -878,8 +880,7 @@ function BlocosTempos({
           </div>
         </div>
         
-        <p className="font-black text-lg text-foreground/90 leading-tight mb-1">{tempo.label}</p>
-        <p className="text-[10px] font-bold opacity-70 mb-4">{tempo.descricao}</p>
+        <p className="font-black text-lg text-foreground/90 leading-tight mb-4">{tempo.label}</p>
         
         <div className="space-y-1.5 mt-auto">
           <div className="h-1.5 w-full bg-white/50 rounded-full overflow-hidden">
@@ -937,9 +938,7 @@ function BlocosTempos({
         <EtapaChip 
           titulo="3ª ETAPA - Celebração dos Sacramentos da Iniciação"
           descricao="Batismo, Confissão, Eucaristia e Crisma."
-          onClick={() => {
-            setShowModalSacramentos(true);
-          }}
+          onClick={onOpenSacramentos}
         />
       )}
 
@@ -1458,6 +1457,7 @@ export default function PainelIVC() {
           etapas={etapas} 
           onOpenTempo={setTempoSelecionado} 
           onOpenEtapa={setEtapaModal}
+          onOpenSacramentos={() => setShowModalSacramentos(true)}
           configuracao={configuracao}
         />
       </div>
@@ -1472,9 +1472,6 @@ export default function PainelIVC() {
                   <span className="text-5xl">{tempoInfo.emoji}</span>
                   <div className="flex-1 text-left">
                     <SheetTitle className="text-2xl font-black text-foreground">{tempoInfo.label}</SheetTitle>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">
-                      {tempoInfo.descricao}
-                    </p>
                   </div>
                 </div>
               </SheetHeader>
