@@ -812,63 +812,127 @@ const TEMPOS_CONFIG = [
   },
 ];
 
+function EtapaChip({ titulo, descricao, onClick }: { titulo: string; descricao: string; onClick: () => void }) {
+  return (
+    <button 
+      onClick={onClick}
+      className="flex flex-col items-center justify-center p-3.5 w-full bg-violet-100 dark:bg-violet-900/30 rounded-[1.25rem] border-2 border-violet-200 dark:border-violet-800/60 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all text-center gap-1 relative overflow-visible"
+    >
+      <div className="absolute -top-3 bg-violet-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+        Etapa
+      </div>
+      <p className="font-black text-violet-800 dark:text-violet-300 text-[13px] leading-tight mt-1">{titulo}</p>
+      <p className="text-[10px] font-bold text-violet-600/80 dark:text-violet-400/80 leading-tight">{descricao}</p>
+    </button>
+  );
+}
+
 function BlocosTempos({
   etapas,
-  onOpenTempo
+  onOpenTempo,
+  onOpenEtapa,
+  configuracao
 }: {
   etapas: EtapaJornada[];
   onOpenTempo: (tempoId: string) => void;
+  onOpenEtapa: (etapa: EtapaJornada) => void;
+  configuracao: ConfiguracaoTurma;
 }) {
+  const renderTempo = (id: string) => {
+    const tempo = TEMPOS_CONFIG.find(t => t.id === id);
+    if (!tempo) return null;
+    const etapasDoTempo = etapas.filter(e => e.tempoId === tempo.id);
+    if (etapasDoTempo.length === 0) return null;
+    
+    const concluidas = etapasDoTempo.filter(e => e.status === 'concluido').length;
+    const total = etapasDoTempo.length;
+    const progresso = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+    
+    const todosConcluidos = concluidas === total && total > 0;
+    const algumAndamento = etapasDoTempo.some(e => e.status === 'em_andamento' || e.status === 'concluido');
+    
+    return (
+      <button
+        key={tempo.id}
+        onClick={() => onOpenTempo(tempo.id)}
+        className={cn(
+          "relative overflow-hidden rounded-3xl border-2 transition-all p-5 text-left group hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md w-full",
+          tempo.cor
+        )}
+      >
+        <div className="flex justify-between items-start mb-4">
+          <span className="text-5xl drop-shadow-md group-hover:scale-110 transition-transform origin-bottom-left">{tempo.emoji}</span>
+          <div className={cn("px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", tempo.corBadge)}>
+            {concluidas}/{total}
+          </div>
+        </div>
+        
+        <p className="font-black text-lg text-foreground/90 leading-tight mb-1">{tempo.label}</p>
+        <p className="text-[10px] font-bold opacity-70 mb-4">{tempo.descricao}</p>
+        
+        <div className="space-y-1.5 mt-auto">
+          <div className="h-1.5 w-full bg-white/50 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-current opacity-60 rounded-full transition-all duration-1000"
+              style={{ width: `${progresso}%` }}
+            />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-widest flex items-center justify-between opacity-80">
+            <span>
+              {todosConcluidos ? 'Concluído' : algumAndamento ? 'Em andamento' : 'Pendente'}
+            </span>
+            <span>{progresso}%</span>
+          </p>
+        </div>
+      </button>
+    );
+  };
+
+  const hasTempo = (id: string) => etapas.some(e => e.tempoId === id);
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {TEMPOS_CONFIG.map(tempo => {
-        const etapasDoTempo = etapas.filter(e => e.tempoId === tempo.id);
-        if (etapasDoTempo.length === 0) return null;
-        
-        const concluidas = etapasDoTempo.filter(e => e.status === 'concluido').length;
-        const total = etapasDoTempo.length;
-        const progresso = Math.round((concluidas / total) * 100);
-        
-        // Define status geral do tempo
-        const todosConcluidos = concluidas === total && total > 0;
-        const algumAndamento = etapasDoTempo.some(e => e.status === 'em_andamento' || e.status === 'concluido');
-        
-        return (
-          <button
-            key={tempo.id}
-            onClick={() => onOpenTempo(tempo.id)}
-            className={cn(
-              "relative overflow-hidden rounded-3xl border-2 transition-all p-5 text-left group hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md",
-              tempo.cor
-            )}
-          >
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-5xl drop-shadow-md group-hover:scale-110 transition-transform origin-bottom-left">{tempo.emoji}</span>
-              <div className={cn("px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", tempo.corBadge)}>
-                {concluidas}/{total}
-              </div>
-            </div>
-            
-            <p className="font-black text-lg text-foreground/90 leading-tight mb-1">{tempo.label}</p>
-            <p className="text-[10px] font-bold opacity-70 mb-4">{tempo.descricao}</p>
-            
-            <div className="space-y-1.5 mt-auto">
-              <div className="h-1.5 w-full bg-white/50 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-current opacity-60 rounded-full transition-all duration-1000"
-                  style={{ width: `${progresso}%` }}
-                />
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-widest flex items-center justify-between opacity-80">
-                <span>
-                  {todosConcluidos ? 'Concluído' : algumAndamento ? 'Em andamento' : 'Pendente'}
-                </span>
-                <span>{progresso}%</span>
-              </p>
-            </div>
-          </button>
-        );
-      })}
+    <div className="flex flex-col space-y-6 pt-2">
+      {renderTempo('tempo1')}
+      
+      {hasTempo('tempo1') && hasTempo('tempo2') && (
+        <EtapaChip 
+          titulo="1ª ETAPA - Rito de Admissão (Entrada)"
+          descricao={configuracao.modelo === 'sementinhas' ? 'Aqui se entrega o Menino Jesus.' : 'Aqui se entrega a Cruz.'}
+          onClick={() => {
+            const etapa = etapas.find(e => e.celebracaoTipo === 'admissao_catecumenato' || e.id === 'pass_cat' || e.id === 'pass_catec' || e.id === 'pass_entrada');
+            if (etapa) onOpenEtapa(etapa);
+            else onOpenTempo('tempo2');
+          }}
+        />
+      )}
+
+      {renderTempo('tempo2')}
+
+      {hasTempo('tempo2') && hasTempo('tempo3') && (
+        <EtapaChip 
+          titulo="2ª ETAPA - Rito de Eleição"
+          descricao="Preparação para os sacramentos."
+          onClick={() => {
+            const etapa = etapas.find(e => e.celebracaoTipo === 'eleicao_preparacao' || e.id === 'eleicao' || e.id === 'pass_ilum_seed');
+            if (etapa) onOpenEtapa(etapa);
+            else onOpenTempo('tempo3');
+          }}
+        />
+      )}
+
+      {renderTempo('tempo3')}
+
+      {hasTempo('tempo3') && (
+        <EtapaChip 
+          titulo="3ª ETAPA - Celebração dos Sacramentos da Iniciação"
+          descricao={configuracao.modelo === 'sementinhas' ? 'Celebração com a Família.' : 'Batismo, Confissão, Eucaristia e Crisma.'}
+          onClick={() => {
+            onOpenTempo('tempo3');
+          }}
+        />
+      )}
+
+      {renderTempo('tempo4')}
     </div>
   );
 }
@@ -1244,6 +1308,8 @@ export default function PainelIVC() {
         <BlocosTempos 
           etapas={etapas} 
           onOpenTempo={setTempoSelecionado} 
+          onOpenEtapa={setEtapaModal}
+          configuracao={configuracao}
         />
       </div>
 
