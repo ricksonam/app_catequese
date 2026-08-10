@@ -1039,21 +1039,27 @@ export function JornadaMap({
                   )}
 
                   {etapa.dataEvento && (
-                    <p className={cn(
-                      "text-[9px] font-black mt-1 flex items-center gap-1",
-                      isPassagem ? "text-violet-600" : etapa.tipo === 'simbolo' ? "text-amber-600" : etapa.tipo === 'sacramento' ? "text-blue-600" : "text-primary"
+                    <div className={cn(
+                      "mt-2 w-full py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 text-[11px] font-black text-center border shadow-sm",
+                      isPassagem ? "bg-violet-100 text-violet-700 border-violet-200 dark:bg-violet-900/40 dark:text-violet-300 dark:border-violet-800" 
+                      : etapa.tipo === 'simbolo' ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800" 
+                      : etapa.tipo === 'sacramento' ? "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800" 
+                      : "bg-primary/10 text-primary border-primary/20"
                     )}>
-                      <Calendar className="w-2.5 h-2.5" />
-                      {etapa.id === 'preparacao' && etapa.dataFim
-                        ? `${new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} → ${new Date(etapa.dataFim + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`
-                        : new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                    </p>
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>
+                        {etapa.id === 'preparacao' && etapa.dataFim
+                          ? `${new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })} → ${new Date(etapa.dataFim + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}`
+                          : new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                      </span>
+                    </div>
                   )}
                   
                   {isClickable && !etapa.dataEvento && etapa.status === 'pendente' && (
-                    <p className="text-[8px] font-bold mt-1.5 flex items-center gap-0.5 text-primary/60">
-                      <Calendar className="w-2.5 h-2.5" /> Toque p/ registrar
-                    </p>
+                    <div className="mt-2 w-full py-1.5 px-2 rounded-lg border-2 border-dashed border-primary/20 flex items-center justify-center gap-1.5 text-[10px] font-bold text-primary/60 bg-primary/5">
+                      <Calendar className="w-3 h-3" />
+                      <span>Toque p/ registrar</span>
+                    </div>
                   )}
                 </div>
               </div>
