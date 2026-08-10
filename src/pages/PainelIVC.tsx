@@ -1500,6 +1500,18 @@ export default function PainelIVC() {
         />
       )}
 
+      {/* ─── MODAL DATAS SACRAMENTOS ─── */}
+      {showModalSacramentos && turma && (
+        <ModalDatasSacramentos
+          isOpen={showModalSacramentos}
+          onClose={() => setShowModalSacramentos(false)}
+          turma={turma}
+          atividades={atividades}
+          updateTurma={turmaMutation}
+          updateAtividade={mutation}
+        />
+      )}
+
       {/* ─── QR SHARE MODAL ─── */}
       {showQR && turma?.codigoAcesso && (
         <QRShareModal
