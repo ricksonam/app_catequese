@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { formatarDataVigente, cn } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+import ReportModule from "@/components/reports/ReportModule";
 
 
 // --- Helpers ---
@@ -834,6 +835,20 @@ export default function ReunioesList() {
                  </div>
                  {/* Actions */}
                  <div className="flex items-center gap-2 z-50">
+                   <ReportModule
+                     context="reunioes"
+                     turmaId={id!}
+                     initialDocId={viewItem.id}
+                     instantReport="reun_complet"
+                     trigger={
+                       <button
+                         title="Emitir relatório da reunião"
+                         className="w-9 h-9 flex items-center justify-center rounded-xl text-violet-600 bg-violet-50 hover:bg-violet-100 transition-all active:scale-95 border border-violet-200"
+                       >
+                         <FileText className="h-4 w-4" />
+                       </button>
+                     }
+                   />
                    <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20" title="Editar"><Pencil className="h-4 w-4" /></button>
                    <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20" title="Excluir"><Trash2 className="h-4 w-4" /></button>
                    <div className="w-px h-5 bg-black/10 mx-1" />

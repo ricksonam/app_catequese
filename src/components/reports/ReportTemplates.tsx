@@ -1663,3 +1663,192 @@ export const LiturgiaDiariaSheet = ({ liturgia, dateLabel }: any) => {
     </div>
   );
 };
+
+// ==========================================
+// DIÁRIO ESPIRITUAL TEMPLATE
+// ==========================================
+
+const TIPO_DIARIO_LABEL: Record<string, string> = {
+  encontro: "Registro de Encontro",
+  evento: "Registro de Evento",
+  evolucao: "Evolução Espiritual",
+  reuniao: "Registro de Reunião",
+};
+
+const TIPO_DIARIO_EMOJI: Record<string, string> = {
+  encontro: "📖",
+  evento: "✨",
+  evolucao: "🌱",
+  reuniao: "👥",
+};
+
+function getDiarioTipo(item: any): string {
+  if (item.encontro_id) return "encontro";
+  if (item.evento_nome) return "evento";
+  if (item.evolucao_espiritual || item.evolucao_catequizandos?.length > 0) return "evolucao";
+  if (item.participantes_reuniao) return "reuniao";
+  return "encontro";
+}
+
+function getDiarioTitulo(item: any): string {
+  const tipo = getDiarioTipo(item);
+  if (tipo === "encontro") return item.encontro_tema ? `Encontro: ${item.encontro_tema}` : "Registro de Encontro";
+  if (tipo === "evento") return item.evento_nome ? item.evento_nome : "Registro de Evento";
+  if (tipo === "reuniao") return "Registro de Reunião";
+  return "Evolução Espiritual";
+}
+
+export const DiarioFullSheet = ({ doc, org, turma }: any) => {
+  if (!doc) return null;
+  const tipo = getDiarioTipo(doc);
+  const titulo = getDiarioTitulo(doc);
+  const emoji = TIPO_DIARIO_EMOJI[tipo] || "📝";
+  const tipoLabel = TIPO_DIARIO_LABEL[tipo] || "Registro";
+  const dataFormatada = doc.data_registro
+    ? new Date(doc.data_registro + "T00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })
+    : "—";
+
+  return (
+    <div className="p-6 text-black bg-white font-sans max-w-[210mm] mx-auto">
+      <PrintHeader
+        titulo="Diário do Catequista"
+        subtitulo={`${emoji} ${tipoLabel}`}
+        paroquia={org?.paroquia}
+        comunidade={org?.comunidade}
+        turma={turma?.nome}
+        etapa={turma?.etapa}
+      />
+
+      {/* Data e Tipo */}
+      <div className="flex items-center justify-between mb-5 px-1">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">{emoji}</span>
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">{tipoLabel}</p>
+            <p className="text-sm font-black text-[#2c1810] capitalize">{dataFormatada}</p>
+          </div>
+        </div>
+        <div className="px-3 py-1 border border-[#2c1810] rounded text-[9px] font-black uppercase tracking-widest text-[#2c1810]">
+          Diário Oficial
+        </div>
+      </div>
+
+      {/* Título principal */}
+      <div className="border-2 border-[#2c1810] p-4 mb-5 bg-gray-50/40">
+        <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">Título</p>
+        <p className="text-base font-black text-[#2c1810]">{titulo}</p>
+      </div>
+
+      {/* Como foi */}
+      {doc.como_foi && tipo !== "evolucao" && (
+        <div className="border border-[#2c1810] p-4 mb-4 break-inside-avoid">
+          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">
+            {tipo === "evento" ? "Como foi o evento" : tipo === "reuniao" ? "Pauta da Reunião" : "Como foi o encontro"}
+          </p>
+          <p className="text-[11px] leading-relaxed whitespace-pre-wrap text-gray-800">{doc.como_foi}</p>
+        </div>
+      )}
+
+      {/* Pontos positivos e a melhorar */}
+      {tipo !== "evolucao" && (doc.pontos_positivos || doc.pontos_negativos) && (
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {doc.pontos_positivos && (
+            <div className="border border-[#2c1810] p-4 break-inside-avoid">
+              <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">✅ Pontos Positivos</p>
+              <p className="text-[11px] leading-relaxed whitespace-pre-wrap text-gray-800">{doc.pontos_positivos}</p>
+            </div>
+          )}
+          {doc.pontos_negativos && (
+            <div className="border border-dashed border-[#2c1810] p-4 break-inside-avoid">
+              <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">⚠️ Pontos a Melhorar</p>
+              <p className="text-[11px] leading-relaxed whitespace-pre-wrap text-gray-800">{doc.pontos_negativos}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Participantes Reunião */}
+      {tipo === "reuniao" && doc.participantes_reuniao && (
+        <div className="border border-[#2c1810] p-4 mb-4 break-inside-avoid">
+          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">👥 Participantes</p>
+          <p className="text-[11px] leading-relaxed whitespace-pre-wrap text-gray-800">{doc.participantes_reuniao}</p>
+        </div>
+      )}
+
+      {/* Avaliação de catequizandos */}
+      {(tipo === "encontro" || tipo === "evento") && Array.isArray(doc.avaliacoes_catequizandos) && doc.avaliacoes_catequizandos.length > 0 && (
+        <div className="border border-[#2c1810] p-4 mb-4 break-inside-avoid">
+          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">⭐ Avaliação de Participação</p>
+          <div className="grid grid-cols-2 gap-3">
+            {doc.avaliacoes_catequizandos.map((av: any) => (
+              <div key={av.catequizando_id} className="border border-gray-200 p-3 rounded">
+                <p className="text-[10px] font-black text-[#2c1810] truncate mb-1">{av.nome}</p>
+                <div className="grid grid-cols-3 gap-1 text-center">
+                  <div>
+                    <p className="text-[7px] font-black uppercase text-gray-400">Pontual.</p>
+                    <p className="text-xs font-black">{"★".repeat(av.pontualidade || 0)}{"☆".repeat(5 - (av.pontualidade || 0))}</p>
+                  </div>
+                  <div>
+                    <p className="text-[7px] font-black uppercase text-gray-400">Particip.</p>
+                    <p className="text-xs font-black">{"★".repeat(av.participacao_grupo || 0)}{"☆".repeat(5 - (av.participacao_grupo || 0))}</p>
+                  </div>
+                  <div>
+                    <p className="text-[7px] font-black uppercase text-gray-400">Engaj.</p>
+                    <p className="text-xs font-black">{"★".repeat(av.engajamento || 0)}{"☆".repeat(5 - (av.engajamento || 0))}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Evolução */}
+      {tipo === "evolucao" && (
+        <>
+          {doc.evolucao_espiritual && (
+            <div className="border border-[#2c1810] p-4 mb-4 break-inside-avoid">
+              <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">🌱 Notas sobre Evolução</p>
+              <p className="text-[11px] leading-relaxed whitespace-pre-wrap text-gray-800">{doc.evolucao_espiritual}</p>
+            </div>
+          )}
+          {Array.isArray(doc.evolucao_catequizandos) && doc.evolucao_catequizandos.length > 0 && (
+            <div className="border border-[#2c1810] p-4 mb-4 break-inside-avoid">
+              <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">📊 Evolução dos Catequizandos</p>
+              <div className="grid grid-cols-2 gap-3">
+                {doc.evolucao_catequizandos.map((ev: any) => (
+                  <div key={ev.catequizando_id} className="border border-gray-200 p-3 rounded">
+                    <p className="text-[10px] font-black text-[#2c1810] truncate mb-1">{ev.nome}</p>
+                    <div className="grid grid-cols-2 gap-1 text-center">
+                      <div>
+                        <p className="text-[7px] font-black uppercase text-gray-400">Espiritual</p>
+                        <p className="text-xs font-black">{"★".repeat(ev.evolucao_espiritual || 0)}{"☆".repeat(5 - (ev.evolucao_espiritual || 0))}</p>
+                      </div>
+                      <div>
+                        <p className="text-[7px] font-black uppercase text-gray-400">Comportam.</p>
+                        <p className="text-xs font-black">{"★".repeat(ev.evolucao_comportamental || 0)}{"☆".repeat(5 - (ev.evolucao_comportamental || 0))}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Observações */}
+      {tipo !== "evolucao" && doc.observacoes_catequizandos && (
+        <div className="border border-dashed border-[#2c1810] p-4 mb-4 break-inside-avoid bg-gray-50/30">
+          <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-2">📝 Observações Gerais</p>
+          <p className="text-[11px] leading-relaxed whitespace-pre-wrap text-gray-800">{doc.observacoes_catequizandos}</p>
+        </div>
+      )}
+
+      {/* Rodapé */}
+      <div className="mt-8 pt-3 border-t-2 border-dashed border-gray-300 text-center text-[8px] font-bold uppercase tracking-widest text-gray-400">
+        Diário do Catequista — {tipoLabel} • Emitido em {new Date().toLocaleDateString("pt-BR")} • Turma: {turma?.nome}
+      </div>
+    </div>
+  );
+};

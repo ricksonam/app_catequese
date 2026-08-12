@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useTurmas, useCatequizandos, useCatequizandoMutation, useDeleteCatequizando, useEncontros, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { type Catequizando, type CatequizandoStatus } from "@/lib/store";
-import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2, Info, Share2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Plus, UserPlus, ChevronDown, ChevronUp, ChevronRight, Camera, Pencil, Trash2, X, Printer, Cake, BellRing, BellOff, ShieldCheck, CalendarDays, CheckCircle2, AlertCircle, FileSignature, Users, LayoutDashboard, Link2, TrendingUp, MessageSquare, Save, Loader2, Info, Share2, FileText } from "lucide-react";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import * as Templates from "@/components/reports/ReportTemplates";
@@ -19,6 +19,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { toggleInscricoesAbertas, garantirCodigoAcesso } from "@/lib/supabaseStore";
 import { useQueryClient } from "@tanstack/react-query";
+import ReportModule from "@/components/reports/ReportModule";
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -732,6 +733,16 @@ export default function CatequizandosList() {
 
         <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
           <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
+            <ReportModule
+              context="catequizandos"
+              turmaId={id!}
+              trigger={
+                <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-50 text-violet-600 hover:bg-violet-100 transition-all border border-violet-200 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wide shadow-sm active:scale-95">
+                  <FileText className="h-4 w-4" />
+                  Relatórios
+                </button>
+              }
+            />
             <button 
               onClick={() => setShowInscricaoModal(true)}
               className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-50 text-indigo-500 hover:bg-indigo-100 border border-indigo-200"
@@ -1922,6 +1933,20 @@ export default function CatequizandosList() {
 
                    {/* Edit & Delete */}
                    <div className="flex items-center gap-3">
+                      <ReportModule
+                        context="catequizandos"
+                        turmaId={id!}
+                        initialDocId={viewItem.id}
+                        instantReport="cat_individual"
+                        trigger={
+                          <button
+                            title="Emitir relatório"
+                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group"
+                          >
+                            <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                          </button>
+                        }
+                      />
                       <button onClick={handleEdit} className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group">
                          <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
                       </button>

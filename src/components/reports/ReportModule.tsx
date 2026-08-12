@@ -10,13 +10,14 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTurmas, useEncontros, useCatequizandos, useAtividades, useReunioes, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
+import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
 import { cn } from "@/lib/utils";
 import * as Templates from "./ReportTemplates";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ReportModuleProps {
-  context: "encontros" | "catequizandos" | "atividades" | "plano" | "reunioes";
+  context: "encontros" | "catequizandos" | "atividades" | "plano" | "reunioes" | "diario";
   turmaId: string;
   trigger?: React.ReactNode;
   initialDocId?: string;
@@ -72,6 +73,14 @@ const MODULE_CONFIG: any = {
       { id: "reun_complet", label: "Ata Completa da Reunião", icon: FileText, desc: "Pautas, decisões e presença", needsSelect: true },
       { id: "pres_reuniao", label: "Lista de Presença", icon: ClipboardList, desc: "Ficha em branco para a reunião", needsSelect: true },
     ]
+  },
+  diario: {
+    title: "Relatórios do Diário",
+    icon: BookOpen,
+    color: "from-indigo-500 to-violet-600",
+    reports: [
+      { id: "diario_complet", label: "Ficha Completa do Registro", icon: FileText, desc: "Registro completo do diário do catequista", needsSelect: true },
+    ]
   }
 };
 
@@ -93,6 +102,7 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
   const { data: reunioes = [] } = useReunioes(turmaId);
   const { data: paroquias = [] } = useParoquias();
   const { data: comunidades = [] } = useComunidades();
+  const { diarios = [] } = useDiarioEspiritual(turmaId);
 
   const turma = turmas.find(t => t.id === turmaId);
   const config = MODULE_CONFIG[context];
@@ -244,6 +254,9 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
       items = atividades;
     } else if (context === "reunioes") {
       items = reunioes;
+    } else if (context === "diario") {
+      items = diarios.map((d: any) => ({ ...d, nome: d.encontro_tema || d.evento_nome || d.data_registro || "Registro" }));
+      labelKey = "nome";
     }
 
     const filtered = items.filter(it => 
@@ -363,6 +376,12 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
           else grouped.push({ month: m, items: [item] });
         });
         return <Templates.UnifiedPlanSheet org={org} turma={turma} items={grouped} />;
+      case "diario_complet":
+        if (selectedRecordId) {
+          const diario = diarios.find((d: any) => d.id === selectedRecordId);
+          return diario ? <Templates.DiarioFullSheet doc={diario} org={org} turma={turma} /> : null;
+        }
+        return diarios.map((d: any) => <Templates.DiarioFullSheet key={d.id} doc={d} org={org} turma={turma} />);
       default:
         return null;
     }

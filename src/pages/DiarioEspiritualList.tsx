@@ -1,13 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useDiarioEspiritual } from "@/hooks/useDiarioEspiritual";
-import { useTurmas } from "@/hooks/useSupabaseData";
-import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown, Users } from "lucide-react";
+import { useTurmas, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
+import { ArrowLeft, Plus, Calendar, Pencil, Trash2, X, BookOpen, Sparkles, TrendingUp, ChevronDown, Users, FileText } from "lucide-react";
 import { formatarDataVigente } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
+import ReportModule from "@/components/reports/ReportModule";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -256,7 +257,15 @@ export default function DiarioEspiritualList() {
   const navigate = useNavigate();
   const { diarios = [], isLoading, excluirDiario } = useDiarioEspiritual(id!);
   const { data: turmas = [] } = useTurmas();
+  const { data: paroquias = [] } = useParoquias();
+  const { data: comunidades = [] } = useComunidades();
   const turma = turmas.find(t => t.id === id);
+  const comunidade = comunidades.find((c: any) => c.id === turma?.comunidade_id);
+  const paroquia = paroquias.find((p: any) => p.id === turma?.paroquia_id);
+  const org = {
+    paroquia: paroquia?.nome || "Paróquia não informada",
+    comunidade: comunidade?.nome || "Comunidade não informada",
+  };
   const [viewItem, setViewItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
@@ -379,6 +388,20 @@ export default function DiarioEspiritualList() {
                     <span className={cn("text-sm font-black uppercase tracking-wider", cfg.textColor)}>{cfg.label}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
+                    <ReportModule
+                      context="diario"
+                      turmaId={id!}
+                      initialDocId={viewItem.id}
+                      instantReport="diario_complet"
+                      trigger={
+                        <button
+                          title="Emitir ficha do diário"
+                          className="p-2 rounded-xl bg-violet-500/10 text-violet-600 hover:bg-violet-500/20 transition-colors"
+                        >
+                          <FileText className="h-4 w-4" />
+                        </button>
+                      }
+                    />
                     <button onClick={() => navigate(`/turmas/${id}/diario/${viewItem.id}/editar`)} className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20 transition-colors">
                       <Pencil className="h-4 w-4" />
                     </button>

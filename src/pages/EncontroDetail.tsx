@@ -10,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+import ReportModule from "@/components/reports/ReportModule";
 
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string; border: string; activeClasses: string; }[] = [
@@ -256,7 +257,7 @@ export default function EncontroDetail() {
         </button>
 
         {/* Row of Actions */}
-        <div className="grid grid-cols-3 gap-2 w-full">
+        <div className="grid grid-cols-4 gap-2 w-full">
           {/* Presença */}
           <button 
             onClick={() => setShowPresenca(true)} 
@@ -289,6 +290,22 @@ export default function EncontroDetail() {
              </div>
              <span className="text-[11px] font-black uppercase tracking-wide text-liturgical">Apresentar</span>
           </button>
+
+          {/* Relatório */}
+          <ReportModule
+            context="encontros"
+            turmaId={id!}
+            initialDocId={encontroId}
+            instantReport="enc_complet"
+            trigger={
+              <button className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group w-full">
+                <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                  <FileText className="h-5 w-5 text-violet-600" />
+                </div>
+                <span className="text-[11px] font-black uppercase tracking-wide text-violet-700">Relatório</span>
+              </button>
+            }
+          />
         </div>
       </div>
 
