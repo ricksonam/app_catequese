@@ -737,9 +737,8 @@ export default function CatequizandosList() {
               context="catequizandos"
               turmaId={id!}
               trigger={
-                <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-50 text-violet-600 hover:bg-violet-100 transition-all border border-violet-200 shrink-0 whitespace-nowrap text-xs font-black uppercase tracking-wide shadow-sm active:scale-95">
-                  <FileText className="h-4 w-4" />
-                  Relatórios
+                <button className="action-btn-sm shrink-0 whitespace-nowrap bg-violet-50 text-violet-600 hover:bg-violet-100 border border-violet-200">
+                  <FileText className="h-4 w-4" /> Relatórios
                 </button>
               }
             />

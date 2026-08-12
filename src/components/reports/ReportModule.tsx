@@ -389,27 +389,35 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
 
   return (
     <>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogTrigger asChild onClick={(e) => { 
-          if (instantReport && initialDocId) {
-            // Se for um relatório instantâneo, bypassamos a lista e vamos direto para o preview
-            e.preventDefault();
+      {/* ── Modo INSTANTÂNEO: botão simples que vai direto ao preview ───────── */}
+      {instantReport && initialDocId ? (
+        <span
+          onClick={() => {
             setSelectedReportId(instantReport);
             setSelectedRecordId(initialDocId);
             setStep('preview');
             setIsPreviewOpen(true);
-          } else {
-            setIsModalOpen(true); 
-            setStep('list'); 
-          }
-        }}>
+          }}
+          style={{ cursor: 'pointer', display: 'inline-flex' }}
+        >
           {trigger || (
             <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20">
               <FileText className="h-5 w-5" />
-              <span className="text-xs font-bold uppercase tracking-wide">Relatórios</span>
+              <span className="text-xs font-bold uppercase tracking-wide">Relatório</span>
             </button>
           )}
-        </DialogTrigger>
+        </span>
+      ) : (
+        /* ── Modo NORMAL: abre o dialog da central ──────────────────────────── */
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            {trigger || (
+              <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/20">
+                <FileText className="h-5 w-5" />
+                <span className="text-xs font-bold uppercase tracking-wide">Relatórios</span>
+              </button>
+            )}
+          </DialogTrigger>
         <DialogContent className="max-w-md rounded-3xl p-0 overflow-hidden border-none shadow-2xl print:hidden">
           {/* Header */}
           <div className={cn("p-6 text-white bg-gradient-to-br transition-all duration-500", config.color)}>
@@ -475,7 +483,8 @@ export default function ReportModule({ context, turmaId, trigger, initialDocId, 
             )}
           </div>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      )}
 
       {/* Preview Overlay */}
       {isPreviewOpen && createPortal(
