@@ -1,7 +1,7 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2, Crown, ClipboardList, LayoutList, Target, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, PieChart as PieChartIcon, FileText, Printer, CheckCircle2, XCircle, User, CalendarDays, BarChartIcon, BookOpen, X, Users, Share2, Crown, ClipboardList, LayoutList, Target, ChevronDown, ChevronUp, Map, Heart, Cross as CrossIcon } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
@@ -11,6 +11,9 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { cn, formatarDataVigente } from "@/lib/utils";
 import * as Templates from "@/components/reports/ReportTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { calcularProgressoJornada, detectarModelo, ETAPAS_POR_MODELO, type ModeloIVC } from "@/pages/PainelIVC";
+import { oracoesBase, categoriasOracao, type CategoriaOracao } from "@/data/oracoes";
+import { getLiturgiaOffline } from "@/services/liturgiaOffline";
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--muted-foreground))'];
 const S_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899'];
@@ -472,6 +475,10 @@ const DOC_TYPES = [
   { id: "plano_turma", label: "Plano da Turma", icon: Target, color: "from-orange-500 to-amber-600", bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-600" },
   { id: "boletim_turma", label: "Relatório da Turma", icon: FileText, color: "from-amber-500 to-orange-600", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-600" },
   { id: "materiais_apoio", label: "Materiais de Apoio", icon: BookOpen, color: "from-indigo-500 to-blue-600", bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-600" },
+  { id: "trilha_sacramental", label: "Trilha Sacramental", icon: Crown, color: "from-teal-500 to-emerald-600", bg: "bg-teal-500/10", border: "border-teal-500/30", text: "text-teal-600" },
+  { id: "painel_ivc", label: "Painel IVC", icon: Map, color: "from-purple-500 to-indigo-600", bg: "bg-purple-500/10", border: "border-purple-500/30", text: "text-purple-600" },
+  { id: "ficha_oracoes", label: "Caderno de Orações", icon: CrossIcon, color: "from-rose-400 to-red-500", bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-600" },
+  { id: "liturgia_diaria", label: "Liturgia Diária", icon: Heart, color: "from-amber-400 to-yellow-500", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-600" },
 ];
 
 function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, turma, org }: any) {
@@ -492,6 +499,36 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
   const [freqBrancoEncontroId, setFreqBrancoEncontroId] = useState<string>("todos");
   const [reuniaoEventoSubTab, setReuniaoEventoSubTab] = useState<"preenchida" | "branco">("preenchida");
   const [reuniaoEventoTipoFiltro, setReuniaoEventoTipoFiltro] = useState<"reuniao" | "atividade">("reuniao");
+
+  // Estados das novas fichas
+  const [oracaoCategoria, setOracaoCategoria] = useState<CategoriaOracao | "Todas">("Todas");
+  const [liturgiaDate, setLiturgiaDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [liturgiaData, setLiturgiaData] = useState<any>(null);
+  const [liturgiaLoading, setLiturgiaLoading] = useState(false);
+
+  // Carregar liturgia quando a data muda (só quando o tipo é liturgia_diaria)
+  useEffect(() => {
+    if (docTipo !== 'liturgia_diaria') return;
+    setLiturgiaLoading(true);
+    const d = new Date(liturgiaDate + 'T12:00:00');
+    getLiturgiaOffline(d).then(data => {
+      setLiturgiaData(data);
+      setLiturgiaLoading(false);
+    }).catch(() => setLiturgiaLoading(false));
+  }, [liturgiaDate, docTipo]);
+
+  // Orações filtradas
+  const oracoesFiltradas = useMemo(() => {
+    if (oracaoCategoria === 'Todas') return oracoesBase;
+    return oracoesBase.filter(o => o.categoria === oracaoCategoria);
+  }, [oracaoCategoria]);
+
+  // Dados IVC
+  const ivcModelo = detectarModelo(turma?.etapa ?? '');
+  const ivcEtapasBase = ETAPAS_POR_MODELO[ivcModelo];
+  const ivcConfiguracao = useMemo(() => ({ modelo: ivcModelo, simbolosAtivos: ['biblia','creio','pai_nosso','cruz'] }), [ivcModelo]);
+  const ivcResult = useMemo(() => calcularProgressoJornada(ivcEtapasBase, encontros, atividades, ivcConfiguracao), [ivcEtapasBase, encontros, atividades, ivcConfiguracao]);
+  const MODELO_LABEL: Record<ModeloIVC, string> = { sementinhas: 'Sementinhas / Pré-Catequese', eucaristia_crisma: 'Eucaristia / Crisma', adultos: 'Adultos (RICA)' };
 
   const meses = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -625,6 +662,8 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
     }
   };
 
+  const liturgiaDateLabel = new Date(liturgiaDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+
   const printContent = printTarget ? (
     <>
       {docTipo === "ficha_cat" && <Templates.CatequizandoIndividualSheet doc={printTarget} org={org} turma={turma} />}
@@ -637,6 +676,10 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
       {docTipo === "plano_turma" && <Templates.PlanoTurmaSheet org={org} turma={turma} encontros={encontros} atividades={atividades} reunioes={reunioes} />}
       {docTipo === "boletim_turma" && <Templates.BoletimTurmaSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
       {docTipo === "materiais_apoio" && <Templates.MateriaisApoioSheet org={org} turma={turma} encontros={printTarget?.encontros || []} filtroInfo={printTarget?.filtroInfo || ""} />}
+      {docTipo === "trilha_sacramental" && <Templates.TrilhaSacramentalSheet org={org} turma={turma} catequizandos={catequizandos} encontros={encontros} />}
+      {docTipo === "painel_ivc" && <Templates.PainelIVCSheet org={org} turma={turma} etapas={ivcResult.etapas} percentualGeral={ivcResult.percentualGeral} modeloLabel={MODELO_LABEL[ivcModelo]} />}
+      {docTipo === "ficha_oracoes" && <Templates.OracoesSheet oracoes={oracoesFiltradas} categoriaFiltro={oracaoCategoria} />}
+      {docTipo === "liturgia_diaria" && <Templates.LiturgiaDiariaSheet liturgia={liturgiaData} dateLabel={liturgiaDateLabel} />}
     </>
   ) : null;
 
@@ -1251,6 +1294,162 @@ function GeradorDocumentos({ encontros, catequizandos, atividades, reunioes, tur
                           </div>
                         ))}
                       </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== TRILHA SACRAMENTAL ===== */}
+              {docTipo === "trilha_sacramental" && (
+                <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-5 py-5 hover:bg-teal-500/5 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0">
+                      <Crown className="h-4 w-4 text-teal-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-bold text-foreground">Trilha Sacramental — {turma.nome}</p>
+                      <p className="text-[11px] text-muted-foreground">{catequizandos.filter((c: any) => c.status === 'ativo').length} catequizandos ativos • Etapa: {turma.etapa}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto mt-3 sm:mt-0">
+                    <button onClick={() => handlePrint({ id: `trilha-${turma.id}` })} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-teal-600 bg-teal-500/10 px-3 py-2.5 rounded-xl border border-teal-500/20 hover:bg-teal-500/20 transition-colors active:scale-95">
+                      <Printer className="h-3 w-3 shrink-0" /> Imprimir
+                    </button>
+                    {readyToShareParams?.id === `trilha-${turma.id}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-white bg-[#25D366] px-3 py-2.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all animate-pulse">
+                        <Share2 className="h-3 w-3 shrink-0" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ id: `trilha-${turma.id}` })} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-500/10 px-3 py-2.5 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors active:scale-95 disabled:opacity-50">
+                        <Share2 className={cn("h-3 w-3 shrink-0", isGenerating && printTarget?.id === `trilha-${turma.id}` && "animate-spin")} />
+                        {isGenerating && printTarget?.id === `trilha-${turma.id}` ? "Aguarde" : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== PAINEL IVC ===== */}
+              {docTipo === "painel_ivc" && (
+                <div className="p-5 space-y-4 bg-card">
+                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-purple-500/5 border border-purple-500/10">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+                      <Map className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">Modelo: <span className="text-purple-600">{MODELO_LABEL[ivcModelo]}</span></p>
+                      <p className="text-[11px] text-muted-foreground">{ivcResult.etapas.length} etapas • {ivcResult.etapas.filter((e: any) => e.status === 'concluido').length} concluídas • {ivcResult.percentualGeral}% completo</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button onClick={() => handlePrint({ id: `ivc-${turma.id}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white rounded-xl transition-colors font-bold shadow-sm shadow-purple-600/20">
+                      <Printer className="h-4 w-4" /> Imprimir Jornada IVC
+                    </button>
+                    {readyToShareParams?.id === `ivc-${turma.id}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] text-white rounded-xl font-bold animate-pulse">
+                        <Share2 className="h-4 w-4" /> Enviar Agora!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ id: `ivc-${turma.id}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4", isGenerating && printTarget?.id === `ivc-${turma.id}` && "animate-spin")} />
+                        {isGenerating && printTarget?.id === `ivc-${turma.id}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== CADERNO DE ORAÇÕES ===== */}
+              {docTipo === "ficha_oracoes" && (
+                <div className="p-5 space-y-4 bg-card">
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Filtrar por Categoria</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setOracaoCategoria("Todas")}
+                        className={cn("px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border", oracaoCategoria === "Todas" ? "bg-rose-600 text-white border-rose-600" : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80")}
+                      >
+                        Todas ({oracoesBase.length})
+                      </button>
+                      {categoriasOracao.map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => setOracaoCategoria(cat)}
+                          className={cn("px-3 py-1.5 rounded-xl text-xs font-bold transition-all border", oracaoCategoria === cat ? "bg-rose-600 text-white border-rose-600" : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80")}
+                        >
+                          {cat} ({oracoesBase.filter(o => o.categoria === cat).length})
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">{oracoesFiltradas.length} oração(ões) selecionada(s)</p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button onClick={() => handlePrint({ id: `oracoes-${oracaoCategoria}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-sm">
+                      <Printer className="h-4 w-4" /> Imprimir Caderno ({oracoesFiltradas.length})
+                    </button>
+                    {readyToShareParams?.id === `oracoes-${oracaoCategoria}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] text-white rounded-xl font-bold animate-pulse">
+                        <Share2 className="h-4 w-4" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating} onClick={() => handleCompartilhar({ id: `oracoes-${oracaoCategoria}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+                        {isGenerating && printTarget?.id === `oracoes-${oracaoCategoria}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ===== LITURGIA DIÁRIA ===== */}
+              {docTipo === "liturgia_diaria" && (
+                <div className="p-5 space-y-4 bg-card">
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Selecionar Data</p>
+                    <input
+                      type="date"
+                      value={liturgiaDate}
+                      onChange={e => setLiturgiaDate(e.target.value)}
+                      className="w-full h-11 px-3 text-sm font-semibold rounded-xl border-2 border-black/10 bg-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  {liturgiaLoading ? (
+                    <div className="flex items-center justify-center py-6 gap-2 text-muted-foreground">
+                      <div className="w-4 h-4 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
+                      <span className="text-xs font-bold">Buscando liturgia...</span>
+                    </div>
+                  ) : liturgiaData ? (
+                    <div className="p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 space-y-1">
+                      {liturgiaData.liturgia && <p className="text-xs font-bold text-foreground">{liturgiaData.liturgia}</p>}
+                      {liturgiaData.cor && (
+                        <p className="text-[10px] text-muted-foreground capitalize">Cor litúrgica: <span className="font-bold">{liturgiaData.cor}</span></p>
+                      )}
+                      <div className="flex gap-3 text-[10px] text-muted-foreground flex-wrap pt-1">
+                        {liturgiaData.primeiraLeitura?.referencia && <span>📖 {liturgiaData.primeiraLeitura.referencia}</span>}
+                        {liturgiaData.salmo?.referencia && <span>🎵 {liturgiaData.salmo.referencia}</span>}
+                        {liturgiaData.evangelho?.referencia && <span>✝️ {liturgiaData.evangelho.referencia}</span>}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-4 text-center text-xs text-muted-foreground italic">Liturgia não encontrada para esta data.</div>
+                  )}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      disabled={!liturgiaData}
+                      onClick={() => handlePrint({ id: `liturgia-${liturgiaDate}` })}
+                      className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-xl font-bold shadow-sm disabled:opacity-50"
+                    >
+                      <Printer className="h-4 w-4" /> Imprimir Liturgia
+                    </button>
+                    {readyToShareParams?.id === `liturgia-${liturgiaDate}` ? (
+                      <button onClick={handleEnviarAgora} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-[#25D366] text-white rounded-xl font-bold animate-pulse">
+                        <Share2 className="h-4 w-4" /> Enviar!
+                      </button>
+                    ) : (
+                      <button disabled={isGenerating || !liturgiaData} onClick={() => handleCompartilhar({ id: `liturgia-${liturgiaDate}` })} className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold disabled:opacity-50">
+                        <Share2 className={cn("h-4 w-4", isGenerating && "animate-spin")} />
+                        {isGenerating && printTarget?.id === `liturgia-${liturgiaDate}` ? "Aguarde..." : "Compartilhar"}
+                      </button>
                     )}
                   </div>
                 </div>

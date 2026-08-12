@@ -1338,3 +1338,328 @@ export const FrequenciaEncontrosSheet = ({ org, turma, catequizandos, encontros,
     </div>
   );
 };
+
+// ==========================================
+// TRILHA SACRAMENTAL TEMPLATE
+// ==========================================
+
+const SAC_LABELS_PRINT: Record<string, string> = {
+  batismo: 'Batismo',
+  eucaristia: '1ª Eucaristia',
+  crisma: 'Crisma',
+};
+
+const DOCS_PADRAO_PRINT = [
+  { key: 'documentos_rg', label: 'RG' },
+  { key: 'documentos_batistério', label: 'Batistério' },
+  { key: 'documentos_residencia', label: 'Residência' },
+  { key: 'contribuicao', label: 'Contribuição' },
+];
+
+export const TrilhaSacramentalSheet = ({ org, turma, catequizandos, encontros }: any) => {
+  const ativos = (catequizandos || []).filter((c: any) => c.status === 'ativo').sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+
+  const etapa = turma?.etapa?.toLowerCase() ?? '';
+  let sac: 'batismo' | 'eucaristia' | 'crisma' = 'eucaristia';
+  if (etapa.includes('crisma')) sac = 'crisma';
+  else if (etapa.includes('batismo') || etapa.includes('adulto')) sac = 'batismo';
+
+  const realizados = (encontros || []).filter((e: any) => e.status === 'realizado');
+
+  return (
+    <div className="p-6 text-black bg-white font-sans">
+      <PrintHeader
+        titulo="Trilha Sacramental"
+        subtitulo={`Acompanhamento sacramental — ${SAC_LABELS_PRINT[sac]}`}
+        paroquia={org.paroquia}
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      <div className="grid grid-cols-4 gap-3 mb-4 text-center">
+        {[
+          { label: 'Ativos', val: ativos.length, color: 'text-[#2c1810]' },
+          { label: 'Encontros Realizados', val: realizados.length, color: 'text-emerald-800' },
+          { label: 'Com Sacramento', val: ativos.filter((c: any) => (c.dadosPastorais?.sacramentos ?? c.sacramentos ?? {})[sac]?.recebido === true).length, color: 'text-indigo-800' },
+          { label: 'Pendentes', val: ativos.filter((c: any) => !((c.dadosPastorais?.sacramentos ?? c.sacramentos ?? {})[sac]?.recebido === true)).length, color: 'text-amber-800' },
+        ].map(s => (
+          <div key={s.label} className="border border-[#2c1810] p-2">
+            <p className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-0.5">{s.label}</p>
+            <p className={cn('text-2xl font-black', s.color)}>{s.val}</p>
+          </div>
+        ))}
+      </div>
+
+      <table className="w-full border-collapse border-2 border-[#2c1810] text-[9px] mb-4">
+        <thead>
+          <tr className="bg-[#2c1810] text-white">
+            <th className="border-r border-white/20 p-1.5 text-left w-6">Nº</th>
+            <th className="border-r border-white/20 p-1.5 text-left">Catequizando</th>
+            <th className="border-r border-white/20 p-1.5 text-center w-10">Freq.%</th>
+            {sac !== 'batismo' && <th className="border-r border-white/20 p-1.5 text-center w-12">Bat.Prév.</th>}
+            {sac === 'crisma' && <th className="border-r border-white/20 p-1.5 text-center w-12">Euc.Prév.</th>}
+            <th className="border-r border-white/20 p-1.5 text-center w-12">Docs</th>
+            <th className="border-r border-white/20 p-1.5 text-center w-12">Ritos</th>
+            <th className="border-r border-white/20 p-1.5 text-center w-14">Sacramento</th>
+            <th className="p-1.5 text-center w-16">Data Sac.</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ativos.map((c: any, i: number) => {
+            const sacramentos = c.dadosPastorais?.sacramentos ?? c.sacramentos ?? {};
+            const recebeu = sacramentos[sac]?.recebido === true;
+            const dataSac = sacramentos[sac]?.data;
+            const batPrev = sacramentos['batismo']?.recebido === true;
+            const eucPrev = sacramentos['eucaristia']?.recebido === true;
+            const presencas = realizados.filter((e: any) => (e.presencas || []).includes(c.id)).length;
+            const freqPct = realizados.length > 0 ? Math.round((presencas / realizados.length) * 100) : 0;
+            const trilha = c.trilhasPorSacramento?.[sac] || c.trilhaSacramental || {};
+            const docsEntregues = DOCS_PADRAO_PRINT.filter(d => (trilha as any)[d.key]).length;
+            const etapasRito = c.etapasRitoPorSacramento?.[sac] ?? {};
+            const ritoCount = Object.values(etapasRito).filter(Boolean).length;
+            const rowBg = recebeu ? 'bg-emerald-50' : freqPct < 50 ? 'bg-amber-50/40' : '';
+            return (
+              <tr key={c.id} className={cn('border-b border-gray-200', rowBg)}>
+                <td className="border-r border-[#2c1810] p-1.5 text-center font-bold text-[#2c1810]">{i + 1}</td>
+                <td className="border-r border-[#2c1810] p-1.5 font-bold uppercase">{c.nome}</td>
+                <td className={cn('border-r border-[#2c1810] p-1.5 text-center font-black', freqPct >= 75 ? 'text-emerald-700' : freqPct >= 50 ? 'text-amber-700' : 'text-red-700')}>{freqPct}%</td>
+                {sac !== 'batismo' && <td className="border-r border-[#2c1810] p-1.5 text-center font-black">{batPrev ? <span className="text-emerald-700">✓</span> : <span className="text-red-600">✗</span>}</td>}
+                {sac === 'crisma' && <td className="border-r border-[#2c1810] p-1.5 text-center font-black">{eucPrev ? <span className="text-emerald-700">✓</span> : <span className="text-red-600">✗</span>}</td>}
+                <td className="border-r border-[#2c1810] p-1.5 text-center font-bold">{docsEntregues}/{DOCS_PADRAO_PRINT.length}</td>
+                <td className="border-r border-[#2c1810] p-1.5 text-center font-bold">{ritoCount > 0 ? ritoCount : '—'}</td>
+                <td className="border-r border-[#2c1810] p-1.5 text-center font-black">
+                  {recebeu ? <span className="text-emerald-700">✓ Recebeu</span>
+                    : trilha.apto === true ? <span className="text-indigo-700">Apto</span>
+                    : trilha.apto === false ? <span className="text-red-600">N/Apto</span>
+                    : <span className="text-amber-700">Pendente</span>}
+                </td>
+                <td className="p-1.5 text-center text-[8px] font-bold">{dataSac ? new Date(dataSac + 'T00:00').toLocaleDateString('pt-BR') : '—'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      <div className="flex justify-between text-[8px] font-bold uppercase tracking-widest text-gray-500">
+        <p>✓ Concluído • ✗ Pendente • Freq. mínima recomendada: 75%</p>
+        <p>Gerado em: {new Date().toLocaleDateString('pt-BR')}</p>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// PAINEL IVC TEMPLATE
+// ==========================================
+
+const ETAPA_STATUS_PRINT: Record<string, { symbol: string; color: string; bg: string }> = {
+  concluido:    { symbol: '✓', color: 'text-emerald-800', bg: 'bg-emerald-50' },
+  em_andamento: { symbol: '◑', color: 'text-blue-800',    bg: 'bg-blue-50' },
+  agendado:     { symbol: '◷', color: 'text-amber-800',   bg: 'bg-amber-50' },
+  pendente:     { symbol: '○', color: 'text-gray-500',    bg: 'bg-gray-50' },
+};
+
+const TIPO_BADGE_PRINT: Record<string, string> = {
+  inicio: 'INÍCIO', tempo: 'TEMPO', passagem: 'PASSAGEM',
+  simbolo: 'SÍMBOLO', sacramento: 'SACRAMENTO', fim: 'FIM',
+};
+
+export const PainelIVCSheet = ({ org, turma, etapas, percentualGeral, modeloLabel }: any) => {
+  const concluidas = (etapas || []).filter((e: any) => e.status === 'concluido').length;
+  const total = (etapas || []).length;
+  return (
+    <div className="p-6 text-black bg-white font-sans">
+      <PrintHeader
+        titulo="Painel IVC — Jornada Catequética"
+        subtitulo={`Modelo: ${modeloLabel || 'Eucaristia / Crisma'}`}
+        paroquia={org.paroquia}
+        comunidade={org.comunidade}
+        turma={turma.nome}
+        etapa={turma.etapa}
+      />
+
+      <div className="grid grid-cols-3 gap-3 mb-4 text-center border-2 border-[#2c1810] divide-x divide-[#2c1810]">
+        <div className="p-3"><p className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-1">Progresso Geral</p><p className="text-3xl font-black text-[#2c1810]">{percentualGeral ?? 0}%</p></div>
+        <div className="p-3 bg-emerald-50"><p className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-1">Etapas Concluídas</p><p className="text-3xl font-black text-emerald-800">{concluidas}</p></div>
+        <div className="p-3"><p className="text-[7px] font-black uppercase tracking-widest text-gray-500 mb-1">Total de Etapas</p><p className="text-3xl font-black">{total}</p></div>
+      </div>
+
+      <div className="mb-4 border border-[#2c1810] p-2">
+        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-full bg-[#2c1810] rounded-full" style={{ width: `${percentualGeral ?? 0}%` }} />
+        </div>
+        <p className="text-[8px] text-center font-bold text-gray-500 mt-1 uppercase tracking-widest">{percentualGeral ?? 0}% da jornada concluída</p>
+      </div>
+
+      <table className="w-full border-collapse border-2 border-[#2c1810] text-[9px] mb-4">
+        <thead>
+          <tr className="bg-[#2c1810] text-white">
+            <th className="border-r border-white/20 p-1.5 w-6 text-center">#</th>
+            <th className="border-r border-white/20 p-1.5 text-left">Etapa</th>
+            <th className="border-r border-white/20 p-1.5 text-center w-16">Tipo</th>
+            <th className="border-r border-white/20 p-1.5 text-center w-20">Status</th>
+            <th className="p-1.5 text-center w-20">Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(etapas || []).map((etapa: any, i: number) => {
+            const st = ETAPA_STATUS_PRINT[etapa.status] ?? ETAPA_STATUS_PRINT.pendente;
+            return (
+              <tr key={etapa.id} className={cn('border-b border-gray-200', st.bg)}>
+                <td className="border-r border-[#2c1810] p-1.5 text-center font-bold text-[#2c1810]">{i + 1}</td>
+                <td className="border-r border-[#2c1810] p-1.5"><p className="font-bold uppercase">{etapa.label}</p>{etapa.sublabel && <p className="text-[8px] text-gray-500 italic">{etapa.sublabel}</p>}</td>
+                <td className="border-r border-[#2c1810] p-1.5 text-center"><span className="text-[7px] font-black uppercase tracking-wider px-1 border border-gray-400 text-gray-600">{TIPO_BADGE_PRINT[etapa.tipo] ?? etapa.tipo}</span></td>
+                <td className={cn('border-r border-[#2c1810] p-1.5 text-center font-black', st.color)}>
+                  {st.symbol} {etapa.status === 'concluido' ? 'Concluída' : etapa.status === 'em_andamento' ? 'Em Andamento' : etapa.status === 'agendado' ? 'Agendada' : 'Pendente'}
+                </td>
+                <td className="p-1.5 text-center font-bold text-[8px]">{etapa.dataEvento ? new Date(etapa.dataEvento + 'T12:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      <div className="flex gap-6 text-[8px] font-bold uppercase tracking-widest text-gray-500">
+        <span>✓ Concluída</span><span>◑ Em Andamento</span><span>◷ Agendada</span><span>○ Pendente</span>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// ORAÇÕES TEMPLATE
+// ==========================================
+
+export const OracoesSheet = ({ oracoes, categoriaFiltro }: any) => {
+  const lista = (oracoes || []);
+  const grouped: Record<string, any[]> = {};
+  lista.forEach((o: any) => {
+    if (!grouped[o.categoria]) grouped[o.categoria] = [];
+    grouped[o.categoria].push(o);
+  });
+
+  return (
+    <div className="p-8 text-black bg-white font-sans">
+      <div className="border-b-2 border-[#2c1810] pb-3 mb-6 text-center">
+        <div className="flex justify-center mb-2">
+          <div className="w-9 h-9 rounded-full border-2 border-[#2c1810] flex items-center justify-center bg-white">
+            <Cross className="h-5 w-5 text-[#2c1810]" />
+          </div>
+        </div>
+        <h1 className="text-lg font-serif font-black uppercase tracking-tight text-[#2c1810]">Caderno de Orações</h1>
+        <p className="text-xs italic font-serif text-[#4a2e1b] mt-1">{categoriaFiltro && categoriaFiltro !== 'Todas' ? `Categoria: ${categoriaFiltro}` : 'Todas as Categorias'}</p>
+        <p className="text-[9px] font-bold uppercase tracking-widest text-gray-500 mt-1">{lista.length} {lista.length === 1 ? 'oração' : 'orações'} • Emissão: {new Date().toLocaleDateString('pt-BR')}</p>
+      </div>
+
+      {Object.entries(grouped).map(([categoria, ors]) => (
+        <div key={categoria} className="mb-8 break-inside-avoid">
+          <div className="bg-[#2c1810] text-white px-4 py-1.5 mb-4">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">{categoria}</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {ors.map((o: any) => (
+              <div key={o.id} className="border border-[#2c1810] p-3 break-inside-avoid">
+                <h3 className="text-[10px] font-black uppercase text-[#2c1810] border-b border-gray-200 pb-1 mb-2 tracking-widest">{o.titulo}</h3>
+                {o.descricao && <p className="text-[8px] font-bold italic text-gray-500 mb-1">{o.descricao}</p>}
+                <p className="text-[9px] font-serif leading-relaxed text-gray-800 whitespace-pre-wrap">{o.texto}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {lista.length === 0 && <p className="text-center py-10 text-sm text-gray-500 italic">Nenhuma oração selecionada.</p>}
+    </div>
+  );
+};
+
+
+// ==========================================
+// LITURGIA DIÁRIA TEMPLATE
+// ==========================================
+
+const COR_LITURGICA_PRINT: Record<string, { label: string; color: string }> = {
+  verde:    { label: 'Tempo Comum',         color: '#16a34a' },
+  branco:   { label: 'Tempo de Luz',        color: '#d97706' },
+  vermelho: { label: 'Espírito e Mártires', color: '#dc2626' },
+  roxo:     { label: 'Advento / Quaresma',  color: '#7c3aed' },
+  rosa:     { label: 'Alegria no Caminho',  color: '#db2777' },
+};
+
+function textoLeituraPrint(v: any): { referencia: string; texto: string } | null {
+  if (!v || typeof v !== 'object' || !('referencia' in v) || !('texto' in v)) return null;
+  return v as any;
+}
+
+function textoSalmoPrint(v: any): { referencia: string; refrao: string; texto: string } | null {
+  if (!v || typeof v !== 'object' || !('referencia' in v)) return null;
+  return v as any;
+}
+
+export const LiturgiaDiariaSheet = ({ liturgia, dateLabel }: any) => {
+  const corKey = liturgia?.cor?.toLowerCase()?.trim() ?? 'verde';
+  const corInfo = COR_LITURGICA_PRINT[corKey] ?? COR_LITURGICA_PRINT.verde;
+  const primeiraLeitura = textoLeituraPrint(liturgia?.primeiraLeitura);
+  const salmo = textoSalmoPrint(liturgia?.salmo);
+  const segundaLeitura = textoLeituraPrint(liturgia?.segundaLeitura);
+  const evangelho = textoLeituraPrint(liturgia?.evangelho);
+  const nomeLiturgia = liturgia?.liturgia ?? '';
+
+  return (
+    <div className="p-8 text-black bg-white font-sans">
+      <div className="border-b-2 border-[#2c1810] pb-3 mb-5 text-center">
+        <div className="flex justify-center mb-2">
+          <div className="w-9 h-9 rounded-full border-2 border-[#2c1810] flex items-center justify-center bg-white">
+            <Cross className="h-5 w-5 text-[#2c1810]" />
+          </div>
+        </div>
+        <h1 className="text-lg font-serif font-black uppercase tracking-tight text-[#2c1810]">Liturgia Diária</h1>
+        <p className="text-sm font-serif font-bold text-[#4a2e1b] mt-1 capitalize">{dateLabel}</p>
+        {nomeLiturgia && <p className="text-xs italic font-serif text-gray-600 mt-0.5">{nomeLiturgia}</p>}
+        <div className="flex items-center justify-center gap-2 mt-2">
+          <span className="px-3 py-0.5 text-[9px] font-black uppercase tracking-widest border rounded-full" style={{ borderColor: corInfo.color, color: corInfo.color }}>{corInfo.label}</span>
+          <span className="inline-block w-3 h-3 rounded-full border" style={{ backgroundColor: corInfo.color, borderColor: corInfo.color }} />
+        </div>
+      </div>
+
+      <div className="space-y-5">
+        {primeiraLeitura && (
+          <div className="border border-[#2c1810] p-4 break-inside-avoid">
+            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 mb-0.5">1ª Leitura</p>
+            <p className="text-sm font-black text-[#2c1810] mb-2 font-serif">{primeiraLeitura.referencia}</p>
+            <p className="text-[10px] font-serif leading-relaxed whitespace-pre-wrap text-gray-800">{primeiraLeitura.texto}</p>
+          </div>
+        )}
+        {salmo && (
+          <div className="border border-dashed border-[#2c1810] p-4 bg-gray-50/50 break-inside-avoid">
+            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 mb-0.5">Salmo Responsorial</p>
+            <p className="text-sm font-black text-[#2c1810] mb-1 font-serif">{salmo.referencia}</p>
+            {salmo.refrao && <p className="text-[10px] font-bold italic text-[#2c1810] border-l-2 border-[#2c1810] pl-2 mb-2 font-serif">Refrão: {salmo.refrao}</p>}
+            <p className="text-[10px] font-serif leading-relaxed whitespace-pre-wrap text-gray-800">{salmo.texto}</p>
+          </div>
+        )}
+        {segundaLeitura && (
+          <div className="border border-[#2c1810] p-4 break-inside-avoid">
+            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 mb-0.5">2ª Leitura</p>
+            <p className="text-sm font-black text-[#2c1810] mb-2 font-serif">{segundaLeitura.referencia}</p>
+            <p className="text-[10px] font-serif leading-relaxed whitespace-pre-wrap text-gray-800">{segundaLeitura.texto}</p>
+          </div>
+        )}
+        {evangelho && (
+          <div className="border-2 border-[#2c1810] p-4 break-inside-avoid bg-gray-50/30">
+            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500 mb-0.5">Evangelho</p>
+            <p className="text-sm font-black text-[#2c1810] mb-2 font-serif">{evangelho.referencia}</p>
+            <p className="text-[10px] font-serif leading-relaxed whitespace-pre-wrap text-gray-800">{evangelho.texto}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-6 pt-3 border-t border-dashed border-gray-300 text-center text-[8px] font-bold uppercase tracking-widest text-gray-400">
+        Palavra de Deus — {dateLabel} • Cor: {corInfo.label} • Gerado em {new Date().toLocaleDateString('pt-BR')}
+      </div>
+    </div>
+  );
+};
