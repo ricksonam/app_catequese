@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation } from "@/hooks/useSupabaseData";
+import { useTurmas, useEncontros, useCatequizandos, useEncontroMutation, useDeleteEncontro, useOcorrencias, useOcorrenciaMutation, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { type EncontroStatus, type RegistroOcorrencia, type AvaliacaoEncontro } from "@/lib/store";
 import { ArrowLeft, Edit, Trash2, Users, Play, Clock, User, BookOpen, CalendarDays, FileText, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ChevronRight, FileSignature, Check, Pencil, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -10,7 +10,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, formatarDataVigente } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
-import ReportModule from "@/components/reports/ReportModule";
+import { ModuleReportSheet } from "@/components/reports/ModuleReportSheet";
+import * as Templates from "@/components/reports/ReportTemplates";
 
 
 const STATUS_OPTIONS: { value: EncontroStatus; label: string; bg: string; text: string; border: string; activeClasses: string; }[] = [
@@ -27,12 +28,18 @@ export default function EncontroDetail() {
   const { data: allEncontros = [], isLoading: eLoading } = useEncontros(id);
   const { data: catequizandos = [], isLoading: cLoading } = useCatequizandos(id);
   const { data: ocorrencias = [] } = useOcorrencias(id);
+  const { data: paroquias = [] } = useParoquias();
+  const { data: comunidades = [] } = useComunidades();
   const encontroMut = useEncontroMutation();
   const deleteMut = useDeleteEncontro();
   const ocorrenciaMut = useOcorrenciaMutation();
 
   const turma = turmas.find((t) => t.id === id);
   const encontro = allEncontros.find((e) => e.id === encontroId);
+
+  const comunidade = comunidades.find((c: any) => c.id === turma?.comunidade_id);
+  const paroquia = paroquias.find((p: any) => p.id === turma?.paroquia_id);
+  const org = { paroquia: paroquia?.nome || "Paróquia não informada", comunidade: comunidade?.nome || "Comunidade não informada" };
 
   const [showStatus, setShowStatus] = useState(false);
   const [showPresenca, setShowPresenca] = useState(false);
@@ -46,6 +53,7 @@ export default function EncontroDetail() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const [showOcorrencias, setShowOcorrencias] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const [searchParams] = useSearchParams();
   const [draftAvaliacao, setDraftAvaliacao] = useState<AvaliacaoEncontro | null>(null);
   const [localPresencas, setLocalPresencas] = useState<string[]>([]);
@@ -292,20 +300,15 @@ export default function EncontroDetail() {
           </button>
 
           {/* Relatório */}
-          <ReportModule
-            context="encontros"
-            turmaId={id!}
-            initialDocId={encontroId}
-            instantReport="enc_complet"
-            trigger={
-              <button className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group w-full">
-                <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm">
-                  <FileText className="h-5 w-5 text-violet-600" />
-                </div>
-                <span className="text-[11px] font-black uppercase tracking-wide text-violet-700">Relatório</span>
-              </button>
-            }
-          />
+          <button
+            onClick={() => setShowReportDialog(true)}
+            className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
+          >
+            <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm">
+              <FileText className="h-5 w-5 text-violet-600" />
+            </div>
+            <span className="text-[11px] font-black uppercase tracking-wide text-violet-700">Relatório</span>
+          </button>
         </div>
       </div>
 
@@ -840,6 +843,25 @@ export default function EncontroDetail() {
           />
         </div>
       </DeleteConfirmationDialog>
+
+      {encontro && (
+        <ModuleReportSheet
+          open={showReportDialog}
+          onOpenChange={setShowReportDialog}
+          title="Ficha do Encontro"
+          subtitle={encontro.tema}
+          color="sky"
+          reportName="Ficha_Encontro"
+          turmaName={turma?.nome || ""}
+          items={[{
+            id: encontro.id,
+            label: encontro.tema || "Encontro",
+            subtitle: encontro.data ? new Date(encontro.data + 'T12:00').toLocaleDateString('pt-BR') : "",
+            data: encontro,
+          }]}
+          renderTemplate={(encData) => <Templates.EncontroFullSheet doc={encData} org={org} turma={turma} />}
+        />
+      )}
     </div>
   );
 }

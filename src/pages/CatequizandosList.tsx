@@ -19,7 +19,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { toggleInscricoesAbertas, garantirCodigoAcesso } from "@/lib/supabaseStore";
 import { useQueryClient } from "@tanstack/react-query";
-import ReportModule from "@/components/reports/ReportModule";
+import { ModuleReportSheet, type ReportItem } from "@/components/reports/ModuleReportSheet";
 
 // --- Helpers ---
 function InfoRow({ label, value }: { label: string; value?: string }) { 
@@ -245,6 +245,8 @@ export default function CatequizandosList() {
 
 
   const [viewItem, setViewItem] = useState<Catequizando | null>(null);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [singleReportItem, setSingleReportItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
@@ -320,6 +322,8 @@ export default function CatequizandosList() {
     const c = comunidades.find(x => x.id === turma?.comunidade_id)?.nome || "Comunidade não informada";
     return { paroquia: p, comunidade: c };
   }, [paroquias, comunidades, turma]);
+  
+  const org = orgNomes;
   
   // --- Celebrações Modal States ---
   const [showCelebracoes, setShowCelebracoes] = useState(false);
@@ -733,15 +737,13 @@ export default function CatequizandosList() {
 
         <div className="flex flex-col w-full sm:w-auto gap-3 shrink-0">
           <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
-            <ReportModule
-              context="catequizandos"
-              turmaId={id!}
-              trigger={
-                <button className="action-btn-sm shrink-0 whitespace-nowrap bg-violet-50 text-violet-600 hover:bg-violet-100 border border-violet-200">
-                  <FileText className="h-4 w-4" /> Relatórios
-                </button>
-              }
-            />
+            <button
+              onClick={() => setShowReportDialog(true)}
+              className="action-btn-sm shrink-0 whitespace-nowrap bg-violet-50 text-violet-600 hover:bg-violet-100 border border-violet-200"
+              title="Relatórios"
+            >
+              <FileText className="h-4 w-4" /> Relatórios
+            </button>
             <button 
               onClick={() => setShowInscricaoModal(true)}
               className="action-btn-sm shrink-0 whitespace-nowrap bg-indigo-50 text-indigo-500 hover:bg-indigo-100 border border-indigo-200"
@@ -1932,20 +1934,13 @@ export default function CatequizandosList() {
 
                    {/* Edit & Delete */}
                    <div className="flex items-center gap-3">
-                      <ReportModule
-                        context="catequizandos"
-                        turmaId={id!}
-                        initialDocId={viewItem.id}
-                        instantReport="cat_individual"
-                        trigger={
-                          <button
-                            title="Emitir relatório"
-                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group"
-                          >
-                            <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                          </button>
-                        }
-                      />
+                      <button
+                        title="Emitir relatório"
+                        onClick={() => { setSingleReportItem(viewItem); }}
+                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group"
+                      >
+                        <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                      </button>
                       <button onClick={handleEdit} className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group">
                          <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
                       </button>
@@ -2300,6 +2295,43 @@ export default function CatequizandosList() {
         document.body
       )}
 
+      {/* Report Dialog for listing all catequizandos */}
+      <ModuleReportSheet
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        title="Fichas Individuais"
+        subtitle={turma?.nome}
+        color="violet"
+        reportName="Ficha_Individual"
+        turmaName={turma?.nome || ""}
+        items={list.filter(c => !c.status || c.status === 'ativo').map((cat) => ({
+          id: cat.id,
+          label: cat.nome,
+          subtitle: cat.status || 'ativo',
+          avatarInitial: cat.nome?.charAt(0),
+          data: cat,
+        }))}
+        renderTemplate={(catData) => <Templates.CatequizandoIndividualSheet doc={catData} org={org} turma={turma} />}
+      />
+
+      {/* Report Dialog for a single catequizando from the viewItem dialog */}
+      <ModuleReportSheet
+        open={!!singleReportItem}
+        onOpenChange={(v) => { if (!v) setSingleReportItem(null); }}
+        title="Ficha Individual"
+        subtitle={singleReportItem?.nome}
+        color="violet"
+        reportName="Ficha_Individual"
+        turmaName={turma?.nome || ""}
+        items={singleReportItem ? [{
+          id: singleReportItem.id,
+          label: singleReportItem.nome,
+          subtitle: singleReportItem.status || 'ativo',
+          avatarInitial: singleReportItem.nome?.charAt(0),
+          data: singleReportItem,
+        }] : []}
+        renderTemplate={(catData) => <Templates.CatequizandoIndividualSheet doc={catData} org={org} turma={turma} />}
+      />
     </div>
   );
 }

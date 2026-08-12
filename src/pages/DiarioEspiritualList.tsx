@@ -8,7 +8,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
 import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
-import ReportModule from "@/components/reports/ReportModule";
+import { ModuleReportSheet } from "@/components/reports/ModuleReportSheet";
+import * as Templates from "@/components/reports/ReportTemplates";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -269,6 +270,7 @@ export default function DiarioEspiritualList() {
   const [viewItem, setViewItem] = useState<any>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
+  const [showReportDialog, setShowReportDialog] = useState(false);
 
   const confirmDelete = async () => {
     if (!itemToDeleteId) return;
@@ -388,20 +390,13 @@ export default function DiarioEspiritualList() {
                     <span className={cn("text-sm font-black uppercase tracking-wider", cfg.textColor)}>{cfg.label}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <ReportModule
-                      context="diario"
-                      turmaId={id!}
-                      initialDocId={viewItem.id}
-                      instantReport="diario_complet"
-                      trigger={
-                        <button
-                          title="Emitir ficha do diário"
-                          className="p-2 rounded-xl bg-violet-500/10 text-violet-600 hover:bg-violet-500/20 transition-colors"
-                        >
-                          <FileText className="h-4 w-4" />
-                        </button>
-                      }
-                    />
+                    <button
+                      title="Emitir ficha do diário"
+                      onClick={() => setShowReportDialog(true)}
+                      className="p-2 rounded-xl bg-violet-500/10 text-violet-600 hover:bg-violet-500/20 transition-colors"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </button>
                     <button onClick={() => navigate(`/turmas/${id}/diario/${viewItem.id}/editar`)} className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20 transition-colors">
                       <Pencil className="h-4 w-4" />
                     </button>
@@ -531,6 +526,24 @@ export default function DiarioEspiritualList() {
         isLoading={excluirDiario.isPending}
       />
 
+      {viewItem && (
+        <ModuleReportSheet
+          open={showReportDialog}
+          onOpenChange={setShowReportDialog}
+          title="Ficha do Diário"
+          subtitle={viewItem.encontro_tema || viewItem.evento_nome || "Registro"}
+          color="indigo"
+          reportName="Ficha_Diario"
+          turmaName={turma?.nome || ""}
+          items={[{
+            id: viewItem.id,
+            label: viewItem.encontro_tema || viewItem.evento_nome || "Registro",
+            subtitle: viewItem.data_registro ? new Date(viewItem.data_registro + 'T12:00').toLocaleDateString('pt-BR') : "",
+            data: viewItem,
+          }]}
+          renderTemplate={(diarioData) => <Templates.DiarioFullSheet doc={diarioData} org={org} turma={turma} />}
+        />
+      )}
       </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas } from "@/hooks/useSupabaseData";
+import { useTurmas, useReunioes, useReuniaoMutation, useDeleteReuniao, useCatequizandos, useEncontros, useAtividades, useCatequistas, useParoquias, useComunidades } from "@/hooks/useSupabaseData";
 import { REUNIAO_TIPOS, type Reuniao, type ReuniaoTipo, ORACAO_TIPOS } from "@/lib/store";
 import { ArrowLeft, Plus, ListChecks, Trash2, MapPin, Clock, Calendar, Car, Users, ChevronRight, CheckCircle2, Pencil, X, Play, CalendarDays, Book, Sparkles, FileSignature, Printer, ClipboardCheck, Info, FileText, ChevronDown, ChevronUp, Share2, Wand2 } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { formatarDataVigente, cn } from "@/lib/utils";
 import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
-import ReportModule from "@/components/reports/ReportModule";
+import { ModuleReportSheet } from "@/components/reports/ModuleReportSheet";
+import * as Templates from "@/components/reports/ReportTemplates";
 
 
 // --- Helpers ---
@@ -126,6 +127,13 @@ export default function ReunioesList() {
   const deleteMut = useDeleteReuniao();
   const turma = turmas.find(t => t.id === id);
 
+  const { data: paroquias = [] } = useParoquias();
+  const { data: comunidades = [] } = useComunidades();
+  const comunidade = comunidades.find((c: any) => c.id === turma?.comunidade_id);
+  const paroquia = paroquias.find((p: any) => p.id === turma?.paroquia_id);
+  const org = { paroquia: paroquia?.nome || "Paróquia não informada", comunidade: comunidade?.nome || "Comunidade não informada" };
+
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormData>({ ...emptyForm });
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -835,20 +843,13 @@ export default function ReunioesList() {
                  </div>
                  {/* Actions */}
                  <div className="flex items-center gap-2 z-50">
-                   <ReportModule
-                     context="reunioes"
-                     turmaId={id!}
-                     initialDocId={viewItem.id}
-                     instantReport="reun_complet"
-                     trigger={
-                       <button
-                         title="Emitir relatório da reunião"
-                         className="w-9 h-9 flex items-center justify-center rounded-xl text-violet-600 bg-violet-50 hover:bg-violet-100 transition-all active:scale-95 border border-violet-200"
-                       >
-                         <FileText className="h-4 w-4" />
-                       </button>
-                     }
-                   />
+                   <button
+                     title="Emitir relatório da reunião"
+                     onClick={() => setShowReportDialog(true)}
+                     className="w-9 h-9 flex items-center justify-center rounded-xl text-violet-600 bg-violet-50 hover:bg-violet-100 transition-all active:scale-95 border border-violet-200"
+                   >
+                     <FileText className="h-4 w-4" />
+                   </button>
                    <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20" title="Editar"><Pencil className="h-4 w-4" /></button>
                    <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20" title="Excluir"><Trash2 className="h-4 w-4" /></button>
                    <div className="w-px h-5 bg-black/10 mx-1" />
@@ -1181,6 +1182,25 @@ export default function ReunioesList() {
         itemName={viewItem?.nome}
         isLoading={deleteMut.isPending}
       />
+
+      {viewItem && (
+        <ModuleReportSheet
+          open={showReportDialog}
+          onOpenChange={setShowReportDialog}
+          title="Ata da Reunião"
+          subtitle={viewItem.titulo || viewItem.tema || "Reunião"}
+          color="blue"
+          reportName="Ata_Reuniao"
+          turmaName={turma?.nome || ""}
+          items={[{
+            id: viewItem.id,
+            label: viewItem.titulo || viewItem.tema || "Reunião",
+            subtitle: viewItem.data ? new Date(viewItem.data + 'T12:00').toLocaleDateString('pt-BR') : "",
+            data: viewItem,
+          }]}
+          renderTemplate={(reunData) => <Templates.ReuniaoFullSheet doc={reunData} org={org} turma={turma} catequizandos={catequizandos || []} />}
+        />
+      )}
     </div>
   );
 }
