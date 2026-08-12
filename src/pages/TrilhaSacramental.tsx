@@ -104,7 +104,7 @@ function buildNodes(sac: SacramentoType, etapasCustom: EtapaCustom[], removidas:
 }
 
 const DOCS_PADRAO = [
-  { key: "documentos_rg",       label: "RG / Identidade" },
+  { key: "documentos_rg",       label: "Certidão de Nascimento/RG" },
   { key: "documentos_batistério", label: "Certidão de Batismo" },
   { key: "documentos_residencia", label: "Comprovante de Residência" },
   { key: "contribuicao",        label: "Contribuição / Taxas" },
@@ -170,10 +170,10 @@ function calcNodeStatuses(
         res[node.id] = !d ? "pending" : isDatePassed(d) ? "done" : "partial"; break;
       }
       case "docs": {
-        const done = DOCS_PADRAO.filter(d => (trilha as any)[d.key]).length
-          + (trilha.documentos_custom || []).filter(d => d.entregue).length;
-        const total = DOCS_PADRAO.length + (trilha.documentos_custom || []).length;
-        res[node.id] = total === 0 ? "pending" : done === total ? "done" : done > 0 ? "partial" : "pending"; break;
+        const hasRg = (trilha as any)["documentos_rg"] === true;
+        const hasAnyOther = DOCS_PADRAO.some(d => d.key !== "documentos_rg" && (trilha as any)[d.key] === true) ||
+          (trilha.documentos_custom || []).some(d => d.entregue);
+        res[node.id] = hasRg ? "done" : hasAnyOther ? "partial" : "pending"; break;
       }
       case "celebracao":
         if (sacramentos[sac]?.recebido === true) {
@@ -899,9 +899,24 @@ export default function TrilhaSacramental() {
       }
       
       let status: NodeStatus = "pending";
-      if (refList.length > 0) {
+      if (node.tipo === "rito") {
+        const d = etapasRito[node.id];
+        status = !d ? "pending" : isDatePassed(d) ? "done" : "partial";
+      } else if (refList.length > 0) {
         if (doneCount === refList.length) status = node.tipo === "condicional" ? "skipped" : "done";
         else if (doneCount > 0) status = "partial";
+        
+        // Se para a node de docs, alguém tem algum documento entregue, consideramos partial
+        if (node.tipo === "docs" && doneCount === 0) {
+          let anyPartial = false;
+          for (const cat of refList) {
+            if (catNodeStatusMap[cat.id]?.[node.id] === "partial") {
+              anyPartial = true;
+              break;
+            }
+          }
+          if (anyPartial) status = "partial";
+        }
       }
       stats[node.id] = { catCount: doneCount, status };
     }
