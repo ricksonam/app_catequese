@@ -739,10 +739,10 @@ export default function CatequizandosList() {
           <div className="flex items-center justify-end gap-2 w-full overflow-x-auto pb-1 sm:pb-0">
             <button
               onClick={() => setShowReportDialog(true)}
-              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0 rounded-xl bg-violet-50 text-violet-600 hover:bg-violet-100 border border-violet-200 shadow-sm transition-all active:scale-95"
+              className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shrink-0 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all active:scale-95 border border-purple-400"
               title="Relatórios"
             >
-              <FileText className="h-4 w-4" />
+              <FileText className="h-4 w-4 drop-shadow-sm" />
             </button>
             <button 
               onClick={() => setShowInscricaoModal(true)}

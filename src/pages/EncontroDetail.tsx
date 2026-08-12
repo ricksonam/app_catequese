@@ -229,6 +229,10 @@ export default function EncontroDetail() {
         {/* Edit Button positioned above grid */}
         {/* Edit & Delete Actions */}
         <div className="relative flex items-center justify-center gap-3 mb-2 animate-float-up px-4" style={{ animationDelay: '50ms' }}>
+          <button onClick={() => setShowReportDialog(true)} className="absolute left-4 w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:scale-105 transition-all active:scale-95 border border-purple-400 group" title="Relatórios">
+            <FileText className="h-4 w-4 drop-shadow-sm group-hover:scale-110 transition-transform" />
+          </button>
+
           <button onClick={() => navigate(`/turmas/${id}/encontros/${encontroId}/editar`)} className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group">
             <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
             <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
@@ -265,7 +269,7 @@ export default function EncontroDetail() {
         </button>
 
         {/* Row of Actions */}
-        <div className="grid grid-cols-4 gap-2 w-full">
+        <div className="grid grid-cols-3 gap-2 w-full">
           {/* Presença */}
           <button 
             onClick={() => setShowPresenca(true)} 
@@ -297,17 +301,6 @@ export default function EncontroDetail() {
                <Play className="h-5 w-5 text-liturgical" />
              </div>
              <span className="text-[11px] font-black uppercase tracking-wide text-liturgical">Apresentar</span>
-          </button>
-
-          {/* Relatório */}
-          <button
-            onClick={() => setShowReportDialog(true)}
-            className="flex flex-col items-center justify-center py-4 px-1 rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95 transition-all duration-300 group"
-          >
-            <div className="w-9 h-9 flex items-center justify-center bg-white/50 rounded-xl mb-1.5 border border-white/50 group-hover:scale-110 transition-all duration-300 shadow-sm">
-              <FileText className="h-5 w-5 text-violet-600" />
-            </div>
-            <span className="text-[11px] font-black uppercase tracking-wide text-violet-700">Relatório</span>
           </button>
         </div>
       </div>
