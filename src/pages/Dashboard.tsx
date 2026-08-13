@@ -318,13 +318,17 @@ export default function Dashboard() {
       const dataStr = p.dataNascimento;
       if (dataStr) {
         const bday = new Date(dataStr + (dataStr.includes('T') ? '' : 'T12:00:00'));
-        events.push({ tipo: 'nascimento', day: bday.getDate(), month: bday.getMonth() });
+        if (bday.getMonth() === mesAtual) {
+          events.push({ tipo: 'nascimento', day: bday.getDate(), month: bday.getMonth() });
+        }
       }
       
       const batismoStr = p.sacramentos?.batismo?.data;
       if (!p.isCatequista && batismoStr) {
         const bday = new Date(batismoStr + (batismoStr.includes('T') ? '' : 'T12:00:00'));
-        events.push({ tipo: 'batismo', day: bday.getDate(), month: bday.getMonth() });
+        if (bday.getMonth() === mesAtual) {
+          events.push({ tipo: 'batismo', day: bday.getDate(), month: bday.getMonth() });
+        }
       }
 
       if (events.length > 0) {
@@ -334,7 +338,6 @@ export default function Dashboard() {
 
     if (peopleData.size === 0) return [];
 
-    const todayMonth = hoje.getMonth();
     const todayDay = hoje.getDate();
 
     const instances: any[] = [];
@@ -345,41 +348,24 @@ export default function Dashboard() {
     });
 
     const sortedInstances = instances.sort((a, b) => {
-      if (a.month !== b.month) return a.month - b.month;
       return a.day - b.day;
     });
 
-    let upcoming = sortedInstances.filter(inst => 
-      inst.month > todayMonth || (inst.month === todayMonth && inst.day >= todayDay)
-    );
-
-    if (upcoming.length === 0) {
-      upcoming = sortedInstances;
-    }
+    // Prioriza eventos a partir de hoje; se não houver, usa todo o mês
+    const fromToday = sortedInstances.filter(inst => inst.day >= todayDay);
+    const orderedInstances = fromToday.length > 0 ? fromToday : sortedInstances;
 
     const result: any[] = [];
-    const seenPeople = new Set();
-    
-    for (const inst of upcoming) {
-      if (!seenPeople.has(inst.id)) {
-        seenPeople.add(inst.id);
+    const seenKeys = new Set<string>();
+
+    for (const inst of orderedInstances) {
+      const key = `${inst.id}_${inst.tipo}`;
+      if (!seenKeys.has(key)) {
+        seenKeys.add(key);
         const hasBoth = inst.allEvents.length > 1;
-        result.push({
-          ...inst,
-          hasBoth
-        });
+        result.push({ ...inst, hasBoth });
       }
       if (result.length >= 4) break;
-    }
-
-    if (result.length < 4 && result.length < peopleData.size) {
-      for (const inst of sortedInstances) {
-        if (!seenPeople.has(inst.id)) {
-          seenPeople.add(inst.id);
-          result.push({ ...inst, hasBoth: inst.allEvents.length > 1 });
-        }
-        if (result.length >= 4) break;
-      }
     }
 
     return result;
