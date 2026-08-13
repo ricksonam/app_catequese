@@ -1808,61 +1808,54 @@ export default function CatequizandosList() {
                                {calcularIdade(viewItem.dataNascimento)}
                             </div>
                          )}
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                               <button 
+                                 className={cn(
+                                   "flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all active:scale-95 group shadow-sm",
+                                   statusConfig[viewItem.status || 'ativo'].bg,
+                                   statusConfig[viewItem.status || 'ativo'].border
+                                 )}
+                               >
+                                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white/80 shadow-sm">
+                                     {(() => {
+                                        const Icon = statusConfig[viewItem.status || 'ativo'].icon;
+                                        return <Icon className={cn("h-3 w-3", statusConfig[viewItem.status || 'ativo'].text)} />;
+                                     })()}
+                                  </div>
+                                  <div className="flex flex-col items-start leading-tight">
+                                     <span className={cn("text-[10px] font-black uppercase tracking-widest", statusConfig[viewItem.status || 'ativo'].text)}>
+                                        {statusConfig[viewItem.status || 'ativo'].label}
+                                     </span>
+                                  </div>
+                                  <ChevronDown className="h-3 w-3 opacity-40 group-hover:translate-y-0.5 transition-transform ml-1" />
+                               </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="center" className="rounded-2xl p-2 border-2 border-zinc-100 shadow-xl min-w-[160px] z-[100]">
+                               {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
+                                  const config = statusConfig[s];
+                                  const Icon = config.icon;
+                                  return (
+                                     <DropdownMenuItem 
+                                       key={s} 
+                                       onClick={() => handleStatusChange(viewItem, s)}
+                                       className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-zinc-50 focus:bg-zinc-50 transition-colors"
+                                     >
+                                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", config.bg)}>
+                                           <Icon className={cn("w-4 h-4", config.text)} />
+                                        </div>
+                                        <span className="text-xs font-black uppercase tracking-widest text-zinc-600">{config.label}</span>
+                                     </DropdownMenuItem>
+                                  );
+                               })}
+                            </DropdownMenuContent>
+                         </DropdownMenu>
                       </div>
                    </div>
                 </div>
 
-                {/* Actions Row */}
-                <div className="flex flex-wrap items-center justify-center gap-4 py-2 border-y border-zinc-100 bg-white/50 backdrop-blur-sm -mx-6 px-6">
-                   {/* Status Chip Dropdown */}
-                   <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                         <button 
-                           className={cn(
-                             "flex items-center gap-2.5 px-4 py-2 rounded-full border-2 transition-all active:scale-95 group shadow-sm",
-                             statusConfig[viewItem.status || 'ativo'].bg,
-                             statusConfig[viewItem.status || 'ativo'].border
-                           )}
-                         >
-                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/80 shadow-sm">
-                               {(() => {
-                                  const Icon = statusConfig[viewItem.status || 'ativo'].icon;
-                                  return <Icon className={cn("h-3.5 w-3.5", statusConfig[viewItem.status || 'ativo'].text)} />;
-                               })()}
-                            </div>
-                            <div className="flex flex-col items-start leading-tight">
-                               <span className="text-[7px] font-black uppercase tracking-widest opacity-50">Status</span>
-                               <span className={cn("text-[10px] font-black uppercase tracking-widest", statusConfig[viewItem.status || 'ativo'].text)}>
-                                  {statusConfig[viewItem.status || 'ativo'].label}
-                               </span>
-                            </div>
-                            <ChevronDown className="h-3 w-3 opacity-40 group-hover:translate-y-0.5 transition-transform" />
-                         </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="center" className="rounded-2xl p-2 border-2 border-zinc-100 shadow-xl min-w-[160px] z-[100]">
-                         {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
-                            const config = statusConfig[s];
-                            const Icon = config.icon;
-                            return (
-                               <DropdownMenuItem 
-                                 key={s} 
-                                 onClick={() => handleStatusChange(viewItem, s)}
-                                 className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-zinc-50 focus:bg-zinc-50 transition-colors"
-                               >
-                                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", config.bg)}>
-                                     <Icon className={cn("w-4 h-4", config.text)} />
-                                  </div>
-                                  <span className="text-xs font-black uppercase tracking-widest text-zinc-600">{config.label}</span>
-                               </DropdownMenuItem>
-                            );
-                         })}
-                      </DropdownMenuContent>
-                   </DropdownMenu>
-
-                   <div className="h-8 w-px bg-zinc-100 mx-1" />
-
-                   {/* Mute Alert Chip */}
-                   {(() => {
+                {/* Mute Alert Chip */}
+                {(() => {
                      const alertaConfig = (viewItem.dadosPastorais as any)?.alertaFaltasConfig;
                      const isMuted = alertaConfig?.mutado === true;
                      const isMutedByAlerta = catequizandosEmAlerta.has(viewItem.id) || isMuted;
@@ -1871,7 +1864,7 @@ export default function CatequizandosList() {
                        // Show unmute chip
                        const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label || '—';
                        return (
-                         <div className="flex flex-col items-center gap-1">
+                         <div className="flex flex-col items-center gap-1 py-3 border-y border-zinc-100 bg-white/50 backdrop-blur-sm -mx-6 px-6">
                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200 shadow-sm">
                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">
@@ -1892,7 +1885,7 @@ export default function CatequizandosList() {
                      // If in alert but not muted — show mute button with dropdown
                      if (catequizandosEmAlerta.has(viewItem.id)) {
                        return (
-                         <div className="relative flex flex-col items-center gap-1">
+                         <div className="relative flex flex-col items-center gap-1 py-3 border-y border-zinc-100 bg-white/50 backdrop-blur-sm -mx-6 px-6">
                            <button
                              onClick={() => setShowMuteAlertDropdown(v => !v)}
                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 shadow-sm hover:bg-red-100 transition-all active:scale-95 group"
@@ -1927,9 +1920,7 @@ export default function CatequizandosList() {
                        );
                      }
 
-                     return null;
                    })()}
-                </div>
 
                 {/* Edit & Delete */}
                 <div className="flex items-center justify-between mt-2">
