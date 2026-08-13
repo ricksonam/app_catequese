@@ -1610,9 +1610,6 @@ export default function PainelIVC() {
     );
   }
 
-  // Find info of selected Tempo
-  const tempoInfo = tempoSelecionado ? TEMPOS_CONFIG.find(t => t.id === tempoSelecionado) : null;
-  const etapasDoTempoSelecionado = tempoSelecionado ? etapas.filter(e => e.tempoId === tempoSelecionado) : [];
 
   return (
     <div className="space-y-6 pb-20">
