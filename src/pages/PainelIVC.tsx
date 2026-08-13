@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useEncontros, useAtividades, useAtividadeMutation, useTurmaMutation } from "@/hooks/useSupabaseData";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowLeft, Share2, CheckCircle2, Calendar, ChevronRight, ChevronDown,
   BookOpen, Users, MapPin, Gift, Star, Settings, AlertTriangle
@@ -1381,23 +1382,23 @@ export function JornadaMap({
               )}
 
               {/* ── Balão explicativo (fixed bottom-sheet no mobile) ── */}
-              {isBalloonExpanded && descInfo && (
+              {isBalloonExpanded && descInfo && typeof document !== 'undefined' && createPortal(
                 <>
                   {/* Overlay escuro */}
                   <div
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm animate-fade-in"
+                    className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm animate-fade-in"
                     onClick={() => setExpandida(null)}
                   />
                   {/* Sheet fixo na parte inferior */}
                   <div className={cn(
-                    "fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl border-t-2 border-x-2 shadow-2xl animate-slide-up",
+                    "fixed bottom-0 left-0 right-0 z-[101] rounded-t-3xl border-t-2 border-x-2 shadow-2xl animate-slide-up",
                     balloonCor
                   )}>
                     {/* Handle */}
                     <div className="flex justify-center pt-3 pb-1">
                       <div className="w-10 h-1 rounded-full bg-current opacity-20" />
                     </div>
-                    <div className="px-5 pb-8 pt-1 space-y-3 max-h-[80vh] overflow-y-auto">
+                    <div className="px-5 pb-8 pt-1 space-y-3 max-h-[80vh] overflow-y-auto overscroll-contain">
                       {/* Header */}
                       <div className="flex items-start gap-3">
                         <span className="text-4xl shrink-0">{etapa.emoji}</span>
@@ -1426,7 +1427,8 @@ export function JornadaMap({
                       )}
                     </div>
                   </div>
-                </>
+                </>,
+                document.body
               )}
             </div>
           );
