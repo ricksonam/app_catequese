@@ -157,6 +157,42 @@ export const ETAPAS_POR_MODELO: Record<ModeloIVC, EtapaBase[]> = {
   adultos: ETAPAS_ADULTOS,
 };
 
+// ─────────────────────────────────────────────────────────────
+// ETAPA DESCRIPTIONS (balão explicativo)
+// ─────────────────────────────────────────────────────────────
+export const ETAPA_DESCRICOES: Record<string, { titulo: string; descricao: string; cor: string; showEncontros?: boolean }> = {
+  // Sementinhas
+  acolhida:            { titulo: 'Acolhida e Inscrição', descricao: 'Momento de boas-vindas e registro da criança na turma. A família é recebida com alegria e convidada a participar do processo de iniciação.', cor: 'emerald' },
+  pre_cat:             { titulo: 'Pré-Catecumenato', descricao: '1º Tempo do IVC. Período de anúncio do Querigma — o núcleo da Boa Nova. A turma é despertada para a experiência viva de Deus por meio de dinâmicas, testemunhos e celebrações lúdicas. Duração mínima de 6 meses.', cor: 'yellow' },
+  encontros_seed:      { titulo: 'Encontros Formativos', descricao: 'Encontros temáticos que acompanham o tempo do Pré-Catecumenato, ajudando as crianças a descobrirem a fé de forma lúdica e experiencial.', cor: 'amber' },
+  catec_seed:          { titulo: 'Catecumenato Infantil', descricao: '2º Tempo do IVC para as sementinhas. Período de aprofundamento da fé, com catequeses sobre a Sagrada Escritura, os sacramentos e a vida cristã em comunidade.', cor: 'sky', showEncontros: true },
+  ilum_seed:           { titulo: 'Purificação e Alegria', descricao: '3º Tempo — período de preparação final para os sacramentos. Momento de revisão de vida, reconciliação e alegria pascal.', cor: 'purple' },
+  mis_seed:            { titulo: 'Missão das Sementinhas', descricao: '4º Tempo — Mistagogia. As crianças são enviadas em missão, vivendo o que receberam e testemunhando na família e na comunidade.', cor: 'green' },
+  // Eucaristia/Crisma
+  preparacao:          { titulo: 'Preparação / Convite', descricao: 'Período de divulgação, convite e inscrição. A comunidade é mobilizada para receber novos catequizandos no processo do IVC.', cor: 'emerald' },
+  pass_entrada:        { titulo: 'Celebração de Início', descricao: 'Celebração litúrgica que marca o início formal da jornada catequética. A turma é apresentada à comunidade e acolhida com oração.', cor: 'violet' },
+  cat_biblia:          { titulo: 'Catecumenato — Fase 1', descricao: '2º Tempo — Fase 1: A Bíblia. Os catequizandos mergulham na Palavra de Deus, aprendendo a ler, rezar e viver os textos sagrados.', cor: 'sky', showEncontros: true },
+  cat_pessoa:          { titulo: 'Catecumenato — Fase 2', descricao: '2º Tempo — Fase 2: A Pessoa de Jesus. Aprofundamento no conhecimento de Jesus Cristo — sua vida, missão e o convite ao seguimento.', cor: 'sky', showEncontros: true },
+  celebracao_vida:     { titulo: 'Celebração da Vida', descricao: 'Celebração interna de passagem entre as fases do Catecumenato. Momento de agradecimento pela caminhada e renovação do compromisso.', cor: 'violet' },
+  cat_jesus:           { titulo: 'Catecumenato — Fase 3', descricao: '2º Tempo — Fase 3: Jesus e a Igreja. Os catequizandos descobrem a Igreja como Corpo de Cristo e sua inserção nela pelo Batismo e Crisma.', cor: 'sky', showEncontros: true },
+  jornada_disc:        { titulo: 'Jornada do Discipulado', descricao: 'Atividade externa de imersão no Catecumenato. Experiência de retiro, convivência e missão que fortalece os vínculos e a identidade cristã.', cor: 'amber' },
+  cat_oracao:          { titulo: 'Catecumenato — Fase 4', descricao: '2º Tempo — Fase 4: A Oração. Iniciação à vida de oração: Pai-Nosso, Rosário, Lectio Divina e outras formas de encontro pessoal com Deus.', cor: 'sky', showEncontros: true },
+  cat_comunidade:      { titulo: 'Catecumenato — Fase 5', descricao: '2º Tempo — Fase 5: A Comunidade. Vivência eclesial — participação na missa, nos grupos de jovens, na liturgia e nos serviços pastorais.', cor: 'sky', showEncontros: true },
+  cat_sacramental:     { titulo: 'Catecumenato — Fase 6', descricao: '2º Tempo — Fase 6: Os Sacramentos. Preparação específica para os sacramentos da iniciação: Batismo, Eucaristia e Crisma.', cor: 'sky', showEncontros: true },
+  purificacao:         { titulo: 'Purificação e Iluminação', descricao: '3º Tempo — período quaresmal de intenso preparo espiritual. Os catequizandos vivem escrutínios, práticas de penitência e momentos de oração profunda.', cor: 'purple' },
+  purif_escrutinios:   { titulo: 'Escrutínios', descricao: 'Ritos de purificação interior celebrados durante a Quaresma. Momentos de exame de consciência, intercessão e fortalecimento espiritual.', cor: 'purple' },
+  purif_praticas:      { titulo: 'Práticas Quaresmais', descricao: 'Jejum, esmola e oração — as três práticas da Quaresma. Os catequizandos são convidados a exercícios concretos de conversão e solidariedade.', cor: 'purple' },
+  purif_ritos:         { titulo: 'Outros Ritos', descricao: 'Ritos complementares da Quaresma: entrega do Credo, entrega do Pai-Nosso, bênçãos especiais e outros momentos litúrgicos de preparação.', cor: 'purple' },
+  purif_orantes:       { titulo: 'Momentos Orantes', descricao: 'Encontros de oração contemplativa: adoração eucarística, via-sacra, terço, vigílias e outros momentos de encontro íntimo com Deus.', cor: 'purple' },
+  mistagogia:          { titulo: 'Mistagogia', descricao: '4º Tempo — o mergulho no mistério celebrado. Após receber os sacramentos, os novos cristãos aprofundam o sentido do que viveram e são enviados em missão.', cor: 'emerald' },
+  mist_aprofundamento: { titulo: 'Aprofundamento no Mistério', descricao: 'Catequeses mistagógicas que ajudam os neocristãos a compreender a riqueza dos sacramentos recebidos e integrá-los na vida cotidiana.', cor: 'emerald' },
+  mist_comunidade:     { titulo: 'Vivência na Comunidade', descricao: 'Inserção ativa na comunidade paroquial: participação nos grupos, nos ministérios e na vida litúrgica da Igreja local.', cor: 'emerald' },
+  mist_pastoral:       { titulo: 'Vivência Pastoral', descricao: 'Exercício concreto da missão: serviço ao próximo, caridade, evangelização e participação nas pastorais da paróquia.', cor: 'emerald' },
+  // Adultos
+  catecumenato:        { titulo: 'Catecumenato', descricao: '2º Tempo — Aprofundamento da fé para adultos. Catequeses sistemáticas sobre a Escritura, a Tradição, os sacramentos e a moral cristã, em comunidade.', cor: 'sky', showEncontros: true },
+  escrutinios:         { titulo: 'Purificação / Escrutínios', descricao: '3º Tempo para adultos. Ritos de purificação e escrutínio realizados durante a Quaresma, preparando os eleitos para a recepção dos sacramentos na Vigília Pascal.', cor: 'purple' },
+};
+
 const getDefaultConfiguracao = (turmaEtapa?: string): ConfiguracaoTurma => {
   const modelo = detectarModelo(turmaEtapa ?? '');
   let simbolosAtivos: string[] = ['biblia', 'creio', 'pai_nosso'];
@@ -1052,6 +1088,8 @@ function BlocosTempos({
                 etapas={etapasDoTempo}
                 posicaoAtual={-1}
                 onEtapaClick={onOpenEtapa}
+                encontros={encontros}
+                dataEntradaCatecumenato={dataEntradaCatecumenato}
               />
             </div>
           </div>
@@ -1082,32 +1120,7 @@ function BlocosTempos({
         </div>
       )}
 
-      {hasTempo('tempo1') && hasTempo('tempo2') && (
-        <div className="w-full">
-          {/* Chip expandível — catecumenato catequese */}
-          <EtapaChip
-            titulo="Catecumenato — Encontros de Catequese"
-            descricao="Clique para ver os encontros neste período"
-            expanded={expandedChip === 'catecumenato_encontros'}
-            onClick={() => toggleChip('catecumenato_encontros')}
-          />
-          {expandedChip === 'catecumenato_encontros' && (
-            <div className="relative">
-              {/* Vertical connector line */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-0.5 h-4 bg-violet-300" />
-              <div className="mt-4 rounded-3xl border-2 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/20 p-4 animate-fade-in">
-                {/* Dot at top center */}
-                <div className="w-3 h-3 rounded-full bg-violet-400 mx-auto -mt-7 mb-3 shadow ring-2 ring-white dark:ring-card" />
-                <EncontrosChipList
-                  encontros={encontros}
-                  dataInicio={dataEntradaCatecumenato}
-                  label={`Encontros a partir do Rito de Entrada ao Catecumenato${dataEntradaCatecumenato ? ` (${new Date(dataEntradaCatecumenato + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })})` : ''}`}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+
 
       {renderTempo('tempo2')}
 
@@ -1154,6 +1167,8 @@ export function JornadaMap({
   modelo,
   turmaNome,
   turmaAno,
+  encontros,
+  dataEntradaCatecumenato,
 }: {
   etapas: EtapaJornada[];
   posicaoAtual: number;
@@ -1162,6 +1177,8 @@ export function JornadaMap({
   modelo?: ModeloIVC;
   turmaNome?: string;
   turmaAno?: string;
+  encontros?: any[];
+  dataEntradaCatecumenato?: string;
 }) {
   const [expandida, setExpandida] = useState<string | null>(null);
 
@@ -1195,6 +1212,28 @@ export function JornadaMap({
           const isExpanded = expandida === etapa.id;
           const isPassagem = etapa.tipo === 'passagem';
           const isClickable = !readonly && (etapa.tipo === 'passagem' || etapa.tipo === 'simbolo' || etapa.tipo === 'sacramento' || etapa.id === 'preparacao' || etapa.id === 'pass_entrada' || etapa.id === 'acolhida');
+          const descInfo = ETAPA_DESCRICOES[etapa.id];
+          const isBalloonExpanded = expandida === etapa.id;
+          const corMap: Record<string, string> = {
+            yellow: 'bg-yellow-50 border-yellow-300 dark:bg-yellow-950/30 dark:border-yellow-700',
+            sky: 'bg-sky-50 border-sky-300 dark:bg-sky-950/30 dark:border-sky-700',
+            purple: 'bg-purple-50 border-purple-300 dark:bg-purple-950/30 dark:border-purple-700',
+            emerald: 'bg-emerald-50 border-emerald-300 dark:bg-emerald-950/30 dark:border-emerald-700',
+            amber: 'bg-amber-50 border-amber-300 dark:bg-amber-950/30 dark:border-amber-700',
+            violet: 'bg-violet-50 border-violet-300 dark:bg-violet-950/30 dark:border-violet-700',
+            green: 'bg-green-50 border-green-300 dark:bg-green-950/30 dark:border-green-700',
+          };
+          const titleCorMap: Record<string, string> = {
+            yellow: 'text-yellow-700 dark:text-yellow-400',
+            sky: 'text-sky-700 dark:text-sky-400',
+            purple: 'text-purple-700 dark:text-purple-400',
+            emerald: 'text-emerald-700 dark:text-emerald-400',
+            amber: 'text-amber-700 dark:text-amber-400',
+            violet: 'text-violet-700 dark:text-violet-400',
+            green: 'text-green-700 dark:text-green-400',
+          };
+          const balloonCor = descInfo ? (corMap[descInfo.cor] ?? corMap.sky) : corMap.sky;
+          const balloonTitleCor = descInfo ? (titleCorMap[descInfo.cor] ?? titleCorMap.sky) : titleCorMap.sky;
 
           const nodeBg = etapa.status === 'concluido' ? 'bg-emerald-500 text-white border-2 border-emerald-600' :
                          etapa.status === 'agendado'  ? 'bg-amber-400 text-amber-950 border-2 border-amber-500' :
@@ -1220,7 +1259,7 @@ export function JornadaMap({
                     if (isClickable && onEtapaClick) {
                       onEtapaClick(etapa);
                     } else {
-                      setExpandida(isExpanded ? null : etapa.id);
+                      setExpandida(isBalloonExpanded ? null : etapa.id);
                     }
                   }}
                   className={cn(
@@ -1339,6 +1378,48 @@ export function JornadaMap({
                   "absolute top-full left-1/2 -translate-x-1/2 w-1 h-8 rounded-full",
                   etapa.status === 'concluido' ? 'bg-emerald-400' : 'bg-muted/40'
                 )} />
+              )}
+
+              {/* ── Balão explicativo ── */}
+              {isBalloonExpanded && descInfo && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-10 z-30 w-[min(88vw,320px)] animate-fade-in">
+                  {/* Seta */}
+                  <div className={cn(
+                    "w-3 h-3 rotate-45 border-t-2 border-l-2 mx-auto -mb-1.5 relative z-20",
+                    balloonCor
+                  )} />
+                  <div className={cn(
+                    "rounded-3xl border-2 shadow-xl p-4 space-y-2.5",
+                    balloonCor
+                  )}>
+                    {/* Header */}
+                    <div className="flex items-start gap-2.5">
+                      <span className="text-3xl shrink-0">{etapa.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn("text-[11px] font-black uppercase tracking-widest leading-none mb-0.5", balloonTitleCor)}>Sobre esta etapa</p>
+                        <p className="text-sm font-black text-foreground leading-tight">{descInfo.titulo}</p>
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setExpandida(null); }}
+                        className="shrink-0 w-6 h-6 rounded-full bg-muted/60 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors text-xs font-black"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <p className="text-[12px] leading-relaxed text-foreground/80">{descInfo.descricao}</p>
+
+                    {/* Encontros do catecumenato */}
+                    {descInfo.showEncontros && encontros && encontros.length > 0 && (
+                      <div className="mt-1 pt-2.5 border-t-2 border-current/10">
+                        <EncontrosChipList
+                          encontros={encontros}
+                          dataInicio={dataEntradaCatecumenato}
+                          label={`Encontros${dataEntradaCatecumenato ? ` a partir de ${new Date(dataEntradaCatecumenato + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ' do Catecumenato'}`}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           );
