@@ -1929,25 +1929,23 @@ export default function CatequizandosList() {
 
                      return null;
                    })()}
+                </div>
 
-                   <div className="h-8 w-px bg-zinc-100 mx-1" />
-
-                   {/* Edit & Delete */}
-                   <div className="flex items-center gap-3">
-                      <button
-                        title="Emitir relatório"
-                        onClick={() => { setSingleReportItem(viewItem); }}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group"
-                      >
-                        <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                      </button>
-                      <button onClick={handleEdit} className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group">
-                         <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-                      </button>
-                      <button onClick={handleDelete} className="w-10 h-10 flex items-center justify-center rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group">
-                         <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-                      </button>
-                   </div>
+                {/* Edit & Delete */}
+                <div className="flex items-center justify-between mt-2">
+                   <button
+                     title="Emitir relatório"
+                     onClick={() => { setSingleReportItem(viewItem); }}
+                     className="w-12 h-12 flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group"
+                   >
+                     <FileText className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                   </button>
+                   <button onClick={handleEdit} className="w-12 h-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group">
+                      <Pencil className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                   </button>
+                   <button onClick={handleDelete} className="w-12 h-12 flex items-center justify-center rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group">
+                      <Trash2 className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 gap-6">
