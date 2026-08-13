@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTurmas, useCatequizandos, useEncontros, useAtividades, useAtividadeMutation, useTurmaMutation } from "@/hooks/useSupabaseData";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import {
-  ArrowLeft, Share2, CheckCircle2, Calendar, ChevronRight,
+  ArrowLeft, Share2, CheckCircle2, Calendar, ChevronRight, ChevronDown,
   BookOpen, Users, MapPin, Gift, Star, Settings, AlertTriangle
 } from "lucide-react";
 import { cn, getAppUrl } from "@/lib/utils";
@@ -11,7 +11,7 @@ import type { Atividade } from "@/lib/store";
 import { SIMBOLOS_IVC, CELEBRACOES_PASSAGEM, type CelebracaoPassagemTipo, type SimboloIVCType } from "@/lib/store";
 import { QRShareModal } from "@/components/QRShareModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
 import { CustomDatePicker } from "@/components/CustomDatePicker";
 
 // ─────────────────────────────────────────────────────────────
@@ -819,80 +819,244 @@ const TEMPOS_CONFIG = [
   },
 ];
 
-function EtapaChip({ titulo, descricao, onClick }: { titulo: string; descricao: string; onClick: () => void }) {
+function EtapaChip({ titulo, descricao, onClick, expanded }: { titulo: string; descricao: string; onClick: () => void; expanded?: boolean }) {
   return (
     <button 
       onClick={onClick}
-      className="flex flex-col items-center justify-center p-3.5 w-full bg-violet-100 dark:bg-violet-900/30 rounded-[1.25rem] border-2 border-violet-200 dark:border-violet-800/60 shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all text-center gap-1 relative overflow-visible"
+      className={cn(
+        "flex flex-col items-center justify-center p-3.5 w-full rounded-[1.25rem] border-2 shadow-sm cursor-pointer active:scale-[0.98] transition-all text-center gap-1 relative overflow-visible",
+        expanded
+          ? "bg-violet-600 dark:bg-violet-700 border-violet-600 dark:border-violet-600"
+          : "bg-violet-100 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800/60 hover:scale-[1.02]"
+      )}
     >
-      <div className="absolute -top-3 bg-violet-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+      <div className={cn(
+        "absolute -top-3 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm",
+        expanded ? "bg-white text-violet-700" : "bg-violet-600 text-white"
+      )}>
         Etapa
       </div>
-      <p className="font-black text-violet-800 dark:text-violet-300 text-[13px] leading-tight mt-1">{titulo}</p>
-      <p className="text-[10px] font-bold text-violet-600/80 dark:text-violet-400/80 leading-tight">{descricao}</p>
+      <div className="flex items-center gap-2 mt-1">
+        <p className={cn("font-black text-[13px] leading-tight", expanded ? "text-white" : "text-violet-800 dark:text-violet-300")}>{titulo}</p>
+        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform shrink-0", expanded ? "text-white rotate-180" : "text-violet-600")} />
+      </div>
+      <p className={cn("text-[10px] font-bold leading-tight", expanded ? "text-violet-100" : "text-violet-600/80 dark:text-violet-400/80")}>{descricao}</p>
     </button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENCONTROS CHIP LIST (shown below EtapaChip when expanded)
+// ─────────────────────────────────────────────────────────────
+function EncontrosChipList({
+  encontros,
+  dataInicio,
+  label,
+}: {
+  encontros: any[];
+  dataInicio?: string;
+  label: string;
+}) {
+  // Filter encontros from dataInicio onwards, sorted by date
+  const filtrados = useMemo(() => {
+    const inicio = dataInicio ? new Date(dataInicio + 'T00:00:00') : null;
+    return [...encontros]
+      .filter(e => {
+        if (!e.data) return false;
+        if (inicio) return new Date(e.data + 'T00:00:00') >= inicio;
+        return true;
+      })
+      .sort((a, b) => a.data.localeCompare(b.data));
+  }, [encontros, dataInicio]);
+
+  if (filtrados.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-4 text-center">
+        <span className="text-2xl">📅</span>
+        <p className="text-xs font-bold text-muted-foreground">Nenhum encontro cadastrado neste período ainda.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <p className="text-[10px] font-black uppercase tracking-widest text-violet-700 dark:text-violet-300 mb-2">
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {filtrados.map((enc, i) => {
+          const isRealizado = enc.status === 'realizado';
+          const isCancelado = enc.status === 'cancelado';
+          const dateFmt = enc.data
+            ? new Date(enc.data + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+            : '';
+          return (
+            <div
+              key={enc.id}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-black border-2 transition-all",
+                isRealizado
+                  ? "bg-emerald-100 border-emerald-400 text-emerald-800 dark:bg-emerald-900/30 dark:border-emerald-600 dark:text-emerald-300"
+                  : isCancelado
+                  ? "bg-red-50 border-red-200 text-red-500 line-through dark:bg-red-950/20 dark:border-red-800"
+                  : "bg-white border-violet-200 text-violet-700 dark:bg-card dark:border-violet-700 dark:text-violet-300"
+              )}
+            >
+              {isRealizado ? (
+                <CheckCircle2 className="w-3 h-3 shrink-0" />
+              ) : (
+                <span className="w-4 h-4 rounded-full border-2 border-current flex items-center justify-center text-[8px] font-black shrink-0">
+                  {i + 1}
+                </span>
+              )}
+              <span>{dateFmt}</span>
+              {enc.tema && <span className="opacity-70 max-w-[80px] truncate">· {enc.tema}</span>}
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-[9px] text-muted-foreground mt-1">
+        {filtrados.filter(e => e.status === 'realizado').length} de {filtrados.length} encontro(s) realizados
+      </p>
+    </div>
   );
 }
 
 function BlocosTempos({
   etapas,
-  onOpenTempo,
   onOpenEtapa,
   onOpenSacramentos,
-  configuracao
+  configuracao,
+  encontros,
+  atividades,
 }: {
   etapas: EtapaJornada[];
-  onOpenTempo: (tempoId: string) => void;
   onOpenEtapa: (etapa: EtapaJornada) => void;
   onOpenSacramentos: () => void;
   configuracao: ConfiguracaoTurma;
+  encontros: any[];
+  atividades: any[];
 }) {
+  const [expandedTempo, setExpandedTempo] = useState<string | null>(null);
+  const [expandedChip, setExpandedChip] = useState<string | null>(null);
+  const expandedRef = useRef<HTMLDivElement>(null);
+
+  const toggleTempo = (id: string) => {
+    setExpandedTempo(prev => (prev === id ? null : id));
+    setExpandedChip(null);
+  };
+
+  const toggleChip = (chipId: string) => {
+    setExpandedChip(prev => (prev === chipId ? null : chipId));
+  };
+
+  // Find the date of the rito de admissão ao catecumenato (start of Catecumenato)
+  const dataEntradaCatecumenato = useMemo(() => {
+    const ev = atividades.find(a =>
+      a.tipo === 'Celebração de Passagem' &&
+      (a.celebracaoPassagemTipo === 'admissao_catecumenato' ||
+       (a.etapaIVC as string) === 'pass_cat' ||
+       (a.etapaIVC as string) === 'pass_catec' ||
+       (a.etapaIVC as string) === 'pass_entrada')
+    );
+    return ev?.data;
+  }, [atividades]);
+
   const renderTempo = (id: string) => {
     const tempo = TEMPOS_CONFIG.find(t => t.id === id);
     if (!tempo) return null;
     const etapasDoTempo = etapas.filter(e => e.tempoId === tempo.id);
     if (etapasDoTempo.length === 0) return null;
-    
+
     const concluidas = etapasDoTempo.filter(e => e.status === 'concluido').length;
     const total = etapasDoTempo.length;
     const progresso = total > 0 ? Math.round((concluidas / total) * 100) : 0;
-    
+
     const todosConcluidos = concluidas === total && total > 0;
     const algumAndamento = etapasDoTempo.some(e => e.status === 'em_andamento' || e.status === 'concluido');
-    
+    const isExpanded = expandedTempo === id;
+
     return (
-      <button
-        key={tempo.id}
-        onClick={() => onOpenTempo(tempo.id)}
-        className={cn(
-          "relative overflow-hidden rounded-3xl border-2 transition-all p-5 text-left group hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md w-full",
-          tempo.cor
+      <div key={id} className="w-full">
+        {/* Card do Tempo */}
+        <button
+          onClick={() => toggleTempo(id)}
+          className={cn(
+            "relative overflow-hidden rounded-3xl border-2 transition-all p-5 text-left group active:scale-[0.98] shadow-sm hover:shadow-md w-full",
+            isExpanded ? tempo.cor + ' rounded-b-none border-b-0' : tempo.cor + ' hover:scale-[1.02]'
+          )}
+        >
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-5xl drop-shadow-md group-hover:scale-110 transition-transform origin-bottom-left">{tempo.emoji}</span>
+            <div className="flex items-center gap-2">
+              <div className={cn("px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", tempo.corBadge)}>
+                {concluidas}/{total}
+              </div>
+              <div className={cn(
+                "w-7 h-7 rounded-full flex items-center justify-center transition-all",
+                tempo.corBadge
+              )}>
+                <ChevronDown className={cn("w-4 h-4 transition-transform duration-300", isExpanded && "rotate-180")} />
+              </div>
+            </div>
+          </div>
+
+          <p className="font-black text-lg text-foreground/90 leading-tight mb-4">{tempo.label}</p>
+
+          <div className="space-y-1.5 mt-auto">
+            <div className="h-1.5 w-full bg-white/50 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-current opacity-60 rounded-full transition-all duration-1000"
+                style={{ width: `${progresso}%` }}
+              />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest flex items-center justify-between opacity-80">
+              <span>
+                {todosConcluidos ? 'Concluído' : algumAndamento ? 'Em andamento' : 'Pendente'}
+              </span>
+              <span>{progresso}%</span>
+            </p>
+          </div>
+        </button>
+
+        {/* Connector line + Dropdown panel */}
+        {isExpanded && (
+          <div className="relative">
+            {/* Connecting line on left side */}
+            <div className={cn(
+              "absolute left-6 top-0 w-0.5 h-full",
+              id === 'tempo1' ? 'bg-yellow-300' :
+              id === 'tempo2' ? 'bg-sky-300' :
+              id === 'tempo3' ? 'bg-purple-300' : 'bg-emerald-300'
+            )} />
+            {/* Right line */}
+            <div className={cn(
+              "absolute right-6 top-0 w-0.5 h-full",
+              id === 'tempo1' ? 'bg-yellow-300' :
+              id === 'tempo2' ? 'bg-sky-300' :
+              id === 'tempo3' ? 'bg-purple-300' : 'bg-emerald-300'
+            )} />
+
+            <div
+              ref={expandedRef}
+              className={cn(
+                "rounded-b-3xl border-2 border-t-0 p-4 animate-fade-in",
+                id === 'tempo1' ? 'border-yellow-300 bg-yellow-50/80 dark:bg-yellow-950/20' :
+                id === 'tempo2' ? 'border-sky-300 bg-sky-50/80 dark:bg-sky-950/20' :
+                id === 'tempo3' ? 'border-purple-300 bg-purple-50/80 dark:bg-purple-950/20' :
+                'border-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/20'
+              )}
+            >
+              {/* Etapas do tempo */}
+              <JornadaMap
+                etapas={etapasDoTempo}
+                posicaoAtual={-1}
+                onEtapaClick={onOpenEtapa}
+              />
+            </div>
+          </div>
         )}
-      >
-        <div className="flex justify-between items-start mb-4">
-          <span className="text-5xl drop-shadow-md group-hover:scale-110 transition-transform origin-bottom-left">{tempo.emoji}</span>
-          <div className={cn("px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", tempo.corBadge)}>
-            {concluidas}/{total}
-          </div>
-        </div>
-        
-        <p className="font-black text-lg text-foreground/90 leading-tight mb-4">{tempo.label}</p>
-        
-        <div className="space-y-1.5 mt-auto">
-          <div className="h-1.5 w-full bg-white/50 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-current opacity-60 rounded-full transition-all duration-1000"
-              style={{ width: `${progresso}%` }}
-            />
-          </div>
-          <p className="text-[10px] font-black uppercase tracking-widest flex items-center justify-between opacity-80">
-            <span>
-              {todosConcluidos ? 'Concluído' : algumAndamento ? 'Em andamento' : 'Pendente'}
-            </span>
-            <span>{progresso}%</span>
-          </p>
-        </div>
-      </button>
+      </div>
     );
   };
 
@@ -901,41 +1065,77 @@ function BlocosTempos({
   return (
     <div className="flex flex-col space-y-6 pt-2">
       {renderTempo('tempo1')}
-      
+
       {hasTempo('tempo1') && hasTempo('tempo2') && (
-        <EtapaChip 
-          titulo="1ª ETAPA - Rito de Admissão (Entrada)"
-          descricao={configuracao.modelo === 'sementinhas' ? 'Aqui se entrega o Menino Jesus.' : 'Aqui se entrega a Cruz.'}
-          onClick={() => {
-            const etapa = etapas.find(e => e.celebracaoTipo === 'admissao_catecumenato' || e.id === 'pass_cat' || e.id === 'pass_catec' || e.id === 'pass_entrada');
-            if (etapa) onOpenEtapa(etapa);
-            else onOpenTempo('tempo2');
-          }}
-        />
+        <div className="w-full">
+          <EtapaChip
+            titulo="1ª ETAPA - Rito de Admissão (Entrada)"
+            descricao={configuracao.modelo === 'sementinhas' ? 'Aqui se entrega o Menino Jesus.' : 'Aqui se entrega a Cruz.'}
+            expanded={expandedChip === 'admissao'}
+            onClick={() => {
+              const etapa = etapas.find(e => e.celebracaoTipo === 'admissao_catecumenato' || e.id === 'pass_cat' || e.id === 'pass_catec' || e.id === 'pass_entrada');
+              if (etapa) {
+                onOpenEtapa(etapa);
+              }
+            }}
+          />
+        </div>
+      )}
+
+      {hasTempo('tempo1') && hasTempo('tempo2') && (
+        <div className="w-full">
+          {/* Chip expandível — catecumenato catequese */}
+          <EtapaChip
+            titulo="Catecumenato — Encontros de Catequese"
+            descricao="Clique para ver os encontros neste período"
+            expanded={expandedChip === 'catecumenato_encontros'}
+            onClick={() => toggleChip('catecumenato_encontros')}
+          />
+          {expandedChip === 'catecumenato_encontros' && (
+            <div className="relative">
+              {/* Vertical connector line */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-0 w-0.5 h-4 bg-violet-300" />
+              <div className="mt-4 rounded-3xl border-2 border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/20 p-4 animate-fade-in">
+                {/* Dot at top center */}
+                <div className="w-3 h-3 rounded-full bg-violet-400 mx-auto -mt-7 mb-3 shadow ring-2 ring-white dark:ring-card" />
+                <EncontrosChipList
+                  encontros={encontros}
+                  dataInicio={dataEntradaCatecumenato}
+                  label={`Encontros a partir do Rito de Entrada ao Catecumenato${dataEntradaCatecumenato ? ` (${new Date(dataEntradaCatecumenato + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })})` : ''}`}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {renderTempo('tempo2')}
 
       {hasTempo('tempo2') && hasTempo('tempo3') && (
-        <EtapaChip 
-          titulo="2ª ETAPA - Rito de Eleição"
-          descricao="Preparação para os sacramentos."
-          onClick={() => {
-            const etapa = etapas.find(e => e.celebracaoTipo === 'eleicao_preparacao' || e.id === 'eleicao' || e.id === 'pass_ilum_seed');
-            if (etapa) onOpenEtapa(etapa);
-            else onOpenTempo('tempo3');
-          }}
-        />
+        <div className="w-full">
+          <EtapaChip
+            titulo="2ª ETAPA - Rito de Eleição"
+            descricao="Preparação para os sacramentos."
+            expanded={expandedChip === 'eleicao'}
+            onClick={() => {
+              const etapa = etapas.find(e => e.celebracaoTipo === 'eleicao_preparacao' || e.id === 'eleicao' || e.id === 'pass_ilum_seed');
+              if (etapa) onOpenEtapa(etapa);
+            }}
+          />
+        </div>
       )}
 
       {renderTempo('tempo3')}
 
       {hasTempo('tempo3') && configuracao.modelo !== 'sementinhas' && (
-        <EtapaChip 
-          titulo="3ª ETAPA - Celebração dos Sacramentos da Iniciação"
-          descricao="Batismo, Confissão, Eucaristia e Crisma."
-          onClick={onOpenSacramentos}
-        />
+        <div className="w-full">
+          <EtapaChip
+            titulo="3ª ETAPA - Celebração dos Sacramentos da Iniciação"
+            descricao="Batismo, Confissão, Eucaristia e Crisma."
+            expanded={false}
+            onClick={onOpenSacramentos}
+          />
+        </div>
       )}
 
       {renderTempo('tempo4')}
@@ -1313,7 +1513,6 @@ export default function PainelIVC() {
     }
   }, [id, configuracao]);
 
-  const [tempoSelecionado, setTempoSelecionado] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
   const [etapaModal, setEtapaModal] = useState<EtapaJornada | null>(null);
   const [showModalSacramentos, setShowModalSacramentos] = useState(false);
@@ -1449,39 +1648,15 @@ export default function PainelIVC() {
         <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-primary" /> Tempos do IVC
         </p>
-        <BlocosTempos 
-          etapas={etapas} 
-          onOpenTempo={setTempoSelecionado} 
+        <BlocosTempos
+          etapas={etapas}
           onOpenEtapa={setEtapaModal}
           onOpenSacramentos={() => setShowModalSacramentos(true)}
           configuracao={configuracao}
+          encontros={encontros}
+          atividades={atividades}
         />
       </div>
-
-      {/* ─── LINHA DO TEMPO MODAL (SHEET) ─── */}
-      <Sheet open={!!tempoSelecionado} onOpenChange={(open) => !open && setTempoSelecionado(null)}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-[3rem] px-0 py-6 overflow-hidden flex flex-col">
-          {tempoInfo && (
-            <>
-              <SheetHeader className="px-6 pb-4 border-b border-border/40 shrink-0">
-                <div className="flex items-center gap-4">
-                  <span className="text-5xl">{tempoInfo.emoji}</span>
-                  <div className="flex-1 text-left">
-                    <SheetTitle className="text-2xl font-black text-foreground">{tempoInfo.label}</SheetTitle>
-                  </div>
-                </div>
-              </SheetHeader>
-              <div className="flex-1 overflow-y-auto px-6">
-                <JornadaMap 
-                  etapas={etapasDoTempoSelecionado}
-                  posicaoAtual={-1} // Not critical for the filtered view, or you can compute local index
-                  onEtapaClick={handleEtapaClick}
-                />
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
 
       {/* ─── ETAPA ACTION MODAL ─── */}
       {etapaModal && (
