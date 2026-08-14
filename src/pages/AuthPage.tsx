@@ -763,7 +763,7 @@ export default function AuthPage() {
                 </div>
 
                 {/* Corpo scrollável */}
-                <div className="max-h-[42vh] overflow-y-auto px-5 py-4 space-y-4 text-sm text-slate-700 leading-relaxed">
+                <div className="max-h-[42vh] overflow-y-auto px-5 py-4 space-y-4 text-base text-justify text-slate-700 leading-relaxed">
                   <p className="font-semibold text-slate-800">
                     Bem-vindo ao iCatequese.<br />
                     Este Termo de Uso e Política de Privacidade estabelece as condições para utilização da plataforma, bem como as diretrizes relacionadas à proteção de dados pessoais, segurança digital e uso ético do sistema.<br /><br />
@@ -787,7 +787,7 @@ export default function AuthPage() {
 
                   <div className="space-y-1">
                     <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">4. PROTEÇÃO DE DADOS — LGPD</h4>
-                    <p>O iCatequese compromete-se a cumprir integralmente a Lei Geral de Proteção de Dados Pessoais (LGPD). Os dados serão utilizados exclusivamente para organização pastoral, gestão catequética e melhorias no sistema. O titular poderá solicitar acesso, correção, exclusão ou revogação do consentimento a qualquer momento.</p>
+                    <p>O iCatequese compromete-se a cumprir integralmente a Lei Geral de Proteção de Dados Pessoais (LGPD). Os dados registrados na plataforma terá total sigilo e não será repassados a terceiros. O titular poderá solicitar acesso, correção, exclusão ou revogação do consentimento a qualquer momento.</p>
                   </div>
 
                   <div className="space-y-2 bg-amber-50 border border-amber-200 rounded-xl p-4">
