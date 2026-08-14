@@ -766,6 +766,7 @@ export default function AuthPage() {
                 {/* Corpo scrollável */}
                 <div className="max-h-[42vh] overflow-y-auto px-5 py-4 space-y-4 text-base text-justify text-slate-700 leading-relaxed">
                   <TermsContent />
+                </div>
               </div>
 
               {/* Aceitar */}
