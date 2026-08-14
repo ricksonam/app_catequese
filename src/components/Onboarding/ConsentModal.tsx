@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Check } from "lucide-react";
+import { X, Check, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ConsentModalProps {
@@ -48,7 +48,7 @@ export function ConsentModal({
               </div>
             </div>
             <h3 className="text-xl font-black text-foreground tracking-tight leading-tight">Termo de Uso e Política de Privacidade</h3>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Última atualização: 17 de maio de 2026</p>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Última atualização: 13 de agosto de 2026</p>
           </div>
 
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
@@ -124,13 +124,26 @@ export function ConsentModal({
             </p>
           </div>
 
-          <div className="space-y-1">
-            <h4 className="text-sm font-black text-foreground uppercase tracking-wider">5. ECA DIGITAL</h4>
-            <p className="text-sm leading-relaxed">
-              O iCatequese reconhece a prioridade absoluta da proteção integral de crianças e adolescentes (ECA). A plataforma compromete-se a proteger a privacidade de menores, minimizar coleta de dados e não comercializar informações.
+          <div className="space-y-2 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <h4 className="text-sm font-black text-amber-900 uppercase tracking-wider flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
+              5. ECA DIGITAL — Lei nº 15.211/2025
+            </h4>
+            <p className="text-sm leading-relaxed text-amber-800">
+              O iCatequese reconhece e adota integralmente os princípios da <strong>Lei nº 15.211/2025 — ECA Digital</strong>, que assegura a proteção integral de crianças e adolescentes no ambiente digital, garantindo seu respeito, dignidade e integridade.
             </p>
-            <p className="text-sm leading-relaxed pt-1">
-              É terminantemente proibido compartilhar imagens sem autorização, expor dados sensíveis ou utilizar a plataforma para fins inadequados. Violações resultarão em denúncia às autoridades.
+            <p className="text-sm leading-relaxed text-amber-800">
+              Em conformidade com esta lei, a plataforma garante:
+            </p>
+            <ul className="list-disc pl-5 text-sm space-y-1 text-amber-800">
+              <li><strong>Respeito à dignidade</strong> de crianças e adolescentes em todos os recursos digitais;</li>
+              <li><strong>Proteção contra exposição indevida</strong> — é terminantemente proibido publicar, compartilhar ou divulgar fotos, vídeos ou qualquer imagem de menores sem o <em>consentimento expresso e documentado</em> dos responsáveis legais;</li>
+              <li><strong>Minimização de dados</strong> — coleta apenas o estritamente necessário para fins pastorais;</li>
+              <li><strong>Não comercialização</strong> de informações de menores em nenhuma hipótese;</li>
+              <li>Denúncia obrigatória às autoridades competentes em caso de violações identificadas.</li>
+            </ul>
+            <p className="text-sm leading-relaxed text-amber-800 font-semibold mt-1">
+              Violações a esta cláusula resultarão em suspensão imediata da conta e comunicação às autoridades.
             </p>
           </div>
 

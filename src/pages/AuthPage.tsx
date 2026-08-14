@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { validatePassword, PASSWORD_REQUIREMENTS } from "@/lib/passwordValidation";
+import { ConsentModal } from "@/components/Onboarding/ConsentModal";
 import {
   Eye,
   EyeOff,
@@ -19,7 +20,9 @@ import {
   Check,
   ChevronLeft,
   AlertTriangle,
-  Info
+  Info,
+  FileText,
+  ShieldCheck
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
 
@@ -162,7 +165,7 @@ export default function AuthPage() {
   const [forgotEmail, setForgotEmail] = useState("");
 
   // Signup states
-  const [signupStep, setSignupStep] = useState<1 | 2 | 3>(1);
+  const [signupStep, setSignupStep] = useState<1 | 2 | 3 | 4>(1);
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupDob, setSignupDob] = useState("");
@@ -172,6 +175,7 @@ export default function AuthPage() {
   const [signupConfirm, setSignupConfirm] = useState("");
   const [showVerificationNotice, setShowVerificationNotice] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   // Location
   const [cities, setCities] = useState<IBGECity[]>([]);
@@ -282,10 +286,21 @@ export default function AuthPage() {
       toast({ title: "Erro", description: "As senhas não coincidem.", variant: "destructive" });
       return;
     }
+    // Step 3 = Terms of Use screen
     setSignupStep(3);
   };
 
+  const handleSignupNextStep3 = () => {
+    // Terms were accepted in step 3, go to confirmation
+    if (!termsAccepted) {
+      toast({ title: "Atenção", description: "Você precisa aceitar os termos de uso para continuar.", variant: "destructive" });
+      return;
+    }
+    setSignupStep(4);
+  };
+
   const handleSignupConfirm = async () => {
+    // termsAccepted already validated in step 3
     if (!termsAccepted) {
       toast({ title: "Atenção", description: "Você precisa aceitar os termos de uso para concluir o cadastro.", variant: "destructive" });
       return;
@@ -555,7 +570,7 @@ export default function AuthPage() {
         <div className="px-6 py-6 flex items-center justify-between">
           <button
             onClick={() => {
-              if (signupStep > 1) setSignupStep((prev) => (prev - 1) as 1 | 2 | 3);
+              if (signupStep > 1) setSignupStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
               else setView("login");
             }}
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
@@ -565,7 +580,7 @@ export default function AuthPage() {
 
           {/* Progress dots */}
           <div className="flex items-center gap-2">
-            {[1, 2, 3].map(step => (
+            {[1, 2, 3, 4].map(step => (
               <div
                 key={step}
                 className={`h-2 rounded-full transition-all duration-300 ${
@@ -721,7 +736,141 @@ export default function AuthPage() {
             </div>
           )}
 
+          {/* ── STEP 3: TERMOS DE USO ── */}
           {signupStep === 3 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-2xl bg-[#f7931a]/10 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5 text-[#f7931a]" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-black text-slate-800 leading-tight">Termos de Uso</h2>
+                </div>
+              </div>
+              <p className="text-slate-500 text-sm mb-6">Leia com atenção antes de criar sua conta no iCatequese.</p>
+
+              {/* Termos scrolláveis */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden mb-6">
+                {/* Header dos termos */}
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 bg-white">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden border border-[#f7931a]/20 bg-white shadow-sm shrink-0 flex items-center justify-center p-1">
+                    <img src="/app-logo.png" alt="Logo" className="w-full h-full object-contain" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-slate-800">iCatequese</p>
+                    <p className="text-[10px] font-bold text-[#f7931a] uppercase tracking-widest">Privacidade &amp; Termos</p>
+                  </div>
+                </div>
+
+                {/* Corpo scrollável */}
+                <div className="max-h-[42vh] overflow-y-auto px-5 py-4 space-y-4 text-sm text-slate-700 leading-relaxed">
+                  <p className="font-semibold text-slate-800">
+                    Bem-vindo ao iCatequese.<br />
+                    Este Termo de Uso e Política de Privacidade estabelece as condições para utilização da plataforma, bem como as diretrizes relacionadas à proteção de dados pessoais, segurança digital e uso ético do sistema.<br /><br />
+                    Ao utilizar o sistema, o usuário declara que leu, compreendeu e concorda integralmente com os termos abaixo.
+                  </p>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">1. SOBRE O SISTEMA</h4>
+                    <p>O iCatequese é uma plataforma digital destinada à gestão pastoral da catequese, permitindo o gerenciamento de turmas, catequizandos, catequistas, encontros, atividades, comunicação com famílias, agenda catequética e recursos de evangelização. A plataforma possui finalidade exclusivamente pastoral, educativa e evangelizadora.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">2. USO EXCLUSIVAMENTE PASTORAL</h4>
+                    <p>O uso do iCatequese é restrito às atividades pastorais, religiosas, educativas e administrativas relacionadas à catequese. É expressamente proibido utilizar a plataforma para campanhas políticas, fake news, discurso de ódio, conteúdo discriminatório ou atividades ilícitas.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">3. CADASTRO E RESPONSABILIDADE</h4>
+                    <p>O usuário compromete-se a fornecer informações verdadeiras, manter a confidencialidade de sua senha e garantir que possui autorização para cadastrar dados de terceiros. O usuário é integralmente responsável pelas atividades realizadas em sua conta.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">4. PROTEÇÃO DE DADOS — LGPD</h4>
+                    <p>O iCatequese compromete-se a cumprir integralmente a Lei Geral de Proteção de Dados Pessoais (LGPD). Os dados serão utilizados exclusivamente para organização pastoral, gestão catequética e melhorias no sistema. O titular poderá solicitar acesso, correção, exclusão ou revogação do consentimento a qualquer momento.</p>
+                  </div>
+
+                  <div className="space-y-2 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <h4 className="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-amber-600" />
+                      5. ECA DIGITAL — Lei nº 15.211/2025
+                    </h4>
+                    <p className="text-amber-800">
+                      O iCatequese reconhece e adota integralmente os princípios da <strong>Lei nº 15.211/2025 — ECA Digital</strong>, que assegura a proteção integral de crianças e adolescentes no ambiente digital.
+                    </p>
+                    <p className="text-amber-800">
+                      Em conformidade com esta lei, a plataforma garante:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1 text-amber-800">
+                      <li><strong>Respeito à dignidade</strong> de crianças e adolescentes em todos os recursos digitais;</li>
+                      <li><strong>Proteção contra exposição indevida</strong> — é terminantemente proibido publicar, compartilhar ou divulgar fotos, vídeos ou qualquer imagem de menores sem o <em>consentimento expresso e documentado</em> dos responsáveis legais;</li>
+                      <li><strong>Minimização de dados</strong> — coleta apenas o necessário para fins pastorais;</li>
+                      <li><strong>Não comercialização</strong> de informações de menores em nenhuma hipótese;</li>
+                      <li>Denúncia obrigatória às autoridades competentes em caso de violações identificadas.</li>
+                    </ul>
+                    <p className="text-amber-800 text-xs font-semibold mt-1">
+                      Violações a esta cláusula resultarão em suspensão imediata da conta e comunicação às autoridades.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">6. CONSENTIMENTO DOS RESPONSÁVEIS</h4>
+                    <p>Ao cadastrar crianças ou adolescentes, o catequista declara possuir autorização legítima dos responsáveis legais para cadastro, comunicação e uso de imagens (quando autorizado).</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">7. SEGURANÇA DA INFORMAÇÃO</h4>
+                    <p>Adotamos controle de acesso, criptografia, monitoramento e backups para proteção dos dados. Apesar disso, nenhum sistema é completamente imune a riscos digitais.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">8. PROPRIEDADE INTELECTUAL</h4>
+                    <p>Todos os direitos do sistema pertencem ao iCatequese. É proibida a reprodução sem autorização.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">9. ALTERAÇÕES DOS TERMOS</h4>
+                    <p>Este Termo poderá ser atualizado periodicamente. A continuidade do uso da plataforma após alterações será interpretada como concordância com os novos termos.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">10. FORO</h4>
+                    <p>Fica eleito o foro da comarca de Manaus, Estado do Amazonas para resolução de quaisquer conflitos, com renúncia a qualquer outro foro.</p>
+                  </div>
+
+                  <p className="text-center text-xs text-slate-400 font-black uppercase tracking-[0.3em] pt-2">Ad Maiorem Dei Gloriam</p>
+                </div>
+              </div>
+
+              {/* Aceitar */}
+              <label className="flex items-start gap-4 mb-6 cursor-pointer group">
+                <div className="relative flex items-center justify-center w-6 h-6 mt-0.5 shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-md bg-white checked:bg-[#f7931a] checked:border-[#f7931a] transition-all cursor-pointer"
+                  />
+                  <Check className="absolute text-white w-4 h-4 opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" strokeWidth={3} />
+                </div>
+                <p className="text-sm text-slate-500 leading-relaxed group-hover:text-slate-700 transition-colors">
+                  Li e concordo com os <strong className="text-slate-700">Termos de Uso</strong>, a <strong className="text-slate-700">Política de Privacidade</strong> e as disposições da <strong className="text-slate-700">Lei nº 15.211/2025 (ECA Digital)</strong> do iCatequese.
+                </p>
+              </label>
+
+              <button
+                type="button"
+                onClick={handleSignupNextStep3}
+                disabled={!termsAccepted}
+                className="w-full bg-[#f7931a] text-black font-black uppercase tracking-widest py-4 rounded-xl shadow-[0_0_20px_rgba(247,147,26,0.3)] hover:bg-[#ffaa40] transition-all active:scale-[0.98] disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
+              >
+                Aceitar e Continuar →
+              </button>
+            </div>
+          )}
+
+          {/* ── STEP 4: CONFIRMAÇÃO DE DADOS ── */}
+          {signupStep === 4 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <h2 className="text-3xl font-black text-slate-800 mb-2">Confirmar dados</h2>
               <p className="text-slate-500 text-sm mb-6">Verifique suas informações antes de finalizar.</p>
@@ -748,28 +897,30 @@ export default function AuthPage() {
                 </div>
               </div>
 
-              <label className="flex items-start gap-4 mb-8 cursor-pointer group">
+              {/* Confirmação - termos já aceitos no passo anterior */}
+              <div
+                onClick={() => setTermsAccepted((v) => !v)}
+                className="flex items-start gap-4 mb-8 cursor-pointer group"
+              >
                 <div className="relative flex items-center justify-center w-6 h-6 mt-0.5 shrink-0">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-md bg-white checked:bg-[#f7931a] checked:border-[#f7931a] transition-all cursor-pointer"
-                  />
-                  <Check className="absolute text-white w-4 h-4 opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" strokeWidth={3} />
+                  <div className={`w-6 h-6 border-2 rounded-md flex items-center justify-center transition-all ${
+                    termsAccepted ? "bg-[#f7931a] border-[#f7931a]" : "border-slate-300 bg-white"
+                  }`}>
+                    <Check className={`text-white w-4 h-4 transition-opacity ${termsAccepted ? "opacity-100" : "opacity-0"}`} strokeWidth={3} />
+                  </div>
                 </div>
                 <p className="text-sm text-slate-500 leading-relaxed group-hover:text-slate-700 transition-colors">
                   Eu confirmo que os dados estão corretos e concordo com os{" "}
-                  <a
-                    href="#"
-                    className="text-[#f7931a] font-bold underline"
-                    onClick={(e) => e.preventDefault()}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setShowTermsModal(true); }}
+                    className="text-[#f7931a] font-bold underline hover:text-[#e0821a] transition-colors"
                   >
                     Termos de Uso
-                  </a>{" "}
+                  </button>{" "}
                   e a Política de Privacidade do iCatequese.
                 </p>
-              </label>
+              </div>
 
               <button
                 type="button"
@@ -788,6 +939,14 @@ export default function AuthPage() {
         </div>
       </div>
       </div>
+
+      {/* Modal de Termos - abre ao clicar em "Termos de Uso" na tela de confirmação */}
+      <ConsentModal
+        open={showTermsModal}
+        onAccept={() => { setTermsAccepted(true); setShowTermsModal(false); }}
+        onCancel={() => setShowTermsModal(false)}
+        isSignup={true}
+      />
     );
   }
 
