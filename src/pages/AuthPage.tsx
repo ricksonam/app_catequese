@@ -937,16 +937,16 @@ export default function AuthPage() {
             </div>
           )}
         </div>
-      </div>
-      </div>
 
-      {/* Modal de Termos - abre ao clicar em "Termos de Uso" na tela de confirmação */}
-      <ConsentModal
-        open={showTermsModal}
-        onAccept={() => { setTermsAccepted(true); setShowTermsModal(false); }}
-        onCancel={() => setShowTermsModal(false)}
-        isSignup={true}
-      />
+        {/* Modal de Termos - abre ao clicar em "Termos de Uso" na tela de confirmação */}
+        <ConsentModal
+          open={showTermsModal}
+          onAccept={() => { setTermsAccepted(true); setShowTermsModal(false); }}
+          onCancel={() => setShowTermsModal(false)}
+          isSignup={true}
+        />
+      </div>
+      </div>
     );
   }
 
