@@ -763,7 +763,7 @@ export default function Dashboard() {
               
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-20 h-20 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center border border-emerald-200 dark:border-emerald-700/50 shadow-inner overflow-hidden animate-bounce-subtle">
-                  <img src="/acesso_nova_turma.jpg" alt="Nova Turma" className="w-16 h-16 object-cover rounded-xl" />
+                  <Users className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 
                 <div className="space-y-2">
