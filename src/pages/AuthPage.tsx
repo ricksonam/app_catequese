@@ -25,6 +25,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { getAppUrl } from "@/lib/utils";
+import { TermsContent } from "@/components/Onboarding/TermsContent";
 
 /* ─── tipos de view ─── */
 type View = "login" | "signup" | "forgot";
@@ -764,82 +765,7 @@ export default function AuthPage() {
 
                 {/* Corpo scrollável */}
                 <div className="max-h-[42vh] overflow-y-auto px-5 py-4 space-y-4 text-base text-justify text-slate-700 leading-relaxed">
-                  <p className="font-semibold text-slate-800">
-                    Bem-vindo ao iCatequese.<br />
-                    Este Termo de Uso e Política de Privacidade estabelece as condições para utilização da plataforma, bem como as diretrizes relacionadas à proteção de dados pessoais, segurança digital e uso ético do sistema.<br /><br />
-                    Ao utilizar o sistema, o usuário declara que leu, compreendeu e concorda integralmente com os termos abaixo.
-                  </p>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">1. SOBRE O SISTEMA</h4>
-                    <p>O iCatequese é uma plataforma digital destinada à gestão pastoral da catequese, permitindo o gerenciamento de turmas, catequizandos, catequistas, encontros, atividades, comunicação com famílias, agenda catequética e recursos de evangelização. A plataforma possui finalidade exclusivamente pastoral, educativa e evangelizadora.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">2. USO EXCLUSIVAMENTE PASTORAL</h4>
-                    <p>O uso do iCatequese é restrito às atividades pastorais, religiosas, educativas e administrativas relacionadas à catequese. É expressamente proibido utilizar a plataforma para campanhas políticas, fake news, discurso de ódio, conteúdo discriminatório ou atividades ilícitas.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">3. CADASTRO E RESPONSABILIDADE</h4>
-                    <p>O usuário compromete-se a fornecer informações verdadeiras, manter a confidencialidade de sua senha e garantir que possui autorização para cadastrar dados de terceiros. O usuário é integralmente responsável pelas atividades realizadas em sua conta.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">4. PROTEÇÃO DE DADOS — LGPD</h4>
-                    <p>O iCatequese compromete-se a cumprir integralmente a Lei Geral de Proteção de Dados Pessoais (LGPD). Os dados registrados na plataforma terá total sigilo e não será repassados a terceiros. O titular poderá solicitar acesso, correção, exclusão ou revogação do consentimento a qualquer momento.</p>
-                  </div>
-
-                  <div className="space-y-2 bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <h4 className="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-amber-600" />
-                      5. ECA DIGITAL — Lei nº 15.211/2025
-                    </h4>
-                    <p className="text-amber-800">
-                      O iCatequese reconhece e adota integralmente os princípios da <strong>Lei nº 15.211/2025 — ECA Digital</strong>, que assegura a proteção integral de crianças e adolescentes no ambiente digital.
-                    </p>
-                    <p className="text-amber-800">
-                      Em conformidade com esta lei, a plataforma garante:
-                    </p>
-                    <ul className="list-disc pl-5 space-y-1 text-amber-800">
-                      <li><strong>Respeito à dignidade</strong> de crianças e adolescentes em todos os recursos digitais;</li>
-                      <li><strong>Proteção contra exposição indevida</strong> — é terminantemente proibido publicar, compartilhar ou divulgar fotos, vídeos ou qualquer imagem de menores sem o <em>consentimento expresso e documentado</em> dos responsáveis legais;</li>
-                      <li><strong>Minimização de dados</strong> — coleta apenas o necessário para fins pastorais;</li>
-                      <li><strong>Não comercialização</strong> de informações de menores em nenhuma hipótese;</li>
-                      <li>Denúncia obrigatória às autoridades competentes em caso de violações identificadas.</li>
-                    </ul>
-                    <p className="text-amber-800 text-xs font-semibold mt-1">
-                      Violações a esta cláusula resultarão em suspensão imediata da conta e comunicação às autoridades.
-                    </p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">6. CONSENTIMENTO DOS RESPONSÁVEIS</h4>
-                    <p>Ao cadastrar crianças ou adolescentes, o catequista declara possuir autorização legítima dos responsáveis legais para cadastro, comunicação e uso de imagens (quando autorizado).</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">7. SEGURANÇA DA INFORMAÇÃO</h4>
-                    <p>Adotamos controle de acesso, criptografia, monitoramento e backups para proteção dos dados. Apesar disso, nenhum sistema é completamente imune a riscos digitais.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">8. PROPRIEDADE INTELECTUAL</h4>
-                    <p>Todos os direitos do sistema pertencem ao iCatequese. É proibida a reprodução sem autorização.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">9. ALTERAÇÕES DOS TERMOS</h4>
-                    <p>Este Termo poderá ser atualizado periodicamente. A continuidade do uso da plataforma após alterações será interpretada como concordância com os novos termos.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">10. FORO</h4>
-                    <p>Fica eleito o foro da comarca de Manaus, Estado do Amazonas para resolução de quaisquer conflitos, com renúncia a qualquer outro foro.</p>
-                  </div>
-
-                  <p className="text-center text-xs text-slate-400 font-black uppercase tracking-[0.3em] pt-2">Ad Maiorem Dei Gloriam</p>
-                </div>
+                  <TermsContent />
               </div>
 
               {/* Aceitar */}
