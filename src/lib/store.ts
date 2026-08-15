@@ -370,6 +370,9 @@ export interface MuralFoto {
   criadoEm: string;
   turmaId?: string;
   tipo?: 'comum' | 'criatividade';
+  referenciaId?: string;
+  referenciaTipo?: 'encontro' | 'atividade' | 'evento';
+  referenciaNome?: string;
 }
 
 export interface TurmaMembro {

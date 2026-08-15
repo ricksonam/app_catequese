@@ -609,7 +609,8 @@ export async function fetchMuralFotos(): Promise<MuralFoto[]> {
   if (error) throw error;
   return (data || []).map((f: any) => ({
     id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
-    data: f.data, criadoEm: f.criado_em, turmaId: f.turma_id, tipo: f.tipo
+    data: f.data, criadoEm: f.criado_em, turmaId: f.turma_id, tipo: f.tipo,
+    referenciaId: f.referencia_id, referenciaTipo: f.referencia_tipo, referenciaNome: f.referencia_nome
   }));
 }
 
@@ -621,7 +622,10 @@ export async function upsertMuralFoto(f: MuralFoto) {
     id: f.id, url: f.url, legenda: f.legenda, resumo: f.resumo,
     data: f.data, criado_em: f.criadoEm, turma_id: f.turmaId || null,
     tipo: f.tipo || 'comum',
-    user_id: user.id
+    user_id: user.id,
+    referencia_id: f.referenciaId || null,
+    referencia_tipo: f.referenciaTipo || null,
+    referencia_nome: f.referenciaNome || null
   });
   if (error) throw error;
 }
