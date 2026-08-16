@@ -357,10 +357,10 @@ export default function Dashboard() {
     const withRange = sortedInstances.filter(inst => inst.diasRelativo >= -6);
     const orderedInstances = withRange.length > 0 ? withRange : sortedInstances;
 
-    // Ordena: passados vão para o fim (aparecem por último), futuros primeiro
+    // Ordena: passados ficam à esquerda (primeiro), futuros/hoje à direita
     const fromToday = orderedInstances.filter(inst => inst.diasRelativo >= 0);
-    const pastThisWeek = orderedInstances.filter(inst => inst.diasRelativo < 0).sort((a, b) => b.diasRelativo - a.diasRelativo);
-    const finalOrdered = [...fromToday, ...pastThisWeek];
+    const pastThisWeek = orderedInstances.filter(inst => inst.diasRelativo < 0).sort((a, b) => a.diasRelativo - b.diasRelativo); // mais antigo fica mais à esquerda
+    const finalOrdered = [...pastThisWeek, ...fromToday];
 
     const result: any[] = [];
     const seenKeys = new Set<string>();
