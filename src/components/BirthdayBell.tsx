@@ -8,16 +8,19 @@ interface BirthdayPerson {
   tipo: "Catequizando" | "Catequista";
   subtipo: "nascimento" | "batismo";
   dataAniversario: Date;
-  diasRestantes: number;
+  diasRestantes: number; // negativo = passou, 0 = hoje, positivo = falta X dias
 }
 
-/** Retorna a próxima ocorrência de (mês, dia) a partir de hoje, e quantos dias faltam */
-function calcNextOccurrence(hoje: Date, thisYear: number, month: number, day: number): { next: Date; dias: number } {
-  const next = new Date(thisYear, month, day);
-  next.setHours(0, 0, 0, 0);
-  if (next < hoje) next.setFullYear(thisYear + 1);
-  const dias = Math.ceil((next.getTime() - hoje.getTime()) / 86400000);
-  return { next, dias };
+/**
+ * Calcula quantos dias faltam (positivo) ou já passaram (negativo) em relação a hoje,
+ * considerando o ano corrente do mês/dia informado.
+ */
+function calcDiasRelativosAoHoje(hoje: Date, thisYear: number, month: number, day: number): { date: Date; dias: number } {
+  const thisYearDate = new Date(thisYear, month, day);
+  thisYearDate.setHours(0, 0, 0, 0);
+  const diffMs = thisYearDate.getTime() - hoje.getTime();
+  const dias = Math.round(diffMs / 86400000);
+  return { date: thisYearDate, dias };
 }
 
 export default function BirthdayBell() {
@@ -38,25 +41,26 @@ export default function BirthdayBell() {
 
     // ── Catequizandos ────────────────────────────────────────────
     catequizandos.forEach((c) => {
-      // Aniversário de nascimento (somente se for neste mês)
+      // Aniversário de nascimento
       if (c.dataNascimento) {
         const bday = new Date(c.dataNascimento + (c.dataNascimento.includes("T") ? "" : "T12:00:00"));
         if (bday.getMonth() === thisMonth) {
-          const { next, dias } = calcNextOccurrence(hoje, thisYear, bday.getMonth(), bday.getDate());
-          if (dias <= 31) {
-            list.push({ nome: c.nome, tipo: "Catequizando", subtipo: "nascimento", dataAniversario: next, diasRestantes: dias });
+          const { date, dias } = calcDiasRelativosAoHoje(hoje, thisYear, bday.getMonth(), bday.getDate());
+          // Incluir: passou nos últimos 6 dias OU falta até 31 dias
+          if (dias >= -6 && dias <= 31) {
+            list.push({ nome: c.nome, tipo: "Catequizando", subtipo: "nascimento", dataAniversario: date, diasRestantes: dias });
           }
         }
       }
 
-      // Aniversário de batismo (somente se for neste mês)
+      // Aniversário de batismo
       const dataBatismo = c.sacramentos?.batismo?.data;
       if (dataBatismo && c.sacramentos?.batismo?.recebido) {
         const bday = new Date(dataBatismo + (dataBatismo.includes("T") ? "" : "T12:00:00"));
         if (bday.getMonth() === thisMonth) {
-          const { next, dias } = calcNextOccurrence(hoje, thisYear, bday.getMonth(), bday.getDate());
-          if (dias <= 31) {
-            list.push({ nome: c.nome, tipo: "Catequizando", subtipo: "batismo", dataAniversario: next, diasRestantes: dias });
+          const { date, dias } = calcDiasRelativosAoHoje(hoje, thisYear, bday.getMonth(), bday.getDate());
+          if (dias >= -6 && dias <= 31) {
+            list.push({ nome: c.nome, tipo: "Catequizando", subtipo: "batismo", dataAniversario: date, diasRestantes: dias });
           }
         }
       }
@@ -67,17 +71,19 @@ export default function BirthdayBell() {
       if (!c.dataNascimento) return;
       const bday = new Date(c.dataNascimento + (c.dataNascimento.includes("T") ? "" : "T12:00:00"));
       if (bday.getMonth() === thisMonth) {
-        const { next, dias } = calcNextOccurrence(hoje, thisYear, bday.getMonth(), bday.getDate());
-        if (dias <= 31) {
-          list.push({ nome: c.nome, tipo: "Catequista", subtipo: "nascimento", dataAniversario: next, diasRestantes: dias });
+        const { date, dias } = calcDiasRelativosAoHoje(hoje, thisYear, bday.getMonth(), bday.getDate());
+        if (dias >= -6 && dias <= 31) {
+          list.push({ nome: c.nome, tipo: "Catequista", subtipo: "nascimento", dataAniversario: date, diasRestantes: dias });
         }
       }
     });
 
+    // Ordena: passados primeiro (do mais recente), depois hoje, depois futuros
     return list.sort((a, b) => a.diasRestantes - b.diasRestantes);
   }, [catequizandos, catequistas, hoje, thisYear, thisMonth]);
 
-  const count = aniversariantes.length;
+  // Badge conta apenas aniversários de hoje em diante (passados não entram no badge)
+  const count = aniversariantes.filter((a) => a.diasRestantes >= 0).length;
 
   return (
     <>
@@ -108,8 +114,17 @@ export default function BirthdayBell() {
               {aniversariantes.map((a, i) => {
                 const isBatismo = a.subtipo === "batismo";
                 const isHoje = a.diasRestantes === 0;
+                const jaPassou = a.diasRestantes < 0;
+
                 return (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
+                  <div
+                    key={i}
+                    className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+                      jaPassou
+                        ? "bg-muted/30 opacity-40 grayscale"
+                        : "bg-muted/50"
+                    }`}
+                  >
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         isHoje
@@ -119,11 +134,15 @@ export default function BirthdayBell() {
                     >
                       {isBatismo ? (
                         <Droplets
-                          className={`h-4 w-4 ${isHoje ? "text-blue-500" : "text-blue-400"}`}
+                          className={`h-4 w-4 ${
+                            isHoje ? "text-blue-500" : jaPassou ? "text-blue-300" : "text-blue-400"
+                          }`}
                         />
                       ) : (
                         <Cake
-                          className={`h-4 w-4 ${isHoje ? "text-gold" : "text-primary"}`}
+                          className={`h-4 w-4 ${
+                            isHoje ? "text-gold" : jaPassou ? "text-muted-foreground" : "text-primary"
+                          }`}
                         />
                       )}
                     </div>
@@ -132,7 +151,7 @@ export default function BirthdayBell() {
                       <p className="text-xs text-muted-foreground">
                         {a.tipo}
                         {" • "}
-                        <span className={isBatismo ? "text-blue-500 font-medium" : ""}>
+                        <span className={isBatismo && !jaPassou ? "text-blue-500 font-medium" : ""}>
                           {isBatismo ? "Batismo" : "Nascimento"}
                         </span>
                         {" • "}
@@ -141,14 +160,23 @@ export default function BirthdayBell() {
                     </div>
                     <span
                       className={`text-xs font-bold px-2 py-1 rounded-full ${
-                        isHoje
-                          ? isBatismo ? "bg-blue-400/20 text-blue-500" : "bg-gold/20 text-gold"
-                          : a.diasRestantes <= 7
-                            ? "bg-caution/10 text-caution"
-                            : "bg-muted text-muted-foreground"
+                        jaPassou
+                          ? "bg-muted text-muted-foreground/50 line-through"
+                          : isHoje
+                            ? isBatismo
+                              ? "bg-blue-400/20 text-blue-500"
+                              : "bg-gold/20 text-gold"
+                            : a.diasRestantes <= 7
+                              ? "bg-caution/10 text-caution"
+                              : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {isHoje ? (isBatismo ? "💧 Hoje!" : "🎉 Hoje!") : `${a.diasRestantes}d`}
+                      {jaPassou
+                        ? `${Math.abs(a.diasRestantes)}d atrás`
+                        : isHoje
+                          ? isBatismo ? "💧 Hoje!" : "🎉 Hoje!"
+                          : `${a.diasRestantes}d`
+                      }
                     </span>
                   </div>
                 );
