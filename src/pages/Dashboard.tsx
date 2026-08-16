@@ -343,22 +343,29 @@ export default function Dashboard() {
     const instances: any[] = [];
     peopleData.forEach(p => {
       p.events.forEach((e: any) => {
-        instances.push({ ...p, ...e, allEvents: p.events });
+        // Calcula dias relativos (negativo = passou, 0 = hoje, positivo = falta)
+        const thisYearDate = new Date(hoje.getFullYear(), e.month, e.day);
+        thisYearDate.setHours(0, 0, 0, 0);
+        const diasRelativo = Math.round((thisYearDate.getTime() - hoje.getTime()) / 86400000);
+        instances.push({ ...p, ...e, allEvents: p.events, diasRelativo });
       });
     });
 
-    const sortedInstances = instances.sort((a, b) => {
-      return a.day - b.day;
-    });
+    const sortedInstances = instances.sort((a, b) => a.day - b.day);
 
-    // Prioriza eventos a partir de hoje; se não houver, usa todo o mês
-    const fromToday = sortedInstances.filter(inst => inst.day >= todayDay);
-    const orderedInstances = fromToday.length > 0 ? fromToday : sortedInstances;
+    // Inclui: passou nos últimos 6 dias OU é hoje OU é no futuro deste mês
+    const withRange = sortedInstances.filter(inst => inst.diasRelativo >= -6);
+    const orderedInstances = withRange.length > 0 ? withRange : sortedInstances;
+
+    // Ordena: passados vão para o fim (aparecem por último), futuros primeiro
+    const fromToday = orderedInstances.filter(inst => inst.diasRelativo >= 0);
+    const pastThisWeek = orderedInstances.filter(inst => inst.diasRelativo < 0).sort((a, b) => b.diasRelativo - a.diasRelativo);
+    const finalOrdered = [...fromToday, ...pastThisWeek];
 
     const result: any[] = [];
     const seenKeys = new Set<string>();
 
-    for (const inst of orderedInstances) {
+    for (const inst of finalOrdered) {
       const key = `${inst.id}_${inst.tipo}`;
       if (!seenKeys.has(key)) {
         seenKeys.add(key);
@@ -813,7 +820,8 @@ export default function Dashboard() {
           )}>
             {aniversariantesMes.map((c, i) => {
               const rotations = ['-2deg', '2deg', '-1deg', '3deg'];
-              const isHoje = c.day === hoje.getDate() && c.month === hoje.getMonth();
+              const isHoje = c.diasRelativo === 0;
+              const jaPassou = c.diasRelativo < 0;
               const dateStr = `${String(c.day).padStart(2, '0')}/${String(c.month + 1).padStart(2, '0')}`;
               return (
                 <div
@@ -823,7 +831,10 @@ export default function Dashboard() {
                 >
                   <button
                     onClick={() => setSelectedCatequizando(c)}
-                    className="relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95"
+                    className={cn(
+                      "relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95",
+                      jaPassou && "opacity-40 grayscale"
+                    )}
                     style={{ transform: `rotate(${rotations[i % 4]})` }}
                   >
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
@@ -853,6 +864,10 @@ export default function Dashboard() {
                           <span className="text-[12px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
                           {isHoje ? (
                             <span className="text-[8px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">HOJE</span>
+                          ) : jaPassou ? (
+                            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter mt-1 truncate w-full text-center">
+                              {Math.abs(c.diasRelativo)}d atrás
+                            </span>
                           ) : (
                             <p className={cn("text-[8px] font-black uppercase tracking-tighter mt-1 truncate w-full text-center", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
                               {c.hasBoth ? "🎉 Nasc. & Bat." : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo")}
