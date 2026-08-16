@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { generateUUID, copyToClipboardOrShare, getAppUrl } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { DeleteConfirmationDialog } from "@/components/DeleteConfirmationDialog";
+
 import { toggleInscricoesAbertas, garantirCodigoAcesso } from "@/lib/supabaseStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { ModuleReportSheet, type ReportItem } from "@/components/reports/ModuleReportSheet";
@@ -247,7 +247,7 @@ export default function CatequizandosList() {
   const [viewItem, setViewItem] = useState<Catequizando | null>(null);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [singleReportItem, setSingleReportItem] = useState<any>(null);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; motivo: string }>({ open: false, motivo: '' });
   const [editMode, setEditMode] = useState(false);
 
   const [editForm, setEditForm] = useState<CatequizandoForm>({ ...emptyForm });
@@ -591,25 +591,21 @@ export default function CatequizandosList() {
     catch (err: any) { toast.error("Erro: " + err.message); }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!viewItem) return;
-    setDeleteConfirmOpen(true);
+    setDeleteModal({ open: true, motivo: '' });
   };
 
   const confirmDelete = async () => {
     if (!viewItem) return;
-    try { 
-      await deleteMut.mutateAsync(viewItem.id); 
-      setDeleteConfirmOpen(false);
-      setTimeout(() => {
-        setViewItem(null);
-        document.body.style.pointerEvents = 'auto';
-      }, 300);
-      toast.success("Catequizando excluído com sucesso!"); 
-    }
-    catch (err: any) { 
-      toast.error("Erro: " + err.message); 
-      setDeleteConfirmOpen(false);
+    try {
+      await deleteMut.mutateAsync(viewItem.id);
+      setDeleteModal({ open: false, motivo: '' });
+      setViewItem(null);
+      setEditMode(false);
+      toast.success('Catequizando excluído com sucesso!');
+    } catch (err: any) {
+      toast.error('Erro ao excluir: ' + err.message);
     }
   };
 
@@ -1802,113 +1798,101 @@ export default function CatequizandosList() {
                          </div>
                       </div>
                    </div>
-                   <div className="flex-1 text-center pt-2 relative">
-                      <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
-                      <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
-                         {viewItem.dataNascimento && (
-                            <div className="flex items-center gap-2 text-primary font-black text-xs bg-primary/5 px-3 py-1.5 rounded-full border-2 border-primary/10">
-                               {calcularIdade(viewItem.dataNascimento)}
-                            </div>
-                         )}
+                   <div className="flex-1 text-center pt-2">
+                       <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
+
+                       {/* Chip de Idade - centralizado abaixo do nome */}
+                       {viewItem.dataNascimento && (
+                         <div className="flex justify-center mt-2">
+                           <div className="flex items-center gap-2 text-primary font-black text-xs bg-primary/5 px-3 py-1.5 rounded-full border-2 border-primary/10">
+                             {calcularIdade(viewItem.dataNascimento)}
+                           </div>
+                         </div>
+                       )}
+
+                       {/* Chips de Status + Aviso de Faltas */}
+                       <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                               <button 
-                                 className={cn(
-                                   "flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all active:scale-95 group shadow-sm",
-                                   statusConfig[viewItem.status || 'ativo'].bg,
-                                   statusConfig[viewItem.status || 'ativo'].border
-                                 )}
-                               >
-                                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white/80 shadow-sm">
-                                     {(() => {
-                                        const Icon = statusConfig[viewItem.status || 'ativo'].icon;
-                                        return <Icon className={cn("h-3 w-3", statusConfig[viewItem.status || 'ativo'].text)} />;
-                                     })()}
-                                  </div>
-                                  <div className="flex flex-col items-start leading-tight">
-                                     <span className={cn("text-[10px] font-black uppercase tracking-widest", statusConfig[viewItem.status || 'ativo'].text)}>
-                                        {statusConfig[viewItem.status || 'ativo'].label}
-                                     </span>
-                                  </div>
-                                  <ChevronDown className="h-3 w-3 opacity-40 group-hover:translate-y-0.5 transition-transform ml-1" />
-                               </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="center" className="rounded-2xl p-2 border-2 border-zinc-100 shadow-xl min-w-[160px] z-[100]">
-                               {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
-                                  const config = statusConfig[s];
-                                  const Icon = config.icon;
-                                  return (
-                                     <DropdownMenuItem 
-                                       key={s} 
-                                       onClick={() => handleStatusChange(viewItem, s)}
-                                       className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-zinc-50 focus:bg-zinc-50 transition-colors"
-                                     >
-                                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", config.bg)}>
-                                           <Icon className={cn("w-4 h-4", config.text)} />
-                                        </div>
-                                        <span className="text-xs font-black uppercase tracking-widest text-zinc-600">{config.label}</span>
-                                     </DropdownMenuItem>
-                                  );
-                               })}
-                            </DropdownMenuContent>
+                           <DropdownMenuTrigger asChild>
+                             <button
+                               className={cn(
+                                 "flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all active:scale-95 group shadow-sm",
+                                 statusConfig[viewItem.status || 'ativo'].bg,
+                                 statusConfig[viewItem.status || 'ativo'].border
+                               )}
+                             >
+                               <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white/80 shadow-sm">
+                                 {(() => { const Icon = statusConfig[viewItem.status || 'ativo'].icon; return <Icon className={cn("h-3 w-3", statusConfig[viewItem.status || 'ativo'].text)} />; })()}
+                               </div>
+                               <span className={cn("text-[10px] font-black uppercase tracking-widest", statusConfig[viewItem.status || 'ativo'].text)}>
+                                 {statusConfig[viewItem.status || 'ativo'].label}
+                               </span>
+                               <ChevronDown className="h-3 w-3 opacity-40 group-hover:translate-y-0.5 transition-transform ml-1" />
+                             </button>
+                           </DropdownMenuTrigger>
+                           <DropdownMenuContent align="center" className="rounded-2xl p-2 border-2 border-zinc-100 shadow-xl min-w-[160px] z-[100]">
+                             {(Object.keys(statusConfig) as CatequizandoStatus[]).map(s => {
+                               const config = statusConfig[s];
+                               const Icon = config.icon;
+                               return (
+                                 <DropdownMenuItem key={s} onClick={() => handleStatusChange(viewItem, s)} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-zinc-50 focus:bg-zinc-50 transition-colors">
+                                   <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", config.bg)}><Icon className={cn("w-4 h-4", config.text)} /></div>
+                                   <span className="text-xs font-black uppercase tracking-widest text-zinc-600">{config.label}</span>
+                                 </DropdownMenuItem>
+                               );
+                             })}
+                           </DropdownMenuContent>
                          </DropdownMenu>
-                         
-                         {/* Mute Alert Chip - ao lado dos outros chips */}
-                          {(() => {
-                            const alertaConfig = (viewItem.dadosPastorais as any)?.alertaFaltasConfig;
-                            const isMuted = alertaConfig?.mutado === true;
 
-                            if (isMuted) {
-                              const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label || '—';
-                              return (
-                                <div className="relative flex flex-col items-center gap-0.5">
-                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200 shadow-sm cursor-default" title={muteLabel}>
-                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Aviso Desativado</span>
-                                  </div>
-                                  <button
-                                    onClick={() => handleUnmuteAlert(viewItem)}
-                                    className="text-[7px] font-black uppercase text-red-400 hover:text-red-600 transition-colors leading-none"
-                                  >
-                                    Reativar
-                                  </button>
-                                </div>
-                              );
-                            }
+                         {/* Chip Aviso de Faltas */}
+                         {(() => {
+                           const alertaConfig = (viewItem.dadosPastorais as any)?.alertaFaltasConfig;
+                           const isMuted = alertaConfig?.mutado === true;
 
-                            if (catequizandosEmAlerta.has(viewItem.id)) {
-                              return (
-                                <div className="relative flex flex-col items-center gap-0.5">
-                                  <button
-                                    onClick={() => setShowMuteAlertDropdown(v => !v)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 shadow-sm hover:bg-red-100 transition-all active:scale-95 group"
-                                  >
-                                    <BellOff className="w-3.5 h-3.5 text-red-500" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-red-600">Desativar Aviso</span>
-                                    <ChevronDown className="w-3 h-3 text-red-400 group-hover:translate-y-0.5 transition-transform" />
-                                  </button>
-                                  {showMuteAlertDropdown && (
-                                    <>
-                                      <div className="fixed inset-0 z-[199]" onClick={() => setShowMuteAlertDropdown(false)} />
-                                      <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[200] bg-white rounded-2xl border-2 border-zinc-100 shadow-xl min-w-[200px] py-2 animate-in zoom-in-95">
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground px-3 py-1">Motivo da desativação</p>
-                                        {MUTE_OPTIONS.map(opt => (
-                                          <button
-                                            key={opt.value}
-                                            onClick={() => handleMuteAlert(viewItem, opt.value)}
-                                            className="w-full text-left px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors"
-                                          >
-                                            {opt.label}
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
-                              );
-                            }
-                            return null;
-                          })()}
+                           if (isMuted) {
+                             const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label || '—';
+                             return (
+                               <div className="relative flex flex-col items-center gap-0.5">
+                                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200 shadow-sm cursor-default" title={muteLabel}>
+                                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                   <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Aviso de Faltas</span>
+                                 </div>
+                                 <button onClick={() => handleUnmuteAlert(viewItem)} className="text-[7px] font-black uppercase text-red-400 hover:text-red-600 transition-colors leading-none">
+                                   Reativar
+                                 </button>
+                               </div>
+                             );
+                           }
+
+                           if (catequizandosEmAlerta.has(viewItem.id)) {
+                             return (
+                               <div className="relative flex flex-col items-center gap-0.5">
+                                 <button
+                                   onClick={() => setShowMuteAlertDropdown(v => !v)}
+                                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 shadow-sm hover:bg-red-100 transition-all active:scale-95 group"
+                                 >
+                                   <BellOff className="w-3.5 h-3.5 text-red-500" />
+                                   <span className="text-[9px] font-black uppercase tracking-widest text-red-600">Aviso de Faltas</span>
+                                   <ChevronDown className="w-3 h-3 text-red-400 group-hover:translate-y-0.5 transition-transform" />
+                                 </button>
+                                 {showMuteAlertDropdown && (
+                                   <>
+                                     <div className="fixed inset-0 z-[199]" onClick={() => setShowMuteAlertDropdown(false)} />
+                                     <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[200] bg-white rounded-2xl border-2 border-zinc-100 shadow-xl min-w-[200px] py-2 animate-in zoom-in-95">
+                                       <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground px-3 py-1">Motivo da desativação</p>
+                                       {MUTE_OPTIONS.map(opt => (
+                                         <button key={opt.value} onClick={() => handleMuteAlert(viewItem, opt.value)} className="w-full text-left px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors">
+                                           {opt.label}
+                                         </button>
+                                       ))}
+                                     </div>
+                                   </>
+                                 )}
+                               </div>
+                             );
+                           }
+                           return null;
+                         })()}
                        </div>
                     </div>
                  </div>
@@ -2267,15 +2251,71 @@ export default function CatequizandosList() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation - fora do Dialog do viewItem para evitar conflito de focus */}
-      <DeleteConfirmationDialog 
-        open={deleteConfirmOpen} 
-        onOpenChange={setDeleteConfirmOpen} 
-        onConfirm={confirmDelete}
-        title="Excluir Catequizando"
-        description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
-        isLoading={deleteMut.isPending}
-      />
+      {/* Modal Excluir — via createPortal, sem Radix UI, para evitar conflito de focus/pointer-events */}
+      {deleteModal.open && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+        >
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-[420px] overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex flex-col items-center pt-8 pb-4 px-8 gap-3">
+              <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center shadow-inner">
+                <Trash2 className="w-9 h-9 text-red-500" />
+              </div>
+              <h3 className="text-xl font-black text-zinc-900 text-center leading-tight mt-1">Excluir Catequizando?</h3>
+              <p className="text-sm text-zinc-500 text-center leading-relaxed">
+                Você está prestes a excluir <span className="font-black text-zinc-800">{viewItem?.nome}</span>. Esta ação não poderá ser desfeita.
+              </p>
+            </div>
+
+            {/* Motivo */}
+            <div className="px-8 pb-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-2">Motivo da exclusão</label>
+              <div className="grid grid-cols-1 gap-1.5">
+                {[
+                  { value: 'engano', label: '✏️ Cadastrado por engano' },
+                  { value: 'duplicado', label: '📋 Cadastro duplicado' },
+                  { value: 'desistente', label: '🚪 Catequizando desistente' },
+                  { value: 'transferido', label: '🔄 Transferido para outra turma' },
+                  { value: 'outros', label: '📝 Outros' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setDeleteModal(m => ({ ...m, motivo: opt.value }))}
+                    className={cn(
+                      'w-full text-left px-4 py-3 rounded-xl text-sm font-bold border-2 transition-all',
+                      deleteModal.motivo === opt.value
+                        ? 'bg-red-50 border-red-400 text-red-700 shadow-sm'
+                        : 'bg-zinc-50 border-zinc-100 text-zinc-600 hover:border-zinc-300'
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-3 px-8 py-6">
+              <button
+                onClick={() => setDeleteModal({ open: false, motivo: '' })}
+                className="flex-1 h-13 py-3 rounded-2xl border-2 border-zinc-200 bg-white text-zinc-600 font-bold hover:bg-zinc-50 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={!deleteModal.motivo || deleteMut.isPending}
+                className="flex-1 h-13 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-red-500/30 active:scale-95"
+              >
+                {deleteMut.isPending ? 'Excluindo...' : 'Sim, Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* --- Print Portal Oculto --- */}
       {printEncontroId && createPortal(
