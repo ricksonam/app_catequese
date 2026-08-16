@@ -1805,10 +1805,6 @@ export default function CatequizandosList() {
                    <div className="flex-1 text-center pt-2 relative">
                       <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 leading-tight uppercase" title={viewItem.nome}>{viewItem.nome}</h2>
                       <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
-                         <div className="flex items-center gap-2 text-muted-foreground font-bold text-xs bg-white border-2 border-zinc-100 px-3 py-1.5 rounded-full shadow-sm">
-                            <Users className="w-3.5 h-3.5" />
-                            {turma?.nome}
-                         </div>
                          {viewItem.dataNascimento && (
                             <div className="flex items-center gap-2 text-primary font-black text-xs bg-primary/5 px-3 py-1.5 rounded-full border-2 border-primary/10">
                                {calcularIdade(viewItem.dataNascimento)}
@@ -1856,77 +1852,66 @@ export default function CatequizandosList() {
                                })}
                             </DropdownMenuContent>
                          </DropdownMenu>
-                      </div>
-                   </div>
-                </div>
+                         
+                         {/* Mute Alert Chip - ao lado dos outros chips */}
+                          {(() => {
+                            const alertaConfig = (viewItem.dadosPastorais as any)?.alertaFaltasConfig;
+                            const isMuted = alertaConfig?.mutado === true;
 
-                {/* Mute Alert Chip */}
-                {(() => {
-                     const alertaConfig = (viewItem.dadosPastorais as any)?.alertaFaltasConfig;
-                     const isMuted = alertaConfig?.mutado === true;
-                     const isMutedByAlerta = catequizandosEmAlerta.has(viewItem.id) || isMuted;
+                            if (isMuted) {
+                              const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label || '—';
+                              return (
+                                <div className="relative flex flex-col items-center gap-0.5">
+                                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200 shadow-sm cursor-default" title={muteLabel}>
+                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">Aviso Desativado</span>
+                                  </div>
+                                  <button
+                                    onClick={() => handleUnmuteAlert(viewItem)}
+                                    className="text-[7px] font-black uppercase text-red-400 hover:text-red-600 transition-colors leading-none"
+                                  >
+                                    Reativar
+                                  </button>
+                                </div>
+                              );
+                            }
 
-                     if (isMuted) {
-                       // Show unmute chip
-                       const muteLabel = MUTE_OPTIONS.find(o => o.value === alertaConfig?.opcao)?.label || '—';
-                       return (
-                         <div className="flex flex-col items-center gap-1 py-3 border-y border-zinc-100 bg-white/50 backdrop-blur-sm -mx-6 px-6">
-                           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border-2 border-emerald-200 shadow-sm">
-                             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">
-                               Aviso Desativado
-                             </span>
-                           </div>
-                           <span className="text-[8px] font-bold text-muted-foreground text-center max-w-[120px] leading-tight">{muteLabel}</span>
-                           <button
-                             onClick={() => handleUnmuteAlert(viewItem)}
-                             className="text-[8px] font-black uppercase text-red-400 hover:text-red-600 transition-colors"
-                           >
-                             Reativar aviso
-                           </button>
-                         </div>
-                       );
-                     }
-
-                     // If in alert but not muted — show mute button with dropdown
-                     if (catequizandosEmAlerta.has(viewItem.id)) {
-                       return (
-                         <div className="relative flex flex-col items-center gap-1 py-3 border-y border-zinc-100 bg-white/50 backdrop-blur-sm -mx-6 px-6">
-                           <button
-                             onClick={() => setShowMuteAlertDropdown(v => !v)}
-                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 shadow-sm hover:bg-red-100 transition-all active:scale-95 group"
-                           >
-                             <BellOff className="w-3.5 h-3.5 text-red-500" />
-                             <span className="text-[9px] font-black uppercase tracking-widest text-red-600">
-                               Desativar Aviso
-                             </span>
-                             <ChevronDown className="w-3 h-3 text-red-400 group-hover:translate-y-0.5 transition-transform" />
-                           </button>
-                           {showMuteAlertDropdown && (
-                             <>
-                               <div
-                                 className="fixed inset-0 z-[199]"
-                                 onClick={() => setShowMuteAlertDropdown(false)}
-                               />
-                               <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[200] bg-white rounded-2xl border-2 border-zinc-100 shadow-xl min-w-[200px] py-2 animate-in zoom-in-95">
-                                 <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground px-3 py-1">Motivo da desativação</p>
-                                 {MUTE_OPTIONS.map(opt => (
-                                   <button
-                                     key={opt.value}
-                                     onClick={() => handleMuteAlert(viewItem, opt.value)}
-                                     className="w-full text-left px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors"
-                                   >
-                                     {opt.label}
-                                   </button>
-                                 ))}
-                               </div>
-                             </>
-                           )}
-                         </div>
-                       );
-                     }
-
-                   })()}
+                            if (catequizandosEmAlerta.has(viewItem.id)) {
+                              return (
+                                <div className="relative flex flex-col items-center gap-0.5">
+                                  <button
+                                    onClick={() => setShowMuteAlertDropdown(v => !v)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 shadow-sm hover:bg-red-100 transition-all active:scale-95 group"
+                                  >
+                                    <BellOff className="w-3.5 h-3.5 text-red-500" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-red-600">Desativar Aviso</span>
+                                    <ChevronDown className="w-3 h-3 text-red-400 group-hover:translate-y-0.5 transition-transform" />
+                                  </button>
+                                  {showMuteAlertDropdown && (
+                                    <>
+                                      <div className="fixed inset-0 z-[199]" onClick={() => setShowMuteAlertDropdown(false)} />
+                                      <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[200] bg-white rounded-2xl border-2 border-zinc-100 shadow-xl min-w-[200px] py-2 animate-in zoom-in-95">
+                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground px-3 py-1">Motivo da desativação</p>
+                                        {MUTE_OPTIONS.map(opt => (
+                                          <button
+                                            key={opt.value}
+                                            onClick={() => handleMuteAlert(viewItem, opt.value)}
+                                            className="w-full text-left px-4 py-2.5 text-xs font-bold text-zinc-700 hover:bg-zinc-50 transition-colors"
+                                          >
+                                            {opt.label}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
+                       </div>
+                    </div>
+                 </div>
 
                 {/* Ações (Relatório, Edit & Delete) */}
                 <div className="flex flex-row items-stretch gap-2 mt-4">
@@ -2279,16 +2264,18 @@ export default function CatequizandosList() {
               </div>
             </div>
           )}
-          <DeleteConfirmationDialog 
-            open={deleteConfirmOpen} 
-            onOpenChange={setDeleteConfirmOpen} 
-            onConfirm={confirmDelete}
-            title="Excluir Catequizando"
-            description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
-            isLoading={deleteMut.isPending}
-          />
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation - fora do Dialog do viewItem para evitar conflito de focus */}
+      <DeleteConfirmationDialog 
+        open={deleteConfirmOpen} 
+        onOpenChange={setDeleteConfirmOpen} 
+        onConfirm={confirmDelete}
+        title="Excluir Catequizando"
+        description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
+        isLoading={deleteMut.isPending}
+      />
 
       {/* --- Print Portal Oculto --- */}
       {printEncontroId && createPortal(
