@@ -600,11 +600,17 @@ export default function CatequizandosList() {
     if (!viewItem) return;
     try { 
       await deleteMut.mutateAsync(viewItem.id); 
-      setViewItem(null); 
       setDeleteConfirmOpen(false);
+      setTimeout(() => {
+        setViewItem(null);
+        document.body.style.pointerEvents = 'auto';
+      }, 300);
       toast.success("Catequizando excluído com sucesso!"); 
     }
-    catch (err: any) { toast.error("Erro: " + err.message); }
+    catch (err: any) { 
+      toast.error("Erro: " + err.message); 
+      setDeleteConfirmOpen(false);
+    }
   };
 
 
@@ -1922,20 +1928,29 @@ export default function CatequizandosList() {
 
                    })()}
 
-                {/* Edit & Delete */}
-                <div className="flex items-center justify-between mt-2">
+                {/* Ações (Relatório, Edit & Delete) */}
+                <div className="flex flex-col sm:flex-row items-stretch gap-3 mt-4">
                    <button
                      title="Emitir relatório"
                      onClick={() => { setSingleReportItem(viewItem); }}
-                     className="w-12 h-12 flex items-center justify-center rounded-xl bg-violet-50 text-violet-600 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group"
+                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-violet-50 text-violet-700 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group font-bold text-sm uppercase tracking-wide"
                    >
-                     <FileText className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                     <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                     Relatório
                    </button>
-                   <button onClick={handleEdit} className="w-12 h-12 flex items-center justify-center rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group">
-                      <Pencil className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                   <button 
+                     onClick={handleEdit} 
+                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group font-bold text-sm uppercase tracking-wide"
+                   >
+                      <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                      Editar
                    </button>
-                   <button onClick={handleDelete} className="w-12 h-12 flex items-center justify-center rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group">
-                      <Trash2 className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                   <button 
+                     onClick={handleDelete} 
+                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group font-bold text-sm uppercase tracking-wide"
+                   >
+                      <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                      Excluir
                    </button>
                 </div>
 
@@ -2272,6 +2287,7 @@ export default function CatequizandosList() {
         onConfirm={confirmDelete}
         title="Excluir Catequizando"
         description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
+        isLoading={deleteMut.isPending}
       />
 
       {/* --- Print Portal Oculto --- */}
