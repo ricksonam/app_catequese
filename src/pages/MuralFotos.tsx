@@ -38,6 +38,8 @@ export default function MuralFotos() {
   const [selectedReferenciaId, setSelectedReferenciaId] = useState<string>("");
   const [selectedReferenciaTipo, setSelectedReferenciaTipo] = useState<'encontro' | 'atividade' | ''>("");
   const [selectedReferenciaNome, setSelectedReferenciaNome] = useState<string>("");
+  const [selectedDataFoto, setSelectedDataFoto] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [isReferenciaModalOpen, setIsReferenciaModalOpen] = useState(false);
 
   const activeTurmaId = useMemo(() => localStorage.getItem("ivc_selected_turma") || "all", []);
 
@@ -231,6 +233,7 @@ export default function MuralFotos() {
         setSelectedReferenciaId("");
         setSelectedReferenciaTipo("");
         setSelectedReferenciaNome("");
+        setSelectedDataFoto(new Date().toISOString().slice(0, 10));
         
         if (turmas.length === 1) {
           setSelectedTurmaId(turmas[0].id);
@@ -251,6 +254,7 @@ export default function MuralFotos() {
     setSelectedReferenciaId("");
     setSelectedReferenciaTipo("");
     setSelectedReferenciaNome("");
+    setSelectedDataFoto(new Date().toISOString().slice(0, 10));
   };
 
   // Publisher function for BOTH Normal photos and Editor photos
@@ -268,12 +272,13 @@ export default function MuralFotos() {
       const fileName = `${crypto.randomUUID()}-${isCriatividade ? 'criatividade' : 'comum'}.jpg`;
       const finalUrl = await uploadFile(blob, "mural", fileName);
       
+      const dataIso = selectedDataFoto ? new Date(selectedDataFoto + 'T12:00:00').toISOString() : new Date().toISOString();
       const nova: MuralFoto = {
         id: crypto.randomUUID(),
         url: finalUrl,
         legenda: legendaSalva.trim() || (isCriatividade ? "Minha Arte" : "Nova Foto"),
         resumo: legendaSalva.trim(),
-        data: new Date().toISOString(),
+        data: dataIso,
         criadoEm: new Date().toISOString(),
         turmaId: turmaIdToUse,
         tipo: isCriatividade ? 'criatividade' : 'comum',
@@ -591,56 +596,43 @@ export default function MuralFotos() {
                      className="w-full bg-zinc-100 border-2 border-transparent focus:border-primary focus:bg-white text-foreground placeholder-zinc-400 h-14 px-6 text-[16px] rounded-2xl outline-none transition-all disabled:opacity-50 font-medium" 
                    />
                    
-                   {/* Seletor de Encontro / Atividade */}
-                   {(encontrosFiltrados.length > 0 || atividadesFiltradas.length > 0) && (
-                     <div className="relative">
-                       <select 
-                         value={selectedReferenciaId}
-                         onChange={(e) => {
-                           const val = e.target.value;
-                           if (!val) {
-                             setSelectedReferenciaId("");
-                             setSelectedReferenciaTipo("");
-                             setSelectedReferenciaNome("");
-                             return;
-                           }
-                           const [tipo, id] = val.split("||");
-                           setSelectedReferenciaId(id);
-                           setSelectedReferenciaTipo(tipo as 'encontro' | 'atividade');
-                           if (tipo === 'encontro') {
-                             const enc = encontrosFiltrados.find(e => e.id === id);
-                             setSelectedReferenciaNome(enc?.tema || "");
-                           } else {
-                             const atv = atividadesFiltradas.find(a => a.id === id);
-                             setSelectedReferenciaNome(atv?.nome || "");
-                           }
-                         }}
+                   {/* Campos Data e Encontro/Atividade */}
+                   <div className="flex flex-col sm:flex-row gap-3">
+                     
+                     {/* Data da foto */}
+                     <div className="flex-1">
+                       <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block">
+                         Data do registro
+                       </label>
+                       <input 
+                         type="date"
+                         value={selectedDataFoto}
+                         onChange={(e) => setSelectedDataFoto(e.target.value)}
                          disabled={isPublishing}
-                         className="w-full bg-zinc-100 border-2 border-transparent focus:border-primary h-14 px-6 pr-12 text-[15px] rounded-2xl appearance-none outline-none transition-all disabled:opacity-50 font-medium text-zinc-700"
-                       >
-                         <option value="">📌 Referente a qual encontro ou atividade?</option>
-                         {encontrosFiltrados.length > 0 && (
-                           <optgroup label="🙏 Encontros">
-                             {encontrosFiltrados.map(e => (
-                               <option key={e.id} value={`encontro||${e.id}`}>
-                                 {e.tema} — {new Date(e.data).toLocaleDateString("pt-BR")}
-                               </option>
-                             ))}
-                           </optgroup>
-                         )}
-                         {atividadesFiltradas.length > 0 && (
-                           <optgroup label="⚡ Atividades">
-                             {atividadesFiltradas.map(a => (
-                               <option key={a.id} value={`atividade||${a.id}`}>
-                                 {a.nome} — {new Date(a.data).toLocaleDateString("pt-BR")}
-                               </option>
-                             ))}
-                           </optgroup>
-                         )}
-                       </select>
-                       <BookOpen className="w-5 h-5 absolute right-5 top-1/2 -translate-y-1/2 text-primary/40 pointer-events-none" />
+                         className="w-full bg-zinc-100 border-2 border-transparent focus:border-primary h-14 px-4 text-sm rounded-2xl outline-none transition-all disabled:opacity-50 font-medium text-zinc-700"
+                       />
                      </div>
-                   )}
+
+                     {/* Botão para abrir o Modal Premium de Referência */}
+                     {(encontrosFiltrados.length > 0 || atividadesFiltradas.length > 0) && (
+                       <div className="flex-[2]">
+                         <label className="text-[10px] font-black uppercase text-muted-foreground mb-1 block">
+                           Vincular Encontro / Atividade
+                         </label>
+                         <button
+                           type="button"
+                           onClick={() => setIsReferenciaModalOpen(true)}
+                           disabled={isPublishing}
+                           className="w-full bg-zinc-100 border-2 border-transparent focus:border-primary hover:bg-zinc-200 h-14 px-4 text-left rounded-2xl transition-all disabled:opacity-50 flex items-center justify-between"
+                         >
+                           <span className="font-medium text-zinc-700 text-sm truncate pr-2">
+                             {selectedReferenciaNome || "📌 Selecione um encontro..."}
+                           </span>
+                           <CalendarDays className="h-4 w-4 text-zinc-400 shrink-0" />
+                         </button>
+                       </div>
+                     )}
+                   </div>
                    
                    {turmas.length > 1 ? (
                       <div className="relative">
@@ -800,13 +792,101 @@ export default function MuralFotos() {
           )}
         </DialogContent>
       </Dialog>
-      <DeleteConfirmationDialog
+      <DeleteConfirmationDialog 
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
         onConfirm={confirmDelete}
-        itemName={viewFoto?.legenda}
+        title="Apagar Foto"
+        description="Tem certeza que deseja apagar esta foto permanentemente do mural?"
         isLoading={deleteMutation.isPending}
       />
+
+      {/* Dialog Premium para seleção de referência */}
+      <Dialog open={isReferenciaModalOpen} onOpenChange={setIsReferenciaModalOpen}>
+        <DialogContent className="max-w-md rounded-3xl p-0 overflow-hidden border-border/50">
+          <div className="p-6 pb-2 border-b border-border/30 bg-muted/20">
+            <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Vincular a um Evento</h2>
+            <p className="text-sm text-muted-foreground mt-1">Selecione o encontro ou atividade que esta foto registra.</p>
+          </div>
+          <div className="p-4 max-h-[60vh] overflow-y-auto space-y-6 bg-background">
+            {encontrosFiltrados.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-primary">
+                  <BookOpen className="w-4 h-4" />
+                  <h3 className="text-xs font-black uppercase tracking-widest">Encontros da Turma</h3>
+                </div>
+                <div className="grid gap-2">
+                  {encontrosFiltrados.map(e => (
+                    <button
+                      key={e.id}
+                      onClick={() => {
+                        setSelectedReferenciaId(e.id);
+                        setSelectedReferenciaTipo('encontro');
+                        setSelectedReferenciaNome(e.tema);
+                        setIsReferenciaModalOpen(false);
+                      }}
+                      className={`flex flex-col text-left p-3 rounded-2xl border-2 transition-all ${
+                        selectedReferenciaId === e.id 
+                          ? 'border-primary bg-primary/10 shadow-sm' 
+                          : 'border-transparent bg-muted/40 hover:bg-muted/70 hover:scale-[1.01]'
+                      }`}
+                    >
+                      <span className="text-sm font-bold text-foreground line-clamp-1">{e.tema}</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase mt-0.5">
+                        {new Date(e.data).toLocaleDateString("pt-BR")}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {atividadesFiltradas.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center gap-2 text-primary">
+                  <Activity className="w-4 h-4" />
+                  <h3 className="text-xs font-black uppercase tracking-widest">Atividades e Eventos</h3>
+                </div>
+                <div className="grid gap-2">
+                  {atividadesFiltradas.map(a => (
+                    <button
+                      key={a.id}
+                      onClick={() => {
+                        setSelectedReferenciaId(a.id);
+                        setSelectedReferenciaTipo('atividade');
+                        setSelectedReferenciaNome(a.nome);
+                        setIsReferenciaModalOpen(false);
+                      }}
+                      className={`flex flex-col text-left p-3 rounded-2xl border-2 transition-all ${
+                        selectedReferenciaId === a.id 
+                          ? 'border-primary bg-primary/10 shadow-sm' 
+                          : 'border-transparent bg-muted/40 hover:bg-muted/70 hover:scale-[1.01]'
+                      }`}
+                    >
+                      <span className="text-sm font-bold text-foreground line-clamp-1">{a.nome}</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase mt-0.5">
+                        {new Date(a.data).toLocaleDateString("pt-BR")}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <button 
+              onClick={() => {
+                setSelectedReferenciaId("");
+                setSelectedReferenciaTipo("");
+                setSelectedReferenciaNome("");
+                setIsReferenciaModalOpen(false);
+              }}
+              className="w-full p-3 rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted transition-colors uppercase tracking-wider mt-4"
+            >
+              Nenhum / Desvincular
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
