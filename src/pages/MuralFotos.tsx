@@ -38,7 +38,9 @@ export default function MuralFotos() {
   const [selectedReferenciaId, setSelectedReferenciaId] = useState<string>("");
   const [selectedReferenciaTipo, setSelectedReferenciaTipo] = useState<'encontro' | 'atividade' | ''>("");
   const [selectedReferenciaNome, setSelectedReferenciaNome] = useState<string>("");
-  const [selectedDataFoto, setSelectedDataFoto] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [selectedDataFoto, setSelectedDataFoto] = useState<string>(
+    new Date().toLocaleDateString('en-CA') // Retorna YYYY-MM-DD no fuso horário local
+  );
   const [isReferenciaModalOpen, setIsReferenciaModalOpen] = useState(false);
 
   const activeTurmaId = useMemo(() => localStorage.getItem("ivc_selected_turma") || "all", []);
@@ -233,7 +235,7 @@ export default function MuralFotos() {
         setSelectedReferenciaId("");
         setSelectedReferenciaTipo("");
         setSelectedReferenciaNome("");
-        setSelectedDataFoto(new Date().toISOString().slice(0, 10));
+        setSelectedDataFoto(new Date().toLocaleDateString('en-CA'));
         
         if (turmas.length === 1) {
           setSelectedTurmaId(turmas[0].id);
@@ -254,7 +256,7 @@ export default function MuralFotos() {
     setSelectedReferenciaId("");
     setSelectedReferenciaTipo("");
     setSelectedReferenciaNome("");
-    setSelectedDataFoto(new Date().toISOString().slice(0, 10));
+    setSelectedDataFoto(new Date().toLocaleDateString('en-CA'));
   };
 
   // Publisher function for BOTH Normal photos and Editor photos
