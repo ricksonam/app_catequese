@@ -248,6 +248,7 @@ export default function CatequizandosList() {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [singleReportItem, setSingleReportItem] = useState<any>(null);
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; motivo: string }>({ open: false, motivo: '' });
+  const [deleteTarget, setDeleteTarget] = useState<Catequizando | null>(null);
   const [editMode, setEditMode] = useState(false);
 
   const [editForm, setEditForm] = useState<CatequizandoForm>({ ...emptyForm });
@@ -593,16 +594,30 @@ export default function CatequizandosList() {
 
   const handleDelete = () => {
     if (!viewItem) return;
-    setDeleteModal({ open: true, motivo: '' });
+    const target = viewItem;
+    setViewItem(null);
+    setEditMode(false);
+    setTimeout(() => {
+      setDeleteTarget(target);
+      setDeleteModal({ open: true, motivo: '' });
+    }, 150);
+  };
+
+  const cancelDelete = () => {
+    const target = deleteTarget;
+    setDeleteModal({ open: false, motivo: '' });
+    setDeleteTarget(null);
+    if (target) {
+      setTimeout(() => setViewItem(target), 150);
+    }
   };
 
   const confirmDelete = async () => {
-    if (!viewItem) return;
+    if (!deleteTarget) return;
     try {
-      await deleteMut.mutateAsync(viewItem.id);
+      await deleteMut.mutateAsync(deleteTarget.id);
       setDeleteModal({ open: false, motivo: '' });
-      setViewItem(null);
-      setEditMode(false);
+      setDeleteTarget(null);
       toast.success('Catequizando excluído com sucesso!');
     } catch (err: any) {
       toast.error('Erro ao excluir: ' + err.message);
@@ -2251,13 +2266,14 @@ export default function CatequizandosList() {
         </DialogContent>
       </Dialog>
 
-      {/* Modal Excluir — via createPortal, sem Radix UI, para evitar conflito de focus/pointer-events */}
-      {deleteModal.open && createPortal(
+      {/* Modal Excluir — renderizado fora de qualquer Dialog Radix */}
+      {deleteModal.open && deleteTarget && (
         <div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) cancelDelete(); }}
         >
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-[420px] overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-[420px] overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
             {/* Header */}
             <div className="flex flex-col items-center pt-8 pb-4 px-8 gap-3">
               <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center shadow-inner">
@@ -2265,7 +2281,7 @@ export default function CatequizandosList() {
               </div>
               <h3 className="text-xl font-black text-zinc-900 text-center leading-tight mt-1">Excluir Catequizando?</h3>
               <p className="text-sm text-zinc-500 text-center leading-relaxed">
-                Você está prestes a excluir <span className="font-black text-zinc-800">{viewItem?.nome}</span>. Esta ação não poderá ser desfeita.
+                Você está prestes a excluir <span className="font-black text-zinc-800">{deleteTarget.nome}</span>. Esta ação não poderá ser desfeita.
               </p>
             </div>
 
@@ -2299,22 +2315,21 @@ export default function CatequizandosList() {
             {/* Footer */}
             <div className="flex gap-3 px-8 py-6">
               <button
-                onClick={() => setDeleteModal({ open: false, motivo: '' })}
-                className="flex-1 h-13 py-3 rounded-2xl border-2 border-zinc-200 bg-white text-zinc-600 font-bold hover:bg-zinc-50 transition-all"
+                onClick={cancelDelete}
+                className="flex-1 py-3 rounded-2xl border-2 border-zinc-200 bg-white text-zinc-600 font-bold hover:bg-zinc-50 transition-all"
               >
                 Cancelar
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={!deleteModal.motivo || deleteMut.isPending}
-                className="flex-1 h-13 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-red-500/30 active:scale-95"
+                className="flex-1 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-red-500/30 active:scale-95"
               >
                 {deleteMut.isPending ? 'Excluindo...' : 'Sim, Excluir'}
               </button>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
 
       {/* --- Print Portal Oculto --- */}
