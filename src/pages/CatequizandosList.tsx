@@ -1929,25 +1929,26 @@ export default function CatequizandosList() {
                    })()}
 
                 {/* Ações (Relatório, Edit & Delete) */}
-                <div className="flex flex-col sm:flex-row items-stretch gap-3 mt-4">
+                <div className="flex flex-row items-stretch gap-2 mt-4">
                    <button
                      title="Emitir relatório"
                      onClick={() => { setSingleReportItem(viewItem); }}
-                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-violet-50 text-violet-700 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group font-bold text-sm uppercase tracking-wide"
+                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-violet-50 text-violet-700 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group font-bold text-xs sm:text-sm uppercase tracking-wide"
                    >
                      <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                     Relatório
+                     <span className="hidden sm:inline">Relatório</span>
+                     <span className="sm:hidden">Relat.</span>
                    </button>
                    <button 
                      onClick={handleEdit} 
-                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group font-bold text-sm uppercase tracking-wide"
+                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group font-bold text-xs sm:text-sm uppercase tracking-wide"
                    >
                       <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
                       Editar
                    </button>
                    <button 
                      onClick={handleDelete} 
-                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group font-bold text-sm uppercase tracking-wide"
+                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group font-bold text-xs sm:text-sm uppercase tracking-wide"
                    >
                       <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
                       Excluir
@@ -2278,17 +2279,16 @@ export default function CatequizandosList() {
               </div>
             </div>
           )}
+          <DeleteConfirmationDialog 
+            open={deleteConfirmOpen} 
+            onOpenChange={setDeleteConfirmOpen} 
+            onConfirm={confirmDelete}
+            title="Excluir Catequizando"
+            description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
+            isLoading={deleteMut.isPending}
+          />
         </DialogContent>
       </Dialog>
-
-      <DeleteConfirmationDialog 
-        open={deleteConfirmOpen} 
-        onOpenChange={setDeleteConfirmOpen} 
-        onConfirm={confirmDelete}
-        title="Excluir Catequizando"
-        description={`Tem certeza que deseja excluir o(a) catequizando(a) ${viewItem?.nome}? Esta ação não poderá ser desfeita e todas as presenças, histórico e diários espirituais serão removidos.`}
-        isLoading={deleteMut.isPending}
-      />
 
       {/* --- Print Portal Oculto --- */}
       {printEncontroId && createPortal(
