@@ -270,7 +270,15 @@ export async function upsertCatequizando(c: Catequizando) {
   if (error) throw error;
 }
 
-export async function removeCatequizando(id: string) {
+export async function removeCatequizando(id: string, motivo?: string) {
+  if (motivo) {
+    const { data: cat } = await supabase.from("catequizandos").select("nome").eq("id", id).single();
+    if (cat) {
+      const nomeComMotivo = `${cat.nome} (Motivo: ${motivo})`;
+      await supabase.from("catequizandos").update({ nome: nomeComMotivo }).eq("id", id);
+    }
+  }
+
   const { error } = await (supabase.from as any)("catequizandos").delete().eq("id", id);
   if (error) throw error;
 }

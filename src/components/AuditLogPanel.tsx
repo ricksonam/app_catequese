@@ -124,7 +124,7 @@ export function AuditLogModal({ turmaId, open, onClose }: AuditLogModalProps) {
             </div>
           )}
 
-          {!isLoading && logs.map((entry) => {
+          {!isLoading && logs.filter(entry => !(entry.action === 'UPDATE' && entry.entity_name?.includes('(Motivo:'))).map((entry) => {
             const cfg = ACTION_CONFIG[entry.action] ?? ACTION_CONFIG.UPDATE;
             const Icon = cfg.icon;
             const emailShort = entry.user_email?.split("@")[0] ?? "Usuário";

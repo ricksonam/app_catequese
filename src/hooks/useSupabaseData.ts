@@ -84,7 +84,10 @@ export function useCatequizandoMutation() {
 }
 export function useDeleteCatequizando() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: removeCatequizando, onSuccess: () => { qc.invalidateQueries({ queryKey: ["catequizandos"] }); } });
+  return useMutation({ 
+    mutationFn: (data: { id: string, motivo?: string }) => removeCatequizando(data.id, data.motivo), 
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["catequizandos"] }); } 
+  });
 }
 
 // ===== ENCONTROS =====

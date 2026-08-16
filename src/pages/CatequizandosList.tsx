@@ -613,14 +613,15 @@ export default function CatequizandosList() {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      await deleteMut.mutateAsync(deleteTarget.id);
-      setDeleteModal({ open: false, motivo: '' });
-      setDeleteTarget(null);
-      toast.success('Catequizando excluído com sucesso!');
-    } catch (err: any) {
-      toast.error('Erro ao excluir: ' + err.message);
+    if (deleteTarget && deleteModal.motivo) {
+      try {
+        await deleteMut.mutateAsync({ id: deleteTarget.id, motivo: deleteModal.motivo });
+        setDeleteModal({ open: false, motivo: '' });
+        setDeleteTarget(null);
+        toast.success("Catequizando excluído com sucesso.");
+      } catch (error: any) {
+        toast.error("Erro ao excluir: " + error.message);
+      }
     }
   };
 
