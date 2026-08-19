@@ -2,20 +2,14 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPublicVisitaConfig, publicAgendarVisita } from "@/lib/supabaseStore";
-import {
-  Calendar, Clock, CheckCircle2, AlertCircle, Heart, MapPin,
-  ChevronRight, Phone, User, MessageSquare, Sparkles, CalendarCheck
+import { Clock, CheckCircle2, AlertCircle, Heart,
+  Phone, User, MessageSquare, CalendarCheck
 } from "lucide-react";
-import { Calendar as CalendarUI } from "@/components/ui/calendar";
-import { ptBR } from "date-fns/locale";
 import { mascaraTelefone, cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Spinner from "@/components/ui/spinner";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
-function toDateStr(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 function fmtDateFull(str: string) {
   const d = new Date(str + "T12:00:00");
   return d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
@@ -113,7 +107,6 @@ export default function PublicAgendaVisita() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedData, setSelectedData] = useState<string | null>(null);
   const [selectedHorario, setSelectedHorario] = useState<string | null>(null);
 
@@ -287,91 +280,76 @@ export default function PublicAgendaVisita() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-            {/* ── STEP 1: CALENDÁRIO ─────────────────────────────────── */}
+            {/* ── STEP 1: DATAS DISPONÍVEIS ─────────────────────────── */}
             <div className="bg-white rounded-3xl shadow-sm border border-black/5 overflow-hidden">
               {/* Header */}
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-black text-white text-sm">1</div>
                 <div>
                   <p className="text-white font-black text-sm uppercase tracking-widest">Escolha um Dia</p>
-                  <p className="text-indigo-200 text-[10px] font-medium">Clique em um dia verde disponível</p>
+                  <p className="text-indigo-200 text-[10px] font-medium">Toque na data para ver os horários</p>
                 </div>
               </div>
 
-              <div className="p-5 space-y-5">
-                {/* Legenda */}
-                <div className="flex flex-wrap gap-4 text-[10px] font-bold text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-indigo-600 inline-block" /> Dia disponível
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-slate-200 inline-block" /> Sem vagas
-                  </span>
+              <div className="p-5 space-y-3">
+                {/* Botões de datas disponíveis */}
+                <div className="grid grid-cols-2 gap-3">
+                  {diasDisponiveis.map((dia: any) => {
+                    const d = new Date(dia.data + "T12:00:00");
+                    const isSelected = selectedData === dia.data;
+                    const diaSemana = d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase();
+                    const vagas = dia.horariosLivres.length;
+                    return (
+                      <button
+                        key={dia.data}
+                        type="button"
+                        onClick={() => {
+                          if (selectedData === dia.data) {
+                            setSelectedData(null);
+                            setSelectedHorario(null);
+                            setCurrentStep(1);
+                          } else {
+                            setSelectedData(dia.data);
+                            setSelectedHorario(null);
+                            setCurrentStep(1);
+                          }
+                        }}
+                        className={cn(
+                          "relative flex flex-col items-center justify-center gap-1 py-4 px-3 rounded-2xl border-2 font-bold transition-all duration-200 overflow-hidden",
+                          isSelected
+                            ? "bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-600/40 scale-[1.03]"
+                            : "bg-white border-slate-200 text-slate-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-800 hover:shadow-md"
+                        )}
+                      >
+                        {isSelected && <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600" />}
+                        <span className={cn("relative text-[10px] font-black uppercase tracking-widest", isSelected ? "text-white/70" : "text-indigo-500")}>
+                          {diaSemana}
+                        </span>
+                        <span className={cn("relative text-xl font-black tracking-tight", isSelected ? "text-white" : "text-slate-800")}>
+                          {d.getDate()}
+                        </span>
+                        <span className={cn("relative text-[11px] font-bold", isSelected ? "text-white/80" : "text-slate-500")}>
+                          {d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase()}
+                        </span>
+                        <span className={cn(
+                          "relative mt-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest",
+                          isSelected ? "bg-white/20 text-white" : "bg-green-50 text-green-700 border border-green-200"
+                        )}>
+                          {vagas} {vagas === 1 ? "vaga" : "vagas"}
+                        </span>
+                        {isSelected && (
+                          <div className="absolute bottom-1.5 right-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-white/70" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Calendário Premium */}
-                <div className="flex justify-center">
-                  <div className="relative">
-                    <CalendarUI
-                      mode="single"
-                      selected={selectedDate}
-                      locale={ptBR}
-                      onSelect={(d) => {
-                        setSelectedDate(d);
-                        if (d) {
-                          const str = toDateStr(d);
-                          setSelectedData(str);
-                          setSelectedHorario(null);
-                          setCurrentStep(1);
-                        } else {
-                          setSelectedData(null);
-                          setSelectedHorario(null);
-                        }
-                      }}
-                      disabled={(day) => {
-                        const str = toDateStr(day);
-                        return !diasDisponiveis.some((d: any) => d.data === str);
-                      }}
-                      className={cn(
-                        "rounded-2xl border-2 border-slate-100 bg-white shadow-sm w-full p-2 sm:p-4",
-                        "[&_.rdp]:w-full [&_.rdp-months]:w-full [&_.rdp-month]:w-full [&_table]:w-full",
-                        "[&_.rdp-cell]:p-0.5",
-                        "[&_.rdp-day_button]:w-full [&_.rdp-day_button]:aspect-square [&_.rdp-day_button]:max-h-14 [&_.rdp-day_button]:text-base sm:[&_.rdp-day_button]:text-lg",
-                        "[&_.rdp-day_button:not(.rdp-day_disabled):not(.rdp-day_outside)]:hover:bg-indigo-100",
-                        "[&_.rdp-day_button:not(.rdp-day_disabled):not(.rdp-day_outside)]:hover:text-indigo-800",
-                      )}
-                      classNames={{
-                        day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white rounded-xl shadow-lg shadow-indigo-600/30 scale-105 transition-transform",
-                        day_disabled: "text-slate-200 opacity-50",
-                        head_cell: "text-slate-400 font-bold text-xs sm:text-sm uppercase pb-2",
-                      }}
-                      components={{
-                        DayContent: ({ date }) => {
-                          const str = toDateStr(date);
-                          const isAvailable = diasDisponiveis.some((d: any) => d.data === str);
-                          const vagasCount = diasDisponiveis.find((d: any) => d.data === str)?.horariosLivres.length || 0;
-                          return (
-                            <div className="relative flex flex-col items-center justify-center w-full h-full gap-0.5">
-                              <span>{date.getDate()}</span>
-                              {isAvailable && (
-                                <div className="flex gap-0.5">
-                                  {Array.from({ length: Math.min(vagasCount, 3) }).map((_, i) => (
-                                    <div key={i} className="w-1 h-1 rounded-full bg-green-500 opacity-90" />
-                                  ))}
-                                  {vagasCount > 3 && <div className="w-1 h-1 rounded-full bg-green-300" />}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        },
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Dia selecionado — exibe horários */}
+                {/* Horários do dia selecionado — aparece inline */}
                 {selectedData && (
-                  <div className="animate-in slide-in-from-bottom-2 duration-300">
+                  <div className="animate-in slide-in-from-top-2 duration-300 mt-1">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="h-px flex-1 bg-slate-100" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 rounded-full px-3 py-1">

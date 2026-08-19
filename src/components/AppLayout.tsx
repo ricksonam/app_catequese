@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { getAppUrl } from "@/lib/utils";
+import BirthdayBell from "@/components/BirthdayBell";
 
 
 const baseTabs = [
@@ -93,13 +94,16 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
               <span className="text-2xl sm:text-3xl font-black tracking-tighter leading-none bg-gradient-to-r from-primary via-white to-primary bg-[length:200%_auto] animate-shimmer bg-clip-text text-transparent drop-shadow-md">iCatequese</span>
             </button>
 
-            <button 
-              onClick={() => setShowApoie(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 border border-pink-400 z-10"
-            >
-              <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse fill-white" />
-              <span>Apoie</span>
-            </button>
+            <div className="flex items-center gap-1 z-10">
+              <BirthdayBell />
+              <button 
+                onClick={() => setShowApoie(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 border border-pink-400"
+              >
+                <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse fill-white" />
+                <span>Apoie</span>
+              </button>
+            </div>
           </div>
           
           <ObjectiveModal 
