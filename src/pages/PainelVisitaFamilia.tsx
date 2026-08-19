@@ -938,94 +938,122 @@ export function PainelVisitaFamilia() {
                 </div>
               </div>
 
-              {/* ── DOIS CARDS PREMIUM DE MODALIDADE ─────────────────────────── */}
-              <div className="space-y-3">
-                <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground px-1">Como deseja marcar?</p>
+              {/* ── CARD ÚNICO: AGENDAMENTO DE VISITAS ─────────────────────── */}
+              <div className="bg-white rounded-3xl border border-black/5 shadow-sm overflow-hidden">
+                {/* Header do card pai */}
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-700 px-6 py-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 border border-white/20">
+                    <CalendarDays className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-black text-lg uppercase tracking-tight leading-tight">Agendamento de Visitas</h3>
+                    <p className="text-indigo-200 text-sm font-medium mt-0.5">Escolha como deseja agendar</p>
+                  </div>
+                </div>
 
-                {/* Card 1 — Marcação Manual */}
-                <button
-                  onClick={() => { setManualStep(1); setActiveView("manual"); }}
-                  className="w-full group relative overflow-hidden rounded-3xl shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300"
-                >
-                  {/* Fundo gradiente */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700" />
-                  {/* Ornamento */}
-                  <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/5 group-hover:bg-white/10 transition-all duration-500" />
-                  <div className="absolute -right-4 -bottom-6 w-28 h-28 rounded-full bg-white/5 group-hover:bg-white/10 transition-all duration-500" />
+                <div className="p-4 space-y-3">
 
-                  <div className="relative flex items-center gap-5 p-6">
-                    {/* Ícone */}
-                    <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <UserCheck className="w-8 h-8 text-white" />
-                    </div>
-                    {/* Texto */}
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-purple-200">Catequista agenda</span>
-                        <span className="bg-white/20 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Manual</span>
+                  {/* ── Card 1: Agendamento Manual ─────────────────────────── */}
+                  <button
+                    onClick={() => { setManualStep(1); setActiveView("manual"); }}
+                    className="w-full group relative overflow-hidden rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 hover:border-violet-400 hover:shadow-lg hover:shadow-violet-500/15 active:scale-[0.99] transition-all duration-200"
+                  >
+                    <div className="p-5 flex items-center gap-4">
+                      {/* Ícone */}
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 flex items-center justify-center shrink-0 shadow-lg shadow-violet-600/30 group-hover:scale-105 transition-transform">
+                        <UserCheck className="w-7 h-7 text-white" />
                       </div>
-                      <h3 className="text-xl font-black text-white leading-tight">Marcar na Agenda</h3>
-                      <p className="text-purple-200 text-xs font-medium mt-1 leading-relaxed">
-                        Você escolhe a família, o dia e o horário diretamente
-                      </p>
+                      {/* Texto */}
+                      <div className="flex-1 text-left">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="bg-violet-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-widest">Manual</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-800 leading-tight">Agendamento Manual</h4>
+                        <p className="text-slate-500 text-sm font-medium mt-1 leading-snug">
+                          Você seleciona a família, escolhe a data e o horário
+                        </p>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-violet-400 group-hover:text-violet-600 group-hover:translate-x-1 transition-all shrink-0" />
                     </div>
-                    <ArrowRight className="w-6 h-6 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all shrink-0" />
+                    {/* Rodapé com dicas */}
+                    <div className="border-t border-violet-100 px-5 py-3 flex items-center gap-5 bg-violet-50/50">
+                      {[
+                        { icon: "👨‍👩‍👧", text: "Escolhe o catequizando" },
+                        { icon: "📅", text: "Seleciona a data" },
+                        { icon: "⏰", text: "Define o horário" },
+                      ].map(({ icon, text }) => (
+                        <div key={text} className="flex items-center gap-1.5">
+                          <span className="text-base">{icon}</span>
+                          <span className="text-xs font-semibold text-violet-700 hidden sm:block">{text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </button>
+
+                  {/* ── Card 2: Agendamento Online ─────────────────────────── */}
+                  <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 overflow-hidden">
+                    <button
+                      onClick={() => setActiveView("nova")}
+                      className="w-full group active:scale-[0.99] transition-all duration-200"
+                    >
+                      <div className="p-5 flex items-center gap-4">
+                        {/* Ícone */}
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-600/30 group-hover:scale-105 transition-transform">
+                          <Share2 className="w-7 h-7 text-white" />
+                        </div>
+                        {/* Texto */}
+                        <div className="flex-1 text-left">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-widest">Online</span>
+                            {config?.token && config?.ativo && (
+                              <span className="bg-green-100 text-green-700 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+                                Ativo
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-lg font-black text-slate-800 leading-tight">Agendamento Online</h4>
+                          <p className="text-slate-500 text-sm font-medium mt-1 leading-snug">
+                            Configure datas e envie o link para as famílias escolherem
+                          </p>
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-emerald-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all shrink-0" />
+                      </div>
+                    </button>
+
+                    {/* Botão de compartilhar link — sempre visível e grande */}
+                    <div className="border-t border-emerald-200 px-4 py-4 bg-white/60">
+                      <button
+                        type="button"
+                        onClick={shareLink}
+                        disabled={!config?.token}
+                        className={cn(
+                          "w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide transition-all flex items-center justify-center gap-3",
+                          config?.token
+                            ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50 hover:scale-[1.02] active:scale-[0.98]"
+                            : "bg-slate-100 text-slate-400 border-2 border-dashed border-slate-200 cursor-not-allowed"
+                        )}
+                      >
+                        <Share2 className="w-5 h-5" />
+                        {!config?.token
+                          ? "Configure as datas primeiro"
+                          : copied ? "✅ Link Copiado!" : "📤 Compartilhar Link com as Famílias"
+                        }
+                      </button>
+                      {config?.token && (
+                        <p className="text-center text-sm text-emerald-700 font-medium mt-2">
+                          Toque para copiar ou compartilhar o link diretamente
+                        </p>
+                      )}
+                      {!config?.token && (
+                        <p className="text-center text-sm text-slate-400 font-medium mt-2">
+                          Acesse "Agendamento Online" para criar e ativar o link
+                        </p>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Rodapé do card */}
-                  <div className="relative border-t border-white/10 px-6 py-3 flex items-center gap-4">
-                    {[
-                      { icon: "👶", label: "Escolhe o catequizando" },
-                      { icon: "📅", label: "Marca o dia" },
-                      { icon: "⏰", label: "Define o horário" },
-                    ].map(({ icon, label }) => (
-                      <div key={label} className="flex items-center gap-1.5">
-                        <span className="text-sm">{icon}</span>
-                        <span className="text-[9px] font-bold text-purple-200 hidden sm:block">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </button>
-
-                {/* Card 2 — Link para Famílias */}
-                <button
-                  onClick={() => setActiveView("nova")}
-                  className="w-full group relative overflow-hidden rounded-3xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700" />
-                  <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full bg-white/5 group-hover:bg-white/10 transition-all duration-500" />
-                  <div className="absolute -right-4 -bottom-6 w-28 h-28 rounded-full bg-white/5 group-hover:bg-white/10 transition-all duration-500" />
-
-                  <div className="relative flex items-center gap-5 p-6">
-                    <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Share2 className="w-8 h-8 text-white" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-200">Família escolhe</span>
-                        <span className="bg-white/20 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Link</span>
-                      </div>
-                      <h3 className="text-xl font-black text-white leading-tight">Enviar Link</h3>
-                      <p className="text-emerald-200 text-xs font-medium mt-1 leading-relaxed">
-                        Configure datas e envie o link para as famílias agendarem
-                      </p>
-                    </div>
-                    <ArrowRight className="w-6 h-6 text-white/60 group-hover:text-white group-hover:translate-x-1 transition-all shrink-0" />
-                  </div>
-
-                  <div className="relative border-t border-white/10 px-6 py-3 flex items-center gap-4">
-                    {[
-                      { icon: "📆", label: "Configura os dias" },
-                      { icon: "🔗", label: "Gera o link" },
-                      { icon: "👨‍👩‍👧", label: "Família agenda" },
-                    ].map(({ icon, label }) => (
-                      <div key={label} className="flex items-center gap-1.5">
-                        <span className="text-sm">{icon}</span>
-                        <span className="text-[9px] font-bold text-emerald-200 hidden sm:block">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </button>
+                </div>
               </div>
 
               {/* Botões secundários */}
@@ -1043,8 +1071,6 @@ export function PainelVisitaFamilia() {
                   <h4 className="text-[11px] sm:text-xs font-black text-amber-950 uppercase tracking-wide">Relatórios</h4>
                 </button>
               </div>
-
-
 
               {/* Próximas visitas agendadas */}
               <div className="bg-white rounded-[24px] p-4 sm:p-5 shadow-sm border border-slate-100">
