@@ -843,8 +843,7 @@ export default function ReunioesList() {
                  </div>
                  {/* Actions */}
                  <div className="flex items-center gap-2 z-50">
-                   <button onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-primary bg-primary/10 hover:bg-primary/20 transition-all active:scale-95 border border-primary/20" title="Editar"><Pencil className="h-4 w-4" /></button>
-                   <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20" title="Excluir"><Trash2 className="h-4 w-4" /></button>
+
                    <div className="w-px h-5 bg-black/10 mx-1" />
                    <button onClick={() => setViewItem(null)} className="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all active:scale-95 border border-zinc-200" title="Fechar"><X className="h-5 w-5" /></button>
                  </div>
@@ -892,13 +891,28 @@ export default function ReunioesList() {
                     </button>
                   </div>
                   
-                  <button 
-                    onClick={() => setShowReportDialog(true)}
-                    className="mt-3 w-full flex justify-center items-center gap-2 px-3 py-3 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-[1.02] transition-all active:scale-95 border border-purple-400 font-black text-[11px] uppercase tracking-widest"
-                  >
-                    <FileText className="h-4 w-4 drop-shadow-sm" />
-                    <span>Relatório Ficha da Reunião</span>
-                  </button>
+                  <div className="relative flex items-center justify-center gap-3 mb-2 animate-float-up px-4" style={{ animationDelay: '50ms' }}>
+                    <button 
+                      title="Relatórios"
+                      onClick={() => setShowReportDialog(true)}
+                      className="absolute left-4 w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:scale-105 transition-all active:scale-95 border border-purple-400 group"
+                    >
+                      <FileText className="h-4 w-4 drop-shadow-sm group-hover:scale-110 transition-transform" />
+                    </button>
+                    <button 
+                      onClick={() => { setForm(fillFormFromItem(viewItem)); setEditingId(viewItem.id); setOpen(true); }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group"
+                    >
+                      <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
+                    </button>
+                    <button 
+                      onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }}
+                      className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm"
+                    >
+                      <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Card: Logística — Data, Hora e Local */}

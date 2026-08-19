@@ -385,10 +385,6 @@ export default function EventosList() {
               <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 border-b border-black/5 bg-background/90 backdrop-blur-md">
                 <span className="text-sm font-bold text-foreground truncate pr-4">Detalhes do Evento</span>
                 <div className="flex items-center gap-1.5 z-50">
-                  <button onClick={() => handleEdit(viewItem)} className="p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm"><Pencil className="h-4 w-4" /></button>
-                  <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors shadow-sm"><Trash2 className="h-4 w-4" /></button>
-
-                  <div className="w-px h-4 bg-black/10 mx-1" />
                   <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90"><X className="h-5 w-5" /></button>
                 </div>
               </div>
@@ -404,6 +400,21 @@ export default function EventosList() {
                      </span>
                    </div>
                    <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight mb-2">{viewItem.nome}</h2>
+                   <div className="relative flex items-center justify-center gap-3 mb-2 animate-float-up px-4" style={{ animationDelay: '50ms' }}>
+                     <button 
+                       onClick={() => handleEdit(viewItem)} 
+                       className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group"
+                     >
+                       <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+                       <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
+                     </button>
+                     <button 
+                       onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} 
+                       className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm"
+                     >
+                       <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                     </button>
+                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

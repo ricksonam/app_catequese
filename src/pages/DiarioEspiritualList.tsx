@@ -390,20 +390,6 @@ export default function DiarioEspiritualList() {
                     <span className={cn("text-sm font-black uppercase tracking-wider", cfg.textColor)}>{cfg.label}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <button
-                      title="Emitir ficha do diário"
-                      onClick={() => setShowReportDialog(true)}
-                      className="p-2 rounded-xl bg-violet-500/10 text-violet-600 hover:bg-violet-500/20 transition-colors"
-                    >
-                      <FileText className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => navigate(`/turmas/${id}/diario/${viewItem.id}/editar`)} className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20 transition-colors">
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} className="p-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                    <div className="w-px h-4 bg-black/10 mx-1" />
                     <button onClick={() => setViewItem(null)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border-2 border-black/5 shadow-md text-foreground hover:bg-zinc-50 transition-all active:scale-90">
                       <X className="h-5 w-5" />
                     </button>
@@ -420,9 +406,31 @@ export default function DiarioEspiritualList() {
                         <Calendar className="w-3 h-3" /> {viewItem.data_registro ? formatarDataVigente(viewItem.data_registro) : "Sem data"}
                       </span>
                     </div>
-                    <h2 className="text-xl font-black text-foreground leading-tight tracking-tight">
+                    <h2 className="text-xl font-black text-foreground leading-tight tracking-tight mb-2">
                       {getTitulo(viewItem)}
                     </h2>
+                    <div className="relative flex items-center justify-center gap-3 mb-2 animate-float-up px-4" style={{ animationDelay: '50ms' }}>
+                      <button 
+                        title="Relatórios"
+                        onClick={() => setShowReportDialog(true)}
+                        className="absolute left-4 w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:scale-105 transition-all active:scale-95 border border-purple-400 group"
+                      >
+                        <FileText className="h-4 w-4 drop-shadow-sm group-hover:scale-110 transition-transform" />
+                      </button>
+                      <button 
+                        onClick={() => navigate(`/turmas/${id}/diario/${viewItem.id}/editar`)} 
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group"
+                      >
+                        <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
+                      </button>
+                      <button 
+                        onClick={() => { setItemToDeleteId(viewItem.id); setDeleteConfirmOpen(true); }} 
+                        className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm"
+                      >
+                        <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Como foi */}

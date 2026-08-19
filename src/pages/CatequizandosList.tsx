@@ -1914,29 +1914,26 @@ export default function CatequizandosList() {
                  </div>
 
                 {/* Ações (Relatório, Edit & Delete) */}
-                <div className="flex flex-row items-stretch gap-2 mt-4">
+                <div className="relative flex items-center justify-center gap-3 mb-2 animate-float-up px-4" style={{ animationDelay: '50ms' }}>
                    <button
-                     title="Emitir relatório"
+                     title="Relatórios"
                      onClick={() => { setSingleReportItem(viewItem); }}
-                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-violet-50 text-violet-700 border-2 border-violet-200 shadow-sm hover:bg-violet-100 transition-all active:scale-95 group font-bold text-xs sm:text-sm uppercase tracking-wide"
+                     className="absolute left-4 w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:scale-105 transition-all active:scale-95 border border-purple-400 group"
                    >
-                     <FileText className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                     <span className="hidden sm:inline">Relatório</span>
-                     <span className="sm:hidden">Relat.</span>
+                     <FileText className="h-4 w-4 drop-shadow-sm group-hover:scale-110 transition-transform" />
                    </button>
                    <button 
                      onClick={handleEdit} 
-                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-primary/10 text-primary border-2 border-primary/20 shadow-sm hover:bg-primary/20 transition-all active:scale-95 group font-bold text-xs sm:text-sm uppercase tracking-wide"
+                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-primary bg-white hover:bg-primary/5 transition-all active:scale-95 border-2 border-primary/20 shadow-sm group"
                    >
-                      <Pencil className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-                      Editar
+                      <Pencil className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">Editar</span>
                    </button>
                    <button 
                      onClick={handleDelete} 
-                     className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-destructive/10 text-destructive border-2 border-destructive/20 shadow-sm hover:bg-destructive/20 transition-all active:scale-95 group font-bold text-xs sm:text-sm uppercase tracking-wide"
+                     className="absolute right-4 w-9 h-9 flex items-center justify-center rounded-xl text-destructive bg-destructive/10 hover:bg-destructive/20 transition-all active:scale-95 border border-destructive/20 group shadow-sm"
                    >
                       <Trash2 className="h-4 w-4 group-hover:rotate-12 transition-transform" />
-                      Excluir
                    </button>
                 </div>
 
