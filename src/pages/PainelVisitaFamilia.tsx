@@ -1021,35 +1021,25 @@ export function PainelVisitaFamilia() {
                       </div>
                     </button>
 
-                    {/* Botão de compartilhar link — sempre visível e grande */}
-                    <div className="border-t border-emerald-200 px-4 py-4 bg-white/60">
+                    {/* Botão de compartilhar link — compacto */}
+                    <div className="border-t border-emerald-200 px-4 py-3 bg-white/60">
                       <button
                         type="button"
                         onClick={shareLink}
                         disabled={!config?.token}
                         className={cn(
-                          "w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide transition-all flex items-center justify-center gap-3",
+                          "w-full py-2.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2",
                           config?.token
-                            ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50 hover:scale-[1.02] active:scale-[0.98]"
-                            : "bg-slate-100 text-slate-400 border-2 border-dashed border-slate-200 cursor-not-allowed"
+                            ? "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98] shadow-sm"
+                            : "bg-slate-100 text-slate-400 border border-dashed border-slate-200 cursor-not-allowed"
                         )}
                       >
-                        <Share2 className="w-5 h-5" />
+                        <Share2 className="w-4 h-4" />
                         {!config?.token
                           ? "Configure as datas primeiro"
-                          : copied ? "✅ Link Copiado!" : "📤 Compartilhar Link com as Famílias"
+                          : copied ? "✅ Link copiado!" : "Compartilhar Link"
                         }
                       </button>
-                      {config?.token && (
-                        <p className="text-center text-sm text-emerald-700 font-medium mt-2">
-                          Toque para copiar ou compartilhar o link diretamente
-                        </p>
-                      )}
-                      {!config?.token && (
-                        <p className="text-center text-sm text-slate-400 font-medium mt-2">
-                          Acesse "Agendamento Online" para criar e ativar o link
-                        </p>
-                      )}
                     </div>
                   </div>
 

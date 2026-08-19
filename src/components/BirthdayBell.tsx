@@ -121,7 +121,7 @@ export default function BirthdayBell() {
                     key={i}
                     className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
                       jaPassou
-                        ? "bg-muted/30 opacity-40 grayscale"
+                        ? "bg-rose-50/60 border border-rose-100"
                         : "bg-muted/50"
                     }`}
                   >
@@ -129,19 +129,21 @@ export default function BirthdayBell() {
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         isHoje
                           ? isBatismo ? "bg-blue-400/20" : "bg-gold/20"
-                          : isBatismo ? "bg-blue-500/10" : "bg-primary/10"
+                          : jaPassou
+                            ? isBatismo ? "bg-blue-100" : "bg-rose-100"
+                            : isBatismo ? "bg-blue-500/10" : "bg-primary/10"
                       }`}
                     >
                       {isBatismo ? (
                         <Droplets
                           className={`h-4 w-4 ${
-                            isHoje ? "text-blue-500" : jaPassou ? "text-blue-300" : "text-blue-400"
+                            isHoje ? "text-blue-500" : jaPassou ? "text-blue-400" : "text-blue-400"
                           }`}
                         />
                       ) : (
                         <Cake
                           className={`h-4 w-4 ${
-                            isHoje ? "text-gold" : jaPassou ? "text-muted-foreground" : "text-primary"
+                            isHoje ? "text-gold" : jaPassou ? "text-rose-400" : "text-primary"
                           }`}
                         />
                       )}
@@ -161,7 +163,7 @@ export default function BirthdayBell() {
                     <span
                       className={`text-xs font-bold px-2 py-1 rounded-full ${
                         jaPassou
-                          ? "bg-muted text-muted-foreground/50 line-through"
+                          ? "bg-rose-100 text-rose-500"
                           : isHoje
                             ? isBatismo
                               ? "bg-blue-400/20 text-blue-500"
@@ -172,7 +174,7 @@ export default function BirthdayBell() {
                       }`}
                     >
                       {jaPassou
-                        ? `${Math.abs(a.diasRestantes)}d atrás`
+                        ? `Já passou · ${Math.abs(a.diasRestantes)}d`
                         : isHoje
                           ? isBatismo ? "💧 Hoje!" : "🎉 Hoje!"
                           : `${a.diasRestantes}d`
