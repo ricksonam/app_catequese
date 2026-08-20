@@ -34,7 +34,7 @@ import { Label } from "@/components/ui/label";
 import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { getAppUrl } from "@/lib/utils";
 import BirthdayBell from "@/components/BirthdayBell";
-
+import PWAInstallBanner from "@/components/PWAInstallBanner";
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
@@ -116,6 +116,8 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
           />
         </header>
       )}
+      
+      <PWAInstallBanner />
 
       {/* Content */}
       <main className={`flex-1 container ${isPresentationMode ? 'p-0 max-w-none' : 'px-4 py-5 pb-24 print:p-0 print:m-0 print:max-w-none'}`}>
