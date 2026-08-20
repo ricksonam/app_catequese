@@ -39,6 +39,9 @@ export default defineConfig(({ mode }) => ({
           /^\/manifest\.json$/,
         ],
 
+        // Aumenta o limite de precache para 5MB para cobrir o chunk liturgiaOffline (3.17MB)
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+
         // Runtime caching: imagens do Supabase Storage (cache 7 dias)
         runtimeCaching: [
           {
