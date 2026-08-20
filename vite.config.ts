@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -11,7 +12,56 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react()].filter(Boolean),
+  plugins: [
+    react(),
+    VitePWA({
+      // O Workbox gera e gerencia o sw.js automaticamente no build
+      registerType: "autoUpdate",
+      injectRegister: false, // Controlamos o registro manualmente no main.tsx
+
+      // Arquivos do public/ que devem ser incluídos no precache
+      includeAssets: [
+        "icon-192.png",
+        "icon-512.png",
+        "favicon.ico",
+        "Logo_sem_fundo.png",
+      ],
+
+      manifest: false, // Usamos o manifest.json existente no public/
+
+      workbox: {
+        // Estratégia navigateFallback: serve index.html para qualquer rota offline
+        navigateFallback: "/index.html",
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /supabase\.co/,
+          /^\/sw\.js$/,
+          /^\/manifest\.json$/,
+        ],
+
+        // Runtime caching: imagens do Supabase Storage (cache 7 dias)
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.(co|in)\/storage\//,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-images-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 7 * 24 * 60 * 60,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+
+        // Limpeza automática de caches antigos
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+      },
+    }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -52,3 +102,5 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+
+

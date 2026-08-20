@@ -1,4 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,6 +10,9 @@ import { logError, initGlobalErrorCapture } from "@/lib/errorLogger";
 import ScrollToTop from "./components/ScrollToTop";
 import { useState, useEffect, lazy, Suspense, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { createIdbPersister } from "@/lib/queryPersister";
+
 
 // ===== IMPORTS ESTÁTICOS (usados no carregamento inicial) =====
 import AppLayout from "@/components/AppLayout";
@@ -108,14 +112,16 @@ function PageLoader() {
   );
 }
 
-// ===== QUERY CLIENT com configuração de resiliência =====
+// ===== QUERY CLIENT com configuração de resiliência + persistência offline =====
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 3,
       retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000),
       staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      // gcTime de 24h: mantém o cache em memória (e no IndexedDB) por 24 horas
+      // permitindo que os dados estejam disponíveis offline
+      gcTime: 24 * 60 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
     mutations: {
@@ -125,6 +131,10 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Persister IndexedDB: salva o cache do React Query no celular
+const persister = createIdbPersister();
+
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
@@ -338,8 +348,12 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
         <TooltipProvider>
+          <OfflineIndicator />
           {showSplash && <SplashScreen />}
           <Toaster />
           <Sonner />
@@ -350,7 +364,7 @@ const App = () => {
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </ErrorBoundary>
   );
 };
