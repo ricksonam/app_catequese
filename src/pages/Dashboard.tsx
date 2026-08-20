@@ -831,10 +831,7 @@ export default function Dashboard() {
                 >
                   <button
                     onClick={() => setSelectedCatequizando(c)}
-                    className={cn(
-                      "relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95",
-                      jaPassou && "opacity-40 grayscale"
-                    )}
+                    className="relative group transition-all duration-500 hover:z-50 hover:scale-110 active:scale-95"
                     style={{ transform: `rotate(${rotations[i % 4]})` }}
                   >
                     <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-4 bg-[#d7b58c] border border-[#b89a71] rounded-sm z-30 shadow-sm opacity-90"></div>
