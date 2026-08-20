@@ -37,6 +37,7 @@ import BirthdayBell from "@/components/BirthdayBell";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
 import { SyncStatus } from "@/components/SyncStatus";
 import { OfflineWriteWarning } from "@/components/OfflineWriteWarning";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
@@ -97,6 +98,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
             </button>
 
             <div className="flex items-center gap-1 z-10">
+              <OfflineIndicator />
               <SyncStatus />
               <BirthdayBell />
               <button 

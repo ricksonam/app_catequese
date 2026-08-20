@@ -10,7 +10,6 @@ import { logError, initGlobalErrorCapture } from "@/lib/errorLogger";
 import ScrollToTop from "./components/ScrollToTop";
 import { useState, useEffect, lazy, Suspense, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { createIdbPersister } from "@/lib/queryPersister";
 
 
@@ -166,6 +165,15 @@ const HomeOrLanding = () => {
       return;
     }
 
+    // Se estiver offline, não tenta buscar no servidor — assume que o usuário
+    // já passou pelo onboarding (sessão ativa = usuário existente) para não
+    // ficar preso na tela de carregando.
+    if (!navigator.onLine) {
+      localStorage.setItem(ONBOARDING_KEY, "true");
+      setDataChecked(true);
+      return;
+    }
+
     // Para usuários sem flag no localStorage, verifica se já têm dados no banco
     // Isso evita redirecionar usuários existentes para o onboarding
     setCheckingData(true);
@@ -182,6 +190,8 @@ const HomeOrLanding = () => {
       setCheckingData(false);
       setDataChecked(true);
     }).catch(() => {
+      // Fallback em caso de erro de rede: assume onboarding completo
+      localStorage.setItem(ONBOARDING_KEY, "true");
       setCheckingData(false);
       setDataChecked(true);
     });
@@ -353,7 +363,6 @@ const App = () => {
         persistOptions={{ persister }}
       >
         <TooltipProvider>
-          <OfflineIndicator />
           {showSplash && <SplashScreen />}
           <Toaster />
           <Sonner />
