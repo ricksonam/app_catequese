@@ -861,13 +861,16 @@ export default function Dashboard() {
                           <span className="text-[12px] font-black text-foreground/90 tabular-nums leading-none">{dateStr}</span>
                           {isHoje ? (
                             <span className="text-[8px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-heartbeat mt-1 uppercase">HOJE</span>
-                          ) : jaPassou ? (
-                            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter mt-1 truncate w-full text-center">
-                              {Math.abs(c.diasRelativo)}d atrás
-                            </span>
                           ) : (
-                            <p className={cn("text-[8px] font-black uppercase tracking-tighter mt-1 truncate w-full text-center", c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600")}>
-                              {c.hasBoth ? "🎉 Nasc. & Bat." : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo")}
+                            <p className={cn(
+                              "text-[8px] font-black uppercase tracking-tighter mt-1 truncate w-full text-center",
+                              c.tipo === 'nascimento' ? "text-amber-600" : "text-blue-600",
+                              jaPassou && "opacity-80"
+                            )}>
+                              {jaPassou 
+                                ? `${Math.abs(c.diasRelativo)}d atrás`
+                                : (c.hasBoth ? "🎉 Nasc. & Bat." : (c.tipo === 'nascimento' ? "Nascimento" : "Batismo"))
+                              }
                             </p>
                           )}
                         </div>
