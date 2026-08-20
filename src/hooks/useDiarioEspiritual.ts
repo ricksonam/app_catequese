@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { enqueueOperation } from "@/lib/offlineQueue";
+import { triggerOfflineWriteWarning } from "@/components/OfflineWriteWarning";
+
+const OFFLINE_QUEUED = { _queued: true } as const;
 
 export type DiarioEspiritual = {
   id: string;
@@ -147,6 +151,20 @@ export function useDiarioEspiritual(turmaId: string) {
     mutationFn: async (novoDiario: Omit<DiarioEspiritual, "id" | "user_id" | "criado_em">) => {
       const payload = serializePayload({ ...novoDiario, user_id: session?.user.id });
 
+      if (!navigator.onLine) {
+        triggerOfflineWriteWarning();
+        const id = crypto.randomUUID();
+        const fullPayload = { ...payload, id, criado_em: new Date().toISOString() };
+        await enqueueOperation({ type: "createDiario", args: payload, queryKeysToInvalidate: [["diario_espiritual", turmaId]] });
+        
+        // Optimistic update
+        queryClient.setQueriesData({ queryKey: ["diario_espiritual", turmaId] }, (old: any) => {
+          if (!Array.isArray(old)) return old;
+          return [fullPayload, ...old];
+        });
+        return OFFLINE_QUEUED;
+      }
+
       const { data, error } = await supabase
         .from("diario_espiritual")
         .insert([payload])
@@ -156,9 +174,11 @@ export function useDiarioEspiritual(turmaId: string) {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["diario_espiritual", turmaId] });
-      toast.success("Registro adicionado ao diário com sucesso!");
+    onSuccess: (data) => {
+      if (data !== OFFLINE_QUEUED) {
+        queryClient.invalidateQueries({ queryKey: ["diario_espiritual", turmaId] });
+        toast.success("Registro adicionado ao diário com sucesso!");
+      }
     },
     onError: (error) => {
       console.error("Erro ao criar diário:", error);
@@ -170,6 +190,17 @@ export function useDiarioEspiritual(turmaId: string) {
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Omit<DiarioEspiritual, "id" | "user_id" | "criado_em">> }) => {
       const payload = serializePayload({ ...updates });
 
+      if (!navigator.onLine) {
+        triggerOfflineWriteWarning();
+        await enqueueOperation({ type: "updateDiario", args: { id, updates: payload }, queryKeysToInvalidate: [["diario_espiritual", turmaId]] });
+        
+        queryClient.setQueriesData({ queryKey: ["diario_espiritual", turmaId] }, (old: any) => {
+          if (!Array.isArray(old)) return old;
+          return old.map(item => item.id === id ? { ...item, ...payload } : item);
+        });
+        return OFFLINE_QUEUED;
+      }
+
       const { data, error } = await supabase
         .from("diario_espiritual")
         .update(payload)
@@ -180,9 +211,11 @@ export function useDiarioEspiritual(turmaId: string) {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["diario_espiritual", turmaId] });
-      toast.success("Registro atualizado com sucesso!");
+    onSuccess: (data) => {
+      if (data !== OFFLINE_QUEUED) {
+        queryClient.invalidateQueries({ queryKey: ["diario_espiritual", turmaId] });
+        toast.success("Registro atualizado com sucesso!");
+      }
     },
     onError: (error) => {
       console.error("Erro ao atualizar diário:", error);
@@ -192,12 +225,25 @@ export function useDiarioEspiritual(turmaId: string) {
 
   const excluirDiario = useMutation({
     mutationFn: async (id: string) => {
+      if (!navigator.onLine) {
+        triggerOfflineWriteWarning();
+        await enqueueOperation({ type: "deleteDiario", args: id, queryKeysToInvalidate: [["diario_espiritual", turmaId]] });
+        queryClient.setQueriesData({ queryKey: ["diario_espiritual", turmaId] }, (old: any) => {
+          if (!Array.isArray(old)) return old;
+          return old.filter(item => item.id !== id);
+        });
+        return OFFLINE_QUEUED;
+      }
+
       const { error } = await supabase.from("diario_espiritual").delete().eq("id", id);
       if (error) throw error;
+      return null;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["diario_espiritual", turmaId] });
-      toast.success("Registro removido com sucesso!");
+    onSuccess: (data) => {
+      if (data !== OFFLINE_QUEUED) {
+        queryClient.invalidateQueries({ queryKey: ["diario_espiritual", turmaId] });
+        toast.success("Registro removido com sucesso!");
+      }
     },
     onError: (error) => {
       console.error("Erro ao excluir diário:", error);

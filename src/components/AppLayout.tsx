@@ -35,6 +35,8 @@ import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { getAppUrl } from "@/lib/utils";
 import BirthdayBell from "@/components/BirthdayBell";
 import PWAInstallBanner from "@/components/PWAInstallBanner";
+import { SyncStatus } from "@/components/SyncStatus";
+import { OfflineWriteWarning } from "@/components/OfflineWriteWarning";
 
 const baseTabs = [
   { path: "/", icon: LayoutDashboard, label: "Início", color: "text-blue-600", dot: "bg-blue-600" },
@@ -95,6 +97,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
             </button>
 
             <div className="flex items-center gap-1 z-10">
+              <SyncStatus />
               <BirthdayBell />
               <button 
                 onClick={() => setShowApoie(true)}
@@ -118,6 +121,7 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
       )}
       
       <PWAInstallBanner />
+      <OfflineWriteWarning />
 
       {/* Content */}
       <main className={`flex-1 container ${isPresentationMode ? 'p-0 max-w-none' : 'px-4 py-5 pb-24 print:p-0 print:m-0 print:max-w-none'}`}>

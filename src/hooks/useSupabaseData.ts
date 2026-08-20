@@ -19,6 +19,66 @@ import {
 } from "@/lib/supabaseStore";
 import type { Turma, Catequizando, Encontro, Atividade, Reuniao, Paroquia, Comunidade, CatequistaCadastro, RegistroOcorrencia, MuralFoto, CitacaoBiblica, HistoricoSorteioCitacao, BingoModelo, MissaoFamilia, ComunicacaoForm, ComunicacaoResposta } from "@/lib/store";
 import { useAuth } from "@/contexts/AuthContext";
+import { enqueueOperation } from "@/lib/offlineQueue";
+import { triggerOfflineWriteWarning } from "@/components/OfflineWriteWarning";
+import { toast } from "sonner";
+
+// Marcador interno para distinguir operações enfileiradas offline
+const OFFLINE_QUEUED = { _queued: true } as const;
+type OfflineQueued = typeof OFFLINE_QUEUED;
+
+/**
+ * Helper genérico para adicionar capacidade offline às mutações (Fase 3).
+ * Salva na fila e faz atualização otimista local.
+ */
+function createOfflineMutation<T>(
+  qc: ReturnType<typeof useQueryClient>,
+  type: string,
+  baseQueryKey: string,
+  mutationFn: (args: T) => Promise<any>,
+  isDelete = false
+) {
+  return async (args: T) => {
+    if (!navigator.onLine) {
+      triggerOfflineWriteWarning();
+      
+      await enqueueOperation({
+        type,
+        args,
+        queryKeysToInvalidate: [[baseQueryKey]],
+      });
+
+      // Atualização otimista do cache
+      qc.setQueriesData({ queryKey: [baseQueryKey] }, (oldData: any) => {
+        if (!Array.isArray(oldData)) return oldData;
+        
+        let id: string | undefined;
+        if (isDelete) {
+          id = typeof args === "string" ? args : (args as any).id;
+        } else {
+          id = (args as any).id;
+        }
+
+        if (!id) return oldData;
+
+        if (isDelete) {
+          return oldData.filter((item) => item.id !== id);
+        } else {
+          const exists = oldData.some((item) => item.id === id);
+          if (exists) {
+            return oldData.map((item) => (item.id === id ? { ...item, ...args } : item));
+          }
+          return [args, ...oldData]; // Coloca o novo no topo
+        }
+      });
+
+      return OFFLINE_QUEUED;
+    }
+    
+    return mutationFn(args);
+  };
+}
+
 
 // ===== TURMAS =====
 export function useTurmas() {
@@ -80,13 +140,16 @@ export function useCatequizandos(turmaId?: string, includeInactive = false) {
 }
 export function useCatequizandoMutation() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: upsertCatequizando, onSuccess: () => { qc.invalidateQueries({ queryKey: ["catequizandos"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "upsertCatequizando", "catequizandos", upsertCatequizando), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["catequizandos"] }); } 
+  });
 }
 export function useDeleteCatequizando() {
   const qc = useQueryClient();
   return useMutation({ 
-    mutationFn: (data: { id: string, motivo?: string }) => removeCatequizando(data.id, data.motivo), 
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["catequizandos"] }); } 
+    mutationFn: createOfflineMutation(qc, "removeCatequizando", "catequizandos", (data: { id: string, motivo?: string }) => removeCatequizando(data.id, data.motivo), true), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["catequizandos"] }); } 
   });
 }
 
@@ -103,11 +166,17 @@ export function useEncontros(turmaId?: string) {
 }
 export function useEncontroMutation() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: upsertEncontro, onSuccess: () => { qc.invalidateQueries({ queryKey: ["encontros"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "upsertEncontro", "encontros", upsertEncontro), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["encontros"] }); } 
+  });
 }
 export function useDeleteEncontro() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: removeEncontro, onSuccess: () => { qc.invalidateQueries({ queryKey: ["encontros"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "removeEncontro", "encontros", removeEncontro, true), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["encontros"] }); } 
+  });
 }
 
 // ===== ATIVIDADES =====
@@ -123,11 +192,17 @@ export function useAtividades(turmaId?: string) {
 }
 export function useAtividadeMutation() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: upsertAtividade, onSuccess: () => { qc.invalidateQueries({ queryKey: ["atividades"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "upsertAtividade", "atividades", upsertAtividade), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["atividades"] }); } 
+  });
 }
 export function useDeleteAtividade() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: removeAtividade, onSuccess: () => { qc.invalidateQueries({ queryKey: ["atividades"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "removeAtividade", "atividades", removeAtividade, true), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["atividades"] }); } 
+  });
 }
 
 // ===== REUNIOES =====
@@ -143,11 +218,43 @@ export function useReunioes(turmaId?: string) {
 }
 export function useReuniaoMutation() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: upsertReuniao, onSuccess: () => { qc.invalidateQueries({ queryKey: ["reunioes"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "upsertReuniao", "reunioes", upsertReuniao), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["reunioes"] }); } 
+  });
 }
 export function useDeleteReuniao() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: removeReuniao, onSuccess: () => { qc.invalidateQueries({ queryKey: ["reunioes"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "removeReuniao", "reunioes", removeReuniao, true), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["reunioes"] }); } 
+  });
+}
+
+// ===== OCORRENCIAS =====
+export function useOcorrencias(turmaId?: string) {
+  const { user } = useAuth();
+  return useQuery({ 
+    queryKey: ["ocorrencias", user?.id, turmaId], 
+    queryFn: () => fetchOcorrencias(turmaId),
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+}
+export function useOcorrenciaMutation() {
+  const qc = useQueryClient();
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "insertOcorrencia", "ocorrencias", insertOcorrencia), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["ocorrencias"] }); } 
+  });
+}
+export function useDeleteOcorrencia() {
+  const qc = useQueryClient();
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "removeOcorrencia", "ocorrencias", removeOcorrencia, true), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["ocorrencias"] }); } 
+  });
 }
 
 // ===== PAROQUIAS =====
@@ -204,40 +311,30 @@ export function useDeleteCatequista() {
   return useMutation({ mutationFn: removeCatequista, onSuccess: () => { qc.invalidateQueries({ queryKey: ["catequistas"] }); } });
 }
 
-// ===== OCORRENCIAS =====
-export function useOcorrencias(turmaId?: string) {
+// ===== CALENDARIO =====
+export function useCalendarioNotas(turmaId?: string) {
   const { user } = useAuth();
   return useQuery({ 
-    queryKey: ["ocorrencias", user?.id, turmaId], 
-    queryFn: () => fetchOcorrencias(turmaId),
-    enabled: !!user
-  });
-}
-export function useOcorrenciaMutation() {
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: insertOcorrencia, onSuccess: () => { qc.invalidateQueries({ queryKey: ["ocorrencias"] }); } });
-}
-export function useDeleteOcorrencia() {
-  const qc = useQueryClient();
-  return useMutation({ mutationFn: removeOcorrencia, onSuccess: () => { qc.invalidateQueries({ queryKey: ["ocorrencias"] }); } });
-}
-
-// ===== CALENDARIO NOTAS =====
-export function useCalendarioNotas() {
-  const { user } = useAuth();
-  return useQuery({ 
-    queryKey: ["calendario_notas", user?.id], 
-    queryFn: fetchCalendarioNotas,
-    enabled: !!user
+    queryKey: ["calendario_notas", user?.id, turmaId], 
+    queryFn: () => fetchCalendarioNotas(turmaId),
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 export function useCalendarioNotaMutation() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: upsertCalendarioNota, onSuccess: () => { qc.invalidateQueries({ queryKey: ["calendario_notas"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "upsertCalendarioNota", "calendario_notas", upsertCalendarioNota), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["calendario_notas"] }); } 
+  });
 }
 export function useDeleteCalendarioNota() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: removeCalendarioNota, onSuccess: () => { qc.invalidateQueries({ queryKey: ["calendario_notas"] }); } });
+  return useMutation({ 
+    mutationFn: createOfflineMutation(qc, "removeCalendarioNota", "calendario_notas", removeCalendarioNota, true), 
+    onSuccess: (data) => { if (data !== OFFLINE_QUEUED) qc.invalidateQueries({ queryKey: ["calendario_notas"] }); } 
+  });
 }
 
 // ===== MURAL FOTOS =====
