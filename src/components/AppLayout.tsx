@@ -33,7 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { getAppUrl } from "@/lib/utils";
-import BirthdayBell from "@/components/BirthdayBell";
+
 import PWAInstallBanner from "@/components/PWAInstallBanner";
 import { SyncStatus } from "@/components/SyncStatus";
 import { OfflineWriteWarning } from "@/components/OfflineWriteWarning";
@@ -100,7 +100,6 @@ export default function AppLayout({ children }: { children?: React.ReactNode }) 
             <div className="flex items-center gap-1 z-10">
               <OfflineIndicator />
               <SyncStatus />
-              <BirthdayBell />
               <button 
                 onClick={() => setShowApoie(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 border border-pink-400"

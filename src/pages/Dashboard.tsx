@@ -353,19 +353,14 @@ export default function Dashboard() {
 
     const sortedInstances = instances.sort((a, b) => a.day - b.day);
 
-    // Inclui: passou nos últimos 6 dias OU é hoje OU é no futuro deste mês
-    const withRange = sortedInstances.filter(inst => inst.diasRelativo >= -6);
-    const orderedInstances = withRange.length > 0 ? withRange : sortedInstances;
-
-    // Ordena: passados ficam à esquerda (primeiro), futuros/hoje à direita
-    const fromToday = orderedInstances.filter(inst => inst.diasRelativo >= 0);
-    const pastThisWeek = orderedInstances.filter(inst => inst.diasRelativo < 0).sort((a, b) => a.diasRelativo - b.diasRelativo); // mais antigo fica mais à esquerda
-    const finalOrdered = [...pastThisWeek, ...fromToday];
+    // Inclui apenas: é hoje OU é no futuro deste mês
+    const upcoming = sortedInstances.filter(inst => inst.diasRelativo >= 0);
+    const orderedInstances = upcoming.length > 0 ? upcoming : [];
 
     const result: any[] = [];
     const seenKeys = new Set<string>();
 
-    for (const inst of finalOrdered) {
+    for (const inst of orderedInstances) {
       const key = `${inst.id}_${inst.tipo}`;
       if (!seenKeys.has(key)) {
         seenKeys.add(key);
@@ -920,33 +915,33 @@ export default function Dashboard() {
         <div className="mt-2 animate-fade-in">
 
           {/* ── SELETOR DE TURMA COMPACTO COM MOLDURA ── */}
-          <div className="mx-4 p-1 rounded-[18px] bg-blue-50 border-2 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 shadow-md shadow-blue-500/10 mb-4 relative z-10">
+          <div className="mx-4 p-1.5 rounded-[20px] bg-blue-50 border-2 border-blue-300 dark:bg-blue-900/20 dark:border-blue-700 shadow-lg shadow-blue-500/15 mb-4 relative z-10">
             <button
               onClick={() => setTurmaPickerOpen(true)}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-[14px] bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-700 shadow-sm hover:border-blue-300 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[14px] bg-white dark:bg-zinc-900 border border-blue-200 dark:border-zinc-700 shadow-sm hover:border-blue-400 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
             >
               {/* Ícone da turma */}
-              <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
-                <BookOpen className="h-3.5 w-3.5 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50">
+                <BookOpen className="h-5 w-5 text-blue-600" />
               </div>
 
               {/* Info da turma */}
-              <div className="text-center relative z-10 min-w-0">
-                <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none mb-0.5">Turma Selecionada</p>
-                <p className="text-sm font-black text-foreground leading-tight truncate">
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none mb-1">Turma Selecionada</p>
+                <p className="text-base font-black text-foreground leading-tight truncate">
                   {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
                 </p>
                 {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
-                  <p className="text-[10px] text-muted-foreground font-bold leading-none mt-0.5 truncate">
+                  <p className="text-xs text-muted-foreground font-bold leading-none mt-0.5 truncate">
                     {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' · ')}
                   </p>
                 )}
               </div>
 
               {/* Ícone trocar */}
-              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-50 dark:bg-zinc-800 border border-blue-100 dark:border-zinc-700 shrink-0 group-hover:bg-blue-100 transition-colors relative z-10">
-                <RefreshCw className="h-3 w-3 text-blue-500 group-hover:rotate-180 transition-transform duration-300" />
-                <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Trocar</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 shrink-0 group-hover:bg-blue-200 transition-colors">
+                <RefreshCw className="h-3.5 w-3.5 text-blue-600 group-hover:rotate-180 transition-transform duration-300" />
+                <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest">Trocar</span>
               </div>
             </button>
           </div>
@@ -1224,19 +1219,22 @@ export default function Dashboard() {
               </DialogHeader>
 
               <div className="p-6 pt-2 space-y-4 relative z-10">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-2xl border border-amber-100 dark:border-amber-900/20 text-center">
-                    <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-1">Aniversário</p>
-                    <p className="text-sm font-black text-black dark:text-white">
-                      {selectedCatequizando?.dataNascimento ? formatarDataVigente(selectedCatequizando.dataNascimento) : "--"}
-                    </p>
-                  </div>
-                  <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-2xl border border-blue-100 dark:border-blue-900/20 text-center">
-                    <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1">Batismo</p>
-                    <p className="text-sm font-black text-black dark:text-white">
-                      {selectedCatequizando?.sacramentos?.batismo?.data ? formatarDataVigente(selectedCatequizando.sacramentos.batismo.data) : "Não inf."}
-                    </p>
-                  </div>
+                <div className="flex justify-center">
+                  {selectedCatequizando?.tipo === 'batismo' ? (
+                    <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl border border-blue-200 dark:border-blue-900/20 text-center w-full max-w-[200px]">
+                      <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1">💧 Batismo</p>
+                      <p className="text-lg font-black text-black dark:text-white">
+                        {selectedCatequizando?.sacramentos?.batismo?.data ? formatarDataVigente(selectedCatequizando.sacramentos.batismo.data) : "Não inf."}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/20 text-center w-full max-w-[200px]">
+                      <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-1">🎂 Nascimento</p>
+                      <p className="text-lg font-black text-black dark:text-white">
+                        {selectedCatequizando?.dataNascimento ? formatarDataVigente(selectedCatequizando.dataNascimento) : "--"}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center gap-4">

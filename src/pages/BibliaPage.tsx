@@ -97,6 +97,7 @@ export default function BibliaPage() {
   const [readingMenuOpen, setReadingMenuOpen] = useState(false);
   const [showMetadataInfo, setShowMetadataInfo] = useState(false);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [translationId, setTranslationId] = useState("ave_maria");
 
   const selectedTranslation = TRADUCOES.find(t => t.id === translationId) || TRADUCOES[0];
 
