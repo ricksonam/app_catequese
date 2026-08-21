@@ -915,25 +915,25 @@ export default function Dashboard() {
         <div className="mt-2 animate-fade-in">
 
           {/* ── SELETOR DE TURMA COMPACTO COM MOLDURA ── */}
-          <div className="mx-4 p-1 rounded-[16px] bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 shadow-sm mb-4 relative z-10">
+          <div className="mx-4 p-1.5 rounded-[20px] bg-blue-50 border-2 border-blue-300 dark:bg-blue-900/20 dark:border-blue-700 shadow-lg shadow-blue-500/15 mb-4 relative z-10">
             <button
               onClick={() => setTurmaPickerOpen(true)}
-              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-[12px] bg-white dark:bg-zinc-900 border border-blue-100 dark:border-zinc-700 shadow-sm hover:border-blue-300 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[14px] bg-white dark:bg-zinc-900 border border-blue-200 dark:border-zinc-700 shadow-sm hover:border-blue-400 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
             >
               {/* Ícone da turma */}
-              <div className="w-8 h-8 rounded-lg bg-blue-500/15 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50">
-                <BookOpen className="h-4 w-4 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50">
+                <BookOpen className="h-5 w-5 text-blue-600" />
               </div>
 
               {/* Info da turma */}
               <div className="flex-1 text-left min-w-0">
-                <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none mb-0.5 whitespace-nowrap truncate">Turma Selecionada</p>
+                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none mb-1 whitespace-nowrap truncate">Turma Selecionada</p>
                 <div className="flex items-baseline gap-1.5 truncate">
-                  <p className="text-sm font-black text-foreground leading-tight truncate">
-                    {selectedTurmaId === 'all' ? 'Nenhuma selecionada' : selectedTurma?.nome}
+                  <p className="text-base font-black text-foreground leading-tight truncate">
+                    {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
                   </p>
                   {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
-                    <span className="text-[10px] text-muted-foreground font-bold truncate">
+                    <span className="text-xs text-muted-foreground font-bold truncate">
                       • {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' ')}
                     </span>
                   )}
@@ -941,9 +941,9 @@ export default function Dashboard() {
               </div>
 
               {/* Ícone trocar */}
-              <div className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-blue-100 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 shrink-0 group-hover:bg-blue-200 transition-colors">
-                <RefreshCw className="h-3 w-3 text-blue-600 group-hover:rotate-180 transition-transform duration-300" />
-                <span className="text-[8px] font-black text-blue-700 uppercase tracking-widest hidden sm:inline">Trocar</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 shrink-0 group-hover:bg-blue-200 transition-colors">
+                <RefreshCw className="h-3.5 w-3.5 text-blue-600 group-hover:rotate-180 transition-transform duration-300" />
+                <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest">Trocar</span>
               </div>
             </button>
           </div>
@@ -994,7 +994,7 @@ export default function Dashboard() {
                       </button>
                     </div>
                     <div className="min-h-[2.5rem] flex items-start justify-center mt-1 w-full px-0.5">
-                      <span className="text-[10px] sm:text-xs font-black text-center uppercase tracking-normal text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full break-words">
+                      <span className="text-xs sm:text-[13px] font-black text-center uppercase tracking-normal text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full break-words">
                         {item.title}
                       </span>
                     </div>
@@ -1042,7 +1042,7 @@ export default function Dashboard() {
                       </button>
                     </div>
                     <div className="min-h-[2.5rem] flex items-start justify-center mt-1 w-full px-0.5">
-                      <span className="text-[10px] sm:text-xs font-black text-center uppercase tracking-normal text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full break-words">
+                      <span className="text-xs sm:text-[13px] font-black text-center uppercase tracking-normal text-black dark:text-white group-hover:opacity-80 transition-opacity duration-300 leading-tight line-clamp-2 w-full break-words">
                         {item.title}
                       </span>
                     </div>
