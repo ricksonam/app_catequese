@@ -27,6 +27,11 @@ interface BibliaData {
   novoTestamento: Book[];
 }
 
+interface VerseRange {
+  start: number;
+  end: number;
+}
+
 const TRADUCOES = [
   { id: "ave_maria", nome: "Ave Maria", file: "/biblia_ave_maria.json" },
 ];
@@ -78,6 +83,11 @@ const NT_GROUPS: Record<string, string[]> = {
   "Apocalipse": ["Apocalipse"]
 };
 
+const MESES_PT = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
+
 const fetchBiblia = async (translationFile: string): Promise<BibliaData> => {
   const response = await fetch(translationFile);
   if (!response.ok) throw new Error("FILE_NOT_FOUND");
@@ -94,6 +104,8 @@ export default function BibliaPage() {
   
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+  // Intervalo de versículos da citação (ex: v. 26 a 38)
+  const [verseRange, setVerseRange] = useState<VerseRange | null>(null);
   const [readingMenuOpen, setReadingMenuOpen] = useState(false);
   const [showMetadataInfo, setShowMetadataInfo] = useState(false);
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
@@ -111,6 +123,18 @@ export default function BibliaPage() {
       .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
   }, [encontros]);
 
+  // Agrupar encontros por mês
+  const encontrosPorMes = useMemo(() => {
+    const grupos: Record<string, typeof encontrosComLeitura> = {};
+    encontrosComLeitura.forEach(e => {
+      const d = new Date(e.data + (e.data.includes("T") ? "" : "T12:00:00"));
+      const chave = `${d.getFullYear()}-${String(d.getMonth()).padStart(2, "0")}`;
+      if (!grupos[chave]) grupos[chave] = [];
+      grupos[chave].push(e);
+    });
+    return grupos;
+  }, [encontrosComLeitura]);
+
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
@@ -125,6 +149,10 @@ export default function BibliaPage() {
     retry: false,
   });
 
+  /**
+   * Resolve uma referência bíblica como "Lc 1,26-38" ou "Jo 3,16" para
+   * livro + capítulo + intervalo de versículos.
+   */
   const resolveReference = (ref: string) => {
     if (!biblia) return null;
     const allBooks = [...biblia.antigoTestamento, ...biblia.novoTestamento];
@@ -133,10 +161,13 @@ export default function BibliaPage() {
       .replace(/^(evangelho|leitura|salmo|epístola|atos|profeta|primeira leitura|segunda leitura|1ª leitura|2ª leitura)[:\s-]*/i, '')
       .trim();
 
-    const match = cleanRef.match(/^((?:\d\s*|I+\s*)?[a-zA-Záéíóúâêîôûãõç.]+)\s+(\d+)(?:[,:]\s*(\d+))?/i);
+    // Captura: Livro Capítulo[,: VersiculoInicio[-VersiculoFim]]
+    const match = cleanRef.match(
+      /^((?:\d\s*|I+\s*)?[a-zA-Záéíóúâêîôûãõç.]+)\s+(\d+)(?:[,:\s]\s*(\d+)(?:\s*[-–]\s*(\d+))?)?/i
+    );
     if (!match) return null;
     
-    const [, bookName, chapterNum, verseNum] = match;
+    const [, bookName, chapterNum, verseStart, verseEnd] = match;
     const searchKey = bookName.toLowerCase().replace(/\./g, '').trim();
 
     const resolvedBookName = ABREVIACOES[searchKey] || searchKey;
@@ -158,8 +189,15 @@ export default function BibliaPage() {
     const chapter = book.capitulos.find(c => c.capitulo === parseInt(chapterNum));
     if (!chapter) return { book };
     
-    const verse = verseNum ? chapter.versiculos.find(v => String(v.versiculo) === verseNum) : null;
-    return { book, chapter, verse };
+    // Determinar intervalo de versículos
+    let range: VerseRange | null = null;
+    if (verseStart) {
+      const start = parseInt(verseStart);
+      const end = verseEnd ? parseInt(verseEnd) : start;
+      range = { start, end };
+    }
+
+    return { book, chapter, range };
   };
 
   const autoOpenReference = (ref: string) => {
@@ -169,6 +207,7 @@ export default function BibliaPage() {
       setShowMetadataInfo(true);
       if (resolved.chapter) {
         setSelectedChapter(resolved.chapter);
+        setVerseRange(resolved.range ?? null);
         setTab("livros");
         setSearch("");
         toast.success(`Leitura encontrada: ${ref}`);
@@ -189,13 +228,13 @@ export default function BibliaPage() {
   const renderBreadcrumbs = () => {
     return (
       <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4 overflow-x-auto whitespace-nowrap pb-1">
-        <button onClick={() => { setSelectedBook(null); setSelectedChapter(null); }} className="hover:text-primary transition-colors font-medium">
+        <button onClick={() => { setSelectedBook(null); setSelectedChapter(null); setVerseRange(null); }} className="hover:text-primary transition-colors font-medium">
           Livros
         </button>
         {selectedBook && (
           <>
             <ChevronRight className="h-3 w-3 shrink-0" />
-            <button onClick={() => setSelectedChapter(null)} className={`transition-colors truncate max-w-[120px] ${!selectedChapter ? 'text-primary font-bold' : 'hover:text-primary font-medium'}`}>
+            <button onClick={() => { setSelectedChapter(null); setVerseRange(null); }} className={`transition-colors truncate max-w-[120px] ${!selectedChapter ? 'text-primary font-bold' : 'hover:text-primary font-medium'}`}>
               {selectedBook.nome}
             </button>
           </>
@@ -203,7 +242,10 @@ export default function BibliaPage() {
         {selectedChapter && (
           <>
             <ChevronRight className="h-3 w-3 shrink-0" />
-            <span className="text-primary font-bold">Cap. {selectedChapter.capitulo}</span>
+            <span className="text-primary font-bold">
+              Cap. {selectedChapter.capitulo}
+              {verseRange && ` · v.${verseRange.start}${verseRange.end !== verseRange.start ? `–${verseRange.end}` : ''}`}
+            </span>
           </>
         )}
       </div>
@@ -285,16 +327,52 @@ export default function BibliaPage() {
     if (!biblia) return null;
 
     if (selectedChapter && selectedBook) {
+      // Filtrar versículos pelo intervalo da citação (se houver)
+      const versiculosExibidos = verseRange
+        ? selectedChapter.versiculos.filter(v => {
+            const num = parseInt(String(v.versiculo));
+            return num >= verseRange.start && num <= verseRange.end;
+          })
+        : selectedChapter.versiculos;
+
       return (
         <div className="space-y-4 animate-fade-in">
           {renderBreadcrumbs()}
           {renderBookMetadata()}
+
+          {/* Banner quando há filtro de versículos */}
+          {verseRange && (
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
+              <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+                <BookIcon className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-black text-primary uppercase tracking-wide">Leitura da Citação</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Mostrando versículos {verseRange.start}
+                  {verseRange.end !== verseRange.start ? ` ao ${verseRange.end}` : ""} de {selectedChapter.versiculos.length} total
+                </p>
+              </div>
+              <button
+                onClick={() => setVerseRange(null)}
+                className="text-[10px] font-black text-primary/60 hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/10 border border-primary/20 whitespace-nowrap"
+              >
+                Ver capítulo completo
+              </button>
+            </div>
+          )}
+
           <div className="float-card liturgical-border bg-liturgical-paper p-5 md:p-8 space-y-6 shadow-xl">
             <h2 className="text-2xl font-liturgical font-bold text-center text-foreground border-b border-border/50 pb-4">
               {selectedBook.nome} {selectedChapter.capitulo}
+              {verseRange && (
+                <span className="text-lg text-primary ml-2">
+                  v.{verseRange.start}{verseRange.end !== verseRange.start ? `–${verseRange.end}` : ""}
+                </span>
+              )}
             </h2>
             <div className="space-y-4 font-liturgical">
-              {selectedChapter.versiculos.map((v) => (
+              {versiculosExibidos.map((v) => (
                 <div key={v.versiculo} className="flex gap-3 group relative pl-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg p-2 transition-colors">
                   <span className="text-xs font-bold text-liturgical-gold shrink-0 mt-1 w-5 text-right">{v.versiculo}</span>
                   <p className="text-base text-foreground leading-relaxed flex-1">{v.texto}</p>
@@ -321,7 +399,7 @@ export default function BibliaPage() {
             {selectedBook.capitulos.map((c) => (
               <button
                 key={c.capitulo}
-                onClick={() => setSelectedChapter(c)}
+                onClick={() => { setSelectedChapter(c); setVerseRange(null); }}
                 className="aspect-auto px-2 py-3 flex flex-col items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-border/50 hover:border-primary hover:bg-primary/5 transition-all shadow-sm group"
               >
                 <span className="text-[9px] sm:text-[10px] font-normal uppercase opacity-60 mb-0.5 group-hover:text-primary transition-colors">Capítulo</span>
@@ -455,7 +533,7 @@ export default function BibliaPage() {
     <div className="space-y-5 pb-20">
       <div className="page-header animate-fade-in">
         <button onClick={() => {
-          if (selectedChapter) setSelectedChapter(null);
+          if (selectedChapter) { setSelectedChapter(null); setVerseRange(null); }
           else if (selectedBook) setSelectedBook(null);
           else navigate(-1);
         }} className="back-btn">
@@ -509,7 +587,7 @@ export default function BibliaPage() {
         </div>
       )}
 
-      {/* ── SEÇÃO: LEITURAS DO ENCONTRO (LISTA SUSPENSA INTELIGENTE) ── */}
+      {/* ── SEÇÃO: LEITURA BÍBLICA DOS ENCONTROS ── */}
       {tab !== "estudo" && encontrosComLeitura.length > 0 && !selectedBook && (
         <div className="animate-float-up relative z-50" style={{ animationDelay: '60ms' }}>
           <div className="relative">
@@ -522,7 +600,7 @@ export default function BibliaPage() {
                   <Calendar className="h-5 w-5" />
                 </div>
                 <div className="text-left">
-                  <h2 className="text-sm font-black uppercase tracking-tight text-primary">Agenda de Leituras</h2>
+                  <h2 className="text-sm font-black uppercase tracking-tight text-primary">Leitura Bíblica dos Encontros</h2>
                   <p className="text-[10px] text-muted-foreground font-medium">Toque para escolher o encontro</p>
                 </div>
               </div>
@@ -537,42 +615,86 @@ export default function BibliaPage() {
             {readingMenuOpen && (
               <div className="absolute top-full left-0 right-0 mt-2 z-[100] animate-in fade-in zoom-in-95 duration-200">
                 <div className="float-card border-2 border-primary/10 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden rounded-[24px]">
-                  <div className="p-2 max-h-[300px] overflow-y-auto premium-scrollbar space-y-1">
-                    {encontrosComLeitura.map((e) => {
-                      const isProximo = e.id === proximoEncontro?.id;
+                  <div className="p-3 max-h-[420px] overflow-y-auto premium-scrollbar space-y-4">
+                    {Object.entries(encontrosPorMes).map(([chave, itens]) => {
+                      const [ano, mesIdx] = chave.split("-").map(Number);
+                      const nomeMes = MESES_PT[mesIdx];
                       return (
-                         <button
-                          key={e.id}
-                          onClick={() => {
-                            autoOpenReference(e.leituraBiblica!);
-                            setReadingMenuOpen(false);
-                          }}
-                          className={cn(
-                            "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group active:scale-[0.98]",
-                            isProximo ? "bg-primary/5 border border-primary/10" : "hover:bg-muted/50"
-                          )}
-                        >
-                          <div className={cn(
-                            "w-9 h-9 rounded-lg flex flex-col items-center justify-center shrink-0 border",
-                            isProximo ? "bg-primary text-white border-primary" : "bg-muted text-muted-foreground border-transparent"
-                          )}>
-                            <span className="text-[7px] font-black uppercase leading-none mb-0.5">
-                              {new Date(e.data).toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}
+                        <div key={chave}>
+                          {/* Cabeçalho do mês */}
+                          <div className="flex items-center gap-2 px-2 mb-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+                              {nomeMes} {ano}
                             </span>
-                            <span className="text-xs font-black leading-none">
-                              {new Date(e.data).getDate()}
-                            </span>
+                            <div className="flex-1 h-px bg-primary/10" />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={cn("text-xs font-black truncate", isProximo ? "text-primary" : "text-foreground")}>
-                              {e.leituraBiblica}
-                            </p>
-                            <p className="text-[9px] text-muted-foreground truncate opacity-70">
-                              {e.tema}
-                            </p>
+
+                          {/* Cards dos encontros do mês */}
+                          <div className="space-y-1.5">
+                            {itens.map((e) => {
+                              const isProximo = e.id === proximoEncontro?.id;
+                              const d = new Date(e.data + (e.data.includes("T") ? "" : "T12:00:00"));
+                              const diaStr = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "");
+                              const diaSemana = d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+
+                              return (
+                                <button
+                                  key={e.id}
+                                  onClick={() => {
+                                    autoOpenReference(e.leituraBiblica!);
+                                    setReadingMenuOpen(false);
+                                  }}
+                                  className={cn(
+                                    "w-full flex items-center gap-3 p-3 rounded-2xl transition-all text-left group active:scale-[0.98] border",
+                                    isProximo
+                                      ? "bg-primary/5 border-primary/20 shadow-sm"
+                                      : "hover:bg-muted/50 border-transparent hover:border-muted"
+                                  )}
+                                >
+                                  {/* Data */}
+                                  <div className={cn(
+                                    "w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0 border",
+                                    isProximo
+                                      ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                                      : "bg-muted text-muted-foreground border-muted"
+                                  )}>
+                                    <span className="text-[8px] font-black uppercase leading-none mb-0.5 opacity-80">{diaSemana}</span>
+                                    <span className="text-base font-black leading-none">{d.getDate()}</span>
+                                    <span className="text-[8px] font-black uppercase leading-none mt-0.5 opacity-80">
+                                      {d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")}
+                                    </span>
+                                  </div>
+
+                                  {/* Tema e citação */}
+                                  <div className="flex-1 min-w-0">
+                                    <p className={cn(
+                                      "text-sm font-black leading-tight truncate mb-1",
+                                      isProximo ? "text-primary" : "text-foreground"
+                                    )}>
+                                      {e.tema}
+                                    </p>
+                                    <div className="flex items-center gap-1.5">
+                                      <span className={cn(
+                                        "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black border",
+                                        isProximo
+                                          ? "bg-primary/10 text-primary border-primary/20"
+                                          : "bg-muted text-muted-foreground border-muted"
+                                      )}>
+                                        <BookIcon className="h-2.5 w-2.5" />
+                                        {e.leituraBiblica}
+                                      </span>
+                                      {isProximo && (
+                                        <span className="text-[9px] font-black text-primary/60 uppercase tracking-wide">Próximo</span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <ChevronRight className="h-4 w-4 text-primary opacity-30 group-hover:opacity-100 transition-opacity shrink-0" />
+                                </button>
+                              );
+                            })}
                           </div>
-                          <ChevronRight className="h-4 w-4 text-primary opacity-30 group-hover:opacity-100 transition-opacity" />
-                        </button>
+                        </div>
                       );
                     })}
                   </div>

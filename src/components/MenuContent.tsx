@@ -26,6 +26,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 interface MenuContentProps {
   onClose: () => void;
@@ -218,6 +219,12 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
   const [birthdaysEnabled, setBirthdaysEnabled] = useState(() => localStorage.getItem('ivc_birthdays_enabled') !== 'false');
   const [meetingsEnabled, setMeetingsEnabled] = useState(() => localStorage.getItem('ivc_meetings_enabled') !== 'false');
   const [reunioesEnabled, setReunioesEnabled] = useState(() => localStorage.getItem('ivc_reunioes_enabled') !== 'false');
+  const { updatePreferences } = usePushNotifications();
+
+  // Sincroniza preferências de notificação no servidor (Supabase)
+  const syncNotificationPrefs = (birthdays: boolean, meetings: boolean, reunioes: boolean) => {
+    updatePreferences({ birthdays, meetings, reunioes });
+  };
 
   // Alertas Inteligentes
   const [showAlertsDialog, setShowAlertsDialog] = useState(false);
@@ -857,6 +864,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                    onCheckedChange={(c) => {
                      setBirthdaysEnabled(c);
                      localStorage.setItem('ivc_birthdays_enabled', String(c));
+                     syncNotificationPrefs(c, meetingsEnabled, reunioesEnabled);
                      if (c && "Notification" in window && Notification.permission !== "granted") {
                        Notification.requestPermission();
                      }
@@ -878,6 +886,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                    onCheckedChange={(c) => {
                      setMeetingsEnabled(c);
                      localStorage.setItem('ivc_meetings_enabled', String(c));
+                     syncNotificationPrefs(birthdaysEnabled, c, reunioesEnabled);
                      if (c && "Notification" in window && Notification.permission !== "granted") {
                        Notification.requestPermission();
                      }
@@ -899,6 +908,7 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
                    onCheckedChange={(c) => {
                      setReunioesEnabled(c);
                      localStorage.setItem('ivc_reunioes_enabled', String(c));
+                     syncNotificationPrefs(birthdaysEnabled, meetingsEnabled, c);
                      if (c && "Notification" in window && Notification.permission !== "granted") {
                        Notification.requestPermission();
                      }
@@ -910,10 +920,14 @@ export function MenuContent({ onClose, onShowObjective }: MenuContentProps) {
              <Button onClick={() => { 
                 if ("Notification" in window && Notification.permission !== "granted" && (birthdaysEnabled || meetingsEnabled || reunioesEnabled)) {
                   Notification.requestPermission().then(p => {
-                    if (p === "granted") toast.success("Notificações permitidas pelo dispositivo!");
+                    if (p === "granted") {
+                      syncNotificationPrefs(birthdaysEnabled, meetingsEnabled, reunioesEnabled);
+                      toast.success("Notificações ativadas! Você receberá avisos no celular. 🎉");
+                    }
                     else toast.error("Permissão de notificação negada no navegador.");
                   });
                 } else {
+                  syncNotificationPrefs(birthdaysEnabled, meetingsEnabled, reunioesEnabled);
                   toast.success("Preferências salvas com sucesso!"); 
                 }
                 setShowNotificationDialog(false); 

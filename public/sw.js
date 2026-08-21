@@ -2,7 +2,7 @@
 // iCatequese Service Worker
 // IMPORTANTE: Altere o CACHE_VERSION a cada deploy para
 // garantir que os usuários recebam a versão mais recente.
-// Atualizado em: 2026-07-08T19:40:00-03:00
+// Atualizado em: 2026-08-21T07:00:00-03:00
 // ============================================================
 
 const CACHE_VERSION = 'v' + Date.now(); // auto-increments on each SW install
@@ -101,41 +101,66 @@ self.addEventListener('fetch', function(event) {
 });
 
 // ── PUSH NOTIFICATIONS ──
+// Recebe push do servidor e exibe notificação nativa no Android/iOS
 self.addEventListener('push', function(event) {
-  if (event.data) {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: '/icon-192.png',
-      badge: '/badge.png',
-      data: {
-        url: data.url || '/'
-      },
-      actions: data.actions || []
-    };
+  if (!event.data) return;
 
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {
+    data = { title: 'iCatequese', body: event.data.text() };
   }
+
+  const title = data.title || 'iCatequese';
+  const options = {
+    body: data.body || '',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    image: data.image || undefined,
+    data: {
+      url: data.url || '/',
+    },
+    tag: data.tag || 'icatequese-notif',
+    // Vibração para Android: padrão longo-curto-longo
+    vibrate: [200, 100, 200, 100, 200],
+    // Mantém a notificação até o usuário interagir (não desaparece automaticamente)
+    requireInteraction: true,
+    // Som padrão do sistema
+    silent: false,
+    actions: data.actions || [],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
 });
 
 // ── NOTIFICATION CLICK ──
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  const urlToOpen = event.notification.data.url;
+
+  const urlToOpen = (event.notification.data && event.notification.data.url)
+    ? new URL(event.notification.data.url, self.location.origin).href
+    : self.location.origin;
 
   event.waitUntil(
     clients.matchAll({
       type: 'window',
       includeUncontrolled: true
     }).then(function(windowClients) {
+      // Se já há uma janela aberta, foca nela
       for (var i = 0; i < windowClients.length; i++) {
         var client = windowClients[i];
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
+        if ('focus' in client) {
+          client.focus();
+          if ('navigate' in client) {
+            client.navigate(urlToOpen);
+          }
+          return;
         }
       }
+      // Senão, abre uma nova janela
       if (clients.openWindow) {
         return clients.openWindow(urlToOpen);
       }

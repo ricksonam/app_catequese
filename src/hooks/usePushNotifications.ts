@@ -54,19 +54,30 @@ export function usePushNotifications() {
         throw new Error("Formato de assinatura inválido");
       }
 
-      // Salvar no Supabase
-      const { error } = await supabase.from("push_subscriptions").insert({
-        user_id: user.id,
-        endpoint: subJson.endpoint,
-        p256dh: subJson.keys.p256dh,
-        auth: subJson.keys.auth,
-      });
+      // Ler preferências salvas localmente
+      const preferences = {
+        birthdays: localStorage.getItem("ivc_birthdays_enabled") !== "false",
+        meetings: localStorage.getItem("ivc_meetings_enabled") !== "false",
+        reunioes: localStorage.getItem("ivc_reunioes_enabled") !== "false",
+      };
+
+      // Salvar/atualizar no Supabase usando upsert por endpoint
+      const { error } = await supabase.from("push_subscriptions").upsert(
+        {
+          user_id: user.id,
+          endpoint: subJson.endpoint,
+          p256dh: subJson.keys.p256dh,
+          auth: subJson.keys.auth,
+          preferences,
+        },
+        { onConflict: "endpoint" }
+      );
 
       if (error) throw error;
 
       toast({
         title: "Notificações ativadas! 🎉",
-        description: "Você receberá lembretes de encontros e aniversários.",
+        description: "Você receberá lembretes de encontros e aniversários no celular.",
       });
     } catch (error: any) {
       console.error("Erro ao assinar notificações:", error);
@@ -80,9 +91,34 @@ export function usePushNotifications() {
     }
   };
 
+  /**
+   * Atualiza as preferências de notificação no Supabase sem refazer toda a assinatura.
+   */
+  const updatePreferences = async (prefs: {
+    birthdays?: boolean;
+    meetings?: boolean;
+    reunioes?: boolean;
+  }) => {
+    if (!user) return;
+    try {
+      const registration = await navigator.serviceWorker?.ready;
+      const existingSubscription = await registration?.pushManager?.getSubscription();
+      if (!existingSubscription) return;
+
+      await supabase
+        .from("push_subscriptions")
+        .update({ preferences: prefs })
+        .eq("endpoint", existingSubscription.endpoint)
+        .eq("user_id", user.id);
+    } catch (err) {
+      console.warn("[usePushNotifications] Erro ao atualizar preferências:", err);
+    }
+  };
+
   return {
     permission,
     subscribe,
+    updatePreferences,
     loading,
   };
 }
