@@ -920,11 +920,6 @@ export default function Dashboard() {
               onClick={() => setTurmaPickerOpen(true)}
               className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-[14px] bg-white dark:bg-zinc-900 border border-blue-200 dark:border-zinc-700 shadow-sm hover:border-blue-400 hover:shadow-md active:scale-[0.98] transition-all group relative overflow-hidden"
             >
-              {/* Ícone da turma */}
-              <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-700/50">
-                <BookOpen className="h-5 w-5 text-blue-600" />
-              </div>
-
               {/* Info da turma */}
               <div className="flex-1 text-left min-w-0">
                 <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest leading-none mb-1 whitespace-nowrap truncate">Turma Selecionada</p>
@@ -933,7 +928,7 @@ export default function Dashboard() {
                     {selectedTurmaId === 'all' ? 'Nenhuma turma selecionada' : selectedTurma?.nome}
                   </p>
                   {selectedTurmaId !== 'all' && (selectedTurma?.etapa || selectedTurma?.ano) && (
-                    <span className="text-xs text-muted-foreground font-bold truncate">
+                    <span className="text-xs text-muted-foreground font-bold truncate shrink-0">
                       • {[selectedTurma?.etapa, selectedTurma?.ano].filter(Boolean).join(' ')}
                     </span>
                   )}
@@ -941,9 +936,8 @@ export default function Dashboard() {
               </div>
 
               {/* Ícone trocar */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 shrink-0 group-hover:bg-blue-200 transition-colors">
-                <RefreshCw className="h-3.5 w-3.5 text-blue-600 group-hover:rotate-180 transition-transform duration-300" />
-                <span className="text-[9px] font-black text-blue-700 uppercase tracking-widest">Trocar</span>
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 shrink-0 group-hover:bg-blue-200 transition-colors">
+                <RefreshCw className="h-4 w-4 text-blue-600 group-hover:rotate-180 transition-transform duration-300" />
               </div>
             </button>
           </div>
